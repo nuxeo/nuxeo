@@ -64,8 +64,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     protected static final String SYNCED_REQUEST_FLAG = "NuxeoSessionAlreadySync";
 
-    // FIXME: typo in constant name.
-    protected static final int LOCK_TIMOUT_S = 120;
+    protected static final int LOCK_TIMEOUT_S = 120;
 
     // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
     public static final FastDateFormat HTTP_EXPIRES_DATE_FORMAT = FastDateFormat.getInstance(
@@ -87,8 +86,6 @@ public class NuxeoRequestControllerFilter implements Filter {
 
                 if (rcm == null) {
                     log.error("Unable to get RequestControllerManager service");
-                    // throw new ServletException(
-                    // "RequestControllerManager can not be found");
                 }
                 log.debug("Staring NuxeoRequestController filter");
             } else {
@@ -195,7 +192,7 @@ public class NuxeoRequestControllerFilter implements Filter {
                     // commit failed, report this to the client before stopping buffering
                     ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                             e.getMessage());
-                    throw e;
+                    log.error(e); // don't rethrow inside finally
                 } finally {
                     if (config.needTransactionBuffered()) {
                         ((BufferingHttpServletResponse) response).stopBuffering();
@@ -249,7 +246,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         boolean locked = false;
         try {
-            locked = lock.tryLock(LOCK_TIMOUT_S, TimeUnit.SECONDS);
+            locked = lock.tryLock(LOCK_TIMEOUT_S, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error(doFormatLogMessage(request, "Unable to acquire lock for Session sync"), e);
             return false;

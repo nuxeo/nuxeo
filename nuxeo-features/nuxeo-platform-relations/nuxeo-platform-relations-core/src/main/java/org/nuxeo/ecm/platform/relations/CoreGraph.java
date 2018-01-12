@@ -108,12 +108,12 @@ public class CoreGraph implements Graph {
     public static final String DC_DESCRIPTION = "dc:description";
 
     // avoid confusion with any legal uri
-    public static String BLANK_NS = "-:";
+    public static final String BLANK_NS = "-:";
 
-    public static String DOCUMENT_NAMESPACE = RelationConstants.DOCUMENT_NAMESPACE;
+    public static final String DOCUMENT_NAMESPACE = RelationConstants.DOCUMENT_NAMESPACE;
 
     /** Without final slash (compat). */
-    public static String DOCUMENT_NAMESPACE2 = DOCUMENT_NAMESPACE.substring(0, DOCUMENT_NAMESPACE.length() - 1);
+    public static final String DOCUMENT_NAMESPACE2 = DOCUMENT_NAMESPACE.substring(0, DOCUMENT_NAMESPACE.length() - 1);
 
     /** Has no final slash (compat). */
     public static final String COMMENT_NAMESPACE = "http://www.nuxeo.org/comments/uid";

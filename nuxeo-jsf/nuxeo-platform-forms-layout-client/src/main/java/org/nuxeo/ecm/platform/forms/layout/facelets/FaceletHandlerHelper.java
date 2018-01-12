@@ -100,7 +100,7 @@ public final class FaceletHandlerHelper {
     /**
      * @since 6.0
      */
-    public static String DEV_MODE_DISABLED_VARIABLE = "nuxeoLayoutDevModeDisabled";
+    public static final String DEV_MODE_DISABLED_VARIABLE = "nuxeoLayoutDevModeDisabled";
 
     private static final Pattern UNIQUE_ID_STRIP_PATTERN = Pattern.compile("(.*)(_[0-9]+)");
 

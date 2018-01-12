@@ -30,8 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DatabaseMySQL extends DatabaseHelper {
 
-    public static DatabaseHelper INSTANCE = new DatabaseMySQL();
-
     private static final String DEF_KIND = "mysql"; // or mariadb
 
     private static final String DEF_URL = "jdbc:" + DEF_KIND + "://localhost:3306/" + DEFAULT_DATABASE_NAME;

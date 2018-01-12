@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -98,22 +96,15 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     "The permission parameter is mandatory to acquire an authentication token.");
         }
 
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        return Framework.doPrivileged(() -> {
             // Open directory session
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 // Generate random token, store the binding and return the token
                 UUID uuid = UUID.randomUUID();
-                token = uuid.toString();
+                String newToken = uuid.toString();
 
                 final DocumentModel entry = getBareAuthTokenModel(Framework.getService(DirectoryService.class));
-                entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, token);
+                entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, newToken);
                 entry.setProperty(DIRECTORY_SCHEMA, USERNAME_FIELD, userName);
                 entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD, applicationName);
                 entry.setProperty(DIRECTORY_SCHEMA, DEVICE_ID_FIELD, deviceId);
@@ -129,19 +120,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 log.debug(String.format(
                         "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
                         userName, applicationName, deviceId));
-                return token;
+                return newToken;
 
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
@@ -182,14 +164,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId.");
         }
 
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        return Framework.doPrivileged(() -> {
             // Open directory session
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 // Look for a token bound to the (userName,
@@ -221,29 +196,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                         userName, applicationName, deviceId));
                 return null;
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
     public String getUserName(final String token) {
-
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        return Framework.doPrivileged(() -> {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 DocumentModel entry = session.getEntry(token);
                 if (entry == null) {
@@ -254,43 +212,17 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 return (String) entry.getProperty(DIRECTORY_SCHEMA, USERNAME_FIELD);
 
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
     public void revokeToken(final String token) {
-
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        Framework.doPrivileged(() -> {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 session.deleteEntry(token);
                 log.info(String.format("Deleted token: '%s' from the back-end.", token));
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
@@ -300,15 +232,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
     @Override
     public DocumentModelList getTokenBindings(String userName, String applicationName) {
-
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        return Framework.doPrivileged(() -> {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 final Map<String, Serializable> filter = new HashMap<>();
                 filter.put(USERNAME_FIELD, userName);
@@ -319,16 +243,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 orderBy.put(CREATION_DATE_FIELD, "desc");
                 return session.query(filter, Collections.emptySet(), orderBy);
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     protected DocumentModel getBareAuthTokenModel(DirectoryService directoryService) {

@@ -36,7 +36,7 @@ import org.nuxeo.wizard.context.Context;
  */
 public class Page {
 
-    public static String NUXEO_COM_URL = "http://www.nuxeo.com/embedded/wizard/";
+    public static final String NUXEO_COM_URL = "http://www.nuxeo.com/embedded/wizard/";
 
     protected final String action;
 

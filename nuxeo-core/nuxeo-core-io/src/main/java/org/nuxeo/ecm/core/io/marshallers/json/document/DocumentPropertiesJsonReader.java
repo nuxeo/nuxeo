@@ -84,7 +84,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Property>> {
 
-    public static String DEFAULT_SCHEMA_NAME = "DEFAULT_SCHEMA_NAME";
+    public static final String DEFAULT_SCHEMA_NAME = "DEFAULT_SCHEMA_NAME";
 
     @Inject
     private SchemaManager schemaManager;

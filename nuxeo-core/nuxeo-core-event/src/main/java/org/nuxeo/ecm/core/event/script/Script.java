@@ -35,25 +35,23 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
-import org.nuxeo.common.utils.FileUtils;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class Script {
 
-    public static boolean trackChanges = true;
+    protected static volatile ScriptEngineManager scripting;
 
-    public static ScriptEngineManager scripting;
+    protected CompiledScript script;
 
-    public CompiledScript script;
-
-    public long lastModified = -1;
+    public volatile long lastModified = -1;
 
     public static ScriptEngineManager getScripting() {
         if (scripting == null) {
             synchronized (Script.class) {
-                scripting = new ScriptEngineManager();
+                if (scripting == null) {
+                    scripting = new ScriptEngineManager();
+                }
             }
         }
         return scripting;
@@ -126,22 +124,17 @@ public abstract class Script {
         }
         ScriptContext ctx = new SimpleScriptContext();
         ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
-        Object result = null;
-        if (!trackChanges && script != null) {
-            result = script.eval(ctx);
-        } else {
-            result = getCompiledScript().eval(ctx);
-        }
-        return result;
+        return getCompiledScript().eval(ctx);
     }
 
     public CompiledScript getCompiledScript() throws ScriptException {
         try {
-            Reader reader = script == null ? getReader() : getReaderIfModified();
-            if (reader != null) {
-                script = compile(reader);
+            try (Reader reader = script == null ? getReader() : getReaderIfModified()) {
+                if (reader != null) {
+                    script = compile(reader);
+                }
+                return script;
             }
-            return script;
         } catch (IOException e) {
             throw new ScriptException(e);
         }

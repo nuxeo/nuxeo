@@ -41,7 +41,7 @@ public class Rollback extends AbstractCommand {
 
     protected static final Log log = LogFactory.getLog(Rollback.class);
 
-    public static String ID = "rollback";
+    public static final String ID = "rollback";
 
     protected String pkgId;
 

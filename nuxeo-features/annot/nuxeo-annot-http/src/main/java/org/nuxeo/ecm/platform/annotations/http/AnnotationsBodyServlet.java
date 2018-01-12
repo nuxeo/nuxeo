@@ -36,10 +36,9 @@ public class AnnotationsBodyServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private AnnotationServiceFacade facade;
+    private final AnnotationServiceFacade facade;
 
-    @Override
-    public void init() {
+    public AnnotationsBodyServlet() {
         facade = new AnnotationServiceFacade();
     }
 

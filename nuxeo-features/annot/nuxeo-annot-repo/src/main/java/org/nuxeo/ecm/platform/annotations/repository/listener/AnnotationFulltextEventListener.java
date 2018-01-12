@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEventListener;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsFulltextInjector;
-import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryComponent;
 
 /**
  * Extract the text of the body of the annotation to register it as a related text resource on the document for
@@ -40,7 +39,7 @@ public class AnnotationFulltextEventListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        AnnotationsFulltextInjector injector = AnnotationsRepositoryComponent.instance.getFulltextInjector();
+        AnnotationsFulltextInjector injector = new AnnotationsFulltextInjector();
         if (!(event.getContext() instanceof DocumentEventContext)) {
             return;
         }

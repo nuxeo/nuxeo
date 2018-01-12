@@ -698,11 +698,9 @@ public class Base64 {
         } // end try
         catch (java.io.IOException e) {
             e.printStackTrace();
-            obj = null;
         } // end catch
         catch (java.lang.ClassNotFoundException e) {
             e.printStackTrace();
-            obj = null;
         } // end catch
         finally {
             IOUtils.closeQuietly(bais);
@@ -729,8 +727,7 @@ public class Base64 {
             success = true;
         } // end try
         catch (java.io.IOException e) {
-
-            success = false;
+            // success is false
         } // end catch: IOException
         finally {
             IOUtils.closeQuietly(bos);
@@ -756,7 +753,7 @@ public class Base64 {
             success = true;
         } // end try
         catch (java.io.IOException e) {
-            success = false;
+            // success is false
         } // end catch: IOException
         finally {
             IOUtils.closeQuietly(bos);

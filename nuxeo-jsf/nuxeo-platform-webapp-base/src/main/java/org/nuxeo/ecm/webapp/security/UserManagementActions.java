@@ -35,8 +35,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,7 +47,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -321,13 +318,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         if (userManager.checkUsernamePassword(currentUser.getName(), oldPassword)) {
 
             try {
-                doAsSystemUser(new Runnable() {
-                    @Override
-                    public void run() {
-                        userManager.updateUser(selectedUser);
-                    }
-
-                });
+                Framework.doPrivileged(() -> userManager.updateUser(selectedUser));
             } catch (InvalidPasswordException e) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
@@ -345,28 +336,6 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         fireSeamEvent(USERS_LISTING_CHANGED);
 
         return null;
-    }
-
-    protected void doAsSystemUser(Runnable runnable) {
-        LoginContext loginContext;
-        try {
-            loginContext = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException(e);
-        }
-
-        try {
-            runnable.run();
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (loginContext != null) {
-                    loginContext.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
     }
 
     public void deleteUser() {

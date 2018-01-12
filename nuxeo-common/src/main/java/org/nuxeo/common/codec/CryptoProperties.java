@@ -64,7 +64,9 @@ import org.nuxeo.common.Environment;
 public class CryptoProperties extends Properties {
     private static final Log log = LogFactory.getLog(CryptoProperties.class);
 
-    private Crypto crypto = Crypto.NO_OP;
+    private static final Crypto Crypto_NO_OP = Crypto.NoOp.NO_OP;
+
+    private Crypto crypto = Crypto_NO_OP;
 
     private static final List<String> CRYPTO_PROPS = Arrays.asList(Environment.SERVER_STATUS_KEY,
             Environment.CRYPT_KEYALIAS, Environment.CRYPT_KEYSTORE_PATH, Environment.JAVA_DEFAULT_KEYSTORE,
@@ -122,7 +124,7 @@ public class CryptoProperties extends Properties {
                 return new Crypto(keystorePath, keystorePass.toCharArray(), keyAlias, statusKey.toCharArray());
             } catch (GeneralSecurityException | IOException e) {
                 log.warn(e);
-                return Crypto.NO_OP;
+                return Crypto_NO_OP;
             }
         }
 
@@ -134,14 +136,14 @@ public class CryptoProperties extends Properties {
                 // It's a raw value, not an URL => fall through
             } catch (IOException e) {
                 log.warn(e);
-                return Crypto.NO_OP;
+                return Crypto_NO_OP;
             }
         } else {
             secretKey = statusKey;
         }
         if (secretKey == null) {
             log.warn("Missing " + Environment.SERVER_STATUS_KEY);
-            return Crypto.NO_OP;
+            return Crypto_NO_OP;
         }
         return new Crypto(secretKey.getBytes());
     }

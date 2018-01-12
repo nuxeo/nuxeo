@@ -47,28 +47,27 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    public static String TILE_OUTPUT_DIR_KEY = "outputDirPath";
+    public static final String TILE_OUTPUT_DIR_KEY = "outputDirPath";
 
-    public static String TILE_INPUT_FILE_KEY = "inputFilePath";
+    public static final String TILE_INPUT_FILE_KEY = "inputFilePath";
 
-    public static String X_TILES_KEY = "XTiles";
+    public static final String X_TILES_KEY = "XTiles";
 
-    public static String Y_TILES_KEY = "YTiles";
+    public static final String Y_TILES_KEY = "YTiles";
 
-    public static String LAST_MODIFICATION_DATE_KEY = "lastModificationDate";
+    public static final String LAST_MODIFICATION_DATE_KEY = "lastModificationDate";
 
-    // public static String ZoomFactorKey = "ZoomFactor";
-    public static String TILES_PREFIX_KEY = "TilesPrefix";
+    public static final String TILES_PREFIX_KEY = "TilesPrefix";
 
-    public static String TILES_SUFFIX_KEY = "TilesSuffix";
+    public static final String TILES_SUFFIX_KEY = "TilesSuffix";
 
-    public static String TILES_WIDTH_KEY = "TilesWidth";
+    public static final String TILES_WIDTH_KEY = "TilesWidth";
 
-    public static String TILES_HEIGHT_KEY = "TilesHeight";
+    public static final String TILES_HEIGHT_KEY = "TilesHeight";
 
-    public static String MAX_TILES_KEY = "MaxTiles";
+    public static final String MAX_TILES_KEY = "MaxTiles";
 
-    public static String PROGRESSIVE_TILING_KEY = "ProgressiveTiling";
+    public static final String PROGRESSIVE_TILING_KEY = "ProgressiveTiling";
 
     protected Map<String, String> infoMap;
 

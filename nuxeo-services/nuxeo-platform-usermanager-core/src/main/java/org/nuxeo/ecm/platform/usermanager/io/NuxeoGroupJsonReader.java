@@ -141,7 +141,7 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
             ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
             try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, groupConfig.schemaName).open()) {
                 List<Property> properties = readEntity(List.class, genericType, propsNode);
-                properties.stream().filter(p -> !excludedProperties.contains(p)).forEach(
+                properties.stream().filter(p -> !excludedProperties.contains(p.getName())).forEach(
                         p -> groupModel.setPropertyValue(p.getName(), p.getValue()));
             }
         }

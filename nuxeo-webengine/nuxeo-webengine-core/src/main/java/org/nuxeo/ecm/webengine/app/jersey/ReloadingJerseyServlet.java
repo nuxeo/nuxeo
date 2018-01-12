@@ -41,25 +41,8 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
 
     private static final long serialVersionUID = 1L;
 
-    protected WebEngine engine;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        engine = Framework.getService(WebEngine.class);
-    }
-
-    @Override
-    public void destroy() {
-        engine = null;
-        super.destroy();
-    }
-
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (engine == null) {
-            engine = Framework.getService(WebEngine.class);
-        }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
             // force reading properties because jersey is consuming one
@@ -71,6 +54,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
     }
 
     public synchronized void reloadIfNeeded() {
+        WebEngine engine = Framework.getService(WebEngine.class);
         if (engine.tryReload()) {
             reload();
         }

@@ -91,11 +91,6 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
         _children = null;
     }
 
-    public synchronized void removeChildren(ClassLoader loader) {
-        children.remove(loader);
-        _children = null;
-    }
-
     public synchronized void clear() {
         children.clear();
         _children = null;

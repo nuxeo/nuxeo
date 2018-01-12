@@ -21,8 +21,9 @@
 package org.nuxeo.ecm.core.management.events;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
@@ -37,9 +38,9 @@ public class EventStatsHolder {
 
     protected static boolean collectSyncHandlersExecTime = false;
 
-    protected static Map<String, CallStat> syncStats = new HashMap<String, CallStat>();
+    protected static Map<String, CallStat> syncStats = new ConcurrentHashMap<>();
 
-    protected static Map<String, CallStat> aSyncStats = new HashMap<String, CallStat>();
+    protected static Map<String, CallStat> aSyncStats = new ConcurrentHashMap<>();
 
     private EventStatsHolder() {
     }
@@ -64,9 +65,8 @@ public class EventStatsHolder {
      * @since 5.6
      */
     public static void clearStats() {
-        synchronized (aSyncStats) {
-            EventStatsHolder.aSyncStats.clear();
-        }
+        syncStats.clear();
+        aSyncStats.clear();
     }
 
     public static void logAsyncExec(EventListenerDescriptor desc, long delta) {
@@ -95,15 +95,8 @@ public class EventStatsHolder {
             return;
         }
         String name = desc.getName();
-        synchronized (syncStats) {
-            CallStat stat = syncStats.get(name);
-            if (stat == null) {
-                String label = desc.asEventListener().getClass().getSimpleName();
-                stat = new CallStat(label);
-                syncStats.put(name, stat);
-            }
-            stat.update(delta);
-        }
+        syncStats.computeIfAbsent(name, k -> new CallStat(desc.asEventListener().getClass().getSimpleName()))
+                 .update(delta);
     }
 
     public static String getAsyncHandlersExecTime() {
@@ -129,39 +122,34 @@ public class EventStatsHolder {
     }
 
     protected static String getStringSummary(Map<String, CallStat> stats) {
-        StringBuffer sb = new StringBuffer();
-        synchronized (stats) {
-
-            long totalTime = 0;
-            for (String name : stats.keySet()) {
-                totalTime += stats.get(name).getAccumulatedTime();
-            }
-
-            for (String name : stats.keySet()) {
-                CallStat stat = stats.get(name);
-                sb.append(name);
-                sb.append(" - ");
-                sb.append(stat.getLabel());
-                sb.append(" - ");
-                sb.append(stat.getCallCount());
-                sb.append(" calls - ");
-                sb.append(stat.getAccumulatedTime());
-                sb.append("ms - ");
-                String pcent = String.format("%.2f", 100.0 * stat.getAccumulatedTime() / totalTime);
-                sb.append(pcent);
-                sb.append("%\n");
-            }
+        long totalTime = 0;
+        for (CallStat stat : stats.values()) {
+            totalTime += stat.getAccumulatedTime();
+        }
+        if (totalTime == 0) {
+            totalTime = 1;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String, CallStat> en : stats.entrySet()) {
+            String name = en.getKey();
+            CallStat stat = en.getValue();
+            sb.append(name);
+            sb.append(" - ");
+            sb.append(stat.getLabel());
+            sb.append(" - ");
+            sb.append(stat.getCallCount());
+            sb.append(" calls - ");
+            sb.append(stat.getAccumulatedTime());
+            sb.append("ms - ");
+            String pcent = String.format("%.2f", 100.0 * stat.getAccumulatedTime() / totalTime);
+            sb.append(pcent);
+            sb.append("%\n");
         }
         return sb.toString();
     }
 
     public static void resetHandlersExecTime() {
-        synchronized (syncStats) {
-            syncStats = new HashMap<String, CallStat>();
-        }
-        synchronized (aSyncStats) {
-            aSyncStats = new HashMap<String, CallStat>();
-        }
+        clearStats();
     }
 
 }

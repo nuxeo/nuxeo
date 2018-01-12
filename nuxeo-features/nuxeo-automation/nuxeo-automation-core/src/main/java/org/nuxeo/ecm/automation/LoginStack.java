@@ -24,6 +24,8 @@ import java.util.List;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,7 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public class LoginStack {
 
-    protected List<Entry> stack = new ArrayList<Entry>();
+    protected List<Entry> stack = new ArrayList<>();
 
     protected CoreSession originalSession;
 
@@ -83,7 +85,7 @@ public class LoginStack {
      * If no login context in in the stack nothing is done. If the login context has an associated CoreSession the
      * session will be destroyed and the previous session is restored as the active session of the operation context.
      */
-    public void pop() throws OperationException {
+    public void pop() {
         if (!stack.isEmpty()) {
             Entry entry = stack.remove(stack.size() - 1);
             entry.dispose();
@@ -99,7 +101,7 @@ public class LoginStack {
     /**
      * Remove the stacked logins if any. This is called when chain execution is done.
      */
-    protected void clear() throws OperationException {
+    protected void clear() {
         if (!stack.isEmpty()) {
             for (int i = stack.size() - 1; i > -1; i--) {
                 stack.get(i).dispose();
@@ -111,6 +113,9 @@ public class LoginStack {
     }
 
     public static class Entry {
+
+        private static final Log log = LogFactory.getLog(Entry.class);
+
         public LoginContext lc;
 
         public CloseableCoreSession session;
@@ -123,7 +128,7 @@ public class LoginStack {
             return session != null;
         }
 
-        public final void dispose() throws OperationException {
+        public final void dispose() {
             try {
                 if (session != null) {
                     try {
@@ -138,7 +143,7 @@ public class LoginStack {
                     lc.logout();
                     lc = null;
                 } catch (LoginException e) {
-                    throw new OperationException(e);
+                    log.error(e); // don't rethrow inside finally
                 }
             }
         }

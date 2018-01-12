@@ -91,7 +91,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
 
-    protected OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
+    protected final OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

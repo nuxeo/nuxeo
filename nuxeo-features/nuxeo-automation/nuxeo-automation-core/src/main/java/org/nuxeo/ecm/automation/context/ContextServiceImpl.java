@@ -21,19 +21,22 @@ package org.nuxeo.ecm.automation.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.core.AutomationComponent;
-
 /**
  * @since 7.3
  */
 public class ContextServiceImpl implements ContextService {
 
+    protected final ContextHelperRegistry contextHelperRegistry;
+
+    public ContextServiceImpl(ContextHelperRegistry contextHelperRegistry) {
+        this.contextHelperRegistry = contextHelperRegistry;
+    }
+
     @Override
     public Map<String, ContextHelper> getHelperFunctions() {
         Map<String, ContextHelper> contextHelpers = new HashMap<>();
-        Map<String, ContextHelperDescriptor> contextHelperDescriptors = AutomationComponent.self.contextHelperRegistry.getContextHelperDescriptors();
-        for (String contextHelperId : contextHelperDescriptors.keySet()) {
-            ContextHelperDescriptor contextHelperDescriptor = contextHelperDescriptors.get(contextHelperId);
+        Map<String, ContextHelperDescriptor> contextHelperDescriptors = contextHelperRegistry.getContextHelperDescriptors();
+        for (ContextHelperDescriptor contextHelperDescriptor : contextHelperDescriptors.values()) {
             if (contextHelperDescriptor.isEnabled()) {
                 contextHelpers.put(contextHelperDescriptor.getId(), contextHelperDescriptor.getContextHelper());
             }

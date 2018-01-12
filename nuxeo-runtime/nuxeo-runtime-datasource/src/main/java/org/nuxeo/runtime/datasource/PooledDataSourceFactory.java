@@ -266,7 +266,9 @@ public class PooledDataSourceFactory implements ObjectFactory {
                         try {
                             c.setAutoCommit(true);
                         } catch (SQLException e) {
-                            throw new ResourceAdapterInternalException("Unable to enable autoCommit after rollback", e);
+                            // don't rethrow inside finally
+                            LogFactory.getLog(PooledDataSourceFactory.class)
+                                      .error("Unable to enable autoCommit after rollback", e);
                         }
                     }
                     super.localTransactionCommit(isSPI);

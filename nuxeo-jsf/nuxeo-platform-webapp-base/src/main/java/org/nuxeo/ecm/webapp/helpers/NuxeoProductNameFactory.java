@@ -40,18 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class NuxeoProductNameFactory implements Serializable {
 
-    /**
-     * @deprecated Since 7.10. Use {@link Environment} constants.
-     */
-    @Deprecated
-    public static String PNAME_KEY = Environment.PRODUCT_NAME;
-
-    /**
-     * @deprecated Since 7.10. Use {@link Environment} constants.
-     */
-    @Deprecated
-    public static String PVERSION_KEY = Environment.PRODUCT_VERSION;
-
     private static final long serialVersionUID = 1L;
 
     @Factory(value = "nuxeoApplicationName", scope = ScopeType.APPLICATION)

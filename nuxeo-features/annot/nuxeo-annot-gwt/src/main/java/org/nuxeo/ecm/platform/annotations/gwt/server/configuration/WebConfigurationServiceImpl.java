@@ -58,27 +58,17 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 public class WebConfigurationServiceImpl extends RemoteServiceServlet implements WebConfigurationService {
 
-    private static final long serialVersionUID = 2389527283775608787L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(WebConfigurationServiceImpl.class);
 
-    private WebAnnotationConfigurationService webAnnotationConfigurationService;
-
-    protected DocumentViewCodecManager documentViewCodecManager;
-
     private NuxeoPrincipal currentUser;
 
-    protected WebAnnotationConfigurationService getConfig() {
-        if (webAnnotationConfigurationService == null) {
-            webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
-        }
-        return webAnnotationConfigurationService;
-    }
-
     public WebConfiguration getWebConfiguration(String url) {
+        WebAnnotationConfigurationService config = Framework.getService(WebAnnotationConfigurationService.class);
         WebConfiguration conf = new WebConfiguration();
 
-        List<WebAnnotationDefinitionDescriptor> types = getConfig().getEnabledWebAnnotationDefinitions();
+        List<WebAnnotationDefinitionDescriptor> types = config.getEnabledWebAnnotationDefinitions();
 
         for (WebAnnotationDefinitionDescriptor type : types) {
             Map<String, String[]> fields = new HashMap<String, String[]>();
@@ -90,24 +80,24 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
                     type.getType(), type.getListIcon(), type.getCreateIcon(), type.isInMenu(), fields));
         }
 
-        UserInfoMapper userInfoMapper = getConfig().getUserInfoMapper();
+        UserInfoMapper userInfoMapper = config.getUserInfoMapper();
         if (userInfoMapper != null) {
             conf.setUserInfo(userInfoMapper.getUserInfo(currentUser));
         }
 
-        WebPermission webPermission = getConfig().getWebPermission();
+        WebPermission webPermission = config.getWebPermission();
         if (webPermission != null) {
             conf.setCanAnnotate(canAnnotate(url, webPermission));
         }
 
-        Map<String, FilterDescriptor> filters = getConfig().getFilterDefinitions();
+        Map<String, FilterDescriptor> filters = config.getFilterDefinitions();
         for (FilterDescriptor filter : filters.values()) {
             conf.addFilter(filter.getOrder(), filter.getName(), filter.getIcon(), filter.getType(), filter.getAuthor(),
                     filter.getFields());
         }
 
-        conf.setDisplayedFields(getConfig().getDisplayedFields());
-        conf.setFieldLabels(getConfig().getFieldLabels());
+        conf.setDisplayedFields(config.getDisplayedFields());
+        conf.setFieldLabels(config.getFieldLabels());
         return conf;
     }
 
@@ -119,7 +109,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
     }
 
     protected boolean canAnnotate(String url, WebPermission webPermission) {
-        DocumentViewCodecManager documentViewCodecManager = getDocumentViewCodecManager();
+        DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(url, true, getBaseUrl(url));
         DocumentLocation docLocation = docView.getDocumentLocation();
         try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
@@ -129,13 +119,6 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
             log.error("Unable to get Document: " + docLocation.getDocRef(), e);
         }
         return true; // if any error, default to authorize annotations
-    }
-
-    protected DocumentViewCodecManager getDocumentViewCodecManager() {
-        if (documentViewCodecManager == null) {
-            documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-        }
-        return documentViewCodecManager;
     }
 
     protected String getBaseUrl(String url) {

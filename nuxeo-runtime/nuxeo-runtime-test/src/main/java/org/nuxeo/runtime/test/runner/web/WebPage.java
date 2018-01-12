@@ -49,9 +49,9 @@ public abstract class WebPage {
      * BIG_TIMEOUT should be used for pages that are slower (like the home of a
      * GWT application)
      */
-    public static int DEFAULT_TIMEOUT = 5;
+    public static final int DEFAULT_TIMEOUT = 5;
 
-    public static int BIG_TIMEOUT = 15;
+    public static final int BIG_TIMEOUT = 15;
 
     private static final Map<Class<?>, WebPage> pages = new HashMap<>();
 

@@ -30,7 +30,7 @@ public class DummyTestListener implements EventListener {
 
     public static final List<Event> EVENTS_RECEIVED = Collections.synchronizedList(new LinkedList<Event>());
 
-    public static String threadName;
+    protected static String threadName;
 
     @Override
     public void handleEvent(Event event) {

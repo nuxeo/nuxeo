@@ -79,7 +79,7 @@ public abstract class AbstractWebContext implements WebContext {
     private static final Log log = LogFactory.getLog(WebContext.class);
 
     // TODO: this should be made configurable through an extension point
-    public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
+    protected static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     public static final String LOCALE_SESSION_KEY = "webengine_locale";
 

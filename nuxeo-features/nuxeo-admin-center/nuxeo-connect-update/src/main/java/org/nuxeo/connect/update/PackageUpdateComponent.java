@@ -33,11 +33,7 @@ public class PackageUpdateComponent extends DefaultComponent {
 
     protected UpdateServiceImpl svc;
 
-    static RuntimeContext ctx;
-
-    public static RuntimeContext getContext() {
-        return ctx;
-    }
+    protected RuntimeContext ctx;
 
     @Override
     public void activate(ComponentContext context) {

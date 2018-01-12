@@ -99,8 +99,6 @@ public class EventHandlerRegistry {
                 }
             }
             return false;
-        } catch (OperationException cause) {
-            throw new NuxeoException(cause);
         }
     }
 

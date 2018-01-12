@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NavTreeService extends DefaultComponent {
 
-    public static String NAVTREE_EP = "navigationTree";
+    public static final String NAVTREE_EP = "navigationTree";
 
     protected NavTreeRegistry registry;
 

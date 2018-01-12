@@ -230,7 +230,7 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
     }
 
     @Override
-    public void close() throws OperationException {
+    public void close() {
         if (getCoreSession() != null && isCommit()) {
             // auto save session if any.
             getCoreSession().save();

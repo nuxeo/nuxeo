@@ -35,8 +35,6 @@ public class DatabaseDB2 extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseDB2.class);
 
-    public static DatabaseHelper INSTANCE = new DatabaseDB2();
-
     private static final String DEF_SERVER = "localhost";
 
     private static final String DEF_PORT = "3700";

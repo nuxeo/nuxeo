@@ -167,7 +167,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
         private static final long serialVersionUID = 1L;
 
-        public static PathComparator INSTANCE = new PathComparator();
+        public static final PathComparator INSTANCE = new PathComparator();
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {

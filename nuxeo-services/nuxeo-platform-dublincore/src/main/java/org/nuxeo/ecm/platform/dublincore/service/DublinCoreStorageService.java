@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
@@ -45,8 +43,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="td@nuxeo.com">Thierry Delprat</a>
  */
 public class DublinCoreStorageService extends DefaultComponent {
-
-    public static Log log = LogFactory.getLog(DublinCoreStorageService.class);
 
     public static final String ID = "DublinCoreStorageService";
 
