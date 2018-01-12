@@ -35,6 +35,7 @@ import org.nuxeo.connect.tools.report.ICanReportTest.Then;
 import org.nuxeo.connect.tools.report.ICanReportTest.When;
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.launcher.info.InstanceInfo;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunnerWithParms;
 
@@ -145,10 +146,10 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
         ObjectMapper mapper = DistributionSnapshot.jsonMapper();
 
         @ProvidedScenarioState
-        ReportComponent component;
+        ReportRunner component;
 
         public Given the_report_component_is_installed() {
-            component = ReportComponent.instance;
+            component = Framework.getService(ReportRunner.class);
             Assert.assertNotNull(component);
             return self();
         }
@@ -157,7 +158,7 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
         ReportWriter writer;
 
         public Given the_report_is_registered() {
-            for (Contribution contrib : ReportComponent.instance.configuration) {
+            for (Contribution contrib : ((ReportComponent.Service) component).getConfiguration()) {
                 if (contrib.name.equals(name)) {
                     writer = contrib.writer;
                     return self();

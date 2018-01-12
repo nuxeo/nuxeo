@@ -19,7 +19,6 @@ package org.nuxeo.connect.tools.report;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,17 +39,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ReportComponent extends DefaultComponent {
 
-    public static ReportComponent instance;
-
-    public ReportComponent() {
-        instance = this;
-    }
-
     final ReportConfiguration configuration = new ReportConfiguration();
 
     final Service service = new Service();
 
     class Service implements ReportRunner {
+
+        public ReportConfiguration getConfiguration() {
+            return configuration;
+        }
+
         @Override
         public Set<String> list() {
             Set<String> names = new HashSet<>();
