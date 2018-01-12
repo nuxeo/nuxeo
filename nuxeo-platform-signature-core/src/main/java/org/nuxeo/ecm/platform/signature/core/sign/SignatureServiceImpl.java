@@ -376,7 +376,8 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
     protected SignatureAppearanceFactory getSignatureAppearanceFactory()
             throws InstantiationException, IllegalAccessException {
-        for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
+        if (!signatureRegistryMap.isEmpty()) {
+            SignatureDescriptor signatureDescriptor = signatureRegistryMap.values().iterator().next();
             return signatureDescriptor.getAppearanceFatory();
         }
         return new DefaultSignatureAppearanceFactory();
