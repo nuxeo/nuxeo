@@ -26,6 +26,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -38,6 +40,9 @@ import org.xml.sax.SAXException;
  * @since 9.10
  */
 public class KafkaConfigParser {
+    protected static final String DEFAULT_ZK_SERVERS = "DEFAULT_TEST";
+
+    protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
 
     protected String zkServers;
 
@@ -69,7 +74,7 @@ public class KafkaConfigParser {
 
     protected void parseConfig(Node node) {
         prefix = node.getAttributes().getNamedItem("topicPrefix").getNodeValue();
-        zkServers = node.getAttributes().getNamedItem("zkServers").getNodeValue();
+        setZkServers(node.getAttributes().getNamedItem("zkServers").getNodeValue());
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
@@ -87,7 +92,13 @@ public class KafkaConfigParser {
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("property".equals(child.getNodeName())) {
-                ret.put(child.getAttributes().getNamedItem("name").getNodeValue(), child.getTextContent());
+                String name = child.getAttributes().getNamedItem("name").getNodeValue();
+                String value = child.getTextContent();
+                if (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG.equals(name) && DEFAULT_BOOTSTRAP_SERVERS.equals(value)) {
+                    ret.put(name, KafkaUtils.getBootstrapServers());
+                } else {
+                    ret.put(name, value);
+                }
             }
         }
         return ret;
@@ -107,5 +118,13 @@ public class KafkaConfigParser {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public void setZkServers(String zkServers) {
+        if (DEFAULT_ZK_SERVERS.equals(zkServers)) {
+            this.zkServers = KafkaUtils.getZkServers();
+        } else {
+            this.zkServers = zkServers;
+        }
     }
 }
