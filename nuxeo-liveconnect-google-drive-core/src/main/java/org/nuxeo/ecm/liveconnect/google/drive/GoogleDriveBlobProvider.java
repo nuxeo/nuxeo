@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -547,11 +548,12 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
      */
     // subclassed for mock
     protected Revision getRevision(LiveConnectFileInfo fileInfo) throws IOException {
-        if (!fileInfo.getRevisionId().isPresent()) {
+        Optional<String> revId = fileInfo.getRevisionId();
+        if (!revId.isPresent()) {
             throw new NullPointerException("null revisionId for " + fileInfo.getFileId());
         }
         String fileId = fileInfo.getFileId();
-        String revisionId = fileInfo.getRevisionId().get();
+        String revisionId = revId.get();
         String cacheKey = "rev_" + fileId + "_" + revisionId;
         DriveRequest<Revision> request = getService(fileInfo.getUser()).revisions().get(fileId, revisionId);
         try {

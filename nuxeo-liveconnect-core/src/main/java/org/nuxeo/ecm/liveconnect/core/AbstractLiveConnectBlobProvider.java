@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -232,9 +233,10 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         key.append(fileInfo.getUser());
         key.append(BLOB_KEY_SEPARATOR);
         key.append(fileInfo.getFileId());
-        if (fileInfo.getRevisionId().isPresent()) {
+        Optional<String> revisionId = fileInfo.getRevisionId();
+        if (revisionId.isPresent()) {
             key.append(BLOB_KEY_SEPARATOR);
-            key.append(fileInfo.getRevisionId().get());
+            key.append(revisionId.get());
         }
         return key.toString();
     }
