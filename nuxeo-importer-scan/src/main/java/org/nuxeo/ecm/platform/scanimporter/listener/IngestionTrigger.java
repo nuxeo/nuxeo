@@ -35,9 +35,9 @@ public class IngestionTrigger implements EventListener {
 
     private static final Log log = LogFactory.getLog(IngestionTrigger.class);
 
-    private static boolean ingestionInProgress = false;
+    private static volatile boolean ingestionInProgress = false;
 
-    public static String START_EVENT = "ScanIngestionStart";
+    public static final String START_EVENT = "ScanIngestionStart";
 
     // fired via the Scheduler
     @Override

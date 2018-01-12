@@ -45,13 +45,13 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
 
     protected static Pattern numPattern = Pattern.compile("([0-9\\,\\.\\+\\-]+)");
 
-    public static String LIST_SEPARATOR = "|";
+    public static final String LIST_SEPARATOR = "|";
 
-    public static String REGEXP_LIST_SEPARATOR = "\\|";
+    public static final String REGEXP_LIST_SEPARATOR = "\\|";
 
-    public static String ARRAY_SEPARATOR = "||";
+    public static final String ARRAY_SEPARATOR = "||";
 
-    public static String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
+    public static final String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
 
     public FileWithNonHeritedIndividalMetaDataSourceNode(File file) {
         super(file);

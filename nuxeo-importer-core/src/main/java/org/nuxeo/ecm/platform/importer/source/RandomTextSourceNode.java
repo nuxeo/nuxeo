@@ -61,19 +61,19 @@ public class RandomTextSourceNode implements SourceNode {
      */
     protected static boolean nonUniformRepartition = false;
 
-    public static int maxDepth = 8;
+    public static final int MAX_DEPTH = 8;
 
-    public static int defaultNbDataNodesPerFolder = 100;
+    public static final int DEFAULT_NB_DATA_NODES_PER_FOLDER = 100;
 
     /**
      * Used to generate a big number of children nodes when {@link #nonUniformRepartition} is {@code true}.
      */
-    public static int bigNbNodesFactor = 50;
+    public static final int BIG_NB_NODES_FACTOR = 50;
 
     /**
      * Used to generate a small number of children nodes when {@link #nonUniformRepartition} is {@code true}.
      */
-    public static int smallNbNodesDivider = defaultNbDataNodesPerFolder;
+    public static final int SMALL_NB_BODES_DIVIDER = DEFAULT_NB_DATA_NODES_PER_FOLDER;
 
     protected static int minGlobalFolders = 0;
 
@@ -101,29 +101,29 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected List<SourceNode> cachedChildren = null;
 
-    public static boolean CACHE_CHILDREN = false;
+    protected static final boolean CACHE_CHILDREN = false;
 
     protected boolean onlyText = true;
 
     protected boolean withProperties = false;
 
-    static protected String[] DC_NATURE = { "article", "acknowledgement", "assessment", "application", "order",
+    protected static final String[] DC_NATURE = { "article", "acknowledgement", "assessment", "application", "order",
             "contract", "quotation", "fax", "worksheet", "letter", "memo", "note", "notification", "procedure",
-            "report", "internshipReport", "pressReview"};
+            "report", "internshipReport", "pressReview" };
 
-    static protected String[] DC_SUBJECTS = {"art/architecture", "art/comics", "art/cinema", "art/culture","art/danse",
-            "art/music", "sciences/astronomy", "sciences/biology", "sciences/chemistry", "sciences/math",
+    protected static final String[] DC_SUBJECTS = { "art/architecture", "art/comics", "art/cinema", "art/culture",
+            "art/danse", "art/music", "sciences/astronomy", "sciences/biology", "sciences/chemistry", "sciences/math",
             "sciences/physic", "society/ecology", "daily life/gastronomy", "daily life/gardening", "daily life/sport",
             "technology/it" };
 
-    static protected String[] DC_RIGHTS = { "OpenContentL", "CC-BY-NC", "CC-BY-ND", "FreeArt", "ODbi", "GNUGPL",
-            "FreeBSD", "CC0"};
+    protected static final String[] DC_RIGHTS = { "OpenContentL", "CC-BY-NC", "CC-BY-ND", "FreeArt", "ODbi", "GNUGPL",
+            "FreeBSD", "CC0" };
 
-    static protected String[] DC_LANGUAGE = { "IT", "DE", "FR", "US", "EN"};
+    protected static final String[] DC_LANGUAGE = { "IT", "DE", "FR", "US", "EN" };
 
-    static protected String[] DC_SOURCE = { "internal", "external", "unknown" };
+    protected static final String[] DC_SOURCE = { "internal", "external", "unknown" };
 
-    static protected String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
+    protected static final String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
             "oceania/Tonga", "africa/Mali", "asia/Japan", "north-america/United_States_of_America" };
 
     public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText, boolean withProperties) {
@@ -163,8 +163,8 @@ public class RandomTextSourceNode implements SourceNode {
         nbVisitedFolders = new AtomicInteger(0);
         size = new AtomicLong(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
-        minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
-        minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / maxDepth));
+        minGlobalFolders = maxNode / DEFAULT_NB_DATA_NODES_PER_FOLDER;
+        minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / MAX_DEPTH));
         nonUniformRepartition = nonUniform;
         return new RandomTextSourceNode(true, 0, 0, onlyText, withProperties);
     }
@@ -240,8 +240,8 @@ public class RandomTextSourceNode implements SourceNode {
     /**
      * Allows to get a non uniform distribution of the number of nodes per folder. Returns:
      * <ul>
-     * <li>A small number of nodes 10% of the time, see {@link #smallNbNodesDivider}.</li>
-     * <li>A big number of nodes 10% of the time, see {@link #bigNbNodesFactor}.</li>
+     * <li>A small number of nodes 10% of the time, see {@link #SMALL_NB_BODES_DIVIDER}.</li>
+     * <li>A big number of nodes 10% of the time, see {@link #BIG_NB_NODES_FACTOR}.</li>
      * <li>A random variation of the target number of nodes 80% of the time.</li>
      * </ul>
      */
@@ -249,7 +249,7 @@ public class RandomTextSourceNode implements SourceNode {
         int res;
         int remainder = nbVisitedFolders.get() % 10;
         if (remainder == 8) {
-            res = 1 + target / smallNbNodesDivider;
+            res = 1 + target / SMALL_NB_BODES_DIVIDER;
             if (log.isDebugEnabled()) {
                 String nodeStr;
                 if (folderish) {
@@ -263,9 +263,9 @@ public class RandomTextSourceNode implements SourceNode {
             int factor;
             // Big number of folderish nodes is 10 times smaller than the big number of data nodes
             if (folderish) {
-                factor = bigNbNodesFactor / 10;
+                factor = BIG_NB_NODES_FACTOR / 10;
             } else {
-                factor = bigNbNodesFactor;
+                factor = BIG_NB_NODES_FACTOR;
             }
             res = 1 + target * factor;
             if (log.isDebugEnabled()) {
@@ -289,7 +289,7 @@ public class RandomTextSourceNode implements SourceNode {
         }
         int targetRemainingFolders = minGlobalFolders - nbFolders.get();
         if (targetRemainingFolders <= 0) {
-            return defaultNbDataNodesPerFolder + 1;
+            return DEFAULT_NB_DATA_NODES_PER_FOLDER + 1;
         }
         int target = ((maxNode - nbNodes.get()) / targetRemainingFolders);
         if (target <= 0) {
@@ -345,7 +345,7 @@ public class RandomTextSourceNode implements SourceNode {
                     getName(), nbNodes));
         }
 
-        if (level < maxDepth) {
+        if (level < MAX_DEPTH) {
             // In the case of a non uniform repartition, don't add folderish nodes if there are no data nodes to not
             // overload the tree with folderish nodes that would probably be empty
             if (!nonUniformRepartition || nbChildren > 0) {

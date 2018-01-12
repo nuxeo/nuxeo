@@ -43,11 +43,11 @@ public class TestRandomNodes {
 
     protected int nbFolderishNodes = 0;
 
-    protected int defaultSmallNbNodes = 1 + RandomTextSourceNode.defaultNbDataNodesPerFolder
-            / RandomTextSourceNode.smallNbNodesDivider;
+    protected int defaultSmallNbNodes = 1 + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER
+            / RandomTextSourceNode.SMALL_NB_BODES_DIVIDER;
 
-    protected int defaultBigNbNodes = 1 + RandomTextSourceNode.defaultNbDataNodesPerFolder
-            * RandomTextSourceNode.bigNbNodesFactor;
+    protected int defaultBigNbNodes = 1 + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER
+            * RandomTextSourceNode.BIG_NB_NODES_FACTOR;
 
     protected boolean isSmallNbNodes = false;
 
@@ -116,7 +116,7 @@ public class TestRandomNodes {
                 nbFolderishNodes++;
                 browse(child);
                 int level = ((RandomTextSourceNode) child).getLevel();
-                assertTrue(level <= RandomTextSourceNode.maxDepth);
+                assertTrue(level <= RandomTextSourceNode.MAX_DEPTH);
             } else {
                 nbDataNodes++;
             }

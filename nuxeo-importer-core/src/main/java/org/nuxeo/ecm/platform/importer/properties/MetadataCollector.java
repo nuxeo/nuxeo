@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
@@ -45,19 +46,19 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MetadataCollector {
 
-    public static final boolean staticInherit = true;
+    protected boolean staticInherit = true;
 
-    public static final boolean useIntrospection = false;
+    protected boolean useIntrospection = false;
 
-    public static String DATE_FORMAT = "MM/dd/yyyy";
+    public static final String DATE_FORMAT = "MM/dd/yyyy";
 
-    public static String LIST_SEPARATOR = "|";
+    public static final String LIST_SEPARATOR = "|";
 
-    public static String REGEXP_LIST_SEPARATOR = "\\|";
+    public static final String REGEXP_LIST_SEPARATOR = "\\|";
 
-    public static String ARRAY_SEPARATOR = "||";
+    public static final String ARRAY_SEPARATOR = "||";
 
-    public static String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
+    public static final String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
 
     protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<>();
 
@@ -65,8 +66,9 @@ public class MetadataCollector {
 
     public void addPropertiesFromStrings(String contextPath, Map<String, String> properties) {
         Map<String, Serializable> collectedProperties = new HashMap<>();
-        for (String name : properties.keySet()) {
-            Serializable value = parseFromString(name, properties.get(name));
+        for (Entry<String, String> es : properties.entrySet()) {
+            String name = es.getKey();
+            Serializable value = parseFromString(name, es.getValue());
             collectedProperties.put(name, value);
         }
         addProperties(contextPath, collectedProperties);

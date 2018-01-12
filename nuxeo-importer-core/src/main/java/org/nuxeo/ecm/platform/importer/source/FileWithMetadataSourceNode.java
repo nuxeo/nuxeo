@@ -42,7 +42,7 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
 
     protected static MetadataCollector collector = new MetadataCollector();
 
-    public static String METADATA_FILENAME = "metadata.properties";
+    public static final String METADATA_FILENAME = "metadata.properties";
 
     private static final Log log = LogFactory.getLog(FileWithMetadataSourceNode.class);
 
