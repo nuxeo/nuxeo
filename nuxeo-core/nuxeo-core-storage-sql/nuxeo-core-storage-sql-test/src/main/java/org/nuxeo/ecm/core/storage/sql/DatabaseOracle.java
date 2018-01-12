@@ -37,8 +37,6 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseOracle.class);
 
-    public static DatabaseHelper INSTANCE = new DatabaseOracle();
-
     private static final String DEF_SERVER = "localhost";
 
     private static final String DEF_URL = "jdbc:oracle:thin:@" + DEF_SERVER + ":1521:XE";

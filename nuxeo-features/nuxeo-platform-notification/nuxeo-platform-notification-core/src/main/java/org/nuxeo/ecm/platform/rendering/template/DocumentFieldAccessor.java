@@ -67,49 +67,49 @@ public abstract class DocumentFieldAccessor {
 
     public abstract Object getValue(DocumentModel doc);
 
-    public static DocumentFieldAccessor ID = new DocumentFieldAccessor("id") {
+    public static final DocumentFieldAccessor ID = new DocumentFieldAccessor("id") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getId();
         }
     };
 
-    public static DocumentFieldAccessor NAME = new DocumentFieldAccessor("name") {
+    public static final DocumentFieldAccessor NAME = new DocumentFieldAccessor("name") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getName();
         }
     };
 
-    public static DocumentFieldAccessor TYPE = new DocumentFieldAccessor("type") {
+    public static final DocumentFieldAccessor TYPE = new DocumentFieldAccessor("type") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getType();
         }
     };
 
-    public static DocumentFieldAccessor PATH = new DocumentFieldAccessor("path") {
+    public static final DocumentFieldAccessor PATH = new DocumentFieldAccessor("path") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getPathAsString();
         }
     };
 
-    public static DocumentFieldAccessor FACETS = new DocumentFieldAccessor("facets") {
+    public static final DocumentFieldAccessor FACETS = new DocumentFieldAccessor("facets") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getFacets();
         }
     };
 
-    public static DocumentFieldAccessor SCHEMAS = new DocumentFieldAccessor("schemas") {
+    public static final DocumentFieldAccessor SCHEMAS = new DocumentFieldAccessor("schemas") {
         @Override
         public Object getValue(DocumentModel doc) {
             return doc.getSchemas();
         }
     };
 
-    public static DocumentFieldAccessor SYSTEM = new DocumentFieldAccessor("system") {
+    public static final DocumentFieldAccessor SYSTEM = new DocumentFieldAccessor("system") {
         @Override
         public Object getValue(DocumentModel doc) {
             return null; // TODO

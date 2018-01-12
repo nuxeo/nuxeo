@@ -94,9 +94,9 @@ public interface Work extends Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        public static long CURRENT_INDETERMINATE = -1;
+        public static final long CURRENT_INDETERMINATE = -1;
 
-        public static float PERCENT_INDETERMINATE = -1F;
+        public static final float PERCENT_INDETERMINATE = -1F;
 
         public static final Progress PROGRESS_INDETERMINATE = new Progress(PERCENT_INDETERMINATE);
 

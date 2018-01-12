@@ -52,11 +52,7 @@ public class RestOperationContext extends OperationContext {
         RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
             @Override
             public void cleanup(HttpServletRequest req) {
-                try {
-                    close();
-                } catch (OperationException e) {
-                    throw new NuxeoException(e);
-                }
+                close();
             }
         });
     }

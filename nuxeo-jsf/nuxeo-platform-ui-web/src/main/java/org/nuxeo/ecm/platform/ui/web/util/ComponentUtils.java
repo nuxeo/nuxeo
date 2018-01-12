@@ -676,7 +676,7 @@ public final class ComponentUtils {
         return defaultTarget;
     }
 
-    public static String NUXEO_RESOURCE_RELOCATED = "NUXEO_RESOURCE_RELOCATED_MARKER";
+    public static final String NUXEO_RESOURCE_RELOCATED = "NUXEO_RESOURCE_RELOCATED_MARKER";
 
     /**
      * Marks given component as relocated, so that subsequent calls to {@link #isRelocated(UIComponent)} returns true.

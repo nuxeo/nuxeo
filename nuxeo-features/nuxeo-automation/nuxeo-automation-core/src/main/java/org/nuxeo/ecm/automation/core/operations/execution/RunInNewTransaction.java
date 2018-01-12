@@ -91,8 +91,6 @@ public class RunInNewTransaction {
                             log.error("Error while executing operation " + chainId, e);
                         }
                     }
-                } catch (OperationException e) {
-                    throw new NuxeoException(e);
                 }
             });
         } catch (NuxeoException e) {

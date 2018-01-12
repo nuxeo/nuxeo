@@ -398,9 +398,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 throw new RuntimeException(e);
             }
             if (pluginExtension.isMerge()) {
-                newPlugin = mergeFileImporters(oldPlugin, newPlugin, pluginExtension);
+                mergeFileImporters(oldPlugin, newPlugin, pluginExtension);
             } else {
-                newPlugin = fillImporterWithDescriptor(newPlugin, pluginExtension);
+                fillImporterWithDescriptor(newPlugin, pluginExtension);
             }
             fileImporters.put(name, newPlugin);
             log.info("Registered file importer " + name);
@@ -411,7 +411,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
-            plugin = fillImporterWithDescriptor(plugin, pluginExtension);
+            fillImporterWithDescriptor(plugin, pluginExtension);
             fileImporters.put(name, plugin);
             log.info("Registered file importer " + name);
         } else {
@@ -420,7 +420,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-    private FileImporter mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin,
+    private void mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin,
             FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
@@ -439,10 +439,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (order != null) {
             newPlugin.setOrder(desc.getOrder());
         }
-        return newPlugin;
     }
 
-    private FileImporter fillImporterWithDescriptor(FileImporter fileImporter, FileImporterDescriptor desc) {
+    private void fillImporterWithDescriptor(FileImporter fileImporter, FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
             fileImporter.setFilters(filters);
@@ -452,7 +451,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         fileImporter.setFileManagerService(this);
         fileImporter.setEnabled(desc.isEnabled());
         fileImporter.setOrder(desc.getOrder());
-        return fileImporter;
     }
 
     private void unregisterFileImporter(FileImporterDescriptor pluginExtension) {

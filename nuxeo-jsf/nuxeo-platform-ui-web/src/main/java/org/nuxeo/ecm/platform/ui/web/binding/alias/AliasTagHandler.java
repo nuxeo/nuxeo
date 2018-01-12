@@ -41,8 +41,6 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
@@ -69,12 +67,10 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  */
 public class AliasTagHandler extends ComponentHandler {
 
-    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
-
     /**
      * @since 6.0
      */
-    public static String ANCHOR_ENABLED_VARIABLE = "nuxeoAliasAnchorEnabled";
+    public static final String ANCHOR_ENABLED_VARIABLE = "nuxeoAliasAnchorEnabled";
 
     protected final TagAttribute cache;
 

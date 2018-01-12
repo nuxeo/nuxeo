@@ -52,12 +52,14 @@ public final class BundleManifestReader {
 
     public static final String WEB_MODULE = "Nuxeo-WebModule";
 
-    public static String[] CUSTOM_HEADERS = { COMPONENT_HEADER, WEB_MODULE, ALLOW_HOST_OVERRIDE };
+    protected static final String[] CUSTOM_HEADERS;
 
     static { // we can add dynamically new headers through system properties
         String h = System.getProperty("org.nuxeo.manifest.headers");
         if (h != null) {
             CUSTOM_HEADERS = StringUtils.split(h, ',', true);
+        } else {
+            CUSTOM_HEADERS = new String[] { COMPONENT_HEADER, WEB_MODULE, ALLOW_HOST_OVERRIDE };
         }
     }
 

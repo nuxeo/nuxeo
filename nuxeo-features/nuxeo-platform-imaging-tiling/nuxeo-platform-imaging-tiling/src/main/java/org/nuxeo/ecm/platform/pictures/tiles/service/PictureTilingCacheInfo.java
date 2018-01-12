@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PictureTilingCacheInfo {
 
-    public static int SHRINK_DOWN_LIMIT_PX = 2000;
+    public static final int SHRINK_DOWN_LIMIT_PX = 2000;
 
     private static final Log log = LogFactory.getLog(PictureTilingCacheInfo.class);
 

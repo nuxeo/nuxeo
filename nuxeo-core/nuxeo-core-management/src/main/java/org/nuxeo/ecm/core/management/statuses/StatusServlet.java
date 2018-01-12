@@ -33,13 +33,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet for retrieving Nuxeo services running status.
- * 
+ *
  * @since 9.3 this servlet returns a status based of all the probes registered for the healthCheck.
  */
 public class StatusServlet extends HttpServlet {
@@ -59,10 +58,6 @@ public class StatusServlet extends HttpServlet {
     public static final String PARAM_RELOAD = "reload";
 
     public static final String PROBE_PARAM = "probe";
-
-    private AbstractRuntimeService runtimeService;
-
-    protected ProbeManager pm;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -92,7 +87,7 @@ public class StatusServlet extends HttpServlet {
             getStartedInfo(response);
         } else if (requestedInfo.equals(PARAM_SUMMARY)) {
             String givenKey = req.getParameter(PARAM_SUMMARY_KEY);
-            if (getRuntimeService().getProperty(Environment.SERVER_STATUS_KEY).equals(givenKey)) {
+            if (Framework.getRuntime().getProperty(Environment.SERVER_STATUS_KEY).equals(givenKey)) {
                 getSummaryInfo(response);
             } else {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -123,17 +118,10 @@ public class StatusServlet extends HttpServlet {
         out.close();
     }
 
-    private RuntimeService getRuntimeService() {
-        if (runtimeService == null) {
-            runtimeService = (AbstractRuntimeService) Framework.getRuntime();
-        }
-        return runtimeService;
-    }
-
     protected void getSummaryInfo(StringBuilder response) {
         if (isStarted()) {
             StringBuilder msg = new StringBuilder();
-            boolean isFine = runtimeService.getStatusMessage(msg);
+            boolean isFine = Framework.getRuntime().getStatusMessage(msg);
             response.append(isFine).append("\n");
             response.append(msg);
         } else {
@@ -147,7 +135,8 @@ public class StatusServlet extends HttpServlet {
     }
 
     private boolean isStarted() {
-        return getRuntimeService() != null && runtimeService.isStarted();
+        RuntimeService runtimeService = Framework.getRuntime();
+        return runtimeService != null && runtimeService.isStarted();
     }
 
     @Override

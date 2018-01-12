@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -50,9 +48,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     public static final ComponentName ID = new ComponentName("org.nuxeo.ecm.platform.types.TypeService");
 
-    private static final Log log = LogFactory.getLog(TypeService.class);
-
-    public static String DEFAULT_CATEGORY = "misc";
+    public static final String DEFAULT_CATEGORY = "misc";
 
     public static final String HIDDEN_IN_CREATION = "create";
 

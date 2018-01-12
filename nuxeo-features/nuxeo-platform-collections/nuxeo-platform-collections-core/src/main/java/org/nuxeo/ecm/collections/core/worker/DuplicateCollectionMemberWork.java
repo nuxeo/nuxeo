@@ -46,7 +46,6 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
         super(CATEGORY + ":" + repoName + ":" + newCollectionId + ":" + offset);
         repositoryName = repoName;
         this.newCollectionId = newCollectionId;
-        repositoryName = repoName;
         this.collectionMemberIds = new ArrayList<>(collectionMemberIds);
     }
 

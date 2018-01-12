@@ -31,24 +31,24 @@ import org.apache.commons.logging.LogFactory;
  */
 public class GCTask implements Runnable {
 
-    public static boolean GCEnabled = false;
+    public static volatile boolean GCEnabled = false;
 
-    private static String GCINTERVAL_KEY = "GCInterval";
+    private static final String GCINTERVAL_KEY = "GCInterval";
 
-    private static long GCInterval = 0;
+    private static long GC_INTERVAL = 0;
 
     private static final Log log = LogFactory.getLog(GCTask.class);
 
     public static long getGCIntervalInMinutes() {
-        if (GCInterval == 0) {
-            GCInterval = Long.parseLong(PictureTilingComponent.getEnvValue(GCINTERVAL_KEY, Long.toString(10)));
-            log.debug("GC interval set to " + GCInterval);
+        if (GC_INTERVAL == 0) {
+            GC_INTERVAL = Long.parseLong(PictureTilingComponent.getEnvValue(GCINTERVAL_KEY, Long.toString(10)));
+            log.debug("GC interval set to " + GC_INTERVAL);
         }
-        return GCInterval;
+        return GC_INTERVAL;
     }
 
     public static void setGCIntervalInMinutes(long interval) {
-        GCInterval = interval;
+        GC_INTERVAL = interval;
     }
 
     public void run() {

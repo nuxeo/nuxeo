@@ -101,7 +101,7 @@ public class DatasourceExceptionSorter implements ExceptionSorter {
         CommonUtilitiesAndTools("5U"),
         RemoteDatabaseAccess("HZ");
 
-        public String value;
+        private String value;
 
         Classcode(String code) {
             value = code;

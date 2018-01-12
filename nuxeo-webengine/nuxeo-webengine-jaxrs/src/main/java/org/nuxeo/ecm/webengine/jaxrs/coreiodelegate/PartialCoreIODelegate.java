@@ -53,15 +53,6 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
 
     public static final String NUXEO_ENTITY = "; nuxeo-entity=";
 
-    public static MarshallerRegistry registry;
-
-    public static MarshallerRegistry getRegistry() {
-        if (registry == null) {
-            registry = Framework.getService(MarshallerRegistry.class);
-        }
-        return registry;
-    }
-
     private Writer<?> writer = null;
 
     private Reader<?> reader = null;
@@ -86,7 +77,8 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
-            writer = getRegistry().getWriter(ctx, type, genericType, mediaType);
+            MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
+            writer = registry.getWriter(ctx, type, genericType, mediaType);
             return writer != null;
         }
         return false;
@@ -96,7 +88,8 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
-            reader = getRegistry().getReader(ctx, type, genericType, mediaType);
+            MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
+            reader = registry.getReader(ctx, type, genericType, mediaType);
             if (reader != null) {
                 // backward compatibility for json document model marshalling
                 DocumentModelJsonReaderLegacy.pushInstanceIfNeeded(ctx, request, headers.getRequestHeaders());

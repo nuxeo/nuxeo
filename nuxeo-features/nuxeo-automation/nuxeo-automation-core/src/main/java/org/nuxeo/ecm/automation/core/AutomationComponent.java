@@ -89,20 +89,17 @@ public class AutomationComponent extends DefaultComponent {
 
     protected TracerFactory tracerFactory;
 
-    public ContextHelperRegistry contextHelperRegistry;
+    protected ContextHelperRegistry contextHelperRegistry;
 
     protected ContextService contextService;
-
-    public static AutomationComponent self;
 
     @Override
     public void activate(ComponentContext context) {
         service = new OperationServiceImpl();
         tracerFactory = new TracerFactory();
         handlers = new EventHandlerRegistry(service);
-        self = this;
-        contextService = new ContextServiceImpl();
         contextHelperRegistry = new ContextHelperRegistry();
+        contextService = new ContextServiceImpl(contextHelperRegistry);
     }
 
     protected void bindManagement() throws JMException {

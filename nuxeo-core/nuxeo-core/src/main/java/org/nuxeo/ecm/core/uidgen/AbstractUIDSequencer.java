@@ -43,7 +43,7 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
     @Override
     public void initSequence(String key, long id) {
         while (getNextLong(key) < id) {
-            continue;
+            // loop
         }
     }
 

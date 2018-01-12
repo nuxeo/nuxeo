@@ -31,8 +31,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DatabasePostgreSQL extends DatabaseHelper {
 
-    public static DatabaseHelper INSTANCE = new DatabasePostgreSQL();
-
     private static final String DEF_SERVER = "localhost";
 
     private static final String DEF_PORT = "5432";

@@ -28,14 +28,14 @@ public class WorkSchedulePath implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final transient ThreadLocal<Work> enteredLocal = new ThreadLocal<Work>();
+    protected static final transient ThreadLocal<Work> enteredLocal = new ThreadLocal<>();
 
     public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
 
-    public static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack",
+    protected static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack",
             "false")) || log.isTraceEnabled();
 
-    public static WorkSchedulePath EMPTY = new WorkSchedulePath();
+    public static final WorkSchedulePath EMPTY = new WorkSchedulePath();
 
     protected final String parentPath;
 
@@ -57,7 +57,8 @@ public class WorkSchedulePath implements Serializable {
     }
 
     public static boolean toggleCaptureStack() {
-        return captureStack = !captureStack;
+        captureStack = !captureStack;
+        return captureStack;
     }
 
     public static boolean isCaptureStackEnabled() {

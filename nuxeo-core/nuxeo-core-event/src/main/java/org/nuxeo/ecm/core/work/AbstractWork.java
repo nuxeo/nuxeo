@@ -436,7 +436,7 @@ public abstract class AbstractWork implements Work {
                 if (!(e instanceof ConcurrentUpdateException)) {
                     if (!isSuspending()) {
                         log.error("Exception during work: " + this, e);
-                        if (WorkSchedulePath.captureStack) {
+                        if (WorkSchedulePath.isCaptureStackEnabled()) {
                             WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
                         }
                     }

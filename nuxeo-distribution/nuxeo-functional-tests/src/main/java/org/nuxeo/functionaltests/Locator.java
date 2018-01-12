@@ -52,7 +52,7 @@ import com.google.common.base.Function;
 public class Locator {
 
     // Timeout for waitUntilURLDifferentFrom in seconds
-    public static int URLCHANGE_MAX_WAIT = 30;
+    public static final int URLCHANGE_MAX_WAIT = 30;
 
     public static WebElement findElement(By by) {
         return AbstractTest.driver.findElement(by);

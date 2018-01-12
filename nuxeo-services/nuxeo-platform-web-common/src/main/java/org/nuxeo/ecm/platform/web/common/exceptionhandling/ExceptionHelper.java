@@ -48,7 +48,7 @@ public class ExceptionHelper {
         }
     }
 
-    public static List<String> possibleSecurityErrorMessages = Arrays.asList("java.lang.SecurityException",
+    protected static final List<String> ERROR_MESSAGES = Arrays.asList("java.lang.SecurityException",
             DocumentSecurityException.class.getName(), SecurityException.class.getName());
 
     public static boolean isSecurityError(Throwable t) {
@@ -59,29 +59,13 @@ public class ExceptionHelper {
             return true;
         } else if (t.getMessage() != null) {
             String message = t.getMessage();
-            for (String errorMessage : possibleSecurityErrorMessages) {
+            for (String errorMessage : ERROR_MESSAGES) {
                 if (message.contains(errorMessage)) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    /**
-     * @deprecated since 7.3, use {@link DownloadHelper#isClientAbortError} instead
-     */
-    @Deprecated
-    public static boolean isClientAbortError(Throwable t) {
-        return DownloadHelper.isClientAbortError(t);
-    }
-
-    /**
-     * @deprecated since 7.3, use {@link DownloadHelper#logClientAbort} instead
-     */
-    @Deprecated
-    public static void logClientAbort(Exception e) {
-        DownloadHelper.logClientAbort(e);
     }
 
 }

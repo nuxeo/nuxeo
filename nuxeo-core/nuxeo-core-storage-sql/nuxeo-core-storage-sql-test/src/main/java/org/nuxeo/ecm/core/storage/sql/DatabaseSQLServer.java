@@ -32,8 +32,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DatabaseSQLServer extends DatabaseHelper {
 
-    public static DatabaseHelper INSTANCE = new DatabaseSQLServer();
-
     private boolean supportsXA;
 
     private boolean supportsSequences;

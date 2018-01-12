@@ -181,9 +181,7 @@ public class TableReference extends AbstractReference {
     }
 
     public boolean exists(String sourceId, String targetId, SQLSession session) throws DirectoryException {
-        // String selectSql = String.format(
-        // "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s = ?", tableName,
-        // sourceColumn, targetColumn);
+        // "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s = ?", tableName, sourceColumn, targetColumn
 
         Table table = getTable();
         Select select = new Select(table);
@@ -199,28 +197,15 @@ public class TableReference extends AbstractReference {
             session.logger.logSQL(selectSql, Arrays.<Serializable> asList(sourceId, targetId));
         }
 
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = session.sqlConnection.prepareStatement(selectSql);
+        try (PreparedStatement ps = session.sqlConnection.prepareStatement(selectSql)) {
             ps.setString(1, sourceId);
             ps.setString(2, targetId);
-            rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) > 0;
+            }
         } catch (SQLException e) {
             throw new DirectoryException(String.format("error reading link from %s to %s", sourceId, targetId), e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 
@@ -229,11 +214,9 @@ public class TableReference extends AbstractReference {
         // OG: the following query should have avoided the round trips but
         // does not work for some reason that might be related to a bug in the
         // JDBC driver:
-        //
-        // String sql = String.format(
         // "INSERT INTO %s (%s, %s) (SELECT ?, ? FROM %s WHERE %s = ? AND %s =
         // ? HAVING COUNT(*) = 0)", tableName, sourceColumn, targetColumn,
-        // tableName, sourceColumn, targetColumn);
+        // tableName, sourceColumn, targetColumn
 
         // first step: check that this link does not exist yet
         if (checkExisting && exists(sourceId, targetId, session)) {
@@ -242,9 +225,7 @@ public class TableReference extends AbstractReference {
 
         // second step: add the link
 
-        // String insertSql = String.format(
-        // "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName,
-        // sourceColumn, targetColumn);
+        // "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, sourceColumn, targetColumn
         Table table = getTable();
         Insert insert = new Insert(table);
         insert.addColumn(table.getColumn(sourceColumn));
@@ -254,30 +235,19 @@ public class TableReference extends AbstractReference {
             session.logger.logSQL(insertSql, Arrays.<Serializable> asList(sourceId, targetId));
         }
 
-        PreparedStatement ps = null;
-        try {
-            ps = session.sqlConnection.prepareStatement(insertSql);
+        try (PreparedStatement ps = session.sqlConnection.prepareStatement(insertSql)) {
             ps.setString(1, sourceId);
             ps.setString(2, targetId);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException(String.format("error adding link from %s to %s", sourceId, targetId), e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 
     protected List<String> getIdsFor(String valueColumn, String filterColumn, String filterValue)
             throws DirectoryException {
         try (SQLSession session = getSQLSession()) {
-            // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
-            // table.getColumn(valueColumn), tableName, filterColumn);
+            // "SELECT %s FROM %s WHERE %s = ?", table.getColumn(valueColumn), tableName, filterColumn
             Table table = getTable();
             Select select = new Select(table);
             select.setWhat(table.getColumn(valueColumn).getQuotedName());
@@ -321,21 +291,11 @@ public class TableReference extends AbstractReference {
         if (session.logger.isLogEnabled()) {
             session.logger.logSQL(sql, Collections.<Serializable> singleton(entryId));
         }
-        PreparedStatement ps = null;
-        try {
-            ps = session.sqlConnection.prepareStatement(sql);
+        try (PreparedStatement ps = session.sqlConnection.prepareStatement(sql)) {
             ps.setString(1, entryId);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException("error remove links to " + entryId, e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 
@@ -380,48 +340,35 @@ public class TableReference extends AbstractReference {
         // iterate over existing links to find what to add and what to remove
         String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?", table.getColumn(idsColumn).getQuotedName(),
                 table.getQuotedName(), table.getColumn(filterColumn).getQuotedName());
-        PreparedStatement ps = null;
-        try {
-            ps = session.sqlConnection.prepareStatement(selectSql);
+        try (PreparedStatement ps = session.sqlConnection.prepareStatement(selectSql)) {
             ps.setString(1, filterValue);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String existingId = rs.getString(1);
-                if (idsToAdd.contains(existingId)) {
-                    // to not add already existing ids
-                    idsToAdd.remove(existingId);
-                } else {
-                    // delete unwanted existing ids
-                    idsToDelete.add(existingId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String existingId = rs.getString(1);
+                    if (idsToAdd.contains(existingId)) {
+                        // to not add already existing ids
+                        idsToAdd.remove(existingId);
+                    } else {
+                        // delete unwanted existing ids
+                        idsToDelete.add(existingId);
+                    }
                 }
             }
-            rs.close();
         } catch (SQLException e) {
             throw new DirectoryException("failed to fetch existing links for " + filterValue, e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
 
         if (!idsToDelete.isEmpty()) {
             // remove unwanted links
 
-            // String deleteSql = String.format(
-            // "DELETE FROM %s WHERE %s = ? AND %s = ?", tableName,
-            // filterColumn, idsColumn);
+            // "DELETE FROM %s WHERE %s = ? AND %s = ?", tableName, filterColumn, idsColumn);
             Delete delete = new Delete(table);
             String whereString = String.format("%s = ? AND %s = ?", table.getColumn(filterColumn).getQuotedName(),
                     table.getColumn(idsColumn).getQuotedName());
             delete.setWhere(whereString);
             String deleteSql = delete.getStatement();
 
-            try {
-                ps = session.sqlConnection.prepareStatement(deleteSql);
+            try (PreparedStatement ps = session.sqlConnection.prepareStatement(deleteSql)) {
                 for (String unwantedId : idsToDelete) {
                     if (session.logger.isLogEnabled()) {
                         session.logger.logSQL(deleteSql, Arrays.<Serializable> asList(filterValue, unwantedId));
@@ -432,14 +379,6 @@ public class TableReference extends AbstractReference {
                 }
             } catch (SQLException e) {
                 throw new DirectoryException("failed to remove unwanted links for " + filterValue, e);
-            } finally {
-                try {
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (SQLException sqle) {
-                    throw new DirectoryException(sqle);
-                }
             }
         }
 

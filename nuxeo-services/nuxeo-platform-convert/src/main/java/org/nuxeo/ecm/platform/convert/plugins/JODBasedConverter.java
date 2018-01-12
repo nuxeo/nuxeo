@@ -171,11 +171,6 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-    }
-
-    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         blobHolder = new UTF8CharsetConverter().convert(blobHolder, parameters);
         Blob inputBlob = blobHolder.getBlob();

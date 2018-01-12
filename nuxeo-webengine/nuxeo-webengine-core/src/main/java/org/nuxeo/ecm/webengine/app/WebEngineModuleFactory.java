@@ -41,7 +41,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class WebEngineModuleFactory {
 
-    public static Log log = LogFactory.getLog(WebEngineModuleFactory.class);
+    private static final Log log = LogFactory.getLog(WebEngineModuleFactory.class);
 
     public static Bundle[] getFragments(Bundle bundle) {
         BundleContext context = bundle.getBundleContext();

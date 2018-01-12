@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.codec.binary.Base64;
@@ -51,18 +52,18 @@ public class ConversionCacheHolder {
 
     private static final Log log = LogFactory.getLog(ConversionCacheHolder.class);
 
-    public static int nbSubPathPart = 5;
+    public static final int NB_SUB_PATH_PART = 5;
 
-    public static int subPathPartSize = 2;
+    public static final int SUB_PATH_PART_SIZE = 2;
 
-    public static long cacheHits = 0;
+    public static final AtomicLong CACHE_HITS = new AtomicLong();
 
     // Utility class.
     private ConversionCacheHolder() {
     }
 
     public static long getCacheHits() {
-        return cacheHits;
+        return CACHE_HITS.get();
     }
 
     public static int getNbCacheEntries() {
@@ -79,10 +80,10 @@ public class ConversionCacheHolder {
 
         int idx = 0;
 
-        for (int i = 0; i < nbSubPathPart; i++) {
-            String subPart = path.substring(idx, idx + subPathPartSize);
+        for (int i = 0; i < NB_SUB_PATH_PART; i++) {
+            String subPart = path.substring(idx, idx + SUB_PATH_PART_SIZE);
             subPath.add(subPart);
-            idx += subPathPartSize;
+            idx += SUB_PATH_PART_SIZE;
             if (idx >= path.length()) {
                 break;
             }
@@ -173,10 +174,9 @@ public class ConversionCacheHolder {
     protected static BlobHolder doGetFromCache(String key) {
         ConversionCacheEntry cacheEntry = cache.get(key);
         if (cacheEntry != null) {
-            if (cacheHits == Long.MAX_VALUE) {
-                cacheHits = 0;
-            } else {
-                cacheHits += 1;
+            if (CACHE_HITS.incrementAndGet() < 0) {
+                // skip all negative values
+                CACHE_HITS.addAndGet(Long.MIN_VALUE); // back to 0
             }
             return cacheEntry.restore();
         }

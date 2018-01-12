@@ -67,7 +67,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
 
         List<Annotation> annotations = service.queryAnnotations(uri, user);
         for (Annotation annotation : annotations) {
-            AnnotationsRepositoryComponent.instance.injector.removeAnnotationText(doc, annotation.getId());
+            new AnnotationsFulltextInjector().removeAnnotationText(doc, annotation.getId());
             session.saveDocument(doc);
             service.deleteAnnotationFor(uri, annotation, user);
         }

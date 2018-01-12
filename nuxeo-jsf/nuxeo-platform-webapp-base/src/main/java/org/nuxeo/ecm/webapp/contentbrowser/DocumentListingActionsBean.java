@@ -66,7 +66,7 @@ public class DocumentListingActionsBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(DocumentListingActionsBean.class);
 
-    public static String DEFAULT_LISTING_LAYOUT = "document_listing";
+    public static final String DEFAULT_LISTING_LAYOUT = "document_listing";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;

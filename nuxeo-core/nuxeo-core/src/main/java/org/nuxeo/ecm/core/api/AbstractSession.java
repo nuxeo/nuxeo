@@ -1965,10 +1965,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
-                for (Document proxy : proxies) {
-                    proxy.setTargetDocument(target);
-                    return readModel(proxy);
-                }
+                Document proxy = proxies.iterator().next();
+                proxy.setTargetDocument(target);
+                return readModel(proxy);
             }
         } catch (UnsupportedOperationException e) {
             log.error("Cannot update proxy, try to remove");

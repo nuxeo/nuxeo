@@ -372,7 +372,7 @@ public class PackWar {
 
     protected static class WebXmlProcessor extends XmlProcessor {
 
-        public static WebXmlProcessor INSTANCE = new WebXmlProcessor();
+        public static final WebXmlProcessor INSTANCE = new WebXmlProcessor();
 
         private static final String LISTENER = "listener";
 
@@ -397,7 +397,7 @@ public class PackWar {
 
     protected static class NuxeoXmlProcessor extends XmlProcessor {
 
-        public static NuxeoXmlProcessor INSTANCE = new NuxeoXmlProcessor();
+        public static final NuxeoXmlProcessor INSTANCE = new NuxeoXmlProcessor();
 
         private static final String DOCBASE = "docBase";
 
@@ -423,7 +423,7 @@ public class PackWar {
 
     protected static class ServerXmlProcessor implements FileProcessor {
 
-        public static ServerXmlProcessor INSTANCE = new ServerXmlProcessor();
+        public static final ServerXmlProcessor INSTANCE = new ServerXmlProcessor();
 
         private static final String GLOBAL_NAMING_RESOURCES = "GlobalNamingResources";
 

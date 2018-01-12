@@ -46,7 +46,7 @@ public class View {
     public View(RenderingEngine renderingEngine, String name, Object object) {
         this.renderingEngine = renderingEngine;
         this.name = name;
-        this.args = new HashMap<String, Object>();
+        this.args = new HashMap<>();
         forObject(object);
     }
 
@@ -103,14 +103,11 @@ public class View {
     }
 
     public void render(Writer writer) throws RenderingException {
+        renderingEngine.render(name, args, writer);
         try {
-            renderingEngine.render(name, args, writer);
-        } finally {
-            try {
-                writer.flush();
-            } catch (IOException e) {
-                throw new RenderingException(e);
-            }
+            writer.flush();
+        } catch (IOException e) {
+            throw new RenderingException(e);
         }
     }
 

@@ -138,8 +138,11 @@ public class Crypto {
         this(Crypto.getKeysFromKeyStore(keystorePath, keystorePass, keyAlias, keyPass), keystorePass);
     }
 
-    private final static class NO_OP extends Crypto {
-        private NO_OP() {
+    public static final class NoOp extends Crypto {
+
+        public static final Crypto NO_OP = new NoOp();
+
+        private NoOp() {
             super(new byte[0]);
         }
 
@@ -158,8 +161,6 @@ public class Crypto {
             // NO OP
         }
     }
-
-    public static final Crypto NO_OP = new NO_OP();
 
     protected SecretKey getSecretKey(String algorithm, byte[] key) throws NoSuchAlgorithmException {
         if (!initialized) {

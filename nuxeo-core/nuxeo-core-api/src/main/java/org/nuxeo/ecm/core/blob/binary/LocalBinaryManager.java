@@ -255,7 +255,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         /**
          * Windows FAT filesystems have a time resolution of 2s. Other common filesystems have 1s.
          */
-        public static int TIME_RESOLUTION = 2000;
+        public static final int TIME_RESOLUTION = 2000;
 
         protected final LocalBinaryManager binaryManager;
 

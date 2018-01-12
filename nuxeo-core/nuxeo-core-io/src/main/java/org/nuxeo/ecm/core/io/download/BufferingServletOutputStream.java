@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 
 import javax.servlet.ServletOutputStream;
 
@@ -212,8 +213,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                     } finally {
                         file.close();
                     }
-                    FileInputStream in = new FileInputStream(tmp);
-                    try {
+                    try (FileInputStream in = new FileInputStream(tmp)) {
                         IOUtils.copy(in, outputStream);
                     } catch (IOException e) {
                         if (DownloadHelper.isClientAbortError(e)) {
@@ -222,11 +222,9 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                         } else {
                             throw e;
                         }
-                    } finally {
-                        in.close();
                     }
                 } finally {
-                    tmp.delete();
+                    Files.delete(tmp.toPath());
                 }
             }
         } catch (IOException e) {
@@ -252,7 +250,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
                         DownloadHelper.logClientAbort(e);
                     }
                 } else {
-                    throw e;
+                    log.error(e); // don't rethrow inside finally
                 }
             } finally {
                 if (needsClose) {

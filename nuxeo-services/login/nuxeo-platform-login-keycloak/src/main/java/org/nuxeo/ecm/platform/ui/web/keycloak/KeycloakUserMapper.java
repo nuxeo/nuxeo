@@ -70,7 +70,7 @@ public class KeycloakUserMapper implements UserMapper {
             userDoc = createUser(userInfo);
         }
 
-        userDoc = updateUser(userDoc, userInfo);
+        updateUser(userDoc, userInfo);
 
         String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
         return userManager.getPrincipal(userId);
@@ -140,7 +140,7 @@ public class KeycloakUserMapper implements UserMapper {
         return userDoc;
     }
 
-    private DocumentModel updateUser(DocumentModel userDoc, KeycloakUserInfo userInfo) {
+    private void updateUser(DocumentModel userDoc, KeycloakUserInfo userInfo) {
         userDoc.setPropertyValue(userManager.getUserIdField(), userInfo.getUserName());
         userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getUserName());
         userDoc.setProperty(userSchemaName, "firstName", userInfo.getFirstName());
@@ -148,7 +148,6 @@ public class KeycloakUserMapper implements UserMapper {
         userDoc.setProperty(userSchemaName, "password", userInfo.getPassword());
         userDoc.setProperty(userSchemaName, "company", userInfo.getCompany());
         userManager.updateUser(userDoc);
-        return userDoc;
     }
 
     @Override

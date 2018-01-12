@@ -33,8 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DatabaseH2 extends DatabaseHelper {
 
-    public static final DatabaseHelper INSTANCE = new DatabaseH2();
-
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 
     /** This directory will be deleted and recreated. */

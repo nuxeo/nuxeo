@@ -24,6 +24,8 @@ import java.security.Principal;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class UnrestrictedSessionRunner {
 
+    private static final Log log = LogFactory.getLog(UnrestrictedSessionRunner.class);
+
     protected String originatingUsername;
 
     protected CoreSession session;
@@ -45,7 +49,7 @@ public abstract class UnrestrictedSessionRunner {
     protected final String repositoryName;
 
     /** True if a call to {@link #runUnrestricted} is in progress. */
-    public boolean isUnrestricted;
+    protected boolean isUnrestricted;
 
     /**
      * Constructs a {@link UnrestrictedSessionRunner} given an existing session (which may or may not be already
@@ -57,7 +61,7 @@ public abstract class UnrestrictedSessionRunner {
      */
     protected UnrestrictedSessionRunner(CoreSession session) {
         this.session = session;
-        sessionIsAlreadyUnrestricted = isUnrestricted(session);
+        sessionIsAlreadyUnrestricted = checkUnrestricted(session);
         if (sessionIsAlreadyUnrestricted) {
             repositoryName = null;
         } else {
@@ -101,7 +105,7 @@ public abstract class UnrestrictedSessionRunner {
         this.originatingUsername = originatingUsername;
     }
 
-    protected boolean isUnrestricted(CoreSession session) {
+    protected boolean checkUnrestricted(CoreSession session) {
         return SecurityConstants.SYSTEM_USERNAME.equals(session.getPrincipal().getName())
                 || (session.getPrincipal() instanceof NuxeoPrincipal && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
     }
@@ -139,7 +143,7 @@ public abstract class UnrestrictedSessionRunner {
                         loginContext.logout();
                     }
                 } catch (LoginException e) {
-                    throw new NuxeoException(e);
+                    log.error(e); // don't rethrow inside finally
                 }
             }
         } finally {

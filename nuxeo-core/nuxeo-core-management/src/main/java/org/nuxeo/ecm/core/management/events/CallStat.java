@@ -20,6 +20,9 @@
  */
 package org.nuxeo.ecm.core.management.events;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Simple class to store Listeners call statistics.
  *
@@ -27,27 +30,27 @@ package org.nuxeo.ecm.core.management.events;
  */
 public class CallStat {
 
-    long accumulatedTime = 0;
+    protected AtomicLong accumulatedTime = new AtomicLong();
 
-    int callCount = 0;
+    protected AtomicInteger callCount = new AtomicInteger();
 
-    final String label;
+    protected final String label;
 
     public CallStat(String label) {
         this.label = label;
     }
 
     void update(long delta) {
-        callCount++;
-        accumulatedTime += delta;
+        callCount.incrementAndGet();
+        accumulatedTime.addAndGet(delta);
     }
 
     public long getAccumulatedTime() {
-        return accumulatedTime;
+        return accumulatedTime.get();
     }
 
     public int getCallCount() {
-        return callCount;
+        return callCount.get();
     }
 
     public String getLabel() {

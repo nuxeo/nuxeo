@@ -39,7 +39,6 @@ public class TestLRUFileCache {
         dir = File.createTempFile("nxtestlrufilecache.", "", new File(System.getProperty("java.io.tmpdir")));
         dir.delete();
         dir.mkdir();
-        LRUFileCache.CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 0; // clear immediately
     }
 
     @After
@@ -58,6 +57,7 @@ public class TestLRUFileCache {
     @Test
     public void testLRUFileCache() throws Exception {
         LRUFileCache cache = new LRUFileCache(dir, 100, 9999, 1); // 100 bytes max
+        cache.setClearOldEntriesIntervalMillis(0); // clear immediately
         assertEquals(0, cache.getSize());
         assertEquals(0, getDirSize());
         assertEquals(0, cache.getNumberOfItems());
@@ -120,6 +120,7 @@ public class TestLRUFileCache {
     @Test
     public void testLRUFileCacheMaxCount() throws Exception {
         LRUFileCache cache = new LRUFileCache(dir, 10000, 3, 1); // 3 files max
+        cache.setClearOldEntriesIntervalMillis(0); // clear immediately
         assertEquals(0, cache.getNumberOfItems());
 
         byte[] buf = new byte[30];

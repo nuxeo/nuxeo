@@ -74,7 +74,7 @@ import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
  */
 public class StandaloneUpdateService implements PackageUpdateService {
 
-    protected static XMap xmap;
+    protected static volatile XMap xmap;
 
     protected PackagePersistence persistence;
 
@@ -164,7 +164,13 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Override
     public void initialize() throws PackageException {
-        xmap = createXmap();
+        if (xmap == null) {
+            synchronized (StandaloneUpdateService.class) {
+                if (xmap == null) {
+                    xmap = createXmap();
+                }
+            }
+        }
         addCommands();
         startInstalledPackages();
     }
@@ -206,7 +212,9 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Override
     public void shutdown() throws PackageException {
-        xmap = null;
+        synchronized (StandaloneUpdateService.class) {
+            xmap = null;
+        }
     }
 
     @Override
@@ -247,45 +255,22 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Override
     public PackageDefinition loadPackageFromZip(File file) throws PackageException {
-        ZipFile zip = null;
-        try {
-            zip = new ZipFile(file);
+        try (ZipFile zip = new ZipFile(file)) {
             ZipEntry mfEntry = zip.getEntry(LocalPackage.MANIFEST);
-            InputStream mfStream = zip.getInputStream(mfEntry);
-            return loadPackage(mfStream);
-        } catch (PackageException e) {
-            throw e;
+            try (InputStream mfStream = zip.getInputStream(mfEntry)) {
+                return loadPackage(mfStream);
+            }
         } catch (IOException e) {
             throw new PackageException("Failed to load package definition from zip file: " + file, e);
-        } finally {
-            if (zip != null) {
-                try {
-                    zip.close();
-                } catch (IOException e) {
-                    throw new PackageException("Failed to close package zip: " + file, e);
-                }
-            }
         }
     }
 
     @Override
     public PackageDefinition loadPackage(File file) throws PackageException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(file);
+        try (FileInputStream in = new FileInputStream(file)) {
             return loadPackage(in);
-        } catch (PackageException e) {
-            throw e;
         } catch (IOException e) {
             throw new PackageException("Failed to load XML package definition from file: " + file, e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                throw new PackageException("Failed to close input stream for " + file, e);
-            }
         }
     }
 

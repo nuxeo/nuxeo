@@ -92,7 +92,7 @@ public class RouterServlet extends HttpServlet {
 
     protected static Log log = LogFactory.getLog(RouterServlet.class);
 
-    protected SimpleNavigationHandler navHandler = SimpleNavigationHandler.instance();
+    protected final SimpleNavigationHandler navHandler = SimpleNavigationHandler.instance();
 
     public static final String CONNECT_TOKEN_KEY = "ConnectRegistrationToken";
 

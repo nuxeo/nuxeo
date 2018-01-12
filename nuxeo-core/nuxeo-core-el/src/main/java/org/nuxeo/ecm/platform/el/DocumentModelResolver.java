@@ -204,7 +204,7 @@ public class DocumentModelResolver extends BeanELResolver {
             readOnly = super.isReadOnly(context, base, property);
         } catch (PropertyNotFoundException e) {
             if (base instanceof DocumentModel || base instanceof DocumentPropertyContext) {
-                readOnly = false;
+                // readOnly is false
                 context.setPropertyResolved(true);
             } else if (base instanceof Property) {
                 readOnly = ((Property) base).isReadOnly();

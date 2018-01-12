@@ -62,7 +62,7 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
     // white-space: pre-wrap; /* css-3 */
     // word-wrap: break-word; /* Internet Explorer 5.5+ */
     // }
-    public static String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
+    public static final String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {

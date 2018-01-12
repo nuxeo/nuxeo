@@ -112,14 +112,11 @@ public class TemplateView {
 
     public void render(OutputStream out) {
         Writer writer = new OutputStreamWriter(out);
+        render(writer);
         try {
-            render(writer);
-        } finally {
-            try {
-                writer.flush();
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            }
+            writer.flush();
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
     }
 

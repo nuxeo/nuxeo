@@ -56,8 +56,9 @@ public class LRUFileCache implements FileCache {
 
     private static final String TMP_SUFFIX = ".tmp";
 
-    // not final for tests
-    public static long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 5000; // 5 s
+    public static final long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS_DEFAULT = 5000; // 5 s
+
+    protected long clearOldEntriesIntervalMillis = CLEAR_OLD_ENTRIES_INTERVAL_MILLIS_DEFAULT;
 
     protected static class PathInfo implements Comparable<PathInfo> {
 
@@ -104,6 +105,11 @@ public class LRUFileCache implements FileCache {
         this.maxSize = maxSize;
         this.maxCount = maxCount;
         this.minAgeMillis = minAge * 1000;
+    }
+
+    // for tests
+    public void setClearOldEntriesIntervalMillis(long millis) {
+        clearOldEntriesIntervalMillis = millis;
     }
 
     /**
@@ -173,7 +179,7 @@ public class LRUFileCache implements FileCache {
     protected void clearOldEntries() {
         if (clearOldEntriesLock.tryLock()) {
             try {
-                if (System.currentTimeMillis() > clearOldEntriesLast + CLEAR_OLD_ENTRIES_INTERVAL_MILLIS) {
+                if (System.currentTimeMillis() > clearOldEntriesLast + clearOldEntriesIntervalMillis) {
                     doClearOldEntries();
                     clearOldEntriesLast = System.currentTimeMillis();
                     return;

@@ -858,7 +858,6 @@ public class LDAPSession extends BaseSession {
         try {
             // creating a context does a bind
             log.debug(String.format("LDAP bind dn='%s'", dn));
-            // noinspection ResultOfObjectAllocationIgnored
             authenticationDirContext = new InitialLdapContext(env, null);
             // force reconnection to prevent from using a previous connection
             // with an obsolete password (after an user has changed his
@@ -877,7 +876,6 @@ public class LDAPSession extends BaseSession {
                 }
             } catch (NamingException e) {
                 log.error("Error closing authentication context when biding dn " + dn, e);
-                return false;
             }
         }
     }
