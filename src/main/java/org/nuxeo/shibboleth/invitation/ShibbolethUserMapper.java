@@ -107,7 +107,7 @@ public class ShibbolethUserMapper implements UserMapper {
         if (userDoc == null) {
             userDoc = createUser(userInfo);
         } else {
-            userDoc = updateUser(userDoc, userInfo);
+            updateUser(userDoc, userInfo);
         }
 
         String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
@@ -197,14 +197,13 @@ public class ShibbolethUserMapper implements UserMapper {
         return users.get(0);
     }
 
-    private DocumentModel updateUser(DocumentModel userDoc, ShibbolethUserInfo userInfo) {
+    private void updateUser(DocumentModel userDoc, ShibbolethUserInfo userInfo) {
         userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
         userDoc.setProperty(userSchemaName, "firstName", userInfo.getFirstName());
         userDoc.setProperty(userSchemaName, "lastName", userInfo.getLastName());
         userDoc.setProperty(userSchemaName, "password", userInfo.getPassword());
         userDoc.setProperty(userSchemaName, "company", userInfo.getCompany());
         Framework.doPrivileged(() -> userManager.updateUser(userDoc));
-        return userDoc;
     }
 
     @Override
