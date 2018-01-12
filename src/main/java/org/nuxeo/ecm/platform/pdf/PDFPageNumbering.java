@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PDFPageNumbering {
 
-    public static float DEFAULT_FONT_SIZE = 16.0f;
+    public static final float DEFAULT_FONT_SIZE = 16.0f;
 
     private Blob blob;
 
