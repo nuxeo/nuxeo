@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -59,6 +58,8 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
 import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.CTX_MAP_KEY;
 import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing.TURN_OFF;
 
@@ -113,13 +114,8 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
         List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
 
-        Collections.sort(distribs, (dist0, dist1) -> {
-            if (dist0.getVersion().equals(dist1.getVersion())) {
-                return dist0.getName().compareTo(dist1.getName());
-            } else {
-                return -dist0.getVersion().compareTo(dist1.getVersion());
-            }
-        });
+        Collections.sort(distribs,
+                reverseOrder(comparing(DistributionSnapshot::getVersion)).thenComparing(DistributionSnapshot::getName));
 
         return distribs;
     }
