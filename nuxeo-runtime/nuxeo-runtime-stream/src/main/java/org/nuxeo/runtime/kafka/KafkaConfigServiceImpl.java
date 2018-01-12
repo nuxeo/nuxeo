@@ -26,6 +26,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -36,6 +39,10 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
     public static final int APPLICATION_STARTED_ORDER = -600;
 
     private static final Log log = LogFactory.getLog(KafkaConfigServiceImpl.class);
+
+    protected static final String DEFAULT_ZK_SERVERS = "DEFAULT_TEST";
+
+    protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
 
     protected final Map<String, KafkaConfigDescriptor> configs = new HashMap<>();
 
@@ -74,7 +81,11 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
     @Override
     public String getZkServers(String configName) {
         checkConfigName(configName);
-        return configs.get(configName).zkServers;
+        String ret = configs.get(configName).zkServers;
+        if (DEFAULT_ZK_SERVERS.equals(ret)) {
+            return KafkaUtils.getZkServers();
+        }
+        return ret;
     }
 
     protected void checkConfigName(String configName) {
@@ -86,13 +97,21 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
     @Override
     public Properties getProducerProperties(String configName) {
         checkConfigName(configName);
-        return configs.get(configName).getProducerProperties();
+        Properties ret = configs.get(configName).getProducerProperties();
+        if (DEFAULT_BOOTSTRAP_SERVERS.equals(ret.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG))) {
+            ret.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
+        }
+        return ret;
     }
 
     @Override
     public Properties getConsumerProperties(String configName) {
         checkConfigName(configName);
-        return configs.get(configName).getConsumerProperties();
+        Properties ret = configs.get(configName).getConsumerProperties();
+        if (DEFAULT_BOOTSTRAP_SERVERS.equals(ret.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))) {
+            ret.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
+        }
+        return ret;
     }
 
     @Override
