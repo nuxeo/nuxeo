@@ -25,8 +25,8 @@ package org.nuxeo.ecm.csv.core;
  */
 public class Constants {
 
-    public static String CSV_NAME_COL = "name";
+    public static final String CSV_NAME_COL = "name";
 
-    public static String CSV_TYPE_COL = "type";
+    public static final String CSV_TYPE_COL = "type";
 
 }

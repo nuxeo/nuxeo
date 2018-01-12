@@ -165,7 +165,7 @@ public class CSVImporterWork extends TransientStoreWork {
      *
      * @since 7.3
      */
-    public static List<String> AUTHORIZED_HEADERS = Arrays.asList(NXQL.ECM_LIFECYCLESTATE, NXQL.ECM_UUID);
+    protected static final List<String> AUTHORIZED_HEADERS = Arrays.asList(NXQL.ECM_LIFECYCLESTATE, NXQL.ECM_UUID);
 
     protected String parentPath;
 
