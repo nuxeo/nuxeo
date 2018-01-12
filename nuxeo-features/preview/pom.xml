@@ -6,7 +6,7 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
   <groupId>org.nuxeo.ecm.preview</groupId>
-  <artifactId>parent</artifactId>
+  <artifactId>nuxeo-preview-parent</artifactId>
   <name>Nuxeo Preview Parent</name>
   <packaging>pom</packaging>
 

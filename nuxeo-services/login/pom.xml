@@ -6,7 +6,7 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
   <groupId>org.nuxeo.ecm.login</groupId>
-  <artifactId>parent</artifactId>
+  <artifactId>nuxeo-platform-login-parent</artifactId>
   <name>Nuxeo Login Parent POM</name>
   <packaging>pom</packaging>
 
