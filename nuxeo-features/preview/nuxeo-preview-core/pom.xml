@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.preview</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>nuxeo-preview-parent</artifactId>
     <version>10.1-SNAPSHOT</version>
   </parent>
 
