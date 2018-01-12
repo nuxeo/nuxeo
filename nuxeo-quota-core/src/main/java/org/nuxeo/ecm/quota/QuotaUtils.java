@@ -38,7 +38,7 @@ public class QuotaUtils {
     private QuotaUtils() {
     }
 
-    public static List<String> FLAGS = Arrays.asList( //
+    protected static final List<String> FLAGS = Arrays.asList( //
             DISABLE_QUOTA_CHECK_LISTENER, //
             DISABLE_AUDIT_LOGGER, //
             DISABLE_DUBLINCORE_LISTENER, //
