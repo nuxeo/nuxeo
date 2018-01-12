@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
@@ -40,9 +42,11 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  */
 public class WIRequestFilter implements Filter {
 
-    public static String WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
+    private static final Log log = LogFactory.getLog(WIRequestFilter.class);
 
-    public static String MSOFFICE_USERAGENT = "Microsoft Office Existence Discovery";
+    public static final String WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
+
+    public static final String MSOFFICE_USERAGENT = "Microsoft Office Existence Discovery";
 
     public static final String BACKEND_KEY = "org.nuxeo.ecm.webdav.service.backend";
 
@@ -88,7 +92,7 @@ public class WIRequestFilter implements Filter {
                     // commit failed, report this to the client before stopping buffering
                     ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                             e.getMessage());
-                    throw e;
+                    log.error(e); // don't rethrow inside finally
                 } finally {
                     ((BufferingHttpServletResponse) response).stopBuffering();
                 }

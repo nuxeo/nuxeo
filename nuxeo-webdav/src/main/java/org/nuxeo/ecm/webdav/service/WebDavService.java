@@ -29,7 +29,7 @@ public class WebDavService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.webdav.service");
 
-    public static String BACKEND_FACTORY_XP = "backendFactory";
+    public static final String BACKEND_FACTORY_XP = "backendFactory";
 
     protected BackendFactory backendFactory = new SearchBackendFactory();
 
