@@ -68,6 +68,7 @@ public class NuxeoContentStream
 
     public static final String DIGEST_HEADER_NAME = "Digest";
 
+    // for tests
     public static long LAST_MODIFIED;
 
     protected final Blob blob;

@@ -36,8 +36,6 @@ import org.apache.chemistry.opencmis.commons.impl.UrlBuilder;
  */
 public class StatusLoggingDefaultHttpInvoker implements HttpInvoker {
 
-    public static int lastStatus;
-
     protected final DefaultHttpInvoker invoker;
 
     protected Method invokeMethod;
@@ -85,7 +83,6 @@ public class StatusLoggingDefaultHttpInvoker implements HttpInvoker {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        lastStatus = response.getResponseCode();
         return response;
     }
 

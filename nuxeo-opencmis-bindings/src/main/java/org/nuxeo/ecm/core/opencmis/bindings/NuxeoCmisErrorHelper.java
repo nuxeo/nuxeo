@@ -33,7 +33,7 @@ public class NuxeoCmisErrorHelper {
 
     public static final String EXTRACTOR_CLASS_PROP = "org.nuxeo.cmis.errorextractor";
 
-    public static ErrorExtractor errorExtractor;
+    protected static ErrorExtractor errorExtractor;
 
     /**
      * Interface for a helper able to extract the error from an exception.
