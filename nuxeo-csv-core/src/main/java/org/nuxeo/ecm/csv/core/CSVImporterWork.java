@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.csv.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.csv.core.CSVImportLog.Status.ERROR;
 import static org.nuxeo.ecm.csv.core.Constants.CSV_NAME_COL;
 import static org.nuxeo.ecm.csv.core.Constants.CSV_TYPE_COL;
@@ -31,7 +32,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -769,7 +769,7 @@ public class CSVImporterWork extends TransientStoreWork {
         InputStream io = CSVImporterWork.class.getClassLoader().getResourceAsStream(key);
         if (io != null) {
             try {
-                return IOUtils.toString(io, StandardCharsets.UTF_8);
+                return IOUtils.toString(io, UTF_8);
             } catch (IOException e) {
                 // cannot happen
                 throw new NuxeoException(e);
