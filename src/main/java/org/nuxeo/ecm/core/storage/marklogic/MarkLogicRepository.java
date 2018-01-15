@@ -439,7 +439,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         String query = builder.buildQuery().getSearchQuery();
         // Don't auto-close the session as we need to keep it open for next scroll
         try {
-            Session session = xccContentSource.newSession();
+            Session session = xccContentSource.newSession(); // kept open by cursor, do not close
             // Build option to scroll results and not buffer them
             RequestOptions options = new RequestOptions();
             options.setCacheResult(false);
@@ -682,7 +682,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
         // Run query
         boolean completedAbruptly = true;
-        Session session = xccContentSource.newSession();
+        Session session = xccContentSource.newSession(); // kept open by stream or closed on exception
         try {
             // As we can get a lot of results don't buffer the result
             RequestOptions options = new RequestOptions();
