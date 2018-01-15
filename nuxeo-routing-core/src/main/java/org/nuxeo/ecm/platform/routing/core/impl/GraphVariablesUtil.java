@@ -90,14 +90,13 @@ public class GraphVariablesUtil {
                 try {
                     Object[] objects = (Object[]) value;
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    JsonGenerator jg = getFactory().createJsonGenerator(out);
-                    jg.writeStartArray();
-                    for (Object object : objects) {
-                        jg.writeString(type.encode(object));
+                    try (JsonGenerator jg = getFactory().createGenerator(out)) {
+                        jg.writeStartArray();
+                        for (Object object : objects) {
+                            jg.writeString(type.encode(object));
+                        }
+                        jg.writeEndArray();
                     }
-                    jg.writeEndArray();
-                    jg.flush();
-                    jg.close();
                     value = out.toString("UTF-8");
                 } catch (IOException e) {
                     throw new NuxeoException(e);

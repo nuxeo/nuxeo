@@ -205,7 +205,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
             Map<String, Object> qParams = new HashMap<String, Object>();
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
-                while (fixedPart.indexOf("?") > 0) {
+                while (fixedPart.indexOf('?') >= 0) {
                     // Hack for handling parameter in fixed part TODO
                     if (getProperties().get(DOC_ID_PROPERTY) != null) {
                         fixedPart = fixedPart.replaceFirst("\\?", getProperties().get(DOC_ID_PROPERTY).toString());
