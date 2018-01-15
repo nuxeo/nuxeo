@@ -374,7 +374,6 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            // restore interrupt status
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
         }

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,8 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     protected int count = 0;
 
+    protected Stream<String> stream;
+
     protected Iterator<String> fileIterator;
 
     public FileBlobMessageProducer(int producerId, File listFile) {
@@ -47,7 +50,8 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
         this.listFile = listFile;
         log.info("Producer using file list: " + listFile.getAbsolutePath());
         try {
-            fileIterator = Files.lines(listFile.toPath()).iterator();
+            stream = Files.lines(listFile.toPath());
+            fileIterator = stream.iterator();
         } catch (IOException e) {
             String msg = "Failed to read file: " + listFile.getAbsolutePath();
             log.error(msg, e);
@@ -64,6 +68,8 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
     @Override
     public void close() throws Exception {
         super.close();
+        stream.close();
+        stream = null;
         fileIterator = null;
     }
 

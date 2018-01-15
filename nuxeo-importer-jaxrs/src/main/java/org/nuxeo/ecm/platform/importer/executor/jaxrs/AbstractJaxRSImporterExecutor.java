@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
 import org.apache.commons.io.IOUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
@@ -107,7 +108,8 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
                 return Response.ok().build();
             }
         } catch (InterruptedException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Interrupted").build();
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Timeout").build();
     }

@@ -65,6 +65,7 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
         this.blobSizeKb = 0;
     }
 
+    @SuppressWarnings("resource")
     @Override
     public ProducerIterator<DocumentMessage> createProducer(int producerId) {
         BlobInfoFetcher fetcher = null;
