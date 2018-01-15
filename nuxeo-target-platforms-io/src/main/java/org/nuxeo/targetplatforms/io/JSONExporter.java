@@ -79,12 +79,12 @@ public class JSONExporter {
 
     protected static void exportToJson(Object object, OutputStream out, boolean pretty) throws IOException {
         JsonFactory factory = createFactory();
-        JsonGenerator jg = factory.createJsonGenerator(out);
-        if (pretty) {
-            jg.useDefaultPrettyPrinter();
+        try (JsonGenerator jg = factory.createGenerator(out)) {
+            if (pretty) {
+                jg.useDefaultPrettyPrinter();
+            }
+            jg.writeObject(object);
         }
-        jg.writeObject(object);
-        jg.flush();
     }
 
 }
