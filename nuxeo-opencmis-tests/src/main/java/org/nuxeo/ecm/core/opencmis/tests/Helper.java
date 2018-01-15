@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -231,7 +232,8 @@ public class Helper {
         try {
             Thread.sleep(2);
         } catch (InterruptedException e) {
-            ExceptionUtils.checkInterrupt(e);
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
     }
 
