@@ -18,22 +18,22 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
-import org.apache.commons.io.FilenameUtils;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.video.service.TestVideoService;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import org.apache.commons.io.FilenameUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.video.service.TestVideoService;
 
 /**
  * @since 8.4
@@ -57,7 +57,7 @@ public abstract class BaseVideoToolsTest {
         File f = inBlob.getFile();
         Path p = Paths.get(f.getAbsolutePath());
         StringBuilder builder = new StringBuilder();
-        List<String> lines = Files.readAllLines(p, StandardCharsets.UTF_8);
+        List<String> lines = Files.readAllLines(p, UTF_8);
         for (String line: lines) {
             builder.append(line);
         }

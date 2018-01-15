@@ -18,22 +18,23 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.runtime.api.Framework;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The {@link VideoTool} that joins two or more video blobs.
@@ -66,7 +67,7 @@ public class VideoConcat extends VideoTool {
                 lines.add("file '" + blobFile.getAbsolutePath());
             }
             tempFile = Framework.createTempFile("NxVTcv-", ".txt");
-            Files.write(tempFile.toPath(), lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            Files.write(tempFile.toPath(), lines, UTF_8, StandardOpenOption.CREATE);
 
             if (blobHolder.getBlobs().size() < 2) {
                 throw new NuxeoException("VideoConcat requires at least two videos to proceed.");
