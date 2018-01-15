@@ -85,13 +85,13 @@ public class NuxeoDriveScrollDescendants {
     protected Blob writeJSONBlob(ScrollFileSystemItemList scrollFSIList) throws IOException {
         StringWriter writer = new StringWriter();
         JsonFactory factory = new JsonFactory();
-        JsonGenerator jg = factory.createJsonGenerator(writer);
-        jg.setCodec(new ObjectMapper());
-        jg.writeStartObject();
-        jg.writeStringField("scrollId", scrollFSIList.getScrollId());
-        jg.writeObjectField("fileSystemItems", scrollFSIList);
-        jg.writeEndObject();
-        jg.close();
+        try (JsonGenerator jg = factory.createGenerator(writer)) {
+            jg.setCodec(new ObjectMapper());
+            jg.writeStartObject();
+            jg.writeStringField("scrollId", scrollFSIList.getScrollId());
+            jg.writeObjectField("fileSystemItems", scrollFSIList);
+            jg.writeEndObject();
+        }
         return Blobs.createJSONBlob(writer.toString());
     }
 
