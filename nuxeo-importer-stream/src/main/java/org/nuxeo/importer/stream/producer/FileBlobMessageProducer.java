@@ -21,6 +21,8 @@ package org.nuxeo.importer.stream.producer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -28,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.lib.stream.pattern.producer.AbstractProducer;
+import scala.collection.Searching;
 
 /**
  * Use a listing file to generate BlobMessage.
@@ -39,15 +42,22 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     protected final File listFile;
 
+    protected final String basePath;
+
     protected int count = 0;
 
     protected Stream<String> stream;
 
     protected Iterator<String> fileIterator;
 
-    public FileBlobMessageProducer(int producerId, File listFile) {
+    public FileBlobMessageProducer(int producerId, File listFile, String basePath) {
         super(producerId);
         this.listFile = listFile;
+        if (basePath == null) {
+            this.basePath = "";
+        } else {
+            this.basePath = basePath;
+        }
         log.info("Producer using file list: " + listFile.getAbsolutePath());
         try {
             stream = Files.lines(listFile.toPath());
@@ -83,6 +93,6 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
         String filePath = fileIterator.next();
         count += 1;
         // TODO: guess mimetype, length ?
-        return new BlobMessage.FileMessageBuilder(filePath).build();
+        return new BlobMessage.FileMessageBuilder(new File(basePath, filePath).toString()).build();
     }
 }

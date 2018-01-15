@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 import org.nuxeo.importer.stream.message.DocumentMessage;
@@ -230,7 +231,10 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         DocumentMessage.Builder builder = DocumentMessage.builder(type, parentPath, name).setProperties(props);
         if (withBlob) {
             if (blobInfoFetcher != null) {
-                builder.setBlobInfo(blobInfoFetcher.get(builder));
+                BlobInfo blobInfo = blobInfoFetcher.get(builder);
+                if (blobInfo != null) {
+                    builder.setBlobInfo(blobInfo);
+                }
             } else {
                 builder.setBlob(getRandomBlob());
             }
@@ -244,7 +248,10 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         HashMap<String, Serializable> props = getRandomProperties(title);
         DocumentMessage.Builder builder = DocumentMessage.builder(type, parentPath, name).setProperties(props);
         if (blobInfoFetcher != null) {
-            builder.setBlobInfo(blobInfoFetcher.get(builder));
+            BlobInfo blobInfo = blobInfoFetcher.get(builder);
+            if (blobInfo != null) {
+                builder.setBlobInfo(blobInfoFetcher.get(builder));
+            }
         } else {
             builder.setBlob(getRandomBlob());
         }

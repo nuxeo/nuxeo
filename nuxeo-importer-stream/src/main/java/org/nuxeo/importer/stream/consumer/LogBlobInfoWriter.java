@@ -38,7 +38,8 @@ public class LogBlobInfoWriter implements BlobInfoWriter {
 
     @Override
     public void save(DocumentMessage.Builder builder, BlobInfo info) {
-        appender.append(info.digest, new BlobInfoMessage(info));
+        // use only the first partition
+        appender.append(0, new BlobInfoMessage(info));
     }
 
     @Override

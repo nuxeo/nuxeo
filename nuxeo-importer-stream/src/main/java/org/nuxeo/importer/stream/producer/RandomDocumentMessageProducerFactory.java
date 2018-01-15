@@ -70,6 +70,7 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
     public ProducerIterator<DocumentMessage> createProducer(int producerId) {
         BlobInfoFetcher fetcher = null;
         if (manager != null) {
+            // read only on the first partition
             LogTailer<BlobInfoMessage> tailer = manager.createTailer(getGroupName(producerId),
                     Collections.singleton(LogPartition.of(logName, 0)));
             fetcher = new RandomLogBlobInfoFetcher(tailer);

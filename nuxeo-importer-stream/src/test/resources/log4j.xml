@@ -41,10 +41,6 @@
     <priority value="WARN" />
   </category>
 
-  <category name="org.nuxeo.lib.core.mqueues">
-    <priority value="WARN" />
-  </category>
-
   <category name="org.nuxeo.lib.stream">
     <priority value="WARN" />
   </category>

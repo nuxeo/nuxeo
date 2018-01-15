@@ -30,15 +30,19 @@ import org.nuxeo.lib.stream.pattern.producer.ProducerIterator;
 public class FileBlobMessageProducerFactory implements ProducerFactory<BlobMessage> {
     protected final File listFile;
 
+    protected final String basePath;
+
     /**
      * Produce messages to import files listed in the listFile.
+     *
      */
-    public FileBlobMessageProducerFactory(File listFile) {
+    public FileBlobMessageProducerFactory(File listFile, String basePath) {
         this.listFile = listFile;
+        this.basePath = basePath;
     }
 
     @Override
     public ProducerIterator<BlobMessage> createProducer(int producerId) {
-        return new FileBlobMessageProducer(producerId, listFile);
+        return new FileBlobMessageProducer(producerId, listFile, basePath);
     }
 }
