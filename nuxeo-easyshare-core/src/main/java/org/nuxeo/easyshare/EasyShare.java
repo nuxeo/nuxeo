@@ -22,7 +22,6 @@ package org.nuxeo.easyshare;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
@@ -108,15 +107,16 @@ public class EasyShare extends ModuleRoot {
 
             PaginableDocumentModelListImpl paginable = (PaginableDocumentModelListImpl) getAutomationService().run(opCtx, chain);
 
-            OperationContext ctx = new OperationContext(session);
-            ctx.setInput(docShare);
+            try (OperationContext ctx = new OperationContext(session)) {
+                ctx.setInput(docShare);
 
-            // Audit Log
-            Map<String, Object> params = new HashMap<>();
-            params.put("event", "Access");
-            params.put("category", "Document");
-            params.put("comment", "IP: " + getIpAddr());
-            getAutomationService().run(ctx, "Audit.Log", params);
+                // Audit Log
+                Map<String, Object> params = new HashMap<>();
+                params.put("event", "Access");
+                params.put("category", "Document");
+                params.put("comment", "IP: " + getIpAddr());
+                getAutomationService().run(ctx, "Audit.Log", params);
+            }
 
             return getView("folderList")
                 .arg("isFolder", document.isFolder() && !SHARE_DOC_TYPE.equals(document.getType()))  //Backward compatibility to non-collection
@@ -275,7 +275,7 @@ public class EasyShare extends ModuleRoot {
       try {
         log.debug("Easyshare: starting email");
         EmailHelper emailHelper = new EmailHelper();
-        Map<String, Object> mailProps = new Hashtable<>();
+        Map<String, Object> mailProps = new HashMap<>();
         mailProps.put("mail.from", Framework.getProperty("mail.from", "system@nuxeo.com"));
         mailProps.put("mail.to", email);
         mailProps.put("ip", getIpAddr());
