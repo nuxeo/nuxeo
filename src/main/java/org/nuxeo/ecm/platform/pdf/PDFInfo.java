@@ -250,17 +250,16 @@ public class PDFInfo {
                 PDMetadata metadata = docCatalog.getMetadata();
                 if (metadata != null) {
                     xmp = "";
-                    InputStream xmlInputStream = metadata.createInputStream();
-                    InputStreamReader isr = new InputStreamReader(xmlInputStream);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String line;
-                    do {
-                        line = reader.readLine();
-                        if (line != null) {
-                            xmp += line + "\n";
-                        }
-                    } while (line != null);
-                    reader.close();
+                    try (InputStream xmlInputStream = metadata.createInputStream(); //
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(xmlInputStream))) {
+                        String line;
+                        do {
+                            line = reader.readLine();
+                            if (line != null) {
+                                xmp += line + "\n";
+                            }
+                        } while (line != null);
+                    }
                 }
             }
             alreadyParsed = true;
