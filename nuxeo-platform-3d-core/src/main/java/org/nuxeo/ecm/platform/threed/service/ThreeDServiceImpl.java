@@ -86,7 +86,6 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                         workManager.getCategoryQueueId(ThreeDBatchUpdateWork.CATEGORY_THREED_CONVERSION), 10,
                         TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
