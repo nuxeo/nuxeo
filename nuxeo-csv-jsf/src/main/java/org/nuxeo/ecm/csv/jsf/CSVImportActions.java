@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -46,8 +47,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
-
-;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -103,8 +102,9 @@ public class CSVImportActions implements Serializable {
         UploadedFile item = event.getUploadedFile();
         // FIXME: check if this needs to be tracked for deletion
         csvFile = Framework.createTempFile("FileManageActionsFile", null);
-        InputStream in = event.getUploadedFile().getInputStream();
-        org.nuxeo.common.utils.FileUtils.copyToFile(in, csvFile);
+        try (InputStream in = event.getUploadedFile().getInputStream()) {
+            FileUtils.copyInputStreamToFile(in, csvFile);
+        }
         csvFileName = FilenameUtils.getName(item.getName());
     }
 
