@@ -18,7 +18,6 @@
  */
 package org.nuxeo.template.odt;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -135,25 +134,21 @@ public class OOoArchiveModifier {
         }
 
         ZipEntry zipEntry = new ZipEntry(entryName);
-        InputStream entryInputStream = new FileInputStream(fileEntry);
-        zipEntry.setMethod(zipMethod);
-        if (zipMethod == ZipEntry.STORED) {
-            byte[] inputBytes = IOUtils.toByteArray(entryInputStream);
-            CRC32 crc = new CRC32();
-            crc.update(inputBytes);
-            zipEntry.setCrc(crc.getValue());
-            zipEntry.setSize(inputBytes.length);
-            zipEntry.setCompressedSize(inputBytes.length);
-            zipOutputStream.putNextEntry(zipEntry);
-            IOUtils.copy(new ByteArrayInputStream(inputBytes), zipOutputStream);
-        } else {
-            zipOutputStream.putNextEntry(zipEntry);
-            IOUtils.copy(entryInputStream, zipOutputStream);
-        }
-        try {
-            entryInputStream.close();
-        } catch (IOException e) {
-            // NOP
+        try (InputStream entryInputStream = new FileInputStream(fileEntry)) {
+            zipEntry.setMethod(zipMethod);
+            if (zipMethod == ZipEntry.STORED) {
+                byte[] inputBytes = IOUtils.toByteArray(entryInputStream);
+                CRC32 crc = new CRC32();
+                crc.update(inputBytes);
+                zipEntry.setCrc(crc.getValue());
+                zipEntry.setSize(inputBytes.length);
+                zipEntry.setCompressedSize(inputBytes.length);
+                zipOutputStream.putNextEntry(zipEntry);
+                IOUtils.write(inputBytes, zipOutputStream);
+            } else {
+                zipOutputStream.putNextEntry(zipEntry);
+                IOUtils.copy(entryInputStream, zipOutputStream);
+            }
         }
         zipOutputStream.closeEntry();
     }

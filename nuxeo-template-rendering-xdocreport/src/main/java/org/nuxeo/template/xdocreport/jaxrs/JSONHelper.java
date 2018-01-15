@@ -36,8 +36,9 @@ public class JSONHelper {
         String prefix = "{ \"resource\" : { \"name\" : \"resources\", \"type\" : \"CATEGORY\", \"children\" : ";
         String suffix = " }}";
         out.write(prefix.getBytes());
-        JsonGenerator gen = JsonHelper.createJsonGenerator(out);
-        gen.writeObject(resource);
+        try (JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
+            jg.writeObject(resource);
+        }
         out.write(suffix.getBytes());
     }
 

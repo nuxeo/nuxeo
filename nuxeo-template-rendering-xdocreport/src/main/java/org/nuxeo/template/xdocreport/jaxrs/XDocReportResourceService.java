@@ -99,10 +99,9 @@ public class XDocReportResourceService extends AbstractResourceService implement
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        JsonGenerator gen = JsonHelper.createJsonGenerator(out);
-        gen.writeObject(names);
-
+        try (JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
+            jg.writeObject(names);
+        }
         return out.toString();
     }
 
