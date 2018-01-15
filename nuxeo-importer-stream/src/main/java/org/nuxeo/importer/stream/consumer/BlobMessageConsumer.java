@@ -64,19 +64,24 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     @Override
     public void accept(BlobMessage message) {
         try {
-            Blob blob;
-            if (message.getPath() != null) {
-                blob = new FileBlob(new File(message.getPath()));
-            } else {
-                // we don't submit filename or encoding this is not saved in the binary store but in the document
-                blob = new StringBlob(message.getContent(), null, null, null);
-            }
+            Blob blob = getBlob(message);
             String digest = blobProvider.writeBlob(blob);
             long length = blob.getLength();
             saveBlobInfo(message, digest, length);
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid blob: " + message, e);
         }
+    }
+
+    protected Blob getBlob(BlobMessage message) {
+        Blob blob;
+        if (message.getPath() != null) {
+            blob = new FileBlob(new File(message.getPath()));
+        } else {
+            // we don't submit filename or encoding this is not saved in the binary store but in the document
+            blob = new StringBlob(message.getContent(), null, null, null);
+        }
+        return blob;
     }
 
     protected void saveBlobInfo(BlobMessage message, String digest, long length) throws IOException {

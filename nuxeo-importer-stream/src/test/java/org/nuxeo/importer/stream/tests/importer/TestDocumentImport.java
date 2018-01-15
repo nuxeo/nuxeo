@@ -176,7 +176,7 @@ public abstract class TestDocumentImport {
             String blobProviderName = "test";
             manager.createIfNotExists("blob-info", 1);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
-            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter);
+            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, true);
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory,
                     ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
@@ -211,13 +211,29 @@ public abstract class TestDocumentImport {
 
         docs = session.query("SELECT * FROM File");
         long nbFiles = docs.totalSize();
-        assertTrue(nbFiles > NB_PRODUCERS);
+        assertFalse(docs.isEmpty());
 
         docs = session.query("SELECT * FROM Document WHERE content/name LIKE '%.txt'");
-        assertEquals(nbFiles, docs.totalSize());
-
-        docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='azertyuiop'");
         assertFalse(docs.isEmpty());
+        long nbText = docs.totalSize();
+
+        docs = session.query("SELECT * FROM Document WHERE content/name LIKE '%.jpg'");
+        assertFalse(docs.isEmpty());
+        long nbPicture = docs.totalSize();
+
+        docs = session.query("SELECT * FROM Document WHERE content/name LIKE '%.mp4'");
+        assertFalse(docs.isEmpty());
+        long nbVideo = docs.totalSize();
+
+        assertEquals(nbFiles, nbPicture + nbText + nbVideo);
+
+        docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='youknowforsearchtag'");
+        assertFalse(docs.isEmpty());
+
+        docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='foobar'");
+        assertEquals(nbText, docs.totalSize());
+
+
     }
 
     @Ignore("Only to work on perf")
