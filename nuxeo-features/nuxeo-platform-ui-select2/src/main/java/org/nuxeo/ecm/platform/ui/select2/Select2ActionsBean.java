@@ -186,10 +186,7 @@ public class Select2ActionsBean implements Serializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
-        JsonGenerator jg;
-        try {
-            jg = JsonHelper.createJsonGenerator(out);
-
+        try (JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
             jg.writeStartObject();
 
             // multiple is not in properties and we must add it because Select2
@@ -681,26 +678,28 @@ public class Select2ActionsBean implements Serializable {
             return "[]";
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedOutputStream out = new BufferedOutputStream(baos);
-        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        jg.writeStartArray();
+        String json;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); //
+                BufferedOutputStream out = new BufferedOutputStream(baos)) {
+            try (JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
+                jg.writeStartArray();
 
-        DocumentModelJsonWriter writer = getDocumentModelWriter(schemaNames);
+                DocumentModelJsonWriter writer = getDocumentModelWriter(schemaNames);
 
-        for (String ref : storedRefs) {
-            DocumentModel doc = resolveReference(repo, ref, operationName, idProperty);
-            if (doc == null) {
-                processDocumentNotFound(ref, jg);
-            } else {
-                writer.write(doc, jg);
-                jg.flush();
+                for (String ref : storedRefs) {
+                    DocumentModel doc = resolveReference(repo, ref, operationName, idProperty);
+                    if (doc == null) {
+                        processDocumentNotFound(ref, jg);
+                    } else {
+                        writer.write(doc, jg);
+                    }
+                }
+
+                jg.writeEndArray();
             }
+            out.flush();
+            json = new String(baos.toByteArray(), "UTF-8");
         }
-
-        jg.writeEndArray();
-        out.flush();
-        String json = new String(baos.toByteArray(), "UTF-8");
 
         if (json.isEmpty()) {
             return "[]";

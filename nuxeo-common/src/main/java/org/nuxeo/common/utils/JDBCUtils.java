@@ -76,7 +76,8 @@ public class JDBCUtils {
                 try {
                     Thread.sleep(1000 * tryNo);
                 } catch (InterruptedException ie) { // deals with interrupt below
-                    throw ExceptionUtils.runtimeException(e);
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(ie);
                 }
             } catch (Exception e) { // deals with interrupt below
                 throw ExceptionUtils.runtimeException(e);

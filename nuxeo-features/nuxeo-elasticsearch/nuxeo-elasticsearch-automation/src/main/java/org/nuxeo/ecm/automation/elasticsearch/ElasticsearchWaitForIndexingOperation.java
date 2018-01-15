@@ -83,7 +83,10 @@ public class ElasticsearchWaitForIndexingOperation {
                 throw new TimeoutException();
             }
             esa.prepareWaitForIndexing().get(computeRemainingTime(start), TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Boolean.FALSE;
+        } catch (TimeoutException | ExecutionException e) {
             if (ExceptionUtils.hasInterruptedCause(e)) {
                 // reset interrupted status
                 Thread.currentThread().interrupt();

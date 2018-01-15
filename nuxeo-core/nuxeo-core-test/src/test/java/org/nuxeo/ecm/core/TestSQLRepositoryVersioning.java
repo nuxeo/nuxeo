@@ -399,8 +399,10 @@ public class TestSQLRepositoryVersioning {
                     // 3. sync
                     barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
                     // 4. wait
-                } catch (InterruptedException | BrokenBarrierException | TimeoutException | RuntimeException
-                        | AssertionError t) {
+                } catch (InterruptedException t) {
+                    Thread.currentThread().interrupt();
+                    throwables[0] = t;
+                } catch (Exception | AssertionError t) {
                     throwables[0] = t;
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
@@ -423,8 +425,10 @@ public class TestSQLRepositoryVersioning {
                     nextTransaction();
                     DocumentModel restored = session.getDocument(docRef);
                     assertEquals("t1", restored.getPropertyValue("dc:title"));
-                } catch (InterruptedException | BrokenBarrierException | TimeoutException | RuntimeException
-                        | AssertionError t) {
+                } catch (InterruptedException t) {
+                    Thread.currentThread().interrupt();
+                    throwables[1] = t;
+                } catch (Exception | AssertionError t) {
                     throwables[1] = t;
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();

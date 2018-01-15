@@ -41,15 +41,15 @@ public class SlowDownloaderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain");
-
-        PrintWriter writer = resp.getWriter();
-
-        for (int i = 1; i < 10; i++) {
-            writer.write("Yoooooo\n");
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // NOP
+        try (PrintWriter writer = resp.getWriter()) {
+            for (int i = 1; i < 10; i++) {
+                writer.write("Yoooooo\n");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

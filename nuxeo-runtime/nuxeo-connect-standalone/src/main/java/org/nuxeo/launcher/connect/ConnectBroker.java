@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -382,30 +381,19 @@ public class ConnectBroker {
                 // distribution file has been deleted
                 continue;
             }
-            ZipFile zipFile;
-            try {
-                zipFile = new ZipFile(md5File);
-            } catch (ZipException e) {
-                log.warn("Unzip error reading file " + md5File, e);
-                continue;
+            try (ZipFile zipFile = new ZipFile(md5File)) {
+                ZipEntry zipEntry = zipFile.getEntry("package.xml");
+                PackageDefinition pd;
+                try (InputStream in = zipFile.getInputStream(zipEntry)) {
+                    pd = NuxeoConnectClient.getPackageUpdateService().loadPackage(in);
+                }
+                allDefinitions.put(md5Filename, pd);
             } catch (IOException e) {
                 log.warn("Could not read file " + md5File, e);
                 continue;
-            }
-            try {
-                ZipEntry zipEntry = zipFile.getEntry("package.xml");
-                InputStream in = zipFile.getInputStream(zipEntry);
-                PackageDefinition pd = NuxeoConnectClient.getPackageUpdateService().loadPackage(in);
-                allDefinitions.put(md5Filename, pd);
-            } catch (Exception e) {
+            } catch (PackageException e) {
                 log.error("Could not read package description", e);
                 continue;
-            } finally {
-                try {
-                    zipFile.close();
-                } catch (IOException e) {
-                    log.warn("Unexpected error closing file " + md5File, e);
-                }
             }
         }
         return allDefinitions;
@@ -1153,7 +1141,8 @@ public class ConnectBroker {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                stopDownload = true;
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
             List<DownloadingPackage> pkgsCompleted = new ArrayList<>();
             for (DownloadingPackage pkg : pkgs) {

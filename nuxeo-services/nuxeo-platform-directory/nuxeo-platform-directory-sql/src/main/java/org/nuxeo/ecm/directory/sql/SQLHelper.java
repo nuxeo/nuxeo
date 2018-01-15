@@ -95,8 +95,7 @@ public class SQLHelper {
     }
 
     private void addMissingColumns() throws DirectoryException {
-        try {
-            Statement stmt = connection.createStatement();
+        try (Statement stmt = connection.createStatement()) {
 
             for (Column column : getMissingColumns(false)) {
                 String alter = table.getAddColumnSql(column);
@@ -209,21 +208,21 @@ public class SQLHelper {
             String schemaName = null;
             String productName = metaData.getDatabaseProductName();
             if ("Oracle".equals(productName)) {
-                Statement st = connection.createStatement();
-                String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
-                log.trace("SQL: " + sql);
-                ResultSet rs = st.executeQuery(sql);
-                rs.next();
-                schemaName = rs.getString(1);
-                log.trace("checking existing tables for oracle database, schema: " + schemaName);
-                rs.close();
-                st.close();
+                try (Statement st = connection.createStatement()) {
+                    String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
+                    log.trace("SQL: " + sql);
+                    try (ResultSet rs = st.executeQuery(sql)) {
+                        rs.next();
+                        schemaName = rs.getString(1);
+                        log.trace("checking existing tables for oracle database, schema: " + schemaName);
+                    }
+                }
             }
-            ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(), new String[] { "TABLE" });
-            boolean exists = rs.next();
-            rs.close();
-            log.debug(String.format("checking if table %s exists: %s", table.getPhysicalName(), Boolean.valueOf(exists)));
-            return exists;
+            try (ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(), new String[] { "TABLE" })) {
+                boolean exists = rs.next();
+                log.debug(String.format("checking if table %s exists: %s", table.getPhysicalName(), Boolean.valueOf(exists)));
+                return exists;
+            }
         } catch (SQLException e) {
             throw new DirectoryException(e);
         }

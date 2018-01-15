@@ -106,8 +106,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
         String[] mimetype = {};
         File tempFile = null;
 
-        try {
-            ZipFile zip = new ZipFile(file);
+        try (ZipFile zip = new ZipFile(file)) {
             ZipEntry entry = zip.getEntry("mimetype");
 
             if (entry != null) {

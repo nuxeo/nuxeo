@@ -42,7 +42,7 @@ public final class JsonHelper {
      * @throws IOException
      */
     public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory, OutputStream out) throws IOException {
-        return jsonFactory.createJsonGenerator(out, JsonEncoding.UTF8);
+        return jsonFactory.createGenerator(out, JsonEncoding.UTF8);
     }
 
     /**

@@ -59,6 +59,18 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
         @XNode("@granted")
         public boolean granted = false;
 
+
+        @Override
+        public ACLDescriptor clone() {
+            ACLDescriptor clone;
+            try {
+                clone = (ACLDescriptor) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError(e);
+            }
+            // basic fields are already copied by super.clone()
+            return clone;
+        }
     }
 
     @XNode("docType")

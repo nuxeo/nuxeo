@@ -110,8 +110,8 @@ public class ThreadedStreamGobbler extends Thread {
                         outputStream.write(line.getBytes());
                         outputStream.write(newLine);
                     }
-                default:
                     break;
+                default:
                 }
             }
         } catch (IOException e) {

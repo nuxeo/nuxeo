@@ -97,9 +97,8 @@ public class XlsMimetypeSniffer implements MagicDetector {
 
         String[] mimetypes = {};
 
-        try {
-            FileInputStream stream = new FileInputStream(file);
-            HSSFWorkbook workbook = new HSSFWorkbook(stream);
+        try (FileInputStream stream = new FileInputStream(file); //
+                HSSFWorkbook workbook = new HSSFWorkbook(stream)) {
             if (workbook.getNumberOfSheets() != 0) {
                 mimetypes = getHandledTypes();
             }

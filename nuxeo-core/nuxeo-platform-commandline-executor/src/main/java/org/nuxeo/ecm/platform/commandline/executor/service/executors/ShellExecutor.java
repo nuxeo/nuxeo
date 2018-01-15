@@ -45,7 +45,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.ParameterValue;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -165,7 +164,8 @@ public class ShellExecutor implements Executor {
                     returnCode = exitCode;
                 }
             } catch (InterruptedException e) {
-                ExceptionUtils.checkInterrupt(e);
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
 
@@ -174,7 +174,8 @@ public class ShellExecutor implements Executor {
             try {
                 t.join();
             } catch (InterruptedException e) {
-                ExceptionUtils.checkInterrupt(e);
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
 

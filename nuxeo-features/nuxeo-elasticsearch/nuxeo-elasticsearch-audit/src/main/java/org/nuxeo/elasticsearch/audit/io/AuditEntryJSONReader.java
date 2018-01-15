@@ -64,60 +64,61 @@ public class AuditEntryJSONReader {
         module.addSerializer(AbstractBlob.class, new BinaryBlobEntrySerializer());
         objectMapper.registerModule(module);
 
-        JsonFactory factory = new JsonFactory();
-        factory.setCodec(objectMapper);
-        JsonParser jp = factory.createJsonParser(content);
-
-        JsonToken tok = jp.nextToken();
-
-        // skip {
-        if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-            tok = jp.nextToken();
-        }
-
         LogEntryImpl entry = new LogEntryImpl();
 
-        while (tok != null && tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            JsonToken token = jp.nextToken();
-            if (token != JsonToken.VALUE_NULL) {
-                if (LOG_CATEGORY.equals(key)) {
-                    entry.setCategory(token == JsonToken.VALUE_NULL ? null : jp.getText());
-                } else if (LOG_PRINCIPAL_NAME.equals(key)) {
-                    entry.setPrincipalName(jp.getText());
-                } else if (LOG_COMMENT.equals(key)) {
-                    entry.setComment(jp.getText());
-                } else if (LOG_DOC_LIFE_CYCLE.equals(key)) {
-                    entry.setDocLifeCycle(jp.getText());
-                } else if (LOG_DOC_PATH.equals(key)) {
-                    entry.setDocPath(jp.getText());
-                } else if (LOG_DOC_TYPE.equals(key)) {
-                    entry.setDocType(jp.getText());
-                } else if (LOG_DOC_UUID.equals(key)) {
-                    entry.setDocUUID(jp.getText());
-                } else if (LOG_EVENT_ID.equals(key)) {
-                    entry.setEventId(jp.getText());
-                } else if (LOG_REPOSITORY_ID.equals(key)) {
-                    entry.setRepositoryId(jp.getText());
-                } else if (LOG_ID.equals(key)) {
-                    entry.setId(jp.getLongValue());
-                } else if (LOG_EVENT_DATE.equals(key)) {
-                    entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-                } else if (LOG_LOG_DATE.equals(key)) {
-                    entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-                } else if (LOG_EXTENDED.equals(key)) {
-                    entry.setExtendedInfos(readExtendedInfo(entry, jp, objectMapper));
-                }
+        JsonFactory factory = new JsonFactory();
+        factory.setCodec(objectMapper);
+        try (JsonParser jp = factory.createParser(content)) {
+
+            JsonToken tok = jp.nextToken();
+
+            // skip {
+            if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
+                tok = jp.nextToken();
             }
-            tok = jp.nextToken();
+
+            while (tok != null && tok != JsonToken.END_OBJECT) {
+                String key = jp.getCurrentName();
+                JsonToken token = jp.nextToken();
+                if (token != JsonToken.VALUE_NULL) {
+                    if (LOG_CATEGORY.equals(key)) {
+                        entry.setCategory(token == JsonToken.VALUE_NULL ? null : jp.getText());
+                    } else if (LOG_PRINCIPAL_NAME.equals(key)) {
+                        entry.setPrincipalName(jp.getText());
+                    } else if (LOG_COMMENT.equals(key)) {
+                        entry.setComment(jp.getText());
+                    } else if (LOG_DOC_LIFE_CYCLE.equals(key)) {
+                        entry.setDocLifeCycle(jp.getText());
+                    } else if (LOG_DOC_PATH.equals(key)) {
+                        entry.setDocPath(jp.getText());
+                    } else if (LOG_DOC_TYPE.equals(key)) {
+                        entry.setDocType(jp.getText());
+                    } else if (LOG_DOC_UUID.equals(key)) {
+                        entry.setDocUUID(jp.getText());
+                    } else if (LOG_EVENT_ID.equals(key)) {
+                        entry.setEventId(jp.getText());
+                    } else if (LOG_REPOSITORY_ID.equals(key)) {
+                        entry.setRepositoryId(jp.getText());
+                    } else if (LOG_ID.equals(key)) {
+                        entry.setId(jp.getLongValue());
+                    } else if (LOG_EVENT_DATE.equals(key)) {
+                        entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                    } else if (LOG_LOG_DATE.equals(key)) {
+                        entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                    } else if (LOG_EXTENDED.equals(key)) {
+                        entry.setExtendedInfos(readExtendedInfo(jp, objectMapper));
+                    }
+                }
+                tok = jp.nextToken();
+            }
         }
         return entry;
     }
 
-    public static Map<String, ExtendedInfo> readExtendedInfo(LogEntryImpl entry, JsonParser jp,
-            ObjectMapper objectMapper) throws IOException {
+    public static Map<String, ExtendedInfo> readExtendedInfo(JsonParser jp, ObjectMapper objectMapper)
+            throws IOException {
 
-        Map<String, ExtendedInfo> info = new HashMap<String, ExtendedInfo>();
+        Map<String, ExtendedInfo> info = new HashMap<>();
 
         JsonNode node = jp.readValueAsTree();
 

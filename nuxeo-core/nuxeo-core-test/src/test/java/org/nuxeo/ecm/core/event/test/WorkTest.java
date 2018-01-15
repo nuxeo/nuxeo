@@ -130,7 +130,6 @@ public class WorkTest {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }

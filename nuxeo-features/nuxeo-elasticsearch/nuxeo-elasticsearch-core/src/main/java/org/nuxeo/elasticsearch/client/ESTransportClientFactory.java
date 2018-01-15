@@ -63,10 +63,11 @@ public class ESTransportClientFactory implements ESClientFactory {
         return createLocalClient(node);
     }
 
+    @SuppressWarnings("resource")
     protected ESClient createRemoteClient(ElasticSearchClientConfig config) {
         Settings settings = getSetting(config).build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
-        TransportClient client = new PreBuiltTransportClient(settings);
+        TransportClient client = new PreBuiltTransportClient(settings); // not closed here
         String[] addresses = config.getOption("addressList", "").split(",");
         if (addresses.length == 0) {
             throw new IllegalArgumentException("No addressList option provided cannot connect TransportClient");

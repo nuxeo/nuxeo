@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
@@ -248,8 +249,8 @@ public class NuxeoRequestControllerFilter implements Filter {
         try {
             locked = lock.tryLock(LOCK_TIMEOUT_S, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            log.error(doFormatLogMessage(request, "Unable to acquire lock for Session sync"), e);
-            return false;
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
 
         if (locked) {

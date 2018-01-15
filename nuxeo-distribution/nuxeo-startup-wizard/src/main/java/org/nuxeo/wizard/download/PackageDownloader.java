@@ -529,12 +529,12 @@ public class PackageDownloader {
         try {
             MessageDigest md = MessageDigest.getInstance(DIGEST);
             byte[] buffer = new byte[DIGEST_CHUNK];
-            InputStream stream = new FileInputStream(file);
-            int bytesRead;
-            while ((bytesRead = stream.read(buffer)) >= 0) {
-                md.update(buffer, 0, bytesRead);
+            try (InputStream stream = new FileInputStream(file)) {
+                int bytesRead;
+                while ((bytesRead = stream.read(buffer)) >= 0) {
+                    md.update(buffer, 0, bytesRead);
+                }
             }
-            stream.close();
             byte[] b = md.digest();
             return md5ToHex(b);
         } catch (Exception e) {

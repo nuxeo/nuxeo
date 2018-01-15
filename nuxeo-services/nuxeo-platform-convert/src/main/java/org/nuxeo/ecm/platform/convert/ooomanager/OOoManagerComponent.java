@@ -271,8 +271,8 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
         try {
             return state.isAlive();
         } catch (InterruptedException e) {
-            log.warn("Thread interrupted while checkin OOo manager state");
-            return false;
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 

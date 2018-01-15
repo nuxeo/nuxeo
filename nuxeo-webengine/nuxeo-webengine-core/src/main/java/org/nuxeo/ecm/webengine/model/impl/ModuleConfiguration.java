@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("module")
-public class ModuleConfiguration implements Cloneable {
+public class ModuleConfiguration {
 
     /**
      * A web module may have multiple roots

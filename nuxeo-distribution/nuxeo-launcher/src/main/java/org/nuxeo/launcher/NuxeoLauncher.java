@@ -1846,7 +1846,10 @@ public abstract class NuxeoLauncher {
             Thread.sleep(100);
             process.waitFor();
             waitForProcessStreams(sgArray);
-        } catch (IOException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             errorValue = EXIT_CODE_ERROR;
             log.error("Could not start process", e);
         } catch (ConfigurationException e) {
@@ -1926,7 +1929,8 @@ public abstract class NuxeoLauncher {
                 }
                 removeShutdownHook();
             } catch (InterruptedException e) {
-                // do nothing
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
         return commandSucceeded;
@@ -2102,9 +2106,8 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process: " + e.getMessage());
             log.debug(e, e);
         } catch (InterruptedException e) {
-            errorValue = EXIT_CODE_ERROR;
-            log.error("Could not start process: " + e.getMessage());
-            log.debug(e, e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         } catch (IllegalStateException e) {
             if (strict) {
                 // assume program is not configured because of http port binding
@@ -2174,7 +2177,9 @@ public abstract class NuxeoLauncher {
             try {
                 streamGobbler.join(STREAM_MAX_WAIT);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 streamGobbler.interrupt();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -2308,7 +2313,8 @@ public abstract class NuxeoLauncher {
                         deltaTime = (new Date().getTime() - startTime) / 1000;
                     } while (!retry && getPid() != null && deltaTime < stopMaxWait);
                 } catch (InterruptedException e) {
-                    log.error(e);
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
                 }
             } while (retry);
             if (getPid() == null) {
@@ -2967,7 +2973,10 @@ public abstract class NuxeoLauncher {
             generator.writeStartObject();
             ReportConnector.of().feed(generator);
             generator.writeEnd();
-        } catch (IOException | InterruptedException | ExecutionException cause) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (IOException | ExecutionException cause) {
             log.error("Cannot dump connect report", cause);
             errorValue = EXIT_CODE_ERROR;
             return false;

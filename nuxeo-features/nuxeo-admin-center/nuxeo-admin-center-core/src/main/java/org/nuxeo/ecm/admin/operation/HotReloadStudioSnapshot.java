@@ -211,8 +211,8 @@ public class HotReloadStudioSnapshot {
                 throw e;
             }
         } catch (InterruptedException e) {
-            ExceptionUtils.checkInterrupt(e);
-            throw new NuxeoException("Error while downloading studio snapshot", e);
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         } catch (PackageException | ConnectServerError e) {
             throw new NuxeoException("Error while installing studio snapshot", e);
         }

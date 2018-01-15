@@ -116,7 +116,6 @@ public class TestSQLBinariesIndexing {
             try {
                 startLatch.await(1, TimeUnit.MINUTES);
             } catch (InterruptedException e) {
-                // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             } finally {

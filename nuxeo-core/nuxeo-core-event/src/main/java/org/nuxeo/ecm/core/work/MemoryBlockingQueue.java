@@ -102,9 +102,8 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
                 }
                 return true;
             } catch (InterruptedException ie) {
-                Thread.currentThread()
-                        .interrupt();
-                throw new RuntimeException("interrupted", ie);
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(ie);
             }
         }
     }

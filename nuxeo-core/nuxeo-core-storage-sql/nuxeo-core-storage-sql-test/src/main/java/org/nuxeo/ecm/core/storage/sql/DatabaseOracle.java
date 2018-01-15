@@ -76,22 +76,22 @@ public class DatabaseOracle extends DatabaseHelper {
 
     public void dropSequences(Connection connection) throws SQLException {
         List<String> sequenceNames = new ArrayList<String>();
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES");
-        while (rs.next()) {
-            String sequenceName = rs.getString(1);
-            if (sequenceName.indexOf('$') != -1) {
-                continue;
+        try (Statement st = connection.createStatement()) {
+            try (ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES")) {
+                while (rs.next()) {
+                    String sequenceName = rs.getString(1);
+                    if (sequenceName.indexOf('$') != -1) {
+                        continue;
+                    }
+                    sequenceNames.add(sequenceName);
+                }
             }
-            sequenceNames.add(sequenceName);
+            for (String sequenceName : sequenceNames) {
+                String sql = String.format("DROP SEQUENCE \"%s\"", sequenceName);
+                log.trace("SQL: " + sql);
+                st.execute(sql);
+            }
         }
-        rs.close();
-        for (String sequenceName : sequenceNames) {
-            String sql = String.format("DROP SEQUENCE \"%s\"", sequenceName);
-            log.trace("SQL: " + sql);
-            st.execute(sql);
-        }
-        st.close();
     }
 
     @Override

@@ -45,9 +45,10 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
     }
 
     public static RemoteException readException(String content) throws IOException {
-        JsonParser jp = JsonMarshalling.getFactory().createJsonParser(content);
-        jp.nextToken(); // skip {
-        return _read(jp);
+        try (JsonParser jp = JsonMarshalling.getFactory().createParser(content)) {
+            jp.nextToken(); // skip {
+            return _read(jp);
+        }
     }
 
     @Override

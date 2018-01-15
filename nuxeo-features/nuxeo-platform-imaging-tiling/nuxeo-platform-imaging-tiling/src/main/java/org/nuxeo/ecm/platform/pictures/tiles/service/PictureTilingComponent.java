@@ -187,7 +187,8 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                     log.debug("Waiting for tiler sync");
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    ExceptionUtils.checkInterrupt(e);
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
                 }
             }
         }
@@ -254,7 +255,8 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                         log.debug("Waiting concurrent convert / dump");
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
-                        ExceptionUtils.checkInterrupt(e);
+                        Thread.currentThread().interrupt();
+                        throw new NuxeoException(e);
                     }
                 }
 

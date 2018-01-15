@@ -103,8 +103,9 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
                 MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(in, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
                 InputStream pin = part.getInputStream();
-                JsonParser jp = factory.createJsonParser(pin);
-                req = JsonRequestReader.readRequest(jp, headers, getCoreSession());
+                try (JsonParser jp = factory.createParser(pin)) {
+                    req = JsonRequestReader.readRequest(jp, headers, getCoreSession());
+                }
                 int cnt = mp.getCount();
                 if (cnt == 2) { // a blob
                     req.setInput(readBlob(request, mp.getBodyPart(1)));

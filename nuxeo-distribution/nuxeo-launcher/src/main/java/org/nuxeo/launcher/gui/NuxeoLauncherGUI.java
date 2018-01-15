@@ -179,7 +179,8 @@ public class NuxeoLauncherGUI {
                         try {
                             Thread.sleep(UPDATE_FREQUENCY);
                         } catch (InterruptedException e) {
-                            break;
+                            Thread.currentThread().interrupt();
+                            return;
                         }
                     }
                 }
@@ -250,7 +251,8 @@ public class NuxeoLauncherGUI {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                log.error(e);
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
     }

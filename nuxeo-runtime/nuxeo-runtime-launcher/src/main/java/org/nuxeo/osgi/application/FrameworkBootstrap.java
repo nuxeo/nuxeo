@@ -161,8 +161,7 @@ public class FrameworkBootstrap implements LoaderConstants {
             return;
         }
         Properties p = new Properties();
-        FileInputStream in = new FileInputStream(file);
-        try {
+        try (FileInputStream in = new FileInputStream(file)) {
             p.load(in);
             env.putAll((Map) p);
             String v = (String) env.get(SCAN_FOR_NESTED_JARS);
@@ -173,8 +172,6 @@ public class FrameworkBootstrap implements LoaderConstants {
             if (v != null) {
                 flushCache = Boolean.parseBoolean(v);
             }
-        } finally {
-            in.close();
         }
     }
 
@@ -279,30 +276,25 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     protected void extractNestedJars(File file, File tmpDir) throws IOException {
-        JarFile jarFile = new JarFile(file);
-        String fileName = file.getName();
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            String path = entry.getName();
-            if (entry.getName().endsWith(".jar")) {
-                String name = path.replace('/', '_');
-                File dest = new File(tmpDir, fileName + '-' + name);
-                extractNestedJar(jarFile, entry, dest);
-                loader.addURL(dest.toURI().toURL());
+        try (JarFile jarFile = new JarFile(file)) {
+            String fileName = file.getName();
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String path = entry.getName();
+                if (entry.getName().endsWith(".jar")) {
+                    String name = path.replace('/', '_');
+                    File dest = new File(tmpDir, fileName + '-' + name);
+                    extractNestedJar(jarFile, entry, dest);
+                    loader.addURL(dest.toURI().toURL());
+                }
             }
         }
     }
 
     protected void extractNestedJar(JarFile file, ZipEntry entry, File dest) throws IOException {
-        InputStream in = null;
-        try {
-            in = file.getInputStream(entry);
+        try (InputStream in = file.getInputStream(entry)) {
             copyToFile(in, dest);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -319,26 +311,17 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     public static void copyFile(File src, File file) throws IOException {
-        FileInputStream in = new FileInputStream(src);
-        try {
+        try (FileInputStream in = new FileInputStream(src)) {
             copyToFile(in, file);
-        } finally {
-            in.close();
         }
     }
 
     public static void copyToFile(InputStream in, File file) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
+        try (OutputStream out = new FileOutputStream(file)) {
             byte[] buffer = createBuffer(in.available());
             int read;
             while ((read = in.read(buffer)) != -1) {
                 out.write(buffer, 0, read);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
             }
         }
     }

@@ -92,7 +92,8 @@ public class LogsSource extends Observable implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            log.debug(e);
+            Thread.currentThread().interrupt();
+            return;
         } catch (IOException e) {
             log.error(e);
         } finally {
@@ -113,7 +114,7 @@ public class LogsSource extends Observable implements Runnable {
     public void resume() {
         pause = false;
         synchronized (this) {
-            notify();
+            notifyAll();
         }
     }
 

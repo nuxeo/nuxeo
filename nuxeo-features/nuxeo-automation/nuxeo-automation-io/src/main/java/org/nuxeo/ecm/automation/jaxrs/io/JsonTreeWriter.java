@@ -60,9 +60,9 @@ public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
     public void writeTo(JsonNode t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
-        JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
-        jg.writeTree(t);
-        jg.flush();
+        try (JsonGenerator jg = factory.createGenerator(entityStream, JsonEncoding.UTF8)) {
+            jg.writeTree(t);
+        }
     }
 
 }

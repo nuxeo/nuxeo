@@ -64,7 +64,6 @@ public class EventServiceComponent extends DefaultComponent {
             try {
                 service.shutdown(timeout);
             } catch (InterruptedException e) {
-                // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }

@@ -45,7 +45,8 @@ public class LazyRenditionWorkSample extends AbstractRenditionBuilderWork {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
         List<Blob> blobs = new ArrayList<Blob>();
         StringBlob blob = new StringBlob("I am really lazy");

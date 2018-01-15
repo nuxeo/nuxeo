@@ -347,14 +347,15 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         try {
             CoreSession session = ctx.getCoreSession();
-            OperationContext ctx = xreq.createContext(request, response, session);
-            Map<String, Object> params = xreq.getParams();
-            BatchManager bm = Framework.getService(BatchManager.class);
             Object result;
-            if (StringUtils.isBlank(fileIdx)) {
-                result = bm.execute(batchId, operationId, session, ctx, params);
-            } else {
-                result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
+            try (OperationContext ctx = xreq.createContext(request, response, session)) {
+                Map<String, Object> params = xreq.getParams();
+                BatchManager bm = Framework.getService(BatchManager.class);
+                if (StringUtils.isBlank(fileIdx)) {
+                    result = bm.execute(batchId, operationId, session, ctx, params);
+                } else {
+                    result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
+                }
             }
             return ResponseHelper.getResponse(result, request);
         } catch (MessagingException | IOException e) {

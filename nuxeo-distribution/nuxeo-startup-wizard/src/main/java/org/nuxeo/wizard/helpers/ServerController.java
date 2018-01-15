@@ -119,7 +119,8 @@ public class ServerController {
                     Thread.sleep(3000);
                     doExec(binPath, logDir);
                 } catch (InterruptedException e) {
-                    log.error("Restart failed", e);
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
                 }
             }
         }.start();

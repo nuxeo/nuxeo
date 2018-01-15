@@ -57,9 +57,9 @@ public class ConnectRegistrationHelper {
         String regFileContent = CLID1 + "\n" + CLID2 + "\nnew instance";
 
         File regFile = new File(connectRegistrationFilePath);
-        FileWriter writer = new FileWriter(regFile);
-        writer.write(regFileContent);
-        writer.close();
+        try (FileWriter writer = new FileWriter(regFile)) {
+            writer.write(regFileContent);
+        }
     }
 
 }

@@ -58,7 +58,8 @@ public class DefaultCommandTester implements CommandTester {
             // wait for process termination
             process.waitFor();
         } catch (InterruptedException e) {
-            ExceptionUtils.checkInterrupt(e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         } catch (IOException e) {
             return new CommandTestResult(
                     "command " + cmd + " not found in system path (descriptor " + cmdDescriptor + ")");

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
@@ -42,20 +42,6 @@ public class TestZipUtils {
         assertEquals("Number of elements", 9, contentNames.size());
 
         assertTrue("Contains mimetype file", ZipUtils.hasEntry(sourceFile, "mimetype"));
-
-        InputStream entryContent = ZipUtils.getEntryContentAsStream(sourceFile, "mimetype");
-        assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text",
-                IOUtils.toString(entryContent, Charsets.UTF_8));
-        // need to close returned InputStream
-        entryContent.close();
-
-        // direct access to content - No need to close returned InputStream
-
-        String directString = ZipUtils.getEntryContentAsString(sourceFile, "mimetype");
-        assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", directString);
-
-        byte[] bytes = ZipUtils.getEntryContentAsBytes(sourceFile, "mimetype");
-        assertEquals("Mimetype file length", 39, bytes.length);
     }
 
     @Test

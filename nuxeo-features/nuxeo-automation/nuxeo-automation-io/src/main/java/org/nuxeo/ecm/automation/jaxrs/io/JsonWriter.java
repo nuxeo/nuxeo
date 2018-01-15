@@ -61,7 +61,7 @@ public class JsonWriter {
     }
 
     private static JsonGenerator createGenerator(OutputStream out) throws IOException {
-        return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
+        return getFactory().createGenerator(out, JsonEncoding.UTF8);
     }
 
     public static void writeAutomationInfo(OutputStream out, AutomationInfo info, boolean prettyPrint)
@@ -116,22 +116,22 @@ public class JsonWriter {
     public static String exportOperations(boolean filterNotInStudio) throws IOException, OperationException {
         List<OperationDocumentation> ops = Framework.getService(AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getFactory().createJsonGenerator(out);
-        jg.useDefaultPrettyPrinter();
-        jg.writeStartObject();
-        jg.writeArrayFieldStart("operations");
-        for (OperationDocumentation op : ops) {
-            if (filterNotInStudio) {
-                if (op.addToStudio && !Constants.CAT_CHAIN.equals(op.category)) {
+        try (JsonGenerator jg = getFactory().createGenerator(out)) {
+            jg.useDefaultPrettyPrinter();
+            jg.writeStartObject();
+            jg.writeArrayFieldStart("operations");
+            for (OperationDocumentation op : ops) {
+                if (filterNotInStudio) {
+                    if (op.addToStudio && !Constants.CAT_CHAIN.equals(op.category)) {
+                        writeOperation(jg, op);
+                    }
+                } else {
                     writeOperation(jg, op);
                 }
-            } else {
-                writeOperation(jg, op);
             }
+            jg.writeEndArray();
+            jg.writeEndObject();
         }
-        jg.writeEndArray();
-        jg.writeEndObject();
-        jg.flush();
         return out.toString("UTF-8");
     }
 

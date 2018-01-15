@@ -38,10 +38,10 @@ import org.apache.http.util.EntityUtils;
  * @since 7.3
  */
 public class HttpClient {
-    private final static String UTF8_CHARSET = "UTF-8";
+    private static final String UTF8_CHARSET = "UTF-8";
 
     private static class HttpGetWithEntity extends HttpPost {
-        public final static String METHOD_NAME = "GET";
+        public static final String METHOD_NAME = "GET";
 
         public HttpGetWithEntity(String url) {
             super(url);
@@ -54,11 +54,12 @@ public class HttpClient {
     }
 
     public static String get(String url) throws IOException {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet(url);
-        try (CloseableHttpResponse response = client.execute(httpget)) {
-            HttpEntity entity = response.getEntity();
-            return entity != null ? EntityUtils.toString(entity) : null;
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(url);
+            try (CloseableHttpResponse response = client.execute(request)) {
+                HttpEntity entity = response.getEntity();
+                return entity != null ? EntityUtils.toString(entity) : null;
+            }
         }
     }
 
@@ -66,14 +67,14 @@ public class HttpClient {
         if (payload == null) {
             return get(url);
         }
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpGetWithEntity e = new HttpGetWithEntity(url);
-        StringEntity myEntity = new StringEntity(payload, ContentType.create(MediaType.APPLICATION_FORM_URLENCODED,
-                UTF8_CHARSET));
-        e.setEntity(myEntity);
-        try (CloseableHttpResponse response = client.execute(e)) {
-            HttpEntity entity = response.getEntity();
-            return entity != null ? EntityUtils.toString(entity) : null;
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGetWithEntity request = new HttpGetWithEntity(url);
+            request.setEntity(
+                    new StringEntity(payload, ContentType.create(MediaType.APPLICATION_FORM_URLENCODED, UTF8_CHARSET)));
+            try (CloseableHttpResponse response = client.execute(request)) {
+                HttpEntity entity = response.getEntity();
+                return entity != null ? EntityUtils.toString(entity) : null;
+            }
         }
     }
 }

@@ -59,13 +59,14 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
     public static final String UICOMMENTS_PROPERTY = "generateUIComments";
 
+    @Override
     public String toString() {
         buildAuditQuery(true);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("\nquery : " + auditQuery);
         sb.append("\nparams : ");
-        List<String> pNames = new ArrayList<String>(auditQueryParams.keySet());
+        List<String> pNames = new ArrayList<>(auditQueryParams.keySet());
         Collections.sort(pNames);
         for (String name : pNames) {
             sb.append("\n ");
@@ -98,7 +99,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     }
 
     protected String getSortPart() {
-        StringBuffer sort = new StringBuffer();
+        StringBuilder sort = new StringBuilder();
         if (getSortInfos() != null && getSortInfos().size() > 0) {
             sort.append(" ORDER BY ");
         }
@@ -176,7 +177,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
             String baseQuery = def.getPattern();
 
-            Map<String, Object> qParams = new HashMap<String, Object>();
+            Map<String, Object> qParams = new HashMap<>();
             for (int i = 0; i < params.length; i++) {
                 baseQuery = baseQuery.replaceFirst("\\?", ":param" + i);
                 qParams.put("param" + i, convertParam(params[i]));
@@ -196,10 +197,10 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
             // manage fixed part
             String fixedPart = getFixedPart();
-            Map<String, Object> qParams = new HashMap<String, Object>();
+            Map<String, Object> qParams = new HashMap<>();
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
-                while (fixedPart.indexOf("?") > 0) {
+                while (fixedPart.indexOf('?') >= 0) {
                     fixedPart = fixedPart.replaceFirst("\\?", ":param" + idxParam);
                     qParams.put("param" + idxParam, convertParam(params[idxParam]));
                     idxParam++;
@@ -318,6 +319,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         }
     }
 
+    @Override
     public void refresh() {
         setCurrentPageOffset(0);
         super.refresh();
@@ -326,7 +328,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     @SuppressWarnings("unchecked")
     @Override
     public long getResultsCount() {
-        if (resultsCount == AbstractPageProvider.UNKNOWN_SIZE) {
+        if (resultsCount == PageProvider.UNKNOWN_SIZE) {
             buildAuditQuery(false);
             AuditReader reader = Framework.getService(AuditReader.class);
             List<Long> res = (List<Long>) reader.nativeQuery("select count(log.id) " + auditQuery, auditQueryParams, 1,

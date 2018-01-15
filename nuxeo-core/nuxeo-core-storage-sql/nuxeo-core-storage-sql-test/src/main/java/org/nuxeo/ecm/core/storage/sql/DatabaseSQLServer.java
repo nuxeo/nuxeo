@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -125,13 +126,15 @@ public class DatabaseSQLServer extends DatabaseHelper {
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
     }
 
     protected void checkSupports(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        try {
-            ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100),SERVERPROPERTY('ProductVersion')), CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
+        try (Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(
+                        "SELECT CONVERT(NVARCHAR(100),SERVERPROPERTY('ProductVersion')), CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))")) {
             rs.next();
             String productVersion = rs.getString(1);
             /** 9 = SQL Server 2005, 10 = SQL Server 2008, 11 = SQL Server 2012 / Azure */
@@ -141,8 +144,6 @@ public class DatabaseSQLServer extends DatabaseHelper {
             boolean azure = engineEdition == 5;
             supportsXA = !azure;
             supportsSequences = majorVersion >= 11 && !azure;
-        } finally {
-            st.close();
         }
     }
 

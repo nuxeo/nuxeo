@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -133,12 +134,13 @@ public class ElasticSearchEmbeddedNode implements Closeable {
     }
 
     protected void deleteLuceneFileLock(String root) throws IOException {
-        List<Path> locks = Files.walk(Paths.get(root))
-                                .filter(f -> f.getFileName().toString().equals("node.lock"))
-                                .collect(Collectors.toList());
-        if (!locks.isEmpty()) {
-            locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
-            locks.forEach(f -> f.toFile().delete());
+        try (Stream<Path> files = Files.walk(Paths.get(root))) {
+            List<Path> locks = files.filter(f -> f.getFileName().toString().equals("node.lock"))
+                                    .collect(Collectors.toList());
+            if (!locks.isEmpty()) {
+                locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
+                locks.forEach(f -> f.toFile().delete());
+            }
         }
     }
 

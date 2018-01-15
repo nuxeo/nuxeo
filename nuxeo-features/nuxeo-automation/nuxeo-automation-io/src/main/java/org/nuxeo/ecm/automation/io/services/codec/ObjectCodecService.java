@@ -215,8 +215,9 @@ public class ObjectCodecService {
     }
 
     public Object read(InputStream in, ClassLoader cl, CoreSession session) throws IOException, ClassNotFoundException {
-        JsonParser jp = jsonFactory.createJsonParser(in);
-        return read(jp, cl, session);
+        try (JsonParser jp = jsonFactory.createParser(in)) {
+            return read(jp, cl, session);
+        }
     }
 
     public Object read(JsonParser jp, ClassLoader cl, CoreSession session) throws IOException, ClassNotFoundException {
@@ -270,25 +271,27 @@ public class ObjectCodecService {
             String type = entityTypeNode.textValue();
             ObjectCodec<?> codec = codecsByName.get(type);
             // handle structured entity with an explicit type declaration
-            JsonParser jp = jsonFactory.createJsonParser(node.toString());
             if (valueNode == null) {
-                if (codec == null) {
-                    return readGenericObject(jp, type, cl);
-                } else {
-                    return codec.read(jp, session);
+                try (JsonParser jp = jsonFactory.createParser(node.toString())) {
+                    if (codec == null) {
+                        return readGenericObject(jp, type, cl);
+                    } else {
+                        return codec.read(jp, session);
+                    }
                 }
             }
-            JsonParser valueParser = valueNode.traverse();
-            if (valueParser.getCodec() == null) {
-                valueParser.setCodec(new ObjectMapper());
-            }
-            if (valueParser.getCurrentToken() == null) {
-                valueParser.nextToken();
-            }
-            if (codec == null) {
-                return readGenericObject(valueParser, type, cl);
-            } else {
-                return codec.read(valueParser, session);
+            try (JsonParser valueParser = valueNode.traverse()) {
+                if (valueParser.getCodec() == null) {
+                    valueParser.setCodec(new ObjectMapper());
+                }
+                if (valueParser.getCurrentToken() == null) {
+                    valueParser.nextToken();
+                }
+                if (codec == null) {
+                    return readGenericObject(valueParser, type, cl);
+                } else {
+                    return codec.read(valueParser, session);
+                }
             }
         }
         // fallback to returning the original json node

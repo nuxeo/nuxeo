@@ -56,9 +56,8 @@ public class GCTask implements Runnable {
                     Thread.sleep(TimeUnit.MILLISECONDS.convert(gcInterval, TimeUnit.MINUTES));
                 }
             } catch (InterruptedException e) {
-                GCEnabled = false;
-                log.info("GCThread bruttaly interupted");
                 Thread.currentThread().interrupt();
+                GCEnabled = false;
             }
         }
     }

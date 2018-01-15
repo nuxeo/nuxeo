@@ -55,23 +55,18 @@ public class RestletServlet extends HttpServlet {
 
     protected ServletConverter converter;
 
-    protected PluggableRestletService service;
-
     @Override
     public synchronized void init() throws ServletException {
         super.init();
 
-        if (converter != null) {
-            log.error("RestletServlet initialized several times");
-            return;
-        }
         converter = new ServletConverter(getServletContext());
 
         // init the router
         Router restletRouter = new Router();
 
         // get the service
-        service = (PluggableRestletService) Framework.getRuntime().getComponent(PluggableRestletService.NAME);
+        PluggableRestletService service = (PluggableRestletService) Framework.getRuntime().getComponent(
+                PluggableRestletService.NAME);
         if (service == null) {
             log.error("Unable to get Service " + PluggableRestletService.NAME);
             throw new ServletException("Can't initialize Nuxeo Pluggable Restlet Service");

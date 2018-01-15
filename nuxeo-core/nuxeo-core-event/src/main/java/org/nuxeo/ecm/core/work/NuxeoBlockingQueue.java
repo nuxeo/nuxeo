@@ -89,8 +89,8 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
         try {
             put(r);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restore interrupt status
-            throw new RuntimeException("interrupted", e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
         return true;
     }
