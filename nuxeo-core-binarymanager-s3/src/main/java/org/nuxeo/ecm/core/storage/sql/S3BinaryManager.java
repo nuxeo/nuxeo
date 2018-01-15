@@ -305,10 +305,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             try {
                 // Open keystore
                 File ksFile = new File(keystoreFile);
-                FileInputStream ksStream = new FileInputStream(ksFile);
-                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-                keystore.load(ksStream, keystorePass.toCharArray());
-                ksStream.close();
+                KeyStore keystore;
+                try (FileInputStream ksStream = new FileInputStream(ksFile)) {
+                    keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                    keystore.load(ksStream, keystorePass.toCharArray());
+                }
                 // Get keypair for alias
                 if (!keystore.isKeyEntry(privkeyAlias)) {
                     throw new RuntimeException("Alias " + privkeyAlias + " is missing or not a key alias");
@@ -458,9 +459,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 } catch (AmazonClientException ee) {
                     throw new IOException(ee);
                 } catch (InterruptedException ee) {
-                    // reset interrupted status
                     Thread.currentThread().interrupt();
-                    // continue interrupt
                     throw new RuntimeException(ee);
                 } finally {
                     if (log.isDebugEnabled()) {
@@ -502,9 +501,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 }
                 return false;
             } catch (InterruptedException e) {
-                // reset interrupted status
                 Thread.currentThread().interrupt();
-                // continue interrupt
                 throw new RuntimeException(e);
             } finally {
                 if (log.isDebugEnabled()) {
