@@ -93,7 +93,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                         workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION), 10,
                         TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
