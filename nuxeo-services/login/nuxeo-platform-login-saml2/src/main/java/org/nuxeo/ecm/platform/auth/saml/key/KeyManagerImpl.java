@@ -88,9 +88,10 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
                 throw new SecurityException("Unable to find keyStore at " + new File(".").getAbsolutePath()
                         + File.separator + path);
             }
-            InputStream keystoreIS = new FileInputStream(rootKeystoreFile);
-            ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
-            ks.load(keystoreIS, password.toCharArray());
+            try (InputStream keystoreIS = new FileInputStream(rootKeystoreFile)) {
+                ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
+                ks.load(keystoreIS, password.toCharArray());
+            }
         } catch (KeyStoreException | IOException e) {
             throw new SecurityException(e);
         } catch (NoSuchAlgorithmException e) {

@@ -109,14 +109,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      * node in cluster mode.
      */
     protected class WorkCompletionSynchronizer {
-        final protected ReentrantLock lock = new ReentrantLock();
+        protected final ReentrantLock lock = new ReentrantLock();
 
-        final protected Condition condition = lock.newCondition();
+        protected final Condition condition = lock.newCondition();
 
         protected boolean waitForCompletedWork(long timeMs) throws InterruptedException {
             lock.lock();
             try {
-                return condition.await(timeMs, TimeUnit.MILLISECONDS);
+                return condition.await(timeMs, TimeUnit.MILLISECONDS); // caller is looping
             } finally {
                 lock.unlock();
             }

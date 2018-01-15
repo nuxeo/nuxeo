@@ -101,10 +101,11 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
     public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws IOException {
         ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
 
-        JsonParser jp = factory.createJsonParser(content);
-        JsonNode inputNode = jp.readValueAsTree();
+        try (JsonParser jp = factory.createParser(content)) {
+            JsonNode inputNode = jp.readValueAsTree();
 
-        return (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());
+            return (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());
+        }
 
     }
 

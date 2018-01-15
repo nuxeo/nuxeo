@@ -84,7 +84,8 @@ public class CanCleanupConnectionLeakTest {
                     try {
                         work();
                     } catch (InterruptedException cause) {
-                        throw new AssertionError(getClass().getSimpleName() + " interrupted", cause);
+                        Thread.currentThread().interrupt();
+                        return;
                     }
                 } finally {
                     lock.unlock();

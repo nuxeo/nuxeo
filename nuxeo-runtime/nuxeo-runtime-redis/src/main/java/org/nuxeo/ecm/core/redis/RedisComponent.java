@@ -163,10 +163,8 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         if (loc == null) {
             throw new RuntimeException("Fail to load lua script: " + scriptName);
         }
-        InputStream is;
         final StrBuilder builder;
-        try {
-            is = loc.openStream();
+        try (InputStream is = loc.openStream()) {
             builder = new StrBuilder();
             for (String line : IOUtils.readLines(is, StandardCharsets.UTF_8)) {
                 builder.appendln(line);

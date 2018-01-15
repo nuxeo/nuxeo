@@ -93,7 +93,6 @@ public class SleepWork extends AbstractWork {
         try {
             doWork();
         } catch (InterruptedException e) {
-            // restore interrupted status
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }

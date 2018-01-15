@@ -472,7 +472,7 @@ public class TestRenditionService {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException("interrupted", e);
+                throw new RuntimeException(e);
             }
             eventService.waitForAsyncCompletion(5000);
             rendition = renditionService.getRendition(doc, renditionName, store);
@@ -733,7 +733,7 @@ public class TestRenditionService {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
+            throw new RuntimeException(e);
         }
         eventService.waitForAsyncCompletion(5000);
         rendition = renditionService.getRendition(folder, renditionName);

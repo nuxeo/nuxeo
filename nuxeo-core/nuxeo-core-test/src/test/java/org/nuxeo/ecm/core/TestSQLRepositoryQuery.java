@@ -3636,7 +3636,8 @@ public class TestSQLRepositoryQuery {
                     try {
                         latch.await();
                     } catch (InterruptedException e) {
-                        ExceptionUtils.checkInterrupt(e);
+                        Thread.currentThread().interrupt();
+                        throw new NuxeoException(e);
                     }
                     int nb = session.scroll(scrollId).getResults().size();
                     // System.out.println(Thread.currentThread().getName() + ": return: " + nb);
@@ -3685,7 +3686,8 @@ public class TestSQLRepositoryQuery {
                     try {
                         latch.await();
                     } catch (InterruptedException e) {
-                        ExceptionUtils.checkInterrupt(e);
+                        Thread.currentThread().interrupt();
+                        throw new NuxeoException(e);
                     }
                     session.scroll("SELECT * FROM Document", 1, 1).getResults().size();
                     return 1;

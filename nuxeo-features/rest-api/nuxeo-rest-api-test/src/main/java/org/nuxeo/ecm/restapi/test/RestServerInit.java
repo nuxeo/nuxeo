@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
@@ -117,9 +116,8 @@ public class RestServerInit implements RepositoryInit {
         try {
             Framework.getService(WorkManager.class).awaitCompletion(10, TimeUnit.SECONDS);
         } catch (InterruptedException cause) {
-            LogFactory.getLog(RestServerInit.class).error("Cannot initialize the rest api test repo in 10 seconds",
-                    cause);
             Thread.currentThread().interrupt();
+            throw new NuxeoException(cause);
         }
 
         UserManager um = Framework.getService(UserManager.class);

@@ -84,43 +84,44 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
     protected void writeRecords(OutputStream out, RecordSet records) throws IOException {
 
-        JsonGenerator jg = factory.createJsonGenerator(out, JsonEncoding.UTF8);
+        try (JsonGenerator jg = factory.createGenerator(out, JsonEncoding.UTF8)) {
 
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "recordSet");
+            jg.writeStartObject();
+            jg.writeStringField("entity-type", "recordSet");
 
-        if (records instanceof PaginableRecordSet) {
-            PaginableRecordSet pRecord = (PaginableRecordSet) records;
-            jg.writeBooleanField("isPaginable", true);
-            jg.writeNumberField("resultsCount", pRecord.getResultsCount());
-            jg.writeNumberField("pageSize", pRecord.getPageSize());
-            jg.writeNumberField("maxPageSize", pRecord.getMaxPageSize());
-            jg.writeNumberField("currentPageSize", pRecord.getCurrentPageSize());
-            jg.writeNumberField("currentPageIndex", pRecord.getCurrentPageIndex());
-            jg.writeNumberField("numberOfPages", pRecord.getNumberOfPages());
-            jg.writeBooleanField("isPreviousPageAvailable", pRecord.isPreviousPageAvailable());
-            jg.writeBooleanField("isNextPageAvailable", pRecord.isNextPageAvailable());
-            jg.writeBooleanField("isLastPageAvailable", pRecord.isLastPageAvailable());
-            jg.writeBooleanField("isSortable", pRecord.isSortable());
-            jg.writeBooleanField("hasError", pRecord.hasError());
-            jg.writeStringField("errorMessage", pRecord.getErrorMessage());
-        }
-
-        jg.writeArrayFieldStart("entries");
-        for (Map<String, Serializable> entry : records) {
-            jg.writeObject(entry);
-        }
-
-        if (records instanceof PaginableRecordSet) {
-            PaginableRecordSet pRecord = (PaginableRecordSet) records;
-            if (pRecord.hasAggregateSupport() && pRecord.getAggregates() != null && !pRecord.getAggregates().isEmpty()) {
-                jg.writeObjectField("aggregations", pRecord.getAggregates());
+            if (records instanceof PaginableRecordSet) {
+                PaginableRecordSet pRecord = (PaginableRecordSet) records;
+                jg.writeBooleanField("isPaginable", true);
+                jg.writeNumberField("resultsCount", pRecord.getResultsCount());
+                jg.writeNumberField("pageSize", pRecord.getPageSize());
+                jg.writeNumberField("maxPageSize", pRecord.getMaxPageSize());
+                jg.writeNumberField("currentPageSize", pRecord.getCurrentPageSize());
+                jg.writeNumberField("currentPageIndex", pRecord.getCurrentPageIndex());
+                jg.writeNumberField("numberOfPages", pRecord.getNumberOfPages());
+                jg.writeBooleanField("isPreviousPageAvailable", pRecord.isPreviousPageAvailable());
+                jg.writeBooleanField("isNextPageAvailable", pRecord.isNextPageAvailable());
+                jg.writeBooleanField("isLastPageAvailable", pRecord.isLastPageAvailable());
+                jg.writeBooleanField("isSortable", pRecord.isSortable());
+                jg.writeBooleanField("hasError", pRecord.hasError());
+                jg.writeStringField("errorMessage", pRecord.getErrorMessage());
             }
-        }
 
-        jg.writeEndArray();
-        jg.writeEndObject();
-        jg.flush();
+            jg.writeArrayFieldStart("entries");
+            for (Map<String, Serializable> entry : records) {
+                jg.writeObject(entry);
+            }
+
+            if (records instanceof PaginableRecordSet) {
+                PaginableRecordSet pRecord = (PaginableRecordSet) records;
+                if (pRecord.hasAggregateSupport() && pRecord.getAggregates() != null
+                        && !pRecord.getAggregates().isEmpty()) {
+                    jg.writeObjectField("aggregations", pRecord.getAggregates());
+                }
+            }
+
+            jg.writeEndArray();
+            jg.writeEndObject();
+        }
     }
 
 }

@@ -109,7 +109,6 @@ public class WebDriverWait implements Wait<WebDriver> {
         try {
             Thread.sleep(sleepTimeOut);
         } catch (InterruptedException e) {
-            // restore interrupted status
             Thread.currentThread().interrupt();
             throw new WebDriverException(e);
         }

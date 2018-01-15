@@ -57,6 +57,7 @@ public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
             // the MongoDB TTLMonitor thread runs every 60 seconds
             Thread.sleep((60 + 10) * 1000);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }

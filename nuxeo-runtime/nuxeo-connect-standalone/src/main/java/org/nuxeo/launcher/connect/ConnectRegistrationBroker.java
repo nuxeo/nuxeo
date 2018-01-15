@@ -72,10 +72,12 @@ public class ConnectRegistrationBroker {
     public void remoteRenewRegistration() throws IOException, RegistrationException {
         try {
             registration().remoteRenewRegistration();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            ExceptionUtils.checkInterrupt(e);
             throw new RegistrationException("Instance registration failed. " + e.getMessage());
         }
     }

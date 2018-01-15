@@ -57,8 +57,9 @@ public class WindowsProcessManager implements ProcessManager {
         List<String> lines = IOUtils.readLines(process.getInputStream());
         try {
             process.waitFor();
-        } catch (InterruptedException interruptedException) {
-            // sorry for the interruption
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
         return lines;
     }

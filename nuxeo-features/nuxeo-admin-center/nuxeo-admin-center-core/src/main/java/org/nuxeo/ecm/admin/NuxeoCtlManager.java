@@ -106,6 +106,7 @@ public class NuxeoCtlManager {
                     Thread.sleep(3000);
                     doExec(binPath, logDir);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     log.error("Restart failed", e);
                 }
             }

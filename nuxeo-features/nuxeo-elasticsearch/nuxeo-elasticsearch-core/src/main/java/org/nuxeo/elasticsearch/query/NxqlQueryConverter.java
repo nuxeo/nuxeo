@@ -372,10 +372,11 @@ public final class NxqlQueryConverter {
         try {
             XContentBuilder content = JsonXContent.contentBuilder();
             content.value(value);
-            XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY,
-                    content.bytes());
-            parser.nextToken();
-            return GeoUtils.parseGeoPoint(parser);
+            try (XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY,
+                    content.bytes())) {
+                parser.nextToken();
+                return GeoUtils.parseGeoPoint(parser);
+            }
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid value for geopoint: " + e.getMessage());
         }

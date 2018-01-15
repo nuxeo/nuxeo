@@ -135,6 +135,7 @@ public abstract class JavaClient implements AutomationClient {
         try {
             async.awaitTermination(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             // do nothing - TODO: log?
         } finally {
             async = null;

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -73,7 +74,8 @@ public class TestDocumentAuditPageProviderOperation {
         try {
             Thread.sleep(1100);
         } catch (InterruptedException e) {
-            ExceptionUtils.checkInterrupt(e);
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
         }
     }
 

@@ -24,7 +24,6 @@ package org.nuxeo.ecm.platform.rendering.wiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -33,7 +32,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -79,15 +77,10 @@ public class WikiTransformer implements TemplateDirectiveModel {
     }
 
     public void transform(URL url, Writer writer) throws RenderingException {
-        Reader reader = null;
-        try {
-            InputStream in = url.openStream();
-            reader = new BufferedReader(new InputStreamReader(in));
+        try (Reader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             transform(reader, writer);
         } catch (IOException e) {
             throw new RenderingException(e);
-        } finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 

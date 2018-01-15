@@ -75,10 +75,8 @@ public class JettyResourceServlet extends HttpServlet {
     }
 
     protected void sendFile(File resource, HttpServletResponse resp) throws ServletException, IOException {
-        InputStream in = null;
-        try {
-            OutputStream out = resp.getOutputStream();
-            in = new FileInputStream(resource);
+        try (InputStream in = new FileInputStream(resource); //
+                OutputStream out = resp.getOutputStream()) {
             byte[] buffer = new byte[BUFFER_SIZE];
             int read;
             while ((read = in.read(buffer)) != -1) {
@@ -86,12 +84,7 @@ public class JettyResourceServlet extends HttpServlet {
                 out.flush();
             }
         } finally {
-            if (resp != null) {
-                resp.flushBuffer();
-            }
-            if (in != null) {
-                in.close();
-            }
+            resp.flushBuffer();
         }
     }
 

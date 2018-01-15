@@ -250,6 +250,7 @@ public class DialectPostgreSQL extends Dialect {
             case SEQUENCE:
                 return jdbcInfo("int8", Types.BIGINT);
             }
+            throw new AssertionError("Unknown id type: " + idType);
         case NODEARRAY:
             switch (idType) {
             case VARCHAR:
@@ -259,6 +260,7 @@ public class DialectPostgreSQL extends Dialect {
             case SEQUENCE:
                 return jdbcInfo("int8[]", Types.ARRAY, "int8", Types.BIGINT);
             }
+            throw new AssertionError("Unknown id type: " + idType);
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case SYSNAMEARRAY:
@@ -322,9 +324,10 @@ public class DialectPostgreSQL extends Dialect {
         }
         String sql = String.format("SELECT NEXTVAL('%s')", idSequenceName);
         try (Statement s = connection.createStatement()) {
-            ResultSet rs = s.executeQuery(sql);
-            rs.next();
-            return Long.valueOf(rs.getLong(1));
+            try (ResultSet rs = s.executeQuery(sql)) {
+                rs.next();
+                return Long.valueOf(rs.getLong(1));
+            }
         }
     }
 

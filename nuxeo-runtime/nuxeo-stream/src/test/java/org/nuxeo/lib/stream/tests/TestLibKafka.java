@@ -141,7 +141,10 @@ public class TestLibKafka {
         for (Future<RecordMetadata> result : results) {
             try {
                 result.get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                fail(e.getMessage());
+            } catch (ExecutionException e) {
                 fail(e.getMessage());
             }
         }

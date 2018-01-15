@@ -93,7 +93,8 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
         try {
             async.awaitTermination(asyncAwaitTerminationTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            log.error(e, e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
         super.shutdown();
         async = null;

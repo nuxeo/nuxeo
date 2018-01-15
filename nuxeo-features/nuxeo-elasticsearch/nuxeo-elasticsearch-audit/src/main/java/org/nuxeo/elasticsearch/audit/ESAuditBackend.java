@@ -483,13 +483,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     log.debug(String.format("Indexing log entry: %s", entry));
                 }
                 entry.setLogDate(new Date());
-                OutputStream out = new BytesStreamOutput();
-                JsonGenerator jsonGen = factory.createGenerator(out);
-                XContentBuilder builder = jsonBuilder(out);
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(jsonGen, entry);
-                bulkRequest.add(new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
-                        String.valueOf(entry.getId())).source(builder));
+                try (OutputStream out = new BytesStreamOutput(); //
+                        JsonGenerator jg = factory.createGenerator(out); //
+                        XContentBuilder builder = jsonBuilder(out)) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.writeValue(jg, entry);
+                    bulkRequest.add(new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                            String.valueOf(entry.getId())).source(builder));
+                }
             }
 
             BulkResponse bulkResponse = esClient.bulk(bulkRequest);

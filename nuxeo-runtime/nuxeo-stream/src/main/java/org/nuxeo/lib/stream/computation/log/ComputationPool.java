@@ -147,8 +147,8 @@ public class ComputationPool {
                 return false;
             }
         } catch (InterruptedException e) {
-            log.warn(metadata.name() + ": Interrupted while waiting for pool termination");
             Thread.currentThread().interrupt();
+            log.warn(metadata.name() + ": Interrupted while waiting for pool termination");
             return false;
         }
         return true;

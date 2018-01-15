@@ -346,7 +346,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     protected void clearClassLoader() {
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
-        System.gc();
     }
 
     /**

@@ -38,7 +38,6 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.admin.repo.RepoStat;
 import org.nuxeo.ecm.admin.repo.RepoStatInfo;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
@@ -270,7 +269,8 @@ public class SystemInfoManager implements Serializable {
                 Thread.sleep(1000);
             } while (stat.isRunning());
         } catch (InterruptedException e) {
-            throw ExceptionUtils.runtimeException(e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
 
         sb.append(stat.getInfo().toString());

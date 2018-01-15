@@ -138,14 +138,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         try {
             processLoop();
         } catch (InterruptedException e) {
+            interrupted = true; // Thread.currentThread().interrupt() in finally
             // this is expected when the pool is shutdownNow
             if (log.isTraceEnabled()) {
                 log.debug(metadata.name() + ": Interrupted", e);
             } else {
                 log.debug(metadata.name() + ": Interrupted");
             }
-            // the interrupt flag is set after the tailer are closed
-            interrupted = true;
         } catch (Exception e) {
             if (Thread.currentThread().isInterrupted()) {
                 // this can happen when pool is shutdownNow throwing ClosedByInterruptException

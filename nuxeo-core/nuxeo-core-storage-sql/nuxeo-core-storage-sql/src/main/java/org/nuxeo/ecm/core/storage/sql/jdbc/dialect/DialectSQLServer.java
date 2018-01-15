@@ -156,9 +156,10 @@ public class DialectSQLServer extends Dialect {
 
     protected int getEngineEdition(Connection connection) throws SQLException {
         try (Statement st = connection.createStatement()) {
-            ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
-            rs.next();
-            return rs.getInt(1);
+            try (ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))")) {
+                rs.next();
+                return rs.getInt(1);
+            }
         }
     }
 
@@ -168,15 +169,15 @@ public class DialectSQLServer extends Dialect {
             if (log.isTraceEnabled()) {
                 log.trace("SQL: " + sql);
             }
-            ResultSet rs = stmt.executeQuery(sql);
-            if (!rs.next()) {
-                throw new SQLException("Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                if (!rs.next()) {
+                    throw new SQLException("Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
+                }
+                int on = rs.getInt(1);
+                if (on != 1) {
+                    throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+                }
             }
-            int on = rs.getInt(1);
-            if (on != 1) {
-                throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
-            }
-            rs.close();
         }
     }
 
@@ -244,7 +245,9 @@ public class DialectSQLServer extends Dialect {
                 return jdbcInfo("NVARCHAR(36)", Types.VARCHAR);
             case SEQUENCE:
                 return jdbcInfo("BIGINT", Types.BIGINT);
+            default:
             }
+            throw new AssertionError("Unknown id type: " + idType);
         case SYSNAME:
         case SYSNAMEARRAY:
             return jdbcInfo("NVARCHAR(256)", Types.VARCHAR);
@@ -678,9 +681,10 @@ public class DialectSQLServer extends Dialect {
         }
         String sql = String.format("SELECT NEXT VALUE FOR [%s]", idSequenceName);
         try (Statement s = connection.createStatement()) {
-            ResultSet rs = s.executeQuery(sql);
-            rs.next();
-            return Long.valueOf(rs.getLong(1));
+            try (ResultSet rs = s.executeQuery(sql)) {
+                rs.next();
+                return Long.valueOf(rs.getLong(1));
+            }
         }
     }
 

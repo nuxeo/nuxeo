@@ -107,7 +107,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                                 Thread.sleep(200);
                             }
                         } catch (InterruptedException e) {
-                            interrupted = true;
+                            interrupted = true; // Thread.currentThread().interrupt() in finally
                         }
                     }
                 } finally {

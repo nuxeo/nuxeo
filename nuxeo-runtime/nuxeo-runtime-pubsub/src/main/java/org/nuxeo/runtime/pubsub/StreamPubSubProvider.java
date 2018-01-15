@@ -107,22 +107,24 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
             // using different group name enable fan out
             String group = GROUP_PREFIX + getNodeId();
             log.debug("Starting subscriber thread with group: " + group);
-            LogTailer<Record> tailer = Framework.getService(StreamService.class).getLogManager(logConfig).createTailer(
-                    group, logName);
-            // Only interested in new messages
-            tailer.toEnd();
-            for (;;) {
-                try {
-                    LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(5));
-                    if (logRecord == null) {
-                        continue;
+            try (LogTailer<Record> tailer = Framework.getService(StreamService.class)
+                                                     .getLogManager(logConfig)
+                                                     .createTailer(group, logName)) {
+                // Only interested in new messages
+                tailer.toEnd();
+                for (;;) {
+                    try {
+                        LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(5));
+                        if (logRecord == null) {
+                            continue;
+                        }
+                        Record record = logRecord.message();
+                        localPublish(record.key, record.data);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.debug("Subscriber thread interrupted, exiting");
+                        return;
                     }
-                    Record record = logRecord.message();
-                    localPublish(record.key, record.data);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    log.debug("Subscriber thread interrupted, exiting");
-                    return;
                 }
             }
 

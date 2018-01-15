@@ -140,7 +140,8 @@ public class StatusServletClient {
             try {
                 wait();
             } catch (InterruptedException e) {
-                // do nothing
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
         server = (HttpURLConnection) url.openConnection();

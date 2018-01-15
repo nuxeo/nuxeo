@@ -272,12 +272,6 @@ public class Crypto {
         initialized = false;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        clear();
-        super.finalize();
-    }
-
     /**
      * Test the given {@code candidateDigest} against the configured digest. In case of failure, the secret data is
      * destroyed and the object is made unusable.<br>

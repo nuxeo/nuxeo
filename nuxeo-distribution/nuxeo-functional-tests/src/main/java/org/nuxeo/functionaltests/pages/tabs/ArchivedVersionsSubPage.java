@@ -167,7 +167,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                // ignore
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
         }
         throw new WebDriverException("Couldn't remove selected versions");

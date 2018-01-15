@@ -36,7 +36,6 @@ public class SleepOperation {
         try {
             Thread.sleep(durationMillis);
         } catch (InterruptedException e) {
-            // restore interrupted status
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }

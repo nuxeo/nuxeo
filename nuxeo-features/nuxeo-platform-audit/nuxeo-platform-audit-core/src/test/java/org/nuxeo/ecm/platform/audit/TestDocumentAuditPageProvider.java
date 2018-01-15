@@ -89,6 +89,7 @@ public class TestDocumentAuditPageProvider {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }

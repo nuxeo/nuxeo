@@ -58,11 +58,8 @@ public class EmbeddedFunctions {
      * @param baseId the base id
      */
     public static boolean isInTree(Serializable id, Serializable baseId) throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:default:connection");
-        try {
+        try (Connection conn = DriverManager.getConnection("jdbc:default:connection")) {
             return isInTree(conn, id, baseId);
-        } finally {
-            conn.close();
         }
     }
 
@@ -78,29 +75,27 @@ public class EmbeddedFunctions {
             // containment check is strict
             return false;
         }
-        PreparedStatement ps = null;
-        try {
-            ps = conn.prepareStatement("SELECT PARENTID, ISPROPERTY FROM HIERARCHY WHERE ID = ?");
+        try (PreparedStatement ps = conn.prepareStatement("SELECT PARENTID, ISPROPERTY FROM HIERARCHY WHERE ID = ?")) {
             do {
                 ps.setObject(1, id);
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    // no such id
-                    return false;
-                }
-                if (id instanceof String) {
-                    id = rs.getString(1);
-                } else {
-                    id = Long.valueOf(rs.getLong(1));
-                }
-                if (rs.wasNull()) {
-                    id = null;
-                }
-                boolean isProperty = rs.getBoolean(2);
-                rs.close();
-                if (isProperty) {
-                    // a complex property is never in-tree
-                    return false;
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        // no such id
+                        return false;
+                    }
+                    if (id instanceof String) {
+                        id = rs.getString(1);
+                    } else {
+                        id = Long.valueOf(rs.getLong(1));
+                    }
+                    if (rs.wasNull()) {
+                        id = null;
+                    }
+                    boolean isProperty = rs.getBoolean(2);
+                    if (isProperty) {
+                        // a complex property is never in-tree
+                        return false;
+                    }
                 }
                 if (baseId.equals(id)) {
                     // found a match
@@ -109,10 +104,6 @@ public class EmbeddedFunctions {
             } while (id != null);
             // got to the root
             return false;
-        } finally {
-            if (ps != null) {
-                ps.close();
-            }
         }
     }
 
@@ -127,11 +118,8 @@ public class EmbeddedFunctions {
      */
     public static boolean isAccessAllowed(Serializable id, Set<String> principals, Set<String> permissions)
             throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:default:connection");
-        try {
+        try (Connection conn = DriverManager.getConnection("jdbc:default:connection")) {
             return isAccessAllowed(conn, id, principals, permissions);
-        } finally {
-            conn.close();
         }
     }
 
@@ -150,55 +138,37 @@ public class EmbeddedFunctions {
         if (isLogEnabled()) {
             logDebug("isAccessAllowed " + id + " " + principals + " " + permissions);
         }
-        PreparedStatement ps1 = null;
-        PreparedStatement ps2 = null;
-        PreparedStatement ps3 = null;
-        try {
-            ps1 = conn.prepareStatement( //
-                    "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" WHERE ID = ? AND (STATUS IS NULL OR STATUS = 1) ORDER BY POS");
-            ps2 = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?");
+        try (PreparedStatement ps1 = conn.prepareStatement(
+                "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" WHERE ID = ? AND (STATUS IS NULL OR STATUS = 1) ORDER BY POS");
+                PreparedStatement ps2 = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?")) {
             boolean first = true;
             do {
                 /*
                  * Check permissions at this level.
                  */
                 ps1.setObject(1, id);
-                ResultSet rs = ps1.executeQuery();
-                while (rs.next()) {
-                    boolean grant = rs.getShort(1) != 0;
-                    String permission = rs.getString(2);
-                    String user = rs.getString(3);
-                    if (isLogEnabled()) {
-                        logDebug(" -> " + user + " " + permission + " " + grant);
-                    }
-                    if (principals.contains(user) && permissions.contains(permission)) {
+                try (ResultSet rs = ps1.executeQuery()) {
+                    while (rs.next()) {
+                        boolean grant = rs.getShort(1) != 0;
+                        String permission = rs.getString(2);
+                        String user = rs.getString(3);
                         if (isLogEnabled()) {
-                            logDebug(" => " + grant);
+                            logDebug(" -> " + user + " " + permission + " " + grant);
                         }
-                        return grant;
+                        if (principals.contains(user) && permissions.contains(permission)) {
+                            if (isLogEnabled()) {
+                                logDebug(" => " + grant);
+                            }
+                            return grant;
+                        }
                     }
                 }
                 /*
                  * Nothing conclusive found, repeat on the parent.
                  */
                 ps2.setObject(1, id);
-                rs = ps2.executeQuery();
                 Serializable newId;
-                if (rs.next()) {
-                    newId = (Serializable) rs.getObject(1);
-                    if (rs.wasNull()) {
-                        newId = null;
-                    }
-                } else {
-                    // no such id
-                    newId = null;
-                }
-                if (first && newId == null) {
-                    // there is no parent for the first level
-                    // we may have a version on our hands, find the live doc
-                    ps3 = conn.prepareStatement("SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?");
-                    ps3.setObject(1, id);
-                    rs = ps3.executeQuery();
+                try (ResultSet rs = ps2.executeQuery()) {
                     if (rs.next()) {
                         newId = (Serializable) rs.getObject(1);
                         if (rs.wasNull()) {
@@ -207,6 +177,25 @@ public class EmbeddedFunctions {
                     } else {
                         // no such id
                         newId = null;
+                    }
+                }
+                if (first && newId == null) {
+                    // there is no parent for the first level
+                    // we may have a version on our hands, find the live doc
+                    try (PreparedStatement ps3 = conn.prepareStatement(
+                            "SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?")) {
+                        ps3.setObject(1, id);
+                        try (ResultSet rs = ps3.executeQuery()) {
+                            if (rs.next()) {
+                                newId = (Serializable) rs.getObject(1);
+                                if (rs.wasNull()) {
+                                    newId = null;
+                                }
+                            } else {
+                                // no such id
+                                newId = null;
+                            }
+                        }
                     }
                 }
                 first = false;
@@ -219,16 +208,6 @@ public class EmbeddedFunctions {
                 logDebug(" => false (root)");
             }
             return false;
-        } finally {
-            if (ps1 != null) {
-                ps1.close();
-            }
-            if (ps2 != null) {
-                ps2.close();
-            }
-            if (ps3 != null) {
-                ps3.close();
-            }
         }
     }
 

@@ -568,9 +568,8 @@ public class AppCenterViewsManager implements Serializable {
                 } catch (ConnectServerError e) {
                     setStatus(SnapshotStatus.error, e.getMessage());
                 } catch (InterruptedException e) {
-                    log.error("Error while downloading studio snapshot", e);
-                    setStatus(SnapshotStatus.error, translate("label.studio.update.downloading.error", e.getMessage()));
-                    ExceptionUtils.checkInterrupt(e);
+                    Thread.currentThread().interrupt();
+                    throw new NuxeoException(e);
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
                     setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));

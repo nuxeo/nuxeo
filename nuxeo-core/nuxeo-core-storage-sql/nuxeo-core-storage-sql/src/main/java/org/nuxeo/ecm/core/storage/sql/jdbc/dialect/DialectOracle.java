@@ -202,15 +202,16 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getConnectionSchema(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
-        log.trace("SQL: " + sql);
-        ResultSet rs = st.executeQuery(sql);
-        rs.next();
-        String user = rs.getString(1);
+        String user;
+        try (Statement st = connection.createStatement()) {
+            String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
+            log.trace("SQL: " + sql);
+            try (ResultSet rs = st.executeQuery(sql)) {
+                rs.next();
+                user = rs.getString(1);
+            }
+        }
         log.trace("SQL:   -> " + user);
-        rs.close();
-        st.close();
         return user;
     }
 
@@ -259,8 +260,8 @@ public class DialectOracle extends Dialect {
             case SEQUENCE:
                 return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
             default:
-                throw new AssertionError("Unknown id type: " + idType);
             }
+            throw new AssertionError("Unknown id type: " + idType);
         case SYSNAME:
         case SYSNAMEARRAY:
             return jdbcInfo("VARCHAR2(250)", Types.VARCHAR);
@@ -340,17 +341,11 @@ public class DialectOracle extends Dialect {
             return super.getGeneratedId(connection);
         }
         String sql = String.format("SELECT %s.NEXTVAL FROM DUAL", idSequenceName);
-        Statement s = connection.createStatement();
-        ResultSet rs = null;
-        try {
-            rs = s.executeQuery(sql);
-            rs.next();
-            return Long.valueOf(rs.getLong(1));
-        } finally {
-            if (rs != null) {
-                rs.close();
+        try (Statement s = connection.createStatement()) {
+            try (ResultSet rs = s.executeQuery(sql)) {
+                rs.next();
+                return Long.valueOf(rs.getLong(1));
             }
-            s.close();
         }
     }
 

@@ -130,26 +130,20 @@ public class BundleWalker extends FileWalker.Visitor {
 
     @Override
     public int visitFile(File file) {
-        // System.out.println("###### Processing file: "+file);
         // first check if this is a possible bundle
         String fileName = file.getName();
         if (patterns != null) {
             if (!acceptFile(fileName, patterns)) {
-                // System.out.println("###### Ignoring file based on name: "+file);
                 return FileWalker.CONTINUE;
             }
         }
         // check if this is an OSGi bundle
-        try {
-            JarFile jarFile = new JarFile(file);
+        try (JarFile jarFile = new JarFile(file)) {
             if (jarFile.getManifest() == null) {
-                // System.out.println("###### No manifest found: "+file);
                 return FileWalker.CONTINUE;
             }
             BundleFile bundleFile = new JarBundleFile(jarFile);
             if (bundleFile.getSymbolicName() != null) {
-                // System.out.println("###### Bundle symbolic name: "+bundleFile.getSymbolicName());
-
                 // notify the callback about the new bundle
                 callback.visitBundle(bundleFile);
             } else {

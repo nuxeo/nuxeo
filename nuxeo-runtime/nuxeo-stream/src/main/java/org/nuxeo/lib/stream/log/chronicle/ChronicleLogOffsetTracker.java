@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,8 +80,8 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
     }
 
     public static boolean exists(Path basePath, String group) {
-        try {
-            return Files.list(basePath.resolve(OFFSET_QUEUE_PREFIX + group)).count() > 0;
+        try (Stream<Path> paths = Files.list(basePath.resolve(OFFSET_QUEUE_PREFIX + group))) {
+            return paths.count() > 0;
         } catch (IOException e) {
             return false;
         }

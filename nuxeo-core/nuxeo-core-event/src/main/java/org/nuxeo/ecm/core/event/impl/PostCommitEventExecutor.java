@@ -173,7 +173,6 @@ public class PostCommitEventExecutor {
                 log.error("Events postcommit bulk execution aborted due to previous error");
             }
         } catch (InterruptedException e) {
-            // restore interrupted status
             Thread.currentThread().interrupt();
             // interrupt thread
             futureTask.cancel(true); // mayInterruptIfRunning=true

@@ -199,7 +199,6 @@ public class VCSLockManager implements LockManager {
                     try {
                         Thread.sleep(sleepDelay);
                     } catch (InterruptedException ie) {
-                        // restore interrupted status
                         Thread.currentThread().interrupt();
                         throw new RuntimeException(ie);
                     }

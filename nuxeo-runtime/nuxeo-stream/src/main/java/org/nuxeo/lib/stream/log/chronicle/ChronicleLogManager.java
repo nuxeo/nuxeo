@@ -95,8 +95,8 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public boolean exists(String name) {
-        try {
-            return Files.list(basePath.resolve(name)).count() > 0;
+        try (Stream<Path> paths = Files.list(basePath.resolve(name))) {
+            return paths.count() > 0;
         } catch (IOException e) {
             return false;
         }
@@ -157,9 +157,11 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public List<String> listAll() {
-        try {
-            return Files.list(basePath).filter(Files::isDirectory).map(Path::getFileName).map(Path::toString).collect(
-                    Collectors.toList());
+        try (Stream<Path> paths = Files.list(basePath)) {
+            return paths.filter(Files::isDirectory)
+                        .map(Path::getFileName)
+                        .map(Path::toString)
+                        .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid base path: " + basePath, e);
         }
@@ -171,9 +173,8 @@ public class ChronicleLogManager extends AbstractLogManager {
         if (!Files.exists(logRoot)) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
-        try {
-            return Files.list(logRoot)
-                        .filter(Files::isDirectory)
+        try (Stream<Path> paths = Files.list(logRoot)) {
+            return paths.filter(Files::isDirectory)
                         .map(Path::getFileName)
                         .map(Path::toString)
                         .filter(ChronicleLogOffsetTracker::isOffsetTracker)

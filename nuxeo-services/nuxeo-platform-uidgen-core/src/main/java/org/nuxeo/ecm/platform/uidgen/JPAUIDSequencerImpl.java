@@ -152,8 +152,10 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
 
         try {
             future.get();
-        } catch (InterruptedException | ExecutionException e) { // deals with interrupt below
-            ExceptionUtils.checkInterrupt(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        } catch (ExecutionException e) {
             throw new NuxeoException(e);
         }
 

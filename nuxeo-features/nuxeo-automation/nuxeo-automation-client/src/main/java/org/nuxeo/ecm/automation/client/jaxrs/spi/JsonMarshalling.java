@@ -203,19 +203,21 @@ public class JsonMarshalling {
         HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
         HashMap<String, String> paths = new HashMap<String, String>();
 
-        JsonParser jp = factory.createJsonParser(content);
-        jp.nextToken(); // start_obj
-        JsonToken tok = jp.nextToken();
-        while (tok != null && tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            if ("operations".equals(key)) {
-                readOperations(jp, ops);
-            } else if ("chains".equals(key)) {
-                readChains(jp, chains);
-            } else if ("paths".equals(key)) {
-                readPaths(jp, paths);
-            }
+        JsonToken tok;
+        try (JsonParser jp = factory.createParser(content)) {
+            jp.nextToken(); // start_obj
             tok = jp.nextToken();
+            while (tok != null && tok != JsonToken.END_OBJECT) {
+                String key = jp.getCurrentName();
+                if ("operations".equals(key)) {
+                    readOperations(jp, ops);
+                } else if ("chains".equals(key)) {
+                    readChains(jp, chains);
+                } else if ("paths".equals(key)) {
+                    readPaths(jp, paths);
+                }
+                tok = jp.nextToken();
+            }
         }
         if (tok == null) {
             throw new IllegalArgumentException("Unexpected end of stream.");
@@ -266,74 +268,76 @@ public class JsonMarshalling {
         if (content.length() == 0) { // void response
             return null;
         }
-        JsonParser jp = factory.createJsonParser(content);
-        jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
-        jp.nextToken();
-        if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
-            throw new RuntimeException("unuspported respone type. No entity-type key found at top of the object");
-        }
-        jp.nextToken();
-        String etype = jp.getText();
-        JsonMarshaller<?> jm = getMarshaller(etype);
-        if (jm == null) {
-            // fall-back on generic java class loading in case etype matches a
-            // valid class name
-            try {
-                // Introspect bundle context to load marshalling class
-                AutomationClientActivator automationClientActivator = AutomationClientActivator.getInstance();
-                Class<?> loadClass;
-                // Java mode or OSGi mode
-                if (automationClientActivator == null) {
-                    loadClass = Thread.currentThread().getContextClassLoader().loadClass(etype);
-                } else {
-                    loadClass = automationClientActivator.getContext().getBundle().loadClass(etype);
-                }
-                ObjectMapper mapper = new ObjectMapper();
-                jp.nextToken(); // move to next field
-                jp.nextToken(); // value field name
-                jp.nextToken(); // value field content
-                return mapper.readValue(jp, loadClass);
-            } catch (ClassNotFoundException e) {
-                log.warn("No marshaller for " + etype + " and not a valid Java class name either.");
-                jp = factory.createJsonParser(content);
-                return jp.readValueAsTree();
+        try (JsonParser jp = factory.createParser(content)) {
+            jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
+            jp.nextToken();
+            if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
+                throw new RuntimeException("unuspported respone type. No entity-type key found at top of the object");
             }
+            jp.nextToken();
+            String etype = jp.getText();
+            JsonMarshaller<?> jm = getMarshaller(etype);
+            if (jm == null) {
+                // fall-back on generic java class loading in case etype matches a
+                // valid class name
+                try {
+                    // Introspect bundle context to load marshalling class
+                    AutomationClientActivator automationClientActivator = AutomationClientActivator.getInstance();
+                    Class<?> loadClass;
+                    // Java mode or OSGi mode
+                    if (automationClientActivator == null) {
+                        loadClass = Thread.currentThread().getContextClassLoader().loadClass(etype);
+                    } else {
+                        loadClass = automationClientActivator.getContext().getBundle().loadClass(etype);
+                    }
+                    ObjectMapper mapper = new ObjectMapper();
+                    jp.nextToken(); // move to next field
+                    jp.nextToken(); // value field name
+                    jp.nextToken(); // value field content
+                    return mapper.readValue(jp, loadClass);
+                } catch (ClassNotFoundException e) {
+                    log.warn("No marshaller for " + etype + " and not a valid Java class name either.");
+                    try (JsonParser jp2 = factory.createParser(content)) {
+                        return jp2.readValueAsTree();
+                    }
+                }
+            }
+            return jm.read(jp);
         }
-        return jm.read(jp);
     }
 
     public static String writeRequest(OperationRequest req) throws IOException {
         StringWriter writer = new StringWriter();
         Object input = req.getInput();
-        JsonGenerator jg = factory.createJsonGenerator(writer);
-        jg.writeStartObject();
-        if (input instanceof OperationInput) {
-            // Custom String serialization
-            OperationInput operationInput = (OperationInput) input;
-            String ref = operationInput.getInputRef();
-            if (ref != null) {
-                jg.writeStringField("input", ref);
-            }
-        } else if (input != null) {
+        try (JsonGenerator jg = factory.createGenerator(writer)) {
+            jg.writeStartObject();
+            if (input instanceof OperationInput) {
+                // Custom String serialization
+                OperationInput operationInput = (OperationInput) input;
+                String ref = operationInput.getInputRef();
+                if (ref != null) {
+                    jg.writeStringField("input", ref);
+                }
+            } else if (input != null) {
 
-            JsonMarshaller<?> marshaller = getMarshaller(input.getClass());
-            if (marshaller != null) {
-                // use the registered marshaller for this type
-                jg.writeFieldName("input");
-                marshaller.write(jg, input);
-            } else {
-                // fall-back to direct POJO to JSON mapping
-                jg.writeObjectField("input", input);
+                JsonMarshaller<?> marshaller = getMarshaller(input.getClass());
+                if (marshaller != null) {
+                    // use the registered marshaller for this type
+                    jg.writeFieldName("input");
+                    marshaller.write(jg, input);
+                } else {
+                    // fall-back to direct POJO to JSON mapping
+                    jg.writeObjectField("input", input);
+                }
             }
+            jg.writeObjectFieldStart("params");
+            writeMap(jg, req.getParameters());
+            jg.writeEndObject();
+            jg.writeObjectFieldStart("context");
+            writeMap(jg, req.getContextParameters());
+            jg.writeEndObject();
+            jg.writeEndObject();
         }
-        jg.writeObjectFieldStart("params");
-        writeMap(jg, req.getParameters());
-        jg.writeEndObject();
-        jg.writeObjectFieldStart("context");
-        writeMap(jg, req.getContextParameters());
-        jg.writeEndObject();
-        jg.writeEndObject();
-        jg.close();
         return writer.toString();
     }
 

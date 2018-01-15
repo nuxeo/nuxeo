@@ -53,7 +53,6 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        InputStream stream = null;
         StringBuffer sb = new StringBuffer();
 
         try {
@@ -63,34 +62,26 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
                 return runFallBackConverter(blobHolder, "xl/");
             }
 
-            stream = blob.getStream();
-
-            OPCPackage p = OPCPackage.open(stream);
-            XSSFWorkbook workbook = new XSSFWorkbook(p);
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                XSSFSheet sheet = workbook.getSheetAt(i);
-                Iterator<Row> rows = sheet.rowIterator();
-                while (rows.hasNext()) {
-                    XSSFRow row = (XSSFRow) rows.next();
-                    Iterator<Cell> cells = row.cellIterator();
-                    while (cells.hasNext()) {
-                        XSSFCell cell = (XSSFCell) cells.next();
-                        appendTextFromCell(cell, sb);
+            try (InputStream stream = blob.getStream(); //
+                    OPCPackage p = OPCPackage.open(stream); //
+                    XSSFWorkbook workbook = new XSSFWorkbook(p)) {
+                for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                    XSSFSheet sheet = workbook.getSheetAt(i);
+                    Iterator<Row> rows = sheet.rowIterator();
+                    while (rows.hasNext()) {
+                        XSSFRow row = (XSSFRow) rows.next();
+                        Iterator<Cell> cells = row.cellIterator();
+                        while (cells.hasNext()) {
+                            XSSFCell cell = (XSSFCell) cells.next();
+                            appendTextFromCell(cell, sb);
+                        }
+                        sb.append(ROW_SEP);
                     }
-                    sb.append(ROW_SEP);
                 }
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException | OpenXML4JException e) {
             throw new ConversionException("Error during XLX2Text conversion", e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    log.error("Error while closing Blob stream", e);
-                }
-            }
         }
     }
 

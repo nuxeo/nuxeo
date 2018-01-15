@@ -185,10 +185,8 @@ public class PackWar {
     }
 
     protected void executePackaging() throws IOException {
-        OutputStream out = new FileOutputStream(zip);
-        ZipOutputStream zout = new ZipOutputStream(out);
-        try {
-
+        try (OutputStream out = new FileOutputStream(zip); //
+                ZipOutputStream zout = new ZipOutputStream(out)) {
             // extract jdbc datasource from server.xml into README
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             bout.write(README_BEGIN.getBytes("UTF-8"));
@@ -210,9 +208,7 @@ public class PackWar {
             zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"), MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
             zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"), zout, null);
-        } finally {
             zout.finish();
-            zout.close();
         }
     }
 

@@ -476,7 +476,9 @@ public class H2Fulltext {
                 return indexWriter;
             }
             try {
-                Directory dir = path == null ? new RAMDirectory() : FSDirectory.open(Paths.get(path));
+                @SuppressWarnings("resource")
+                Directory dir = getDirectory(path);
+                @SuppressWarnings("resource")
                 Analyzer an = getAnalyzer(analyzer);
                 IndexWriterConfig iwc = new IndexWriterConfig(an);
                 iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
@@ -489,6 +491,10 @@ public class H2Fulltext {
             indexWriters.put(name, indexWriter);
             return indexWriter;
         }
+    }
+
+    protected static Directory getDirectory(String path) throws IOException {
+        return path == null ? new RAMDirectory() : FSDirectory.open(Paths.get(path));
     }
 
     private static void removeIndexFiles(Connection conn) throws SQLException {

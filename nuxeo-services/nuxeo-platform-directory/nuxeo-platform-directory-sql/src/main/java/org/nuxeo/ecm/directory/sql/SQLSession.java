@@ -518,52 +518,42 @@ public class SQLSession extends BaseSession {
             int queryLimitSize = getDirectory().getDescriptor().getQuerySizeLimit();
             boolean trucatedResults = false;
             if (queryLimitSize != 0 && (limit <= 0 || limit > queryLimitSize)) {
-                PreparedStatement ps = null;
-                try {
-                    // create a preparedStatement for counting and bind the
-                    // values
-                    // String countQuery = new StringBuilder("SELECT count(*)
-                    // FROM ")
-                    // .append(table.getQuotedName(dialect)).append(whereClause).toString();
-                    Select select = new Select(table);
-                    select.setWhat("count(*)");
-                    select.setFrom(table.getQuotedName());
+                // create a preparedStatement for counting and bind the values
+                Select select = new Select(table);
+                select.setWhat("count(*)");
+                select.setFrom(table.getQuotedName());
 
-                    String where = whereClause.toString();
-                    where = addFilterWhereClause(where);
-                    select.setWhere(where);
+                String where = whereClause.toString();
+                where = addFilterWhereClause(where);
+                select.setWhere(where);
 
-                    String countQuery = select.getStatement();
-                    if (logger.isLogEnabled()) {
-                        List<Serializable> values = new ArrayList<>(orderedColumns.size());
-                        for (Column column : orderedColumns) {
-                            Object value = filterMap.get(column.getKey());
-                            values.add((Serializable) value);
-                        }
-                        addFilterValuesForLog(values);
-                        logger.logSQL(countQuery, values);
+                String countQuery = select.getStatement();
+                if (logger.isLogEnabled()) {
+                    List<Serializable> values = new ArrayList<>(orderedColumns.size());
+                    for (Column column : orderedColumns) {
+                        Object value = filterMap.get(column.getKey());
+                        values.add((Serializable) value);
                     }
-                    ps = sqlConnection.prepareStatement(countQuery);
+                    addFilterValuesForLog(values);
+                    logger.logSQL(countQuery, values);
+                }
+                int count;
+                try (PreparedStatement ps = sqlConnection.prepareStatement(countQuery)) {
                     fillPreparedStatementFields(filterMap, orderedColumns, ps);
 
-                    int count;
                     try (ResultSet rs = ps.executeQuery()) {
                         rs.next();
                         count = rs.getInt(1);
                     }
-                    if (logger.isLogEnabled()) {
-                        logger.logCount(count);
-                    }
-                    if (count > queryLimitSize) {
-                        trucatedResults = true;
-                        limit = queryLimitSize;
-                        log.error("Displayed results will be truncated because too many rows in result: " + count);
-                        // throw new SizeLimitExceededException("too many rows in result: " + count);
-                    }
-                } finally {
-                    if (ps != null) {
-                        ps.close();
-                    }
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logCount(count);
+                }
+                if (count > queryLimitSize) {
+                    trucatedResults = true;
+                    limit = queryLimitSize;
+                    log.error("Displayed results will be truncated because too many rows in result: " + count);
+                    // throw new SizeLimitExceededException("too many rows in result: " + count);
                 }
             }
 
@@ -625,40 +615,40 @@ public class SQLSession extends BaseSession {
                 fillPreparedStatementFields(filterMap, orderedColumns, ps);
 
                 // execute the query and create a documentModel list
-                ResultSet rs = ps.executeQuery();
                 DocumentModelList list = new DocumentModelListImpl();
-                while (rs.next()) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
 
-                    // fetch values for stored fields
-                    Map<String, Object> map = new HashMap<>();
-                    for (Column column : getReadColumns()) {
-                        Object o = getFieldValue(rs, column);
-                        map.put(column.getKey(), o);
-                    }
+                        // fetch values for stored fields
+                        Map<String, Object> map = new HashMap<>();
+                        for (Column column : getReadColumns()) {
+                            Object o = getFieldValue(rs, column);
+                            map.put(column.getKey(), o);
+                        }
 
-                    DocumentModel docModel = fieldMapToDocumentModel(map);
+                        DocumentModel docModel = fieldMapToDocumentModel(map);
 
-                    // fetch the reference fields
-                    if (fetchReferences) {
-                        Map<String, List<String>> targetIdsMap = new HashMap<>();
-                        for (Reference reference : directory.getReferences()) {
-                            List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
-                            String fieldName = reference.getFieldName();
-                            if (targetIdsMap.containsKey(fieldName)) {
-                                targetIdsMap.get(fieldName).addAll(targetIds);
-                            } else {
-                                targetIdsMap.put(fieldName, targetIds);
+                        // fetch the reference fields
+                        if (fetchReferences) {
+                            Map<String, List<String>> targetIdsMap = new HashMap<>();
+                            for (Reference reference : directory.getReferences()) {
+                                List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
+                                String fieldName = reference.getFieldName();
+                                if (targetIdsMap.containsKey(fieldName)) {
+                                    targetIdsMap.get(fieldName).addAll(targetIds);
+                                } else {
+                                    targetIdsMap.put(fieldName, targetIds);
+                                }
+                            }
+                            for (Entry<String, List<String>> en : targetIdsMap.entrySet()) {
+                                String fieldName = en.getKey();
+                                List<String> targetIds = en.getValue();
+                                docModel.setProperty(schemaName, fieldName, targetIds);
                             }
                         }
-                        for (Entry<String, List<String>> en : targetIdsMap.entrySet()) {
-                            String fieldName = en.getKey();
-                            List<String> targetIds = en.getValue();
-                            docModel.setProperty(schemaName, fieldName, targetIds);
-                        }
+                        list.add(docModel);
                     }
-                    list.add(docModel);
                 }
-                rs.close();
                 if (manualLimitOffset) {
                     int totalSize = list.size();
                     if (offset > 0) {
@@ -766,7 +756,6 @@ public class SQLSession extends BaseSession {
         }
 
         DocumentModel entry;
-        Statement st = null;
         try (PreparedStatement ps = prepareStatementWithAutoKeys(sql)) {
 
             int index = 1;
@@ -779,26 +768,18 @@ public class SQLSession extends BaseSession {
             ps.execute();
             if (autoincrementId) {
                 Column column = table.getColumn(getIdField());
-                ResultSet rs;
                 if (dialect.hasIdentityGeneratedKey()) {
-                    rs = ps.getGeneratedKeys();
+                    try (ResultSet rs = ps.getGeneratedKeys()) {
+                        setIdFieldInMap(rs, column, idFieldName, fieldMap);
+                    }
                 } else {
                     // needs specific statements
                     sql = dialect.getIdentityGeneratedKeySql(column);
-                    st = sqlConnection.createStatement();
-                    rs = st.executeQuery(sql);
-                }
-                if (!rs.next()) {
-                    throw new DirectoryException("Cannot get generated key");
-                }
-                if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs, Collections.singletonList(column));
-                }
-                Serializable rawId = column.getFromResultSet(rs, 1);
-                fieldMap.put(idFieldName, rawId);
-                rs.close();
-                if (st != null) {
-                    st.close();
+                    try (Statement st = sqlConnection.createStatement()) {
+                        try (ResultSet rs = st.executeQuery(sql)) {
+                            setIdFieldInMap(rs, column, idFieldName, fieldMap);
+                        }
+                    }
                 }
             }
             entry = fieldMapToDocumentModel(fieldMap);
@@ -808,6 +789,18 @@ public class SQLSession extends BaseSession {
         }
 
         return entry;
+    }
+
+    protected void setIdFieldInMap(ResultSet rs, Column column, String idFieldName, Map<String, Object> fieldMap)
+            throws SQLException {
+        if (!rs.next()) {
+            throw new DirectoryException("Cannot get generated key");
+        }
+        if (logger.isLogEnabled()) {
+            logger.logResultSet(rs, Collections.singletonList(column));
+        }
+        Serializable rawId = column.getFromResultSet(rs, 1);
+        fieldMap.put(idFieldName, rawId);
     }
 
     /**

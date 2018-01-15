@@ -43,6 +43,8 @@ public class UpdateCenterPage extends AdminCenterBasePage {
         try {
             Thread.sleep(nbSeconds * 1000);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 
