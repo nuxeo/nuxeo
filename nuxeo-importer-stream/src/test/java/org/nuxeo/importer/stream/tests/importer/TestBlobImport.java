@@ -91,19 +91,18 @@ public abstract class TestBlobImport {
 
     @Test
     public void fileBlobImporter() throws Exception {
-        final int NB_QUEUE = 10;
-        final short NB_PRODUCERS = 10;
-        final int NB_BLOBS = 2 * 1000;
+        final int NB_QUEUE = 2;
+        final short NB_PRODUCERS = 2;
+        final int NB_BLOBS = 50;
 
         try (LogManager manager = getManager()) {
             manager.createIfNotExists("blob-import", NB_QUEUE);
-            LogAppender<BlobMessage> appender = manager.getAppender("blob-import");
+
             ProducerPool<BlobMessage> producers = new ProducerPool<>("blob-import", manager,
-                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files")),
+                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"), NB_BLOBS),
                     NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
-            assertEquals(NB_PRODUCERS, ret.size());
-            // assertEquals(NB_PRODUCERS * NB_BLOBS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
+            assertEquals(NB_PRODUCERS * NB_BLOBS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
 
             try (LogManager managerBlobInfo = getManager()) {
                 String blobProviderName = "test";
@@ -113,8 +112,7 @@ public abstract class TestBlobImport {
                         new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                         ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
                 List<ConsumerStatus> retConsumers = consumers.start().get();
-                assertEquals(NB_QUEUE, (long) retConsumers.size());
-                // assertEquals(NB_PRODUCERS * NB_BLOBS, retConsumers.stream().mapToLong(r -> r.committed).sum());
+                assertEquals(NB_PRODUCERS * NB_BLOBS, retConsumers.stream().mapToLong(r -> r.committed).sum());
             }
         }
     }

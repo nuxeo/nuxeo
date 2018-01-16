@@ -51,7 +51,6 @@ import org.mp4parser.boxes.iso14496.part12.MetaBox;
 import org.mp4parser.boxes.iso14496.part12.MovieBox;
 import org.mp4parser.boxes.iso14496.part12.UserDataBox;
 import org.mp4parser.tools.Path;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -62,12 +61,16 @@ import org.nuxeo.importer.stream.message.BlobMessage;
  */
 public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
 
-    public BlobWatermarkMessageConsumer(String consumerId, String blobProviderName, BlobInfoWriter blobInfoWriter) {
+    protected final String prefix;
+
+    public BlobWatermarkMessageConsumer(String consumerId, String blobProviderName, BlobInfoWriter blobInfoWriter,
+            String watermarkPrefix) {
         super(consumerId, blobProviderName, blobInfoWriter);
+        this.prefix = watermarkPrefix;
     }
 
     @Override
-    protected Blob getBlob(BlobMessage message) {
+    protected MyBlob getBlob(BlobMessage message) {
         String watermark = getWatermarkString();
         switch (message.getMimetype()) {
         case "text/plain":
@@ -81,10 +84,10 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
         }
     }
 
-    protected Blob addWatermarkToVideo(BlobMessage message, String watermark) {
+    protected MyBlob addWatermarkToVideo(BlobMessage message, String watermark) {
         String videoFilePath = message.getPath();
         File videoFile = new File(videoFilePath);
-        videoFile.setReadOnly();
+        // videoFile.setReadOnly();
         try {
             IsoFile isoFile = new IsoFile(videoFilePath);
             MovieBox moov = isoFile.getBoxes(MovieBox.class).get(0);
@@ -151,7 +154,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
             FileChannel read = new RandomAccessFile(videoFile, "r").getChannel();
             File tmp = File.createTempFile("ChangeMetaData", ".mp4");
             FileChannel write = new RandomAccessFile(tmp, "rw").getChannel();
-            if ( diff == 0) {
+            if (diff == 0) {
                 read.transferTo(0, read.size(), write);
                 write.position(offset);
                 write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
@@ -160,17 +163,16 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
                 write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
                 read.transferTo(offset + baos.size(), read.size() - diff, write);
             }
-            System.out.println(tmp);
-            return new FileBlob(tmp, message.getMimetype());
+            return new MyBlob(new FileBlob(tmp, message.getMimetype()), tmp.getAbsolutePath());
 
-//            RandomAccessFile f = new RandomAccessFile(videoFilePath, "r");
-//            byte[] data = new byte[(int) offset + baos.getBuffer().length];
-//            System.out.println("data len " + data.length);
-//            f.readFully(data, 0, (int) f.length());
-//            ByteBuffer buf = ByteBuffer.wrap(data);
-//            buf.position((int) offset);
-//            buf.put(baos.getBuffer());
-//            return new ByteArrayBlob(data, message.getMimetype());
+            // RandomAccessFile f = new RandomAccessFile(videoFilePath, "r");
+            // byte[] data = new byte[(int) offset + baos.getBuffer().length];
+            // System.out.println("data len " + data.length);
+            // f.readFully(data, 0, (int) f.length());
+            // ByteBuffer buf = ByteBuffer.wrap(data);
+            // buf.position((int) offset);
+            // buf.put(baos.getBuffer());
+            // return new ByteArrayBlob(data, message.getMimetype());
         } catch (IOException e) {
             throw new IllegalArgumentException("shit happen", e);
         }
@@ -231,7 +233,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
     /**
      * Returns a blob with the jpeg image update the exif software tag with the watermark
      */
-    protected Blob addWatermarkToPicture(BlobMessage message, String watermark) {
+    protected MyBlob addWatermarkToPicture(BlobMessage message, String watermark) {
         File jpegImageFile = new File(message.getPath());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
@@ -254,7 +256,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
             os.flush();
             // FileUtils.writeByteArrayToFile(new File("/tmp/", message.getFilename()), os.toByteArray());
             // System.out.println("done");
-            return new ByteArrayBlob(os.toByteArray(), message.getMimetype());
+            return new MyBlob(new ByteArrayBlob(os.toByteArray(), message.getMimetype()));
         } catch (ImageReadException | ImageWriteException | IOException e) {
             throw new IllegalArgumentException("Unable to edit jpeg " + message, e);
         } finally {
@@ -266,7 +268,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
         }
     }
 
-    protected Blob addWatermarkToText(BlobMessage message, String watermark) {
+    protected MyBlob addWatermarkToText(BlobMessage message, String watermark) {
         String content = message.getContent();
         if (content == null) {
             try {
@@ -276,10 +278,10 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
                 throw new IllegalArgumentException("Invalid message: " + message, e);
             }
         }
-        return new StringBlob(watermark + content);
+        return new MyBlob(new StringBlob(watermark + content));
     }
 
     protected String getWatermarkString() {
-        return "foobar " + System.currentTimeMillis();
+        return prefix + " " + System.currentTimeMillis();
     }
 }

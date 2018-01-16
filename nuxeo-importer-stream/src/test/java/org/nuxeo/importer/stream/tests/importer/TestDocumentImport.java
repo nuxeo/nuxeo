@@ -161,12 +161,13 @@ public abstract class TestDocumentImport {
         final int NB_QUEUE = 2;
         final short NB_PRODUCERS = 2;
         final long NB_DOCUMENTS = 100;
+        final long NB_BLOBS = 100;
 
         try (LogManager manager = getManager()) {
             manager.createIfNotExists("blob", NB_QUEUE);
             // 1. generates blobs from files
             ProducerPool<BlobMessage> blobProducers = new ProducerPool<>("blob", manager,
-                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files")),
+                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"), NB_BLOBS),
                     NB_PRODUCERS);
             List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
             assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
@@ -176,7 +177,7 @@ public abstract class TestDocumentImport {
             String blobProviderName = "test";
             manager.createIfNotExists("blob-info", 1);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
-            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, true);
+            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, "foobar");
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory,
                     ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();

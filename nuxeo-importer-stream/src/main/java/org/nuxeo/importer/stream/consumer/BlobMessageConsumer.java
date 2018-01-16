@@ -20,6 +20,8 @@ package org.nuxeo.importer.stream.consumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -64,16 +66,20 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     @Override
     public void accept(BlobMessage message) {
         try {
-            Blob blob = getBlob(message);
-            String digest = blobProvider.writeBlob(blob);
-            long length = blob.getLength();
-            saveBlobInfo(message, digest, length);
+            MyBlob blob = getBlob(message);
+            try {
+                String digest = blobProvider.writeBlob(blob.getBlob());
+                long length = blob.getBlob().getLength();
+                saveBlobInfo(message, digest, length);
+            } finally {
+                blob.clean();
+            }
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid blob: " + message, e);
         }
     }
 
-    protected Blob getBlob(BlobMessage message) {
+    protected MyBlob getBlob(BlobMessage message) {
         Blob blob;
         if (message.getPath() != null) {
             blob = new FileBlob(new File(message.getPath()));
@@ -81,10 +87,10 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
             // we don't submit filename or encoding this is not saved in the binary store but in the document
             blob = new StringBlob(message.getContent(), null, null, null);
         }
-        return blob;
+        return new MyBlob(blob);
     }
 
-    protected void saveBlobInfo(BlobMessage message, String digest, long length) throws IOException {
+    protected void saveBlobInfo(BlobMessage message, String digest, long length) {
         BlobInfo bi = new BlobInfo();
         bi.digest = digest;
         bi.key = blobProviderName + ":" + bi.digest;
@@ -103,5 +109,38 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     @Override
     public void rollback() {
 
+    }
+
+    public class MyBlob {
+        protected final Blob blob;
+
+        protected final String fileToDelete;
+
+        public MyBlob(Blob blob) {
+            this(blob, null);
+        }
+
+        public MyBlob(Blob blob, String fileToDelete) {
+            this.blob = blob;
+            this.fileToDelete = fileToDelete;
+        }
+
+        public Blob getBlob() {
+            return blob;
+        }
+
+        public String getFileToDelete() {
+            return fileToDelete;
+        }
+
+        public void clean() {
+            if (fileToDelete != null) {
+                try {
+                    Files.delete(Paths.get(fileToDelete));
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 }

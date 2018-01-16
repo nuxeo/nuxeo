@@ -146,7 +146,7 @@ public class BlobMessage implements Message {
             this.setPath(path);
             this.filename = Paths.get(path).getFileName().toString();
             this.mimetype = guessMimeType();
-            System.out.println("Got " + filename + " mime: " + mimetype);
+            // System.out.println("Got " + filename + " mime: " + mimetype);
         }
 
         private String guessMimeType() {

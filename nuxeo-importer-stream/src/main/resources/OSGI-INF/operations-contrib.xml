@@ -3,6 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
     <operation class="org.nuxeo.importer.stream.automation.RandomBlobProducers" />
+    <operation class="org.nuxeo.importer.stream.automation.FileBlobProducers" />
     <operation class="org.nuxeo.importer.stream.automation.BlobConsumers" />
     <operation class="org.nuxeo.importer.stream.automation.RandomDocumentProducers" />
     <operation class="org.nuxeo.importer.stream.automation.DocumentConsumers" />

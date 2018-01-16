@@ -32,17 +32,20 @@ public class FileBlobMessageProducerFactory implements ProducerFactory<BlobMessa
 
     protected final String basePath;
 
+    protected final long nbBlobs;
+
     /**
-     * Produce messages to import files listed in the listFile.
-     *
+     * Produce messages to import files listed in the listFile. the basePath is added as a prefix to all file path in
+     * the listFile
      */
-    public FileBlobMessageProducerFactory(File listFile, String basePath) {
+    public FileBlobMessageProducerFactory(File listFile, String basePath, long nbBlobs) {
         this.listFile = listFile;
         this.basePath = basePath;
+        this.nbBlobs = nbBlobs;
     }
 
     @Override
     public ProducerIterator<BlobMessage> createProducer(int producerId) {
-        return new FileBlobMessageProducer(producerId, listFile, basePath);
+        return new FileBlobMessageProducer(producerId, listFile, basePath, nbBlobs);
     }
 }

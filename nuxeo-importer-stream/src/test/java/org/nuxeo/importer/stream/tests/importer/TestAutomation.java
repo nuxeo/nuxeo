@@ -21,6 +21,7 @@ package org.nuxeo.importer.stream.tests.importer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.importer.stream.automation.BlobConsumers;
 import org.nuxeo.importer.stream.automation.DocumentConsumers;
+import org.nuxeo.importer.stream.automation.FileBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomDocumentProducers;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -65,7 +67,7 @@ public abstract class TestAutomation {
     public abstract void addExtraParams(Map<String, Object> params);
 
     @Test
-    public void testBlobImport() throws Exception {
+    public void testRandomBlobImport() throws Exception {
         final int nbThreads = 4;
         OperationContext ctx = new OperationContext(session);
 
@@ -82,6 +84,29 @@ public abstract class TestAutomation {
         addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
     }
+
+    @Test
+    public void testFileBlobImport() throws Exception {
+        final int nbThreads = 4;
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("nbBlobs", 10);
+        params.put("nbThreads", nbThreads);
+        params.put("logSize", nbThreads);
+        params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
+        params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
+        addExtraParams(params);
+        automationService.run(ctx, FileBlobProducers.ID, params);
+
+        params.clear();
+        params.put("blobProviderName", "test");
+        params.put("nbThreads", nbThreads);
+        params.put("watermark", "foo");
+        addExtraParams(params);
+        automationService.run(ctx, BlobConsumers.ID, params);
+    }
+
 
     @Test
     public void testDocumentImport() throws Exception {

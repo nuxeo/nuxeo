@@ -21,8 +21,6 @@ package org.nuxeo.importer.stream.producer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -30,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.lib.stream.pattern.producer.AbstractProducer;
-import scala.collection.Searching;
 
 /**
  * Use a listing file to generate BlobMessage.
@@ -44,21 +41,29 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     protected final String basePath;
 
-    protected int count = 0;
+    protected long count = 0;
+
+    protected final long nbBlobs;
 
     protected Stream<String> stream;
 
     protected Iterator<String> fileIterator;
 
-    public FileBlobMessageProducer(int producerId, File listFile, String basePath) {
+    public FileBlobMessageProducer(int producerId, File listFile, String basePath, long nbBlobs) {
         super(producerId);
         this.listFile = listFile;
+        this.nbBlobs = nbBlobs;
         if (basePath == null) {
             this.basePath = "";
         } else {
             this.basePath = basePath;
         }
         log.info("Producer using file list: " + listFile.getAbsolutePath());
+        getFileIterator();
+
+    }
+
+    private void getFileIterator() {
         try {
             stream = Files.lines(listFile.toPath());
             fileIterator = stream.iterator();
@@ -67,12 +72,11 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
             log.error(msg, e);
             throw new IllegalArgumentException(e);
         }
-
     }
 
     @Override
     public int getPartition(BlobMessage message, int partitions) {
-        return count % partitions;
+        return ((int) count) % partitions;
     }
 
     @Override
@@ -85,7 +89,17 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     @Override
     public boolean hasNext() {
-        return fileIterator.hasNext();
+        if (nbBlobs > 0 && count >= nbBlobs) {
+            return false;
+        }
+        if (! fileIterator.hasNext()) {
+            if (nbBlobs == 0) {
+                return false;
+            }
+            // loop until we get the nb blobs
+            getFileIterator();
+        }
+        return true;
     }
 
     @Override

@@ -26,7 +26,6 @@ import org.nuxeo.importer.stream.message.BlobInfoMessage;
 import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
-import sun.rmi.runtime.Log;
 
 /**
  * Returns blob information from a Log, loop on the log.
@@ -37,6 +36,7 @@ public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
     protected static final int READ_DELAY_MS = 100;
 
     protected final LogTailer<BlobInfoMessage> tailer;
+
     private boolean first;
 
     public RandomLogBlobInfoFetcher(LogTailer<BlobInfoMessage> blobInfoTailer) {
@@ -67,7 +67,7 @@ public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         tailer.close();
     }
 }

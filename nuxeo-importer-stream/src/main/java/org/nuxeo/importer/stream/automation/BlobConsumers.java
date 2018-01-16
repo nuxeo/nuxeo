@@ -90,6 +90,10 @@ public class BlobConsumers {
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
 
+    @Param(name = "watermark", required = false)
+    protected String watermark;
+
+
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
@@ -112,7 +116,7 @@ public class BlobConsumers {
         LogManager manager = service.getLogManager(getLogConfig());
         try (BlobInfoWriter blobInfoWriter = getBlobInfoWriter(manager)) {
             ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(getLogName(), manager,
-                    new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter), consumerPolicy);
+                    new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark), consumerPolicy);
             consumers.start().get();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

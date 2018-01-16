@@ -82,7 +82,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 
 2. Run consumers of blob messages importing into the Nuxeo binary store, saving blob information into a new Log.
   ```
-mkdir /tmp/a
 curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
   -d '{"params":{"blobProviderName": "default", "logBlobInfo": "blob-info"}}'
 ```

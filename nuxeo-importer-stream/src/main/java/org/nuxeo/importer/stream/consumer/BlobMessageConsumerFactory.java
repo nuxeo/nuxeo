@@ -30,28 +30,31 @@ public class BlobMessageConsumerFactory implements ConsumerFactory<BlobMessage> 
 
     protected final BlobInfoWriter blobInfoWriter;
 
-    protected final boolean watermark;
+    protected final String watermarkPrefix;
 
     /**
      * Blob Consumer factory requires a blob providerName that is present in Nuxeo instance running the consumer. The
      * writer is used to store the blob information.
      */
     public BlobMessageConsumerFactory(String blobProviderName, BlobInfoWriter blobInfoWriter) {
-        this(blobProviderName, blobInfoWriter, false);
+        this(blobProviderName, blobInfoWriter, null);
     }
 
-    public BlobMessageConsumerFactory(String blobProviderName, BlobInfoWriter blobInfoWriter, boolean watermark) {
+    /**
+     * Blob consumer that change the input blob to add a random watermark.
+     */
+    public BlobMessageConsumerFactory(String blobProviderName, BlobInfoWriter blobInfoWriter, String watermarkPrefix) {
         this.blobProviderName = blobProviderName;
         this.blobInfoWriter = blobInfoWriter;
-        this.watermark = watermark;
+        this.watermarkPrefix = watermarkPrefix;
 
     }
 
     @Override
     public Consumer<BlobMessage> createConsumer(String consumerId) {
-        if (watermark) {
-            return new BlobWatermarkMessageConsumer(consumerId, blobProviderName, blobInfoWriter);
+        if (watermarkPrefix == null || watermarkPrefix.isEmpty()) {
+            return new BlobMessageConsumer(consumerId, blobProviderName, blobInfoWriter);
         }
-        return new BlobMessageConsumer(consumerId, blobProviderName, blobInfoWriter);
+        return new BlobWatermarkMessageConsumer(consumerId, blobProviderName, blobInfoWriter, watermarkPrefix);
     }
 }
