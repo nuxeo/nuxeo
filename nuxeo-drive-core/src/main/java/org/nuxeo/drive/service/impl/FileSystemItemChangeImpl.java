@@ -21,7 +21,7 @@ package org.nuxeo.drive.service.impl;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemChange;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Default implementation of a {@link FileSystemItemChange}.
@@ -141,7 +141,7 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
     }
 
     @Override
-    @JsonIgnore
+    @JsonDeserialize(using = FileSystemItemDeserializer.class)
     public void setFileSystemItem(FileSystemItem fileSystemItem) {
         this.fileSystemItem = fileSystemItem;
     }

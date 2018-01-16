@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -98,9 +99,10 @@ public class TestGetChangeSummary {
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        // Register sync roots and create 2 documents => should find 2 changes
+        // Register sync roots and create 2 documents and 1 folder => should find 3 changes
         DocumentModel doc1;
         DocumentModel doc2;
+        DocumentModel folder3;
         try {
             Principal administrator = session.getPrincipal();
             nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1, session);
@@ -113,6 +115,9 @@ public class TestGetChangeSummary {
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
             doc2 = session.createDocument(doc2);
+            Thread.sleep(1000);
+            folder3 = session.createDocumentModel("/folder2", "folder3", "Folder");
+            folder3 = session.createDocument(folder3);
 
             session.save();
         } finally {
@@ -122,15 +127,32 @@ public class TestGetChangeSummary {
 
         changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
-        assertEquals(2, docChanges.size());
+        assertEquals(3, docChanges.size());
+
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc2.getId(), docChange.getDocUuid());
+        assertEquals(folder3.getId(), docChange.getDocUuid());
+        FileSystemItem fsi = docChange.getFileSystemItem();
+        assertNotNull(fsi);
+        assertEquals("folder3", fsi.getName());
+
         docChange = docChanges.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
+        assertEquals(doc2.getId(), docChange.getDocUuid());
+        fsi = docChange.getFileSystemItem();
+        assertNotNull(fsi);
+        assertEquals("doc2", fsi.getName());
+
+        docChange = docChanges.get(2);
+        assertEquals("test", docChange.getRepositoryId());
+        assertEquals("documentChanged", docChange.getEventId());
         assertEquals(doc1.getId(), docChange.getDocUuid());
+        fsi = docChange.getFileSystemItem();
+        assertNotNull(fsi);
+        assertEquals("doc1", fsi.getName());
+
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
