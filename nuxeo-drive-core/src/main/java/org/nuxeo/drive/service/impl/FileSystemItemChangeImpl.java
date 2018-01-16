@@ -18,7 +18,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemChange;
 
@@ -140,7 +140,7 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
     }
 
     @Override
-    @JsonIgnore
+    @JsonDeserialize(using = FileSystemItemDeserializer.class)
     public void setFileSystemItem(FileSystemItem fileSystemItem) {
         this.fileSystemItem = fileSystemItem;
     }
