@@ -54,7 +54,12 @@ public class TestRFC2231 {
                 RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false,
                         TestUserAgent.FF_30));
         assertEquals("attachment; filename*=UTF-8''%E5%B9%B3%E4%BB%AE%E5%90%8D%20-%20good.txt",
-                RFC2231.encodeContentDisposition("平仮名 - good.txt", false, TestUserAgent.MSIE11));
+                RFC2231.encodeContentDisposition("\u5e73\u4eee\u540d - good.txt", false, TestUserAgent.MSIE11));
+        assertEquals(
+                "attachment; filename*=UTF-8''%E3%83%8C%E3%82%AF%E3%82%BB%E3%82%AA%E3%83%BB%E3%82%B7%E3%82%99%E3%83%A3%E3%83%8F%E3%82%9A%E3%83%B3.txt",
+                RFC2231.encodeContentDisposition(
+                        "\u30cc\u30af\u30bb\u30aa\u30fb\u30b7\u3099\u30e3\u30cf\u309a\u30f3.txt", false,
+                        TestUserAgent.SAFARI11));
     }
 
 }
