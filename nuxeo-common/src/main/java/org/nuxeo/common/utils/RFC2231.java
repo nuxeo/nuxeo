@@ -84,19 +84,14 @@ public class RFC2231 {
         if (userAgent == null) {
             userAgent = "";
         }
-        if (isSafari5(userAgent) || isMSIE6or7(userAgent)) {
+        if (isMSIE6or7(userAgent)) {
+            // MSIE understands straight %-encoding
             buf.append("filename=");
-            if (isMSIE6or7(userAgent)) {
-                // MSIE understands straight %-encoding
-                percentEscape(buf, filename);
-            } else {
-                // Safari (maybe others) expects direct UTF-8 encoded strings
-                buf.append(filename);
-            }
+            percentEscape(buf, filename);
         } else {
             // proper RFC2231
             buf.append("filename*=UTF-8''");
-            percentEscape(buf, filename);            
+            percentEscape(buf, filename);
         }
         return buf.toString();
     }
