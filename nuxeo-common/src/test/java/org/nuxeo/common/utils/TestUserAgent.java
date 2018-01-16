@@ -55,6 +55,8 @@ public class TestUserAgent {
 
     public static final String MS_EDGE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.<OS build number>";
 
+    public static final String SAFARI11 = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7";
+
     @Test
     public void testSupportedBrowsers() throws Exception {
 
