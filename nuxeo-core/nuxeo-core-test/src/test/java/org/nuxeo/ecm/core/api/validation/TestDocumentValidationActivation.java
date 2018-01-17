@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.api.validation;
 
+import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.SIMPLE_FIELD;
+import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_ARRAY_FIELD;
+import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_PROPS_FIELD;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -53,8 +57,6 @@ public class TestDocumentValidationActivation {
 
     private static final int INVALID = -12345;
 
-    private static final String SIMPLE_FIELD = "vs:groupCode";
-
     @Inject
     protected DocumentValidationService validator;
 
@@ -66,6 +68,8 @@ public class TestDocumentValidationActivation {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
         doc = session.createDocument(doc);
     }
 
@@ -118,6 +122,8 @@ public class TestDocumentValidationActivation {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
         doc = session.createDocument(doc);
     }
 
@@ -189,8 +195,10 @@ public class TestDocumentValidationActivation {
     public void testOnSaveDocumentActivationAfterListeners() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
-        doc = session.createDocument(doc);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
     }
 
