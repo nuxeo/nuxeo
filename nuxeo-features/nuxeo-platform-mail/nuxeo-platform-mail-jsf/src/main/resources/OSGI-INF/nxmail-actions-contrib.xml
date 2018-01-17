@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="org.nuxeo.ecm.platform.mail.web.actions.contrib">
+<component name="org.nuxeo.ecm.platform.mail.jsf.actions.contrib">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">

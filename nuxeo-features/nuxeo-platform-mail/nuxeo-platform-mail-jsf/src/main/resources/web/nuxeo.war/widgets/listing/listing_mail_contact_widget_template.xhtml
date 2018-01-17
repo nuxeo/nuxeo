@@ -5,14 +5,14 @@
 
   <h:outputText value="#{messages['label.mail.from']}: " styleClass="boldLabel" />
   <h:outputText value="#{field_0}" escape="false">
-    <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+    <f:converter converterId="org.nuxeo.ecm.platform.mail.jsf.converter.mailconverter" />
   </h:outputText>
   <h:outputText value=" " />
 
   <h:outputText value="#{messages['label.mail.to']}: " styleClass="boldLabel" />
   <nxu:repeat value="#{field_1}" var="contact">
     <h:outputText value="#{contact}" escape="false">
-      <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+      <f:converter converterId="org.nuxeo.ecm.platform.mail.jsf.converter.mailconverter" />
     </h:outputText>
     <h:outputText value=" " />
   </nxu:repeat>
@@ -21,7 +21,7 @@
     <h:outputText value="#{messages['label.mail.tocc']}: " styleClass="boldLabel" />
     <nxu:repeat value="#{field_2}" var="contact">
       <h:outputText value="#{contact}" escape="false">
-        <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+        <f:converter converterId="org.nuxeo.ecm.platform.mail.jsf.converter.mailconverter" />
       </h:outputText>
       <h:outputText value=" " />
     </nxu:repeat>

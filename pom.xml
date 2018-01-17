@@ -1454,7 +1454,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-mail-web</artifactId>
+        <artifactId>nuxeo-platform-mail-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>

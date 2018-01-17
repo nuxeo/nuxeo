@@ -7,9 +7,9 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-mail-web</artifactId>
-  <name>Nuxeo Mail - Web</name>
-  <description>Nuxeo Platform Mail Web module is the web module of the mail plugin for Nuxeo.</description>
+  <artifactId>nuxeo-platform-mail-jsf</artifactId>
+  <name>Nuxeo Mail - JSF</name>
+  <description>Nuxeo Platform Mail JSF module is the JSF module of the mail plugin for Nuxeo.</description>
 
   <dependencies>
     <dependency>

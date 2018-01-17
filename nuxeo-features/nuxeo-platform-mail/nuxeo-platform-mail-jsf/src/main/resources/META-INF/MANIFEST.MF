@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo ECM Mail Web
-Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.web;singleton:=true
+Bundle-Name: Nuxeo ECM Mail JSF
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo

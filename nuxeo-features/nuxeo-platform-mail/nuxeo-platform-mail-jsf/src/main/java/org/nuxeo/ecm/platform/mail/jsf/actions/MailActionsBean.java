@@ -19,10 +19,10 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.mail.web.actions;
+package org.nuxeo.ecm.platform.mail.jsf.actions;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_FOLDER_TYPE;
-import static org.nuxeo.ecm.platform.mail.web.utils.MailWebConstants.CURRENT_PAGE;
+import static org.nuxeo.ecm.platform.mail.jsf.utils.MailWebConstants.CURRENT_PAGE;
 
 import java.io.Serializable;
 

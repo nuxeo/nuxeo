@@ -19,7 +19,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.mail.web.utils;
+package org.nuxeo.ecm.platform.mail.jsf.utils;
 
 /**
  * Constants specific to Mail Web.

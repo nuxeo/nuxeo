@@ -32,7 +32,7 @@
   <target name="web" description="Copy web files to a live JBoss"
     depends="setproperties">
     <copy todir="${jboss.nuxeo.ear}/nuxeo.war">
-      <fileset dir="${basedir}/nuxeo-platform-mail-web/src/main/resources/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-platform-mail-jsf/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
 
