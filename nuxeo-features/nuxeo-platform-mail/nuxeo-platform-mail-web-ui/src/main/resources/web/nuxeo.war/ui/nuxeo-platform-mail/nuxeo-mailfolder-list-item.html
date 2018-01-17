@@ -1,0 +1,239 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+`nuxeo-mailfolder-list-item`
+@group Nuxeo UI
+@element nuxeo-mailfolder-list-item
+-->
+<dom-module id="nuxeo-mailfolder-list-item">
+  <template>
+    <style include="nuxeo-styles iron-flex">
+      :host {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .list-item {
+        background-color: var(--nuxeo-box);
+        border: 1px solid transparent;
+        border-bottom-color: var(--nuxeo-border);
+        cursor: pointer;
+        padding: 1em;
+        outline: none;
+      }
+
+      .list-item:hover,
+      .list-item:focus {
+        border: 1px solid var(--nuxeo-link-hover-color);
+      }
+
+      .list-item .select {
+        display: none;
+        position: absolute;
+        top: 1.2rem;
+        left: 1.2rem;
+        border: 1px solid #ddd;
+        background-color: var(--nuxeo-box);
+        z-index: 2;
+        border-radius: 3em;
+      }
+
+      .list-item .select paper-icon-button {
+        margin: 0;
+        padding: .3em;
+        box-sizing: border-box;
+      }
+
+      .list-item .select,
+      .list-item .select paper-icon-button {
+        width: 2.5em;
+        height: 2.5em;
+      }
+
+      :host([selected]) .select paper-icon-button,
+      .list-item .select:hover paper-icon-button {
+        color: #fff;
+      }
+
+      .list-item:hover .select,
+      .list-item[selection-mode] .select {
+        display: block;
+      }
+
+      .list-item:hover .select:hover {
+        border: 1px solid var(--nuxeo-button-primary);
+        background-color: var(--nuxeo-button-primary);
+        cursor: pointer;
+      }
+
+      :host([selected]) .list-item .select,
+      :host([selected]) .list-item:hover .select:hover {
+        border: 1px solid var(--nuxeo-grid-selected);
+        background-color: var(--nuxeo-grid-selected);
+        cursor: pointer;
+        display: block;
+      }
+
+      :host([selected]) .list-item {
+        border: 1px solid var(--nuxeo-grid-selected);
+      }
+
+      .sender {
+        font-weight: bold;
+      }
+
+      .ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .details {
+        @apply --layout-vertical;
+        margin-left: 50px;
+        width: 200px;
+      }
+
+      .text {
+        @apply --layout-flex;
+        @apply --layout-self-end;
+        color: #BCBFBF;
+        margin: 0 24px;
+      }
+
+      .subject, .text, .date {
+        font-size: .9rem;
+      }
+
+      .date {
+        @apply --layout-vertical;
+        color: #BCBFBF;
+        text-align: right;
+      }
+
+      iron-icon {
+        color: #7F8284;
+        margin-right: 24px;
+      }
+
+      .invisible {
+        visibility: hidden;
+      }
+    </style>
+
+    <div class="list-item" selection-mode$="[[selectionMode]]">
+      <div class="select">
+        <paper-icon-button noink icon="icons:check" title="select" on-tap="_onCheckBoxTap"></paper-icon-button>
+      </div>
+      <div class="layout horizontal center" on-tap="handleClick">
+        <div class="details">
+          <span class="sender" title="[[_computeSenderEmail(item)]]">[[_computeSender(item)]]</span>
+          <span class="subject ellipsis" title="[[item.title]]">[[item.title]]</span>
+        </div>
+        <div class="text ellipsis">[[item.properties.mail:text]]</div>
+        <iron-icon icon="nuxeo:attachment" class$="[[_computedAttachmentClass(item)]]"></iron-icon>
+        <div class="date">
+          <nuxeo-date datetime="[[item.properties.mail:sending_date]]" format="relative"></nuxeo-date>
+          <nuxeo-date datetime="[[item.properties.mail:sending_date]]" format="HH:mm A"></nuxeo-date>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-mailfolder-list-item',
+      properties: {
+        item: {
+          type: Object
+        },
+
+        selected: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        selectedItems: {
+          type: Array,
+          value: []
+        },
+
+        index: {
+          type: Number
+        }
+      },
+
+      observers: [
+        '_selectedItemsChanged(selectedItems.splices)'
+      ],
+
+      handleClick: function(e) {
+        if (this.selectionMode) {
+          this._toogleSelect(e);
+        } else if (!(e.ctrlKey || e.shiftKey || e.metaKey || e.button === 1)) {
+          this.fire('navigate', {item: this.doc, index: this.index});
+        }
+      },
+
+      _onCheckBoxTap: function(e) {
+        this._toogleSelect(e);
+      },
+
+      _toogleSelect: function(e) {
+        this.selected = !this.selected;
+        this.fire('selected', {index: this.index, shiftKey: e.detail.sourceEvent.shiftKey});
+      },
+
+      _selectedItemsChanged: function() {
+        this.selectionMode = this.selectedItems && this.selectedItems.length > 0;
+      },
+
+      _computeSender: function(item) {
+        var match = this._getSenderRegexParts(item);
+        if (match && match.length > 2) {
+          var alias = match[1];
+          // return the email (match[2]) if the alias is null
+          return alias === 'null' ? match[2] : match[1];
+        }
+      },
+
+      _computeSenderEmail: function(item) {
+        var match = this._getSenderRegexParts(item);
+        if (match && match.length > 2) {
+          return match[2];
+        }
+      },
+
+      _getSenderRegexParts: function(item) {
+        if (item && item.properties) {
+          var regex = /(.*)<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})>/i;
+          return regex.exec(item.properties['mail:sender']);
+        }
+      },
+
+      _computedAttachmentClass: function(item) {
+        return this._hasAttachments(item) ? '' : 'invisible';
+      },
+
+      _hasAttachments: function(item) {
+        return item && item.properties && item.properties['files:files'] && item.properties['files:files'].length > 0;
+      }
+    });
+  </script>
+</dom-module>

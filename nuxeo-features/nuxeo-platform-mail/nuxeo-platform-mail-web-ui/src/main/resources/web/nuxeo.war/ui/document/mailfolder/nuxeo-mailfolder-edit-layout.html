@@ -1,0 +1,96 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+`nuxeo-mailfolder-edit-layout`
+@group Nuxeo UI
+@element nuxeo-mailfolder-edit-layout
+-->
+<dom-module id="nuxeo-mailfolder-edit-layout">
+  <template>
+    <style>
+      paper-checkbox {
+        padding-bottom: 8px;
+      }
+    </style>
+
+    <nuxeo-input role="widget" value="{{document.properties.dc:title}}" label="[[i18n('title')]]" type="text"
+                 required></nuxeo-input>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:email}}" label="[[i18n('label.mail.folder.email')]]"
+                 type="email" required></nuxeo-input>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:password}}"
+                 label="[[i18n('label.mail.folder.password')]]" type="password" required></nuxeo-input>
+
+    <nuxeo-select role="widget" label="[[i18n('label.mail.folder.protocol_type')]]" options="[[protocols]]"
+                  selected="{{document.properties.prot:protocol_type}}" required></nuxeo-select>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:host}}" label="[[i18n('label.mail.folder.host')]]"
+                 type="text"></nuxeo-input>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:port}}" label="[[i18n('label.mail.folder.port')]]"
+                 type="number"></nuxeo-input>
+
+    <paper-checkbox role="widget" noink checked="{{document.properties.prot:socket_factory_fallback}}">
+      [[i18n('label.mail.folder.socket_factory_fallback')]]
+    </paper-checkbox>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:socket_factory_port}}"
+                 label="[[i18n('label.mail.folder.socket_factory_port')]]" type="number"></nuxeo-input>
+
+    <paper-checkbox role="widget" noink checked="{{document.properties.prot:starttls_enable}}">
+      [[i18n('label.mail.folder.starttls_enable')]]
+    </paper-checkbox>
+
+    <nuxeo-select role="widget" label="[[i18n('label.mail.folder.ssl_protocols')]]" options="[[ssl_protocols]]"
+                  selected="{{document.properties.prot:ssl_protocols}}"></nuxeo-select>
+
+    <nuxeo-input role="widget" value="{{document.properties.prot:emails_limit}}"
+                 label="[[i18n('label.mail.folder.emails_limit')]]" type="number" required></nuxeo-input>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-mailfolder-edit-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype MailFolder
+         */
+        document: Object,
+
+        protocols: Array,
+
+        ssl_protocols: Array
+      },
+
+      ready: function() {
+        this.protocols = [
+          { id: 'imap', label: 'IMAP' },
+          { id: 'pop3', label: 'POP3' },
+          { id: 'imaps', label: 'IMAPS' },
+          { id: 'pop3s', label: 'POP3S' }
+        ];
+        this.ssl_protocols = [
+          { id: 'SSLv3', label: 'SSLv3' },
+          { id: 'TLSv1.2', label: 'TLSv1.2' },
+          { id: 'TLSv1.1', label: 'TLSv1.1' },
+          { id: 'TLSv1', label: 'TLSv1' },
+          { id: 'SSLv2Hello', label: 'SSLv2Hello' }
+        ];
+      }
+    });
+  </script>
+</dom-module>

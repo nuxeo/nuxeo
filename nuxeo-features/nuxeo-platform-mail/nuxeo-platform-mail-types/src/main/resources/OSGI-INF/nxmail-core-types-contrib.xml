@@ -19,6 +19,7 @@
       <schema name="uid"/>
       <schema name="files"/>
       <facet name="Commentable" />
+      <facet name="HiddenInCreation" />
     </doctype>
 
     <doctype name="MailFolder" extends="Folder">

@@ -1,0 +1,106 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../nuxeo-platform-mail/nuxeo-mailfolder-list-item.html">
+
+<!--
+`nuxeo-mailfolder-view-layout`
+@group Nuxeo UI
+@element nuxeo-mailfolder-view-layout
+-->
+<dom-module id="nuxeo-mailfolder-view-layout">
+  <template>
+    <style include="nuxeo-styles">
+      nuxeo-data-list {
+        display: block;
+        position: relative;
+        min-height: calc(100vh - 300px - var(--nuxeo-app-top));
+      }
+    </style>
+
+    <nuxeo-page-provider id="nxProvider"
+                         provider="advanced_document_content"
+                         page-size="20"
+                         enrichers="thumbnail, permissions"
+                         params="[[params]]"></nuxeo-page-provider>
+
+    <nuxeo-results id="results" nx-provider="[[nxProvider]]" name="default" display-mode="list"
+                   selected-items="{{selectedItems}}">
+      <nuxeo-data-list name="list" selection-enabled multi-selection display-sort
+                       sort-label="[[i18n('searchResults.sort.label')]]" sort-options="[[sortOptions]]">
+        <template>
+          <nuxeo-mailfolder-list-item selected$="{{selected}}" item="[[item]]" index="[[index]]"
+                                      on-navigate="_navigate" selected-items="[[selectedItems]]">
+          </nuxeo-mailfolder-list-item>
+        </template>
+      </nuxeo-data-list>
+    </nuxeo-results>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-mailfolder-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype MailFolder
+         */
+        document: {
+          type: Object,
+          observer: '_documentChanged'
+        },
+
+        params: {
+          type: Object,
+          observer: '_paramsChanged'
+        },
+
+        sortOptions: {
+          type: Array,
+          value: []
+        }
+      },
+
+      ready: function() {
+        this.nxProvider = this.$.nxProvider;
+        this.sortOptions = [
+          {
+            field: 'mail:sending_date',
+            label: this.i18n('mailfolder.sort.field.sending_date'),
+            order: 'desc',
+            selected: true
+          },
+          {field: 'mail:sender', label: this.i18n('mailfolder.sort.field.sender'), order: 'asc'},
+          {field: 'dc:title', label: this.i18n('mailfolder.sort.field.subject'), order: 'asc'}
+        ];
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.set('params', {'ecm_parentId': this.document.uid});
+        }
+      },
+
+      _paramsChanged: function() {
+        if (this.document && this.$.results.view) {
+          this.$.results.view.fetch();
+        }
+      },
+
+      _navigate: function(e) {
+        this.fire('navigate', {doc: (e.model || e.detail).item, index: (e.model || e.detail).index});
+      }
+    });
+  </script>
+</dom-module>
