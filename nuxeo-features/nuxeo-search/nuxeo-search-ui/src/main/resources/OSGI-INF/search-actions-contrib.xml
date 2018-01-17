@@ -91,6 +91,36 @@
       <filter-id>denyForDefaultSearch</filter-id>
     </action>
 
+    <action id="TAB_VIEW">
+      <filter-id>denyForSavedSearch</filter-id>
+    </action>
+
+    <action id="TAB_VIEW_SAVEDSEARCH" link="/search/incl/tabs/savedsearch_document_view.xhtml" order="5"
+      label="action.view.summary" icon="/icons/file.gif" accessKey="v"
+      type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>onlyForSavedSearch</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="TAB_EDIT">
+      <filter-id>denyForSavedSearch</filter-id>
+    </action>
+
+    <action id="TAB_EDIT_SAVEDSEARCH" link="/search/incl/tabs/savedsearch_document_edit.xhtml" order="25"
+      label="action.view.modification" icon="/icons/file.gif" accessKey="e"
+      type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>edit</filter-id>
+      <filter-id>onlyForSavedSearch</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+
     <!-- End of Home Searches tab actions -->
 
     <!-- Search content views -->
@@ -137,6 +167,18 @@
 
     <filter id="rights" append="true">
       <rule grant="true">
+        <facet>SavedSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="onlyForSavedSearch">
+      <rule grant="true">
+        <facet>SavedSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForSavedSearch">
+      <rule grant="false">
         <facet>SavedSearch</facet>
       </rule>
     </filter>
