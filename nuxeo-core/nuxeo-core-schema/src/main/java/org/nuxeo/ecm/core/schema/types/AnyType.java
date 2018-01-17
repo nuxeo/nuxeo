@@ -53,7 +53,7 @@ public final class AnyType extends AbstractType {
 
     @Override
     public boolean validate(Object object) {
-        return true;
+        throw new UnsupportedOperationException("Unimplemented, use DocumentValidationService");
     }
 
     @Override

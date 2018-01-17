@@ -119,17 +119,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     @SuppressWarnings("unchecked")
     @Override
     public boolean validate(Object object) throws TypeException {
-        if (object == null) {
-            return true;
-        }
-        if (object instanceof Map) {
-            return validateMap((Map<Object, Object>) object);
-        }
-        return false;
-    }
-
-    protected boolean validateMap(Map<Object, Object> map) {
-        return true;
+        throw new UnsupportedOperationException("Unimplemented, use DocumentValidationService");
     }
 
     @Override
