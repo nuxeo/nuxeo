@@ -25,8 +25,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,13 +65,17 @@ public class TestDocumentValidationService {
     // it comes from the message bundle messages_en.properties
     private static final String MESSAGE_FOR_USERS_FIRSTNAME = "message_for_users_firstname";
 
-    private static final String SIMPLE_FIELD = "vs:groupCode";
+    public static final String SIMPLE_FIELD = "vs:groupCode";
 
     private static final String COMPLEX_FIELD = "vs:manager";
 
     private static final String LIST_FIELD = "vs:roles";
 
     private static final String COMPLEX_LIST_FIELD = "vs:users";
+
+    public static final String STRING_LIST_PROPS_FIELD = "vs:simpleStringList";
+
+    public static final String STRING_LIST_ARRAY_FIELD = "vs:anotherSimpleList";
 
     private static final String SCHEMA = "validationSample";
 
@@ -88,6 +94,9 @@ public class TestDocumentValidationService {
     public void setUp() {
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc = session.createDocument(doc);
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+
         doc = session.saveDocument(doc);
     }
 
@@ -104,7 +113,7 @@ public class TestDocumentValidationService {
 
     @Test
     public void testDocumentWithViolation1() {
-        checkNotNullOnGroupCode(validator.validate(doc));
+        checkNotNullOnField(SIMPLE_FIELD, validator.validate(doc));
     }
 
     @Test
@@ -118,7 +127,7 @@ public class TestDocumentValidationService {
         doc.setPropertyValue(SIMPLE_FIELD, 10);
         doc = session.saveDocument(doc);
         doc.setPropertyValue(SIMPLE_FIELD, null);
-        checkNotNullOnGroupCode(validator.validate(doc, true));
+        checkNotNullOnField(SIMPLE_FIELD, validator.validate(doc, true));
     }
 
     @Test
@@ -138,7 +147,7 @@ public class TestDocumentValidationService {
     @Test
     public void testFieldWithViolation1() {
         Field field = metamodel.getField(SIMPLE_FIELD);
-        checkNotNullOnGroupCode(validator.validate(field, null));
+        checkNotNullOnField(SIMPLE_FIELD, validator.validate(field, null));
     }
 
     @Test
@@ -151,6 +160,36 @@ public class TestDocumentValidationService {
     public void testFieldComplexWithoutViolation() {
         Field field = metamodel.getField(COMPLEX_FIELD);
         checkOk(validator.validate(field, createUser("Bob", "Sponge")));
+    }
+
+    @Test
+    public void testMandatoryList() {
+        doc.setPropertyValue(SIMPLE_FIELD, 12345);
+
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"nowValid"});
+
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, null);
+        checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
+
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, (Serializable) Collections.emptyList());
+        checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
+
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, (Serializable) new String[] {});
+        checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
+
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"nowValid"});
+
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, null);
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(doc));
+
+        // It's difficult to set a document property with an empty collection (for a list with child properties)
+        // so I am going to use the field directly.
+        Field field = metamodel.getField(STRING_LIST_PROPS_FIELD);
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, null));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) Collections.emptyList()));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) new String[] {}));
     }
 
     @Test
@@ -223,7 +262,7 @@ public class TestDocumentValidationService {
 
     @Test
     public void testFieldXPathWithViolation1() {
-        checkNotNullOnGroupCode(validator.validate(SIMPLE_FIELD, null));
+        checkNotNullOnField(SIMPLE_FIELD, validator.validate(SIMPLE_FIELD, null));
     }
 
     @Test
@@ -525,7 +564,7 @@ public class TestDocumentValidationService {
         assertEquals(0, violations.size());
     }
 
-    private void checkNotNullOnGroupCode(DocumentValidationReport report) {
+    private void checkNotNullOnField(String field, DocumentValidationReport report) {
         List<ConstraintViolation> violations = report.asList();
         assertEquals(1, violations.size());
         ConstraintViolation violation = violations.get(0);
@@ -533,7 +572,7 @@ public class TestDocumentValidationService {
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(1, violation.getPath().size());
         String fieldName = violation.getPath().get(0).getField().getName().getPrefixedName();
-        assertEquals(SIMPLE_FIELD, fieldName);
+        assertEquals(field, fieldName);
         assertNull(violation.getInvalidValue());
     }
 
