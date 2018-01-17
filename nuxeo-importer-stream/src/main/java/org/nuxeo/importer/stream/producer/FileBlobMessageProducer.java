@@ -45,9 +45,9 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     protected final long nbBlobs;
 
-    protected Stream<String> stream;
-
     protected Iterator<String> fileIterator;
+
+    protected Stream<String> lines;
 
     public FileBlobMessageProducer(int producerId, File listFile, String basePath, long nbBlobs) {
         super(producerId);
@@ -65,8 +65,11 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     private void getFileIterator() {
         try {
-            stream = Files.lines(listFile.toPath());
-            fileIterator = stream.iterator();
+            if (lines != null) {
+                lines.close();
+            }
+            lines = Files.lines(listFile.toPath());
+            fileIterator = lines.iterator();
         } catch (IOException e) {
             String msg = "Failed to read file: " + listFile.getAbsolutePath();
             log.error(msg, e);
@@ -85,6 +88,10 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
         stream.close();
         stream = null;
         fileIterator = null;
+        if (lines != null) {
+            lines.close();
+        }
+        lines = null;
     }
 
     @Override
@@ -92,7 +99,7 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
         if (nbBlobs > 0 && count >= nbBlobs) {
             return false;
         }
-        if (! fileIterator.hasNext()) {
+        if (!fileIterator.hasNext()) {
             if (nbBlobs == 0) {
                 return false;
             }

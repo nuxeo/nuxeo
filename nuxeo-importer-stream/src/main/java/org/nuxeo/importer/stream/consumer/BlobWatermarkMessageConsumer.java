@@ -88,8 +88,8 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
         String videoFilePath = message.getPath();
         File videoFile = new File(videoFilePath);
         // videoFile.setReadOnly();
-        try {
-            IsoFile isoFile = new IsoFile(videoFilePath);
+        try (IsoFile isoFile = new IsoFile(videoFilePath)) {
+
             MovieBox moov = isoFile.getBoxes(MovieBox.class).get(0);
             FreeBox freeBox = findFreeBox(moov);
             long sizeBefore = moov.getSize();
@@ -151,20 +151,22 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
             moov.getBox(Channels.newChannel(baos));
             isoFile.close();
 
-            FileChannel read = new RandomAccessFile(videoFile, "r").getChannel();
             File tmp = File.createTempFile("ChangeMetaData", ".mp4");
-            FileChannel write = new RandomAccessFile(tmp, "rw").getChannel();
-            if (diff == 0) {
-                read.transferTo(0, read.size(), write);
-                write.position(offset);
-                write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
-            } else {
-                read.transferTo(0, offset, write);
-                write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
-                read.transferTo(offset + baos.size(), read.size() - diff, write);
+            try (FileChannel read = new RandomAccessFile(videoFile, "r").getChannel();
+                    FileChannel write = new RandomAccessFile(tmp, "rw").getChannel()) {
+                if (diff == 0) {
+                    read.transferTo(0, read.size(), write);
+                    write.position(offset);
+                    write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
+                } else {
+                    read.transferTo(0, offset, write);
+                    write.write(ByteBuffer.wrap(baos.getBuffer(), 0, baos.size()));
+                    read.transferTo(offset + baos.size(), read.size() - diff, write);
+                }
+                return new MyBlob(new FileBlob(tmp, message.getMimetype()), tmp.getAbsolutePath());
+            } finally {
+                baos.close();
             }
-            return new MyBlob(new FileBlob(tmp, message.getMimetype()), tmp.getAbsolutePath());
-
             // RandomAccessFile f = new RandomAccessFile(videoFilePath, "r");
             // byte[] data = new byte[(int) offset + baos.getBuffer().length];
             // System.out.println("data len " + data.length);
@@ -176,6 +178,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
         } catch (IOException e) {
             throw new IllegalArgumentException("shit happen", e);
         }
+
     }
 
     protected boolean needsOffsetCorrection(IsoFile isoFile) {

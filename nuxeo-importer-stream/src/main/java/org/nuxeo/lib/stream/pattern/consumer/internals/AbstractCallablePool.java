@@ -148,7 +148,9 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
         @SuppressWarnings("NullableProblems")
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(r, String.format("%s-%02d", prefix, count.getAndIncrement()));
+            Thread t = new Thread(r, String.format("%s-%02d", prefix, count.getAndIncrement()));
+            t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: " + e.getMessage(), e));
+            return t;
         }
     }
 
