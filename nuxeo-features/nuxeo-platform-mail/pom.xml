@@ -8,7 +8,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-mail-parent</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Mail - Parent POM</name>
@@ -18,6 +17,7 @@
     <module>nuxeo-platform-mail-types</module>
     <module>nuxeo-platform-mail-core</module>
     <module>nuxeo-platform-mail-jsf</module>
+    <module>nuxeo-platform-mail-web-ui</module>
     <module>nuxeo-platform-mail-test</module>
   </modules>
 
