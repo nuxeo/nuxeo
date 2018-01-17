@@ -66,5 +66,23 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="simpleStringList" nillable="false" nxsv:nillable="false">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="anotherSimpleList" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
 </xs:schema>
 

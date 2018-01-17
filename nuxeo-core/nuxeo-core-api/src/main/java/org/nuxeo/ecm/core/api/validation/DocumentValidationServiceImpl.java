@@ -330,12 +330,19 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         assert field.getType().isListType();
         List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
         Collection<?> castedValue = null;
+        if (!field.isNillable() && value == null) {
+            addNotNullViolation(violations, schema, path);
+        }
+
         if (value instanceof List) {
             castedValue = (Collection<?>) value;
         } else if (value instanceof Object[]) {
             castedValue = Arrays.asList((Object[]) value);
         }
         if (castedValue != null) {
+            if (!field.isNillable() && castedValue.isEmpty()) {
+                addNotNullViolation(violations, schema, path);
+            }
             ListType listType = (ListType) field.getType();
             Field listField = listType.getField();
             int index = 0;
@@ -461,6 +468,9 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             if (castedValue != null) {
                 int index = 0;
                 if (prop instanceof ArrayProperty) {
+                    if (!field.isNillable() && castedValue.isEmpty()) {
+                        addNotNullViolation(violations, schema, path);
+                    }
                     ArrayProperty arrayProp = (ArrayProperty) prop;
                     // that's an ArrayProperty : there will not be child properties
                     for (Object itemValue : castedValue) {
@@ -472,7 +482,11 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                         index++;
                     }
                 } else {
-                    for (Property child : prop.getChildren()) {
+                    Collection<Property> children = prop.getChildren();
+                    if (!field.isNillable() && children.isEmpty()) {
+                        addNotNullViolation(violations, schema, path);
+                    }
+                    for (Property child : children) {
                         List<PathNode> subPath = new ArrayList<PathNode>(path);
                         subPath.add(new PathNode(child.getField(), index));
                         violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly, true));
