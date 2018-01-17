@@ -93,9 +93,4 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
         return true;
     }
 
-    @Override
-    public boolean validate(Object object) {
-        return true;
-    }
-
 }
