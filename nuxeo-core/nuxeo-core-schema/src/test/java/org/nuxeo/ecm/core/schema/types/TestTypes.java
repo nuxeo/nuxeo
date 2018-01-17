@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -62,10 +63,12 @@ public class TestTypes extends NXRuntimeTestCase {
         assertNull(type.getSuperType());
         assertEquals(0, type.getTypeHierarchy().length);
 
-        // ANY validates anything
-        assertTrue(type.validate(0));
-        assertTrue(type.validate(""));
-        assertTrue(type.validate(true));
+        try {
+            type.validate(0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
     }
 
     // Primitive types
@@ -239,12 +242,12 @@ public class TestTypes extends NXRuntimeTestCase {
         assertNull(type.getSuperType());
         assertEquals(StringType.INSTANCE, type.getFieldType());
 
-        // Validation tests
-        assertTrue(type.validate(new Integer[3]));
-        assertTrue(type.validate(null));
-        assertFalse(type.validate(0));
-        assertFalse(type.validate(""));
-        assertFalse(type.validate(true));
+        try {
+            type.validate(0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
 
         // Conversion tests
         assertNull(type.decode(""));
@@ -255,7 +258,7 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testCompositeType() {
+    public void testCompositeType() throws TypeException {
         CompositeTypeImpl type = new CompositeTypeImpl(null, SchemaNames.BUILTIN, "composite type", null);
 
         assertTrue(type.isCompositeType());
@@ -274,6 +277,13 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Author fields API
         assertTrue(type.getFields().isEmpty());
+
+        try {
+            type.validate(0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
     }
 
     @Test

@@ -152,24 +152,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
     @Override
     @SuppressWarnings("rawtypes")
     public boolean validate(Object object) throws TypeException {
-        if (object == null) {
-            return true;
-        }
-        if (object instanceof Collection) {
-            return validateCollection((Collection) object);
-        } else if (object.getClass().isArray()) {
-            return validateArray((Object[]) object);
-        }
-        return false;
-    }
-
-    protected boolean validateArray(Object[] array) {
-        return true; // TODO
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected boolean validateCollection(Collection col) {
-        return true; // TODO
+        throw new UnsupportedOperationException("Unimplemented, use DocumentValidationService");
     }
 
     @Override
