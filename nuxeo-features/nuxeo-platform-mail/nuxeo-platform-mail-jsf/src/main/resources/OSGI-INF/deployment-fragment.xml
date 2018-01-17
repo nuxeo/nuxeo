@@ -7,8 +7,8 @@
   <extension target="faces-config#CONVERTER">
 
     <converter>
-      <converter-id>org.nuxeo.ecm.platform.mail.web.converter.mailconverter</converter-id>
-      <converter-class>org.nuxeo.ecm.platform.mail.web.converter.MailAddressConverter
+      <converter-id>org.nuxeo.ecm.platform.mail.jsf.converter.mailconverter</converter-id>
+      <converter-class>org.nuxeo.ecm.platform.mail.jsf.converter.MailAddressConverter
       </converter-class>
     </converter>
 

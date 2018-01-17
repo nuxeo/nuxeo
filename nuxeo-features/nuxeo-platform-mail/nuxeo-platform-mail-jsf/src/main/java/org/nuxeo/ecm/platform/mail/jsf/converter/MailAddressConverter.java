@@ -19,7 +19,7 @@
  *
  */
 
-package org.nuxeo.ecm.platform.mail.web.converter;
+package org.nuxeo.ecm.platform.mail.jsf.converter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

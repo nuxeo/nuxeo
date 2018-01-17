@@ -17,7 +17,7 @@
   <modules>
     <module>nuxeo-platform-mail-types</module>
     <module>nuxeo-platform-mail-core</module>
-    <module>nuxeo-platform-mail-web</module>
+    <module>nuxeo-platform-mail-jsf</module>
     <module>nuxeo-platform-mail-test</module>
   </modules>
 
