@@ -57,7 +57,7 @@ public class DirectoryAuditStorage implements AuditStorage {
 
     public static final String NAME = "DirectoryAuditStorage";
 
-    public static final String DIRECTORY_NAME = "audit";
+    public static final String DIRECTORY_NAME = "auditStorage";
 
     public static final String ID_COLUMN = "id";
 

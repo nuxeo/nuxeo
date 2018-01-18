@@ -16,7 +16,7 @@
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory"
     point="directories">
-    <directory name="audit" extends="template-directory">
+    <directory name="auditStorage" extends="template-directory">
       <schema>audit</schema>
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
