@@ -102,7 +102,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<>();
-        String query = "SELECT * FROM " + TYPE_NAME + " where ecm:currentLifeCycleState != 'deleted' AND ecm:isVersion = 0";
+        String query = "SELECT * FROM " + TYPE_NAME + " where ecm:isTrashed = 0 AND ecm:isVersion = 0";
         DocumentModelList docs = session.query(query);
         for (DocumentModel child : docs) {
             DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);

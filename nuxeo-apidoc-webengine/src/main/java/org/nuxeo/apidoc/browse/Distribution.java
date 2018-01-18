@@ -529,7 +529,7 @@ public class Distribution extends ModuleRoot {
 
         CoreSession coreSession = getContext().getCoreSession();
         String query = String.format(
-                "SELECT ecm:uuid FROM Document WHERE ecm:primaryType in ('%s') AND ecm:isProxy = 0 AND ecm:currentLifeCycleState <> 'deleted'",
+                "SELECT ecm:uuid FROM Document WHERE ecm:primaryType in ('%s') AND ecm:isProxy = 0 AND ecm:isTrashed = 0",
                 StringUtils.join(AttributesExtractorStater.DOC_TYPES, "','"));
 
         try (IterableQueryResult it = coreSession.queryAndFetch(query, NXQL.NXQL, QueryFilter.EMPTY);) {

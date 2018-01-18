@@ -19,7 +19,6 @@
 package org.nuxeo.apidoc.api;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
@@ -31,7 +30,7 @@ public class QueryHelper {
     private QueryHelper() {
     }
 
-    public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> '" + LifeCycleConstants.DELETED_STATE + "'";
+    public static final String NOT_DELETED = NXQL.ECM_ISTRASHED + " = 0";
 
     /**
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString()
