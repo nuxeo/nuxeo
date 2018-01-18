@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -244,6 +245,30 @@ public final class NxqlQueryConverter {
         } else if (nxqlName.startsWith(NXQL.ECM_ANCESTORID)) {
             filter = makeAncestorIdFilter((String) value, session);
             if ("!=".equals(op) || "<>".equals(op)) {
+                filter = QueryBuilders.boolQuery().mustNot(filter);
+            }
+        } else if (nxqlName.equals(NXQL.ECM_ISTRASHED)) {
+            boolean equalsDeleted;
+            switch (op) {
+            case "=":
+                equalsDeleted = true;
+                break;
+            case "<>":
+            case "!=":
+                equalsDeleted = false;
+                break;
+            default:
+                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
+            }
+            if ("0".equals(value)) {
+                equalsDeleted = !equalsDeleted;
+            } else if ("1".equals(value)) {
+                // equalsDeleted unchanged
+            } else {
+                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
+            }
+            filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+            if (!equalsDeleted) {
                 filter = QueryBuilders.boolQuery().mustNot(filter);
             }
         } else

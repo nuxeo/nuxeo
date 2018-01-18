@@ -2126,6 +2126,39 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testIsTrashed() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    @Test
+    public void testLifeCycleStateDeleted() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    protected void doTestTrashed(String sqlNotTrashed, String sqlTrashed) throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query(sqlNotTrashed);
+        assertEquals(8, dml.size());
+        dml = session.query(sqlTrashed);
+        assertEquals(0, dml.size());
+
+        // put a doc in the trash
+        assertTrue(session.followTransition(new PathRef("/testfolder1/testfile1"), "delete"));
+        session.save();
+
+        dml = session.query(sqlNotTrashed);
+        assertEquals(7, dml.size());
+        dml = session.query(sqlTrashed);
+        assertEquals(1, dml.size());
+    }
+
+    @Test
     public void testOrderByAndDistinct() throws Exception {
         createDocs();
 
