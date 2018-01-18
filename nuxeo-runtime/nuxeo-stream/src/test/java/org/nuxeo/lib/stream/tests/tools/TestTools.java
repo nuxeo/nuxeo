@@ -86,7 +86,12 @@ public abstract class TestTools {
     public void testPosition() {
         run("help position");
         runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, 123));
+    }
+
+    @Test
+    public void testPositionToEnd() {
         run(String.format("position %s --log-name %s --group anotherGroup --to-end", getManagerOptions(), LOG_NAME));
+        run(String.format("lag %s --log-name %s", getManagerOptions(), LOG_NAME));
     }
 
     @Test
