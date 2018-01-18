@@ -82,6 +82,8 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     public static final int DEFAULT_CONCURRENCY = 4;
 
+    public static final String BLOCK_PROCESSING_PROP = "nuxeo.stream.work.processing.disable";
+
     protected Topology topology;
 
     protected Settings settings;
@@ -186,6 +188,10 @@ public class StreamWorkManager extends WorkManagerImpl {
 
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
+            if (Boolean.parseBoolean(Framework.getProperty(BLOCK_PROCESSING_PROP, "false"))) {
+                log.warn("StreamWorkManager configured to schedule works but do not execute them");
+                return;
+            }
             streamProcessor.start();
             for (String id : workQueueConfig.getQueueIds()) {
                 activateQueueMetrics(id);
