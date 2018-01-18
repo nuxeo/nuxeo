@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -248,7 +247,7 @@ public class CMISQLtoNXQL {
         // lifecycle not deleted filter
 
         if (skipDeleted) {
-            whereClauses.add(String.format("%s <> '%s'", NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE));
+            whereClauses.add(String.format("%s = 0", NXQL.ECM_ISTRASHED));
         }
 
         // searchAllVersions filter

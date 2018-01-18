@@ -1719,11 +1719,11 @@ public class NuxeoCmisService extends AbstractCmisService
                 "SELECT * FROM %s WHERE " // Folder/Document
                         + "%s = '%s' AND " // ecm:parentId = 'folderId'
                         + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
-                        + "%s <> '%s'", // ecm:currentLifeCycleState <> 'deleted'
+                        + "%s = 0", // ecm:isTrashed = 0
                 folderOnly ? "Folder" : "Document", //
                 NXQL.ECM_PARENTID, folderId, //
                 NXQL.ECM_MIXINTYPE, FacetNames.HIDDEN_IN_NAVIGATION, //
-                NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+                NXQL.ECM_ISTRASHED);
         query = addProxyClause(query);
         if (!StringUtils.isBlank(orderBy)) {
             CMISQLtoNXQL converter = new CMISQLtoNXQL(repository.supportsProxies());
