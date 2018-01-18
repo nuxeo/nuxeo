@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -78,6 +79,7 @@ public class TestToolsKafka extends TestTools {
 
     }
 
+    @Test
     @Override
     public void testPosition() {
         super.testPosition();

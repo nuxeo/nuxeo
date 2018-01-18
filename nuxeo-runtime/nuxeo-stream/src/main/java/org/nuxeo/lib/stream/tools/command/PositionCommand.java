@@ -102,8 +102,9 @@ public class PositionCommand extends Command {
 
         try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
             tailer.toEnd();
+            tailer.commit();
         }
-        System.out.println(String.format("# Moved log %s, group: %s, from: %s to %s", name, group, lag.lag(), lag.upper()));
+        System.out.println(String.format("# Moved log %s, group: %s, from: %s to %s", name, group, lag.lower(), lag.upper()));
     }
 
     protected void reset(LogManager manager, String group, String name) {
