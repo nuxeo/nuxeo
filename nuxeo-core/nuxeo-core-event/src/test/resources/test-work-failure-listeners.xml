@@ -2,7 +2,10 @@
 <component name="test-work-failure-listener">
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener async="true" postCommit="false" class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener" name="testWorkFailure">
+    <listener async="false" postCommit="false" class="org.nuxeo.ecm.core.event.WorkFailureEventListener" name="testWorkFailure">
+      <event>workFailed</event>
+    </listener>
+    <listener async="true" postCommit="false" class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener" name="testWorkFailureAsync">
       <event>workFailed</event>
     </listener>
   </extension>
