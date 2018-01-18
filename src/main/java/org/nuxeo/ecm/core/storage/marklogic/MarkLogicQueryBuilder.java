@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -189,6 +190,8 @@ class MarkLogicQueryBuilder {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
+        } else if (NXQL.ECM_ISTRASHED.equals(name)) {
+            return walkIsTrashed(op, rvalue);
         } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
@@ -338,6 +341,21 @@ class MarkLogicQueryBuilder {
         }
         // TODO implement fulltext on explicit field
         return null;
+    }
+
+    protected QueryBuilder walkIsTrashed(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
+        }
+        long v;
+        if (!(rvalue instanceof IntegerLiteral)
+                || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
+            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
+        }
+        Reference ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
+        StringLiteral val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        boolean equalsDeleted = op == Operator.EQ ^ v == 0;
+        return walkEq(ref, val, equalsDeleted);
     }
 
     protected QueryBuilder getMarkLogicFulltextQuery(StringLiteral rvalue) {
