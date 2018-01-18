@@ -229,7 +229,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             public void run() {
                 try (IterableQueryResult results = session.queryAndFetch(String.format(
                         "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
-                                + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ",
+                                + "AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0",
                         userWorkspacesId), "NXQL")) {
                     int size = 0;
                     List<String> allIds = new ArrayList<String>();

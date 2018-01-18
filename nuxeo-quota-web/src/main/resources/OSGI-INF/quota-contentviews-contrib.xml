@@ -17,7 +17,7 @@
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
           </predicate>
-          <fixedPart>ecm:parentId = ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+          <fixedPart>ecm:parentId = ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
            AND dss:totalSize >=1024</fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -39,11 +39,11 @@
       <showRefreshCommand>true</showRefreshCommand>
       <actions category="CURRENT_QUOTA_SELECTION_LIST"/>
       <resultLayouts>
-        <layout name="quota_heaviest_children@cvListingLayout" title="document_listing" translateTitle="true" 
+        <layout name="quota_heaviest_children@cvListingLayout" title="document_listing" translateTitle="true"
         iconPath="/icons/document_listing_icon.png" showCSVExport="false" showPDFExport="false"/>
       </resultLayouts>
     </contentView>
-    
+
     <contentView name="quota_heaviest_containers">
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -55,7 +55,7 @@
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
           </predicate>
-          <fixedPart>ecm:path STARTSWITH ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+          <fixedPart>ecm:path STARTSWITH ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
            AND dss:totalSize >=1024</fixedPart>
         </whereClause>
         <parameter>#{documentManager.getRootDocument().getPathAsString()}</parameter>
@@ -76,11 +76,11 @@
       <showPageSizeSelector>false</showPageSizeSelector>
       <showRefreshCommand>true</showRefreshCommand>
       <resultLayouts>
-        <layout name="quota_heaviest_containers@cvListingLayout" title="document_listing" translateTitle="true" 
+        <layout name="quota_heaviest_containers@cvListingLayout" title="document_listing" translateTitle="true"
         iconPath="/icons/document_listing_icon.png" showCSVExport="false" showPDFExport="false"/>
       </resultLayouts>
     </contentView>
-  
+
   </extension>
 
 </component>
