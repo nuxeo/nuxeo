@@ -88,6 +88,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected boolean isRebalanced;
 
+    protected boolean consumerMoved;
+
     protected KafkaLogTailer(String prefix, String group, Properties consumerProps) {
         Objects.requireNonNull(group);
         this.prefix = prefix;
@@ -223,6 +225,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         lastOffsets.clear();
         records.clear();
         consumer.seekToEnd(Collections.emptyList());
+        consumerMoved = true;
     }
 
     @Override
@@ -231,6 +234,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         lastOffsets.clear();
         records.clear();
         consumer.seekToBeginning(Collections.emptyList());
+        consumerMoved = true;
     }
 
     @Override
@@ -251,6 +255,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         lastCommittedOffsets.clear();
         lastOffsets.clear();
         records.clear();
+        consumerMoved = false;
     }
 
     protected long toLastCommitted(TopicPartition topicPartition) {
@@ -312,7 +317,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @Override
     public LogOffset offsetForTimestamp(LogPartition partition, long timestamp) {
         TopicPartition topicPartition = new TopicPartition(prefix + partition.name(), partition.partition());
-        Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes = consumer.offsetsForTimes(Collections.singletonMap(topicPartition, timestamp));
+        Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes = consumer.offsetsForTimes(
+                Collections.singletonMap(topicPartition, timestamp));
         if (offsetsForTimes.size() == 1) {
             OffsetAndTimestamp offsetAndTimestamp = offsetsForTimes.get(topicPartition);
             if (offsetAndTimestamp != null) {
@@ -324,6 +330,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public void commit() {
+        if (consumerMoved) {
+            forceCommit();
+            return;
+        }
         Map<TopicPartition, OffsetAndMetadata> offsetToCommit = new HashMap<>();
         lastOffsets.forEach((tp, offset) -> offsetToCommit.put(tp, new OffsetAndMetadata(offset + 1)));
         lastOffsets.clear();
@@ -341,6 +351,16 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                                        .collect(Collectors.joining("|"));
             log.debug("Committed offsets  " + group + ":" + msg);
         }
+    }
+
+    protected void forceCommit() {
+        log.info("Force commit after a move");
+        final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>(topicPartitions.size());
+        topicPartitions.forEach(topicPartition -> offsets.put(topicPartition,
+                new OffsetAndMetadata(consumer.position(topicPartition))));
+        consumer.commitSync(offsets);
+        consumerMoved = false;
+        lastOffsets.clear();
     }
 
     @Override
