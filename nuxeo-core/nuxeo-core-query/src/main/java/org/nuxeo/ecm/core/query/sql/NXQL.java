@@ -199,6 +199,11 @@ public class NXQL {
     public static final String ECM_ACL_STATUS = "status";
 
     /**
+     * @since 10.1
+     */
+    public static final String ECM_ISTRASHED = "ecm:isTrashed";
+
+    /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>
      * Any single quote or backslash characters are escaped with a backslash.

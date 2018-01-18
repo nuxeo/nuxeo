@@ -829,6 +829,61 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testConverterIsTrashed() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    @Test
+    public void testConverterLifeCycleStateDeleted() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    protected void doTestTrashed(String sqlNotTrashed, String sqlTrashed) throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(sqlTrashed).toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"term\" : {\n" //
+                + "        \"ecm:currentLifeCycleState\" : {\n" //
+                + "          \"value\" : \"deleted\",\n" //
+                + "          \"boost\" : 1.0\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"boost\" : 1.0\n" //
+                + "  }\n" //
+                + "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(sqlNotTrashed).toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"bool\" : {\n" //
+                + "        \"must_not\" : [\n" //
+                + "          {\n" //
+                + "            \"term\" : {\n" //
+                + "              \"ecm:currentLifeCycleState\" : {\n" //
+                + "                \"value\" : \"deleted\",\n" //
+                + "                \"boost\" : 1.0\n" //
+                + "              }\n" //
+                + "            }\n" //
+                + "          }\n" //
+                + "        ],\n" //
+                + "        \"disable_coord\" : false,\n" //
+                + "        \"adjust_pure_negative\" : true,\n" //
+                + "        \"boost\" : 1.0\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"boost\" : 1.0\n" //
+                + "  }\n" //
+                + "}", es);
+    }
+
+    @Test
     public void testConverterWhereCombination() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 AND f2=2").toString();
         assertEqualsEvenUnderWindows("{\n" +

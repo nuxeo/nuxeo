@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -125,6 +126,8 @@ public abstract class ExpressionEvaluator {
             return walkEcmPath(op, rvalue);
         } else if (NXQL.ECM_ANCESTORID.equals(name)) {
             return walkAncestorId(op, rvalue);
+        } else if (NXQL.ECM_ISTRASHED.equals(name)) {
+            return walkIsTrashed(op, rvalue);
         } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
@@ -257,6 +260,25 @@ public abstract class ExpressionEvaluator {
             String ft = query.replace(" ", "%");
             rvalue = new StringLiteral(ft);
             return walkLike(new Reference(prop), rvalue, true, true);
+        }
+    }
+
+    protected Boolean walkIsTrashed(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
+        }
+        long v;
+        if (!(rvalue instanceof IntegerLiteral)
+                || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
+            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
+        }
+        Reference ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
+        StringLiteral val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        boolean equalsDeleted = op == Operator.EQ ^ v == 0;
+        if (equalsDeleted) {
+            return walkEq(ref, val);
+        } else {
+            return walkNotEq(ref, val);
         }
     }
 

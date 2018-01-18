@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -1345,6 +1346,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_PROXY_VERSIONABLEID.equals(name) || //
                     NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 // ok
+            } else if (NXQL.ECM_ISTRASHED.equals(name)) {
+                name = NXQL.ECM_LIFECYCLESTATE; // column actually used
             } else if (NXQL.ECM_TAG.equals(name) || name.startsWith(ECM_TAG_STAR)) {
                 hasTag = true;
             } else if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
@@ -1867,6 +1870,8 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_ISCHECKEDIN.equals(name) || NXQL.ECM_ISLATESTVERSION.equals(name)
                     || NXQL.ECM_ISLATESTMAJORVERSION.equals(name)) {
                 visitExpressionWhereFalseMayBeNull(node);
+            } else if (NXQL.ECM_ISTRASHED.equals(name)) {
+                visitExpressionIsTrashed(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
@@ -2114,6 +2119,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 node.lvalue.accept(this);
                 buf.append(" IS NULL)");
             }
+        }
+
+        protected void visitExpressionIsTrashed(Expression node) {
+            String name = ((Reference) node.lvalue).name;
+            boolean bool = getBooleanRValue(name, node);
+            Operator op = bool ? Operator.EQ : Operator.NOTEQ;
+            visitReference(new Reference(NXQL.ECM_LIFECYCLESTATE));
+            visitOperator(op);
+            visitStringLiteral(LifeCycleConstants.DELETED_STATE);
         }
 
         private boolean getBooleanRValue(String name, Expression node) {
