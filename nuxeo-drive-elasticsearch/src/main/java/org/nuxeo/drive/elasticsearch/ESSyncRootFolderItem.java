@@ -66,7 +66,7 @@ public class ESSyncRootFolderItem extends DefaultSyncRootFolderItem {
         ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
 
         StringBuilder sb = new StringBuilder(String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'", docId));
-        sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
+        sb.append(" AND ecm:isTrashed = 0");
         sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
         sb.append(" AND ecm:isCheckedInVersion = 0");
         // Let's order by path to make it easier for Drive as it isn't that expensive with Elasticsearch

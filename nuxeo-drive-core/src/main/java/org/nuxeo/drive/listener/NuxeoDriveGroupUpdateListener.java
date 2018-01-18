@@ -123,7 +123,7 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
      */
     protected DocumentModelList getImpactedDocuments(CoreSession session, List<String> groupNames) {
         String groups = groupNames.stream().map(NXQL::escapeString).collect(Collectors.joining(","));
-        String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted' AND ecm:isVersion = 0 AND ecm:acl/*/principal IN ("
+        String query = "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:isVersion = 0 AND ecm:acl/*/principal IN ("
                 + groups + ")";
         return session.query(query);
     }
