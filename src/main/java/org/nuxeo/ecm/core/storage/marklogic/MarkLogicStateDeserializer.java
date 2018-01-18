@@ -18,12 +18,13 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -64,7 +65,7 @@ final class MarkLogicStateDeserializer {
     }
 
     public static State deserialize(String s) {
-        try (InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))) {
+        try (InputStream is = new ByteArrayInputStream(s.getBytes(UTF_8))) {
             return deserialize(is);
         } catch (IOException ioe) {
             throw new NuxeoException("Error during deserialization", ioe);
@@ -123,18 +124,18 @@ final class MarkLogicStateDeserializer {
             String text = xmler.peek().isEndElement() ? "" : xmler.nextEvent().asCharacters().getData();
             switch (typeOpt.get()) {
             case BOOLEAN:
-                result = Boolean.parseBoolean(text);
+                result = Boolean.valueOf(text);
                 break;
             case DOUBLE:
                 // Due to MarkLogic issue on replace+apply on number we need to handle xs:double type for Delta
                 if (text.contains(".")) {
-                    result = Double.parseDouble(text);
+                    result = Double.valueOf(text);
                 } else {
-                    result = Long.parseLong(text);
+                    result = Long.valueOf(text);
                 }
                 break;
             case LONG:
-                result = Long.parseLong(text);
+                result = Long.valueOf(text);
                 break;
             case CALENDAR:
                 result = MarkLogicHelper.deserializeCalendar(text);
