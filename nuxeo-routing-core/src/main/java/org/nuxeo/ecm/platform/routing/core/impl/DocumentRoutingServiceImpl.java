@@ -131,7 +131,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
             + " ecm:parentId = '%s' AND ecm:isCheckedInVersion  = 0 AND "
-            + "ecm:currentLifeCycleState != 'deleted' ORDER BY ecm:pos";
+            + "ecm:isTrashed = 0 ORDER BY ecm:pos";
 
     public static final String CHAINS_TO_TYPE_XP = "chainsToType";
 

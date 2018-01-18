@@ -12,8 +12,7 @@
           SELECT * FROM Document WHERE ecm:mixinType IN
           ('RoutingTask')
           AND ecm:isCheckedInVersion = 0 AND
-          ecm:currentLifeCycleState !=
-          'deleted' AND
+          ecm:isTrashed = 0 AND
           ecm:currentLifeCycleState !=
           'cancelled' AND
           ecm:currentLifeCycleState != 'ended' AND ecm:isProxy = 0

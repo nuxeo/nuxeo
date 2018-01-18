@@ -4,12 +4,12 @@
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
-   
+
     <coreQueryPageProvider name="default_section_suggestion">
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Section WHERE dc:title LIKE '?%' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
       <pageSize>5</pageSize>

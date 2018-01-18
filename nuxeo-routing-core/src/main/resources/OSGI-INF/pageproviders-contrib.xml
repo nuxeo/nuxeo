@@ -32,7 +32,7 @@
     <coreQueryPageProvider name="CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType != 'Folderish' AND
-        ecm:currentLifeCycleState != 'deleted' AND dc:title ILIKE ?
+        ecm:isTrashed = 0 AND dc:title ILIKE ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
