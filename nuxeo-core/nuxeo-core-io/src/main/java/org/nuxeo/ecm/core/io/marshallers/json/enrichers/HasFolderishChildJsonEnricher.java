@@ -52,7 +52,7 @@ public class HasFolderishChildJsonEnricher extends AbstractJsonEnricher<Document
         }
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             String fetchFolderishChildQuery = "SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'"
-                    + " AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'"
+                    + " AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0"
                     + " AND ecm:parentId = " + NXQL.escapeString(document.getId());
             // Limit result set to 1 as we just want to know if there's at least one Folderish child
             DocumentModelList children = wrapper.getSession().query(fetchFolderishChildQuery, 1);

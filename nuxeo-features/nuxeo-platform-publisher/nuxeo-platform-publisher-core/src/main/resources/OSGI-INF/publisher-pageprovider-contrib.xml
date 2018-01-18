@@ -7,7 +7,7 @@
     <coreQueryPageProvider name="domains_for_publishing">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Domain'
-        AND ecm:parentId = ? AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:parentId = ? AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>

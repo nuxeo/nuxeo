@@ -29,7 +29,7 @@
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?%' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -40,7 +40,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Domain WHERE ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>0</pageSize>
@@ -51,7 +51,7 @@
       <pattern>
         SELECT * FROM Domain
         WHERE ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND ecm:isCheckedInVersion = 0
         AND ecm:isProxy = 0
       </pattern>

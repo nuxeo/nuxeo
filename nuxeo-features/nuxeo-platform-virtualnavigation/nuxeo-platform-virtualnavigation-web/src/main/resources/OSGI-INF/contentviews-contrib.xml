@@ -21,8 +21,8 @@
           </predicate>
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:currentLifeCycleState
-            !='deleted' AND ecm:isCheckedInVersion = 0
+            ecm:isTrashed = 0 AND
+            ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
@@ -67,8 +67,8 @@
           </predicate>
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:currentLifeCycleState
-            !='deleted' AND ecm:isCheckedInVersion = 0
+            ecm:isTrashed = 0 AND
+            ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />

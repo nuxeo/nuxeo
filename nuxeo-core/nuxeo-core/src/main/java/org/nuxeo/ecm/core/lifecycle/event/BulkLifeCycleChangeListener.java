@@ -136,7 +136,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             documentManager.reinitLifeCycleState(docMod.getRef());
             if (docMod.isFolder()) {
                 DocumentModelList children = documentManager.query(String.format(
-                        "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted' AND ecm:parentId = '%s'",
+                        "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:parentId = '%s'",
                         docMod.getRef()));
                 reinitDocumentsLifeCyle(documentManager, children);
             }

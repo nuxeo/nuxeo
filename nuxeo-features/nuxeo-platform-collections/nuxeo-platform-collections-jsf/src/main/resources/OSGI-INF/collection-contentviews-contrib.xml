@@ -20,7 +20,7 @@
             'HiddenInNavigation'
             AND ecm:primaryType != 'Favorites'
             AND ecm:isCheckedInVersion = 0 AND
-            ecm:currentLifeCycleState != 'deleted'
+            ecm:isTrashed = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
@@ -72,7 +72,7 @@
           </predicate>
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:currentLifeCycleState != 'deleted' AND
+            ecm:isTrashed = 0 AND
             collectionMember:collectionIds/* = ?
           </fixedPart>
         </whereClause>

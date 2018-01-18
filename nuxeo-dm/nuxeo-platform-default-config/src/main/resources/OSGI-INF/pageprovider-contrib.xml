@@ -23,8 +23,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
         ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-        'deleted'
+        AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
@@ -35,7 +34,7 @@
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE ecm:fulltext LIKE '?*' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
       <pageSize>5</pageSize>
@@ -48,7 +47,7 @@
         AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
         'SystemDocument' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:modified" ascending="false" />
       <pageSize>5</pageSize>

@@ -190,7 +190,7 @@ public class TestCompareQueryAndFetch {
     public void testSimpleSearchWithSort() throws Exception {
         compareESAndCore("select ecm:uuid, dc:title, dc:nature from Document order by ecm:uuid");
         compareESAndCore(
-                "select ecm:uuid, dc:title from Document where ecm:currentLifeCycleState != 'deleted' order by ecm:uuid");
+                "select ecm:uuid, dc:title from Document where ecm:isTrashed = 0 order by ecm:uuid");
         compareESAndCore("select ecm:uuid, dc:nature from File order by dc:nature, ecm:uuid");
         // TODO some timezone issues here...
         // compareESAndCore("select ecm:uuid, dc:issued from File order by ecm:uuid");

@@ -222,7 +222,7 @@ public class TestCompareCoreWithES {
     @Test
     public void testSimpleSearchWithSort() throws Exception {
         testQueries(new String[] { "select * from Document order by dc:title, dc:created",
-                "select * from Document where ecm:currentLifeCycleState != 'deleted' order by dc:title",
+                "select * from Document where ecm:isTrashed = 0 order by dc:title",
                 "select * from File order by dc:title", });
     }
 

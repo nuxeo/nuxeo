@@ -11,7 +11,7 @@
               OR saved:providerName IS NOT NULL)
         AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
@@ -24,7 +24,7 @@
               OR saved:providerName IS NOT NULL)
         AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND saved:providerName = :pageProvider
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -38,7 +38,7 @@
         AND cvd:contentViewName IS NOT NULL
         AND dc:creator = ? AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -51,7 +51,7 @@
         AND cvd:contentViewName IS NOT NULL
         AND dc:creator != ? AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />

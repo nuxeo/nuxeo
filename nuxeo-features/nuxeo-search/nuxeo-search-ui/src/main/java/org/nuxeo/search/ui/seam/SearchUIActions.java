@@ -113,7 +113,7 @@ public class SearchUIActions implements Serializable {
 
     public static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document"
             + " WHERE ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0"
-            + " AND ecm:currentLifeCycleState != 'deleted'";
+            + " AND ecm:isTrashed = 0";
 
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 

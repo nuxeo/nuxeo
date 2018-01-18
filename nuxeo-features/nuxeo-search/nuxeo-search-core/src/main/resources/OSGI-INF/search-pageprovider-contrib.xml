@@ -11,7 +11,7 @@
           AND ecm:mixinType != 'HiddenInNavigation'
           AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
           AND ecm:isCheckedInVersion = 0
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:isTrashed = 0
           AND ecm:parentId IS NOT NULL
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>
@@ -127,7 +127,7 @@
         <fixedPart>
           ecm:mixinType != 'HiddenInNavigation' AND
           ecm:isCheckedInVersion = 0
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:isTrashed = 0
           AND ecm:parentId IS NOT NULL
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>
@@ -154,8 +154,7 @@
         <fixedPart>
           ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState
-          != 'deleted'
+          'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="expired_search" name="title" />

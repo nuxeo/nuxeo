@@ -12,7 +12,7 @@
           AND ecm:mixinType != 'HiddenInNavigation'
           AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
           AND ecm:isCheckedInVersion = 0
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:isTrashed = 0
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>
         <predicate operator="FULLTEXT" parameter="ecm:fulltext">

@@ -2785,7 +2785,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <searchDocumentType>all_documents_cv</searchDocumentType>
-        <pattern>SELECT * FROM Document WHERE (ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted')</pattern>
+        <pattern>SELECT * FROM Document WHERE (ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0)</pattern>
         <sort column="dc:title" ascending="true"/>
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
@@ -2816,7 +2816,7 @@
           <predicate parameter="dc:title" operator="=">
             <field schema="testSearch_cv" name="dublincore_title"/>
           </predicate>
-          <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'</fixedPart>
+          <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0</fixedPart>
         </whereClause>
         <searchDocumentType>testSearch_cv</searchDocumentType>
         <pageSize>10</pageSize>
@@ -2910,256 +2910,256 @@
   </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
 
-    
+
     <documentation>Widget types declared in studio</documentation>
 
-    
+
     <widgetType name="studio_header">
-      
+
       <configuration>
-        
+
         <title>Header</title>
-        
+
         <description>
           The header widget just displays the widget label.
         </description>
-        
+
         <supportedModes>
-          
+
           <mode>edit</mode>
-          
+
           <mode>view</mode>
-        
+
         </supportedModes>
-        
+
         <fields>
-          
+
           <list>false</list>
-          
+
           <complex>false</complex>
-          
+
           <supportedTypes/>
-          
+
           <defaultTypes/>
-        
+
         </fields>
-        
+
         <handlingLabels>true</handlingLabels>
-        
+
         <categories>
-          
+
           <category>document</category>
-          
+
           <category>studio</category>
-        
+
         </categories>
-        
+
         <properties>
-          
+
           <layouts mode="any">
-            
+
             <layout name="studio_header_widget_type_properties_any">
-              
+
               <rows>
-                
+
                 <row>
-                  
+
                   <widget>styleClass</widget>
-                
+
                 </row>
-                
+
                 <row>
-                  
+
                   <widget>style</widget>
-                
+
                 </row>
-              
+
               </rows>
-              
+
               <widget name="styleClass" type="text">
-                
+
                 <labels>
-                  
+
                   <label mode="any">Style class</label>
-                
+
                 </labels>
-                
+
                 <fields>
-                  
+
                   <field>styleClass</field>
-                
+
                 </fields>
-              
+
               </widget>
-              
+
               <widget name="style" type="text">
-                
+
                 <labels>
-                  
+
                   <label mode="any">Style</label>
-                
+
                 </labels>
-                
+
                 <fields>
-                  
+
                   <field>style</field>
-                
+
                 </fields>
-              
+
               </widget>
-            
+
             </layout>
-          
+
           </layouts>
-        
+
         </properties>
-      
+
       </configuration>
-      
+
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      
+
       <property name="template">
         /widgets/studio_header_widget.xhtml
       </property>
-    
+
     </widgetType>
 
-    
+
     <widgetType name="filesList">
-      
+
       <configuration>
-        
+
         <title>Files</title>
-        
+
         <description>
-          
+
           <p>
             The Files displays an editable list of files, using javascript to
             keep the uploaded file path when adding several files in a row.
           </p>
-          
+
           <p>Items are defined using sub wigdets configuration.</p>
-          
+
           <p>
             This is actually a template widget type whose template uses a
             &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
             iterating over items in other modes.
           </p>
-        
+
         </description>
-        
+
         <categories>
-          
+
           <category>document</category>
-          
+
           <category>studio</category>
-        
+
         </categories>
-        
+
         <supportedModes>
-          
+
           <mode>edit</mode>
-          
+
           <mode>view</mode>
-        
+
         </supportedModes>
-        
+
         <acceptingSubWidgets>true</acceptingSubWidgets>
-        
+
         <fields>
-          
+
           <list>true</list>
-          
+
           <complex>false</complex>
-          
+
           <supportedTypes>
-            
+
             <type>blob</type>
-          
+
           </supportedTypes>
-          
+
           <defaultTypes>
-            
+
             <type>blob</type>
-          
+
           </defaultTypes>
-        
+
         </fields>
-        
+
         <properties>
-          
+
           <layouts mode="edit">
-            
+
             <layout name="list_widget_type_properties_edit">
-              
+
               <rows>
-                
+
                 <row>
-                  
+
                   <widget>required</widget>
-                
+
                 </row>
-                
+
                 <row>
-                  
+
                   <widget>diff</widget>
-                
+
                 </row>
-              
+
               </rows>
-              
+
               <widget name="required" type="checkbox">
-                
+
                 <labels>
-                  
+
                   <label mode="any">Required</label>
-                
+
                 </labels>
-                
+
                 <fields>
-                  
+
                   <field>required</field>
-                
+
                 </fields>
-              
+
               </widget>
-              
+
               <widget name="diff" type="checkbox">
-                
+
                 <labels>
-                  
+
                   <label mode="any">Diff</label>
-                
+
                 </labels>
-                
+
                 <fields>
-                  
+
                   <field>diff</field>
-                
+
                 </fields>
-              
+
               </widget>
-            
+
             </layout>
-          
+
           </layouts>
-        
+
         </properties>
-      
+
       </configuration>
-      
+
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.ListWidgetTypeHandler
       </handler-class>
-      
+
       <property name="template">/widgets/js_files_list_widget_template.xhtml</property>
-      
+
       <property name="compatTemplate">/widgets/files_list_widget_template.xhtml</property>
-    
+
     </widgetType>
 
-  
+
   </extension>
 </component>

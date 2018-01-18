@@ -44,7 +44,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
 
     protected static String ACCESSIBLE_CHILDREN_QUERY = "SELECT * FROM Document"
             + " WHERE ecm:primaryType = 'Section' AND ecm:path STARTSWITH %s"
-            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " + " AND ecm:currentLifeCycleState != 'deleted' ";
+            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " + " AND ecm:isTrashed = 0 ";
 
     protected String coreSessionId;
 
