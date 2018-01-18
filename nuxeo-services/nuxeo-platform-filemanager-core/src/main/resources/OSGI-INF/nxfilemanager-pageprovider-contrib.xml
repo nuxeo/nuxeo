@@ -8,7 +8,7 @@
     <coreQueryPageProvider name="DEFAULT_CREATION_CONTAINER_LIST_PROVIDER">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType IN ('Workspace',
-        'Folder') AND ecm:currentLifeCycleState != 'deleted'
+        'Folder') AND ecm:isTrashed = 0
       </pattern>
       <sort column="ecm:path" ascending="true" />
     </coreQueryPageProvider>

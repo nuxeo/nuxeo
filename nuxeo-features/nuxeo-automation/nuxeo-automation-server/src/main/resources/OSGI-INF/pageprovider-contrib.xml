@@ -17,8 +17,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-        'deleted'
+        AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort ascending="true" column="dc:title"/>
       <pageSize>50</pageSize>

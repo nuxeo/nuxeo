@@ -169,7 +169,7 @@
             AND cvd:contentViewName IS NOT NULL
             AND ecm:isProxy = 0 AND
             ecm:isCheckedInVersion = 0
-            AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:isTrashed = 0
             AND ecm:parentId = ?
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>

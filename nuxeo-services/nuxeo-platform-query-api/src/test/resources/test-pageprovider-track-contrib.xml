@@ -21,7 +21,7 @@
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -33,12 +33,12 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_TRACK">
-      <trackUsage>true</trackUsage>       
+      <trackUsage>true</trackUsage>
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -48,13 +48,13 @@
         <option>20</option>
       </pageSizeOptions>
     </coreQueryPageProvider>
-    
+
       <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN2">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -64,14 +64,14 @@
         <option>20</option>
       </pageSizeOptions>
     </coreQueryPageProvider>
-    
+
     <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <trackUsage>true</trackUsage>
       <pattern>
         SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -105,11 +105,11 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    
+
     <listener name="SearchLogger" async="false"
       postCommit="false" priority="1000"
       class="org.nuxeo.ecm.platform.query.core.SearchEventsAccumulator">
     </listener>
   </extension>
-  
+
 </component>

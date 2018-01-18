@@ -115,7 +115,7 @@
       <pattern quoteParameters="false">
         SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation'
         AND ecm:isCheckedInVersion = 0
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
         AND dc:subjects IN (?)
       </pattern>
       <pageSize>50</pageSize>

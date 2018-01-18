@@ -8,7 +8,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Domain WHERE ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>0</pageSize>
@@ -33,7 +33,7 @@
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:mixinType != 'SystemDocument' AND
         ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
-        ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH ?
+        ecm:isTrashed = 0 AND ecm:path STARTSWITH ?
       </pattern>
       <sort column="dc:modified" ascending="true" />
       <pageSize>5</pageSize>
@@ -53,7 +53,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
-        ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
+        ecm:isTrashed = 0 AND webc:isWebContainer = 1 AND
         ecm:path STARTSWITH ?
       </pattern>
       <sort column="webc:name" ascending="true" />
@@ -64,7 +64,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
+        ecm:isTrashed = 0 AND ecm:isProxy = 0 AND ecm:path
         STARTSWITH ?
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -78,7 +78,7 @@
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:mixinType != 'SystemDocument' AND
         ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
-        ecm:currentLifeCycleState = 'deleted'
+        ecm:isTrashed = 1
       </pattern>
       <sort column="dc:modified" ascending="true" />
       <pageSize>5</pageSize>
@@ -88,8 +88,8 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-        'deleted' AND collectionMember:collectionIds/* = ?
+        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND
+        collectionMember:collectionIds/* = ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>5</pageSize>
@@ -99,8 +99,8 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-        'deleted' AND ecm:acl/*1/grant = 1 AND
+        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND
+        ecm:acl/*1/grant = 1 AND
         ecm:acl/*1/permission IN ('Read', 'ReadWrite', 'ReadRemove', 'Everything') AND
         ecm:acl/*1/principal IN ?
       </pattern>

@@ -31,7 +31,6 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public final class FileManagerUtils {
@@ -125,8 +124,7 @@ public final class FileManagerUtils {
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();
         String query = "SELECT * FROM Document WHERE ecm:parentId = '" + parentId + "' AND " + propertyName + " = '"
-                + value.replace("'", "\\\'") + "' AND ecm:currentLifeCycleState != '" + LifeCycleConstants.DELETED_STATE
-                + "'";
+                + value.replace("'", "\\\'") + "' AND ecm:isTrashed = 0";
         DocumentModelList docs = documentManager.query(query, 1);
         if (docs.size() > 0) {
             existing = docs.get(0);

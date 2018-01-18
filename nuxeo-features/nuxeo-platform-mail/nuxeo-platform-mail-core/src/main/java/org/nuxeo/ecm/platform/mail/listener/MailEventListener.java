@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
@@ -83,7 +82,7 @@ public class MailEventListener implements EventListener {
         try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(null)) {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
-            query.append(String.format(" WHERE ecm:currentLifeCycleState != '%s' ", LifeCycleConstants.DELETED_STATE));
+            query.append(" WHERE ecm:isTrashed = 0 ");
             query.append(" AND ecm:isProxy = 0 ");
             DocumentModelList mailFolderList = coreSession.query(query.toString());
 

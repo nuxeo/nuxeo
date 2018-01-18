@@ -419,8 +419,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         CoreSession session = currentDoc.getCoreSession();
         DocumentModelList docs = session.query(
                 String.format("SELECT * FROM " + "Document WHERE " + "ecm:mixinType != 'HiddenInNavigation' AND "
-                        + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = "
-                        + "'deleted' AND ecm:parentId = '%s'", currentDoc.getId()));
+                        + "ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 1 AND "
+                        + "ecm:parentId = '%s'", currentDoc.getId()));
         return docs;
     }
 }

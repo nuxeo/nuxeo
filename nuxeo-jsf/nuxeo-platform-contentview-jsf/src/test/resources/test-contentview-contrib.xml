@@ -65,8 +65,7 @@
             ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation'
-            AND ecm:currentLifeCycleState
-            != 'deleted'
+            AND ecm:isTrashed = 0
           </fixedPart>
           <predicate parameter="dc:title" operator="FULLTEXT">
             <field schema="dublincore" name="title" />
@@ -84,7 +83,7 @@
         <pattern>
           SELECT * FROM Folder WHERE ecm:parentId = ? AND
           ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
@@ -98,7 +97,7 @@
         <pattern>
           SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
           ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
+          AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
@@ -164,8 +163,7 @@
           <fixedPart>
             ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState
-            != 'deleted'
+            'HiddenInNavigation' AND ecm:isTrashed = 0
           </fixedPart>
           <predicate parameter="dc:title" operator="FULLTEXT">
             <field schema="dublincore" name="title" />
@@ -321,8 +319,7 @@
           ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND
-          ecm:currentLifeCycleState !=
-          'deleted'
+          ecm:isTrashed = 0
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="dublincore" name="title" />
@@ -337,7 +334,7 @@
       <pattern>
         SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
         ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>

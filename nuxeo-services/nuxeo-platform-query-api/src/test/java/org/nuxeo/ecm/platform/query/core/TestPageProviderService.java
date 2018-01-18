@@ -84,7 +84,7 @@ public class TestPageProviderService {
         assertNull(def.getWhereClause());
         assertEquals("SELECT * FROM Document WHERE ecm:parentId = ? AND "
                 + "ecm:isCheckedInVersion = 0 AND ecm:mixinType != "
-                + "'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'", def.getPattern());
+                + "'HiddenInNavigation' AND ecm:isTrashed = 0", def.getPattern());
         assertEquals(1, def.getSortInfos().size());
         assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
         assertTrue(def.getSortInfos().get(0).getSortAscending());
@@ -104,7 +104,7 @@ public class TestPageProviderService {
         assertNotNull(def);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
         assertEquals(
-                "ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'",
+                "ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0",
                 def.getWhereClause().getFixedPart());
         assertEquals("SELECT * FROM Note", def.getWhereClause().getSelectStatement());
         assertEquals(1, def.getSortInfos().size());

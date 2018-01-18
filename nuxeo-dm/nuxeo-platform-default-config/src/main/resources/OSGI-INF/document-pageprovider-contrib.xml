@@ -18,7 +18,7 @@
         </predicate>
         <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
-          ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
       <sort column="dc:title" ascending="true" />
@@ -32,8 +32,7 @@
         <fixedPart>
           ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState
-          != 'deleted'
+          'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="advanced_content" name="title" />
@@ -82,8 +81,7 @@
         <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState =
-          'deleted'
+          'HiddenInNavigation' AND ecm:isTrashed = 1
         </fixedPart>
       </whereClause>
       <sort column="dc:title" ascending="true" />
@@ -105,8 +103,7 @@
         <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState
-          != 'deleted'
+          'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
       <sort column="dc:title" ascending="true" />
@@ -128,8 +125,7 @@
         <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState
-          != 'deleted'
+          'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
       <sort column="ecm:pos" ascending="true" />

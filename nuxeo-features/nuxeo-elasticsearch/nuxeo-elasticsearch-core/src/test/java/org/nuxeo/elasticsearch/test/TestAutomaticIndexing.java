@@ -518,7 +518,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+                "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(1, ret.totalSize());
         trashService.undeleteDocuments(Collections.singletonList(doc));
 
@@ -528,7 +528,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+                "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(2, ret.totalSize());
 
         SearchResponse searchResponse = searchAll();

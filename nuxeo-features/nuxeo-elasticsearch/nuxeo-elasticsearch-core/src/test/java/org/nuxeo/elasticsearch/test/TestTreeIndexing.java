@@ -411,7 +411,7 @@ public class TestTreeIndexing {
 
         startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                "select * from Document where ecm:currentLifeCycleState != 'deleted'"));
+                "select * from Document where ecm:isTrashed = 0"));
         // for (DocumentModel doc : docs) {
         // System.out.println(doc.getPathAsString());
         // }

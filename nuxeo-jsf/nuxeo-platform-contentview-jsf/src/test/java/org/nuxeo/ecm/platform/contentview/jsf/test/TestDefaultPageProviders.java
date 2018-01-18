@@ -532,7 +532,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT dc:title FROM Document WHERE ecm:parentId = '%s'"
                         + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title", parentIdParam),
+                        + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryAndFetchPageProvider) pp).getCurrentQuery());
 
         pp.nextPage();
@@ -541,7 +541,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT dc:title FROM Document WHERE ecm:parentId = '%s'"
                         + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title", parentIdParam),
+                        + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryAndFetchPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -662,7 +662,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title", parentIdParam),
+                        + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -692,7 +692,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title", parentIdParam),
+                        + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -714,7 +714,7 @@ public class TestDefaultPageProviders {
                 String.format(
                         "SELECT * FROM Folder WHERE ecm:fulltext.dc:title = 'number0'" + " AND (ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted') ORDER BY dc:title",
+                                + " AND ecm:isTrashed = 0) ORDER BY dc:title",
                         parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
@@ -753,7 +753,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title", parentIdParam),
+                        + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
     }
 

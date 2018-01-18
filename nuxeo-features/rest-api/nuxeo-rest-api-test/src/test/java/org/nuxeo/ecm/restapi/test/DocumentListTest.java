@@ -160,8 +160,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
-                        + "        'deleted'");
+                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
@@ -183,8 +182,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:title,:title2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
-                        + "        'deleted'");
+                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("title", "Note 1");
         queryParams.add("title2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());

@@ -12,7 +12,7 @@
         AND
         ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
         AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -27,7 +27,7 @@
         ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
         'HiddenInNavigation'
         AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
@@ -42,7 +42,7 @@
         ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
         'HiddenInNavigation'
         AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>

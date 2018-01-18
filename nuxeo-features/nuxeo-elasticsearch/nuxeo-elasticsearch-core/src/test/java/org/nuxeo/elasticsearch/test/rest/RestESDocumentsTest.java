@@ -85,7 +85,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
-    public static final String QUERY = "select * from Document where " + "ecm:currentLifeCycleState <> 'deleted'";
+    public static final String QUERY = "select * from Document where " + "ecm:isTrashed = 0";
 
     @Inject
     PageProviderService pageProviderService;
