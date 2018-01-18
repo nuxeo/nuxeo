@@ -12,7 +12,7 @@
           <field schema="assets_search" name="ecm_fulltext"/>
         </predicate>
         <fixedPart>ecm:mixinType IN ('Picture', 'Audio', 'Video') AND ecm:isCheckedInVersion = 0 AND
-          ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy=0
+          ecm:isTrashed = 0 AND ecm:isProxy=0
         </fixedPart>
       </whereClause>
       <aggregates>
