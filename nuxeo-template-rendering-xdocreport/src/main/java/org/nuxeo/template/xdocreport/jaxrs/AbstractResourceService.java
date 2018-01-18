@@ -50,7 +50,7 @@ public abstract class AbstractResourceService extends DefaultObject {
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         CoreSession session = getCoreSession();
         StringBuffer sb = new StringBuffer(
-                "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
+                "select * from Document where ecm:mixinType = 'Template' AND ecm:isTrashed = 0");
         sb.append(" AND tmpl:templateType = 'XDocReportProcessor'");
         DocumentModelList docs = session.query(sb.toString());
         for (DocumentModel doc : docs) {

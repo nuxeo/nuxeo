@@ -82,14 +82,14 @@ public class ModelImporter {
     public static final String TEST_EXAMPLE_ROOT = "testexample";
 
     public static final String TEMPLATE_ROOT = "template";
-    
+
     public static final String TEST_TEMPLATE_ROOT = "testtemplate";
 
     protected static final String RESOURCES_ROOT = "templatesamples";
 
     protected static final String RAW_RESOURCES_ROOT = "rawsamples";
 
-    protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:currentLifeCycleState != 'deleted' order by dc:created ASC";
+    protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:isTrashed = 0 order by dc:created ASC";
 
     protected final CoreSession session;
 
@@ -293,7 +293,7 @@ public class ModelImporter {
                             nbImportedDocs = nbImportedDocs
                                     + importSamples(roots.get(EXAMPLE_ROOT), modelRef, samplesContainer);
                         }
-                        if (roots.get(TEST_EXAMPLE_ROOT) != null 
+                        if (roots.get(TEST_EXAMPLE_ROOT) != null
                         	&& Framework.isTestModeSet()) {
                             nbImportedDocs = nbImportedDocs
                                     + importSamples(roots.get(TEST_EXAMPLE_ROOT), modelRef, testSamplesContainer);

@@ -7,7 +7,7 @@
     <coreQueryPageProvider name="template_based">
       <pattern escapeParameters="true" quoteParameters="false">
         SELECT * FROM Document WHERE ecm:mixinType = 'TemplateBased' AND
-        ecm:currentLifeCycleState != 'deleted' AND
+        ecm:isTrashed = 0 AND
         nxts:bindings/*/templateId IN (?) AND ecm:isCheckedInVersion = ?
       </pattern>
       <sort column="dc:title" ascending="true" />

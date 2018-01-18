@@ -244,7 +244,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     protected String buildTemplateSearchQuery(String targetType) {
         StringBuffer sb = new StringBuffer(
-                "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
+                "select * from Document where ecm:mixinType = 'Template' AND ecm:isTrashed = 0");
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
             sb.append(" AND ecm:isCheckedInVersion = 0");
         }
