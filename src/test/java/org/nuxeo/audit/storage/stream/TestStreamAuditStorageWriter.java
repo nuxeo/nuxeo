@@ -21,12 +21,10 @@ package org.nuxeo.audit.storage.stream;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import java.util.List;
-import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.storage.impl.DirectoryAuditStorage;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -49,9 +47,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.audit.storage.directory", "org.nuxeo.runtime.stream" })
 @LocalDeploy({ "org.nuxeo.audit.storage.directory:OSGI-INF/test-stream-audit-storage-contrib.xml" })
 public class TestStreamAuditStorageWriter {
-
-    @Inject
-    protected CoreSession session;
 
     @Test
     public void testWriteJsonEntriesToAudit() {

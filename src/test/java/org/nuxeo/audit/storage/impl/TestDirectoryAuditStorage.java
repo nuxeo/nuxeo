@@ -49,10 +49,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.query.sql.model.Literals;
-import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -62,7 +59,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -147,13 +143,13 @@ public class TestDirectoryAuditStorage {
             String jsonEntry1 = jsonEntries.get(0);
             DocumentModel auditEntry1 = auditEntries.get(0);
             assertTrue(auditEntry1.hasSchema(schemaName));
-            assertEquals(new Long(1), auditEntry1.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
+            assertEquals(1L, auditEntry1.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
             assertEquals(jsonEntry1, auditEntry1.getPropertyValue(DirectoryAuditStorage.JSON_COLUMN));
 
             String jsonEntry2 = jsonEntries.get(1);
             DocumentModel auditEntry2 = auditEntries.get(1);
             assertTrue(auditEntry2.hasSchema(schemaName));
-            assertEquals(new Long(2), auditEntry2.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
+            assertEquals(2L, auditEntry2.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
             assertEquals(jsonEntry2, auditEntry2.getPropertyValue(DirectoryAuditStorage.JSON_COLUMN));
         }
     }
