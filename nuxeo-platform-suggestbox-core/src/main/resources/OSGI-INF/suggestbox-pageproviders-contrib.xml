@@ -9,7 +9,7 @@
         <pattern quoteParameters="false" escapeParameters="true">
           SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
-          ecm:currentLifeCycleState != 'deleted' AND ecm:parentId IS NOT NULL
+          ecm:isTrashed = 0 AND ecm:parentId IS NOT NULL
         </pattern>
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
