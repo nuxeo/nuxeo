@@ -25,7 +25,7 @@
         <pattern quoteParameters="false" escapeParameters="false">
           SELECT * FROM Document ? ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
-          ecm:currentLifeCycleState != 'deleted'
+          ecm:isTrashed = 0
         </pattern>
         <parameter>
           #{smartNXQLQueryActions.getWhereClause(searchDocument.sf.queryPart, true)}
