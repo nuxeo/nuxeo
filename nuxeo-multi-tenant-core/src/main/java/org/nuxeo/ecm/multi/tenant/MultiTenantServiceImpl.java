@@ -85,7 +85,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() {
-                    String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:currentLifeCycleState != 'deleted'";
+                    String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:isTrashed = 0";
                     tenants.addAll(session.query(query));
                 }
             }.runUnrestricted();
@@ -100,7 +100,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() {
-                    String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s' AND ecm:currentLifeCycleState != 'deleted'";
+                    String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s' AND ecm:isTrashed = 0";
                     List<DocumentModel> docs = session.query(
                             String.format(query, configuration.getTenantDocumentType()));
                     for (DocumentModel doc : docs) {
@@ -119,7 +119,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() {
-                    String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:currentLifeCycleState != 'deleted'";
+                    String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:isTrashed = 0";
                     List<DocumentModel> docs = session.query(query);
                     for (DocumentModel doc : docs) {
                         disableTenantIsolationFor(session, doc);
