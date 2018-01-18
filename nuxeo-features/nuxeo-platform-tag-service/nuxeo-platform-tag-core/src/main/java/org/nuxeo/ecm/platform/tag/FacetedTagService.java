@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.tag;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
+import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
@@ -79,6 +81,8 @@ public class FacetedTagService extends AbstractTagService {
     protected void saveDocument(CoreSession session, DocumentModel doc) {
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         doc.putContextData(DISABLE_VERSIONING, Boolean.TRUE);
+        doc.putContextData(DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
+        doc.putContextData(DISABLE_AUDIT_LOGGER, Boolean.TRUE);
         session.saveDocument(doc);
     }
 

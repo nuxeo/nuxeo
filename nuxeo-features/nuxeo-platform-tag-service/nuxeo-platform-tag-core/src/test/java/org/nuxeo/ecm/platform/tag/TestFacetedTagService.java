@@ -161,7 +161,6 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         doc.refresh();
         assertEquals("0.0", doc.getVersionLabel()); // version unchanged
-        assertEquals("joe", doc.getPropertyValue("dc:lastContributor"));
     }
 
     // start with a checked in doc
@@ -184,7 +183,6 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         doc.refresh();
         assertEquals("1.0", doc.getVersionLabel()); // version unchanged
-        assertEquals("joe", doc.getPropertyValue("dc:lastContributor"));
     }
 
 }
