@@ -250,13 +250,8 @@ public class PostCommitEventExecutor {
 
                     listener.asPostCommitListener().handleEvent(reconnected);
 
-                    if (Thread.currentThread().isInterrupted()) {
-                        log.error("Events postcommit execution interrupted for listener: " + listener.getName());
-                        SequenceTracer.destroy("interrupted");
-                        ok = false;
-                    } else {
-                        ok = true;
-                    }
+                    ok = true;
+                    // don't check for interrupted flag, the event completed normally, no reason to rollback
                 } catch (RuntimeException e) {
                     log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
                             e);
