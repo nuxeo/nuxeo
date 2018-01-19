@@ -13,6 +13,9 @@
 
     <operation class="org.nuxeo.ecm.platform.picture.operation.GetPictureView" />
 
+    <operation class="org.nuxeo.ecm.platform.picture.operation.RecomputePictureViewsOperation" />
+    <operation class="org.nuxeo.ecm.platform.picture.operation.PendingRecomputeOperation" />
+
   </extension>
 
   <extension point="chains"
