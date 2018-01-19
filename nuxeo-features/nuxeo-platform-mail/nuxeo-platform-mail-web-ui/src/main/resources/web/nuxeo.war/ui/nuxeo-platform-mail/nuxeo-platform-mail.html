@@ -13,6 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<link rel="import" href="nuxeo-mail-sync-button.html">
+
+<nuxeo-slot-content name="syncEmailAction" slot="DOCUMENT_ACTIONS">
+  <template>
+    <nuxeo-filter document="[[document]]" type="MailFolder" permission="ReadWrite">
+      <template>
+        <nuxeo-mail-sync-button document="[[document]]"></nuxeo-mail-sync-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
 
 <script>
   // push MailFolder to list of document types that are not available for import
