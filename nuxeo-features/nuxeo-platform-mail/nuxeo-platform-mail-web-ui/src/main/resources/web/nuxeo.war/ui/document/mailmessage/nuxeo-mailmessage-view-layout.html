@@ -1,0 +1,106 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+`nuxeo-mailmessage-view-layout`
+@group Nuxeo UI
+@element nuxeo-mailmessage-view-layout
+-->
+<dom-module id="nuxeo-mailmessage-view-layout">
+  <template>
+    <style include="nuxeo-styles">
+      div.multiline {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        -o-hyphens: auto;
+        hyphens: auto;
+        white-space: pre-line;
+      }
+
+      .toggle {
+        margin-top: 16px;
+        text-align: right;
+      }
+
+      .toggle span {
+        cursor: pointer;
+      }
+
+      .toggle span[active] {
+        color: var(--nuxeo-primary-color);
+      }
+    </style>
+    <nuxeo-card>
+      <nuxeo-document-preview id="preview" hidden$="[[!_isHTML(mode)]]"></nuxeo-document-preview>
+      <div name="description" class="multiline" hidden$="[[!_isText(mode)]]">[[document.properties.mail:text]]</div>
+      <div class="toggle">
+        <span on-tap="_viewHTML" active$="[[_isHTML(mode)]]">HTML</span> / <span on-tap="_viewText" active$="[[_isText(mode)]]">TXT</span>
+      </div>
+    </nuxeo-card>
+  </template>
+  <script>
+    var HTML_MODE = 'html';
+    var TXT_MODE = 'text';
+
+    Polymer({
+      is: 'nuxeo-mailmessage-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype MailMessage
+         */
+        document: {
+          type: Object,
+          observer: '_documentChanged'
+        },
+
+        mode: {
+          type: String,
+          value: HTML_MODE
+        }
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.document.properties['file:content'] = {
+            data: this.document.properties['mail:htmlText'],
+            'mime-type': 'text/html'
+          };
+          this.$.preview.document = this.document;
+        }
+      },
+
+      _viewHTML: function() {
+        this.mode = HTML_MODE;
+      },
+
+      _viewText: function() {
+        this.mode = TXT_MODE;
+      },
+
+      _isHTML: function() {
+        return this.mode === HTML_MODE;
+      },
+
+      _isText: function() {
+        return this.mode === TXT_MODE;
+      }
+    });
+  </script>
+</dom-module>
