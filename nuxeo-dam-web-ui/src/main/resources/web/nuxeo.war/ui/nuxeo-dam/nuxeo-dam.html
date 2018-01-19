@@ -16,6 +16,7 @@ limitations under the License.
 -->
 
 <link rel="import" href="nuxeo-picture-document-page.html">
+<link rel="import" href="nuxeo-imaging.html">
 
 <nuxeo-slot-content name="damSearchMenuButtons" slot="DRAWER_ITEMS" order="45">
   <template>
@@ -37,6 +38,26 @@ limitations under the License.
     <nuxeo-filter document="[[document]]" type="Picture">
       <template>
         <nuxeo-picture-document-page name="view" document="[[document]]"></nuxeo-picture-document-page>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="adminImagingMenuItem" slot="ADMINISTRATION_MENU" order="100">
+  <template>
+    <nuxeo-filter user="[[user]]" expression="user.isAdministrator">
+      <template>
+        <nuxeo-menu-item name="imaging" label="Imaging" route="administration:imaging"></nuxeo-menu-item>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="adminImagingPage" slot="ADMINISTRATION_PAGES">
+  <template>
+    <nuxeo-filter user="[[user]]" expression="user.isAdministrator">
+      <template>
+        <nuxeo-imaging name="imaging"></nuxeo-imaging>
       </template>
     </nuxeo-filter>
   </template>
