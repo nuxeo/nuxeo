@@ -174,4 +174,13 @@ public interface BatchManager {
      */
     boolean removeFileEntry(String batchId, String filedIdx);
 
+    /**
+     * Fetches information about a Batch
+     *
+     * @since 10.1
+     */
+    Batch getBatch(String batchId);
+    Batch initBatch(String providerName);
+    Map<String, BatchHandler> getSupportedHandlers();
+    BatchHandler getHandlerByName(String name);
 }
