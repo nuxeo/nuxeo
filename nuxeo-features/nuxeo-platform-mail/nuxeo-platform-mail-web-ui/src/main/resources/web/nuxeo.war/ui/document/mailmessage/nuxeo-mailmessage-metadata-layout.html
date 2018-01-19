@@ -1,0 +1,77 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+`nuxeo-mailmessage-metadata-layout`
+@group Nuxeo UI
+@element nuxeo-mailmessage-metadata-layout
+-->
+<dom-module id="nuxeo-mailmessage-metadata-layout">
+  <template>
+    <style include="nuxeo-styles">
+      *[role=widget] {
+        margin-bottom: 16px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+    </style>
+
+    <div role="widget">
+      <label>[[i18n('label.mail.message.subject')]]</label>
+      <div name="title">[[document.properties.dc:title]]</div>
+    </div>
+
+    <div role="widget">
+      <label>[[i18n('label.mail.message.sender')]]</label>
+      <div name="title">[[document.properties.mail:sender]]</div>
+    </div>
+
+    <div role="widget">
+      <label>[[i18n('label.mail.message.sending_date')]]</label>
+      <nuxeo-date datetime="[[document.properties.mail:sending_date]]"></nuxeo-date>
+    </div>
+
+    <div role="widget">
+      <label>[[i18n('label.mail.message.importing_date')]]</label>
+      <nuxeo-date datetime="[[document.properties.dc:created]]"></nuxeo-date>
+    </div>
+
+    <div role="widget">
+      <label>[[i18n('label.mail.message.recipients')]]</label>
+      <nuxeo-tags items="[[document.properties.mail:recipients]]"></nuxeo-tags>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.mail:cc_recipients.length]]">
+      <label>[[i18n('label.mail.message.cc_recipients')]]</label>
+      <nuxeo-tags items="[[document.properties.mail:cc_recipients]]"></nuxeo-tags>
+    </div>
+
+    <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-mailmessage-metadata-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype MailMessage
+         */
+        document: Object
+      }
+    });
+  </script>
+</dom-module>
