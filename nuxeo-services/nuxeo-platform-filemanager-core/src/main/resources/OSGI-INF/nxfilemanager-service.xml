@@ -26,16 +26,15 @@
       <code>
         <plugin name="myCustomFileImporter"
           class="com.example.MyFileImporterImplementationClass" enabled="true"
-          order="30">
+          docType="MyCustomDoctype" order="30">
           <filter>text/plain</filter>
-          <doctype>MyCustomDoctype</doctype>
         </plugin>
       </code>
 
       The filter tag is used to know what mime-types can be used with the
       plugin. The order tag is used to determine order between plugins.
       
-      The doctype tag is optional. When added, an instance of the document type specified in it will be created. Otherwise, one of the default Nuxeo document types will be used.
+      The docType attribute is optional. When added, an instance of the document type specified in it will be created. Otherwise, one of the default Nuxeo document types will be used.
 
       A plugin can override an existing plugin by reusing the same name, in this
       case the previous filters will be ignored. A plugin can be completely
