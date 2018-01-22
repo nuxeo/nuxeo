@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.search.SearchRequest;
@@ -48,8 +47,9 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Override the JPA audit based change finder to execute query in ES.
@@ -90,12 +90,13 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             int limit) {
 
         SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                                                  .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
                 upperBound, integerBounds, limit);
-        SearchSourceBuilder source = new SearchSourceBuilder().query(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
+        SearchSourceBuilder source = new SearchSourceBuilder().query(
+                QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
         source.sort("repositoryId", SortOrder.ASC).sort("eventDate", SortOrder.DESC);
         source.size(limit);
         request.source(source);
@@ -225,12 +226,11 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequest request = new SearchRequest(getESIndexName())
-                .types(ElasticSearchConstants.ENTRY_TYPE)
-                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
+                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
         // TODO refactor this to use max clause
-        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery())
-                .sort("id", SortOrder.DESC).size(1));
+        request.source(
+                new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).sort("id", SortOrder.DESC).size(1));
         logSearchRequest(request);
         SearchResponse searchResponse = getClient().search(request);
         logSearchResponse(searchResponse);
@@ -254,15 +254,13 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
      */
     @Override
     public long getUpperBound(Set<String> repositoryNames) {
-        SearchRequest request = new SearchRequest(getESIndexName())
-                .types(ElasticSearchConstants.ENTRY_TYPE)
-                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
+                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
         SearchSourceBuilder source = new SearchSourceBuilder();
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate")
-                                                           .lt(lastClusteringInvalidationDate);
+            RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate").lt(lastClusteringInvalidationDate);
             source.query(QueryBuilders.boolQuery().filter(filterBuilder));
         } else {
             source.query(QueryBuilders.matchAllQuery());
