@@ -11,5 +11,6 @@ Nuxeo-Component: OSGI-INF/nxmail-framework.xml,
  OSGI-INF/nxmail-listener-contrib.xml,
  OSGI-INF/nxmail-blobholder-contrib.xml,
  OSGI-INF/automation-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/security-policy-contrib.xml
 Provide-Package: org.nuxeo.ecm.platform.mail
