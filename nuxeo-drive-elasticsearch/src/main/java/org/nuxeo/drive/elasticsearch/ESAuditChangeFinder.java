@@ -20,6 +20,7 @@
 package org.nuxeo.drive.elasticsearch;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -257,47 +258,50 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                                                   .setTypes(ElasticSearchConstants.ENTRY_TYPE)
                                                   .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+        RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate");
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate")
-                                                           .lt(new Date(lastClusteringInvalidationDate));
-            builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
-        } else {
-            builder.setQuery(queryBuilder);
+            filterBuilder = filterBuilder.lt(new Date(lastClusteringInvalidationDate));
         }
         builder.addSort("id", SortOrder.DESC);
         builder.setSize(1);
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.execute().actionGet();
-        logSearchResponse(searchResponse);
-        List<LogEntry> entries = new ArrayList<>();
-        SearchHits hits = searchResponse.getHits();
-        for (SearchHit hit : hits) {
-            try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (IOException e) {
-                log.error("Error while reading Audit Entry from ES", e);
-            }
-        }
-        if (entries.isEmpty()) {
-            if (clusteringDelay > -1) {
-                // Check for existing entries without the clustering invalidation date filter to not return -1 in this
-                // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
-                // 0
-                builder.setQuery(queryBuilder);
-                logSearchRequest(builder);
-                searchResponse = builder.execute().actionGet();
-                logSearchResponse(searchResponse);
-                if (searchResponse.getHits().iterator().hasNext()) {
-                    log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
-                    return 0;
+        // scroll on previous days with a times 2 step up to 30
+        for (int i = 1; i <= 30; i = i * 2) {
+            ZonedDateTime lowerLogDateTime = ZonedDateTime.now().minusDays(i);
+            // set lower bound in query
+            filterBuilder = filterBuilder.gt(Date.from(lowerLogDateTime.toInstant()));
+            builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
+            // run request
+            logSearchRequest(builder);
+            SearchResponse searchResponse = builder.execute().actionGet();
+            logSearchResponse(searchResponse);
+
+            // if results return the first hit id
+            SearchHits hits = searchResponse.getHits();
+            for (SearchHit hit : hits) {
+                try {
+                    return AuditEntryJSONReader.read(hit.getSourceAsString()).getId();
+                } catch (IOException e) {
+                    log.error("Error while reading Audit Entry from ES", e);
                 }
             }
-            log.debug("Found no audit log entries, returning -1");
-            return -1;
         }
-        return entries.get(0).getId();
+        if (clusteringDelay > -1) {
+            // Check for existing entries without the clustering invalidation date filter to not return -1 in this
+            // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >= 0
+            builder.setQuery(queryBuilder);
+            builder.setSize(0);
+            logSearchRequest(builder);
+            SearchResponse searchResponse = builder.execute().actionGet();
+            logSearchResponse(searchResponse);
+            if (searchResponse.getHits().getTotalHits() > 0) {
+                log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
+                return 0;
+            }
+        }
+        log.debug("Found no audit log entries, returning -1");
+        return -1;
     }
 
     @Override
