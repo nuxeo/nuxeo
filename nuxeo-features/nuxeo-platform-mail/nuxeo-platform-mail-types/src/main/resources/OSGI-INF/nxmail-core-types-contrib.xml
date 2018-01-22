@@ -20,6 +20,7 @@
       <schema name="files"/>
       <facet name="Commentable" />
       <facet name="HiddenInCreation" />
+      <facet name="NXTag" />
     </doctype>
 
     <doctype name="MailFolder" extends="Folder">
