@@ -30,6 +30,25 @@ class Sim10BenchPolling extends Simulation {
     .assertions(global.successfulRequests.percent.greaterThan(80))
 }
 
+class Sim15BenchPolling extends Simulation {
+
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .acceptEncodingHeader("identity")
+    .connection("keep-alive")
+    .disableCaching // disabling Etag cache since If-None-Modified on GetChangeSummary fails
+
+  val poll = scenario("Poll").during(Parameters.getSimulationDuration(60)) {
+    exec(PollChanges.run(Parameters.getPollInterval(30)))
+  }
+
+  setUp(poll.inject(rampUsers(Parameters.getConcurrentUsers(100)).over(Parameters.getRampDuration(10))))
+    .protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.greaterThan(80))
+}
+
 class Sim40BenchRecursiveRemoteScan extends Simulation {
 
   val httpProtocol = http

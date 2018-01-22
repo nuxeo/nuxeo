@@ -10,11 +10,11 @@ object Cleanup {
 
   def run = (userCount: Integer) => {
     feed(Feeders.admins)
-      .exec(Actions.deleteFileDocumentAsAdmin(Constants.GAT_WS_PATH))
+      .exec(Actions.deleteFileDocumentAsAdmin("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests"))
       .repeat(userCount.intValue(), "count") {
       feed(Feeders.usersQueue)
         .exec(Actions.deleteUser())
-    }.exec(Actions.deleteGroup(Constants.GAT_GROUP_NAME))
+    }//.exec(Actions.deleteGroup(Constants.GAT_GROUP_NAME))
   }
 }
 

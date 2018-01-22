@@ -10,23 +10,23 @@ object ServerFeeder {
     group("Server Feeder") {
       feed(Feeders.users)
         .exec(
-          Actions.createFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME, filename)
+          Actions.createFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_FOLDER_NAME, filename)
         ).pause(halfSleep)
         .exec(
-          Actions.createFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME, filename)
+          Actions.createFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_USER_FOLDER_NAME, filename)
         ).pause(halfSleep)
         .repeat(2, "count") {
         exec(
-          Actions.updateFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME, filename)
+          Actions.updateFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_FOLDER_NAME, filename)
         ).pause(halfSleep)
           .exec(
-            Actions.updateFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME, filename)
+            Actions.updateFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_USER_FOLDER_NAME, filename)
           ).pause(halfSleep)
       }.exec(
-          Actions.deleteFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME + "/" + filename)
+          Actions.deleteFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_FOLDER_NAME + "/" + filename)
         ).pause(halfSleep)
         .exec(
-          Actions.deleteFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME + "/" + filename)
+          Actions.deleteFileDocument("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_USER_FOLDER_NAME + "/" + filename)
         )
     }
   }

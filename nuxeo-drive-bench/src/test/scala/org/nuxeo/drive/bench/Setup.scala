@@ -11,17 +11,17 @@ object Setup {
   def run = (userCount: Integer) => {
 
     feed(Feeders.admins)
-      .exec(Actions.createGroupIfNotExists(Constants.GAT_GROUP_NAME)).exitHereIfFailed
-      .exec(Actions.createDocumentIfNotExistsAsAdmin(Constants.ROOT_WORKSPACE_PATH, Constants.GAT_WS_NAME, "Workspace")).exitHereIfFailed
-      .exec(Actions.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME)).exitHereIfFailed
-      .exec(Actions.createDocumentIfNotExistsAsAdmin(Constants.GAT_WS_PATH, Constants.GAT_FOLDER_NAME, "Folder")).exitHereIfFailed
+//      .exec(Actions.createGroupIfNotExists("Commercial")).exitHereIfFailed
+      .exec(Actions.createDocumentIfNotExistsAsAdmin("/default-domain/002 Donnees communes/3 Admin/3 KBis", "NX-tests", "Folder")).exitHereIfFailed
+      .exec(Actions.grantReadWritePermission("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests", "Commercial")).exitHereIfFailed
+      .exec(Actions.createDocumentIfNotExistsAsAdmin("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests", Constants.GAT_FOLDER_NAME, "Folder")).exitHereIfFailed
       .repeat(userCount.intValue(), "count") {
       feed(Feeders.usersQueue)
         .feed(Feeders.deviceId)
-        .exec(Actions.createUserIfNotExists(Constants.GAT_GROUP_NAME))
-        .exec(Actions.createDocumentIfNotExists(Constants.GAT_WS_PATH, Constants.GAT_USER_FOLDER_NAME, "Folder"))
-        .exec(Actions.synchronyzeFolder(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME))
-        .exec(Actions.synchronyzeFolder(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME))
+        .exec(Actions.createUserIfNotExists("Commercial"))
+        .exec(Actions.createDocumentIfNotExists("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests", Constants.GAT_USER_FOLDER_NAME, "Folder"))
+        .exec(Actions.synchronyzeFolder("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_USER_FOLDER_NAME))
+        .exec(Actions.synchronyzeFolder("/default-domain/002 Donnees communes/3 Admin/3 KBis/NX-tests/" + Constants.GAT_FOLDER_NAME))
         .exec(Actions.getDriveToken())
     }
   }
