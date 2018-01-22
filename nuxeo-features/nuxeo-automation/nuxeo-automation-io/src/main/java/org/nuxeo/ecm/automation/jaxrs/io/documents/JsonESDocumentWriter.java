@@ -76,6 +76,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         }
         jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
         jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
+        jg.writeStringField("ecm:versionVersionableId", doc.getVersionSeriesId());
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
         jg.writeBooleanField("ecm:isVersion", doc.isVersion());
