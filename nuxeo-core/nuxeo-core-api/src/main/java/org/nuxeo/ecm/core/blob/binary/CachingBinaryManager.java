@@ -20,13 +20,16 @@
 package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.FileCache;
@@ -44,6 +47,12 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  * @since 5.7
  */
 public abstract class CachingBinaryManager extends AbstractBinaryManager {
+
+    // for tests
+    public static final String DEBUG_WRITE_CACHED_BINARY = "writeCachedBinary";
+
+    // for tests
+    public static final String DEBUG_READ_CACHED_BINARY = "readCachedBinary";
 
     private static final Log log = LogFactory.getLog(CachingBinaryManager.class);
 
@@ -129,26 +138,44 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     }
 
     @Override
-    protected Binary getBinary(InputStream in) throws IOException {
-        // write the input stream to a temporary file, while computing a digest
-        File tmp = fileCache.getTempFile();
-        OutputStream out = new FileOutputStream(tmp);
+    protected Binary getBinary(InputStream inputStream) throws IOException {
+        // compute the digest
         String digest;
-        try {
-            digest = storeAndDigest(in, out);
-        } finally {
-            in.close();
-            out.close();
+        File tmp = null;
+        File cachedFile;
+        try (InputStream in = inputStream) {
+            if (in instanceof FileInputStream) {
+                // we can read the stream several times by resetting the FileInputStream's FileChannel position
+                // so we can compute the digest in-memory which avoids writing to a file if digest is already known
+                digest = storeAndDigest(in, NullOutputStream.NULL_OUTPUT_STREAM);
+                cachedFile = fileCache.getFile(digest);
+                if (cachedFile == null) {
+                    // copy stream to file
+                    tmp = fileCache.getTempFile();
+                    try (FileChannel channel = ((FileInputStream) in).getChannel()) {
+                        channel.position(0);
+                        FileUtils.copyToFile(in, tmp);
+                    }
+                }
+            } else {
+                // we can only read the stream once
+                // write the input stream to a temporary file, while computing a digest
+                tmp = fileCache.getTempFile();
+                try (OutputStream out = new FileOutputStream(tmp)) {
+                    digest = storeAndDigest(in, out);
+                }
+                cachedFile = fileCache.getFile(digest);
+            }
         }
-
-        File cachedFile = fileCache.getFile(digest);
         if (cachedFile != null) {
             // file already in cache
             if (Framework.isTestModeSet()) {
-                Framework.getProperties().setProperty("cachedBinary", digest);
+                Framework.getProperties().setProperty(DEBUG_WRITE_CACHED_BINARY, digest);
             }
             // delete tmp file, not needed anymore
-            tmp.delete();
+            if (tmp != null) {
+                tmp.delete();
+            }
         } else {
             // send the file to storage
             fileStorage.storeFile(digest, tmp);
@@ -174,6 +201,9 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         // get file from cache
         File file = fileCache.getFile(digest);
         if (file != null) {
+            if (Framework.isTestModeSet()) {
+                Framework.getProperties().setProperty(DEBUG_READ_CACHED_BINARY, digest);
+            }
             return file;
         }
         // fetch file from storage
