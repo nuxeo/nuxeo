@@ -120,6 +120,11 @@
 <#macro ga>
 <script>
   !function() {
+    if (window.location.host.match(/localhost/)) {
+      // Skip analytics tracking on localhost
+      return;
+    }
+
     var analytics = window.analytics = window.analytics || [];
     if (!analytics.initialize) {
       if (analytics.invoked) {
