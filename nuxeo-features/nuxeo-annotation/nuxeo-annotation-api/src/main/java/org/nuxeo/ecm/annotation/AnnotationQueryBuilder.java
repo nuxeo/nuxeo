@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,22 +14,19 @@
  * limitations under the License.
  *
  * Contributors:
- *     Kevin Leturc <kleturc@nuxeo.com>
+ *     Funsho David
  *
  */
-package org.nuxeo.ecm.platform.audit.api;
+
+package org.nuxeo.ecm.annotation;
 
 import org.nuxeo.ecm.platform.query.api.QueryBuilder;
 
 /**
- * Query builder for querying audit.
+ * Query builder for querying annotations.
  *
- * @since 9.3
+ * @since 10.1
  */
-public class AuditQueryBuilder extends QueryBuilder<AuditQueryBuilder> {
-
-    public AuditQueryBuilder defaultOrder() {
-        return orders(OrderByExprs.desc(BuiltinLogEntryData.LOG_EVENT_DATE));
-    }
+public class AnnotationQueryBuilder extends QueryBuilder<AnnotationQueryBuilder> {
 
 }
