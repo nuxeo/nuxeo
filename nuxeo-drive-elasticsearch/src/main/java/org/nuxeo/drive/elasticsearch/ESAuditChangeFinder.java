@@ -20,6 +20,7 @@
 package org.nuxeo.drive.elasticsearch;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -256,49 +257,52 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     public long getUpperBound(Set<String> repositoryNames) {
         SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
                                                                    .searchType(SearchType.DFS_QUERY_THEN_FETCH);
-        SearchSourceBuilder source = new SearchSourceBuilder();
+        RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate");
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate").lt(lastClusteringInvalidationDate);
-            source.query(QueryBuilders.boolQuery().filter(filterBuilder));
-        } else {
-            source.query(QueryBuilders.matchAllQuery());
+            filterBuilder = filterBuilder.lt(lastClusteringInvalidationDate);
         }
+        SearchSourceBuilder source = new SearchSourceBuilder();
         source.sort("id", SortOrder.DESC).size(1);
-        request.source(source);
-        logSearchRequest(request);
-        SearchResponse searchResponse = getClient().search(request);
-        logSearchResponse(searchResponse);
-        List<LogEntry> entries = new ArrayList<>();
-        SearchHits hits = searchResponse.getHits();
-        ObjectMapper mapper = new ObjectMapper();
-        for (SearchHit hit : hits) {
-            try {
-                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
-            } catch (IOException e) {
-                log.error("Error while reading Audit Entry from ES", e);
-            }
-        }
-        if (entries.isEmpty()) {
-            if (clusteringDelay > -1) {
-                // Check for existing entries without the clustering invalidation date filter to not return -1 in this
-                // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
-                // 0
-                source.query(QueryBuilders.matchAllQuery());
-                request.source(source);
-                logSearchRequest(request);
-                searchResponse = getClient().search(request);
-                logSearchResponse(searchResponse);
-                if (searchResponse.getHits().iterator().hasNext()) {
-                    log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
-                    return 0;
+        // scroll on previous days with a times 2 step up to 30
+        for (int i = 1; i <= 30; i = i * 2) {
+            ZonedDateTime lowerLogDateTime = ZonedDateTime.now().minusDays(i);
+            // set lower bound in query
+            filterBuilder = filterBuilder.gt(lowerLogDateTime.toInstant().toEpochMilli());
+            source.query(QueryBuilders.boolQuery().filter(filterBuilder));
+            request.source(source);
+            // run request
+            logSearchRequest(request);
+            SearchResponse searchResponse = getClient().search(request);
+            logSearchResponse(searchResponse);
+
+            // if results return the first hit id
+            ObjectMapper mapper = new ObjectMapper();
+            SearchHits hits = searchResponse.getHits();
+            for (SearchHit hit : hits) {
+                try {
+                    return mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class).getId();
+                } catch (IOException e) {
+                    log.error("Error while reading Audit Entry from ES", e);
                 }
             }
-            log.debug("Found no audit log entries, returning -1");
-            return -1;
         }
-        return entries.get(0).getId();
+        if (clusteringDelay > -1) {
+            // Check for existing entries without the clustering invalidation date filter to not return -1 in this
+            // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >= 0
+            source.query(QueryBuilders.matchAllQuery()).size(0);
+            request.source(source);
+            logSearchRequest(request);
+            SearchResponse searchResponse = getClient().search(request);
+            logSearchResponse(searchResponse);
+            if (searchResponse.getHits().getTotalHits() > 0) {
+                log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
+                return 0;
+            }
+        }
+        log.debug("Found no audit log entries, returning -1");
+        return -1;
     }
 
     @Override
