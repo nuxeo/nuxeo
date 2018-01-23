@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.ecm.platform.video.tools.VideoTool;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for converters doing video conversions.
@@ -91,7 +90,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
         cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
 
         VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
-        if (videoInfo == null) {
+        if (videoInfo == null || videoInfo.getHeight() == 0) {
             return cmdStringParams;
         }
 

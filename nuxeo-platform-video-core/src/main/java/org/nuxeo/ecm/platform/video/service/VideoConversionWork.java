@@ -28,8 +28,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -82,7 +85,7 @@ public class VideoConversionWork extends AbstractWork {
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_INDETERMINATE);
 
-        Video originalVideo = null;
+        Video originalVideo;
         try {
             openSystemSession();
             originalVideo = getVideoToConvert();
@@ -111,19 +114,38 @@ public class VideoConversionWork extends AbstractWork {
         setStatus("Done");
     }
 
+    @Override
+    public boolean isIdempotent() {
+        // when video is updated the workid is the same
+        return false;
+    }
+
     protected Video getVideoToConvert() {
         DocumentModel doc = session.getDocument(new IdRef(docId));
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         Video video = videoDocument.getVideo();
         if (video == null) {
             log.warn("No original video to transcode for: " + doc);
+        } else if (video.getHeight() == 0) {
+            log.debug("Updating video info");
+            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            Blob blob = blobHolder.getBlob();
+            VideoHelper.updateVideoInfo(doc, blob);
+            if (doc.isVersion()) {
+                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
+            session.saveDocument(doc);
+            session.save();
+            videoDocument = doc.getAdapter(VideoDocument.class, true);
+            video = videoDocument.getVideo();
         }
         return video;
     }
 
     protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "vid:transcodedVideos");
         if (transcodedVideos == null) {
             transcodedVideos = new ArrayList<>();
         }
