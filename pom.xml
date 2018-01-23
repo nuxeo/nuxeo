@@ -99,6 +99,7 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-csv</module>
+    <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-drive-server</module>
     <module>nuxeo-resources-compat</module>
