@@ -266,8 +266,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         }
         builder.addSort("id", SortOrder.DESC);
         builder.setSize(1);
-        // scroll on previous days with a times 2 step up to 30
-        for (int i = 1; i <= 30; i = i * 2) {
+        // scroll on previous days with a times 2 step up to 32
+        for (int i = 1; i <= 32; i = i * 2) {
             ZonedDateTime lowerLogDateTime = ZonedDateTime.now().minusDays(i);
             // set lower bound in query
             filterBuilder = filterBuilder.gt(Date.from(lowerLogDateTime.toInstant()));
