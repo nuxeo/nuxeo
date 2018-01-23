@@ -76,11 +76,11 @@
     nuxeo.spreadsheet = {
       language: '<%= selectedLanguage %>',
       labels: {
-        'saving': '<fmt:message bundle="${messages}" key="message.spreadsheet.saving" />',
-        'failedSave': '<fmt:message bundle="${messages}" key="message.spreadsheet.failedSave" />',
-        'upToDate': '<fmt:message bundle="${messages}" key="message.spreadsheet.upToDate" />',
-        'rowsSaved': '<fmt:message bundle="${messages}" key="message.spreadsheet.rowsSaved" />',
-        'autoSave': '<fmt:message bundle="${messages}" key="message.spreadsheet.autoSave" />'
+        "saving": "<fmt:message bundle="${messages}" key="message.spreadsheet.saving" />",
+        "failedSave": "<fmt:message bundle="${messages}" key="message.spreadsheet.failedSave" />",
+        "upToDate": "<fmt:message bundle="${messages}" key="message.spreadsheet.upToDate" />",
+        "rowsSaved": "<fmt:message bundle="${messages}" key="message.spreadsheet.rowsSaved" />",
+        "autoSave": "<fmt:message bundle="${messages}" key="message.spreadsheet.autoSave" />"
       }
     };
     var contextPath = '<%= request.getContextPath() %>';
