@@ -69,6 +69,10 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         }
     }
 
+    @Override public boolean containsStore(String name) {
+        return stores.containsKey(name);
+    }
+
     @Override
 	public void doGC() {
         stores.values().forEach(TransientStoreProvider::doGC);
@@ -116,5 +120,4 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     public void cleanUpStores() {
         stores.values().forEach(TransientStoreProvider::removeAll);
     }
-
 }

@@ -41,4 +41,6 @@ public interface TransientStoreService {
      * Triggers Garbage collecting of all {@link TransientStore}
      */
     void doGC();
+
+    boolean containsStore(String name);
 }
