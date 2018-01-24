@@ -41,8 +41,8 @@
       <artifactId>json</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.levigo.jbig2</groupId>
-      <artifactId>levigo-jbig2-imageio</artifactId>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>jbig2-imageio</artifactId>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
