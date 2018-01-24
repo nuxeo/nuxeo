@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.ui.web.component.list;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
+import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
@@ -113,6 +115,10 @@ public class UIJavascriptList extends UIEditableList {
 
             // expose a boolean that can be used on client side to hide this element without disturbing the DOM
             requestMap.put(IS_LIST_TEMPLATE_VAR, Boolean.TRUE);
+
+            EditableModel model = new EditableModelImpl(Collections.singletonList(getTemplate()), null);
+            model.setRowIndex(0);
+            requestMap.put("model", model);
 
             // render the template as escaped html
             ResponseWriter oldResponseWriter = context.getResponseWriter();

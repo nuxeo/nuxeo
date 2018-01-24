@@ -93,6 +93,8 @@ public class TestDocumentModelFunctions {
         assertEquals("foo", complexValMap.get("stringComplexItem"));
         assertTrue(complexValMap.containsKey("dateComplexItem"));
         assertNull(complexValMap.get("dateComplexItem"));
+        assertTrue(complexValMap.containsKey("booleanComplexItem"));
+        assertTrue((Boolean) complexValMap.get("booleanComplexItem"));
 
         Object stringVal = DocumentModelFunctions.defaultValue("lds:textField");
         assertNull(stringVal);
