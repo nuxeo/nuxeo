@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -138,6 +139,16 @@ public interface BatchManager {
     String initBatch(String batchId, String contextName);
 
     /**
+     * Initiates a new batch with the given handler.
+     *
+     * @param handlerName the batch handler name
+     * @return the newly created batch
+     * @throws IllegalArgumentException it the batch handler does not exist
+     * @since 10.1
+     */
+    Batch initBatch(String handlerName);
+
+    /**
      * Executes the chain or operation on the {@code Blobs} from the given {@code batchId}.
      * <p>
      * This method does not clean the temporary storage associated to the {@code batchId}.
@@ -173,5 +184,31 @@ public interface BatchManager {
      * @since 8.4
      */
     boolean removeFileEntry(String batchId, String filedIdx);
+
+    /**
+     * Fetches information about a batch.
+     *
+     * @param batchId the batch id
+     * @return the batch, or {@code null} if it doesn't exist
+     * @since 10.1
+     */
+    Batch getBatch(String batchId);
+
+    /**
+     * Returns the supported batch handler names.
+     *
+     * @return the supported batch handler names
+     * @since 10.1
+     */
+    Set<String> getSupportedHandlers();
+
+    /**
+     * Gets a batch handler.
+     *
+     * @param handlerName the batch handler name
+     * @return the batch handler, or {@code null} if it doesn't exist
+     * @since 10.1
+     */
+    BatchHandler getHandler(String handlerName);
 
 }
