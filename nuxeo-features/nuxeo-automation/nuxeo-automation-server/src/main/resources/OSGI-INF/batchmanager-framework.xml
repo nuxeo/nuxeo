@@ -12,4 +12,7 @@
     <provide interface="org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager" />
   </service>
 
+  <extension-point name="handlers">
+    <object class="org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchHandlerDescriptor"/>
+  </extension-point>
 </component>

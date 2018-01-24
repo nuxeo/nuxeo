@@ -52,7 +52,11 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
         }
         if (fileId != null) {
             BatchManager bm = Framework.getService(BatchManager.class);
-            blob = bm.getBlob(batchId, fileId);
+            Batch batch = bm.getBatch(batchId);
+            if (batch == null) {
+                return null;
+            }
+            blob = batch.getBlob(fileId);
 
             if (RequestContext.getActiveContext() != null) {
                 final boolean drop = !Boolean.parseBoolean(

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Luís Duarte
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
@@ -23,9 +25,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,18 +49,22 @@ import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerConstants;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -66,6 +75,9 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Batch upload endpoint.
@@ -98,15 +110,62 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected static final String OPERATION_ID = "operationId";
 
+    protected static final String REQUEST_HANDLER_NAME = "handlerName";
+
     public static final String UPLOAD_TYPE_NORMAL = "normal";
 
     public static final String UPLOAD_TYPE_CHUNKED = "chunked";
+
+    public static final String KEY = "key";
+
+    public static final String NAME = "name";
+
+    public static final String MIMETYPE = "mimeType";
+
+    public static final String FILE_SIZE = "fileSize";
+
+    public static final String MD5 = "md5";
+
+    protected Map<String, String> mapWithName(String name) {
+        return Collections.singletonMap("name", name);
+    }
+
+    @GET
+    @Path("handlers")
+    public Response handlers() throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        Set<String> supportedHandlers = bm.getSupportedHandlers();
+        List<Map<String, String>> handlers = supportedHandlers.stream().map(this::mapWithName).collect(
+                Collectors.toList());
+        Map<String, Object> result = Collections.singletonMap("handlers", handlers);
+        return buildResponse(Status.OK, result);
+    }
+
+    @GET
+    @Path("handlers/{handlerName}")
+    public Response getHandlerInfo(@PathParam(REQUEST_HANDLER_NAME) String handlerName) throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        BatchHandler handler = bm.getHandler(handlerName);
+        if (handler == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        Map<String, String> result = mapWithName(handler.getName());
+        return buildResponse(Status.OK, result);
+    }
+
+    @POST
+    @Path("new/{handlerName}")
+    public Response createNewBatch(@PathParam(REQUEST_HANDLER_NAME) String handlerName) throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        Batch batch = bm.initBatch(handlerName);
+        return getBatchExtraInfo(batch.getKey());
+    }
 
     @POST
     public Response initBatch() throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("batchId", batchId);
         return buildResponse(Status.CREATED, result);
     }
@@ -126,8 +185,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     protected Response uploadNoTransaction(@Context HttpServletRequest request,
             @PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
             throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
 
-        if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
+        if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
 
@@ -183,16 +243,15 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 mimeType = blob.getMimeType();
             }
             uploadedSize = blob.getLength();
-            try (InputStream is = blob.getStream()) {
-                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
-                        uploadChunkIndex, fileSize);
-            }
+            addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
+                    fileSize);
         } else {
             if (fileName != null) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
             }
             try (InputStream is = request.getInputStream()) {
-                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
+                Blob blob = Blobs.createBlob(is);
+                addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount,
                         uploadChunkIndex, fileSize);
             }
         }
@@ -205,7 +264,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         result.put("uploadType", uploadType);
         result.put("uploadedSize", String.valueOf(uploadedSize));
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-            BatchFileEntry fileEntry = Framework.getService(BatchManager.class).getFileEntry(batchId, fileIdx);
+            BatchFileEntry fileEntry = bm.getFileEntry(batchId, fileIdx);
             if (fileEntry != null) {
                 result.put("uploadedChunkIds", fileEntry.getOrderedChunkIndexes());
                 result.put("chunkCount", fileEntry.getChunkCount());
@@ -225,22 +284,23 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return Long.parseLong(contentLength);
     }
 
-    protected void addStream(String uploadType, String batchId, String fileIdx, InputStream is, String fileName,
+    protected void addBlob(String uploadType, String batchId, String fileIdx, Blob blob, String fileName,
             String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize)
             throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
+        Batch batch = bm.getBatch(batchId);
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Uploading chunk [index=%d / total=%d] (%s) for file %s", uploadChunkIndex,
                         chunkCount, uploadedSizeDisplay, fileName));
             }
-            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, chunkCount, uploadChunkIndex,
-                    fileName, mimeType, fileSize);
+            batch.addChunk(fileIdx, blob, chunkCount, uploadChunkIndex, fileName, mimeType, fileSize);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Uploading file %s (%s)", fileName, uploadedSizeDisplay));
             }
-            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, fileName, mimeType);
+            batch.addFile(fileIdx, blob, fileName, mimeType);
         }
     }
 
@@ -329,34 +389,93 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return executeBatch(batchId, fileIdx, operationId, request, xreq);
     }
 
+    @GET
+    @Path("{batchId}/info")
+    public Response getBatchExtraInfo(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        if (!bm.hasBatch(batchId)) {
+            return buildEmptyResponse(Status.NOT_FOUND);
+        }
+        Batch batch = bm.getBatch(batchId);
+        Map<String, Object> properties = batch.getProperties();
+        List<BatchFileEntry> fileEntries = batch.getFileEntries();
+
+        List<Map<String, Object>> fileInfos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(fileEntries)) {
+            fileEntries.stream().map(this::getFileInfo).forEach(fileInfos::add);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("provider", batch.getHandlerName());
+        if (properties != null && !properties.isEmpty()) {
+            result.put("extraInfo", properties);
+        }
+
+        result.put("fileEntries", fileInfos);
+        result.put("batchId", batch.getKey());
+        return buildResponse(Status.OK, result);
+    }
+
+    @POST
+    @Path("{batchId}/{fileIdx}/complete")
+    public Response uploadCompleted(@PathParam(REQUEST_BATCH_ID) String batchId,
+            @PathParam(REQUEST_FILE_IDX) String fileIdx, String body) throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        JsonNode jsonNode = new ObjectMapper().readTree(body);
+
+        Batch batch = bm.getBatch(batchId);
+        if (batch == null) {
+            return buildEmptyResponse(Status.NOT_FOUND);
+        }
+
+        String key = jsonNode.hasNonNull(KEY) ? jsonNode.get(KEY).asText(null) : null;
+        String filename = jsonNode.hasNonNull(NAME) ? jsonNode.get(NAME).asText() : null;
+        String mimeType = jsonNode.hasNonNull(MIMETYPE) ? jsonNode.get(MIMETYPE).asText(null) : null;
+        Long length = jsonNode.hasNonNull(FILE_SIZE) ? jsonNode.get(FILE_SIZE).asLong() : -1L;
+        String md5 = jsonNode.hasNonNull(MD5) ? jsonNode.get(MD5).asText() : null;
+
+        BatchFileInfo batchFileInfo = new BatchFileInfo(key, filename, mimeType, length, md5);
+
+        BatchHandler handler = bm.getHandler(batch.getHandlerName());
+        if (!handler.completeUpload(batchId, fileIdx, batchFileInfo)) {
+            return Response.status(Status.CONFLICT).build();
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("uploaded", "true");
+        result.put("batchId", batchId);
+        result.put("fileIdx", fileIdx);
+        return buildResponse(Status.OK, result);
+    }
+
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
             ExecutionRequest xreq) {
+        BatchManager bm = Framework.getService(BatchManager.class);
 
-        if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
+        if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
 
         if (!Boolean.parseBoolean(
                 RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {
             RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
-                BatchManager bm = Framework.getService(BatchManager.class);
                 bm.clean(batchId);
             });
         }
 
         try {
             CoreSession session = ctx.getCoreSession();
-            OperationContext ctx = xreq.createContext(request, response, session);
-            Map<String, Object> params = xreq.getParams();
-            BatchManager bm = Framework.getService(BatchManager.class);
             Object result;
-            if (StringUtils.isBlank(fileIdx)) {
-                result = bm.execute(batchId, operationId, session, ctx, params);
-            } else {
-                result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
+            try (OperationContext ctx = xreq.createContext(request, response, session)) {
+                Map<String, Object> params = xreq.getParams();
+                if (StringUtils.isBlank(fileIdx)) {
+                    result = bm.execute(batchId, operationId, session, ctx, params);
+                } else {
+                    result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
+                }
             }
             return ResponseHelper.getResponse(result, request);
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException | OperationException | IOException e) {
             log.error("Error while executing automation batch ", e);
             throw new NuxeoException(e);
         }
