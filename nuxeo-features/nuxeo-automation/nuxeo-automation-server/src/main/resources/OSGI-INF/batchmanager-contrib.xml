@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler"
+           version="1.0">
+
+  <requires>org.nuxeo.ecm.core.transientstore.TransientStorageComponent</requires>
+
+  <extension target="org.nuxeo.ecm.automation.server.BatchManager"
+             point="handlers">
+    <batchHandler>
+      <name>default</name>
+      <class>org.nuxeo.ecm.automation.server.jaxrs.batch.handler.impl.DefaultBatchHandler</class>
+      <property name="transientStore">default</property>
+    </batchHandler>
+  </extension>
+
+</component>

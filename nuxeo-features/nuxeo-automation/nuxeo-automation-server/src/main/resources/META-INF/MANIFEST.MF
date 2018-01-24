@@ -12,7 +12,8 @@ Nuxeo-Component: OSGI-INF/AutomationServer.xml,
  OSGI-INF/auth-contrib.xml,
  OSGI-INF/batchmanager-framework.xml,
  OSGI-INF/binding-contrib.xml,
- OSGI-INF/pageprovider-contrib.xml
+ OSGI-INF/pageprovider-contrib.xml,
+ OSGI-INF/batchmanager-contrib.xml
 Nuxeo-AllowOverride: true
 Import-Package: javax.mail,
  javax.mail.internet,

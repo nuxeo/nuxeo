@@ -4500,6 +4500,11 @@
         <version>${aws.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-sts</artifactId>
+        <version>${aws.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-allblobstore</artifactId>
         <version>${jclouds.version}</version>

@@ -83,7 +83,7 @@ public class BatchManagerFixture {
         String batchId = bm.initBatch();
         assertNotNull(batchId);
         assertTrue(bm.hasBatch(batchId));
-        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        Batch batch = bm.getBatch(batchId);
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
 
@@ -105,7 +105,7 @@ public class BatchManagerFixture {
         String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
         assertEquals("testBatchId", batchId);
         assertTrue(bm.hasBatch("testBatchId"));
-        Batch batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
+        Batch batch = bm.getBatch("testBatchId");
         assertNotNull(batch);
         assertEquals("testBatchId", batch.getKey());
     }

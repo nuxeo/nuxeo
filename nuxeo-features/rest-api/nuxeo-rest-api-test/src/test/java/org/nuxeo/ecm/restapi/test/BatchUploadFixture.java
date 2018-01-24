@@ -23,7 +23,6 @@ package org.nuxeo.ecm.restapi.test;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -44,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -70,7 +70,8 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
 @Features({ TransientStoreFeature.class, RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
+@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml",
+        "org.nuxeo.ecm.platform.restapi.test:test-conflict-batch-handler.xml" })
 public class BatchUploadFixture extends BaseTest {
 
     @Inject
@@ -1035,6 +1036,127 @@ public class BatchUploadFixture extends BaseTest {
     }
 
     @Test
+    public void testDefaultProviderAsLegacyFallback() throws Exception {
+        // Get batch id, used as a session id
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/info")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode jsonNode = mapper.readTree(response.getEntityInputStream());
+            assertTrue(jsonNode.get("provider") != null && !jsonNode.get("provider").isNull());
+            assertEquals(BatchManagerComponent.DEFAULT_BATCH_HANDLER, jsonNode.get("provider").getValueAsText());
+
+            JsonNode fileEntriesNode = jsonNode.get("fileEntries");
+            ArrayNode fileEntriesArrayNode = null;
+            if (fileEntriesNode != null && !fileEntriesNode.isNull() && fileEntriesNode.isArray()) {
+                fileEntriesArrayNode = (ArrayNode) fileEntriesNode;
+            }
+            assertNotNull(fileEntriesArrayNode);
+            assertEquals(0, fileEntriesArrayNode.size());
+
+            assertEquals(batchId, jsonNode.get("batchId").getValueAsText());
+        }
+    }
+
+    @Test
+    public void testConflictOnCompleteUploadError() throws Exception {
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode responseJson = mapper.readTree(response.getEntityInputStream());
+            batchId = responseJson.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0/complete",
+                "{}")) {
+            assertEquals(Status.CONFLICT.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
+    public void testBatchUploadRemoveFileEntryWithProvider() throws Exception {
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode responseJson = mapper.readTree(response.getEntityInputStream());
+            batchId = responseJson.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        // Upload a file not in multipart
+        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
+        String mimeType = "text/plain";
+        String data1 = "Contenu accentué du premier fichier";
+        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/plain");
+        headers.put("X-Upload-Type", "normal");
+        headers.put("X-File-Name", fileName1);
+        headers.put("X-File-Size", fileSize1);
+        headers.put("X-File-Type", mimeType);
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", data1,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").getValueAsText());
+            assertEquals(batchId, node.get("batchId").getValueAsText());
+            assertEquals("0", node.get("fileIdx").getValueAsText());
+            assertEquals("normal", node.get("uploadType").getValueAsText());
+        }
+
+        // Upload a file not in multipart
+        String fileName2 = URLEncoder.encode("Fichier accentué 2.txt", "UTF-8");
+        headers = new HashMap<>();
+        headers.put("Content-Type", "text/plain");
+        headers.put("X-Upload-Type", "normal");
+        headers.put("X-File-Name", fileName2);
+        headers.put("X-File-Size", fileSize1);
+        headers.put("X-File-Type", mimeType);
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", data1,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").getValueAsText());
+            assertEquals(batchId, node.get("batchId").getValueAsText());
+            assertEquals("1", node.get("fileIdx").getValueAsText());
+            assertEquals("normal", node.get("uploadType").getValueAsText());
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/info")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode fileEntriesJsonNode = node.get("fileEntries");
+
+            assertTrue(fileEntriesJsonNode.isArray());
+            ArrayNode fileEntries = (ArrayNode) fileEntriesJsonNode;
+            assertEquals(2, fileEntries.size());
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "upload/" + batchId + "/0")) {
+            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/info")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode fileEntriesJsonNode = node.get("fileEntries");
+
+            assertTrue(fileEntriesJsonNode.isArray());
+            ArrayNode fileEntries = (ArrayNode) fileEntriesJsonNode;
+            assertEquals(1, fileEntries.size());
+        }
+    }
+
+    @Test
     public void testBatchUploadWithMultivaluedBlobProperty() throws Exception {
 
         // Get batch id, used as a session id
@@ -1087,8 +1209,6 @@ public class BatchUploadFixture extends BaseTest {
         assertNotNull(blob1);
         assertEquals("File.txt", blob1.getFilename());
 
-
     }
-
 
 }
