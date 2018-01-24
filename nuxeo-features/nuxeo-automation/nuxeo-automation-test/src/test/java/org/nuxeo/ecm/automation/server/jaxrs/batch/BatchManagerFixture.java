@@ -84,7 +84,7 @@ public class BatchManagerFixture {
         String batchId = bm.initBatch();
         assertNotNull(batchId);
         assertTrue(bm.hasBatch(batchId));
-        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        Batch batch = bm.getBatch(batchId);
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
 
@@ -96,17 +96,17 @@ public class BatchManagerFixture {
 
     @Test(expected = NuxeoException.class)
     public void testBatchInitClientGeneratedIdNotAllowed() {
-        ((BatchManagerComponent) Framework.getService(BatchManager.class)).initBatchInternal("testBatchId");
+        ((BatchManagerComponent) Framework.getService(BatchManager.class)).initBatchInternal(null,"testBatchId");
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.automation.test.test:test-batchmanager-client-generated-id-allowed-contrib.xml")
     public void testBatchInitClientGeneratedIdAllowed() {
         BatchManager bm = Framework.getService(BatchManager.class);
-        String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
+        String batchId = ((BatchManagerComponent) bm).initBatchInternal(null,"testBatchId").getKey();
         assertEquals("testBatchId", batchId);
         assertTrue(bm.hasBatch("testBatchId"));
-        Batch batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
+        Batch batch = bm.getBatch("testBatchId");
         assertNotNull(batch);
         assertEquals("testBatchId", batch.getKey());
     }
@@ -367,7 +367,6 @@ public class BatchManagerFixture {
 
     @Test
     public void testFileConcurrency() throws Exception {
-
         // Initialize a batch
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
