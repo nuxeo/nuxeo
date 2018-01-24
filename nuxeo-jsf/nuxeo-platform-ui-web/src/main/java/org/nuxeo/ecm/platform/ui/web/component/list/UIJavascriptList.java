@@ -182,8 +182,8 @@ public class UIJavascriptList extends UIEditableList {
             }
             setRowIndexes(indexes);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(String.format("Invalid value '%s' for row indexes at '%s'",
-                    StringUtils.join(v, ","), clientId));
+            throw new IllegalArgumentException(
+                    String.format("Invalid value '%s' for row indexes at '%s'", StringUtils.join(v, ","), clientId));
         }
     }
 
