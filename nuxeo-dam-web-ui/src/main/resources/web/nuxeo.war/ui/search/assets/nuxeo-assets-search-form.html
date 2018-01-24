@@ -109,7 +109,7 @@ limitations under the License.
   <script>
     Polymer({
       is: 'nuxeo-assets-search-form',
-
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.I18nBehavior],
       properties: {
         params: {
           type: Object,
@@ -128,11 +128,13 @@ limitations under the License.
         }
       },
 
-      behaviors: [Nuxeo.I18nBehavior],
+      clear: function() {
+        this.searchTerm = '';
+      },
 
       _addFullTextSearch: function() {
         if (this.searchTerm) {
-          this.set('params.ecm_fulltext', this.searchTerm + '*');
+          this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm) + '*');
         } else {
           if (this.params.ecm_fulltext) {
             this.set('params.ecm_fulltext', '');
@@ -141,11 +143,8 @@ limitations under the License.
             delete this.params.ecm_fulltext;
           }
         }
-      },
-
-      clear: function() {
-        this.searchTerm = '';
       }
+
     });
   </script>
 </dom-module>
