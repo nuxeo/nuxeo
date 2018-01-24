@@ -20,15 +20,14 @@
 
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.nuxeo.ecm.automation.core.util.JSONBlobDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.runtime.api.Framework;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Uses a JSON definition to retrive a Blob uploaded in a batch
@@ -53,7 +52,11 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
         }
         if (fileId != null) {
             BatchManager bm = Framework.getService(BatchManager.class);
-            blob = bm.getBlob(batchId, fileId);
+            Batch batch = bm.getBatch(batchId);
+            if (batchId == null) {
+                return null;
+            }
+            blob = batch.getBlob(fileId);
 
             if (RequestContext.getActiveContext() != null) {
                 final boolean drop = !Boolean.parseBoolean(
