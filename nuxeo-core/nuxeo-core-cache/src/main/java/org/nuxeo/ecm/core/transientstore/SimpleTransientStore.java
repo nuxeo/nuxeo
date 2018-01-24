@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.transientstore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +141,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
         if (entry == null) {
             return null;
         }
-        Map<String, Serializable> res = entry.getParams();
+        Map<String, Serializable> res = new HashMap<>(entry.getParams());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Fetched parameters from StorageEntry stored at key %s: %s", key, res));
         }
