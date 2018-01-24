@@ -179,6 +179,7 @@
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.7.4</jackson.version>
+    <bouncycastle.version>1.59</bouncycastle.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -3184,13 +3185,18 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcmail-jdk15</artifactId>
-        <version>1.45</version>
+        <artifactId>bcmail-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15</artifactId>
-        <version>1.45</version>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
@@ -3905,6 +3911,10 @@
           <exclusion>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>bouncycastle</groupId> <!-- without org. -->
+            <artifactId>bcprov-jdk15</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -5573,6 +5583,18 @@
                   <exclude>javassist:javassist</exclude> <!-- use org.javassist:javassist instead, more recent and supports Java 8 -->
                 </excludes>
                 <message>javassist:javassist must not be used, use org.javassist:javassist instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.bouncycastle:bcprov-jdk15</exclude> <!-- use more recent org.bouncycastle:bcprov-jdk15on instead -->
+                </excludes>
+                <message>org.bouncycastle:bcprov-jdk15 must not be used, use org.bouncycastle:bcprov-jdk15on instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.bouncycastle:bcmail-jdk15</exclude> <!-- use more recent org.bouncycastle:bcmail-jdk15on instead -->
+                </excludes>
+                <message>org.bouncycastle:bcmail-jdk15 must not be used, use org.bouncycastle:bcmail-jdk15on instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
