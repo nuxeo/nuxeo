@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,48 +23,43 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
+
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.asn1.pkcs.Attribute;
-import org.bouncycastle.asn1.pkcs.CertificationRequest;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
-import org.bouncycastle.asn1.x509.X509Extension;
-import org.bouncycastle.asn1.x509.X509Extensions;
-import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
-import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
-import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.x509.extension.X509ExtensionUtil;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.RootService;
@@ -107,62 +102,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         }
     }
 
-    protected X509Certificate createCertificateFromCSR(PKCS10CertificationRequest csr) throws CertException {
-        X509Certificate cert;
-        try {
-            X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
-            certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-            certGen.setIssuerDN(getRootCertificate().getIssuerX500Principal());
-            certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
-            certGen.setNotBefore(getCertStartDate());
-            certGen.setNotAfter(getCertEndDate());
-            certGen.setPublicKey(csr.getPublicKey("BC"));
-            certGen.setSignatureAlgorithm(CERT_SIGNATURE_ALGORITHM);
-            certGen.addExtension(X509Extensions.SubjectKeyIdentifier, false,
-                    new SubjectKeyIdentifierStructure(csr.getPublicKey("BC")));
-            certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false, new AuthorityKeyIdentifierStructure(
-                    getRootCertificate()));
-            certGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
-            certGen.addExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.digitalSignature));
-            certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(
-                    KeyPurposeId.id_kp_serverAuth));
-
-            ASN1Set attributes = csr.getCertificationRequestInfo().getAttributes();
-            for (int i = 0; i != attributes.size(); i++) {
-                Attribute attr = Attribute.getInstance(attributes.getObjectAt(i));
-                if (attr.getAttrType().equals(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest)) {
-                    X509Extensions extensions = X509Extensions.getInstance(attr.getAttrValues().getObjectAt(0));
-                    @SuppressWarnings("rawtypes")
-                    Enumeration e = extensions.oids();
-                    while (e.hasMoreElements()) {
-                        DERObjectIdentifier oid = (DERObjectIdentifier) e.nextElement();
-                        X509Extension ext = extensions.getExtension(oid);
-                        certGen.addExtension(oid, ext.isCritical(), ext.getValue().getOctets());
-                    }
-                }
-            }
-
-            KeyPair rootKeyPair = getKeyPair(rootService.getRootKeyStore(), rootService.getRootKeyAlias(),
-                    rootService.getRootCertificateAlias(), rootService.getRootKeyPassword());
-            cert = certGen.generate(rootKeyPair.getPrivate(), "BC");
-        } catch (CertificateParsingException e) {
-            throw new CertException(e);
-        } catch (CertificateEncodingException e) {
-            throw new CertException(e);
-        } catch (InvalidKeyException e) {
-            throw new CertException(e);
-        } catch (IllegalStateException e) {
-            throw new CertException(e);
-        } catch (NoSuchProviderException e) {
-            throw new CertException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new CertException(e);
-        } catch (java.security.SignatureException e) {
-            throw new CertException(e);
-        }
-        LOG.debug("Certificate generated for subject: " + cert.getSubjectDN());
-        return cert;
-    }
 
     @Override
     public X509Certificate getRootCertificate() throws CertException {
@@ -256,40 +195,30 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     protected X509Certificate getCertificate(KeyPair keyPair, UserInfo userInfo) throws CertException {
-        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(keyPair, userInfo);
-        X509Certificate certificate = createCertificateFromCSR(csr);
-        return certificate;
-    }
-
-    protected CertificationRequest generateCSR(KeyPair keyPair, UserInfo userInfo) throws CertException {
-
-        CertificationRequest csr;
-
-        GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.rfc822Name,
-                userInfo.getUserFields().get(CNField.Email)));
-
-        Vector<DERObjectIdentifier> objectIdentifiers = new Vector<DERObjectIdentifier>();
-        Vector<X509Extension> extensionValues = new Vector<X509Extension>();
-
-        objectIdentifiers.add(X509Extensions.SubjectAlternativeName);
-        extensionValues.add(new X509Extension(false, new DEROctetString(subjectAltName)));
-
-        X509Extensions extensions = new X509Extensions(objectIdentifiers, extensionValues);
-
-        Attribute attribute = new Attribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, new DERSet(extensions));
+        X509Certificate rootCertificate = getRootCertificate();
+        X500Principal issuer = rootCertificate.getIssuerX500Principal();
+        BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
+        X500Principal principal = userInfo.getX500Principal();
+        String email = userInfo.getUserFields().get(CNField.Email);
         try {
-            csr = new PKCS10CertificationRequest(CERT_SIGNATURE_ALGORITHM, userInfo.getX500Principal(),
-                    keyPair.getPublic(), new DERSet(attribute), keyPair.getPrivate());
-        } catch (InvalidKeyException e) {
-            throw new CertException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new CertException(e);
-        } catch (NoSuchProviderException e) {
-            throw new CertException(e);
-        } catch (java.security.SignatureException e) {
+            JcaX509ExtensionUtils extUtils = new JcaX509ExtensionUtils();
+            X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuer, serial, getCertStartDate(),
+                    getCertEndDate(), principal, keyPair.getPublic());
+            builder.addExtension(Extension.authorityKeyIdentifier, false,
+                           extUtils.createAuthorityKeyIdentifier(rootCertificate))
+                   .addExtension(Extension.subjectKeyIdentifier, false,
+                           extUtils.createSubjectKeyIdentifier(keyPair.getPublic()))
+                   .addExtension(Extension.basicConstraints, true, new BasicConstraints(false))
+                   .addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature))
+                   .addExtension(Extension.extendedKeyUsage, true, new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth))
+                   .addExtension(Extension.subjectAlternativeName, false,
+                           new GeneralNames(new GeneralName(GeneralName.rfc822Name, email)));
+            ContentSigner signer = new JcaContentSignerBuilder(CERT_SIGNATURE_ALGORITHM).setProvider("BC")
+                                                                                        .build(keyPair.getPrivate());
+            return new JcaX509CertificateConverter().setProvider("BC").getCertificate(builder.build(signer));
+        } catch (GeneralSecurityException | OperatorException | IOException e) {
             throw new CertException(e);
         }
-        return csr;
     }
 
     @Override
@@ -317,21 +246,18 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
 
     @Override
     public String getCertificateEmail(X509Certificate certificate) throws CertException {
-        String emailOID = "2.5.29.17";
-        byte[] emailBytes = certificate.getExtensionValue(emailOID);
-        String certificateEmail = null;
         try {
-            byte[] octets = ((DEROctetString) org.bouncycastle.asn1.ASN1Object.fromByteArray(emailBytes)).getOctets();
-            GeneralNames generalNameCont = GeneralNames.getInstance(org.bouncycastle.asn1.ASN1Object.fromByteArray(octets));
-            GeneralName[] generalNames = generalNameCont.getNames();
-            if (generalNames.length > 0) {
-                GeneralName generalName = generalNames[0];
-                certificateEmail = generalName.getName().toString();
+            @SuppressWarnings("unchecked")
+            Collection<List<?>> altNames = X509ExtensionUtil.getSubjectAlternativeNames(certificate);
+            for (List<?> names : altNames) {
+                if (Integer.valueOf(GeneralName.rfc822Name).equals(names.get(0))) {
+                    return (String) names.get(1);
+                }
             }
-        } catch (IOException e) {
-            throw new CertException("Email could not be extracted from certificate", e);
+            return null;
+        } catch (GeneralSecurityException e) {
+            throw new CertException(e);
         }
-        return certificateEmail;
     }
 
     @Override
