@@ -175,6 +175,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         assertNotNull(listWidget.getSubWidget("nxw_stringComplexItem", 1));
         listWidget.getSubWidget("nxw_stringComplexItem", 1).setInputValue("test 2");
+        listWidget.getSubWidget("nxw_booleanComplexItem", 1).setInputValue("false");
         listWidget.getSubWidget("nxw_text", 1).setInputValue("field 3");
         listWidget.getSubWidget("nxw_text_1", 1).setInputValue("field 4");
 
@@ -193,7 +194,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
         assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
-        assertEquals("No", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
+        assertEquals("Yes", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
         assertEquals("field 1", listWidget.getSubWidget("nxw_text_2", 0).getOutputValue());
         assertEquals("field 2", listWidget.getSubWidget("nxw_text_3", 0).getOutputValue());
 
@@ -214,7 +215,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
         assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
-        assertEquals("No", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
+        assertEquals("Yes", listWidget.getSubWidget("nxw_booleanComplexItem_1", 0).getOutputValue());
         assertEquals("field 1", listWidget.getSubWidget("nxw_text_2", 0).getOutputValue());
         assertEquals("field 2", listWidget.getSubWidget("nxw_text_3", 0).getOutputValue());
     }

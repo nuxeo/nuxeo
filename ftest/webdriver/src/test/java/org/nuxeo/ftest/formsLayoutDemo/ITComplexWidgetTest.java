@@ -48,7 +48,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         assertEquals("String item", viewEl.findElement(By.xpath(tableStruct + "tr[1]")).getText());
         assertEquals("Date item", viewEl.findElement(By.xpath(tableStruct + "tr[2]")).getText());
         assertEquals("Int item", viewEl.findElement(By.xpath(tableStruct + "tr[3]")).getText());
-        assertEquals("Boolean item No", viewEl.findElement(By.xpath(tableStruct + "tr[4]")).getText());
+        assertEquals("Boolean item Yes", viewEl.findElement(By.xpath(tableStruct + "tr[4]")).getText());
 
         submitDemo();
         Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
@@ -58,6 +58,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         edit.getWidget("nxw_stringComplexItem").setInputValue("test");
         edit.getWidget("nxw_dateComplexItem", DateWidgetElement.class).setInputValue("09/7/2010 03:14 PM");
         edit.getWidget("nxw_intComplexItem").setInputValue("lalala");
+        edit.getWidget("nxw_booleanComplexItem").setInputValue("false");
 
         submitDemo();
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
