@@ -63,7 +63,7 @@ Contributors:
 
     <div role="widget" hidden$="[[!document.properties.dc:expired]]">
       <label>[[i18n('label.dublincore.expire')]]</label>
-      <div>[[formatDate(document.properties.dc:expired)]]</div>
+      <nuxeo-date name="expired" datetime="[[document.properties.dc:expired]]"></nuxeo-date>
     </div>
 
   </template>
