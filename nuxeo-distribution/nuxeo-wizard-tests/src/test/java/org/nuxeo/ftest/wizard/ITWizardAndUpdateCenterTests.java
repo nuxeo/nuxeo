@@ -177,7 +177,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
         smtpPage.next();
 
-        registerConnectInstance();
+        boolean alreadyRegistered = registerConnectInstance();
 
         // **********************
         // Online Registration exited and Display Packages page must be visible
@@ -204,13 +204,15 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SummaryWizardPage summary = packageDownloadPage.next(SummaryWizardPage.class);
         assertNotNull(summary);
         assertEquals("Summary", summary.getTitle());
-        assertNotNull(summary.getRegistration());
+        if (!alreadyRegistered) {
+            assertNotNull(summary.getRegistration());
+        }
 
         // Restart
         summary.restart();
     }
 
-    public void registerConnectInstance() throws InterruptedException {
+    public boolean registerConnectInstance() throws InterruptedException {
         // **********************
         // Connect Form
         WizardPage connectWizardPage = asPage(WizardPage.class);
@@ -218,7 +220,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         if (!Locator.hasElementWithTimeout(By.linkText("Register Your Instance"), 200)) {
             // Instance already registered
             connectWizardPage.next();
-            return;
+            return true;
         }
 
         // Save main window handle to ease the switch back
@@ -267,6 +269,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         if (!currentUrl.contains("PackagesSelection")) {
             Locator.waitUntilURLDifferentFrom(currentUrl);
         }
+
+        return false;
     }
 
     @Test
