@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -230,6 +231,18 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.minusDays(1)));
         queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.minusDays(1)));
+        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> nodes = getLogEntries(node);
+            assertEquals(2, nodes.size());
+        }
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("category", "One");
+        queryParams.add("startEventDate", DateParser.formatW3CDateTime(firstDate.minusDays(1).toDate()));
+        queryParams.add("endEventDate", DateParser.formatW3CDateTime(secondDate.minusDays(1).toDate()));
         try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
