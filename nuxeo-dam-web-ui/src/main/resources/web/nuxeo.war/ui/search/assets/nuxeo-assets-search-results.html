@@ -55,7 +55,7 @@ limitations under the License.
 
         <nuxeo-data-table-column name="[[i18n('label.dublincore.modified')]]" field="dc:modified" sort-by="dc:modified" flex="50">
           <template>
-            [[formatDate(item.properties.dc:modified)]]
+            <nuxeo-date datetime="[[item.properties.dc:modified]]"></nuxeo-date>
           </template>
         </nuxeo-data-table-column>
 
@@ -79,7 +79,7 @@ limitations under the License.
 
         <nuxeo-data-table-column name="[[i18n('label.dublincore.created')]]" field="dc:created" flex="50" hidden>
           <template>
-            [[formatDate(item.properties.dc:created)]]
+            <nuxeo-date datetime="[[item.properties.dc:created]]"></nuxeo-date>
           </template>
         </nuxeo-data-table-column>
 
