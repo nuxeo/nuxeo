@@ -36,7 +36,7 @@ limitations under the License.
                          enrichers="thumbnail, permissions"
                          params="[[params]]"></nuxeo-page-provider>
 
-    <nuxeo-results id="results" nx-provider="[[nxProvider]]" name="default" display-mode="list"
+    <nuxeo-results id="results" nx-provider="[[nxProvider]]" name="[[document.uid]]" display-mode="list"
                    selected-items="{{selectedItems}}">
       <nuxeo-data-list name="list" selection-enabled multi-selection display-sort
                        sort-label="[[i18n('searchResults.sort.label')]]" sort-options="[[sortOptions]]">
