@@ -331,12 +331,8 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
                 throw new AlreadySignedException(message);
             }
 
-            List<Certificate> certificates = new ArrayList<>();
-            certificates.add(certificate);
-
-            Certificate[] certChain = certificates.toArray(new Certificate[0]);
             PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
-            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain, null, PdfSignatureAppearance.SELF_SIGNED);
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), (X509Certificate) certificate, null, PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
                 reason = getSigningReason();
             }
