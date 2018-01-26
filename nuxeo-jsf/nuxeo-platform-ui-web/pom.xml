@@ -123,6 +123,19 @@
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-pdf</artifactId>
     </dependency>
+    <!-- dependencies for jboss-seam-pdf (replacing itext, which is excluded) -->
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>pdf-rtf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>pdf-html</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-rss</artifactId>
