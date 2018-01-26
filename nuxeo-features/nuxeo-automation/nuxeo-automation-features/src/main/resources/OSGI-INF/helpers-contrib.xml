@@ -7,4 +7,11 @@
     <contextHelper id="HTTP" class="org.nuxeo.ecm.automation.features.HTTPHelper"/>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Contribution to determine which uid sequence generator to use, either the defaultSequencer or hibernateSequencer.
+      For backwards compatibility, the default value is true, so it will use the hibernateSequencer.
+    </documentation>
+    <property name="org.nuxeo.ecm.core.uidgen.sequencer.hibernate">true</property>
+  </extension>
 </component>

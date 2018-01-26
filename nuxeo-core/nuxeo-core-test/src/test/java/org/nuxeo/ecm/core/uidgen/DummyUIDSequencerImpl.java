@@ -27,6 +27,8 @@ public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
 
     protected Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
 
+    protected long delta = 1L;
+
     @Override
     public void init() {
     }
@@ -39,7 +41,7 @@ public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
     @Override
     public long getNextLong(String key) {
         counters.putIfAbsent(key, new AtomicLong());
-        return counters.get(key).incrementAndGet();
+        return counters.get(key).addAndGet(delta);
     }
 
     @Override
