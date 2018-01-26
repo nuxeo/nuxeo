@@ -26,9 +26,9 @@ import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusW
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNED;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -66,20 +66,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfSignatureAppearance;
-import com.itextpdf.text.pdf.PdfStamper;
-import com.itextpdf.text.pdf.security.BouncyCastleDigest;
-import com.itextpdf.text.pdf.security.DigestAlgorithms;
-import com.itextpdf.text.pdf.security.ExternalDigest;
-import com.itextpdf.text.pdf.security.ExternalSignature;
-import com.itextpdf.text.pdf.security.MakeSignature;
-import com.itextpdf.text.pdf.security.MakeSignature.CryptoStandard;
-import com.itextpdf.text.pdf.security.PdfPKCS7;
-import com.itextpdf.text.pdf.security.PrivateKeySignature;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PdfPKCS7;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfSignatureAppearance;
+import com.lowagie.text.pdf.PdfStamper;
 
 /**
  * Base implementation for the signature service (also a Nuxeo component).
@@ -321,7 +314,8 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             List<X509Certificate> pdfCertificates = getCertificates(pdfReader);
 
             // allows for multiple signatures
-            PdfStamper pdfStamper = PdfStamper.createSignature(pdfReader, null, '\0', outputFile, true);
+            PdfStamper pdfStamper = PdfStamper.createSignature(pdfReader, new FileOutputStream(outputFile), '\0', null,
+                    true);
 
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
@@ -341,26 +335,20 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
-
             PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain, null, PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
                 reason = getSigningReason();
             }
             pdfSignatureAppearance.setVisibleSignature(getNextCertificatePosition(pdfReader, pdfCertificates), 1, null);
             getSignatureAppearanceFactory().format(pdfSignatureAppearance, doc, userID, reason);
 
-            // create the signature
-            ExternalSignature pks = new PrivateKeySignature(keyPair.getPrivate(), DigestAlgorithms.SHA256, null);
-            ExternalDigest digest = new BouncyCastleDigest();
-            MakeSignature.signDetached(pdfSignatureAppearance, digest, pks, certChain, null, null, null, 0,
-                    CryptoStandard.CMS);
-
             pdfStamper.close(); // closes the file
 
             log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
 
             return blob;
-        } catch (IOException | DocumentException | InstantiationException | IllegalAccessException | GeneralSecurityException e) {
+        } catch (IOException | DocumentException | InstantiationException | IllegalAccessException e) {
             throw new SignException(e);
         } catch (IllegalArgumentException e) {
             if (String.valueOf(e.getMessage()).contains("PdfReader not opened with owner password")) {
