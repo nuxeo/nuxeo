@@ -60,22 +60,24 @@ integration/.*'''],
         stash('ws')
         try {
             parallel (
-                'cmis' : verifyClosure(sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
+                'cmis' : emitVerifyClosure(sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
                     archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
                     failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
                 },
-                'funkload' : verifyClosure(sha, zipfile, 'funkload', 'nuxeo-jsf-ui-funkload-tests') {
+                'funkload' : emitVerifyClosure(sha, zipfile, 'funkload', 'nuxeo-jsf-ui-funkload-tests') {
                     archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
                     failOnServerError('nuxeo-distribution/nuxeo-server-funkload-tests/target/tomcat/log/server.log')
                 },
-                'webdriver' : verifyClosure(sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
+                'webdriver' : emitVerifyClosure(sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
                     archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
                     junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
                     failOnServerError('nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/tomcat/log/server.log')
                 }
             )
         } catch (Throwable error) {
+            println '---- DEBUG catched Throwable -----'
             println error
+            println '----'
             throw error
         } finally {
             warningsPublisher()
@@ -84,18 +86,17 @@ integration/.*'''],
     }
 }
 
-def verifyClosure(String sha, String zipfile, String name, String dir, Closure post) {
+/**
+ * Emit the closure which will be evaluated in the parallel step for
+ * verifying.
+ **/
+def emitVerifyClosure(String sha, String zipfile, String name, String dir, Closure post) {
     return {
         node('SLAVE') {
             stage(name) {
                 ws("${WORKSPACE}-${name}") {
                     unstash 'ws'
-                    def mvnopts
-                    if (zipfile == "") {
-                        mvnopts=""
-                    } else {
-                        mvnopts="-Dzip.file=${WORKSPACE}/${zipfile}"
-                    }
+                    def mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
                     timeout(time: 2, unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
                             withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", "mvn ${mvnopts} -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
@@ -106,5 +107,3 @@ def verifyClosure(String sha, String zipfile, String name, String dir, Closure p
         }
     }
 }
-
-
