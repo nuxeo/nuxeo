@@ -518,6 +518,9 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
         while (scrollResult.hasResults()) {
             List<String> jsonEntries = scrollResult.getResults();
+            if (log.isDebugEnabled()) {
+                log.debug("Appending " + jsonEntries.size() + " entries");
+            }
             total += jsonEntries.size();
             append(jsonEntries);
 
