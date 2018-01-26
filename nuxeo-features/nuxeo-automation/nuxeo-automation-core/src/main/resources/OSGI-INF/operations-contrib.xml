@@ -199,6 +199,8 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.UpdateDocument"/>
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.OrderDocument"/>
+    <operation
         class="org.nuxeo.ecm.automation.core.operations.document.PublishDocument"/>
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument"/>
