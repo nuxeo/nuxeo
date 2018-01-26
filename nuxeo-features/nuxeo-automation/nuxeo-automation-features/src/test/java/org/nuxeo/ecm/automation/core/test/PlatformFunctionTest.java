@@ -38,9 +38,9 @@ import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
@@ -48,7 +48,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@LocalDeploy("org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml",
+        "org.nuxeo.ecm.automation.features:test-platform-functions.xml" })
 public class PlatformFunctionTest {
 
     List<String> listOfString = Arrays.asList(new String[] { "value list 1", "value list 2" });
@@ -132,4 +133,22 @@ public class PlatformFunctionTest {
         assertEquals(entryLabel, pf.getVocabularyLabel(vocabularyName, entryId));
         assertEquals(notEntryId, pf.getVocabularyLabel(vocabularyName, notEntryId));
     }
+
+    @Test
+    public void testGetNextIdUsingHibernate() {
+        // for backwards compatibility the default sequenceId generator is hibernate,
+        // our test hibernateSequencer skips every 10 so we know we are using it.
+        assertEquals(Long.valueOf("10"), Long.valueOf(pf.getNextId("testin")));
+        assertEquals(Long.valueOf("20"), Long.valueOf(pf.getNextId("testin")));
+        assertEquals(Long.valueOf("30"), Long.valueOf(pf.getNextId("testin")));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-platform-sequencers.xml")
+    public void testGetNextWithoutHibernate() {
+        assertEquals(Long.valueOf("1"), Long.valueOf(pf.getNextId("testin")));
+        assertEquals(Long.valueOf("2"), Long.valueOf(pf.getNextId("testin")));
+        assertEquals(Long.valueOf("3"), Long.valueOf(pf.getNextId("testin")));
+    }
+
 }
