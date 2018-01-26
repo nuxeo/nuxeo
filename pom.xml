@@ -160,7 +160,7 @@
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
-    <itext.version>2.1.7</itext.version>
+    <librepdf.version>1.0.5</librepdf.version>
     <jclouds.version>1.9.2</jclouds.version>
     <guava.version>18.0</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
@@ -2511,6 +2511,15 @@
             <groupId>org.jboss.spec.javax.faces</groupId>
             <artifactId>jboss-jsf-api_2.1_spec</artifactId>
           </exclusion>
+          <!-- we now use librepdf, with is compatible with itext 2.1.7 -->
+          <exclusion>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext-rtf</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -2858,43 +2867,21 @@
       </dependency>
       <dependency>
         <!-- also a jboss-seam-pdf dependency -->
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext</artifactId>
-        <version>${itext.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bctsp-jdk14</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>openpdf</artifactId>
+        <version>${librepdf.version}</version>
       </dependency>
       <dependency>
         <!-- also a jboss-seam-pdf dependency -->
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext-rtf</artifactId>
-        <version>${itext.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcmail-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bctsp-jdk14</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>pdf-rtf</artifactId>
+        <version>${librepdf.version}</version>
+      </dependency>
+      <dependency>
+        <!-- also a jboss-seam-pdf dependency -->
+        <groupId>com.github.librepdf</groupId>
+        <artifactId>pdf-html</artifactId>
+        <version>${librepdf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
