@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,13 +99,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     private String directoryName;
 
-    /**
-     * the directory is transient - it's refetched on read object - see {@link #readObject(java.io.ObjectInputStream)}
-     */
-    private transient Directory directory;
-
-    private transient DirectoryService directoryService;
-
     @Override
     public void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalStateException {
         if (this.parameters != null) {
@@ -119,7 +111,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
         if (directoryName == null || directoryName.isEmpty()) {
             throw new IllegalArgumentException("missing directory parameter. A directory name is necessary");
         }
-        fetchDirectory();
+        Directory directory = getDirectory();
         idField = directory.getIdField();
         schema = directory.getSchema();
         if (schema.endsWith("xvocabulary")) {
@@ -135,7 +127,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
             separator = separatorParam;
         }
         this.parameters = new HashMap<>();
-        this.parameters.put(PARAM_DIRECTORY, directory.getName());
+        this.parameters.put(PARAM_DIRECTORY, directoryName);
     }
 
     @Override
@@ -147,26 +139,13 @@ public class DirectoryEntryResolver implements ObjectResolver {
         return managedClasses;
     }
 
-    private void fetchDirectory() {
-        directory = getDirectoryService().getDirectory(directoryName);
+    public Directory getDirectory() {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Directory directory = directoryService.getDirectory(directoryName);
         if (directory == null) {
             throw new IllegalArgumentException(String.format("the directory \"%s\" was not found", directoryName));
         }
-    }
-
-    public DirectoryService getDirectoryService() {
-        if (directoryService == null) {
-            directoryService = Framework.getService(DirectoryService.class);
-        }
-        return directoryService;
-    }
-
-    public Directory getDirectory() {
         return directory;
-    }
-
-    public void setDirectory(Directory directory) {
-        this.directory = directory;
     }
 
     @Override
@@ -200,11 +179,11 @@ public class DirectoryEntryResolver implements ObjectResolver {
                     return null;
                 }
             }
-            try (Session session = directory.getSession()) {
+            try (Session session = getDirectory().getSession()) {
                 String finalId = id; // Effectively final
                 DocumentModel doc = Framework.doPrivileged(() -> session.getEntry(finalId));
                 if (doc != null) {
-                    return new DirectoryEntry(directory.getName(), doc);
+                    return new DirectoryEntry(directoryName, doc);
                 }
                 return null;
             }
@@ -244,7 +223,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
                 String result = (String) entry.getProperty(schema, idField);
                 if (hierarchical) {
                     String parent = (String) entry.getProperty(schema, parentField);
-                    try (Session session = directory.getSession()) {
+                    try (Session session = getDirectory().getSession()) {
                         while (parent != null) {
                             String finalParent = parent; // Effectively final
                             entry = Framework.doPrivileged(() -> session.getEntry(finalParent));
@@ -265,7 +244,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
     @Override
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
-        return Helper.getConstraintErrorMessage(this, invalidValue, locale, directory.getName());
+        return Helper.getConstraintErrorMessage(this, invalidValue, locale, directoryName);
     }
 
     private void checkConfig() throws IllegalStateException {
@@ -273,16 +252,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
             throw new IllegalStateException(
                     "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
         }
-    }
-
-    /**
-     * Refetch the directory which is transient.
-     *
-     * @since 7.10
-     */
-    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        stream.defaultReadObject();
-        fetchDirectory();
     }
 
 }
