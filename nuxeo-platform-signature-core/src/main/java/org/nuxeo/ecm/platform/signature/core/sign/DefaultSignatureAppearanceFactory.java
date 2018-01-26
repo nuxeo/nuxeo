@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.signature.core.sign;
 
+import java.awt.Color;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,10 +28,9 @@ import org.nuxeo.ecm.platform.signature.api.sign.SignatureLayout;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.runtime.api.Framework;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.pdf.PdfSignatureAppearance;
 
 public class DefaultSignatureAppearanceFactory implements SignatureAppearanceFactory {
 
@@ -39,11 +40,11 @@ public class DefaultSignatureAppearanceFactory implements SignatureAppearanceFac
     public void format(PdfSignatureAppearance pdfSignatureAppearance, DocumentModel doc, String principal, String reason) {
         pdfSignatureAppearance.setReason(reason);
         pdfSignatureAppearance.setAcro6Layers(true);
-        pdfSignatureAppearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.DESCRIPTION);
+        pdfSignatureAppearance.setRender(PdfSignatureAppearance.SignatureRenderDescription);
         SignatureService service = Framework.getService(SignatureService.class);
         SignatureLayout layout = ((SignatureServiceImpl)service).getSignatureLayout();
-        Font layer2Font = FontFactory.getFont(FontFactory.TIMES, (float) layout.getTextSize(), Font.NORMAL,
-                BaseColor.BLACK);
+        Font layer2Font = FontFactory.getFont(FontFactory.TIMES, layout.getTextSize(), Font.NORMAL, new Color(
+                        0x00, 0x00, 0x00));
         pdfSignatureAppearance.setLayer2Font(layer2Font);
     }
 

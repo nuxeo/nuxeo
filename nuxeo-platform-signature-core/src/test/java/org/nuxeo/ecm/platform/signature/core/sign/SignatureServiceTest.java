@@ -67,7 +67,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.itextpdf.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfReader;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
@@ -196,7 +196,7 @@ public class SignatureServiceTest {
         // test presence of multiple signatures
         List<String> names = getSignatureNames(signedBlobTwice);
         assertEquals(2, names.size());
-        assertEquals(Arrays.asList("Signature1", "Signature2"), names);
+        assertEquals(Arrays.asList("Signature2", "Signature1"), names);
     }
 
     protected List<String> getSignatureNames(Blob blob) throws IOException {
@@ -416,9 +416,9 @@ public class SignatureServiceTest {
                 SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1", "Signature2"), getSignatureNames(signedBlob));
+        assertEquals(Arrays.asList("Signature2", "Signature1"), getSignatureNames(signedBlob));
     }
-
+    
     @Test public void testGetDefaultSignatureAppearance() throws Exception {
         SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
         assertNotNull(ssi.getSignatureAppearanceFactory());

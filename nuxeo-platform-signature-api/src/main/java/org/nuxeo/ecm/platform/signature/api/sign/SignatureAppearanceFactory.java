@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.signature.api.sign;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.lowagie.text.pdf.PdfSignatureAppearance;
 
 public interface SignatureAppearanceFactory {
 
