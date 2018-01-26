@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,21 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thierry Delprat
+ *     Gethin James
  *
  */
-package org.nuxeo.ecm.core.uidgen;
+package org.nuxeo.ecm.automation.core.test.uidgen;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import org.nuxeo.ecm.core.uidgen.DummyUIDSequencerImpl;
 
-public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
-
-    protected Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
-
-    protected long delta = 1L;
+/**
+ * A UIDSequencer that skips 10 each time its called.
+ */
+public class DummySkippingUIDSequencerImpl extends DummyUIDSequencerImpl {
 
     @Override
     public void init() {
+        super.init();
+        delta = 10L;
     }
-
-    @Override
-    public long getNextLong(String key) {
-        counters.putIfAbsent(key, new AtomicLong());
-        return counters.get(key).addAndGet(delta);
-    }
-
-    @Override
-    public void dispose() {
-    }
-
 }

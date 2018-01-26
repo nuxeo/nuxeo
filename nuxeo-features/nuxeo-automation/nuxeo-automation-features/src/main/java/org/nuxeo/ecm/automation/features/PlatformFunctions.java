@@ -25,10 +25,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +44,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,6 +56,8 @@ public class PlatformFunctions extends CoreFunctions {
     private static final Log log = LogFactory.getLog(PlatformFunctions.class);
 
     private volatile UserManager userMgr;
+
+    public static final String HIBERNATE_SEQUENCER_PROPERTY = "org.nuxeo.ecm.core.uidgen.sequencer.hibernate";
 
     public UserManager getUserManager() {
         if (userMgr == null) {
@@ -169,7 +172,9 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public String getNextId(final String key) {
-        return getNextId(key, "hibernateSequencer");
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        boolean useHibernate = configurationService.isBooleanPropertyTrue(HIBERNATE_SEQUENCER_PROPERTY);
+        return getNextId(key, useHibernate ? "hibernateSequencer" : null);
     }
 
     public String getNextId(final String key, final String sequencerName) {

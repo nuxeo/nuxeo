@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.core.test.platformFunction.test-contrib">
+
+    <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+        <sequencer name="dummySequencer" class="org.nuxeo.ecm.core.uidgen.DummyUIDSequencerImpl" default="true" />
+        <sequencer name="hibernateSequencer"
+                   class="org.nuxeo.ecm.automation.core.test.uidgen.DummySkippingUIDSequencerImpl" default="false" />
+    </extension>
+
+</component>
