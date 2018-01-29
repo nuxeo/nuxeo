@@ -85,8 +85,6 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
     @Override
     public void close() throws Exception {
         super.close();
-        stream.close();
-        stream = null;
         fileIterator = null;
         if (lines != null) {
             lines.close();

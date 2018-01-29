@@ -77,6 +77,9 @@ public class RandomDocumentProducers implements RebalanceListener {
     @Param(name = "logConfig", required = false)
     protected String logConfig;
 
+    @Param(name = "countFolderAsDocument", required = false)
+    protected Boolean countFolderAsDocument = true;
+
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
@@ -87,11 +90,11 @@ public class RandomDocumentProducers implements RebalanceListener {
             ProducerPool<DocumentMessage> producers;
             if (logBlobInfoName != null) {
                 producers = new ProducerPool<>(getLogName(), manager,
-                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName),
+                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName, countFolderAsDocument),
                         nbThreads.shortValue());
             } else {
                 producers = new ProducerPool<>(getLogName(), manager,
-                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, avgBlobSizeKB),
+                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, avgBlobSizeKB, countFolderAsDocument),
                         nbThreads.shortValue());
             }
             producers.start().get();

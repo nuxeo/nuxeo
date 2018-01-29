@@ -234,12 +234,25 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
                 BlobInfo blobInfo = blobInfoFetcher.get(builder);
                 if (blobInfo != null) {
                     builder.setBlobInfo(blobInfo);
+                    if (blobInfo.mimeType != null) {
+                        builder.setType(getDocumentTypeForMimeType(blobInfo.mimeType));
+                    }
                 }
             } else {
                 builder.setBlob(getRandomBlob());
             }
         }
         return builder.build();
+    }
+
+    protected String getDocumentTypeForMimeType(String mimeType) {
+        if (mimeType.startsWith("image")) {
+            return "Picture";
+        }
+        if (mimeType.startsWith("video")) {
+            return "Video";
+        }
+        return "File";
     }
 
     protected DocumentMessage getRandomNodeWithPrefix(String prefix, String type, String parentPath) {

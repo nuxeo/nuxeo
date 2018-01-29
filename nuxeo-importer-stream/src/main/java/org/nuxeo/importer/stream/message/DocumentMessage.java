@@ -115,11 +115,11 @@ public class DocumentMessage implements Message {
     }
 
     public static class Builder {
-        protected final String name;
+        protected String name;
 
-        protected final String parentPath;
+        protected String parentPath;
 
-        protected final String type;
+        protected String type;
 
         protected Map<String, Serializable> properties;
 
@@ -159,6 +159,18 @@ public class DocumentMessage implements Message {
 
         public String getType() {
             return type;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setParentPath(String parentPath) {
+            this.parentPath = parentPath;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public Map<String, Serializable> getProperties() {
