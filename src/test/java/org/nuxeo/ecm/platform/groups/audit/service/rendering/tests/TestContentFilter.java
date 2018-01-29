@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,14 +49,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * Test excel export of groups
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({CoreFeature.class, DirectoryFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
-        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
         "org.nuxeo.ecm.automation.core" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/directory-config.xml",
+        "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/schemas-config.xml" })
 public class TestContentFilter extends AbstractAclLayoutTest {
 
     @Inject
