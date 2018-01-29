@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings.SpanMode;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ByteColor;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
@@ -113,36 +115,33 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
         acceptStyle = excel.newColoredCellStyle(ByteColor.GREEN);
 
         acceptStyleLeft = excel.newColoredCellStyle(ByteColor.GREEN);
-        acceptStyleLeft.setBorderLeft(CellStyle.BORDER_THIN);
+        acceptStyleLeft.setBorderLeft(BorderStyle.THIN);
         acceptStyleLeft.setLeftBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         acceptStyleRight = excel.newColoredCellStyle(ByteColor.GREEN);
-        acceptStyleRight.setBorderRight(CellStyle.BORDER_THIN);
+        acceptStyleRight.setBorderRight(BorderStyle.THIN);
         acceptStyleRight.setRightBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         denyStyle = excel.newColoredCellStyle(ByteColor.RED);
-        denyStyle.setFillPattern(CellStyle.THIN_FORWARD_DIAG); // TODO:
-                                                               // generaliser
-                                                               // autres
-                                                               // cellules
+        denyStyle.setFillPattern(FillPatternType.THIN_FORWARD_DIAG);  // TODO: Generalize other cells
         denyStyle.setFillBackgroundColor(excel.getColor(ByteColor.WHITE).getIndex());
 
         denyStyleLeft = excel.newColoredCellStyle(ByteColor.RED);
-        denyStyleLeft.setBorderLeft(CellStyle.BORDER_THIN);
+        denyStyleLeft.setBorderLeft(BorderStyle.THIN);
         denyStyleLeft.setLeftBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         denyStyleRight = excel.newColoredCellStyle(ByteColor.RED);
-        denyStyleRight.setBorderRight(CellStyle.BORDER_THIN);
+        denyStyleRight.setBorderRight(BorderStyle.THIN);
         denyStyleRight.setRightBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         emptyStyle = excel.newColoredCellStyle(ByteColor.WHITE);
 
         emptyStyleLeft = excel.newColoredCellStyle(ByteColor.WHITE);
-        emptyStyleLeft.setBorderLeft(CellStyle.BORDER_THIN);
+        emptyStyleLeft.setBorderLeft(BorderStyle.THIN);
         emptyStyleLeft.setLeftBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         emptyStyleRight = excel.newColoredCellStyle(ByteColor.WHITE);
-        emptyStyleRight.setBorderRight(CellStyle.BORDER_THIN);
+        emptyStyleRight.setBorderRight(BorderStyle.THIN);
         emptyStyleRight.setRightBorderColor(excel.getColor(ByteColor.BLACK).getIndex());
 
         if (layoutSettings.logoImageFile != null)
