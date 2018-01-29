@@ -17,3 +17,8 @@ log/
 *~
 *.xls
 *.xlsx
+.idea
+*.iml
+*.ipr
+*.iws
+*.log
