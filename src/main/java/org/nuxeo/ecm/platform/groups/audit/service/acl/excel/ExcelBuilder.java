@@ -117,7 +117,7 @@ public class ExcelBuilder implements IExcelBuilder {
             this.workbook = new HSSFWorkbook();
         else if (Type.XLSX.equals(type))
             this.workbook = new XSSFWorkbook();
-        this.sheets = new HashMap<Integer, Sheet>();
+        this.sheets = new HashMap<>();
         this.create = workbook.getCreationHelper();
         this.currentSheetId = newSheet(0, "Repository");
         this.drawing = getCurrentSheet().createDrawingPatriarch();

@@ -81,6 +81,6 @@ public class Pair<X, Y> implements Serializable {
     }
 
     public static <M, N> Pair<M, N> of(M x, N y) {
-        return new Pair<M, N>(x, y);
+        return new Pair<>(x, y);
     }
 }

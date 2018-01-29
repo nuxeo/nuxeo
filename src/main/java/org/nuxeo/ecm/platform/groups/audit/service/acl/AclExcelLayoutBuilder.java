@@ -350,7 +350,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
      */
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls,
             Multimap<String, Pair<String, Boolean>> inheritedAcls) {
-        Set<String> users = new HashSet<String>();
+        Set<String> users = new HashSet<>();
         users.addAll(localAcls.keySet());
         users.addAll(inheritedAcls.keySet());
 
