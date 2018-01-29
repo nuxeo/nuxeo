@@ -23,89 +23,83 @@ node('SLAVE') {
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
-    timeout(time: 3, unit: 'HOURS') {
-        timestamps {
-            def sha
-            stage('clone') {
-                checkout(
-                    [$class: 'GitSCM',
-                        branches: [[name: '*/${BRANCH}']],
-                        browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/nuxeo'],
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [
-                            [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''nuxeo-distribution/.*
+    
+    timestamps {
+        def sha = stage('clone') {
+            checkout(
+                [$class: 'GitSCM',
+                 branches: [[name: '*/${BRANCH}']],
+                 browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/nuxeo'],
+                 doGenerateSubmoduleConfigurations: false,
+                 extensions: [
+                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''nuxeo-distribution/.*
 integration/.*'''],
-                            [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'pom.xml'], [path: 'nuxeo-distribution'], [path: 'integration']]],
-                            [$class: 'WipeWorkspace'],
-                            [$class: 'CleanBeforeCheckout'],
-                            [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
-                        ],
-                        submoduleCfg: [],
-                        userRemoteConfigs: [[url: 'git://github.com/nuxeo/nuxeo.git']]
-                    ])
-                sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                stash 'clone'
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'pom.xml'], [path: 'nuxeo-distribution'], [path: 'integration']]],
+                        [$class: 'WipeWorkspace'],
+                        [$class: 'CleanBeforeCheckout'],
+                        [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
+                    ],
+                 submoduleCfg: [],
+                 userRemoteConfigs: [[url: 'git://github.com/nuxeo/nuxeo.git']]
+                ])
+            return sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+        }
+        def zipfile = stage('zipfile') {
+            dir('upstream') {
+                deleteDir()
             }
-            try {
-                parallel (
-                    "cmis" : {
-                        node('SLAVE') {
-                            stage('cmis') {
-                                ws("$WORKSPACE-cmis") {
-                                    unstash "clone"
-                                    timeout(time: 2, unit: 'HOURS') {
-                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-cmis", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-server-cmis-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                                archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
-                                                failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "funkload" : {
-                        node('SLAVE') {
-                            stage('funkload') {
-                                ws("$WORKSPACE-funkload") {
-                                    unstash "clone"
-                                    timeout(time: 2, unit: 'HOURS') {
-                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/funkload", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-funkload", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                                archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
-                                                failOnServerError('nuxeo-distribution/nuxeo-server-funkload-tests/target/tomcat/log/server.log')
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "webdriver" : {
-                        node('SLAVE') {
-                            stage('webdriver') {
-                                ws("$WORKSPACE-webdriver") {
-                                    unstash "clone"
-                                    timeout(time: 2, unit: 'HOURS') {
-                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/webdriver", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-webdriver", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                                archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
-                                                junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
-                                                failOnServerError('nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/tomcat/log/server.log')
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                )
-            } finally {
-                warningsPublisher()
-                claimPublisher()
+            if (rawBuild.copyUpstreamArtifacts('nuxeo-server-tomcat-*.zip', 'upstream') == false) {
+                return ""
             }
+            return findFiles(glob:'upstream/nuxeo-server-tomcat-*.zip')[0].path
+        }
+        stash('ws')
+        try {
+            parallel (
+                'cmis' : emitVerifyClosure(sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
+                    archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
+                    failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
+                },
+                'funkload' : emitVerifyClosure(sha, zipfile, 'funkload', 'nuxeo-jsf-ui-funkload-tests') {
+                    archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
+                    failOnServerError('nuxeo-distribution/nuxeo-server-funkload-tests/target/tomcat/log/server.log')
+                },
+                'webdriver' : emitVerifyClosure(sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
+                    archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
+                    junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+                    failOnServerError('nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/tomcat/log/server.log')
+                }
+            )
+        } catch (Throwable error) {
+            println '---- DEBUG catched Throwable -----'
+            println error
+            println '----'
+            throw error
+        } finally {
+            warningsPublisher()
+            claimPublisher()
         }
     }
 }
 
+/**
+ * Emit the closure which will be evaluated in the parallel step for
+ * verifying.
+ **/
+def emitVerifyClosure(String sha, String zipfile, String name, String dir, Closure post) {
+    return {
+        node('SLAVE') {
+            stage(name) {
+                ws("${WORKSPACE}-${name}") {
+                    unstash 'ws'
+                    def mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
+                    timeout(time: 2, unit: 'HOURS') {
+                        withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
+                            withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", "mvn ${mvnopts} -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
