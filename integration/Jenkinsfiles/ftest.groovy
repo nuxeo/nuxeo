@@ -17,11 +17,7 @@
  *     jcarsique
  */
 
-@Library("nuxeo@feature-NXP-23884-pipelines-on-it-builds") _
-
-
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
-
 
 node('SLAVE') {
     tool name: 'ant-1.9', type: 'ant'
