@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/annotation" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="color" type="xs:string"/>
+  <xs:element name="date" type="xs:date"/>
+  <xs:element name="flags" type="xs:string"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="documentId" type="xs:string"/>
+  <xs:element name="xpath" type="xs:string"/>
+  <xs:element name="lastModifier" type="xs:string"/>
+  <xs:element name="page" type="xs:long"/>
+  <xs:element name="position" type="xs:string"/>
+  <xs:element name="creationDate" type="xs:date"/>
+  <xs:element name="opacity" type="xs:float"/>
+  <xs:element name="subject" type="xs:string"/>
+  <xs:element name="security" type="xs:string"/>
+
+</xs:schema>

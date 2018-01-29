@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.annotation;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 import java.util.List;
 
@@ -34,44 +34,55 @@ public interface AnnotationService {
     /**
      * Creates an annotation on a document.
      *
-     * @param documentModel the document to annotate
+     * @param session the core session
+     * @param documentId the annotated document id
+     * @param xpath the annotated blob xpath in the document
      * @param annotation the annotation to create
-     * @return the annotation id
+     * @return the created annotation
      */
-    String createAnnotation(DocumentModel documentModel, Annotation annotation);
+    Annotation createAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation);
 
     /**
-     * Gets an annotation for a document.
+     * Gets an annotation.
      *
-     * @param documentModel the document
+     * @param session the core session
+     * @param documentId the annotated document id
+     * @param xpath the annotated blob xpath in the document
      * @param annotationId the annotation id
      * @return the annotation, or {@code null} if the annotation with the given id was not found
      */
-    Annotation getAnnotation(DocumentModel documentModel, String annotationId);
+    Annotation getAnnotation(CoreSession session, String documentId, String xpath, String annotationId);
 
     /**
      * Gets all annotations for a document.
      *
-     * @param documentModel the document
+     * @param session the core session
+     * @param documentId the annotated document id
+     * @param xpath the annotated blob xpath in the document
      * @return the list of annotations, or an empty list if no annotation is found
      */
-    List<Annotation> getAnnotations(DocumentModel documentModel);
+    List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath);
 
     /**
      * Updates an annotation for a document.
      *
-     * @param documentModel the document
+     * @param session the core session
+     * @param documentId the annotated document id
+     * @param xpath the annotated blob xpath in the document
      * @param annotation the annotation containing the modifications
      */
-    void updateAnnotation(DocumentModel documentModel, Annotation annotation);
+    void updateAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation);
 
     /**
      * Deletes an annotation for a document.
      *
-     * @param documentModel the document
+     * @param session the core session
+     * @param documentId the annotated document id
+     * @param xpath the annotated blob xpath in the document
      * @param annotationId the annotation id
      * @throws IllegalArgumentException if no annotation was found with the given id
      */
-    void deleteAnnotation(DocumentModel documentModel, String annotationId) throws IllegalArgumentException;
+    void deleteAnnotation(CoreSession session, String documentId, String xpath, String annotationId)
+            throws IllegalArgumentException;
 
 }
