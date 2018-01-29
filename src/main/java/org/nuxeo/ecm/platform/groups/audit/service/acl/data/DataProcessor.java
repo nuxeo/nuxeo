@@ -93,8 +93,8 @@ public class DataProcessor implements IDataProcessor {
     }
 
     public void init() {
-        userAndGroups = new TreeSet<String>();
-        permissions = new TreeSet<String>();
+        userAndGroups = new TreeSet<>();
+        permissions = new TreeSet<>();
         documentMinDepth = Integer.MAX_VALUE;
         documentTreeDepth = 0;
     }
@@ -122,7 +122,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     protected void initSummarySet() {
-        allDocuments = new ArrayList<DocumentSummary>(1000);
+        allDocuments = new ArrayList<>(1000);
     }
 
     /**

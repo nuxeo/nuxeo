@@ -27,7 +27,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 public class InfoExporter {
-    List<String> infos = new ArrayList<String>();
+    List<String> infos = new ArrayList<>();
 
     public void append(String info) {
         infos.add(info);

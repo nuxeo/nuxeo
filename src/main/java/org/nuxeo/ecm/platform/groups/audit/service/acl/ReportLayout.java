@@ -32,8 +32,8 @@ public class ReportLayout {
     }
 
     public void reset() {
-        userColumn = new HashMap<String, Integer>();
-        userAclColumn = new HashMap<Pair<String, String>, Integer>();
+        userColumn = new HashMap<>();
+        userAclColumn = new HashMap<>();
     }
 
     /** Store the user column */

@@ -71,7 +71,7 @@ public class DataFetch {
         Long targetPageSize = pageSize;
         List<SortInfo> sortInfos = null;
         Object[] parameters = null;
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         PageProvider<?> provider = pps.getPageProvider("", desc, null, sortInfos, targetPageSize, targetPage, props,

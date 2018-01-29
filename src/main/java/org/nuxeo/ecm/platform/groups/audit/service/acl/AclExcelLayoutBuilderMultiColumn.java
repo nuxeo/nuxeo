@@ -234,7 +234,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     @Override
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) {
         for (String user : userAcls.keySet()) {
-            List<Pair<String, Boolean>> acls = new ArrayList<Pair<String, Boolean>>(userAcls.get(user));
+            List<Pair<String, Boolean>> acls = new ArrayList<>(userAcls.get(user));
             int last = acls.size() - 1;
 
             // TODO: IF ACLS not contain an ACL that should be first or last,

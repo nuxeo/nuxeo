@@ -109,7 +109,7 @@ public class AbstractAclLayoutTest {
     protected DocumentModel makeDocumentTree(CoreSession session, int depth, int width, int nGroups) throws Exception {
         DocumentModel root = makeFolder(session, "/", "root", false);
 
-        List<String> groups = new ArrayList<String>(nGroups);
+        List<String> groups = new ArrayList<>(nGroups);
         for (int i = 0; i < nGroups; i++) {
             String group = "group" + i;
             groups.add(group);
@@ -150,7 +150,7 @@ public class AbstractAclLayoutTest {
                 if (groups.size() >= 2) {
                     subgroups = Lists.partition(groups, 1);
                 } else {
-                    subgroups = new ArrayList<List<String>>();
+                    subgroups = new ArrayList<>();
                     subgroups.add(groups);
                 }
             }
@@ -165,7 +165,7 @@ public class AbstractAclLayoutTest {
                     List<String> subgroup = subgroups.get(i);
                     makeDocumentTree(session, maxDepth, width, nGroups, currentDepth + 1, f, subgroup);
                 } else {
-                    makeDocumentTree(session, maxDepth, width, nGroups, currentDepth + 1, f, new ArrayList<String>());
+                    makeDocumentTree(session, maxDepth, width, nGroups, currentDepth + 1, f, new ArrayList<>());
                 }
             }
             return folder;

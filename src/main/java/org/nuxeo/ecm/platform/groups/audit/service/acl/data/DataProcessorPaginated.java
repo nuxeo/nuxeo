@@ -104,7 +104,7 @@ public class DataProcessorPaginated extends DataProcessor {
 
     @Override
     public void initSummarySet() {
-        allDocuments = new TreeSet<DocumentSummary>(new Comparator<DocumentSummary>() {
+        allDocuments = new TreeSet<>(new Comparator<DocumentSummary>() {
             @Override
             public int compare(DocumentSummary arg0, DocumentSummary arg1) {
                 final String dp0 = arg0.getPath();
