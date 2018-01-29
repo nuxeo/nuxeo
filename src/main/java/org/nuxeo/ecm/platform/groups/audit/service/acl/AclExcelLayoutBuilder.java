@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,9 +42,9 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.data.IDataProcessor;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.AclNameShortner;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ByteColor;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder.Type;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilderMultiSheet;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder.Type;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
@@ -250,13 +251,13 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
         userHeaderStyle = excel.newCellStyle();
         userHeaderStyle.setFont(excel.getBoldFont());
-        userHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        userHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
         if (layoutSettings.userHeaderRotation != 0)
             userHeaderStyle.setRotation((short) layoutSettings.userHeaderRotation);
 
         aclHeaderStyle = excel.newCellStyle();
         aclHeaderStyle.setFont(excel.newFont(layoutSettings.aclHeaderFontSize));
-        aclHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        aclHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
         if (layoutSettings.aclHeaderRotation != 0)
             aclHeaderStyle.setRotation((short) layoutSettings.aclHeaderRotation);
 
@@ -264,7 +265,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
         grayTextStyle = excel.newCellStyle();
         Font f = excel.newFont();
-        f.setColor(HSSFColor.GREY_50_PERCENT.index);
+        f.setColor(HSSFColor.HSSFColorPredefined.GREY_50_PERCENT.getIndex());
         grayTextStyle.setFont(f);
         // grayTextStyle.set
     }
@@ -272,7 +273,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /** Perform various general tasks, such as setting the current sheet zoom. */
     protected void renderFinal() {
         for (Sheet s : excel.getAllSheets()) {
-            s.setZoom(layoutSettings.zoomRatioNumerator, layoutSettings.zoomRatioDenominator);
+            s.setZoom(layoutSettings.zoomRatioNumerator * layoutSettings.zoomRatioDenominator);
         }
     }
 

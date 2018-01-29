@@ -34,6 +34,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -41,7 +42,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -81,7 +81,7 @@ public class ExportGroupManagementActions implements Serializable {
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
-            FileUtils.copy(in, os);
+            IOUtils.copy(in, os);
             os.flush();
             in.close();
             os.close();
@@ -104,7 +104,7 @@ public class ExportGroupManagementActions implements Serializable {
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
-            FileUtils.copy(in, os);
+            IOUtils.copy(in, os);
             os.flush();
             in.close();
             os.close();

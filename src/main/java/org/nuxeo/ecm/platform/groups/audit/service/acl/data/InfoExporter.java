@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 public class InfoExporter {
     List<String> infos = new ArrayList<String>();
