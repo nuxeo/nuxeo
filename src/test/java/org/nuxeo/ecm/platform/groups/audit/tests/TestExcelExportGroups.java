@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
@@ -47,25 +48,30 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * Test excel export of groups
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({CoreFeature.class, DirectoryFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
-        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
+@Deploy({ "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.core.api",
+        "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.permissions",
+        "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.usermanager.api",
+        "nuxeo-groups-rights-audit",
         "org.nuxeo.ecm.automation.core" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/directory-config.xml",
+        "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/schemas-config.xml",
+        "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/test-chain-export-operation.xml" })
 public class TestExcelExportGroups {
 
     @Inject
-    CoreSession session;
+    private CoreSession session;
 
     @Inject
-    UserManager userManager;
+    private UserManager userManager;
 
     @Inject
-    AutomationService automationService;
+    private AutomationService automationService;
 
     @Test
     public void testExcelExportService() throws Exception {
