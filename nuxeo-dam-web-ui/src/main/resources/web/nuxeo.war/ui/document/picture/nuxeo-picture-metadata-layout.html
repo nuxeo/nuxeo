@@ -24,6 +24,31 @@ limitations under the License.
 <dom-module id="nuxeo-picture-metadata-layout">
 
   <template>
+    <style>
+      *[role=widget] {
+        margin-bottom: 16px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+
+      div.multiline {
+        white-space: pre-line;
+      }
+
+      div {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        -o-hyphens: auto;
+        hyphens: auto;
+      }
+    </style>
+
     <div role="widget">
       <label>[[i18n('label.dublincore.title')]]</label>
       <div name="title">[[document.properties.dc:title]]</div>
