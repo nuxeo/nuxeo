@@ -1,0 +1,7 @@
+# dependencies of Nuxeo not seen by maven's dependency analysis (or scoped as provided but used by assembly)
+org.postgresql:postgresql
+mysql:mysql-connector-java
+org.mongodb:mongo-java-driver
+org.mariadb.jdbc:mariadb-java-client
+com.microsoft.sqlserver:sqljdbc
+com.novemberain:quartz-mongodb
