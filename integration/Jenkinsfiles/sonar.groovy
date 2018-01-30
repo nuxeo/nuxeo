@@ -49,7 +49,8 @@ node('SLAVE') {
                         withEnv(['MAVEN_OPTS=-Xmx6g -server']) {
                             withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
                                 sh """#!/bin/bash -ex
-                                    mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar
+                                    mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar \
+                                    -Dsonar.branch.name=$BRANCH -Dsonar.branch.target=$PARENT_BRANCH
                                 """
                             }
                         }
