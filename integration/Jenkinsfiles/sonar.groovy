@@ -36,30 +36,33 @@ node('SLAVE') {
     tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
     timeout(time: 5, unit: 'HOURS') {
         timestamps {
-            stage('clone') {
-                git branch: '$BRANCH', url: 'git://github.com/nuxeo/nuxeo.git'
-                sh """#!/bin/bash -xe
-                      ./clone.py $BRANCH -f $PARENT_BRANCH
-                """
-                sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-            }
             try {
+                stage('clone') {
+                    git branch: '$BRANCH', url: 'git://github.com/nuxeo/nuxeo.git'
+                    sh """#!/bin/bash -xe
+                          ./clone.py $BRANCH -f $PARENT_BRANCH
+                    """
+                    sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                }
                 stage('analysis') {
                     withBuildStatus("mvn verify sonar", "https://github.com/nuxeo/nuxeo", sha, BUILD_URL) {
-                        withEnv(['MAVEN_OPTS=-Xmx6g -server']) {
-                            withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
-                                sh """#!/bin/bash -ex
-                                    mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar \
-                                    -Dsonar.branch.name=$BRANCH -Dsonar.branch.target=$PARENT_BRANCH
-                                """
+                        try {
+                            withEnv(['MAVEN_OPTS=-Xmx6g -server']) {
+                                withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
+                                    sh """#!/bin/bash -ex
+                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar \
+                                        -Dsonar.branch.name=$BRANCH -Dsonar.branch.target=$PARENT_BRANCH
+                                    """
+                                }
                             }
+                        } finally {
+                            archive '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
+                            junit testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+                            warningsPublisher()
                         }
                     }
                 }
             } finally {
-                archive '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
-                junit testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/**/*.xml'
-                warningsPublisher()
                 claimPublisher()
             }
         }
