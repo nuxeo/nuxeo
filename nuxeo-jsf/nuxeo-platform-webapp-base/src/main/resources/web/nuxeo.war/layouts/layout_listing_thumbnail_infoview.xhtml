@@ -36,6 +36,23 @@
       oncomplete="nuxeo.infoView.openLastInfoView();" />
 
     <h:outputScript target="#{pageJsTarget}">
+    var nuxeo = nuxeo || {};
+    (function() {
+      function openFancyBoxInConversation(url) {
+        // use the conversationId already created by another call to the infoView URL, if any
+        if (typeof nuxeo.infoViewConversationId !== 'undefined') {
+          url += "?conversationId=" + nuxeo.infoViewConversationId;
+        }
+        openFancyBox(url, {
+          'autoDimensions': false,
+          'width': '100%',
+          'height': '100%',
+          'centerOnScroll': true,
+          'scrolling': 'auto',
+          'padding': 0
+        });
+      }
+
       jQuery.extend(true, jQuery.magnificPopup.defaults, {
         tClose: "#{messages['label.slideshow.close']}",
         tLoading: "#{messages['label.slideshow.loading']}",
@@ -52,7 +69,6 @@
         }
       });
 
-      var nuxeo = nuxeo || {};
       nuxeo.infoView = (function(m) {
         m.hasPreviousPage = #{provider.previousPageAvailable};
         m.hasNextPage = #{provider.nextPageAvailable};
@@ -77,28 +93,14 @@
         m.openFirstInfoView = function() {
           jQuery.fancybox.close();
           if (m.infoViewUrls.length > 0) {
-            openFancyBox(m.infoViewUrls[0], {
-              'autoDimensions': false,
-              'width': '100%',
-              'height': '100%',
-              'centerOnScroll': true,
-              'scrolling': 'auto',
-              'padding': 0
-            });
+            openFancyBoxInConversation(m.infoViewUrls[0]);
           }
         };
 
         m.openLastInfoView = function() {
           jQuery.fancybox.close();
           if (m.infoViewUrls.length > 0) {
-            openFancyBox(m.infoViewUrls[m.infoViewUrls.length - 1], {
-              'autoDimensions': false,
-              'width': '100%',
-              'height': '100%',
-              'centerOnScroll': true,
-              'scrolling': 'auto',
-              'padding': 0
-            });
+            openFancyBoxInConversation(m.infoViewUrls[m.infoViewUrls.length - 1]);
           }
         };
 
@@ -134,19 +136,13 @@
           nuxeo.infoView.infoViewUrls.push(infoViewUrl);
           ele.click(function(event) {
             if (canTriggerInfoView(event)) {
-              openFancyBox(infoViewUrl, {
-                'autoDimensions': false,
-                'width': '100%',
-                'height': '100%',
-                'centerOnScroll': true,
-                'scrolling': 'auto',
-                'padding': 0
-              });
+              openFancyBoxInConversation(infoViewUrl);
             }
           });
         });
 
       });
+    })();
     </h:outputScript>
 
   </nxu:set>

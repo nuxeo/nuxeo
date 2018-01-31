@@ -24,6 +24,11 @@
 
     <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {
+        // store the newly created conversation id to be reused if needed
+        if (typeof top.nuxeo.infoViewConversationId === 'undefined') {
+          top.nuxeo.infoViewConversationId = currentConversationId;
+        }
+
         // focus inside the iframe
         jQuery(".infoView.nxNext a").focus();
 
