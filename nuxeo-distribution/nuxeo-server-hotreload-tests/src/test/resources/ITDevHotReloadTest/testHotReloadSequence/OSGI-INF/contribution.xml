@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+
+    <scriptedOperation id="javascript.getSequence">
+      <inputType>string</inputType>
+      <outputType>string</outputType>
+      <category>javascript</category>
+      <param name="sequenceName" type="string"/>
+      <script>
+        function run(input, params) {
+          return Fn.getNextId("testingKey", params.sequenceName);
+        }
+      </script>
+    </scriptedOperation>
+  </extension>
+
+</component>
