@@ -6,7 +6,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-imaging-parent</artifactId>
   <name>Nuxeo Platform Imaging parent</name>
   <packaging>pom</packaging>

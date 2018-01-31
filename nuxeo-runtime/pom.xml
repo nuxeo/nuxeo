@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
-  <version>10.1-SNAPSHOT</version>
   <name>Nuxeo Runtime Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>

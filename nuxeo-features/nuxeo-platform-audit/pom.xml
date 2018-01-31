@@ -6,12 +6,9 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-audit-parent</artifactId>
   <name>Nuxeo Platform audit service parent</name>
   <packaging>pom</packaging>
-  <description>
-  </description>
 
   <modules>
     <module>nuxeo-platform-audit-api</module>
