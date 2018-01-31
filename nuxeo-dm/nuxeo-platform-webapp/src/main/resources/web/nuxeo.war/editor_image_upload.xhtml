@@ -24,6 +24,13 @@
   </div>
 
   <script type="text/javascript">
+    jQuery(document).ready(function() {
+      // store the newly created conversation id to be reused if needed
+      if (typeof window.opener.nuxeo.noteEditorConversationId === 'undefined') {
+        window.opener.nuxeo.noteEditorConversationId = currentConversationId;
+      }
+    });
+
     function getSelectedRadio(buttonGroup) {
       if (buttonGroup[0]) {
         for (var i=0; i&lt;buttonGroup.length; i++) {
