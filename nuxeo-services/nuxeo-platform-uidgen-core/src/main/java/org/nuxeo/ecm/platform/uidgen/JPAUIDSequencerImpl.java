@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
@@ -45,17 +44,25 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
 
+    public static final int POOL_SIZE = 1;
+    public static final int MAX_POOL_SIZE = 2;
+    public static final long KEEP_ALIVE_TIME = 10L;
+    public static final int QUEUE_SIZE = 1000;
+    
     private static volatile PersistenceProvider persistenceProvider;
 
-    protected ThreadPoolExecutor tpe = new ThreadPoolExecutor(1, 2, 10, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(1000));
+    protected ThreadPoolExecutor tpe;
 
     public JPAUIDSequencerImpl() {
     }
 
     @Override
     public void init() {
-        // NOP
+        if (tpe != null && !tpe.isShutdown()) {
+            tpe.shutdownNow();
+        }
+        tpe = new ThreadPoolExecutor(POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(QUEUE_SIZE));
     }
 
     /**
