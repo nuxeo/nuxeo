@@ -8,7 +8,11 @@
       // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
       ed.addCommand('mceNuxeoImageUpload', function () {
         var template = new Array();
-        var urlPlugin = nxContextPath + '/editor_image_upload.faces' + '?conversationId=' + currentConversationId + '&conversationIsLongRunning=true';
+        var urlPlugin = nxContextPath + '/nxdoc/' + currentDocURL + '/editor_image_upload';
+        if (typeof nuxeo.noteEditorConversationId !== 'undefined') {
+          // use the conversationId already created by another call to this or other plugin, if any
+          urlPlugin += ('?conversationId=' + nuxeo.noteEditorConversationId + '&conversationIsLongRunning=true');
+        }
         window.open(urlPlugin, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=800, height=480');
         return true;
       });
