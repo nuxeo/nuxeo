@@ -20,17 +20,22 @@ package org.nuxeo.drive.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.fixtures.SimpleFileSystemItemChange;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -133,11 +138,9 @@ public class TestGetChangeSummaryMultiRepo {
         doc1 = session.createDocumentModel("/folder1", "doc1", "File");
         doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
         doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
         doc2 = session.createDocumentModel("/folder2", "doc2", "File");
         doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
         doc2 = session.createDocument(doc2);
-        Thread.sleep(1000);
         doc3 = otherSession.createDocumentModel("/folder3", "doc3", "File");
         doc3.setPropertyValue("file:content", new StringBlob("The content of file 3."));
         doc3 = otherSession.createDocument(doc3);
@@ -150,21 +153,19 @@ public class TestGetChangeSummaryMultiRepo {
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
 
-        FileSystemItemChange docChange = docChanges.get(2);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+        Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+        expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentChanged", "test"));
+        expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(), "documentChanged", "test"));
+        expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(), "documentChanged", "other"));
+        Set<SimpleFileSystemItemChange> changes = new HashSet<>();
+        docChanges.forEach(docChange -> {
+            changes.add(new SimpleFileSystemItemChange(docChange.getDocUuid(), docChange.getEventId(),
+                    docChange.getRepositoryId()));
+            assertNotNull(docChange.getFileSystemItem());
+        });
+        assertTrue(CollectionUtils.isEqualCollection(expectedChanges, changes));
+
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
-
-        docChange = docChanges.get(1);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc2.getId(), docChange.getDocUuid());
-
-        docChange = docChanges.get(0);
-        assertEquals("other", docChange.getRepositoryId());
-        assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc3.getId(), docChange.getDocUuid());
 
         // Update documents
         doc1.setPropertyValue("dc:description", "Added description to doc1.");
