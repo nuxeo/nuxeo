@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 
 import java.util.Collections;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.nuxeo.client.NuxeoClient.Builder;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.functionaltests.RestHelper;
 
 /**
@@ -70,6 +72,15 @@ public class ITDevHotReloadTest {
         assertNotNull(properties);
         assertEquals("root1", properties.get("parent"));
         assertEquals("child2", properties.get("label"));
+    }
+
+    @Test
+    public void testHotReloadSequence() {
+       String storageConf = StorageConfiguration.defaultSystemProperty(StorageConfiguration.CORE_PROPERTY, StorageConfiguration.DEFAULT_CORE);
+       assumeTrue("This test only works with VCS", StorageConfiguration.CORE_VCS.equals(storageConf));
+       Map<String, Object> parameters = new HashMap<>();
+       parameters.put("sequenceName", "hibernateSequencer");
+       RestHelper.operation("javascript.getSequence", parameters);
     }
 
     @Test
