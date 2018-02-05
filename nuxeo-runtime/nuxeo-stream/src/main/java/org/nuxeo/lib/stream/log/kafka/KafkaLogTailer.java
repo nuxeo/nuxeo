@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.log.kafka;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.ByteArrayInputStream;
 import java.io.Externalizable;
 import java.io.IOException;
@@ -159,6 +161,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         M value = messageOf(record.value());
         LogPartition partition = LogPartition.of(getNameForTopic(record.topic()), record.partition());
         LogOffset offset = new LogOffsetImpl(partition, record.offset());
+        consumerMoved = false;
         if (log.isDebugEnabled()) {
             log.debug(String.format("Read from %s/%s, key: %s, value: %s", offset, group, record.key(), value));
         }
@@ -252,7 +255,6 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                 log.info("toLastCommitted offsets: " + group + ":" + msg);
             }
         }
-        lastCommittedOffsets.clear();
         lastOffsets.clear();
         records.clear();
         consumerMoved = false;
@@ -272,6 +274,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
             consumer.seekToBeginning(Collections.singletonList(topicPartition));
             offset = consumer.position(topicPartition);
         }
+        lastCommittedOffsets.put(topicPartition,offset);
         if (log.isDebugEnabled()) {
             log.debug(String.format(" toLastCommitted: %s-%02d:+%d", getNameForTopic(topicPartition.topic()),
                     topicPartition.partition(), offset));
@@ -281,13 +284,14 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public void seek(LogOffset offset) {
-        log.debug("Seek to: " + offset + " from tailer: " + id);
+        log.debug("Seek to: " + offset.offset() + " from tailer: " + id);
         TopicPartition topicPartition = new TopicPartition(prefix + offset.partition().name(),
                 offset.partition().partition());
         consumer.seek(topicPartition, offset.offset());
         lastOffsets.remove(topicPartition);
         int partition = topicPartition.partition();
         records.removeIf(rec -> rec.partition() == partition);
+        consumerMoved = true;
     }
 
     @Override
@@ -353,12 +357,16 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
     }
 
+    /**
+     * Commits the consumer at its current position regardless of lastOffsets or lastCommittedOffsets
+     */
     protected void forceCommit() {
         log.info("Force commit after a move");
-        final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>(topicPartitions.size());
-        topicPartitions.forEach(topicPartition -> offsets.put(topicPartition,
-                new OffsetAndMetadata(consumer.position(topicPartition))));
+
+        Map<TopicPartition, OffsetAndMetadata> offsets =
+                topicPartitions.stream().collect(toMap(tp -> tp, tp -> new OffsetAndMetadata(consumer.position(tp))));
         consumer.commitSync(offsets);
+        offsets.forEach((topicPartition, offset) -> lastCommittedOffsets.put(topicPartition, offset.offset()));
         consumerMoved = false;
         lastOffsets.clear();
     }
