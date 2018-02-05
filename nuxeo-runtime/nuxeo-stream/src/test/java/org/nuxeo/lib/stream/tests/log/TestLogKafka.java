@@ -43,6 +43,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -58,6 +59,8 @@ public class TestLogKafka extends TestLog {
     public static final String DEFAULT_BOOTSTRAP_SERVER = "localhost:9092";
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
+
+    private static final String GROUP = "defaultTest";
 
     protected String prefix;
 
@@ -105,8 +108,38 @@ public class TestLogKafka extends TestLog {
     }
 
     @Test
+    public void testSeekToEnd() throws Exception {
+        manager.createIfNotExists(logName, 1);
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+        appender.append(0, KeyValueMessage.of("mess1"));
+        appender.append(0, KeyValueMessage.of("mess2"));
+        appender.append(0, KeyValueMessage.of("mess3"));
+        appender.append(0, KeyValueMessage.of("mess4"));
+
+        LogPartition logPartition = LogPartition.of(logName, 0);
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logPartition)) {
+            Assert.assertEquals("mess1", tailer.read(DEF_TIMEOUT).message().key());
+            assertEquals("There should be a lag of 4 uncommitted records",
+                    4, manager.getLag(logName, GROUP).lag());
+            tailer.commit();
+            assertEquals("There should be a lag of 3 uncommitted records",
+                    3, manager.getLag(logName, GROUP).lag());
+            tailer.toEnd();
+            tailer.commit();
+            assertEquals("There should be a no uncommitted records",
+                    0, manager.getLag(logName, GROUP).lag());
+            appender.append(0, KeyValueMessage.of("mess5"));
+            Assert.assertEquals("mess5", tailer.read(DEF_TIMEOUT).message().key());
+            assertEquals("There should be a 1 uncommitted records",
+                    1, manager.getLag(logName, GROUP).lag());
+            tailer.commit();
+            assertEquals("There should be a 0 uncommitted records",
+                    0, manager.getLag(logName, GROUP).lag());
+        }
+    }
+
+    @Test
     public void testSeekByTimestamp() throws Exception {
-        final String GROUP = "defaultTest";
 
         manager.createIfNotExists(logName, 1);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -126,15 +159,18 @@ public class TestLogKafka extends TestLog {
         appender.append(0, KeyValueMessage.of("id8"));
         LogOffset offset9 = appender.append(0, KeyValueMessage.of("id9"));
         LogPartition logPartition = LogPartition.of(logName, 0);
-
         try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logPartition)) {
             Assert.assertEquals("id1", tailer.read(DEF_TIMEOUT).message().key());
             tailer.seek(offset9);
             Assert.assertEquals("id9", tailer.read(DEF_TIMEOUT).message().key());
             tailer.commit();
-
+            assertEquals("There should be no lag, because we are at the last record",
+                    0, manager.getLag(logName, GROUP).lag());
             LogOffset logOffset = tailer.offsetForTimestamp(logPartition, now.toEpochMilli());
             tailer.seek(logOffset);
+            tailer.commit();
+            assertEquals("After moving the tailer, we should have a lag of 4.",
+                    4, manager.getLag(logName, GROUP).lag());
             Assert.assertEquals("id6", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id7", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id8", tailer.read(DEF_TIMEOUT).message().key());
