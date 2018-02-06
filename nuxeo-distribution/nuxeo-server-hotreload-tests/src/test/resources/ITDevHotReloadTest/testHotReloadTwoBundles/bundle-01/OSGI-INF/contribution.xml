@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.bundle.01.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+
+    <coreQueryPageProvider name="SIMPLE_NXQL_FOR_HOT_RELOAD_PAGE_PROVIDER">
+      <pattern>SELECT * FROM File</pattern>
+      <maxPageSize>10</maxPageSize>
+      <sort column="dc:title" ascending="false" />
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
