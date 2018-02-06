@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.bundle.02.contrib" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="javascript.CreateSeveralChild">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <param type="string" name="parentPath"/>
+      <param type="integer" name="nbChildren"/>
+      <category>javascript</category>
+      <script><![CDATA[function run(input, params) {
+        var parent = Repository.GetDocument(null, {
+          "value" : "/"
+        });
+        for (var i = 0; i < params.nbChildren; i++) {
+          Document.Create(parent, {
+            "type" : "File",
+            "name" : "file" + i
+          });
+        }
+}]]></script>
+    </scriptedOperation>
+  </extension>
+
+</component>

@@ -36,8 +36,10 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -286,10 +288,23 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
             // timer is running, we need to stop it before editing the file
             toggleTimer();
         }
+        // for nuxeo-cli needs, we need to keep comments
+        List<String> lines = Files.readAllLines(devBundlesFile.toPath());
         // newBufferedWriter without OpenOption will create/truncate if exist the target file
         try (BufferedWriter writer = Files.newBufferedWriter(devBundlesFile.toPath())) {
-            for (DevBundle devBundle : devBundles) {
-                writer.write(devBundle.toString());
+            Iterator<DevBundle> devBundlesIt = Arrays.asList(devBundles).iterator();
+            for (String line : lines) {
+                if (line.startsWith("#")) {
+                    writer.write(line);
+                } else if (devBundlesIt.hasNext()) {
+                    writer.write(devBundlesIt.next().toString());
+                } else {
+                    // there's a sync problem between dev.bundles file and nuxeo runtime
+                    // comment this bundle to not break further attempt
+                    writer.write("# ");
+                    writer.write(line);
+                }
+                writer.write(System.lineSeparator());
             }
         } finally {
             if (timerExists) {
