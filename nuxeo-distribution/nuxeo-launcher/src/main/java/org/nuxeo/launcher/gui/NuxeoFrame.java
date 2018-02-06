@@ -60,8 +60,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -246,7 +244,7 @@ public class NuxeoFrame extends JFrame {
         UIManager.getDefaults().put("Button.disabledText", Color.BLACK);
 
         // Main frame
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setIconImage(appIcon.getImage());
         getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(new GridBagLayout());
@@ -275,8 +273,6 @@ public class NuxeoFrame extends JFrame {
         constraints.weighty = 0;
         constraints.insets = new Insets(10, 0, 0, 0);
         getContentPane().add(buildFooter(), constraints);
-
-        // debug((JComponent) this.getContentPane());
     }
 
     protected Component buildConsolePanel() {
@@ -304,16 +300,13 @@ public class NuxeoFrame extends JFrame {
                 }
             }
         });
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Shell.get().main(new String[] { controller.launcher.getURL() + "site/automation" });
-                } catch (Exception e) {
-                    setError(e);
-                }
+        new Thread(() -> {
+            try {
+                Shell.get().main(new String[] { controller.launcher.getURL() + "site/automation" });
+            } catch (Exception e) {
+                setError(e);
             }
-        }.start();
+        }).start();
         return consolePanel;
     }
 
@@ -372,16 +365,12 @@ public class NuxeoFrame extends JFrame {
     /**
      * Called by buildLogsTab to know if a log file should be display. Can be overridden. Return false by default.
      *
-     * @param logFile
      * @return false
      */
     protected boolean hideLogTab(String logFile) {
         return false;
     }
 
-    /**
-     * @param logFile
-     */
     protected JComponent buildLogPanel(String logFile) {
         ColoredTextPane textArea = new ColoredTextPane();
         textArea.setEditable(false);
@@ -446,13 +435,10 @@ public class NuxeoFrame extends JFrame {
         logsTab = buildLogsTab();
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.logs.title"), logsTab);
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.shell.title"), buildConsolePanel());
-        tabbedPanel.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JTabbedPane pane = (JTabbedPane) e.getSource();
-                if (pane.getSelectedIndex() == 2) {
-                    consolePanel.getConsole().requestFocusInWindow();
-                }
+        tabbedPanel.addChangeListener(e -> {
+            JTabbedPane pane = (JTabbedPane) e.getSource();
+            if (pane.getSelectedIndex() == 2) {
+                consolePanel.getConsole().requestFocusInWindow();
             }
         });
         return tabbedPanel;
@@ -469,13 +455,13 @@ public class NuxeoFrame extends JFrame {
             if (comp instanceof JComponent) {
                 ((JComponent) comp).setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.red), ((JComponent) comp).getBorder()));
-                log.info(comp.getClass() + " size: " + ((JComponent) comp).getSize());
+                log.info(comp.getClass() + " size: " + comp.getSize());
             }
         }
     }
 
     protected ImageIcon getImageIcon(String resourcePath) {
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             ImageIO.setCacheDirectory(Environment.getDefault().getTemp());
             image = ImageIO.read(getClass().getClassLoader().getResource(resourcePath));

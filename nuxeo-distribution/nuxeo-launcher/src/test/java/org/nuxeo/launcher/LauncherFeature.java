@@ -34,12 +34,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 
-/**
- *
- *
- */
 @Features(PlatformFeature.class)
 public class LauncherFeature extends SimpleFeature {
 
@@ -56,13 +51,7 @@ public class LauncherFeature extends SimpleFeature {
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(NuxeoLauncher.class).toProvider(new Provider<NuxeoLauncher>() {
-
-            @Override
-            public NuxeoLauncher get() {
-                return launcher;
-            }
-        });
+        binder.bind(NuxeoLauncher.class).toProvider(() -> launcher);
     }
 
     @Override

@@ -30,7 +30,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -76,9 +75,6 @@ public class StatusServletClient {
         this.key = key;
     }
 
-    /**
-     * @param configurationGenerator
-     */
     public StatusServletClient(ConfigurationGenerator configurationGenerator) {
         final String servletURL = configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_LOOPBACK_URL)
@@ -92,26 +88,18 @@ public class StatusServletClient {
 
     /**
      * @return true if Nuxeo finished starting
-     * @throws SocketTimeoutException
      */
     public boolean isStarted() throws SocketTimeoutException {
         timeout = TIMEOUT;
         return post(POST_PARAM, POST_PARAM_STARTED);
     }
 
-    /**
-     * @param postParam
-     * @param postParamStarted
-     * @return
-     * @throws SocketTimeoutException
-     */
     private boolean post(String postParam, String postParamStarted) throws SocketTimeoutException {
         return post(postParam, postParamStarted, null);
     }
 
     /**
      * @return true if succeed to connect on StatusServlet
-     * @throws SocketTimeoutException
      */
     public boolean init() throws SocketTimeoutException {
         try {
@@ -156,7 +144,6 @@ public class StatusServletClient {
 
     /**
      * @return Nuxeo server startup summary (components loading status)
-     * @throws SocketTimeoutException
      */
     public String getStartupSummary() throws SocketTimeoutException {
         timeout = SUMMARY_TIMEOUT;
@@ -170,9 +157,9 @@ public class StatusServletClient {
         post += "&key=" + key;
         try {
             connect("POST");
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
-            bw.write(post, 0, post.length());
-            bw.close();
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()))) {
+                bw.write(post, 0, post.length());
+            }
             return getResponse(response);
         } catch (SocketTimeoutException e) {
             throw e;
@@ -184,25 +171,18 @@ public class StatusServletClient {
     }
 
     protected boolean getResponse(StringBuilder response) throws IOException {
-        String line;
-        boolean answer;
-        BufferedReader s = null;
-        try {
-            s = new BufferedReader(new InputStreamReader(server.getInputStream()));
+        try (BufferedReader s = new BufferedReader(new InputStreamReader(server.getInputStream()))) {
             // First line is a status (true or false)
-            answer = Boolean.parseBoolean(s.readLine());
+            boolean answer = Boolean.parseBoolean(s.readLine());
+            String line;
             // Next (if exists) is a response body
             while ((line = s.readLine()) != null) {
                 if (response != null) {
-                    response.append(line + "\n");
+                    response.append(line).append('\n');
                 }
             }
-        } catch (IOException e) {
-            throw e;
-        } finally {
-            IOUtils.closeQuietly(s);
+            return answer;
         }
-        return answer;
     }
 
     /**
