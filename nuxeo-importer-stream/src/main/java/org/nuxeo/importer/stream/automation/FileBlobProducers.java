@@ -21,7 +21,6 @@ package org.nuxeo.importer.stream.automation;
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
 import java.io.File;
-import java.nio.file.Paths;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +39,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
+ * Create blob message using a file list.
+ *
  * @since 9.1
  */
 @Operation(id = FileBlobProducers.ID, category = Constants.CAT_SERVICES, label = "Produces random blobs", since = "9.1", description = "Produces random blobs in a Log.")
@@ -53,11 +54,14 @@ public class FileBlobProducers {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "nbBlobs")
+    @Param(name = "listFile")
+    protected String listFile;
+
+    @Param(name = "nbBlobs", required = false)
     protected Integer nbBlobs;
 
     @Param(name = "nbThreads", required = false)
-    protected Integer nbThreads = 8;
+    protected Integer nbThreads = 1;
 
     @Param(name = "logName", required = false)
     protected String logName;
@@ -67,9 +71,6 @@ public class FileBlobProducers {
 
     @Param(name = "logConfig", required = false)
     protected String logConfig;
-
-    @Param(name = "listFile", required = true)
-    protected String listFile;
 
     @Param(name = "basePath", required = false)
     protected String basePath;
@@ -82,12 +83,20 @@ public class FileBlobProducers {
         try {
             manager.createIfNotExists(getLogName(), getLogSize());
             try (ProducerPool<BlobMessage> producers = new ProducerPool<>(getLogName(), manager,
-                    new FileBlobMessageProducerFactory(getListFile(), getBasePath(), nbBlobs), nbThreads.shortValue())) {
+                    new FileBlobMessageProducerFactory(getListFile(), getBasePath(), getNbBlobs()), nbThreads.shortValue())) {
                 producers.start().get();
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    protected long getNbBlobs() {
+        if (nbBlobs == null) {
+            // this means all the files listed in the files
+            return 0;
+        }
+        return nbBlobs.longValue();
     }
 
     protected int getLogSize() {

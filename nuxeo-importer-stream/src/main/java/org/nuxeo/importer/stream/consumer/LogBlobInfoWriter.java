@@ -25,7 +25,7 @@ import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.lib.stream.log.LogAppender;
 
 /**
- * Write blob information to a Log
+ * Write blob information to a Log, use only one partition.
  *
  * @since 9.3
  */

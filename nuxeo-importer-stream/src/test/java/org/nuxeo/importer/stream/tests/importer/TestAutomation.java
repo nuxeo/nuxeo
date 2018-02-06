@@ -196,4 +196,69 @@ public abstract class TestAutomation {
         assertEquals(createdFiles, createdBlobs);
     }
 
+
+    @Test
+    public void testFileBlobAndDocumentImport() throws Exception {
+        final int nbBlobs = 10;
+        final int nbDocuments = 100;
+        final int nbThreads = 4;
+        final String marker = "youknowforsearch";
+
+
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        params.put("nbBlobs", nbBlobs);
+        params.put("nbThreads", nbThreads);
+        params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
+        params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
+        addExtraParams(params);
+        automationService.run(ctx, FileBlobProducers.ID, params);
+
+
+        // 2. import blobs into the binarystore, saving blob info into csv
+        params.clear();
+        params.put("blobProviderName", "test");
+        params.put("nbThreads", nbThreads);
+        params.put("logBlobInfo", "blob-info");
+        addExtraParams(params);
+        automationService.run(ctx, BlobConsumers.ID, params);
+
+        // 3. generates random document messages with blob references
+        params.clear();
+        params.put("nbDocuments", nbDocuments);
+        params.put("nbThreads", nbThreads);
+        params.put("logBlobInfo", "blob-info");
+        addExtraParams(params);
+        automationService.run(ctx, RandomDocumentProducers.ID, params);
+
+        // 4. import document into the repository
+        params.clear();
+        params.put("rootFolder", "/");
+        params.put("nbThreads", nbThreads);
+        params.put("useBulkMode", true);
+        params.put("blockDefaultSyncListeners", true);
+        params.put("blockPostCommitListeners", true);
+        params.put("blockAsyncListeners", true);
+        params.put("blockIndexing", true);
+        addExtraParams(params);
+        automationService.run(ctx, DocumentConsumers.ID, params);
+
+        // WorkManager service = Framework.getService(WorkManager.class);
+        // assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+
+        // start a new transaction to prevent db isolation to hide our new documents
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        DocumentModelList ret = session.query("SELECT * FROM Document WHERE ecm:primaryType IN ('File', 'Folder')");
+        assertEquals(nbThreads * nbDocuments, ret.size());
+
+        int createdFiles = session.query("SELECT * FROM Document WHERE ecm:primaryType IN ('File')").size();
+        assertTrue("No file created", createdFiles > 0);
+
+        // Check that all files has a non null blob
+        int createdBlobs = session.query("SELECT * FROM Document WHERE  content/length > 0").size();
+        assertEquals(createdFiles, createdBlobs);
+    }
+
 }
