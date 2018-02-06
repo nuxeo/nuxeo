@@ -19,6 +19,7 @@
     <converter name="zip2html" class="org.nuxeo.ecm.platform.convert.plugins.Zip2HtmlConverter">
       <destinationMimeType>text/html</destinationMimeType>
       <sourceMimeType>application/zip</sourceMimeType>
+      <sourceMimeType>application/x-zip-compressed</sourceMimeType>
     </converter>
 
     <converter name="wpd2text" class="org.nuxeo.ecm.platform.convert.plugins.WordPerfect2TextConverter">

@@ -39,7 +39,7 @@ public class Zip2HtmlConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         Blob blob = blobHolder.getBlob();
         String mimeType = blob.getMimeType();
-        if (!mimeType.equals("application/zip")) {
+        if (!mimeType.equals("application/zip") && !mimeType.equals("application/x-zip-compressed")) {
             throw new ConversionException("not a zip file");
         }
         return new ZipCachableBlobHolder(blob);
