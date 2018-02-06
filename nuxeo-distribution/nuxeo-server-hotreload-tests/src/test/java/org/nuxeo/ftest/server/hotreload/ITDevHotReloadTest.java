@@ -207,4 +207,13 @@ public class ITDevHotReloadTest {
         RestHelper.removeDocumentToDelete(docId);
     }
 
+    @Test
+    public void testHotReloadTwoBundles() {
+        // this test just test we can hot reload two bundles
+        // bundle-01 test
+        testHotReloadPageProvider();
+        // bundle-02 test
+        testHotReloadAutomationScripting();
+    }
+
 }
