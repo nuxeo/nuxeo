@@ -164,12 +164,13 @@ public class NuxeoRequestControllerFilter implements Filter {
         }
         boolean txStarted = false;
         try {
-            if (useTx) {
+            if (useTx && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 txStarted = ServletHelper.startTransaction(httpRequest);
-                if (txStarted) {
-                    if (config.needTransactionBuffered()) {
-                        response = new BufferingHttpServletResponse(httpResponse);
-                    }
+                if (!txStarted) {
+                    throw new ServletException("Failed to start transaction");
+                }
+                if (config.needTransactionBuffered()) {
+                    response = new BufferingHttpServletResponse(httpResponse);
                 }
             }
             chain.doFilter(request, response);
