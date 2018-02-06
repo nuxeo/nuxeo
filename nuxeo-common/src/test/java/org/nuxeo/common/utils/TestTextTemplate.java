@@ -21,6 +21,7 @@
 package org.nuxeo.common.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,8 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.junit.Rule;
 import org.junit.Test;
-
+import org.junit.rules.TemporaryFolder;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
 
@@ -51,6 +53,9 @@ public class TestTextTemplate {
     private final String templateText2bis = "test ${#var1}"; // that format is not usable in FreeMarker
 
     private final String processedText2 = "test value1";
+
+    @Rule
+    public TemporaryFolder temporary = new TemporaryFolder();
 
     @Test
     public void test1() {
@@ -95,8 +100,8 @@ public class TestTextTemplate {
     @Test
     public void testCryptoFreemarker() throws IOException, TemplateException {
         TextTemplate tt = getTextTemplateWithCryptoVariables();
-        File ftl = new File(getClass().getClassLoader().getResource("freemarkerTemplate.ftl").getPath());
-        File tmpFile = File.createTempFile("ftl", null);
+        File ftl = FileUtils.getResourceFileFromContext("freemarkerTemplate.ftl");
+        File tmpFile = temporary.newFile("ftl");
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
             assertEquals(processedText, reader.readLine());
@@ -109,7 +114,6 @@ public class TestTextTemplate {
             assertEquals("Encrypted variables must not be replaced", templateText, reader.readLine());
             assertEquals("Encrypted #variables must be replaced", processedText2, reader.readLine());
         }
-        tmpFile.delete();
     }
 
     @Test
@@ -136,7 +140,8 @@ public class TestTextTemplate {
         // TextTemplate with var "foo"
         tt = new TextTemplate(vars);
         assertEquals("bar", tt.processText("${foo:=baz}"));
-        assertEquals("<foo>${myUnresolvedExpression}</foo>", tt.processText("<foo>${myUnresolvedExpression}</foo>"));
+        assertEquals("<foo>${myUnresolvedExpression}</foo>",
+                tt.processText("<foo>${myUnresolvedExpression}</foo>"));
         vars.setProperty("myUnresolvedExpression", "");
         assertEquals("<foo></foo>", tt.processText("<foo>${myUnresolvedExpression}</foo>"));
     }
@@ -155,6 +160,31 @@ public class TestTextTemplate {
         assertEquals("mypass$$", templates.processText("mypass$$"));
         // $$ unchanged if used in a crypto value (cf org.nuxeo.common.codec.Crypto.CRYPTO_PATTERN)
         assertEquals("{$$CZjbsiX748UF583qkbinsQ==}", templates.processText("{$$CZjbsiX748UF583qkbinsQ==}"));
+    }
+
+    @Test
+    public void testFreetemplateFileNameValidity() throws Exception {
+
+        File tmpdir = temporary.newFolder();
+
+        TextTemplate textTemplate = new TextTemplate();
+        textTemplate.setFreemarkerParsingExtensions("nxftl");
+        File testResouceDirectory = FileUtils.getResourceFileFromContext("test-nxftl");
+
+        textTemplate.processDirectory(new File(testResouceDirectory, "tutu.xml.nxftl"), tmpdir);
+        textTemplate.processDirectory(new File(testResouceDirectory, "tutu.nxftl"), tmpdir);
+
+        File failingFile = new File(testResouceDirectory, ".nxftl");
+
+        try {
+            textTemplate.processDirectory(failingFile, tmpdir);
+            fail("File name is invalid the call should not success");
+        } catch (IOException expected) {
+            String expectedMessage = "Extension only as a filename is not allowed: "
+                    + failingFile.getAbsolutePath();
+            assertEquals(expectedMessage, expected.getMessage());
+        }
+
     }
 
 }
