@@ -426,6 +426,9 @@ public class TextTemplate {
                 if (filename.endsWith(ext)) {
                     processAsFreemarker = true;
                     out = new File(out.getCanonicalPath().replaceAll("\\.*" + Pattern.quote(ext) + "$", ""));
+                    if (filename.equals("." + ext.toLowerCase())) {
+                        throw new IOException("Extension only as a filename is not allowed: " + in.getAbsolutePath());
+                    }
                     break;
                 }
             }
