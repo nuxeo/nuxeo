@@ -35,7 +35,6 @@
     <module>nuxeo-war-tests</module>
     <module>nuxeo-jsf-ui-hotreload-tests</module>
     <module>nuxeo-jsf-ui-webdriver-tests</module>
-    <module>nuxeo-jsf-ui-funkload-tests</module>
     <module>nuxeo-jsf-ui-gatling-tests</module>
   </modules>
 
