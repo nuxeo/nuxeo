@@ -37,9 +37,6 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
  */
 public class NuxeoTomcatLauncher extends NuxeoLauncher {
 
-    /**
-     * @param configurationGenerator
-     */
     public NuxeoTomcatLauncher(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }

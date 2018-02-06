@@ -22,11 +22,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,10 +42,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.ExpectedException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
@@ -96,7 +96,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         }
 
         @Override
-        protected List<String> execute(String... command) throws IOException {
+        protected List<String> execute(String... command) {
             for (Entry<String, List<String>> es : commands.entrySet()) {
                 String c = es.getKey();
                 if (command[0].contains(c)) {
@@ -143,7 +143,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         Environment.setDefault(null);
         nuxeoHome = new File("target/launcher");
         FileUtils.deleteQuietly(nuxeoHome);
-        nuxeoHome.mkdirs();
+        Files.createDirectories(nuxeoHome.toPath());
         File nuxeoConf = getResourceFile("config/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
         FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
@@ -238,13 +238,13 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         launcher = NuxeoLauncher.createLauncher(new String[] { "config", "--set", "--", "someKey" });
         assertTrue(launcher.commandIs("config"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_SET));
-        assertEquals(null, launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
+        assertNull(launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
         assertArrayEquals(new String[] { "someKey" }, launcher.params);
 
         launcher = NuxeoLauncher.createLauncher(new String[] { "config", "someKey", "--set" });
         assertTrue(launcher.commandIs("config"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_SET));
-        assertEquals(null, launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
+        assertNull(launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
         assertArrayEquals(new String[] { "someKey" }, launcher.params);
     }
 
