@@ -54,7 +54,6 @@ Ant usage: `ant package`
 ## Modules listing
 
  * nuxeo-functional-tests: Framework for testing Nuxeo distributions
- * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo Server with the JSF UI package installed
  * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo Server with the JSF UI package installed
  * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo Server with the JSF UI package installed
  * nuxeo-launcher: Control Panel and Launcher
