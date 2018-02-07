@@ -35,7 +35,6 @@ import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -98,7 +97,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
      * <ul>
      * <li>It is not a version</li>
      * <li>AND it is not HiddenInNavigation</li>
-     * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
+     * <li>AND it is not in the trash, unless {@code includeDeleted} is true</li>
      * <li>AND it is Folderish or it can be adapted as a {@link BlobHolder} with a blob</li>
      * <li>AND its blob is not backed by an extended blob provider</li>
      * <li>AND it is not a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint}
@@ -132,12 +131,11 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             }
             return false;
         }
-        // Check "deleted" life cycle state
-        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        // Check if document is in the trash
+        if (!includeDeleted && doc.isTrashed()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+                log.debug(String.format("Document %s is trashed, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
             }
             return false;
         }

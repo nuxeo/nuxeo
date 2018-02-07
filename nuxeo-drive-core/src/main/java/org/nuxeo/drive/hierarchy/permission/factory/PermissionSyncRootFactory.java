@@ -93,7 +93,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
      * <li>It is Folderish</li>
      * <li>AND it is not a version nor a proxy</li>
      * <li>AND it is not HiddenInNavigation</li>
-     * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
+     * <li>AND it is not in the trash, unless {@code includeDeleted} is true</li>
      * <li>AND it is a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint} is
      * true</li>
      * <li>AND the current user has the {@link #getRequiredPermission()} permission on the document</li>

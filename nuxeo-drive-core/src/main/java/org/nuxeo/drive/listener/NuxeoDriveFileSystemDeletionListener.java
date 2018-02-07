@@ -157,9 +157,9 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
     }
 
     protected boolean handleAboutToRemove(DocumentModel doc) {
-        // Document deletion of document that are already in deleted
-        // state should not be marked as FS deletion to avoid duplicates
-        return !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState());
+        // Document deletion of document that are already in the trash should not be marked as FS deletion to avoid
+        // duplicates
+        return !doc.isTrashed();
     }
 
     protected void fireVirtualEventLogEntries(DocumentModel doc, String eventName, Principal principal,

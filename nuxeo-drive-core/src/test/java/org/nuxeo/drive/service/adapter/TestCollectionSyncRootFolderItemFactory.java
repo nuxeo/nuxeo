@@ -45,7 +45,6 @@ import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -160,7 +159,7 @@ public class TestCollectionSyncRootFolderItemFactory {
         log.trace("Test AbstractDocumentBackedFileSystemItem#delete");
         child1.delete();
         doc1 = session.getDocument(doc1.getRef());
-        assertTrue(!doc1.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE));
+        assertFalse(doc1.isTrashed());
         assertFalse(collectionManager.isInCollection(collection, doc1, session));
     }
 

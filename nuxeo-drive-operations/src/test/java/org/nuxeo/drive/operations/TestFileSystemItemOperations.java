@@ -563,7 +563,7 @@ public class TestFileSystemItemOperations {
         TransactionHelper.startTransaction();
 
         DocumentModel deletedFileDoc = session.getDocument(new IdRef(file1.getId()));
-        assertEquals("deleted", deletedFileDoc.getCurrentLifeCycleState());
+        assertTrue(deletedFileDoc.isTrashed());
 
         // ------------------------------------------------------
         // Delete sync root: should unregister it

@@ -35,7 +35,6 @@ import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -78,12 +77,11 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
             }
             return false;
         }
-        // Check "deleted" life cycle state
-        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        // Check trashed state
+        if (!includeDeleted && doc.isTrashed()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+                log.debug(String.format("Document %s is in the trash, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
             }
             return false;
         }

@@ -527,7 +527,7 @@ public class TestFileSystemItemManagerService {
         // File deletion
         fileSystemItemManagerService.delete(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + updatedFile.getId(), principal);
         updatedFile = session.getDocument(new IdRef(updatedFile.getId()));
-        assertEquals("deleted", updatedFile.getCurrentLifeCycleState());
+        assertTrue(updatedFile.isTrashed());
 
         // Parent folder children check
         assertTrue(fileSystemItemManagerService.getChildren(newFolderItem.getId(), principal).isEmpty());

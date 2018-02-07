@@ -29,7 +29,6 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,7 +48,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
      * <ul>
      * <li>It is a Collection</li>
      * <li>AND it is not HiddenInNavigation</li>
-     * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
+     * <li>AND it is not in the trash, unless {@code includeDeleted} is true</li>
      * <li>AND it is a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint} is
      * true</li>
      * </ul>
@@ -73,12 +72,11 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
             }
             return false;
         }
-        // Check "deleted" life cycle state
-        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        // Check is document is in the trash
+        if (!includeDeleted && doc.isTrashed()) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+                log.debug(String.format("Document %s is in the trash, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
             }
             return false;
         }
