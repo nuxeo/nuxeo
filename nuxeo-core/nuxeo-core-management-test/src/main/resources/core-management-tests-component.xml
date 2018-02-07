@@ -14,8 +14,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener
-      class="org.nuxeo.ecm.core.management.test.statuses.RuntimeListener">
+    <listener class="org.nuxeo.ecm.core.management.test.statuses.RuntimeListener">
       <topic>administrativeStatus</topic>
     </listener>
   </extension>
