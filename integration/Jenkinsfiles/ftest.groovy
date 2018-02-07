@@ -26,7 +26,7 @@ node(nodelabel) {
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
-    
+
     timestamps {
         def sha = stage('clone') {
             checkout(
@@ -62,10 +62,6 @@ integration/.*'''],
                 'cmis' : emitVerifyClosure(nodelabel, sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
                     archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
                     failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
-                },
-                'funkload' : emitVerifyClosure(nodelabel, sha, zipfile, 'funkload', 'nuxeo-jsf-ui-funkload-tests') {
-                    archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
-                    failOnServerError('nuxeo-distribution/nuxeo-server-funkload-tests/target/tomcat/log/server.log')
                 },
                 'webdriver' : emitVerifyClosure(nodelabel, sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
                     archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
