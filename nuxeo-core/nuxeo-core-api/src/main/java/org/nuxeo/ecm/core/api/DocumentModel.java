@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -468,7 +468,7 @@ public interface DocumentModel extends Serializable {
      * <p>
      * This is a wrapper for {@link CoreSession#setACP(DocumentRef, ACP, boolean)}
      *
-     * @see {@link CoreSession#setACP(DocumentRef, ACP, boolean)}
+     * @see CoreSession#setACP(DocumentRef, ACP, boolean)
      * @param acp the ACP to set
      * @param overwrite whether to overwrite the old ACP or not
      */
