@@ -30,4 +30,21 @@
       class="org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler" />
   </extension>
 
+  <implementation class="org.nuxeo.ecm.core.management.test.probes.FakeService" />
+  <service>
+    <provide interface="org.nuxeo.ecm.core.management.test.probes.FakeService" />
+  </service>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="probes">
+    <probe name="testProbeStatus" class="org.nuxeo.ecm.core.management.test.probes.FakeProb">
+      <label>Test probe</label>
+    </probe>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="healthCheck">
+    <probe name="testProbeStatus" enabled="true" />
+  </extension>
+
 </component>
