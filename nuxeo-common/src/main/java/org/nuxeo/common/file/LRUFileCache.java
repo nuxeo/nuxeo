@@ -56,7 +56,7 @@ public class LRUFileCache implements FileCache {
 
     private static final String TMP_SUFFIX = ".tmp";
 
-    public static final long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS_DEFAULT = 5000; // 5 s
+    public static final long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS_DEFAULT = Integer.MAX_VALUE; // 5 s
 
     protected long clearOldEntriesIntervalMillis = CLEAR_OLD_ENTRIES_INTERVAL_MILLIS_DEFAULT;
 
