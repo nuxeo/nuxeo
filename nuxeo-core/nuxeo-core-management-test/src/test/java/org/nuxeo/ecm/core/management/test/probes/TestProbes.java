@@ -129,27 +129,6 @@ public class TestProbes {
     }
 
     @Test
-    public void testConsecutiveCallsOnHealthCheck() {
-        HealthCheckResult result = pm.getOrRunHealthCheck("runtimeStatus");
-        ProbeInfo probeInfo = pm.getProbeInfo("runtimeStatus");
-
-        assertTrue(result.isHealthy());
-        assertTrue(probeInfo.getStatus().isSuccess());
-        // run again and test that the probe was only invoked once since the default check interval is 20s
-        result = pm.getOrRunHealthCheck("runtimeStatus");
-        probeInfo = pm.getProbeInfo("runtimeStatus");
-        assertEquals(1, probeInfo.getRunnedCount());
-
-        // modify the default check interval to -1, run again and test that the probe was invoked
-        Framework.getProperties().setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY, "-1");
-
-        result = pm.getOrRunHealthCheck("runtimeStatus");
-        probeInfo = pm.getProbeInfo("runtimeStatus");
-        assertEquals(2, probeInfo.getRunnedCount());
-
-    }
-
-    @Test
     public void testRepositoryStatusProbe() throws IOException {
 
         HealthCheckResult result = pm.getOrRunHealthCheck("repositoryStatus");
