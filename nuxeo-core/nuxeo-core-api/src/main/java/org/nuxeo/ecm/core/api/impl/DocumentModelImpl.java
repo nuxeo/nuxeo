@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.InstanceRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -744,6 +745,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public Map<String, DataModel> getDataModels() {
         return dataModels;
+    }
+
+    @Override
+    public boolean isTrashed() {
+        return LifeCycleConstants.DELETED_STATE.equals(getCurrentLifeCycleState());
     }
 
     @Override

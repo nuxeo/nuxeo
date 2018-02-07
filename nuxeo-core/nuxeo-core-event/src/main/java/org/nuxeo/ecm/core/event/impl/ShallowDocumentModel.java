@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -163,6 +164,11 @@ public class ShallowDocumentModel implements DocumentModel {
     @Override
     public String getType() {
         return type;
+    }
+
+    @Override
+    public boolean isTrashed() {
+        return LifeCycleConstants.DELETED_STATE.equals(lifecycleState);
     }
 
     @Override

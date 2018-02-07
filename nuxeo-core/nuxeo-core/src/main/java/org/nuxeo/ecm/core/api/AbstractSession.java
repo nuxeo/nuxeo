@@ -2052,6 +2052,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public boolean isTrashed(DocumentRef docRef) {
+        return LifeCycleConstants.DELETED_STATE.equals(getCurrentLifeCycleState(docRef));
+    }
+
+    @Override
     public String getCurrentLifeCycleState(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_LIFE_CYCLE);
