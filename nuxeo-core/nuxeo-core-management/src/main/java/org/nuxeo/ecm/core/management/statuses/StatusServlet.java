@@ -76,7 +76,7 @@ public class StatusServlet extends HttpServlet {
     }
 
     protected void sendHealthCheckResponse(HttpServletResponse resp, HealthCheckResult result) throws IOException {
-        if (result.healthy) {
+        if (result.isHealthy()) {
             resp.setStatus(HttpServletResponse.SC_OK);
         } else {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

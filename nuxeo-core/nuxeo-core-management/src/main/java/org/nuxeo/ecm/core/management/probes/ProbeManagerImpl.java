@@ -197,13 +197,13 @@ public class ProbeManagerImpl implements ProbeManager {
                 Probe runnableProbe = probesByShortcuts.get(probe.getShortcutName());
                 probeInfoImpl.lastStatus = runnableProbe.run();
                 if (probeInfoImpl.lastStatus.isSuccess()) {
+                    probeInfoImpl.successCount += 1;
                     probeInfoImpl.lastSucceedDate = probeInfoImpl.lastRunnedDate;
                     probeInfoImpl.lastSuccessStatus = probeInfoImpl.lastStatus;
-                    probeInfoImpl.successCount += 1;
                 } else {
-                    probeInfoImpl.lastFailureStatus = probeInfoImpl.lastStatus;
                     probeInfoImpl.failureCount += 1;
                     probeInfoImpl.lastFailureDate = probeInfoImpl.lastRunnedDate;
+                    probeInfoImpl.lastFailureStatus = probeInfoImpl.lastStatus;
                 }
             } catch (RuntimeException e) {
                 probeInfoImpl.failureCount += 1;
