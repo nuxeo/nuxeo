@@ -32,14 +32,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
@@ -119,7 +116,7 @@ public class TemplateInitListener implements EventListener {
                                 // check if source template is visible
                                 if (docCtx.getCoreSession().exists(templateRef)) {
                                     DocumentModel sourceTemplateDoc = docCtx.getCoreSession().getDocument(templateRef);
-                                    if (!LifeCycleConstants.DELETED_STATE.equals(sourceTemplateDoc.getCurrentLifeCycleState())) {
+                                    if (!sourceTemplateDoc.isTrashed()) {
                                     	tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
                                     }
                                 }
