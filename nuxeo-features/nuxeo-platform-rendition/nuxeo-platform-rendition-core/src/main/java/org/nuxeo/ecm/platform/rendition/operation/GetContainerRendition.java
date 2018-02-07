@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.utils.BlobUtils;
@@ -83,8 +82,7 @@ public class GetContainerRendition {
         int added = 0;
         for (String memberId : collection.getCollectedDocumentIds()) {
             DocumentRef memberRef = new IdRef(memberId);
-            if (session.exists(memberRef)
-                    && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(memberRef))) {
+            if (session.exists(memberRef) && !session.isTrashed(memberRef)) {
                 DocumentModel member = session.getDocument(memberRef);
                 Blob blob = getDefaultRendition(member, currentDepth + 1);
                 if (blob != null) {
@@ -130,7 +128,7 @@ public class GetContainerRendition {
         DocumentModelIterator it = session.getChildrenIterator(parent.getRef());
         while (it.hasNext()) {
             DocumentModel child = it.next();
-            if (!LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(child.getRef()))) {
+            if (!child.isTrashed()) {
                 Blob blob = getDefaultRendition(child, currentDepth);
                 if (blob != null) {
                     blobs.add(blob);

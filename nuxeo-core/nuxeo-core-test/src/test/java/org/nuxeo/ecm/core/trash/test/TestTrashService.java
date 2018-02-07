@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -159,12 +158,12 @@ public class TestTrashService {
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         doc3 = session.getDocument(new IdRef(doc3.getId()));
         doc4 = session.getDocument(new IdRef(doc4.getId()));
-        assertEquals("deleted", fold.getCurrentLifeCycleState());
-        assertEquals("deleted", doc1.getCurrentLifeCycleState());
-        assertEquals("deleted", doc3.getCurrentLifeCycleState());
-        assertEquals("deleted", doc4.getCurrentLifeCycleState());
+        assertTrue(fold.isTrashed());
+        assertTrue(doc1.isTrashed());
+        assertTrue(doc3.isTrashed());
+        assertTrue(doc4.isTrashed());
         // doc2 done by async BulkLifeCycleChangeListener
-        assertEquals("deleted", doc2.getCurrentLifeCycleState());
+        assertTrue(doc2.isTrashed());
         // check names changed
         assertFalse("fold".equals(fold.getName()));
         assertFalse("doc1".equals(doc1.getName()));
@@ -221,10 +220,10 @@ public class TestTrashService {
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
-        assertEquals("deleted", fold.getCurrentLifeCycleState());
+        assertTrue(fold.isTrashed());
         // doc1 & doc2 done by async BulkLifeCycleChangeListener
-        assertEquals("deleted", doc1.getCurrentLifeCycleState());
-        assertEquals("deleted", doc2.getCurrentLifeCycleState());
+        assertTrue(doc1.isTrashed());
+        assertTrue(doc2.isTrashed());
 
         // undelete fold
         trashService.undeleteDocuments(Collections.singletonList(fold));
@@ -259,7 +258,7 @@ public class TestTrashService {
 
         fold.refresh();
         version.refresh();
-        assertEquals("deleted", fold.getCurrentLifeCycleState());
+        assertTrue(fold.isTrashed());
         assertEquals("project", version.getCurrentLifeCycleState());
         assertFalse(session.exists(proxy.getRef()));
     }
@@ -333,7 +332,7 @@ public class TestTrashService {
 
         // make sure it's still checked in (or not if compat)
         doc = session.getDocument(new IdRef(doc.getId()));
-        assertEquals(LifeCycleConstants.DELETED_STATE, doc.getCurrentLifeCycleState());
+        assertTrue(doc.isTrashed());
         if (expectCheckedIn) {
             assertFalse(doc.isCheckedOut());
         } else {

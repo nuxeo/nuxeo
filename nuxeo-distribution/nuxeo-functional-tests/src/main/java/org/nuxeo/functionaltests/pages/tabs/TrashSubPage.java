@@ -67,7 +67,7 @@ public class TrashSubPage extends AbstractPage {
     public TrashSubPage emptyTrash() {
         findElementWaitUntilEnabledAndClick(By.id(EMPTY_TRASH_BUTTON_ID));
         Alert alert = driver.switchTo().alert();
-        assertEquals("Permanently delete all documents in trash?", alert.getText());
+        assertEquals("Permanently delete all documents in the trash?", alert.getText());
         alert.accept();
         return asPage(TrashSubPage.class);
     }

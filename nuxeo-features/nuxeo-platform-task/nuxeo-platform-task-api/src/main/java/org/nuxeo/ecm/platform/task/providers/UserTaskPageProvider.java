@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
@@ -122,9 +121,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
                 }
                 DocumentModel doc = taskService.getTargetDocumentModel(task, coreSession);
                 if (doc != null) {
-                    if (filterTrashDocs && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                        continue;
-                    } else {
+                    if (!filterTrashDocs || !doc.isTrashed()) {
                         userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                     }
                 } else {

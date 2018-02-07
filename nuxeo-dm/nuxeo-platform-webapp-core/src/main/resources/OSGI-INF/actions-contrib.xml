@@ -885,7 +885,7 @@
       </rule>
       <rule grant="false">
         <condition>
-          document.getCurrentLifeCycleState().equals("deleted")
+          document.isTrashed()
         </condition>
       </rule>
     </filter>

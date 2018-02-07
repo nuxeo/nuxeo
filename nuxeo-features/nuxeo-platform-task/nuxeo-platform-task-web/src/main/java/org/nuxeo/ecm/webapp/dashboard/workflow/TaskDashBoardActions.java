@@ -39,7 +39,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -80,7 +79,7 @@ public class TaskDashBoardActions implements Serializable {
                         continue;
                     }
                     DocumentModel doc = taskService.getTargetDocumentModel(task, documentManager);
-                    if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    if (doc != null && !doc.isTrashed()) {
                         currentUserTasks.add(new DashBoardItemImpl(task, doc, localeSelector.getLocale()));
                     } else {
                         log.warn(

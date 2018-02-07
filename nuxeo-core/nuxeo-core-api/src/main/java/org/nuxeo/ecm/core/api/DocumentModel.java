@@ -509,9 +509,9 @@ public interface DocumentModel extends Serializable {
     void setProperties(String schemaName, Map<String, Object> data);
 
     /**
-     * Checks if this document is in trash.
+     * Checks if this document is in the trash.
      *
-     * @return true if the document is in trash, false otherwise.
+     * @return true if the document is in the trash, false otherwise.
      * @since 10.1
      */
     boolean isTrashed();

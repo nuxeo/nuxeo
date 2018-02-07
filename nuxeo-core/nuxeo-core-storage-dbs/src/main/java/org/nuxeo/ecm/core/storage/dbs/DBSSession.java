@@ -44,6 +44,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VER
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RETENTION_ACTIVE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_POLICY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
@@ -1889,6 +1890,8 @@ public class DBSSession implements Session {
         case DBSDocument.PROP_UID_MINOR_VERSION:
         case DBSDocument.PROP_MINOR_VERSION:
             return DBSDocument.KEY_MINOR_VERSION;
+        case NXQL.ECM_ISTRASHED:
+            return KEY_IS_TRASHED;
         case NXQL.ECM_FULLTEXT:
             throw new UnsupportedOperationException(name);
         }
@@ -1965,6 +1968,8 @@ public class DBSSession implements Session {
             return "minor_version";
         case KEY_FULLTEXT_SCORE:
             return NXQL.ECM_FULLTEXT_SCORE;
+        case KEY_IS_TRASHED:
+            return NXQL.ECM_ISTRASHED;
         case KEY_LIFECYCLE_POLICY:
         case KEY_ACP:
         case KEY_ANCESTOR_IDS:

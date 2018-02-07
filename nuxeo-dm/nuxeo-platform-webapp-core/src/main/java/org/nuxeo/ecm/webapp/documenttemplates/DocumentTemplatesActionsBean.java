@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.webapp.action.TypesTool;
@@ -112,7 +111,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
             templates = documentManager.getChildren(tl.get(0).getRef(), targetTypeName);
             List<DocumentModel> deleted = new ArrayList<>();
             for (DocumentModel current : templates) {
-                if (LifeCycleConstants.DELETED_STATE.equals(current.getCurrentLifeCycleState())) {
+                if (current.isTrashed()) {
                     deleted.add(current);
                 }
             }

@@ -112,7 +112,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         }
         CoreSession session = docs.get(0).getCoreSession();
         for (DocumentModel doc : docs) {
-            if (checkDeleted && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            if (checkDeleted && !doc.isTrashed()) {
                 info.forbidden++;
                 continue;
             }
@@ -239,10 +239,9 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                             + doc.getPath() + ")");
                 }
                 trashDocument(session, doc);
-            } else if (session.getCurrentLifeCycleState(docRef).equals(LifeCycleConstants.DELETED_STATE)) {
-                log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
-                        + doc.getCurrentLifeCycleState() + " is already in state "
-                        + LifeCycleConstants.DELETED_STATE + ", nothing to do");
+            } else if (session.isTrashed(docRef)) {
+                log.warn("Document " + doc.getId() + " of type " + doc.getType()
+                        + " is already in the trash, nothing to do");
                 return;
             } else {
                 log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
