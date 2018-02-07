@@ -1170,6 +1170,15 @@ public interface CoreSession {
     void setRetentionActive(DocumentRef docRef, boolean retentionActive);
 
     /**
+     * Checks if this document is in trash.
+     *
+     * @param docRef the document reference
+     * @return true if the document is in trash, false otherwise.
+     * @since 10.1
+     */
+    boolean isTrashed(DocumentRef docRef);
+
+    /**
      * Returns the life cycle of the document.
      *
      * @see org.nuxeo.ecm.core.lifecycle

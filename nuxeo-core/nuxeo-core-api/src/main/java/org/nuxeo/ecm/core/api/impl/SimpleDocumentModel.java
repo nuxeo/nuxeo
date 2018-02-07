@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -370,6 +371,11 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public boolean isTrashed() {
+        return LifeCycleConstants.DELETED_STATE.equals(getCurrentLifeCycleState());
+    }
+
+    @Override
     public boolean isFolder() {
         throw new UnsupportedOperationException();
     }
@@ -491,7 +497,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean isLifeCycleLoaded() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
