@@ -459,12 +459,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    @Deprecated
-    public String[] getDeclaredSchemas() {
-        return getSchemas();
-    }
-
-    @Override
     public boolean hasSchema(String schema) {
         return schemas.contains(schema);
     }
@@ -477,12 +471,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean hasFacet(String facet) {
         return facets.contains(facet);
-    }
-
-    @Override
-    @Deprecated
-    public Set<String> getDeclaredFacets() {
-        return getFacets();
     }
 
     @Override

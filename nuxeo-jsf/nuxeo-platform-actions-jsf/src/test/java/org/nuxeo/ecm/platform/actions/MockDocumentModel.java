@@ -43,7 +43,7 @@ public final class MockDocumentModel extends DocumentModelImpl {
     }
 
     @Override
-    public Set<String> getDeclaredFacets() {
+    public Set<String> getFacets() {
         return facets;
     }
 

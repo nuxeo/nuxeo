@@ -267,17 +267,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Set<String> getDeclaredFacets() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String[] getSchemas() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String[] getDeclaredSchemas() {
         throw new UnsupportedOperationException();
     }
 

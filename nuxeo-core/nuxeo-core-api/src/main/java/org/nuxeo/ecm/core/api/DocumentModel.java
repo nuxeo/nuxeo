@@ -192,15 +192,6 @@ public interface DocumentModel extends Serializable {
     String[] getSchemas();
 
     /**
-     * Gets the schemas available on this document (from the type and the facets).
-     *
-     * @deprecated use {@link #getSchemas} instead, or call {@link #getDocumentType} and look up the type schemas
-     * @return the schemas
-     */
-    @Deprecated
-    String[] getDeclaredSchemas();
-
-    /**
      * Checks if the document has the given schema, either from its type or added on the instance through a facet.
      *
      * @param schema the schema name
@@ -215,15 +206,6 @@ public interface DocumentModel extends Serializable {
      * @since 5.4.2
      */
     Set<String> getFacets();
-
-    /**
-     * Gets the facets available on this document (from the type and the instance facets).
-     *
-     * @deprecated use {@link #getFacets} instead, or call {@link #getDocumentType} and look up the type facets
-     * @return the facets
-     */
-    @Deprecated
-    Set<String> getDeclaredFacets();
 
     /**
      * Checks if the document has a facet, either from its type or added on the instance.

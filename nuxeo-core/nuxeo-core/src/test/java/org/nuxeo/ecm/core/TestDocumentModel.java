@@ -62,11 +62,11 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertTrue(model.getDataModelsCollection().isEmpty());
 
         @SuppressWarnings("deprecation")
-        Set<String> declaredFacets = model.getDeclaredFacets();
-        assertEquals(Collections.emptySet(), declaredFacets);
+        Set<String> facets = model.getFacets();
+        assertEquals(Collections.emptySet(), facets);
         @SuppressWarnings("deprecation")
-        String[] declaredSchemas = model.getDeclaredSchemas();
-        assertEquals(0, declaredSchemas.length);
+        String[] schemas = model.getSchemas();
+        assertEquals(0, schemas.length);
         assertEquals(Collections.emptySet(), model.getFacets());
         assertEquals(0, model.getSchemas().length);
         assertNull(model.getId());
