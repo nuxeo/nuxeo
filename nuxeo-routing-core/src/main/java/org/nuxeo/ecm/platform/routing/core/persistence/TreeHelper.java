@@ -38,6 +38,10 @@ public class TreeHelper {
 
     public static final String TITLE_PROPERTY_NAME = "dc:title";
 
+    /**
+     * @deprecated since 10.1, unused
+     */
+    @Deprecated
     public static final String DELETED_STATE = "deleted";
 
     /**
@@ -70,7 +74,7 @@ public class TreeHelper {
         boolean exists = session.exists(pathRef);
         if (exists) {
             DocumentModel existing = session.getDocument(pathRef);
-            if (!DELETED_STATE.equals(existing.getCurrentLifeCycleState())) {
+            if (!existing.isTrashed()) {
                 return existing;
             }
         }
