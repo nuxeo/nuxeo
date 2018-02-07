@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.quota.size;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 
 import java.io.Serializable;
@@ -126,7 +125,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
     }
 
     protected void initDocument(CoreSession session, DocumentModel doc) {
-        boolean isDeleted = DELETED_STATE.equals(doc.getCurrentLifeCycleState());
+        boolean isDeleted = doc.isTrashed();
         long size = getBlobsSize(doc);
         long versionsSize = getVersionsSize(session, doc);
         updateDocumentAndAncestors(session, doc, size, size + versionsSize, isDeleted ? size : 0, versionsSize);
@@ -134,7 +133,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     protected void initDocumentFromChildren(DocumentModel doc) {
         CoreSession session = doc.getCoreSession();
-        boolean isDeleted = DELETED_STATE.equals(doc.getCurrentLifeCycleState());
+        boolean isDeleted = doc.isTrashed();
         long innerSize = getBlobsSize(doc);
         long versionsSize = getVersionsSize(session, doc);
         long totalSize = innerSize + versionsSize;
@@ -281,8 +280,8 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             }
         }
         // remove size for all its versions from sizeVersions on parents
-        boolean isDeleted = DELETED_STATE.equals(doc.getCurrentLifeCycleState());
-        // when permanently deleting the doc clean the trash if the doc is in trash
+        boolean isDeleted = doc.isTrashed();
+        // when permanently deleting the doc clean the trash if the doc is in the trash
         // and all archived versions size
         if (log.isTraceEnabled()) {
             log.trace("Processing document about to be removed on parents. Total: " + size + " , trash size: "

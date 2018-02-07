@@ -815,7 +815,7 @@ public class TestDocumentsSizeUpdater {
 
         // sent file to trash
         doDeleteFileContent();
-        // then permanently delete file when file is in trash
+        // then permanently delete file when file is in the trash
         doRemoveContent();
 
         assertFalse(session.exists(firstFileRef));
