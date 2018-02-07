@@ -39,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -218,7 +217,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
      */
     protected String getTenantIdForTenant(DocumentModel doc) {
         String name = doc.getName();
-        if (doc.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE)) {
+        if (doc.isTrashed()) {
             name = Framework.getService(TrashService.class).unmangleName(doc);
         }
         return name;
