@@ -28,15 +28,46 @@ object NuxeoRest {
     java.net.URLEncoder.encode(path, "UTF-8")
   }
 
-  /** Create a document ins the gatling workspace  */
+  /** Create a document in the gatling workspace  */
   def createDocument() = {
-    http("Create ${type}")
-      .post(Constants.GAT_API_PATH + "/${parentPath}")
-      .headers(Headers.base)
-      .header("Content-Type", "application/json")
-      .basicAuth("${user}", "${password}")
-      .body(StringBody("${payload}"))
-      .check(status.saveAs("status")).check(status.is(201))
+    exec()
+      .doIf("${blobPath.isUndefined()}") {
+        exec(
+          http("Create ${type}")
+            .post(Constants.GAT_API_PATH + "/${parentPath}")
+            .headers(Headers.base)
+            .header("Content-Type", "application/json")
+            .basicAuth("${user}", "${password}")
+            .body(StringBody("${payload}"))
+            .check(status.saveAs("status"))
+            .check(status.is(201))
+        )
+      }.doIf("${blobPath.exists()}") {
+      exec(
+        http("Get a batch id")
+          .post("/api/v1/upload")
+          .headers(Headers.base)
+          .basicAuth("${user}", "${password}")
+          .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
+      ).exec(
+        http("Upload ${type} blob")
+          .post("/api/v1/upload/${batchId}/0")
+          .headers(Headers.base)
+          .header("X-File-Name", "${blobFilename}")
+          .header("Content-Type", "${blobMimeType}")
+          .basicAuth("${user}", "${password}")
+          .body(RawFileBody("${blobPath}"))
+      ).exec(
+        http("Create ${type} with blob")
+          .post(Constants.GAT_API_PATH + "/${parentPath}")
+          .headers(Headers.base)
+          .header("Content-Type", "application/json")
+          .basicAuth("${user}", "${password}")
+          .body(StringBody(session => session("payload").as[String].replaceAll("_BATCH_ID_", session("batchId").as[String])))
+          .check(status.saveAs("status"))
+          .check(status.in(201))
+      )
+    }
   }
 
   /** Update the description of a document in the gatling workspace */
@@ -206,6 +237,7 @@ object NuxeoRest {
             ""","upload-fileId":"0"}}}""".stripMargin))
         .check(status.in(200)))
   }
+
 
   def deleteFileDocument = (path: String) => {
     http("Delete server File")
