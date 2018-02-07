@@ -115,11 +115,6 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String[] getDeclaredSchemas() {
-        return getSchemas();
-    }
-
-    @Override
     public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModelInternal(schemaName);
         return dm != null ? dm.getData(name) : null;
@@ -299,11 +294,6 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public Set<String> getFacets() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<String> getDeclaredFacets() {
-        return getFacets();
     }
 
     @Override
