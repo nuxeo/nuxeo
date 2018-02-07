@@ -136,6 +136,7 @@
     <seam.version>2.3.1.Final</seam.version>
     <nxseam.version>2.3.1.Final.NX02</nxseam.version>
 
+    <servlet-api.version>3.0.1</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
     <jaxb.version>2.2.11</jaxb.version>
     <jaxws-api.version>2.2.9</jaxws-api.version>
@@ -1943,14 +1944,13 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.0.1</version>
-        <scope>provided</scope>
+        <version>${servlet-api.version}</version>
       </dependency>
       <!-- Deprecated GAV (redirected for backward compat since 5.7.2) -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
-        <version>3.0.1</version>
+        <version>${servlet-api.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2664,6 +2664,7 @@
         <artifactId>jetty</artifactId>
         <version>${jetty.mortbay.version}</version>
         <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>servlet-api</artifactId>
@@ -2701,6 +2702,13 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-api-2.1</artifactId>
         <version>6.1.6</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -4035,6 +4043,23 @@
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-coyote</artifactId>
+        <version>${tomcat.version}</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-util</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-dbcp</artifactId>
         <version>${tomcat.version}</version>
       </dependency>
@@ -4094,6 +4119,13 @@
         <artifactId>scim-sdk</artifactId>
         <groupId>com.unboundid.product.scim</groupId>
         <version>1.7.1</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <artifactId>org.mortbay.jetty</artifactId>
+            <groupId>servlet-api</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- SCIM - Tests -->
       <dependency>
@@ -5600,6 +5632,18 @@
                   <exclude>org.bouncycastle:bcmail-jdk15</exclude> <!-- use more recent org.bouncycastle:bcmail-jdk15on instead -->
                 </excludes>
                 <message>org.bouncycastle:bcmail-jdk15 must not be used, use org.bouncycastle:bcmail-jdk15on instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.apache.tomcat:tomcat-servlet-api</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>org.apache.tomcat:tomcat-servlet-api must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.mortbay.jetty:servlet-api-2.5</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>org.mortbay.jetty:servlet-api-2.5 must not be used, use javax.servlet:javax.servlet-api instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
