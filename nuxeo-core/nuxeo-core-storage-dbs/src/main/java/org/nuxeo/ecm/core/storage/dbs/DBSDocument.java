@@ -164,6 +164,11 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_LIFECYCLE_STATE = "ecm:lifeCycleState";
 
+    /**
+     * @since 10.1
+     */
+    public static final String KEY_IS_TRASHED = "ecm:isTrashed";
+
     public static final String KEY_LOCK_OWNER = "ecm:lockOwner";
 
     public static final String KEY_LOCK_CREATED = "ecm:lockCreated";

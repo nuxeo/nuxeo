@@ -179,6 +179,16 @@ public class Model {
 
     public static final String MISC_LIFECYCLE_STATE_KEY = "lifecyclestate";
 
+    /**
+     * @since 10.1
+     */
+    public static final String MISC_IS_TRASHED_PROP = "ecm:isTrashed";
+
+    /**
+     * @since 10.1
+     */
+    public static final String MISC_IS_TRASHED_KEY = "istrashed";
+
     public static final String ACL_TABLE_NAME = "acls";
 
     public static final String ACL_PROP = "ecm:acl";

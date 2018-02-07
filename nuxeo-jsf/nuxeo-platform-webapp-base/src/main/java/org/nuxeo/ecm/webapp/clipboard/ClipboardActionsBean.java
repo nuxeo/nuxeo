@@ -328,7 +328,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     public List<DocumentModel> moveDocumentsToNewParent(DocumentModel destFolder, List<DocumentModel> docs) {
         DocumentRef destFolderRef = destFolder.getRef();
-        boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
+        boolean destinationIsDeleted = destFolder.isTrashed();
         List<DocumentModel> newDocs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (DocumentModel docModel : docs) {
@@ -468,7 +468,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
         // copying proxy or document
         boolean isPublishSpace = isPublishSpace(parent);
-        boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(parent.getCurrentLifeCycleState());
+        boolean destinationIsDeleted = parent.isTrashed();
         List<DocumentRef> docRefs = new ArrayList<>();
         List<DocumentRef> proxyRefs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -504,13 +504,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     protected boolean checkDeletedState(DocumentModel doc) {
-        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            return true;
-        }
-        if (doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
-            return true;
-        }
-        return false;
+        return doc.isTrashed() || doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION);
     }
 
     protected void setDeleteState(DocumentModel doc) {

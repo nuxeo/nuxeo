@@ -1170,10 +1170,10 @@ public interface CoreSession {
     void setRetentionActive(DocumentRef docRef, boolean retentionActive);
 
     /**
-     * Checks if this document is in trash.
+     * Checks if this document is in the trash.
      *
      * @param docRef the document reference
-     * @return true if the document is in trash, false otherwise.
+     * @return true if the document is in the trash, false otherwise.
      * @since 10.1
      */
     boolean isTrashed(DocumentRef docRef);

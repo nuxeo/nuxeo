@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -241,10 +240,9 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
             for (int i = 0; i < collectionIds.size() && result.size() < maxResult; i++) {
                 final String collectionId = collectionIds.get(i);
                 DocumentRef documentRef = new IdRef(collectionId);
-                if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)
-                        && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
+                if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)) {
                     DocumentModel collection = session.getDocument(documentRef);
-                    if (!collection.isVersion()) {
+                    if (!collection.isTrashed() && !collection.isVersion()) {
                         result.add(collection);
                     }
                 }

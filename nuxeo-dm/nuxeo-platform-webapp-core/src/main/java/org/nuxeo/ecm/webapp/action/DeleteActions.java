@@ -96,7 +96,7 @@ public interface DeleteActions {
     void restoreCurrentDocument();
 
     /**
-     * Checks if the document is "deleted".
+     * Checks if the document is "trashed".
      */
     boolean getCanRestoreCurrentDoc();
 

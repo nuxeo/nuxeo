@@ -23,12 +23,11 @@ package org.nuxeo.ecm.core.api.tree;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 
 /**
  * Default filter for tree elements.
  * <p>
- * Filters using facets and types criteria. Also filters documents that are in the "deleted" life cycle state.
+ * Filters using facets and types criteria. Also filters documents that are in the trash.
  *
  * @author Anahide Tchertchian
  */
@@ -48,8 +47,8 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
         if (excludedTypes != null && excludedTypes.contains(docType)) {
             return false;
         }
-        // exclude deleted documents from tree
-        if (LifeCycleConstants.DELETED_STATE.equals(document.getCurrentLifeCycleState())) {
+        // exclude trashed documents from tree
+        if (document.isTrashed()) {
             return false;
         }
         // XXX AT: this could have not been copied from FacetFilter if fields

@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
@@ -70,8 +69,8 @@ public class DocumentListZipExporter {
                     doc = documentManager.getDocument(doc.getRef());
                 }
 
-                // NXP-2334 : skip deleted docs
-                if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                // NXP-2334 : skip trashed docs
+                if (doc.isTrashed()) {
                     continue;
                 }
 
@@ -100,8 +99,8 @@ public class DocumentListZipExporter {
         String title = doc.getTitle();
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
-            // NXP-2334 : skip deleted docs
-            if (LifeCycleConstants.DELETED_STATE.equals(docChild.getCurrentLifeCycleState())) {
+            // NXP-2334 : skip trashed docs
+            if (doc.isTrashed()) {
                 continue;
             }
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
