@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.trash;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -76,8 +75,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies)
-            {
+    public boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -108,7 +106,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     protected TrashInfo getInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies,
             boolean checkDeleted) {
         TrashInfo info = new TrashInfo();
-        info.docs = new ArrayList<DocumentModel>(docs.size());
+        info.docs = new ArrayList<>(docs.size());
         if (docs.isEmpty()) {
             return info;
         }
@@ -171,8 +169,9 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
-            return doc1.getPathAsString().replace("/", "\u0000").compareTo(
-                    doc2.getPathAsString().replace("/", "\u0000"));
+            return doc1.getPathAsString()
+                       .replace("/", "\u0000")
+                       .compareTo(doc2.getPathAsString().replace("/", "\u0000"));
         }
 
     }
@@ -183,15 +182,13 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         TrashInfo info = getInfo(docs, principal, checkProxies, checkDeleted);
         // Keep only common tree roots (see NXP-1411)
         // This is not strictly necessary with Nuxeo Core >= 1.3.2
-        Collections.sort(info.docs, PathComparator.INSTANCE);
-        List<DocumentModel> roots = new LinkedList<DocumentModel>();
-        info.rootPaths = new HashSet<Path>();
-        info.rootRefs = new LinkedList<DocumentRef>();
-        info.rootParentRefs = new HashSet<DocumentRef>();
+        info.docs.sort(PathComparator.INSTANCE);
+        info.rootPaths = new HashSet<>();
+        info.rootRefs = new LinkedList<>();
+        info.rootParentRefs = new HashSet<>();
         Path previousPath = null;
         for (DocumentModel doc : info.docs) {
             if (previousPath == null || !previousPath.isPrefixOf(doc.getPath())) {
-                roots.add(doc);
                 Path path = doc.getPath();
                 info.rootPaths.add(path);
                 info.rootRefs.add(doc.getRef());
@@ -268,7 +265,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     @Override
     public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) {
-        Set<DocumentRef> undeleted = new HashSet<DocumentRef>();
+        Set<DocumentRef> undeleted = new HashSet<>();
         if (docs.isEmpty()) {
             return undeleted;
         }
@@ -281,7 +278,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         }
         session.save();
         // find parents of undeleted docs (for notification);
-        Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
+        Set<DocumentRef> parentRefs = new HashSet<>();
         for (DocumentRef docRef : undeleted) {
             parentRefs.add(session.getParentDocumentRef(docRef));
         }
@@ -309,9 +306,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     /**
      * Undeletes a list of documents. Session is not saved. Log about non-deletable documents.
      */
-    protected Set<DocumentRef> undeleteDocumentList(CoreSession session, List<DocumentModel> docs)
-            {
-        Set<DocumentRef> undeleted = new HashSet<DocumentRef>();
+    protected Set<DocumentRef> undeleteDocumentList(CoreSession session, List<DocumentModel> docs) {
+        Set<DocumentRef> undeleted = new HashSet<>();
         for (DocumentModel doc : docs) {
             DocumentRef docRef = doc.getRef();
             if (session.getAllowedStateTransitions(docRef).contains(LifeCycleConstants.UNDELETE_TRANSITION)) {
@@ -328,8 +324,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     /**
      * Undeletes ancestors of a document. Session is not saved. Stops as soon as an ancestor is not undeletable.
      */
-    protected void undeleteAncestors(CoreSession session, DocumentRef docRef, Set<DocumentRef> undeleted)
-            {
+    protected void undeleteAncestors(CoreSession session, DocumentRef docRef, Set<DocumentRef> undeleted) {
         for (DocumentRef ancestorRef : session.getParentDocumentRefs(docRef)) {
             // getting allowed state transitions and following a transition need
             // ReadLifeCycle and WriteLifeCycle
@@ -417,10 +412,10 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     @Override
     public DocumentModelList getDocuments(DocumentModel currentDoc) {
         CoreSession session = currentDoc.getCoreSession();
-        DocumentModelList docs = session.query(
-                String.format("SELECT * FROM " + "Document WHERE " + "ecm:mixinType != 'HiddenInNavigation' AND "
-                        + "ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 1 AND "
-                        + "ecm:parentId = '%s'", currentDoc.getId()));
+        DocumentModelList docs = session.query(String.format(
+                "SELECT * FROM " + "Document WHERE " + "ecm:mixinType != 'HiddenInNavigation' AND "
+                        + "ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 1 AND " + "ecm:parentId = '%s'",
+                currentDoc.getId()));
         return docs;
     }
 }
