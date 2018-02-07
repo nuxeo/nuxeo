@@ -31,7 +31,6 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -170,7 +169,7 @@ public class MetadataFile {
     }
 
     protected void load() {
-        for (String schema : doc.getDeclaredSchemas()) {
+        for (String schema : doc.getSchemas()) {
             addAllProperties(schema);
         }
     }
