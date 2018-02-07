@@ -77,6 +77,8 @@ public class RuntimeDeployment {
         for (Annotation anno : annos) {
             if (anno.annotationType() == Deploy.class) {
                 index((Deploy) anno);
+            } else if (anno.annotationType() == Deploys.class) {
+                index((Deploys) anno);
             } else if (anno.annotationType() == LocalDeploy.class) {
                 index((LocalDeploy) anno);
             } else if (anno.annotationType() == PartialDeploy.class) {
@@ -91,6 +93,7 @@ public class RuntimeDeployment {
 
     protected void index(Method method) {
         index(method.getAnnotation(Deploy.class));
+        index(method.getAnnotation(Deploys.class));
         index(method.getAnnotation(LocalDeploy.class));
     }
 
@@ -100,6 +103,15 @@ public class RuntimeDeployment {
         }
         for (String each : config.value()) {
             index(each, mainIndex);
+        }
+    }
+
+    private void index(Deploys deploys) {
+        if (deploys == null) {
+            return;
+        }
+        for (Deploy value : deploys.value()) {
+            index(value);
         }
     }
 
