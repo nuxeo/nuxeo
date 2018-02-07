@@ -32,11 +32,12 @@ object ScnNavigation {
             .randomSwitch(
               30.0 -> exec(NuxeoRest.getDocument("Get document")),
               10.0 -> exec(NuxeoRest.getParentFolderOfCurrentDocument("Get document folder")),
-              10.0 -> exec(NuxeoRest.getDocument("Get document dc only", schemas = "dublincore")),
+              10.0 -> exec(NuxeoRest.downloadBlob()),
               10.0 -> exec(NuxeoRest.getDocument("Get document with acl", enrichers = "acl")),
-              10.0 -> exec(NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb")),
               10.0 -> exec(NuxeoRest.getDocument("Get document with thumbnail", enrichers = "thumbnail")),
               10.0 -> exec(NuxeoRest.getDocument("Get document with properties", parts = "properties")),
+              5.0 -> exec(NuxeoRest.getDocument("Get document dc only", schemas = "dublincore")),
+              5.0 -> exec(NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb")),
               5.0 -> exec(NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel")),
               5.0 -> exec(NuxeoRest.getDocument("Get document with lock", parts = "lock"))
             )

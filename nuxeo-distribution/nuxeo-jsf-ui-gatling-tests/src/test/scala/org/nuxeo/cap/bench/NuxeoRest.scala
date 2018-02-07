@@ -1,5 +1,3 @@
-package org.nuxeo.cap.bench
-
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -16,6 +14,7 @@ package org.nuxeo.cap.bench
  * Contributors:
  *     Delbosc Benoit
  */
+package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -70,6 +69,12 @@ object NuxeoRest {
     }
   }
 
+  /** Create again a document with a different name */
+  def createAgainDocument() = {
+    createDocument()
+  }
+
+
   /** Update the description of a document in the gatling workspace */
   def updateDocument() = {
     http("Update ${type}")
@@ -91,6 +96,21 @@ object NuxeoRest {
       .header("X-NXfetch.document", parts)
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
+  }
+
+  def downloadBlob() = {
+    exec()
+      .doIf("${blobPath.exists()}") {
+        exec(
+          http("Download blob ${type}")
+            .post(Constants.GAT_API_PATH + "/${url}/@op/Blob.Get")
+            .headers(Headers.base)
+            .header("Content-Type", "application/json")
+            .basicAuth("${user}", "${password}")
+            .body(StringBody("""{"params":{}}"""))
+            .check(status.in(200, 412)) // 412 happens when blob has been already known ETAG
+        )
+      }
   }
 
   def deleteDocument() = {

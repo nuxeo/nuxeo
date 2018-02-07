@@ -39,6 +39,20 @@ object ScnCreateDocuments {
 
 }
 
+object ScnCreateAgainDocuments {
+
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
+    scenario("CreateAgainDocuments").exec(
+      during(duration, "counterName") {
+        feed(documents)
+          .feed(Feeders.users)
+          .exec(NuxeoRest.createAgainDocument())
+          .pause(pause)
+      }
+    ).feed(Feeders.admins)
+  }
+
+}
 
 class Sim20CreateDocuments extends Simulation {
 
