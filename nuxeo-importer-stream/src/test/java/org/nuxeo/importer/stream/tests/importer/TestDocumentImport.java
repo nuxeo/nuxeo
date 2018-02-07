@@ -284,6 +284,57 @@ public abstract class TestDocumentImport {
         }
     }
 
+    @Test
+    public void testRedisImportWithFile() throws Exception {
+
+        final int NB_QUEUE = 2;
+        final short NB_PRODUCERS = 2;
+        final long NB_DOCUMENTS = 100;
+        final long NB_BLOBS = 100;
+
+        try (LogManager manager = getManager()) {
+            manager.createIfNotExists("blob", NB_QUEUE);
+            // 1. generates blobs from files
+            ProducerPool<BlobMessage> blobProducers = new ProducerPool<>("blob", manager,
+                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"),
+                            NB_BLOBS),
+                    NB_PRODUCERS);
+            List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
+            assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
+
+            // 2. import blobs
+            manager.createIfNotExists("blob-info", 1);
+            BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
+            // null blob provider don't import blobs into binarystore
+            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(null, blobInfoWriter,
+                    "foobar");
+            ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory,
+                    ConsumerPolicy.BOUNDED);
+            List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
+            assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
+            // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
+
+            manager.createIfNotExists("document", NB_QUEUE);
+            // 3. generate documents using blob reference
+            ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
+                    "en_US", manager, "blob-info");
+            ProducerPool<DocumentMessage> docProducers = new ProducerPool<>("document", manager, randomDocFactory,
+                    NB_PRODUCERS);
+            List<ProducerStatus> docProducersStatus = docProducers.start().get();
+            assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
+
+            // 4. import documents without creating blobs
+            DocumentModel root = session.getRootDocument();
+            ConsumerFactory<DocumentMessage> docFactory = new RedisDocumentMessageConsumerFactory();
+            ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>("document", manager, docFactory,
+                    ConsumerPolicy.BOUNDED);
+            List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
+            assertEquals(NB_QUEUE, (long) docConsumersStatus.size());
+        }
+    }
+
+
     protected File getFileList(String filename) {
         return new File(this.getClass().getClassLoader().getResource(filename).getPath());
     }

@@ -260,14 +260,6 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         String name = prefix + getName(title);
         HashMap<String, Serializable> props = getRandomProperties(title);
         DocumentMessage.Builder builder = DocumentMessage.builder(type, parentPath, name).setProperties(props);
-        if (blobInfoFetcher != null) {
-            BlobInfo blobInfo = blobInfoFetcher.get(builder);
-            if (blobInfo != null) {
-                builder.setBlobInfo(blobInfoFetcher.get(builder));
-            }
-        } else {
-            builder.setBlob(getRandomBlob());
-        }
         return builder.build();
     }
 

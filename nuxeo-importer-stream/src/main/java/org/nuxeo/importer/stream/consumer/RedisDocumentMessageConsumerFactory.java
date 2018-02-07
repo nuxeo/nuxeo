@@ -28,6 +28,10 @@ import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
 public class RedisDocumentMessageConsumerFactory implements ConsumerFactory<DocumentMessage> {
     protected final String redisPrefix;
 
+    public RedisDocumentMessageConsumerFactory() {
+        this("imp");
+    }
+
     public RedisDocumentMessageConsumerFactory(String redisPrefix) {
         this.redisPrefix = redisPrefix;
     }

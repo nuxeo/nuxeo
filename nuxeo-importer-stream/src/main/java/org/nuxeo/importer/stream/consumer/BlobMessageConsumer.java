@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     protected static final AtomicInteger consumerCounter = new AtomicInteger(0);
 
-    protected final BlobProvider blobProvider;
+    protected BlobProvider blobProvider;
 
     protected final String blobProviderName;
 
@@ -51,10 +51,13 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     public BlobMessageConsumer(String consumerId, String blobProviderName, BlobInfoWriter blobInfoWriter) {
         super(consumerId);
         this.blobProviderName = blobProviderName;
-        this.blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderName);
-        if (blobProvider == null) {
-            throw new IllegalArgumentException("Invalid blob provider: " + blobProviderName);
+        if (blobProviderName != null) {
+            this.blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderName);
+            if (blobProvider == null) {
+                throw new IllegalArgumentException("Invalid blob provider: " + blobProviderName);
+            }
         }
+        // when there is no blob provider we don't upload the blobs
         this.blobInfoWriter = blobInfoWriter;
     }
 
@@ -68,7 +71,10 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
         try {
             MyBlob blob = getBlob(message);
             try {
-                String digest = blobProvider.writeBlob(blob.getBlob());
+                String digest = null;
+                if (blobProvider != null) {
+                    digest = blobProvider.writeBlob(blob.getBlob());
+                }
                 long length = blob.getBlob().getLength();
                 saveBlobInfo(message, digest, length);
             } finally {
@@ -95,7 +101,12 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
         bi.digest = digest;
         bi.key = blobProviderName + ":" + bi.digest;
         bi.length = length;
-        bi.filename = message.getFilename();
+        if (digest == null) {
+            // the blob is not uploaded use the blob info to pass the file path
+            bi.filename = message.getPath();
+        } else {
+            bi.filename = message.getFilename();
+        }
         bi.mimeType = message.getMimetype();
         bi.encoding = message.getEncoding();
         blobInfoWriter.save(null, bi);

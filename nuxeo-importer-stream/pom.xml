@@ -102,6 +102,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.github.mike10004</groupId>
       <artifactId>commons-imaging</artifactId>
       <version>1.0a1</version>

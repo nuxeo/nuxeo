@@ -37,6 +37,8 @@ public class FileBlobMessageProducerFactory implements ProducerFactory<BlobMessa
     /**
      * Produce messages to import files listed in the listFile. the basePath is added as a prefix to all file path in
      * the listFile
+     *
+     * if nbBlobs = 0 the entire listFile is imported
      */
     public FileBlobMessageProducerFactory(File listFile, String basePath, long nbBlobs) {
         this.listFile = listFile;
