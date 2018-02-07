@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -45,13 +44,10 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Filter to handle Transactions and Requests synchronization. This filter is useful when accessing web resources that
@@ -60,6 +56,8 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  * @author tiry
  */
 public class NuxeoRequestControllerFilter implements Filter {
+
+    private static final Log log = LogFactory.getLog(NuxeoRequestControllerFilter.class);
 
     protected static final String SESSION_LOCK_KEY = "NuxeoSessionLockKey";
 
@@ -71,28 +69,14 @@ public class NuxeoRequestControllerFilter implements Filter {
     public static final FastDateFormat HTTP_EXPIRES_DATE_FORMAT = FastDateFormat.getInstance(
             "EEE, dd MMM yyyy HH:mm:ss z", TimeZone.getTimeZone("GMT"), Locale.US);
 
-    protected static RequestControllerManager rcm;
-
-    private static final Log log = LogFactory.getLog(NuxeoRequestControllerFilter.class);
-
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        doInitIfNeeded();
+    public void init(FilterConfig filterConfig) {
+        // nothing to do
     }
 
-    private static void doInitIfNeeded() {
-        if (rcm == null) {
-            if (Framework.getRuntime() != null) {
-                rcm = Framework.getService(RequestControllerManager.class);
-
-                if (rcm == null) {
-                    log.error("Unable to get RequestControllerManager service");
-                }
-                log.debug("Staring NuxeoRequestController filter");
-            } else {
-                log.debug("Postpone filter init since Runtime is not yet available");
-            }
-        }
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 
     public static String doFormatLogMessage(HttpServletRequest request, String info) {
@@ -108,108 +92,40 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
         if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(httpRequest, "Entering NuxeoRequestController filter"));
+            log.debug(doFormatLogMessage(request, "Entering NuxeoRequestController filter"));
         }
 
-        ServletContext servletContext = httpRequest.getServletContext();
-        ServletHelper.setServletContext(servletContext);
-
-        doInitIfNeeded();
-
-        RequestFilterConfig config = rcm.getConfigForRequest(httpRequest);
-
+        RequestControllerManager rcm = Framework.getService(RequestControllerManager.class);
+        RequestFilterConfig config = rcm.getConfigForRequest(request);
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
-
-        // Add cache header if needed
-        if (httpRequest.getMethod().equals("GET")) {
-            boolean isCached = config.isCached();
-            if (isCached) {
-                addCacheHeader(httpResponse, config.isPrivate(), config.getCacheTime());
-            }
-        }
-
-        if (!useSync && !useTx) {
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(httpRequest, "Existing NuxeoRequestController filter: nothing to be done"));
-            }
-
-            try {
-                chain.doFilter(request, response);
-            } catch (ServletException e) {
-                if (DownloadHelper.isClientAbortError(e)) {
-                    DownloadHelper.logClientAbort(e);
-                } else {
-                    throw e;
-                }
-            }
-            return;
-        }
+        boolean useBuffer = config.needTransactionBuffered();
 
         if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(httpRequest, "Handling request with tx=" + useTx + " and sync=" + useSync));
+            log.debug(doFormatLogMessage(request,
+                    "Handling request with tx=" + useTx + " and sync=" + useSync + " and buffer=" + useBuffer));
         }
 
         boolean sessionSynched = false;
         if (useSync) {
-            sessionSynched = simpleSyncOnSession(httpRequest);
+            sessionSynched = simpleSyncOnSession(request);
         }
-        boolean txStarted = false;
         try {
-            if (useTx && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                txStarted = ServletHelper.startTransaction(httpRequest);
-                if (!txStarted) {
-                    throw new ServletException("Failed to start transaction");
-                }
-                if (config.needTransactionBuffered()) {
-                    response = new BufferingHttpServletResponse(httpResponse);
-                }
-            }
-            chain.doFilter(request, response);
-        } catch (RuntimeException | IOException | ServletException e) {
-            if (txStarted) {
-                if (log.isDebugEnabled()) {
-                    log.debug(doFormatLogMessage(httpRequest, "Marking transaction for RollBack"));
-                }
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-            if (DownloadHelper.isClientAbortError(e)) {
-                DownloadHelper.logClientAbort(e);
-            } else {
-                log.error(doFormatLogMessage(httpRequest, "Unhandled error was caught by the Filter"), e);
-                throw new ServletException(e);
-            }
+            addCacheHeader(request, response, config);
+            ServletHelper.doFilter(chain, request, response, useTx, useBuffer);
         } finally {
-            if (txStarted) {
-                try {
-                    TransactionHelper.commitOrRollbackTransaction();
-                } catch (TransactionRuntimeException e) {
-                    // commit failed, report this to the client before stopping buffering
-                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                            e.getMessage());
-                    log.error(e); // don't rethrow inside finally
-                } finally {
-                    if (config.needTransactionBuffered()) {
-                        ((BufferingHttpServletResponse) response).stopBuffering();
-                    }
-                }
-            }
             if (sessionSynched) {
-                simpleReleaseSyncOnSession(httpRequest);
+                simpleReleaseSyncOnSession(request);
             }
+        }
 
-            ServletHelper.removeServletContext();
-
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(httpRequest, "Exiting NuxeoRequestController filter"));
-            }
+        if (log.isDebugEnabled()) {
+            log.debug(doFormatLogMessage(request, "Exiting NuxeoRequestController filter"));
         }
     }
 
@@ -298,27 +214,29 @@ public class NuxeoRequestControllerFilter implements Filter {
         }
     }
 
+    protected void addCacheHeader(HttpServletRequest request, HttpServletResponse response,
+            RequestFilterConfig config) {
+        if (request.getMethod().equals("GET") && config.isCached()) {
+            addCacheHeader(response, config.isPrivate(), config.getCacheTime());
+        }
+    }
+
     /**
      * Set cache parameters to httpResponse.
      */
-    public static void addCacheHeader(HttpServletResponse httpResponse, Boolean isPrivate, String cacheTime) {
+    public static void addCacheHeader(HttpServletResponse response, boolean isPrivate, String cacheTime) {
         if (isPrivate) {
-            httpResponse.setHeader("Cache-Control", "private, max-age=" + cacheTime);
+            response.setHeader("Cache-Control", "private, max-age=" + cacheTime);
         } else {
-            httpResponse.setHeader("Cache-Control", "public, max-age=" + cacheTime);
+            response.setHeader("Cache-Control", "public, max-age=" + cacheTime);
         }
         // Generating expires using current date and adding cache time.
         // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
         Date date = new Date();
-        long newDate = date.getTime() + new Long(cacheTime) * 1000;
+        long newDate = date.getTime() + Long.parseLong(cacheTime) * 1000;
         date.setTime(newDate);
 
-        httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
-    }
-
-    @Override
-    public void destroy() {
-        rcm = null;
+        response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
 }

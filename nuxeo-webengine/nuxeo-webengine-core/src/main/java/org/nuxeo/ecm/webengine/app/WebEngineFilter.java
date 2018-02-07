@@ -32,14 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This filter must be declared after the nuxeo authentication filter since it needs an authentication info. The session
@@ -48,125 +42,84 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class WebEngineFilter implements Filter {
 
-    protected WebEngine engine;
-
-    protected boolean isAutoTxEnabled;
-
-    protected boolean isStatefull;
-
-    protected static Log log = LogFactory.getLog(WebEngineFilter.class);
-
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        engine = Framework.getService(WebEngine.class);
+    public void init(FilterConfig filterConfig) {
+        // nothing to do
     }
 
     @Override
     public void destroy() {
-        engine = null;
+        // nothing to do
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
             throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest)) {
-            chain.doFilter(request, response);
-            return;
-        }
-        new UnitOfWork((HttpServletRequest) request, (HttpServletResponse)response).doFilter(chain);
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        boolean useTx = !isStatic(request);
+
+        preRequest(request);
+        ServletHelper.doFilter(new WebContextFilterChain(chain), request, response, useTx, true);
+        postRequest(request, response);
     }
 
-    private static class UnitOfWork {
+    protected boolean isStatic(HttpServletRequest request) {
+        String pathInfo = StringUtils.defaultIfEmpty(request.getPathInfo(), "/");
+        return request.getServletPath().contains("/skin") || pathInfo.contains("/skin/");
+    }
 
-        private final boolean txStarted;
-
-        private final boolean isStatic;
-
-        private final String pathInfo;
-
-        private final DefaultContext context;
-
-        private UnitOfWork(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            pathInfo = StringUtils.isEmpty(req.getPathInfo()) ? "/" :  req.getPathInfo();
-            isStatic = req.getServletPath().contains("/skin") || pathInfo.contains("/skin/");
-            txStarted = !isStatic && !TransactionHelper.isTransactionActive()
-                    && ServletHelper.startTransaction(req);
-            context = new DefaultContext(req, txStarted ? new BufferingHttpServletResponse(resp) : resp);
-            req.setAttribute(WebContext.class.getName(), context);
-        }
-
-        private void doFilter(FilterChain chain) throws ServletException, IOException {
-            boolean completedAbruptly = true;
+    protected void preRequest(HttpServletRequest request) {
+        // need to set the encoding of characters manually
+        if (request.getCharacterEncoding() == null) {
             try {
-                preRequest();
-                chain.doFilter(context.getRequest(), context.getResponse());
-                postRequest();
-                completedAbruptly = false;
-            } catch (IOException | ServletException | RuntimeException error) {
-                context.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        error.getMessage());
-                throw error;
-            } finally {
-                cleanup(completedAbruptly);
+                request.setCharacterEncoding("UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // cannot happen
+                throw new RuntimeException(e);
             }
+        }
+    }
+
+    protected void postRequest(HttpServletRequest request, HttpServletResponse response) {
+        // check if the target resource don't want automatic headers to be inserted
+        if (request.getAttribute("org.nuxeo.webengine.DisableAutoHeaders") != null) {
+            // insert automatic headers
+            response.addHeader("Pragma", "no-cache");
+            response.addHeader("Cache-Control", "no-cache");
+            response.addHeader("Cache-Control", "no-store");
+            response.addHeader("Cache-Control", "must-revalidate");
+            response.addHeader("Expires", "0");
+            response.setDateHeader("Expires", 0); // prevents caching
+        }
+    }
+
+    /**
+     * Wraps a filter chain to provide the WebEngine {@link WebContext} in the request attributes.
+     * <p>
+     * The filter we're executing ({@link ServletHelper#doFilter}) may wrap the response, and it's this wrapped version
+     * that must be available in the {@link WebContext}.
+     *
+     * @since 10.3
+     */
+    protected static class WebContextFilterChain implements FilterChain {
+
+        protected final FilterChain chain;
+
+        public WebContextFilterChain(FilterChain chain) {
+            this.chain = chain;
         }
 
         @Override
-        public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append("WebEngine Filter:");
-            sb.append("\nPath Info:");
-            sb.append(pathInfo);
-            sb.append("\nStatic:");
-            sb.append(isStatic);
-            return sb.toString();
-        }
-
-        void cleanup(boolean completedAbruptly) throws IOException {
-            context.getRequest().removeAttribute(WebContext.class.getName());
-
-            if (!txStarted) {
-                return;
-            }
-
-            if (completedAbruptly) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
+        public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+            request.setAttribute(WebContext.class.getName(),
+                    new DefaultContext((HttpServletRequest) request, (HttpServletResponse) response));
             try {
-                TransactionHelper.commitOrRollbackTransaction();
-            } catch (RuntimeException cause) {
-                context.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, cause.getMessage());
+                chain.doFilter(request, response);
             } finally {
-                ((BufferingHttpServletResponse) context.getResponse()).stopBuffering();
-            }
-        }
-
-        void preRequest() {
-            // need to set the encoding of characters manually
-            HttpServletRequest request = context.getRequest();
-            if (request.getCharacterEncoding() == null) {
-                try {
-                    request.setCharacterEncoding("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        void postRequest() {
-            HttpServletRequest request = context.getRequest();
-            HttpServletResponse response = context.getResponse();
-            // check if the target resource don't want automatic headers to be
-            // inserted
-            if (null != request.getAttribute("org.nuxeo.webengine.DisableAutoHeaders")) {
-                // insert automatic headers
-                response.addHeader("Pragma", "no-cache");
-                response.addHeader("Cache-Control", "no-cache");
-                response.addHeader("Cache-Control", "no-store");
-                response.addHeader("Cache-Control", "must-revalidate");
-                response.addHeader("Expires", "0");
-                response.setDateHeader("Expires", 0); // prevents caching
+                request.removeAttribute(WebContext.class.getName());
             }
         }
     }
+
 }
