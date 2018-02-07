@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.status;
 import java.util.List;
 
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -36,14 +37,19 @@ public class ElasticSearchStatusProbe implements Probe {
     @Override
     public ProbeStatus run() {
         String[] indices = getIndexNames();
-        ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class).getClient().getHealthStatus(
-                indices);
-        switch (clusterStatus) {
-        case GREEN:
-        case YELLOW:
-            return ProbeStatus.newSuccess(clusterStatus.toString());
-        default:
-            return ProbeStatus.newFailure(clusterStatus.toString());
+        try {
+            ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class)
+                                                         .getClient()
+                                                         .getHealthStatus(indices);
+            switch (clusterStatus) {
+            case GREEN:
+            case YELLOW:
+                return ProbeStatus.newSuccess(clusterStatus.toString());
+            default:
+                return ProbeStatus.newFailure(clusterStatus.toString());
+            }
+        } catch (NuxeoException e) {
+            return ProbeStatus.newError(e);
         }
     }
 
