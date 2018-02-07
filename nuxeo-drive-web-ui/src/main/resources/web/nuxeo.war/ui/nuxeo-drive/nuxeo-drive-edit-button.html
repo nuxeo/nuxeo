@@ -93,7 +93,7 @@ Contributors:
         return [
           'nxdrive://edit',
           baseUrl.replace('://', '/'), // XXX replaceFirst
-          //'user', this.user.id, // NXP-22302: keep compatibility with both drive versions
+          'user', this.user.id,
           'repo', this.document.repository,
           'nxdocid', this.document.uid,
           'filename', encodeURIComponent(this.blob.name),
