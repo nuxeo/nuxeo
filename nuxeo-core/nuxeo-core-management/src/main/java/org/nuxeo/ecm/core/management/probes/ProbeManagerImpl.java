@@ -209,7 +209,8 @@ public class ProbeManagerImpl implements ProbeManager {
                 probeInfoImpl.failureCount += 1;
                 probeInfoImpl.lastFailureDate = new Date();
                 probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);
-                // then swallow exception
+                // then swallow exception but wrap error to update status
+                probeInfoImpl.lastStatus = ProbeStatus.newError(e);
             } finally {
                 probeInfoImpl.lastDuration = doGetDuration(probeInfoImpl.lastRunnedDate, new Date());
                 currentThread.setContextClassLoader(lastLoader);
