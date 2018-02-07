@@ -23,11 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,6 +61,20 @@ public class TestProbes {
 
     @Inject
     ProbeManager pm;
+
+    @Inject
+    FakeService fs;
+
+    protected static final int TEST_INTERVAL_SECONDS = -1;
+
+    @Before
+    public void removeCacheOnProbes() {
+        // remove effects linked to cache for these tests
+        Framework.getProperties().setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
+                String.valueOf(TEST_INTERVAL_SECONDS));
+        // reset fake service status
+        fs.setSuccess();
+    }
 
     @After
     public void cleanupProbes() {
@@ -96,14 +112,64 @@ public class TestProbes {
 
     @Test
     public void testHealthCheck() throws IOException {
-
         Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
-        assertEquals(2, healthCheckProbes.size());
-
+        assertEquals(3, healthCheckProbes.size());
         HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\"}", result.toJson());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
+                result.toJson());
+    }
 
+    /**
+     * Non-regression test for NXP-24360
+     *
+     * @since 10.1
+     */
+    @Test
+    public void testChangingHealthCheck() throws IOException, InterruptedException {
+        // make sure test probe status should be ok
+        assertTrue(fs.getStatus().isSuccess());
+        HealthCheckResult result = pm.getOrRunHealthChecks();
+        assertTrue(result.isHealthy());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
+                result.toJson());
+
+        // make test probe return a failure status instead
+        fs.setFailure();
+        assertTrue(fs.getStatus().isFailure());
+        result = pm.getOrRunHealthChecks();
+        assertFalse(result.isHealthy());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\"}",
+                result.toJson());
+
+        // make test probe status back to ok
+        fs.setSuccess();
+        assertTrue(fs.getStatus().isSuccess());
+        result = pm.getOrRunHealthChecks();
+        assertTrue(result.isHealthy());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
+                result.toJson());
+
+        // make test probe throw an exception instead
+        fs.setThrowException();
+        try {
+            fs.getStatus().isFailure();
+            fail("should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        result = pm.getOrRunHealthChecks();
+        assertFalse(result.isHealthy());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\"}",
+                result.toJson());
+
+        // make test probe status back to ok
+        fs.setSuccess();
+        assertTrue(fs.getStatus().isSuccess());
+        result = pm.getOrRunHealthChecks();
+        assertTrue(result.isHealthy());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
+                result.toJson());
     }
 
     @Test
@@ -115,6 +181,55 @@ public class TestProbes {
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"runtimeStatus\":\"ok\"}", result.toJson());
+    }
+
+    /**
+     * Non-regression test for NXP-24360
+     *
+     * @since 10.1
+     */
+    @Test
+    public void testChangingSingleProbeStatus() throws IOException, InterruptedException {
+        // make sure test probe status should be ok
+        assertTrue(fs.getStatus().isSuccess());
+
+        HealthCheckResult result = pm.getOrRunHealthCheck("testProbeStatus");
+        ProbeInfo probeInfo = pm.getProbeInfo("testProbeStatus");
+        assertTrue(result.isHealthy());
+        assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"testProbeStatus\":\"ok\"}", result.toJson());
+
+        // make test probe throw an exception instead
+        fs.setThrowException();
+        try {
+            fs.getStatus().isFailure();
+            fail("should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        result = pm.getOrRunHealthCheck("testProbeStatus");
+        probeInfo = pm.getProbeInfo("testProbeStatus");
+        assertFalse(result.isHealthy());
+        assertFalse(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"testProbeStatus\":\"failed\"}", result.toJson());
+
+        // make test probe return a failure status instead
+        fs.setFailure();
+        assertTrue(fs.getStatus().isFailure());
+        result = pm.getOrRunHealthCheck("testProbeStatus");
+        probeInfo = pm.getProbeInfo("testProbeStatus");
+        assertFalse(result.isHealthy());
+        assertFalse(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"testProbeStatus\":\"failed\"}", result.toJson());
+
+        // make test probe status back to ok
+        fs.setSuccess();
+        assertTrue(fs.getStatus().isSuccess());
+        result = pm.getOrRunHealthCheck("testProbeStatus");
+        probeInfo = pm.getProbeInfo("testProbeStatus");
+        assertTrue(result.isHealthy());
+        assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"testProbeStatus\":\"ok\"}", result.toJson());
     }
 
     @Test
