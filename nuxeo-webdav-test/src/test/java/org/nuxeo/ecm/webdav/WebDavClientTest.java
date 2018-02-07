@@ -330,7 +330,7 @@ public class WebDavClientTest extends AbstractServerTest {
         // check using Nuxeo Core APIs
         session.save(); // process invalidations
         PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
-        assertFalse(session.exists(pathRef)); // in trash with different name
+        assertFalse(session.exists(pathRef)); // in the trash with different name
 
         // recreate it, for other tests using the same repo
         byte[] bytes = "Hello, world!".getBytes("UTF-8");

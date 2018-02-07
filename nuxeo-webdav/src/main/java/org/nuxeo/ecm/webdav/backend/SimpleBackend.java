@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -454,7 +453,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             if (child.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {
                 continue;
             }
-            if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
+            if (child.isTrashed()) {
                 continue;
             }
             if (!child.hasSchema("dublincore")) {
@@ -537,13 +536,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     }
 
     protected boolean isTrashDocument(DocumentModel model) {
-        if (model == null) {
-            return true;
-        } else if (LifeCycleConstants.DELETED_STATE.equals(model.getCurrentLifeCycleState())) {
-            return true;
-        } else {
-            return false;
-        }
+        return model == null || model.isTrashed();
     }
 
     protected TrashService getTrashService() {
@@ -557,7 +550,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         Path checkedPath = new Path(parent.getPathAsString()).append(name);
         if (getSession().exists(new PathRef(checkedPath.toString()))) {
             DocumentModel model = getSession().getDocument(new PathRef(checkedPath.toString()));
-            if (model != null && LifeCycleConstants.DELETED_STATE.equals(model.getCurrentLifeCycleState())) {
+            if (model != null && model.isTrashed()) {
                 name = name + "." + System.currentTimeMillis();
                 getSession().move(model.getRef(), parent.getRef(), name);
                 return true;
