@@ -19,10 +19,11 @@
  */
 package org.nuxeo.drive.seam;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,8 +175,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             }
             // We do the URL decoding for backward compatibility reasons, but in the future token parameters should be
             // stored in their natural format (i.e. not needing re-decoding).
-            if (NUXEO_DRIVE_APPLICATION_NAME.equals(
-                    URLDecoder.decode(applicationName, StandardCharsets.UTF_8.toString()))) {
+            if (NUXEO_DRIVE_APPLICATION_NAME.equals(URLDecoder.decode(applicationName, UTF_8.toString()))) {
                 return true;
             }
         }
