@@ -57,8 +57,7 @@ public class TestProbesCount {
     @AfterClass
     public static void cleanupProbes() {
         // set healthCheck interval back to default value after test
-        Framework.getProperties().setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
-                ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS);
+        Framework.getProperties().remove(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY);
     }
 
     @Test
