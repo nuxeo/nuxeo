@@ -105,8 +105,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     @Deprecated
     public static final String SERVER_VERSION_PROP_KEY = Environment.PRODUCT_VERSION;
 
-    public static final String NEW_DRIVE_EDIT_URL_PROP_KEY = "org.nuxeo.drive.new.edit.url";
-
     public static final String DESKTOP_PACKAGE_URL_LATEST_SEGMENT = "latest";
 
     public static final String DESKTOP_PACKAGE_PREFIX = "nuxeo-drive.";
@@ -231,11 +229,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append(NXDRIVE_PROTOCOL).append("://");
         sb.append(PROTOCOL_COMMAND_EDIT).append("/");
         sb.append(baseURL.replaceFirst("://", "/"));
-        if (Boolean.parseBoolean(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
-            sb.append("user/");
-            sb.append(documentManager.getPrincipal().getName());
-            sb.append("/");
-        }
+        sb.append("user/");
+        sb.append(documentManager.getPrincipal().getName());
+        sb.append("/");
         sb.append("repo/");
         sb.append(documentManager.getRepositoryName());
         sb.append("/nxdocid/");
@@ -243,12 +239,10 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        if (Boolean.parseBoolean(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
-            sb.append("/downloadUrl/");
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            String downloadUrl = downloadService.getDownloadUrl(currentDocument, DownloadService.BLOBHOLDER_0, "");
-            sb.append(downloadUrl);
-        }
+        sb.append("/downloadUrl/");
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        String downloadUrl = downloadService.getDownloadUrl(currentDocument, DownloadService.BLOBHOLDER_0, "");
+        sb.append(downloadUrl);
         return sb.toString();
     }
 
