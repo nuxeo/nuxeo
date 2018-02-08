@@ -739,6 +739,9 @@ public abstract class NuxeoLauncher {
         startCommand.add(getClassPath());
         startCommand.addAll(getNuxeoProperties());
         startCommand.addAll(getServerProperties());
+        if (strict) {
+            startCommand.add("-Dnuxeo.start.strict=true");
+        }
         setServerStartCommand(startCommand);
         for (String param : params) {
             startCommand.add(param);

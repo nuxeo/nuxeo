@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -482,6 +482,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             log.info(msg);
         } else {
             log.error(msg);
+            if (Boolean.getBoolean("nuxeo.start.strict")) {
+                throw new IllegalStateException("Startup aborted due to previous failures (strict mode)");
+            }
         }
     }
 
