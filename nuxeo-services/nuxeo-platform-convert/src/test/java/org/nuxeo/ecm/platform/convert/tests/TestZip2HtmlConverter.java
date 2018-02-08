@@ -59,31 +59,13 @@ public class TestZip2HtmlConverter extends BaseConverterTest {
         assertEquals(3, blobs.size());
 
         String content = blobs.get(0).getString();
-        String zipList = "<html>" +
-                "<body>" +
-                "<h1>hello.zip</h1>" +
-                "<ul>" +
-                "<li><a href=\"hello.xml\">hello.xml</a></li>" +
-                "<li><a href=\"hello.txt\">hello.txt</a></li>" +
-                "</ul>" +
-                "</body>" +
-                "</html>";
-        String zipListAlternative = "<html>" +
-                "<body>" +
-                "<h1>hello.zip</h1>" +
-                "<ul>" +
-                "<li><a href=\"hello.xml\">hello.xml</a></li>" +
-                "<li><a href=\"hello.txt\">hello.txt</a></li>" +
-                "</ul>" +
-                "</body>" +
-                "</html>";
-
-        assertTrue(zipList.equals(content) || zipListAlternative.equals(content));
+        assertTrue(content, content.contains("<li><a href=\"hello.xml\">hello.xml</a></li>"));
+        assertTrue(content, content.contains("<li><a href=\"hello.txt\">hello.txt</a></li>"));
 
         content = DocumentUTUtils.readContent(blobs.get(1).getFile());
-        assertTrue(content.contains("Hello from a xml <b>document</b>"));
+        assertTrue(content, content.contains("Hello from a xml <b>document</b>"));
 
         content = DocumentUTUtils.readContent(blobs.get(2).getFile());
-        assertTrue(content.contains("Hello from a text document"));
+        assertTrue(content, content.contains("Hello from a text document"));
     }
 }
