@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,6 +233,9 @@ public class OSGiAdapter {
                 log.debug("End execution of " + listener.getClass() + " listener");
             } catch (RuntimeException e) {
                 log.error("Error during Framework Listener execution : " + listener.getClass(), e);
+                if (Boolean.getBoolean("nuxeo.start.strict")) {
+                    throw e;
+                }
             }
         }
     }
