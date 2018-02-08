@@ -13,6 +13,13 @@
     </doctype>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="types">
+    <types>
+      <type name="TestRegistration">registrationRequest</type>
+    </types>
+  </extension>
+
   <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
              point="configuration">
 
