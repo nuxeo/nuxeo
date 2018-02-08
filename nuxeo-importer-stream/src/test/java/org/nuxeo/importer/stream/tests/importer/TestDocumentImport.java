@@ -307,7 +307,7 @@ public abstract class TestDocumentImport {
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
             // null blob provider don't import blobs into binarystore
             ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(null, blobInfoWriter,
-                    "foobar");
+                    "foobar", "/tmp/foo");
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory,
                     ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();

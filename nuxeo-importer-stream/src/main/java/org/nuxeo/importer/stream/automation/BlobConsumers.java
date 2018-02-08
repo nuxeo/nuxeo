@@ -93,6 +93,8 @@ public class BlobConsumers {
     @Param(name = "watermark", required = false)
     protected String watermark;
 
+    @Param(name = "persistBlobPath", required = false)
+    protected String persistBlobPath;
 
     @OperationMethod
     public void run() {
@@ -116,7 +118,8 @@ public class BlobConsumers {
         LogManager manager = service.getLogManager(getLogConfig());
         try (BlobInfoWriter blobInfoWriter = getBlobInfoWriter(manager)) {
             ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(getLogName(), manager,
-                    new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark), consumerPolicy);
+                    new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark, persistBlobPath),
+                    consumerPolicy);
             consumers.start().get();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

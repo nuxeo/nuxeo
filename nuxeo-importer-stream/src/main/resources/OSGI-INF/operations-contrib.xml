@@ -7,6 +7,7 @@
     <operation class="org.nuxeo.importer.stream.automation.BlobConsumers" />
     <operation class="org.nuxeo.importer.stream.automation.RandomDocumentProducers" />
     <operation class="org.nuxeo.importer.stream.automation.DocumentConsumers" />
+    <operation class="org.nuxeo.importer.stream.automation.RedisDocumentConsumers" />
   </extension>
 
 </component>

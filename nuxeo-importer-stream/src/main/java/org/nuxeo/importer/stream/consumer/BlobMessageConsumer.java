@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -51,7 +52,7 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
     public BlobMessageConsumer(String consumerId, String blobProviderName, BlobInfoWriter blobInfoWriter) {
         super(consumerId);
         this.blobProviderName = blobProviderName;
-        if (blobProviderName != null) {
+        if (!StringUtils.isBlank(blobProviderName)) {
             this.blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderName);
             if (blobProvider == null) {
                 throw new IllegalArgumentException("Invalid blob provider: " + blobProviderName);
@@ -76,7 +77,7 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
                     digest = blobProvider.writeBlob(blob.getBlob());
                 }
                 long length = blob.getBlob().getLength();
-                saveBlobInfo(message, digest, length);
+                saveBlobInfo(message, digest, length, blob.getBlob().getFile());
             } finally {
                 blob.clean();
             }
@@ -96,14 +97,14 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
         return new MyBlob(blob);
     }
 
-    protected void saveBlobInfo(BlobMessage message, String digest, long length) {
+    protected void saveBlobInfo(BlobMessage message, String digest, long length, File blobFile) {
         BlobInfo bi = new BlobInfo();
         bi.digest = digest;
         bi.key = blobProviderName + ":" + bi.digest;
         bi.length = length;
         if (digest == null) {
             // the blob is not uploaded use the blob info to pass the file path
-            bi.filename = message.getPath();
+            bi.filename = blobFile.getAbsolutePath();
         } else {
             bi.filename = message.getFilename();
         }
