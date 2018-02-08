@@ -76,6 +76,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -138,6 +139,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String SERVERSIDE_ENCRYPTION_PROPERTY = "crypt.serverside";
 
+    public static final String SERVERSIDE_ENCRYPTION_KMS_KEY_PROPERTY = "crypt.kms.key";
+
     public static final String PRIVKEY_ALIAS_PROPERTY = "crypt.key.alias";
 
     public static final String PRIVKEY_PASS_PROPERTY = "crypt.key.password";
@@ -164,7 +167,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     protected CryptoConfiguration cryptoConfiguration;
 
-    protected boolean userServerSideEncryption;
+    protected boolean useServerSideEncryption;
+
+    protected String serverSideKMSKeyID;
 
     protected AmazonS3 amazonS3;
 
@@ -224,7 +229,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String endpoint = getProperty(ENDPOINT_PROPERTY);
         String sseprop = getProperty(SERVERSIDE_ENCRYPTION_PROPERTY);
         if (isNotBlank(sseprop)) {
-            userServerSideEncryption = Boolean.parseBoolean(sseprop);
+            useServerSideEncryption = Boolean.parseBoolean(sseprop);
+            serverSideKMSKeyID = getProperty(SERVERSIDE_ENCRYPTION_KMS_KEY_PROPERTY);
         }
 
         // Fallback on default env keys for ID and secret
@@ -445,9 +451,15 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 PutObjectRequest request;
                 if (!isEncrypted) {
                     request = new PutObjectRequest(bucketName, key, file);
-                    if (userServerSideEncryption) {
+                    if (useServerSideEncryption) {
                         ObjectMetadata objectMetadata = new ObjectMetadata();
-                        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                        if (isNotBlank(serverSideKMSKeyID)) {
+                            SSEAwsKeyManagementParams keyManagementParams = 
+                                new SSEAwsKeyManagementParams(serverSideKMSKeyID);
+                            request = request.withSSEAwsKeyManagementParams(keyManagementParams);
+                        } else {
+                            objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                        }
                         request.setMetadata(objectMetadata);
                     }
                 } else {
