@@ -62,10 +62,6 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
         return registry;
     }
 
-    private Writer<?> writer = null;
-
-    private Reader<?> reader = null;
-
     @Context
     private HttpServletRequest request;
 
@@ -86,7 +82,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
-            writer = getRegistry().getWriter(ctx, type, genericType, mediaType);
+            Writer<?> writer = getRegistry().getWriter(ctx, type, genericType, mediaType);
             return writer != null;
         }
         return false;
@@ -96,7 +92,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
-            reader = getRegistry().getReader(ctx, type, genericType, mediaType);
+            Reader<?> reader = getRegistry().getReader(ctx, type, genericType, mediaType);
             if (reader != null) {
                 // backward compatibility for json document model marshalling
                 DocumentModelJsonReaderLegacy.pushInstanceIfNeeded(ctx, request, headers.getRequestHeaders());
@@ -117,19 +113,21 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public final void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
+        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
+        Writer<?> writer = getRegistry().getWriter(ctx, type, genericType, mediaType);
         if (writer != null) {
             ((Writer<Object>) writer).write(t, type, genericType, mediaType, entityStream);
         }
-        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
         response.setHeader(CONTENT_TYPE,
                 mediaType + NUXEO_ENTITY + ctx.getParameter(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
+        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
+        Reader<?> reader = getRegistry().getReader(ctx, type, genericType, mediaType);
         if (reader != null) {
             return reader.read(type, genericType, mediaType, entityStream);
         }
