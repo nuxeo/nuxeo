@@ -7,5 +7,4 @@ Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/user-registration-adapter-contrib.xml,
  OSGI-INF/user-registration-core-types-contrib.xml,
  OSGI-INF/user-registration-service-framework.xml,
- OSGI-INF/user-registration-lifecycle-contrib.xml,
- OSGI-INF/user-registration-listener-contrib.xml
+ OSGI-INF/user-registration-lifecycle-contrib.xml

@@ -373,9 +373,21 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 }
             }
 
+            NuxeoPrincipal principal = null;
             if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
                 if (registrationDoc.getCurrentLifeCycleState().equals("approved")) {
-                    registrationDoc.followTransition("accept");
+                    try {
+                        UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
+                        UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registrationDoc);
+                        RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
+                        if (rules.allowUserCreation()) {
+                            principal = userRegistrationService.createUser(session, registrationDoc);
+                        }
+                        registrationDoc.followTransition("accept");
+                    } catch (NuxeoException e) {
+                        e.addInfo("Unable to complete registration");
+                        throw e;
+                    }
                 } else {
                     if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                         throw new AlreadyProcessedRegistrationException(
@@ -388,11 +400,10 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
             session.saveDocument(registrationDoc);
             session.save();
-            EventContext evContext = sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
-
-            ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
+            sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
+            registrationDoc.detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
-            registrationData.put(REGISTRATION_DATA_USER, evContext.getProperty("registeredUser"));
+            registrationData.put(REGISTRATION_DATA_USER, principal);
         }
 
     }

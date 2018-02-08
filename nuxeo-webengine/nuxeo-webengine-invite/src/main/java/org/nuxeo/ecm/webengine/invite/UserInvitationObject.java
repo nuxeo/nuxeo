@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
@@ -101,6 +102,9 @@ public class UserInvitationObject extends ModuleRoot {
             log.warn("Unable to validate registration request", ue);
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
                     ctx.getMessage("label.errror.requestNotAccepted"));
+        } catch (InvalidPasswordException ive) {
+            return getView("ValidationErrorTemplate").arg("exceptionMsg",
+                ctx.getMessage("label.registerForm.validation.invalidpassword"));
         }
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
