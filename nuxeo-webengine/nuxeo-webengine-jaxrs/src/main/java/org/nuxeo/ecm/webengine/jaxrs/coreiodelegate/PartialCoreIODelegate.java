@@ -53,10 +53,6 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
 
     public static final String NUXEO_ENTITY = "; nuxeo-entity=";
 
-    private Writer<?> writer = null;
-
-    private Reader<?> reader = null;
-
     @Context
     private HttpServletRequest request;
 
@@ -78,7 +74,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
             MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
-            writer = registry.getWriter(ctx, type, genericType, mediaType);
+            Writer<?> writer = registry.getWriter(ctx, type, genericType, mediaType);
             return writer != null;
         }
         return false;
@@ -89,7 +85,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
         if (accept(type, genericType, annotations, mediaType)) {
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
             MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
-            reader = registry.getReader(ctx, type, genericType, mediaType);
+            Reader<?> reader = registry.getReader(ctx, type, genericType, mediaType);
             if (reader != null) {
                 // backward compatibility for json document model marshalling
                 DocumentModelJsonReaderLegacy.pushInstanceIfNeeded(ctx, request, headers.getRequestHeaders());
@@ -110,19 +106,23 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
     public final void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
+        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
+        MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
+        Writer<?> writer = registry.getWriter(ctx, type, genericType, mediaType);
         if (writer != null) {
             ((Writer<Object>) writer).write(t, type, genericType, mediaType, entityStream);
         }
-        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
         response.setHeader(CONTENT_TYPE,
                 mediaType + NUXEO_ENTITY + ctx.getParameter(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
+        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
+        MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
+        Reader<?> reader = registry.getReader(ctx, type, genericType, mediaType);
         if (reader != null) {
             return reader.read(type, genericType, mediaType, entityStream);
         }
