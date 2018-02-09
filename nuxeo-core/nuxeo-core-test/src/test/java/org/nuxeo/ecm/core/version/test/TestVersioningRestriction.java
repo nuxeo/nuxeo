@@ -35,9 +35,9 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Restriction contributions always restrict to MAJOR option.
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-document-type.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-document-type.xml")
 public class TestVersioningRestriction {
 
     @Inject
@@ -62,7 +62,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-all-life-cycles.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-all-life-cycles.xml")
     public void testRestrictionAllTypesAllLifeCycles() {
         testRestriction("File", false);
         testRestriction("File", true);
@@ -71,7 +71,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-project-life-cycle.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-project-life-cycle.xml")
     public void testRestrictionAllTypesProjectLifeCycles() {
         testRestriction("File", false);
         testNoRestriction("File", true);
@@ -80,7 +80,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-all-life-cycles.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-all-life-cycles.xml")
     public void testRestrictionFileTypeAllLifeCycles() {
         testRestriction("File", false);
         testRestriction("File", true);
@@ -89,7 +89,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-project-life-cycle.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-project-life-cycle.xml")
     public void testRestrictionFileTypeProjectLifeCycle() {
         testRestriction("File", false);
         testNoRestriction("File", true);
@@ -98,7 +98,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-obsolete-life-cycle-all-types-project-life-cycle.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-obsolete-life-cycle-all-types-project-life-cycle.xml")
     public void testRestrictionFileTypeObsoleteLifeCycleAndAllTypesProjectLifeCycle() {
         testRestriction("File", false);
         testNoRestriction("File", true);
@@ -107,7 +107,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-obsolete-life-cycle-all-types-all-life-cycles.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-file-type-obsolete-life-cycle-all-types-all-life-cycles.xml")
     public void testRestrictionFileTypeObsoleteLifeCycleAndAllTypesAllLifeCycles() {
         // even if restriction apply on File, as we don't have matching rule for 'project' or 'approved' lifeCycle,
         // everything is rejected
@@ -118,7 +118,7 @@ public class TestVersioningRestriction {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-all-life-cycles-file-reinit.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-all-types-all-life-cycles-file-reinit.xml")
     public void testRestrictionAllTypesAllLifeCyclesAndFileReinit() {
         // here everything is restricted, unless File which re-init the rule
         testNoRestriction("File", false);

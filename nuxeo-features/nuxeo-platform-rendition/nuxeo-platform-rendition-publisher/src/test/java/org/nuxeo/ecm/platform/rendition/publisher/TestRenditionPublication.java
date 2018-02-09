@@ -19,11 +19,10 @@
 package org.nuxeo.ecm.platform.rendition.publisher;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory.RENDITION_NAME_PARAMETER_KEY;
@@ -54,7 +53,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -70,7 +68,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.actions" })
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 
     @Inject

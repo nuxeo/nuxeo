@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 public class PropertiesValueTrimmingCustomContributionTest extends PropertiesTestAbstract {
 
-    @LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/test-properties-contrib.xml")
+    @Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/test-properties-contrib.xml")
     @Test
     public void loadProperties_value_trimmed_true() throws IOException {
         Boolean isTrimmed = Properties.isPropertyValueTrimmed();

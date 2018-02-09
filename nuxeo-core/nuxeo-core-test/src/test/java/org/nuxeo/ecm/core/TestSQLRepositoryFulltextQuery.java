@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -72,7 +71,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -82,7 +80,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml" })
@@ -954,7 +952,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testFulltextReindexOnCreateDelete() throws Exception {
         waitForFulltextIndexing();
 

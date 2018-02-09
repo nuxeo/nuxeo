@@ -20,17 +20,16 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
-import org.junit.Test;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
  * @since 5.2

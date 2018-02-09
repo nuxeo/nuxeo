@@ -38,14 +38,13 @@ import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.relations", //
         "org.nuxeo.ecm.relations.jena", //
 })
-@LocalDeploy("org.nuxeo.ecm.relations.jena.tests:jena-or-core-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.relations.jena.tests:jena-or-core-test-contrib.xml")
 public class TestJenaOrCoreGraphFactory {
 
     public static final String DC_TERMS_NS = "http://purl.org/dc/terms/";

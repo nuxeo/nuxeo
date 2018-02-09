@@ -23,6 +23,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
 import java.util.Calendar;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -34,7 +35,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.7
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/my-automation-doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/my-automation-doc-type-contrib.xml")
 public class AddEntryToMultiValuedPropertyTest {
 
     @Inject

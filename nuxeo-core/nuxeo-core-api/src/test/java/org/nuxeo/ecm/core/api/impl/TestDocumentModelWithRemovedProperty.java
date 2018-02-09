@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
-@LocalDeploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-removed-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-removed-types-contrib.xml")
 @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerName = TestDocumentModelWithRemovedProperty.LOGGER_NAME)
 public class TestDocumentModelWithRemovedProperty {
 

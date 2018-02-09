@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManagerTestCase;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * These Test Cases test the usermanager when a Directory Local Configuration is set.
@@ -55,7 +54,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author Benjamin JALON
  */
 @Deploy("org.nuxeo.ecm.directory.multi")
-@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
 public class TestUserManagerWithContext extends UserManagerTestCase {
 
     protected Mockery mockery = new JUnit4Mockery();

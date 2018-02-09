@@ -34,11 +34,10 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @Features(DirectoryFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.usermanager" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml" })
 public class NuxeoPrincipalListJsonWriterTest extends
         AbstractJsonWriterTest.External<NuxeoPrincipalListJsonWriter, List<NuxeoPrincipal>> {
 

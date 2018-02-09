@@ -30,17 +30,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author arussel
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-properties.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-properties.xml" })
 public class TestFunctions {
 
     @Inject

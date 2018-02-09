@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 8.3
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/reset-schema-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/reset-schema-test-contrib.xml")
 public class ResetSchemaTest {
 
     @Inject

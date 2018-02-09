@@ -53,7 +53,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.runtime.metrics",
@@ -64,7 +63,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml",
+@Deploy({ "org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
@@ -161,7 +160,7 @@ public class TestAuditMigration {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-override-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-override-contrib.xml")
     public void shouldMigrateWithPreviousMapping() throws Exception {
         shouldMigrate();
     }

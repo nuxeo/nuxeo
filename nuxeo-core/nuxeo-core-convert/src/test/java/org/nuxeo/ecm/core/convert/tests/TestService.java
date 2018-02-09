@@ -50,7 +50,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(ConvertFeature.class)
@@ -69,7 +68,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testServiceContrib() throws Exception {
         assertNotNull(cs);
 
@@ -86,7 +85,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testConverterLookup() throws Exception {
 
         String converterName = cs.getConverterName("text/plain", "test/me");
@@ -140,7 +139,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml",
+    @Deploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml",
             "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml",
             "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml" })
     public void testAvailability() throws Exception {
@@ -218,7 +217,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml",
+    @Deploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml",
             "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml",
             "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib5.xml" })
     public void testChainConverterAvailability() throws Exception {
@@ -235,7 +234,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-test.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-test.xml")
     public void testServiceConfig() throws Exception {
         assertNotNull(cs);
 
@@ -253,7 +252,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testSupportedSourceMimeType() throws Exception {
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/plain"));
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/xml"));
@@ -261,7 +260,7 @@ public class TestService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-pdf-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-pdf-contrib.xml")
     public void testUpdateMimeTypeAndFileName() {
         Map<String, Serializable> parameters = new HashMap<>();
         Blob blob = Blobs.createBlob("dummy text", "text/plain");

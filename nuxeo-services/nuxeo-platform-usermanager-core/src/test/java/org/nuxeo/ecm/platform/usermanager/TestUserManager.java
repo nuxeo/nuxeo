@@ -63,7 +63,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
@@ -71,7 +70,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  * @author Florent Guillaume
  * @author Anahide Tchertchian
  */
-@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserManager extends UserManagerTestCase {
 
     @Inject

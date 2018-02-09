@@ -27,12 +27,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @author Thierry Martins
  */
-@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserAdapter extends UserManagerTestCase {
 
     @Test

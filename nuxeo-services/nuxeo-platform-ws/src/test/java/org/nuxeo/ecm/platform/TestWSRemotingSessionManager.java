@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -113,7 +112,7 @@ public class TestWSRemotingSessionManager {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.tests:login-config.xml")
+    @Deploy("org.nuxeo.ecm.platform.tests:login-config.xml")
     public void testSnapshotProperties() {
         DocumentModel doc = session.createDocumentModel("/", "youps", "File");
         doc.setProperty("dublincore", "title", "huum");

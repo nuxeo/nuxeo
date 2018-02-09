@@ -27,8 +27,8 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 public class TestVersioningCompatibilitySaveOptions extends AbstractTestVersioning {
 
@@ -71,7 +71,7 @@ public class TestVersioningCompatibilitySaveOptions extends AbstractTestVersioni
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-nooptions.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-nooptions.xml")
     public void testNoOptions() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);

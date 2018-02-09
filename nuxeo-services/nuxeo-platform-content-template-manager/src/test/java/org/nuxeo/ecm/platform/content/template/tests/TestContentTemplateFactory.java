@@ -47,14 +47,14 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl;
 import org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:test-content-template-framework.xml",
+@Deploy({ "org.nuxeo.ecm.platform.content.template.tests:test-content-template-framework.xml",
         "org.nuxeo.ecm.platform.content.template.tests:test-content-template-contrib.xml",
         "org.nuxeo.ecm.platform.content.template.tests:test-content-template-listener.xml" })
 public class TestContentTemplateFactory {

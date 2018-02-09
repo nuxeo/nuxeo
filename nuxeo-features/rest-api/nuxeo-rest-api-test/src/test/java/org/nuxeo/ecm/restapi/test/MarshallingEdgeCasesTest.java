@@ -33,7 +33,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.Client;

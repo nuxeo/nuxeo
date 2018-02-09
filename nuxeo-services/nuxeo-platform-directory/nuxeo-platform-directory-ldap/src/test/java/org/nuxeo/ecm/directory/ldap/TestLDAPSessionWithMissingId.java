@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests for NXP-2461: Manage LDAP directories with missing entries for identifier field.
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author Anahide Tchertchian
  */
 //override the default server setup
-@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override.xml")
 public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
     protected static final String USER_SCHEMANAME = "user";

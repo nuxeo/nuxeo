@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.core.management" })
 @Features({ CoreFeature.class, LogFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml" })
+@Deploy({ "org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
     @Override

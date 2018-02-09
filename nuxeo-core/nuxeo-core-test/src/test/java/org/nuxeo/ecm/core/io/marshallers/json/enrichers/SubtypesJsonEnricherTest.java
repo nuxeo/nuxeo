@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -28,14 +30,12 @@ import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 8.4
  */
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public SubtypesJsonEnricherTest() {

@@ -65,7 +65,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -82,9 +81,9 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -92,7 +91,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-permissions-contrib.xml" })
 public class TestSQLRepositorySecurity {
 

@@ -31,17 +31,17 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.actions.core:OSGI-INF/actions-framework.xml",
+@Deploy({ "org.nuxeo.ecm.actions:OSGI-INF/actions-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
-        "org.nuxeo.ecm.webapp.base:test-navtree-contrib-compat.xml",
-        "org.nuxeo.ecm.webapp.base:test-navtree-contrib.xml" })
+        "org.nuxeo.ecm.webapp.base.tests:test-navtree-contrib-compat.xml",
+        "org.nuxeo.ecm.webapp.base.tests:test-navtree-contrib.xml" })
 public class TestNavTreeService {
 
     @Test

@@ -31,10 +31,10 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.sql.SQLDirectory;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test hot reload of registrations using mock directory factories
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
+@Deploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })
 public class TestDirectoryServiceRegistration {
 

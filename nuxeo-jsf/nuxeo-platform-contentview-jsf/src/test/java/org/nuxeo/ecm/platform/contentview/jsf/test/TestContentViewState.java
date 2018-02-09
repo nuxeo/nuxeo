@@ -66,7 +66,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
@@ -78,7 +77,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.contentview.jsf", //
 })
-@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
 public class TestContentViewState {
 
     @Inject

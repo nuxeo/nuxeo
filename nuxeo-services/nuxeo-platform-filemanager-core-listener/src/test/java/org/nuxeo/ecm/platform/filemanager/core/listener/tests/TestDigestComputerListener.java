@@ -37,14 +37,13 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.api", //
         "org.nuxeo.ecm.platform.filemanager.core", //
 })
-@LocalDeploy({
+@Deploy({
         "org.nuxeo.ecm.platform.filemanager.core.listener:OSGI-INF/filemanager-digestcomputer-event-contrib.xml",
         "org.nuxeo.ecm.platform.filemanager.core.listener.test:OSGI-INF/nxfilemanager-digest-contrib.xml" })
 public class TestDigestComputerListener {

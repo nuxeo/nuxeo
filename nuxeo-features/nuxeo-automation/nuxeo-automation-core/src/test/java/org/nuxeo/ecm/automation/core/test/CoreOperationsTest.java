@@ -77,7 +77,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -87,7 +86,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class CoreOperationsTest {
 
     protected DocumentModel src;

@@ -40,7 +40,6 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.codahale.metrics.Counter;
@@ -53,7 +52,7 @@ import com.codahale.metrics.SharedMetricRegistries;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
-@LocalDeploy("org.nuxeo.ecm.directory.tests:directory-cache-config.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:directory-cache-config.xml")
 public class TestCachedDirectory extends AbstractDirectoryTest {
 
     protected final static String REDIS_CACHE_CONFIG = "directory-redis-cache-config.xml";

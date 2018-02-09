@@ -40,7 +40,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -51,7 +50,7 @@ import com.google.inject.name.Names;
 
 @Features({ ManagementFeature.class, ContainerFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.management.jtajca" })
-@LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
+@Deploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
 public class JtajcaManagementFeature extends SimpleFeature {
 
     protected static ObjectName nameOf(Class<?> itf) {

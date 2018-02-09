@@ -34,16 +34,16 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 @RunWith(FeaturesRunner.class)
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @Features({ RepositoryElasticSearchFeature.class })
 public class TestService {
     @Rule

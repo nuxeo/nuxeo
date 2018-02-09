@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test registration of operation chains on service.
@@ -41,7 +40,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-registration-chain.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-registration-chain.xml")
 public class OperationChainRegistrationTest {
 
     @Inject

@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.4.2
@@ -67,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.task.testing", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml", //
         "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml", //
         "org.nuxeo.ecm.platform.task.core.test:OSGI-INF/pageproviders-contrib.xml", //
 })

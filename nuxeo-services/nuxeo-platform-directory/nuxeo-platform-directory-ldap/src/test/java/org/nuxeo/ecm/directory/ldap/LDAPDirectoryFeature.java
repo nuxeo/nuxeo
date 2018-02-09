@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -53,7 +52,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.directory.ldap", //
         "org.nuxeo.ecm.directory.ldap.tests", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
+@Deploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
         "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml", })
 public class LDAPDirectoryFeature extends SimpleFeature {
 

@@ -113,7 +113,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -126,7 +125,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml", "org.nuxeo.ecm.automation.test" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml", "org.nuxeo.ecm.automation.test:test-mvalues.xml",
+@Deploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml", "org.nuxeo.ecm.automation.test:test-mvalues.xml",
         "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
 @Features({ EmbeddedAutomationServerFeature.class, AuditFeature.class })
 @Jetty(port = 18080)
@@ -1015,7 +1014,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
+    @Deploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
     public void canSendCalendarParametersIfUserNotFound() throws IOException {
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
         assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));

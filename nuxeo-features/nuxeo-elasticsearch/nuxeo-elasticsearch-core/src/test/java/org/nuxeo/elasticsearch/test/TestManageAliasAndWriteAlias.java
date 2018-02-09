@@ -36,16 +36,16 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@Deploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestManageAliasAndWriteAlias {
 
     @Inject
@@ -88,7 +88,7 @@ public class TestManageAliasAndWriteAlias {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-alias-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-alias-contrib.xml")
     public void testIndexWithManageAlias() throws Exception {
         String repo = esa.getRepositoryNames().iterator().next();
         assertEquals("test", repo);
@@ -121,7 +121,7 @@ public class TestManageAliasAndWriteAlias {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-alias-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-alias-contrib.xml")
     public void testIndexWithManageAliasReindex() throws Exception {
         String repo = esa.getRepositoryNames().iterator().next();
         assertEquals("test", repo);
@@ -145,7 +145,7 @@ public class TestManageAliasAndWriteAlias {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-write-alias-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-write-alias-contrib.xml")
     public void testIndexWithWriteAlias() throws Exception {
         String repo = esa.getRepositoryNames().iterator().next();
         assertEquals("test", repo);

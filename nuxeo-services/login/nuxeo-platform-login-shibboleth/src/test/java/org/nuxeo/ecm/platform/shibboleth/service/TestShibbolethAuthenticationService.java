@@ -22,6 +22,9 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -36,16 +39,12 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.login.shibboleth" })
-@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-shibboleth-authentication-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-shibboleth-authentication-contrib.xml")
 public class TestShibbolethAuthenticationService {
 
     @Inject

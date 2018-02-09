@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -47,7 +46,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.url.core" })
-@LocalDeploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-document-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-document-contrib.xml")
 public class TestGetDefaultThumbnail {
 
     @Inject

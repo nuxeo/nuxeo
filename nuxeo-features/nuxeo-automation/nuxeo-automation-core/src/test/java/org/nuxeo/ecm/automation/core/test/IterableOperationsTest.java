@@ -51,7 +51,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -60,7 +59,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class IterableOperationsTest {
 

@@ -21,14 +21,15 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Alexandre Russel

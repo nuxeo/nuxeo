@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.7.3 Test for exception chain.
@@ -52,7 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-exception-chain.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-exception-chain.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = TestChainException.Populate.class)
 public class TestChainException {
 

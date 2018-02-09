@@ -34,9 +34,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -68,21 +68,21 @@ public class TestDataSourceComponent {
     }
 
     @Test
-    @LocalDeploy(DATASOURCE_CONTRIB)
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonXANoTM() throws Exception {
         checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
-    @LocalDeploy(DATASOURCE_CONTRIB)
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonXA() throws Exception {
         checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
-    @LocalDeploy(DATASOURCE_CONTRIB)
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonShared() throws Exception {
         PooledDataSource ds = (PooledDataSource)DataSourceHelper.getDataSource("foo");
         TransactionHelper.startTransaction();
@@ -113,13 +113,13 @@ public class TestDataSourceComponent {
     }
 
     @Test
-    @LocalDeploy(XADATASOURCE_CONTRIB)
+    @Deploy(XADATASOURCE_CONTRIB)
     public void testXANoTx() throws Exception {
         checkDataSourceOk("foo", true);
     }
 
     @Test
-    @LocalDeploy(XADATASOURCE_CONTRIB)
+    @Deploy(XADATASOURCE_CONTRIB)
     public void testXA() throws Exception {
         TransactionHelper.startTransaction();
         try {

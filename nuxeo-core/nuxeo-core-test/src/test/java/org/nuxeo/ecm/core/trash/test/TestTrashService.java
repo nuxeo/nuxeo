@@ -48,9 +48,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -299,13 +299,13 @@ public class TestTrashService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-keep.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-keep.xml")
     public void testTrashCheckedInDocumentKeepCheckedIn() throws Exception {
         doTestTrashCheckedInDocument(true);
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-dontkeep.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-dontkeep.xml")
     public void testTrashCheckedInDocumentDontKeepCheckedIn() throws Exception {
         doTestTrashCheckedInDocument(false);
     }

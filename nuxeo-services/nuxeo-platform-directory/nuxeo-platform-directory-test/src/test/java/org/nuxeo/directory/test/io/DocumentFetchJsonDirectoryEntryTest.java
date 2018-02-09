@@ -48,7 +48,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.2
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class, DirectoryFeature.class})
 @Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.io" })
-@LocalDeploy("org.nuxeo.ecm.directory.resolver.test:test-directory-resolver-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.resolver.test:test-directory-resolver-contrib.xml")
 public class DocumentFetchJsonDirectoryEntryTest {
 
     @Inject

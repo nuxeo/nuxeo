@@ -30,13 +30,13 @@ import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 8.10
  */
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class HasFolderishChildJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public HasFolderishChildJsonEnricherTest() {

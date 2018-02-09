@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Isolated in its own test as the DirectoryFeature doesn't restore correctly the directories when the schema prefix
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+@Deploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml",
         "org.nuxeo.ecm.directory.tests:test-directories-schema-prefix.xml" })
 public class TestDirectorySchemaPrefix {

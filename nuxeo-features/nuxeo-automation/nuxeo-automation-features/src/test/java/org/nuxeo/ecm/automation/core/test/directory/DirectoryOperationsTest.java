@@ -57,7 +57,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,7 +69,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryOperationsTest {
 
     @Inject

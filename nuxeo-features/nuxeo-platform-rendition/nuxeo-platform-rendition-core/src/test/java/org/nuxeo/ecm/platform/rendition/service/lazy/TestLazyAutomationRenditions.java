@@ -40,9 +40,9 @@ import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -50,7 +50,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RenditionFeature.class, TransientStoreFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml", //
         "org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml" //
 })
 /**

@@ -52,7 +52,6 @@ import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -132,7 +131,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-profile-enricher-compat-contrib.xml")
+    @Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-profile-enricher-compat-contrib.xml")
     public void testCompatibility() throws IOException {
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
         JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);

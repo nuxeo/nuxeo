@@ -26,13 +26,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ FulltextDisabledFeature.class, RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextDisabled extends TestFulltextEnabled {
 
     @Override

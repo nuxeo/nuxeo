@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.7.3
@@ -69,7 +68,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.test" })
-@LocalDeploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
 public class CanTraceChainsTest {
 
     @Inject

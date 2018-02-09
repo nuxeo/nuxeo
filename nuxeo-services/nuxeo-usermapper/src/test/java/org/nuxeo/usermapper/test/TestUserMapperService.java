@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.usermapper.service.UserMapperService;
 import org.nuxeo.usermapper.test.dummy.DummyUser;
 
@@ -39,7 +38,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(UserMapperFeature.class)
-@LocalDeploy("org.nuxeo.usermapper:usermapper-contribs.xml")
+@Deploy("org.nuxeo.usermapper:usermapper-contribs.xml")
 @Deploy({"org.nuxeo.ecm.platform.userworkspace.api",
     "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
 "org.nuxeo.ecm.user.center.profile"})

@@ -35,20 +35,19 @@ import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.1
  */
 @Deploy({"org.nuxeo.ecm.core.test.tests"})
-@LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
 public class TestAutoVersioning extends AbstractTestVersioning {
 
     @Inject
     protected TransactionalFeature txFeature;
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version.xml")
     public void testInitialVersion() {
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
@@ -61,7 +60,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-minor.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-minor.xml")
     public void testAlwaysVersionMinor() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -79,7 +78,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-major.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-major.xml")
     public void testAlwaysVersionMajor() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -97,7 +96,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-major.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-major.xml")
     public void testAlwaysVersionMajorTwoSaves() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -120,7 +119,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-custom-filter.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-custom-filter.xml")
     public void testWithCustomFilter() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -139,7 +138,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-types.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-types.xml")
     public void testWithStandardFilterAndTypes() {
         // No initial state defined by policy
         // Document of type File or Note should have a new version for each update
@@ -163,7 +162,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-facets.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-facets.xml")
     public void testWithStandardFilterAndFacets() {
         // No initial state defined by policy
         // Document with facet Downloadable or Note3Facet should have a new version for each update
@@ -187,7 +186,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-schemas.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-schemas.xml")
     public void testWithStandardFilterAndSchemas() {
         // No initial state defined by policy
         // Document with file schema should have a new version for each update
@@ -205,7 +204,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-condition.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-condition.xml")
     public void testWithStandardFilterAndCondition() {
         // No initial state defined by policy
         // Same condition as the custom filter below
@@ -225,7 +224,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-ordering.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-ordering.xml")
     public void testAutoVersioningOrdering() {
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
@@ -241,7 +240,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
     public void testAutoVersioningBeforeAlwaysMinor() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -274,7 +273,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-minor-after-major.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-minor-after-major.xml")
     public void testAutoVersioningBeforeAlwaysMinorAfterAlwaysMajor() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -333,7 +332,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
     public void testManualVersioningCreateABeforeVersion() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -358,7 +357,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
     public void testManualVersioningOnlyDoesntCreateABeforeVersion() {
         // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -380,7 +379,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-no-auto-versioning-system.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-no-auto-versioning-system.xml")
     public void testAutoVersioningNoneOption() {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note4");

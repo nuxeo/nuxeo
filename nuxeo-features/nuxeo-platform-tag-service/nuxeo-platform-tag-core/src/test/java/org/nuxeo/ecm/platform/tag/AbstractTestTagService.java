@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
 
@@ -76,7 +75,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -84,7 +82,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.platform.dublincore" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.tag:login-config.xml", "org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.tag:login-config.xml", "org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml",
         "org.nuxeo.ecm.tag.tests:test-versioning-contrib.xml" })
 public abstract class AbstractTestTagService {
 

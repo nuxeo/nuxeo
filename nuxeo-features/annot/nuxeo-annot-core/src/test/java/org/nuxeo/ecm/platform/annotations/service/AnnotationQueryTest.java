@@ -27,20 +27,16 @@ import static org.junit.Assert.assertNotNull;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Alexandre Russel
@@ -54,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.types.core", //
         "org.nuxeo.ecm.platform.types.api", //
 })
-@LocalDeploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
+@Deploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
 public class AnnotationQueryTest {
 
     private final AnnotationQuery query = new AnnotationQuery();

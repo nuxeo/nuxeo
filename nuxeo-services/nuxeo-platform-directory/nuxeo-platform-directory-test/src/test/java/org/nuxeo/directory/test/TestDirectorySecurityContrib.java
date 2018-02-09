@@ -39,16 +39,16 @@ import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+@Deploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.tests:test-directories-security.xml" })
 public class TestDirectorySecurityContrib {
 

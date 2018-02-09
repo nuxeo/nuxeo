@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Repository;
@@ -52,16 +51,16 @@ import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
 
     @SuppressWarnings("deprecation")
@@ -248,7 +247,7 @@ public class TestSQLRepositoryJTAJCA {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.storage.sql.test:OSGI-INF/test-listeners-async-retry-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test:OSGI-INF/test-listeners-async-retry-contrib.xml")
     public void testAsyncListenerRetry() throws Exception {
         DummyAsyncRetryListener.clear();
 

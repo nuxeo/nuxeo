@@ -18,12 +18,11 @@
  */
 package org.nuxeo.ecm.web.resources.wro;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ro.isdc.wro.config.Context;
@@ -71,7 +69,7 @@ import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
 @Deploy({ "org.nuxeo.web.resources.core", "org.nuxeo.web.resources.wro" })
-@LocalDeploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml" })
+@Deploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml" })
 public class TestNuxeoWroPageManagerFactory {
 
     @Mock

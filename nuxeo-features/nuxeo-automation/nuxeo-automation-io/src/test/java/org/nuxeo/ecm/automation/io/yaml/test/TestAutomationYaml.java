@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.9.4
@@ -42,7 +41,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io" })
-@LocalDeploy("org.nuxeo.ecm.automation.io:test-chains.xml")
+@Deploy("org.nuxeo.ecm.automation.io:test-chains.xml")
 public class TestAutomationYaml {
 
     @Inject

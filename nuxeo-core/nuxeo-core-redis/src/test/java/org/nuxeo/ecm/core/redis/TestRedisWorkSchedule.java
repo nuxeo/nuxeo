@@ -19,9 +19,9 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -73,7 +73,7 @@ public class TestRedisWorkSchedule {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.event:test-redis-pfouh-listener.xml")
+    @Deploy("org.nuxeo.ecm.core.event:test-redis-pfouh-listener.xml")
     public void canSerializeEventBundles() throws InterruptedException {
         Assert.assertTrue(TransactionHelper.isTransactionActive());
         DocumentModel doc = session.createDocumentModel("/", "pfouh", "Document");

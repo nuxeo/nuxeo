@@ -20,20 +20,20 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assume.assumeTrue;
+
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import static org.junit.Assume.assumeTrue;
 
 /**
  * Test class for tag service based on SQL relations
  *
  * @since 9.3
  */
-@LocalDeploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
+@Deploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
 public class TestRelationTagService extends AbstractTestTagService {
 
     protected static final String TAG_DOCUMENT_TYPE = "Tag";

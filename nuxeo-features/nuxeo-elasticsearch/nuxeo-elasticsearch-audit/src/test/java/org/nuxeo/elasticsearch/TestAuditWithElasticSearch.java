@@ -58,7 +58,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -70,7 +69,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
+@Deploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 public class TestAuditWithElasticSearch {
 

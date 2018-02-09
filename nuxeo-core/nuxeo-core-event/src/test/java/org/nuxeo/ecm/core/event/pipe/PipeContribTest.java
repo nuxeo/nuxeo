@@ -27,14 +27,14 @@ import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.event" })
-@LocalDeploy("org.nuxeo.ecm.core.event.test:test-DummyPipes.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:test-DummyPipes.xml")
 public class PipeContribTest {
 
     @Inject

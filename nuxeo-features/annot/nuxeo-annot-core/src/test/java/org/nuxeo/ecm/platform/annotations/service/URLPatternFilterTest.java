@@ -21,10 +21,12 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>

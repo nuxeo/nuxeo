@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
@@ -69,9 +70,9 @@ import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the event conf service.
@@ -81,7 +82,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
 @RepositoryConfig(init = MyInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
 public class TestNXAuditEventsService {
 
     protected static MyInit repo;

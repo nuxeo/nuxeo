@@ -20,6 +20,11 @@
 
 package org.nuxeo.ecm.directory.multi;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,20 +33,16 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
-@LocalDeploy("org.nuxeo.ecm.directory.multi.tests:directories-readonly-subdir-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-readonly-subdir-config.xml")
 public class TestMultiDirectoryReadOnlySubDir {
 
     private static final String MULTI_DIRECTORY_NAME = "multi";

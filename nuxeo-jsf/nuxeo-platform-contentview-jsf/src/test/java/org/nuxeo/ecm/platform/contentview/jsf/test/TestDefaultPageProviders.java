@@ -18,11 +18,19 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -33,7 +41,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.AbstractSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -56,7 +69,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -68,7 +80,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.contentview.jsf", //
         "org.nuxeo.ecm.core.io" })
-@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
 public class TestDefaultPageProviders {
 
     protected static final Log log = LogFactory.getLog(TestDefaultPageProviders.class);

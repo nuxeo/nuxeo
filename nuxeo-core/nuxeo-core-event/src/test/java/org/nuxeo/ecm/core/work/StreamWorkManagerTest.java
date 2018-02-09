@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -46,7 +45,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
 @Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core.event.test:test-workmanager-config.xml" })
-@LocalDeploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
+@Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
 public class StreamWorkManagerTest extends WorkManagerTest {
 
     @Override

@@ -52,7 +52,6 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion} contributions.
@@ -64,7 +63,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureConversions {
 
     public static final String PICTURE_CORE = "org.nuxeo.ecm.platform.picture.core";

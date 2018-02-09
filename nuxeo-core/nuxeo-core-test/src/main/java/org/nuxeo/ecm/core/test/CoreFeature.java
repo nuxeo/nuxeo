@@ -61,7 +61,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -102,7 +101,7 @@ import com.google.inject.Binder;
         "org.nuxeo.ecm.core.io", //
 })
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
+@Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 public class CoreFeature extends SimpleFeature {
 
     protected ACP rootAcp;

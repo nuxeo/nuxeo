@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -113,7 +112,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-contrib.xml")
+    @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-contrib.xml")
     public void testBulkEdit() {
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
@@ -139,7 +138,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-before-update-contrib.xml")
+    @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-before-update-contrib.xml")
     public void testBulkEditBeforeUpdate() {
 
         boolean facetedTags = tagService instanceof FacetedTagService;
@@ -201,7 +200,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-majorversion-contrib.xml")
+    @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-majorversion-contrib.xml")
     public void testBulkEditMajorVersion() throws Exception {
 
         List<DocumentModel> docs = createTestDocuments();
@@ -228,7 +227,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-restricted-version-options.xml")
+    @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-restricted-version-options.xml")
     public void testBulkEditAutoVersioningFailure() throws Exception {
 
         List<DocumentModel> docs = createTestDocuments();

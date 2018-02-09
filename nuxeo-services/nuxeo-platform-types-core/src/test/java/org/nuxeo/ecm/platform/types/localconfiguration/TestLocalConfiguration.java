@@ -57,7 +57,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -66,7 +65,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = LocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
-@LocalDeploy("org.nuxeo.ecm.platform.types.core:test-ui-types-local-configuration.xml")
+@Deploy("org.nuxeo.ecm.platform.types.core:test-ui-types-local-configuration.xml")
 public class TestLocalConfiguration {
 
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");

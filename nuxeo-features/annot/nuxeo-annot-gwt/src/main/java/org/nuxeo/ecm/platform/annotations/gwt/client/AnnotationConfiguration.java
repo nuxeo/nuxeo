@@ -21,9 +21,9 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client;
 
-import com.google.gwt.i18n.client.Dictionary;
-
 import java.util.MissingResourceException;
+
+import com.google.gwt.i18n.client.Dictionary;
 
 /**
  * @author Alexandre Russel

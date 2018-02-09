@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -64,7 +63,7 @@ public class TestServiceRegistration {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-contrib.xml")
     public void testContrib() throws Exception {
         List<String> treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());

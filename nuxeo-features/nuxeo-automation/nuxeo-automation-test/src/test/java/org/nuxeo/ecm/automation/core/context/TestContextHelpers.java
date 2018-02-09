@@ -41,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.3
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy("org.nuxeo.ecm.automation.test:helpers-contrib-test.xml")
+@Deploy("org.nuxeo.ecm.automation.test.test:helpers-contrib-test.xml")
 public class TestContextHelpers {
 
     @Inject

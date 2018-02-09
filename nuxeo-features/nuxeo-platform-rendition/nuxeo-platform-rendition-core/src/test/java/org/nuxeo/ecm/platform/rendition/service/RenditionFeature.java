@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -47,7 +46,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
         "org.nuxeo.ecm.platform.io.core", //
         "org.nuxeo.ecm.platform.dublincore" //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml", //
         "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml" //
 })

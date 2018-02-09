@@ -42,17 +42,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features({ BlobManagerFeature.class, LogFeature.class, LogCaptureFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core.api:OSGI-INF/test-fs-blobprovider.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-fs-blobprovider.xml")
 public class TestFilesystemBlobProvider {
 
     private static final String CONTENT = "hello";

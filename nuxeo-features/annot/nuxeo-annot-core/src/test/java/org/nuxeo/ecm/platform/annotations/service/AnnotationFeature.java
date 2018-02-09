@@ -23,7 +23,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(CoreFeature.class)
@@ -34,7 +33,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.annotations.contrib", //
         "org.nuxeo.runtime.datasource", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.annotations:test-ann-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.annotations:test-ann-contrib.xml", //
         "org.nuxeo.ecm.annotations:datasource-config.xml" })
 public class AnnotationFeature extends SimpleFeature {
 

@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -45,7 +44,7 @@ public class TestAutomationDocumentation {
     AutomationService service;
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.automation.core:test-chain-op-not-found.xml")
+    @Deploy("org.nuxeo.ecm.automation.core:test-chain-op-not-found.xml")
     public void testDocumentationWithNotFoundOperation() throws OperationException {
         List<OperationDocumentation> documentation = service.getDocumentation();
         assertFalse(documentation.isEmpty());

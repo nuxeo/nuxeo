@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 // Look at the @Test(expected=...) to understand the tests
 // for those tests, both saveDocument, createDocument and importDocument validation context are enable by default
@@ -124,7 +123,7 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnCreateDocumentActivationAfterListeners() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
@@ -201,7 +200,7 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnSaveDocumentActivationAfterListeners() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
@@ -260,7 +259,7 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnImportDocumentActivationAfterListeners() {
         DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
                 null, null, null, null, null);

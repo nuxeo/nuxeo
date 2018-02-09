@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.naming.directory.DirContext;
 import javax.security.auth.login.LoginException;
 
@@ -43,11 +42,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test class on security based on LDAP embedded server. Only read based test can be perform because the embedded server
@@ -57,7 +55,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(InternalLDAPDirectoryFeature.class)
-@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-internal-security.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-internal-security.xml")
 public class TestInternalLDAPSessionSecurity {
 
     public static final String READER_USER = "readerUser";

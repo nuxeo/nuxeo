@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -36,7 +35,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.schema",
         "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory.sql" })
-@LocalDeploy("org.nuxeo.ecm.directory.sql:nxdirectory-ds.xml")
+@Deploy("org.nuxeo.ecm.directory.sql:nxdirectory-ds.xml")
 public class SQLDirectoryFeature extends SimpleFeature {
 
     protected Granularity granularity;

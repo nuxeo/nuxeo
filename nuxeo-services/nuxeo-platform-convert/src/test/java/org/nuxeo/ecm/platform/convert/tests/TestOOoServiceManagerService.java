@@ -27,14 +27,13 @@ import java.io.FileInputStream;
 
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.junit.Test;
-
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerComponent;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerDescriptor;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
-@LocalDeploy("org.nuxeo.ecm.platform.convert:OSGI-INF/test-ooo-manager-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/test-ooo-manager-contrib.xml")
 public class TestOOoServiceManagerService extends BaseConverterTest {
 
     // not injected to test different configurations

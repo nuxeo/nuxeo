@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.io.download;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({"org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache"})
-@LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-with-resolver.xml")
+@Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-with-resolver.xml")
 public class TestCustomRedirectResolver {
 
     protected static abstract class DummyServletOutputStream extends ServletOutputStream {

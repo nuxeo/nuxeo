@@ -59,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -71,7 +70,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.schema" })
-@LocalDeploy({ "org.nuxeo.ecm.webengine.core:OSGI-INF/json-service.xml" })
+@Deploy({ "org.nuxeo.ecm.webengine.core:OSGI-INF/json-service.xml" })
 public class TestJSONPropertyWriter {
 
     public static final String SCHEMA_NAME = "schema";

@@ -52,13 +52,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.platform.preview:doctype-contrib-test.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.preview:doctype-contrib-test.xml" })
 public class TestPreviewAdapter {
 
     @Inject

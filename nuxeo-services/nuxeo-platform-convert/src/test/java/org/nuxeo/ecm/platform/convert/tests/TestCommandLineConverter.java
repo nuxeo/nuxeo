@@ -28,15 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 5.2
  */
-@LocalDeploy("org.nuxeo.ecm.platform.convert:OSGI-INF/test-command-line-converter-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/test-command-line-converter-contrib.xml")
 public class TestCommandLineConverter extends BaseConverterTest {
 
     @Test

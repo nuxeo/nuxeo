@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
@@ -45,7 +44,7 @@ import com.google.inject.name.Names;
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.directory.types.contrib", //
 })
-@LocalDeploy({ //
+@Deploy({ //
         "org.nuxeo.ecm.directory.core.tests:core/types-config.xml",
         "org.nuxeo.ecm.directory.core.tests:core/core-directory-config.xml" })
 public class CoreDirectoryFeature extends SimpleFeature {

@@ -40,16 +40,16 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.rendition.Renderable;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
 public class TestRenditionProvider {
 
     public static final String PDF_RENDITION_DEFINITION = "pdf";
