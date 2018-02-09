@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -123,7 +124,7 @@ public class TestFilesystemBlobProvider {
         assertNotNull(blob);
         assertEquals(key, blob.getKey());
         try (InputStream in = blob.getStream()) {
-            assertEquals(CONTENT, IOUtils.toString(in));
+            assertEquals(CONTENT, IOUtils.toString(in, UTF_8));
         }
 
         // same with explicit blob
@@ -136,7 +137,7 @@ public class TestFilesystemBlobProvider {
         assertEquals(CONTENT.length(), blob.getLength());
         assertEquals(CONTENT_MD5, blob.getDigest());
         try (InputStream in = blob.getStream()) {
-            assertEquals(CONTENT, IOUtils.toString(in));
+            assertEquals(CONTENT, IOUtils.toString(in, UTF_8));
         }
     }
 
@@ -182,7 +183,7 @@ public class TestFilesystemBlobProvider {
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             try (InputStream in = blob.getStream()) {
-                assertEquals(CONTENT, IOUtils.toString(in));
+                assertEquals(CONTENT, IOUtils.toString(in, UTF_8));
             }
         } finally {
             ((BlobManagerComponent) blobManager).unregisterBlobProvider(descr);

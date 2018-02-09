@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
@@ -78,7 +79,7 @@ public class TestBlobDispatcher2 {
             doc = session.getDocument(doc.getRef());
             blob = (Blob) doc.getPropertyValue("file:content");
             try (InputStream in = blob.getStream()) {
-                assertEquals("foo", IOUtils.toString(in));
+                assertEquals("foo", IOUtils.toString(in, UTF_8));
             }
         } finally {
             harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-blob-dispatcher.xml");

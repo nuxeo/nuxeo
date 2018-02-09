@@ -19,6 +19,8 @@
 //
 package org.nuxeo.launcher.process;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -65,8 +67,7 @@ public class UnixProcessManager implements ProcessManager {
 
     private List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
-        List<String> lines = IOUtils.readLines(process.getInputStream());
-        return lines;
+        return IOUtils.readLines(process.getInputStream(), UTF_8);
     }
 
     @Override

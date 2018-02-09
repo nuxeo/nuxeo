@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -151,7 +152,7 @@ public class AddItemToListPropertyTest {
     protected String readPropertiesFromFile(String filename) throws IOException {
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext(filename);
         assertNotNull(fieldsAsJsonFile);
-        String fieldsDataAsJson = org.apache.commons.io.FileUtils.readFileToString(fieldsAsJsonFile);
+        String fieldsDataAsJson = org.apache.commons.io.FileUtils.readFileToString(fieldsAsJsonFile, UTF_8);
         fieldsDataAsJson = fieldsDataAsJson.replaceAll("\n", "");
         fieldsDataAsJson = fieldsDataAsJson.replaceAll("\r", "");
 

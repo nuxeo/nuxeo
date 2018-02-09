@@ -21,6 +21,8 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.restlets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -74,7 +76,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         Integer maxTiles = Integer.decode((String) req.getAttributes().get("maxTiles"));
 
         Form form = req.getResourceRef().getQueryAsForm();
-        String xpath = (String) form.getFirstValue("fieldPath");
+        String xpath = form.getFirstValue("fieldPath");
         String x = form.getFirstValue("x");
         String y = form.getFirstValue("y");
         String format = form.getFirstValue("format");
@@ -161,11 +163,11 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
     protected void handleSendTest(Response res, String repoId, String docId, Integer tileWidth, Integer tileHeight,
             Integer maxTiles) throws IOException {
-        MediaType mt = null;
+        MediaType mt;
         mt = MediaType.TEXT_HTML;
 
         File file = FileUtils.getResourceFileFromContext("testTiling.html");
-        String html = org.apache.commons.io.FileUtils.readFileToString(file);
+        String html = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
 
         html = html.replace("$repoId$", repoId);
         html = html.replace("$docId$", docId);
@@ -180,8 +182,8 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         if (format == null) {
             format = "XML";
         }
-        MediaType mt = null;
-        PictureTilesSerializer serializer = null;
+        MediaType mt;
+        PictureTilesSerializer serializer;
 
         if (format.equalsIgnoreCase("json")) {
             serializer = new JSONPictureTilesSerializer();

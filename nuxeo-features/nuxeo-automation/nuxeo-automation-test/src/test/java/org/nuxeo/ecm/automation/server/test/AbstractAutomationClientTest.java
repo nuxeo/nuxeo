@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -111,7 +112,7 @@ public abstract class AbstractAutomationClientTest {
 
     protected File newFile(String content) throws IOException {
         File file = Framework.createTempFile("automation-test-\u00e9\u00e1\u00f2-", ".xml");
-        FileUtils.writeStringToFile(file, content);
+        FileUtils.writeStringToFile(file, content, UTF_8);
         return file;
     }
 

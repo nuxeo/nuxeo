@@ -18,6 +18,8 @@
  */
 package org.nuxeo.connect.update.task.standalone;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -165,7 +167,7 @@ public abstract class CommandsTask extends AbstractTask {
             String content = parametrizePaths(writer.toString());
             // replace '//' by '/' if any
             content = content.replace(File.separator.concat(File.separator), File.separator);
-            FileUtils.writeStringToFile(file, content);
+            FileUtils.writeStringToFile(file, content, UTF_8);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);
         }

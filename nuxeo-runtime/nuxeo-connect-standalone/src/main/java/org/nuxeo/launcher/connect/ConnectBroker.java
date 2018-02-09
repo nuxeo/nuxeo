@@ -22,11 +22,12 @@
 
 package org.nuxeo.launcher.connect;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -940,7 +941,7 @@ public class ConnectBroker {
         List<String> pkgsToRemove = new ArrayList<>();
         List<String> lines;
         try {
-            lines = FileUtils.readLines(commandsFile, StandardCharsets.UTF_8);
+            lines = FileUtils.readLines(commandsFile, UTF_8);
             for (String line : lines) {
                 line = line.trim();
                 String[] split = line.split("\\s+", 2);

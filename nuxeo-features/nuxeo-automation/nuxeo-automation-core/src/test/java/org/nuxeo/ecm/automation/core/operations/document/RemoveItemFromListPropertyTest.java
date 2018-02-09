@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -91,7 +92,7 @@ public class RemoveItemFromListPropertyTest {
         // Get new fields from json file to String
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext("newFields.json");
         assertNotNull(fieldsAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldsAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldsAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
 
@@ -99,7 +100,6 @@ public class RemoveItemFromListPropertyTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testChain");
-        chain = new OperationChain("testChain");
         chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJSon);
 
         doc = (DocumentModel) service.run(ctx, chain);
@@ -122,36 +122,39 @@ public class RemoveItemFromListPropertyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void removeFirstItemFromListPropertyTest() throws Exception {
         //remove the first item
         DocumentModel resultDoc = removeItemsFromListProperty(0);
 
-        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
+        Map<String, String> properties = dbFields.get(0);
         assertEquals(properties.get("fieldType"), "unicTypeAdded2");
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void removeLastItemFromListPropertyTest() throws Exception {
         // Remove the last item
         DocumentModel resultDoc = removeItemsFromListProperty(1);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
+        Map<String, String> properties = dbFields.get(0);
         assertEquals(properties.get("fieldType"), "unicTypeAdded");
     }
 
     @Test(expected = OperationException.class)
+    @SuppressWarnings("unchecked")
     public void removeNonExistentItemFromListPropertyTest() throws Exception {
         // Not possible to remove the index:2, because the list only have two items
         DocumentModel resultDoc = removeItemsFromListProperty(2);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
+        Map<String, String> properties = dbFields.get(0);
         assertEquals(properties.get("fieldType"), "unicTypeAdded");
     }
 
@@ -166,9 +169,7 @@ public class RemoveItemFromListPropertyTest {
 
         if (index != null) parameters.set("index", index);
 
-        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
-
-        return resultDoc;
+        return (DocumentModel) service.run(ctx, chain);
     }
 
 }

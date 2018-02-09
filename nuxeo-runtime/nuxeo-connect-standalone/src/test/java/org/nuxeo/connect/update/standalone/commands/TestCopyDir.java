@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -66,7 +67,7 @@ public class TestCopyDir extends AbstractCommandTest {
         org.apache.commons.io.FileUtils.touch(deprecatedFile);
         newFile = new File(bundles, newFilename);
         snapshotFile = new File(bundles, snapshotFilename);
-        FileUtils.writeStringToFile(snapshotFile, "old SNAPSHOT content");
+        FileUtils.writeStringToFile(snapshotFile, "old SNAPSHOT content", UTF_8);
     }
 
     @Override

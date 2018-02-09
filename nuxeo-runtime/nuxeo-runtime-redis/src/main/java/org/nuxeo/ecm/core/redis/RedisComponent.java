@@ -18,15 +18,16 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.StrBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -146,7 +147,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         try {
             delsha = load("org.nuxeo.runtime.redis", "del-keys");
         } catch (RuntimeException cause) {
-            executor = null;
+            this.executor = null;
             throw new RuntimeException("Cannot activate redis executor", cause);
         }
     }
@@ -166,7 +167,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         final StrBuilder builder;
         try (InputStream is = loc.openStream()) {
             builder = new StrBuilder();
-            for (String line : IOUtils.readLines(is, StandardCharsets.UTF_8)) {
+            for (String line : IOUtils.readLines(is, UTF_8)) {
                 builder.appendln(line);
             }
         } catch (IOException e) {

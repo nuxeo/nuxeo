@@ -18,6 +18,8 @@
  */
 package org.nuxeo.connect.download.tests;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,7 @@ public class DownloadFeature extends SimpleFeature implements WorkingDirectoryCo
         }
 
         File data = new File(workingDir, "web/root.war/test.data");
-        FileUtils.writeStringToFile(data, "TestMe");
+        FileUtils.writeStringToFile(data, "TestMe", UTF_8);
     }
 
     private static URL getResource(String resource) {

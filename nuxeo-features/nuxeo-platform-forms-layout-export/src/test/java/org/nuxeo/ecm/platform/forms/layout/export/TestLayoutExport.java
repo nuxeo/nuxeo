@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.export;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.junit.Assert.assertNotNull;
 
@@ -26,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -72,8 +72,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     protected void checkEquals(InputStream expected, InputStream actual) throws Exception {
-        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8).replaceAll("\r?\n", "");
-        String actualString = IOUtils.toString(actual, StandardCharsets.UTF_8).replaceAll("\r?\n", "");
+        String expectedString = IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", "");
+        String actualString = IOUtils.toString(actual, UTF_8).replaceAll("\r?\n", "");
         JSONAssert.assertEquals(expectedString, actualString, true);
     }
 

@@ -20,13 +20,16 @@
 
 package org.nuxeo.ecm.web.resources.wro.processor;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +72,7 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
         if (isEnabled(resource)) {
             Reader finalReader = null;
             try {
-                String varContents = "";
+                StringBuilder varContentsBuidler = new StringBuilder();
                 if (flavorName != null) {
                     ThemeStylingService s = Framework.getService(ThemeStylingService.class);
                     FlavorDescriptor fd = s.getFlavor(flavorName);
@@ -77,16 +80,17 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
                         List<SassImport> sassVars = fd.getSassImports();
                         if (sassVars != null) {
                             for (SassImport var : sassVars) {
-                                varContents += var.getContent();
+                                varContentsBuidler.append(var.getContent());
                             }
                         }
                     }
                 }
+                String varContents = varContentsBuidler.toString();
 
-                InputSource source = null;
+                InputSource source;
                 if (StringUtils.isNoneBlank(varContents)) {
                     byte[] varBytes = varContents.getBytes();
-                    byte[] initalBytes = IOUtils.toByteArray(reader);
+                    byte[] initalBytes = IOUtils.toByteArray(reader, UTF_8);
                     reader.close();
                     byte[] finalBytes = ArrayUtils.addAll(varBytes, initalBytes);
                     finalReader = new InputStreamReader(new ByteArrayInputStream(finalBytes));
@@ -110,7 +114,7 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
                 }
 
                 stylesheet.setCharset(getEncoding());
-                stylesheet.addSourceUris(Arrays.asList(resource.getUri()));
+                stylesheet.addSourceUris(Collections.singletonList(resource.getUri()));
 
                 stylesheet.compile();
 

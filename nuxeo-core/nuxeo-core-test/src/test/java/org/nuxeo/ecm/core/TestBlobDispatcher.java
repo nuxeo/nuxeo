@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -37,10 +38,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -82,12 +83,12 @@ public class TestBlobDispatcher {
 
         blob1 = (Blob) doc1.getPropertyValue("file:content");
         try (InputStream in = blob1.getStream()) {
-            assertEquals("foo", IOUtils.toString(in));
+            assertEquals("foo", IOUtils.toString(in, UTF_8));
         }
 
         blob2 = (Blob) doc2.getPropertyValue("file:content");
         try (InputStream in = blob2.getStream()) {
-            assertEquals("bar", IOUtils.toString(in));
+            assertEquals("bar", IOUtils.toString(in, UTF_8));
         }
     }
 

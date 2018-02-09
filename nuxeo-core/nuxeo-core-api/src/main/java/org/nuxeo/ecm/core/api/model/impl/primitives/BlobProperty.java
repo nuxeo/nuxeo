@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -245,7 +245,7 @@ public class BlobProperty extends MapProperty {
             return false;
         }
         BlobProperty other = (BlobProperty) property;
-        return ObjectUtils.equals(getValue(), other.getValue());
+        return Objects.equals(getValue(), other.getValue());
     }
 
 }

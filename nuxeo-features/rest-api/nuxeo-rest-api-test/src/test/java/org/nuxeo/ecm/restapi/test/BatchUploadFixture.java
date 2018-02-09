@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,7 +30,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -957,7 +957,7 @@ public class BatchUploadFixture extends BaseTest {
     }
 
     protected byte[] getUTF8Bytes(String data) {
-        return data.getBytes(StandardCharsets.UTF_8);
+        return data.getBytes(UTF_8);
     }
 
     protected void assertBatchExists(String batchId) {

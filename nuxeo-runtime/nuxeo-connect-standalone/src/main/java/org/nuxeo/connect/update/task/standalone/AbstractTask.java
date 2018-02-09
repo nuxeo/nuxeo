@@ -18,6 +18,8 @@
  */
 package org.nuxeo.connect.update.task.standalone;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -197,7 +199,7 @@ public abstract class AbstractTask implements Task {
     }
 
     protected String loadParametrizedFile(File file, Map<String, String> params) throws IOException {
-        String content = FileUtils.readFileToString(file);
+        String content = FileUtils.readFileToString(file, UTF_8);
         // replace variables.
         return StringUtils.expandVars(content, createContextMap(params));
     }
@@ -210,11 +212,8 @@ public abstract class AbstractTask implements Task {
             Properties props = new Properties();
             props.putAll(params);
             File file = pkg.getData().getEntry(LocalPackage.INSTALL_PROPERTIES);
-            FileOutputStream out = new FileOutputStream(file);
-            try {
+            try (FileOutputStream out = new FileOutputStream(file)) {
                 props.store(out, "user install parameters");
-            } finally {
-                out.close();
             }
         } catch (IOException e) {
             throw new PackageException("Failed to save install parameters", e);
@@ -232,7 +231,7 @@ public abstract class AbstractTask implements Task {
                     // uninstall it.
                     Task utask = oldpkg.getUninstallTask();
                     try {
-                        utask.run(new HashMap<String, String>());
+                        utask.run(new HashMap<>());
                     } catch (PackageException e) {
                         utask.rollback();
                         throw new PackageException("Failed to uninstall: " + oldpkg.getId()

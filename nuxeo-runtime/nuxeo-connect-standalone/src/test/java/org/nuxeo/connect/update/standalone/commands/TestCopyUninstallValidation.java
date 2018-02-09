@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -34,7 +35,7 @@ public class TestCopyUninstallValidation extends TestCopy {
     protected void installDone(Task task, Throwable error) throws Exception {
         super.installDone(task, error);
         // modify the target file so that uninstall fails
-        FileUtils.writeStringToFile(getTargetFile(), "modified file");
+        FileUtils.writeStringToFile(getTargetFile(), "modified file", UTF_8);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class TestCopyUninstallValidation extends TestCopy {
         // since we modified the file the file should be still there (and not
         // deleted by the uninstall)
         assertTrue(getTargetFile().isFile());
-        assertEquals("modified file", FileUtils.readFileToString(getTargetFile()));
+        assertEquals("modified file", FileUtils.readFileToString(getTargetFile(), UTF_8));
     }
 
 }

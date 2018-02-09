@@ -18,6 +18,7 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -244,7 +245,7 @@ public class TestScriptRunnerInfrastructure {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);

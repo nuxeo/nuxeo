@@ -18,6 +18,8 @@
  */
 package org.nuxeo.connect.update.task.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class ParameterizedCopy extends Copy {
     @Override
     protected String getContentToCopy(File fileToCopy, Map<String, String> prefs) throws PackageException {
         try {
-            String content = FileUtils.readFileToString(fileToCopy);
+            String content = FileUtils.readFileToString(fileToCopy, UTF_8);
             return StringUtils.expandVars(content, prefs);
         } catch (IOException e) {
             throw new PackageException("Failed to run parameterized copy for: " + fileToCopy.getName(), e);

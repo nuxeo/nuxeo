@@ -19,6 +19,7 @@
 package org.nuxeo.scim.server.jaxrs.marshalling;
 
 import static com.unboundid.scim.sdk.StaticUtils.toLowerCase;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +53,7 @@ public class NXJsonUnmarshaller extends JsonUnmarshaller {
                     throws InvalidResourceException {
         try {
 
-            String json = IOUtils.toString(inputStream, Charsets.UTF_8);
+            String json = IOUtils.toString(inputStream, UTF_8);
             final JSONObject jsonObject = makeCaseInsensitive(new JSONObject(new JSONTokener(json)));
 
             final NXJsonParser parser = new NXJsonParser();

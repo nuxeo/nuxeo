@@ -41,10 +41,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
@@ -59,6 +61,9 @@ import org.nuxeo.runtime.api.Framework;
 public class AuthorizationRequest extends OAuth2Request {
 
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
+
+    private static final RandomStringGenerator GENERATOR = new Builder().filteredBy(CharacterPredicates.LETTERS,
+            CharacterPredicates.DIGITS).withinRange('0', 'z').build();
 
     public static final String MISSING_REQUIRED_FIELD_MESSAGE = "Missing required field \"%s\".";
 
@@ -183,7 +188,7 @@ public class AuthorizationRequest extends OAuth2Request {
             return OAuth2Error.accessDenied("No redirect URI configured for the app.");
         }
 
-        String clientRedirectURI = null;
+        String clientRedirectURI;
         // No redirect_uri parameter, use the first redirect URI registered for this client
         if (StringUtils.isBlank(redirectURI)) {
             clientRedirectURI = clientRedirectURIs.get(0);
@@ -242,7 +247,7 @@ public class AuthorizationRequest extends OAuth2Request {
 
     public String getAuthorizationCode() {
         if (StringUtils.isBlank(authorizationCode)) {
-            authorizationCode = RandomStringUtils.random(10, true, true);
+            authorizationCode = GENERATOR.generate(10);
         }
         return authorizationCode;
     }

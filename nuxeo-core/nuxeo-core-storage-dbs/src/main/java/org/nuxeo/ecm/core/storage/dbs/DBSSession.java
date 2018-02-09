@@ -84,13 +84,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -780,7 +780,7 @@ public class DBSSession implements Session {
         String oldParentId = (String) sourceState.get(KEY_PARENT_ID);
 
         // simple case of a rename
-        if (ObjectUtils.equals(oldParentId, parentId)) {
+        if (Objects.equals(oldParentId, parentId)) {
             if (!oldName.equals(name)) {
                 if (hasChild(parentId, name)) {
                     throw new DocumentExistsException("Destination name already exists: " + name);

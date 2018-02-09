@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ftest.server;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -232,7 +233,7 @@ public class ITRemoteAutomationClientTCK {
      */
     protected File newFile(String content) throws IOException {
         File aFile = Framework.createTempFile("automation-test-", ".xml");
-        FileUtils.writeStringToFile(aFile, content);
+        FileUtils.writeStringToFile(aFile, content, UTF_8);
         return aFile;
     }
 
@@ -325,7 +326,8 @@ public class ITRemoteAutomationClientTCK {
         // send the fields representation as json
         File fieldAsJsonFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("creationFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile,
+                UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);
@@ -348,7 +350,7 @@ public class ITRemoteAutomationClientTCK {
 
         // Read the json file
         fieldAsJsonFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("updateFields.json");
-        fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
 
         // Don't forget to replace CRLF or LF
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");

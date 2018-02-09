@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.webengine.install;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,9 +50,9 @@ public class AppendOperation {
         // ctx.getBundle().getEntryPaths(path);
         File src = new File(bundleDir, path);
         if (src.isFile()) {
-            String text = FileUtils.readFileToString(src);
+            String text = FileUtils.readFileToString(src, UTF_8);
             if (appendNewLine) {
-                String crlf = System.getProperty("line.separator");
+                String crlf = System.lineSeparator();
                 text = crlf + text + crlf;
             }
             File file = new File(installDir, target);
@@ -59,11 +61,8 @@ public class AppendOperation {
                 parent.mkdirs();
             }
             boolean append = file.exists();
-            FileOutputStream out = new FileOutputStream(file, append);
-            try {
+            try (FileOutputStream out = new FileOutputStream(file, append)) {
                 out.write(text.getBytes());
-            } finally {
-                out.close();
             }
         } else {
             installer.logWarning("Could not find path: " + path + " to append");

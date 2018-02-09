@@ -18,12 +18,12 @@
  */
 package org.nuxeo.runtime;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
@@ -45,7 +45,7 @@ public class ResourceServiceTest extends NXRuntimeTestCase {
         ResourceService rs = Framework.getService(ResourceService.class);
         URL url = rs.getResource("myres");
         try (InputStream in = url.openStream()) {
-            assertEquals("test resource", IOUtils.toString(in, Charsets.UTF_8).trim());
+            assertEquals("test resource", IOUtils.toString(in, UTF_8).trim());
         }
     }
 

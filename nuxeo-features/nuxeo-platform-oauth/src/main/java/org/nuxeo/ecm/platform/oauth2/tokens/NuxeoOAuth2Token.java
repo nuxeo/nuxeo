@@ -23,12 +23,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 
 public class NuxeoOAuth2Token {
+
+    private static final RandomStringGenerator GENERATOR = new Builder().filteredBy(CharacterPredicates.LETTERS,
+            CharacterPredicates.DIGITS).withinRange('0', 'z').build();
 
     public static final String SCHEMA = "oauth2Token";
 
@@ -140,8 +145,8 @@ public class NuxeoOAuth2Token {
     }
 
     public void refresh() {
-        accessToken = RandomStringUtils.random(32, true, true);
-        refreshToken = RandomStringUtils.random(64, true, true);
+        accessToken = GENERATOR.generate(32);
+        refreshToken = GENERATOR.generate(64);
         creationDate = Calendar.getInstance();
     }
 

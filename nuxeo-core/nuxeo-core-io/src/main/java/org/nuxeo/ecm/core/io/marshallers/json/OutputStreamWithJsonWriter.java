@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -49,7 +51,7 @@ public class OutputStreamWithJsonWriter extends OutputStream {
         if (outputTarget instanceof OutputStream) {
             out = (OutputStream) outputTarget;
         } else if (outputTarget instanceof Writer) {
-            out = new WriterOutputStream((Writer) outputTarget);
+            out = new WriterOutputStream((Writer) outputTarget, UTF_8);
         }
     }
 

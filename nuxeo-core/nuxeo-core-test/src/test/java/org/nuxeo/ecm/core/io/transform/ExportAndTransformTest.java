@@ -1,10 +1,11 @@
 package org.nuxeo.ecm.core.io.transform;
 
-import java.io.File;
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -50,7 +51,8 @@ public class ExportAndTransformTest extends BaseExport {
 
             // check invoice exported
             assertTrue(listing.contains("ws1" + File.separator + "invoice" + File.separator + "document.xml"));
-            String xml = FileUtils.readFileToString(new File(out, "ws1" + File.separator + "invoice" + File.separator + "document.xml"));
+            String xml = FileUtils.readFileToString(
+                    new File(out, "ws1" + File.separator + "invoice" + File.separator + "document.xml"), UTF_8);
 
             assertTrue(xml.contains("<type>File</type>"));
             assertTrue(xml.contains("<facet>Invoice</facet>"));

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class RTF2TextConverter implements Converter {
             rtfParser.read(blobHolder.getBlob().getStream(), document, 0);
             String text = document.getText(0, document.getLength());
             f = Framework.createTempFile("swing-rtf2text", ".txt");
-            FileUtils.writeStringToFile(f, text);
+            FileUtils.writeStringToFile(f, text, UTF_8);
             Blob blob;
             try (InputStream in = new FileInputStream(f)) {
                 blob = Blobs.createBlob(in, "text/plain");
