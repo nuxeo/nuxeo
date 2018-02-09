@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -300,7 +299,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertNotNull(doc);
     }
 
-    @Ignore("NXP-24343")
     @Test(expected = RemoteException.class)
     public void testTxTimeout() throws Exception {
         session.newRequest(WaitForTxTimeoutOperation.ID).setHeader(ServletHelper.TX_TIMEOUT_HEADER_KEY, "1").execute();
