@@ -378,7 +378,8 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public boolean hasEntry(String id) {
-        return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(getIdField(), id)) > 0;
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(idFieldName, id)) > 0;
     }
 
     /**

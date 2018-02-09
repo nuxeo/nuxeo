@@ -20,6 +20,7 @@
 package org.nuxeo.directory.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
@@ -64,6 +65,8 @@ public class TestDirectorySchemaPrefix {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
+
+            assertTrue(session.hasEntry("user_1"));
         }
     }
 
