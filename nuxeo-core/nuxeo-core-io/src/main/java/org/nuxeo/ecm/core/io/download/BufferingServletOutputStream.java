@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -64,7 +65,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
 
     protected boolean needsClose;
 
-    protected final OutputStream outputStream;
+    protected final ServletOutputStream outputStream;
 
     protected PrintWriter writer;
 
@@ -82,7 +83,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
      *
      * @param outputStream the underlying output stream
      */
-    public BufferingServletOutputStream(OutputStream outputStream) {
+    public BufferingServletOutputStream(ServletOutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -267,6 +268,20 @@ public class BufferingServletOutputStream extends ServletOutputStream {
         if (out instanceof BufferingServletOutputStream) {
             ((BufferingServletOutputStream) out).stopBuffering();
         }
+    }
+
+    @Override
+    public boolean isReady() {
+        if (streaming) {
+            return outputStream.isReady();
+        } else {
+            // memory or file
+            return true;
+        }
+    }
+
+    @Override
+    public void setWriteListener(WriteListener writeListener) {
     }
 
 }

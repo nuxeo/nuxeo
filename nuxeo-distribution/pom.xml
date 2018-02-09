@@ -145,6 +145,12 @@
 
       <!-- Provided scope -->
       <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+        <scope>provided</scope> <!-- redefine scope from toplevel POM -->
+      </dependency>
+      <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>${mongo.java.driver.version}</version>
