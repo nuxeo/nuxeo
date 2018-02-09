@@ -30,13 +30,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Windows Integration Request filter, bound to /nuxeo. Allows Windows user agents to bind to the root as the expect
  * (not /nuxeo/site/dav) and still work.
  */
 public class WIRequestFilter implements Filter {
+
+    private static final Log log = LogFactory.getLog(WIRequestFilter.class);
 
     public static final String WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
 
@@ -46,22 +52,56 @@ public class WIRequestFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // nothing to do
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        if (!isWIRequest(httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // do what WebEngineFilter does:
+        // - start a transaction
+        // - do response buffering
+        boolean txStarted = false;
+        boolean ok = false;
+        try {
+            if (!TransactionHelper.isTransactionActive()) {
+                txStarted = TransactionHelper.startTransaction();
+                if (!txStarted) {
+                    throw new ServletException("A transaction is needed.");
+                }
+                response = new BufferingHttpServletResponse(httpResponse);
+            }
+            chain.doFilter(request, response);
+            ok = true;
+        } finally {
+            if (txStarted) {
+                try {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                    TransactionHelper.commitOrRollbackTransaction();
+                } catch (TransactionRuntimeException e) {
+                    // commit failed, report this to the client before stopping buffering
+                    ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            e.getMessage());
+                    log.error(e); // don't rethrow inside finally
+                } finally {
+                    ((BufferingHttpServletResponse) response).stopBuffering();
+                }
+            }
+        }
     }
 
     @Override
     public void destroy() {
-        // nothing to do
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-        boolean useTx = isWIRequest(request);
-
-        ServletHelper.doFilter(chain, request, response, useTx, true);
     }
 
     private boolean isWIRequest(HttpServletRequest request) {
