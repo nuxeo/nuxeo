@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager", //
 })
-@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-user-directories-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml", //
 })
 public class TestQueryUsers {
 

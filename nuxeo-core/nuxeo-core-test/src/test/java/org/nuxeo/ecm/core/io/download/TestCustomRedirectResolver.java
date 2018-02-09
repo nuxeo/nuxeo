@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({"org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache"})
-@Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-with-resolver.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-with-resolver.xml")
 public class TestCustomRedirectResolver {
 
     protected static abstract class DummyServletOutputStream extends ServletOutputStream {

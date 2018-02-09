@@ -89,7 +89,7 @@ public class TestGroupsPageProvider {
     @Test
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderAllMode() {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY, AbstractGroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PROVIDER_NAME, null, null, null, properties, "");
@@ -112,7 +112,7 @@ public class TestGroupsPageProvider {
     @Test
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderSearchMode() {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
                 AbstractGroupsPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(

@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.actions.core:OSGI-INF/actions-framework.xml",
+@Deploy({ "org.nuxeo.ecm.actions:OSGI-INF/actions-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/directorytreemanager-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-default-contrib.xml",

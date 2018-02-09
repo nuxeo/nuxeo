@@ -51,7 +51,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.restapi.test:test-validation-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.restapi.test.test:test-validation-contrib.xml" })
 public class DocumentValidationTest extends BaseTest {
 
     private static final String VALID_DOC = createDocumentJSON("\"Bill\"", "\"Boquet\"");

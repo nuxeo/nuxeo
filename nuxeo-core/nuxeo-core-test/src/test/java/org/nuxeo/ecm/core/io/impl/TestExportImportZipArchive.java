@@ -61,7 +61,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/import-docTypes.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-docTypes.xml")
 public class TestExportImportZipArchive {
 
     @Inject

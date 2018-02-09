@@ -20,7 +20,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.io.test:OSGI-INF/export-docTypes.xml" })
+@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/export-docTypes.xml" })
 public class ExportAndTransformTest extends BaseExport {
 
     @Test
@@ -54,7 +54,11 @@ public class ExportAndTransformTest extends BaseExport {
             // check invoice exported
             assertTrue(listing.contains("ws1" + File.separator + "invoice" + File.separator + "document.xml"));
             String xml = FileUtils.readFileToString(
+<<<<<<< Upstream, based on origin/master
                     new File(out, "ws1" + File.separator + "invoice" + File.separator + "document.xml"), UTF_8);
+=======
+                    new File(out, "ws1" + File.separator + "invoice" + File.separator + "document.xml"));
+>>>>>>> 26a768b NXP-22544: fix failing tests
 
             assertTrue(xml.contains("<type>File</type>"));
             assertTrue(xml.contains("<facet>Invoice</facet>"));

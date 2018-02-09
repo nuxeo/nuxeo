@@ -217,7 +217,7 @@ public class TestDownloadService {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-permission.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-permission.xml")
     public void testDownloadPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
@@ -275,7 +275,7 @@ public class TestDownloadService {
      * @since 9.3
      */
     @Test
-    @Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-default-download.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-default-download.xml")
     public void testDocumentDefaultDownloadAndPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
