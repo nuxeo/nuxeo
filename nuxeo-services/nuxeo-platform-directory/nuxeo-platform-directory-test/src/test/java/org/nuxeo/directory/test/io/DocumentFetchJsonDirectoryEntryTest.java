@@ -53,9 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, DirectoryFeature.class})
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.io" })
-@Deploy("org.nuxeo.ecm.directory.resolver.test:test-directory-resolver-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directory-resolver-contrib.xml")
 public class DocumentFetchJsonDirectoryEntryTest {
 
     @Inject

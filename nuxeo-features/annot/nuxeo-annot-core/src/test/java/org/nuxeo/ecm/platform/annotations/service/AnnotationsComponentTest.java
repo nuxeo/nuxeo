@@ -43,13 +43,14 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
 
     private AnnotationConfigurationService configuration;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
+        deployContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
     }
 
     @Test

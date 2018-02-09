@@ -39,7 +39,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     private static final String REPOSITORY_NAME = "test";
 
-    private Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
+    private final Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
 
     public Repository repository;
 
@@ -57,12 +57,12 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.storage.sql");
         deployBundle("org.nuxeo.ecm.platform.el");
         DatabaseHelper.DATABASE.setUp();
-        deployTestContrib("org.nuxeo.ecm.core.storage", "OSGI-INF/test-repo-ds.xml");
+        deployContrib("org.nuxeo.ecm.core.storage", "OSGI-INF/test-repo-ds.xml");
     }
 
     @Override
     protected void postSetUp() throws Exception {
-	repository = newRepository(-1);
+        repository = newRepository(-1);
     }
 
     protected Repository newRepository(long clusteringDelay) throws Exception {

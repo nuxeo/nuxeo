@@ -21,11 +21,8 @@ package org.nuxeo.ecm.core.event.pipe;
 import org.junit.Before;
 import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
 import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
-import org.nuxeo.ecm.core.event.test.EventListenerTest;
 import org.nuxeo.ecm.core.event.test.TestEventServiceComponent;
 import org.nuxeo.runtime.api.Framework;
-
-import java.net.URL;
 
 /**
  * Run the existing EventListeners tests using the Queue implementation.
@@ -49,8 +46,7 @@ public class TestEventListenerViaQueue extends TestEventServiceComponent {
         Framework.getProperties().setProperty(PostCommitEventExecutor.TIMEOUT_MS_PROP, "300"); // 0.3s
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.event");
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-LocalQueues.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event.test", url);
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-LocalQueues.xml");
 
         fireFrameworkStarted();
         // 2 quartz threads launched by the event contribs above
