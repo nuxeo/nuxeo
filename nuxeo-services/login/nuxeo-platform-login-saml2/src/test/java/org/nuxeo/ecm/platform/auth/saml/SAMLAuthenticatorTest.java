@@ -86,7 +86,7 @@ import com.google.common.collect.ImmutableMap;
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.login.saml2" })
-@Deploy("org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml")
+@Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/test-sql-directory.xml")
 public class SAMLAuthenticatorTest {
 
     @Inject
@@ -103,7 +103,8 @@ public class SAMLAuthenticatorTest {
         String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
 
         Map<String, String> params = new ImmutableMap.Builder<String, String>() //
-        .put("metadata", metadata).build();
+                                                                                .put("metadata", metadata)
+                                                                                .build();
 
         samlAuth.initPlugin(params);
 
@@ -204,7 +205,8 @@ public class SAMLAuthenticatorTest {
         assertTrue(SAMLBinding.uriComparator.compare("https://dummy", "http://dummy"));
     }
 
-    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType, String relayState)
+    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType,
+            String relayState)
             throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = new MockHttpSession();

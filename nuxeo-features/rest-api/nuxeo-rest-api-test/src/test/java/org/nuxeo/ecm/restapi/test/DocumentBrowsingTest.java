@@ -159,7 +159,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.restapi.test:test-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-listener-contrib.xml")
     public void iCanUpdateADocumentWithAComment() throws Exception {
         JSONDocumentNode jsonDoc;
         DocumentModel note = RestServerInit.getNote(0, session);

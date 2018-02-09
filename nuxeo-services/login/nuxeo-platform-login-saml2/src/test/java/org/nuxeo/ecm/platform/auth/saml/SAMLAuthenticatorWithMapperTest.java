@@ -66,7 +66,8 @@ import com.google.common.collect.ImmutableMap;
 @Features({ UserMapperFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.login.saml2" })
-@Deploy({"org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml","org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml"})
+@Deploy({ "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/test-sql-directory.xml",
+        "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml" })
 public class SAMLAuthenticatorWithMapperTest {
 
     @Inject
@@ -81,11 +82,11 @@ public class SAMLAuthenticatorWithMapperTest {
         String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
 
         Map<String, String> params = new ImmutableMap.Builder<String, String>() //
-        .put("metadata", metadata).build();
+                                                                                .put("metadata", metadata)
+                                                                                .build();
 
         samlAuth.initPlugin(params);
     }
-
 
     @Test
     public void testRetrieveIdentity() throws Exception {
@@ -96,15 +97,13 @@ public class SAMLAuthenticatorWithMapperTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy",info.getUserName());
+        assertEquals("user@dummy", info.getUserName());
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
 
         assertEquals("user@dummy", principal.getEmail());
 
-
     }
-
 
     protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType)
             throws Exception {
