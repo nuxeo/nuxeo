@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.trash.service.migrator" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+
+    <migration id="trash-storage">
+      <description label="migration.trash-storage">Migration of in the trash storage model</description>
+      <defaultState>lifecycle</defaultState>
+      <state id="lifecycle">
+        <description label="migration.trash-storage.lifecycle">Trashed state stored as deleted lifecycle state</description>
+      </state>
+      <state id="property">
+        <description label="migration.trash-storage.property">Trashed state stored as system property</description>
+      </state>
+
+      <step id="lifecycle-to-property" fromState="lifecycle" toState="property">
+        <description label="migration.trash-storage.lifecycle-to-property">Migrate trashed state from lifecycle to property</description>
+      </step>
+    </migration>
+
+  </extension>
+
+</component>
