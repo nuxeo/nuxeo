@@ -160,7 +160,7 @@ public class RedisFeature extends SimpleFeature {
             harness.deployBundle("org.nuxeo.ecm.core.cache");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
-        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
+        harness.deployContrib("org.nuxeo.ecm.core.redis.tests", "redis-contribs.xml");
 
         registerComponentListener();// this will dynamically configure redis component when activated
         return true;

@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -44,7 +44,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
-        deployTestContrib("org.nuxeo.ecm.core.api", "OSGI-INF/test-blobholder-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.api", "OSGI-INF/test-blobholder-contrib.xml");
     }
 
     @Test

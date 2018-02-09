@@ -44,7 +44,7 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-server-locator-service.xml");
         deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-resource-publisher-service.xml");
-        deployTestContrib(OSGI_BUNDLE_NAME, "isolated-server.xml");
+        deployContrib("org.nuxeo.runtime.test", "isolated-server.xml");
     }
 
     @Override

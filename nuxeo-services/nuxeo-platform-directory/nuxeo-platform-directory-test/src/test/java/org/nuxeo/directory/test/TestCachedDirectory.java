@@ -68,7 +68,7 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
     public void setUp() throws Exception {
 
         if (RedisFeature.setup(harness)) {
-            harness.deployTestContrib("org.nuxeo.ecm.directory.tests", REDIS_CACHE_CONFIG);
+            harness.deployContrib("org.nuxeo.ecm.directory.tests", REDIS_CACHE_CONFIG);
             Framework.getService(WorkManager.class).init();
         }
 
