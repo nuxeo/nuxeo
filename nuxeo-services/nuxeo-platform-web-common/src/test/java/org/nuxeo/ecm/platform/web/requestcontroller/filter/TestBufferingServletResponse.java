@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -135,12 +136,23 @@ public class TestBufferingServletResponse {
         return response;
     }
 
+    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
+
     public static class ResponseProxy implements InvocationHandler {
 
         public ServletOutputStream sout;
 
         public ResponseProxy(final OutputStream out) {
-            sout = new ServletOutputStream() {
+            sout = new DummyServletOutputStream() {
                 @Override
                 public void write(int b) throws IOException {
                     out.write(b);
