@@ -1,5 +1,7 @@
 package org.nuxeo.launcher.process;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -54,7 +56,7 @@ public class WindowsProcessManager implements ProcessManager {
     private List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
         process.getOutputStream().close(); // don't wait for stdin
-        List<String> lines = IOUtils.readLines(process.getInputStream());
+        List<String> lines = IOUtils.readLines(process.getInputStream(), UTF_8);
         try {
             process.waitFor();
         } catch (InterruptedException e) {

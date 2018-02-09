@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +31,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +78,7 @@ public class BatchManagerFixture {
     }
 
     @Test
-    public void testBatchInit() throws Exception {
+    public void testBatchInit() {
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
         assertNotNull(batchId);
@@ -94,13 +94,13 @@ public class BatchManagerFixture {
     }
 
     @Test(expected = NuxeoException.class)
-    public void testBatchInitClientGeneratedIdNotAllowed() throws Exception {
+    public void testBatchInitClientGeneratedIdNotAllowed() {
         ((BatchManagerComponent) Framework.getService(BatchManager.class)).initBatchInternal("testBatchId");
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.automation.test.test:test-batchmanager-client-generated-id-allowed-contrib.xml")
-    public void testBatchInitClientGeneratedIdAllowed() throws Exception {
+    public void testBatchInitClientGeneratedIdAllowed() {
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
         assertEquals("testBatchId", batchId);
@@ -329,7 +329,7 @@ public class BatchManagerFixture {
                 try {
                     String batchId = bm.initBatch();
                     bm.addStream(batchId, "0",
-                            new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(StandardCharsets.UTF_8)),
+                            new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(UTF_8)),
                             "MyBatchFile.txt", "text/plain");
                     batchIds[batchIndex] = batchId;
                 } catch (IOException e) {
@@ -388,7 +388,7 @@ public class BatchManagerFixture {
             tpe.submit(() -> {
                 try {
                     bm.addStream(batchId, fileIndex,
-                            new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(StandardCharsets.UTF_8)),
+                            new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(UTF_8)),
                             fileIndex + ".txt", "text/plain");
                 } catch (IOException e) {
                     fail(e.getMessage());
@@ -441,7 +441,7 @@ public class BatchManagerFixture {
                 try {
                     bm.addStream(batchId, "0",
                             new ByteArrayInputStream(
-                                    ("SomeChunkContent_" + chunkIndex + " ").getBytes(StandardCharsets.UTF_8)),
+                                    ("SomeChunkContent_" + chunkIndex + " ").getBytes(UTF_8)),
                             nbChunks, chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
                 } catch (IOException e) {
                     fail(e.getMessage());

@@ -33,11 +33,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -293,7 +293,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             // do write
             return false;
         }
-        if (!ArrayUtils.isEquals(value, oldValue)) {
+        if (!Objects.deepEquals(value, oldValue)) {
             // do write
             return false;
         }

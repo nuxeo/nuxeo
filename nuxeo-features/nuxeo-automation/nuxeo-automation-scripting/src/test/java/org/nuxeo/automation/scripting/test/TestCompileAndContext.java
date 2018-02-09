@@ -18,6 +18,7 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,6 +40,7 @@ import javax.inject.Inject;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -104,7 +106,7 @@ public class TestCompileAndContext {
 
             try (InputStream stream = this.getClass().getResourceAsStream("/testScript.js")) {
                 assertNotNull(stream);
-                String js = IOUtils.toString(stream);
+                String js = IOUtils.toString(stream, UTF_8);
 
                 CompiledScript compiled = compiler.compile(new StringReader(js));
 
@@ -150,7 +152,7 @@ public class TestCompileAndContext {
         try (AutomationScriptingService.Session session = pool.get(this.session)) {
             try (InputStream stream = this.getClass().getResourceAsStream("/QuickScript.js")) {
                 assertNotNull(stream);
-                String js = IOUtils.toString(stream);
+                String js = IOUtils.toString(stream, UTF_8);
 
                 // long t0 = System.currentTimeMillis();
                 session.run(getScriptWithRandomContent(js));
@@ -218,7 +220,7 @@ public class TestCompileAndContext {
             Map<String, Object> data = new HashMap<>();
             data.put("p1", "This is a string");
             data.put("p2", 2);
-            List<String> l = new ArrayList<String>();
+            List<String> l = new ArrayList<>();
             l.add("A");
             l.add("B");
             l.add("C");

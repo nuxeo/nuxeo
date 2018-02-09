@@ -18,6 +18,7 @@
  */
 package org.nuxeo.transientstore.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -126,7 +127,7 @@ public class TransientStorageComplianceFixture {
         assertEquals("fake.txt", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(DigestUtils.md5Hex("FakeContent"), blob.getDigest());
-        assertEquals("FakeContent", IOUtils.toString(blob.getStream()));
+        assertEquals("FakeContent", IOUtils.toString(blob.getStream(), UTF_8));
 
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(11, size);
@@ -226,7 +227,7 @@ public class TransientStorageComplianceFixture {
         Blob blob = blobs.get(0);
         assertEquals("fake.txt", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
-        assertEquals("FakeContent", IOUtils.toString(blob.getStream()));
+        assertEquals("FakeContent", IOUtils.toString(blob.getStream(), UTF_8));
 
         // move to deletable entries
         // check that deleted

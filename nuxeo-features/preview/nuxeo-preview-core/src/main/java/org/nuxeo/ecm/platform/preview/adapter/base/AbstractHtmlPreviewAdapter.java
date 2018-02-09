@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.preview.adapter.base;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,9 +87,9 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     }
 
     protected void updateTitleInHtml(File file) throws IOException {
-        String htmlContent = FileUtils.readFileToString(file);
+        String htmlContent = FileUtils.readFileToString(file, UTF_8);
         htmlContent = updateTitleInHtml(htmlContent);
-        FileUtils.writeStringToFile(file, htmlContent);
+        FileUtils.writeStringToFile(file, htmlContent, UTF_8);
     }
 
     protected String getPreviewTitle() {

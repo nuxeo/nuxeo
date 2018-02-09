@@ -19,6 +19,7 @@
  */
 package org.nuxeo.connect.update.standalone.registry;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -192,7 +193,7 @@ public class TestRollback extends SharedFilesTest {
     @Test
     public void testHotfixUninstall() throws Exception {
         final String BASEFILENAME = JARNAME + "-5.6.jar";
-        FileUtils.writeStringToFile(new File(bundles, BASEFILENAME), BASEFILENAME);
+        FileUtils.writeStringToFile(new File(bundles, BASEFILENAME), BASEFILENAME, UTF_8);
         UpdateManager mgr = getManager();
         assertEquals(0, mgr.getRegistry().size());
         ensureFiles(BASEFILENAME);

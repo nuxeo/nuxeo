@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -48,7 +49,7 @@ public class TestCopy extends AbstractCommandTest {
     public void setUp() throws Exception {
         super.setUp();
         goldStandardFile = new File(Environment.getDefault().getConfig(), "goldstandard.properties");
-        FileUtils.writeStringToFile(goldStandardFile, "param1=value1");
+        FileUtils.writeStringToFile(goldStandardFile, "param1=value1", UTF_8);
     }
 
     @Override

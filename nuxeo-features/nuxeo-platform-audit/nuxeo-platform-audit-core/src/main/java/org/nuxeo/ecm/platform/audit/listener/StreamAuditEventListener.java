@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.platform.audit.listener;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,7 +127,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (json == null) {
             return;
         }
-        appender.append(0, Record.of(String.valueOf(entry.getId()), json.getBytes(StandardCharsets.UTF_8)));
+        appender.append(0, Record.of(String.valueOf(entry.getId()), json.getBytes(UTF_8)));
     }
 
     protected String asJson(LogEntry entry) {

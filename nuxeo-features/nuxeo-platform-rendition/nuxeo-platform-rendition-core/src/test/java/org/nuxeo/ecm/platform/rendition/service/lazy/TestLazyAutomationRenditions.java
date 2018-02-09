@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendition.service.lazy;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -106,7 +107,7 @@ public class TestLazyAutomationRenditions {
         blob = rendition.getBlob();
         assertFalse(blob.getMimeType().contains("empty=true"));
         assertEquals("dummy.txt", blob.getFilename());
-        String data = IOUtils.toString(blob.getStream());
+        String data = IOUtils.toString(blob.getStream(), UTF_8);
         assertEquals("dummy", data);
     }
 

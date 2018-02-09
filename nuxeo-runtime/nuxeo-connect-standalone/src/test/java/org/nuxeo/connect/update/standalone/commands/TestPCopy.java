@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +45,7 @@ public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected Map<String, String> getUserProperties() {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("v", "value");
         return map;
     }
@@ -54,7 +55,7 @@ public class TestPCopy extends AbstractCommandTest {
         super.installDone(task, error);
         File dst = getTargetFile();
         assertTrue(dst.isFile());
-        assertEquals("test=my value", FileUtils.readFileToString(dst));
+        assertEquals("test=my value", FileUtils.readFileToString(dst, UTF_8));
     }
 
     @Override

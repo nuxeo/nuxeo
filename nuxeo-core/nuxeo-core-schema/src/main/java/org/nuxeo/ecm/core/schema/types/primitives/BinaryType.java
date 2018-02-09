@@ -20,10 +20,11 @@
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +88,7 @@ public final class BinaryType extends PrimitiveType {
     public String encode(Object object) {
         if (object instanceof InputStream) {
             try (InputStream in = (InputStream) object) {
-                return IOUtils.toString(in, StandardCharsets.UTF_8);
+                return IOUtils.toString(in, UTF_8);
             } catch (IOException e) {
                 log.error(e, e);
                 return null;
@@ -98,10 +99,7 @@ public final class BinaryType extends PrimitiveType {
 
     @Override
     public boolean support(Class<? extends Constraint> constraint) {
-        if (NotNullConstraint.class.equals(constraint)) {
-            return true;
-        }
-        return false;
+        return NotNullConstraint.class.equals(constraint);
     }
 
 }

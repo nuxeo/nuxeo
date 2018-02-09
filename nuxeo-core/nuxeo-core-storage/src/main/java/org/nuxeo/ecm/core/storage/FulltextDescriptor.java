@@ -21,9 +21,9 @@ package org.nuxeo.ecm.core.storage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -194,7 +194,7 @@ public class FulltextDescriptor {
         for (FulltextIndexDescriptor oi : other.fulltextIndexes) {
             boolean append = true;
             for (FulltextIndexDescriptor i : fulltextIndexes) {
-                if (ObjectUtils.equals(i.name, oi.name)) {
+                if (Objects.equals(i.name, oi.name)) {
                     i.merge(oi);
                     append = false;
                     break;

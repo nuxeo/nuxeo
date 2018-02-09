@@ -18,6 +18,8 @@
  */
 package org.nuxeo.common.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -314,7 +315,7 @@ public final class ZipUtils {
     @Deprecated
     public static String getEntryContentAsString(File file, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(file, entryName)) {
-            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            return IOUtils.toString(resultStream, UTF_8);
         }
     }
 
@@ -377,7 +378,7 @@ public final class ZipUtils {
 
     public static String getEntryContentAsString(InputStream stream, String searchedEntryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(stream, searchedEntryName)) {
-            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            return IOUtils.toString(resultStream, UTF_8);
         }
     }
 
@@ -412,7 +413,7 @@ public final class ZipUtils {
 
     public static String getEntryContentAsString(URL url, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(url, entryName)) {
-            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            return IOUtils.toString(resultStream, UTF_8);
         }
     }
 

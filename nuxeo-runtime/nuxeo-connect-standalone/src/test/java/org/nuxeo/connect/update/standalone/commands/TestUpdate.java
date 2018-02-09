@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -42,7 +43,7 @@ public class TestUpdate extends AbstractCommandTest {
         super.setUp();
         File bundles = new File(Environment.getDefault().getHome(), "bundles");
         oldJar = new File(bundles, "foo-1.0.jar");
-        FileUtils.writeStringToFile(oldJar, "old JAR content");
+        FileUtils.writeStringToFile(oldJar, "old JAR content", UTF_8);
         expectedJar = new File(bundles, "foo-1.1.jar"); // installed by install.xml
     }
 

@@ -20,6 +20,8 @@
  */
 package org.nuxeo.connect.update.standalone;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -125,12 +127,12 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     @Override
-    public File getInstallFile() throws PackageException {
+    public File getInstallFile() {
         return data.getEntry(LocalPackage.INSTALL);
     }
 
     @Override
-    public File getUninstallFile() throws PackageException {
+    public File getUninstallFile() {
         return data.getEntry(LocalPackage.UNINSTALL);
     }
 
@@ -149,7 +151,7 @@ public class LocalPackageImpl implements LocalPackage {
         File file = data.getEntry(LocalPackage.LICENSE);
         if (file.isFile()) {
             try {
-                return FileUtils.readFileToString(file);
+                return FileUtils.readFileToString(file, UTF_8);
             } catch (IOException e) {
                 throw new PackageException("Failed to read license.txt file for package: " + getId());
             }
@@ -264,7 +266,7 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     protected Task getTask(TaskDefinition tdef) throws PackageException {
-        Task task = null;
+        Task task;
         try {
             task = (Task) data.loadClass(tdef.getType()).getConstructor(PackageUpdateService.class).newInstance(service);
         } catch (ReflectiveOperationException e) {
@@ -291,20 +293,11 @@ public class LocalPackageImpl implements LocalPackage {
     public Form[] getForms(String path) throws PackageException {
         File file = data.getEntry(path);
         if (file.isFile()) {
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(file);
+            try (FileInputStream in = new FileInputStream(file)) {
                 FormsDefinition forms = (FormsDefinition) StandaloneUpdateService.getXmap().load(in);
                 return forms.getForms();
             } catch (IOException e) {
                 throw new PackageException("Failed to load forms file: " + file);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                    }
-                }
             }
         }
         return null;
@@ -330,7 +323,7 @@ public class LocalPackageImpl implements LocalPackage {
         File file = data.getEntry(LocalPackage.TERMSANDCONDITIONS);
         if (file.isFile()) {
             try {
-                return FileUtils.readFileToString(file);
+                return FileUtils.readFileToString(file, UTF_8);
             } catch (IOException e) {
                 throw new PackageException("Failed to read license.txt file for package: " + getId());
             }

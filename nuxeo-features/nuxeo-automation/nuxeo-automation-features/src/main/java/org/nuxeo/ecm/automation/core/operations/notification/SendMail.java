@@ -18,10 +18,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.notification;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +33,9 @@ import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -148,7 +149,7 @@ public class SendMail {
                 throw new OperationException("No such mail template: " + name);
             }
             try (InputStream in = url.openStream()) {
-                return IOUtils.toString(in, StandardCharsets.UTF_8);
+                return IOUtils.toString(in, UTF_8);
             }
         } else {
             return StringEscapeUtils.unescapeHtml4(message);

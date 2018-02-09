@@ -20,12 +20,13 @@
  */
 package org.nuxeo.common.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,8 +66,8 @@ public final class URIUtils {
                         if (value == null) {
                             value = "";
                         }
-                        items.add(String.format("%s=%s", URLEncoder.encode(key, StandardCharsets.UTF_8.name()),
-                                URLEncoder.encode(value, StandardCharsets.UTF_8.name())));
+                        items.add(String.format("%s=%s", URLEncoder.encode(key, UTF_8.name()),
+                                URLEncoder.encode(value, UTF_8.name())));
                     }
                 }
                 query = String.join("&", items);

@@ -21,9 +21,10 @@ package org.nuxeo.ecm.platform.oauth2.openid.auth;
 
 import java.util.List;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
@@ -33,6 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class UserResolver {
 
     private static final Log log = LogFactory.getLog(UserResolver.class);
+
+    private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().filteredBy(
+            CharacterPredicates.DIGITS).build();
 
     private OpenIDConnectProvider provider;
 
@@ -85,7 +89,7 @@ public abstract class UserResolver {
             List<String> userIds = userManager.getUserIds();
 
             while (userId == null || userIds.contains(userId)) {
-                userId = "user_" + RandomStringUtils.randomNumeric(4);
+                userId = "user_" + GENERATOR.generate(4);
             }
         } catch (NuxeoException e) {
             log.error("Error while generating random user id", e);

@@ -18,12 +18,13 @@
  */
 package org.nuxeo.ecm.core.api.model.impl.primitives;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -74,7 +75,7 @@ public class BinaryProperty extends ScalarProperty {
         }
         if (toType == String.class && value instanceof InputStream) {
             try (InputStream in = (InputStream) value){
-                return (T) IOUtils.toString(in, Charsets.UTF_8);
+                return (T) IOUtils.toString(in, UTF_8);
             } catch (IOException e) {
                 throw new InvalidPropertyValueException("Failed to read given input stream", e);
             }

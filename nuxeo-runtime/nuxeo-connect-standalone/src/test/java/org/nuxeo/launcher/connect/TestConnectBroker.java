@@ -20,6 +20,7 @@
 
 package org.nuxeo.launcher.connect;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -123,9 +124,9 @@ public class TestConnectBroker {
     @Before
     public void beforeEach() throws Exception {
         // set fake Connect connector
-        String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"));
-        String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"));
-        String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"));
+        String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"), UTF_8);
+        String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"), UTF_8);
+        String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"), UTF_8);
         NuxeoConnectClient.getConnectGatewayComponent().setTestConnector(
                 new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON));
 
@@ -1139,7 +1140,7 @@ public class TestConnectBroker {
 
         for (String jsonFileName : jsonFileNames) {
             File jsonFile = new File(testStore, jsonFileName);
-            JSONArray array = new JSONArray(FileUtils.readFileToString(jsonFile));
+            JSONArray array = new JSONArray(FileUtils.readFileToString(jsonFile, UTF_8));
             Set<String> ids = new HashSet<>();
 
             for (int i = 0; i < array.length(); i++) {

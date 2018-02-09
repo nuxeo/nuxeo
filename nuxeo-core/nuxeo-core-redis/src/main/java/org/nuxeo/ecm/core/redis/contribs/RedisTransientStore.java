@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.core.redis.contribs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,7 +29,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -558,11 +559,11 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     protected byte[] getBytes(String key) {
-        return key.getBytes(StandardCharsets.UTF_8);
+        return key.getBytes(UTF_8);
     }
 
     protected String getString(byte[] bytes) {
-        return new String(bytes, StandardCharsets.UTF_8);
+        return new String(bytes, UTF_8);
     }
 
     protected byte[] serialize(Serializable value) {

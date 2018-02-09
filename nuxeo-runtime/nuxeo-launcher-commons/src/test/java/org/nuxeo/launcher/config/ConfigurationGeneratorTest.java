@@ -18,6 +18,7 @@
  */
 package org.nuxeo.launcher.config;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -70,25 +71,25 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void getJavaOptsStringWithoutConfig() throws Exception {
+    public void getJavaOptsStringWithoutConfig() {
         assertThat(configGenerator.getJavaOptsString()).isEmpty();
     }
 
     @Test
-    public void getJavaOptsWithoutConfig() throws Exception {
+    public void getJavaOptsWithoutConfig() {
         List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("");
     }
 
     @Test
-    public void getJavaOptsWithConfig() throws Exception {
+    public void getJavaOptsWithConfig() {
         setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Xms1g -Xmx2g");
         List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("-Xms1g", "-Xmx2g");
     }
 
     @Test
-    public void getJavaOptsWithMultivaluedProperty() throws Exception {
+    public void getJavaOptsWithMultivaluedProperty() {
         setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Da=\"a1 a2\" -Db=\"b1 b2\"");
         List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
         assertThat(javaOpts).containsExactly("-Da=\"a1 a2\"", "-Db=\"b1 b2\"");
@@ -284,12 +285,12 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator.run();
         File outfile = new File(nuxeoHome, "testfm");
         assertTrue(outfile.exists());
-        String fileContents = FileUtils.readFileToString(outfile).trim();
+        String fileContents = FileUtils.readFileToString(outfile, UTF_8).trim();
         assertEquals(fileContents, "Success");
     }
 
     @Test
-    public void testChangeDatabase() throws Exception {
+    public void testChangeDatabase() {
         String originalTemplates = configGenerator.getUserConfig()
                                                   .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
@@ -319,7 +320,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testChangeSecondaryDatabase() throws Exception {
+    public void testChangeSecondaryDatabase() {
         String originalTemplates = configGenerator.getUserConfig()
                                                   .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("marklogic");
@@ -349,7 +350,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testChangeMarkLogicDatabase() throws Exception {
+    public void testChangeMarkLogicDatabase() {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig()
@@ -383,12 +384,12 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testCheckJavaVersionFail() throws Exception {
+    public void testCheckJavaVersionFail() {
         testCheckJavaVersion(true);
     }
 
     @Test
-    public void testCheckJavaVersionNoFail() throws Exception {
+    public void testCheckJavaVersionNoFail() {
         testCheckJavaVersion(false);
     }
 
@@ -521,7 +522,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testEnvironmentVariablesExpansion() throws Exception {
+    public void testEnvironmentVariablesExpansion() {
 
         // Nominal case
         assertEquals("10.0.0.1", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_HOST));
@@ -544,7 +545,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testEnvironmentVariableInTemplates() throws Exception {
+    public void testEnvironmentVariableInTemplates() {
         configGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
                 "${env:NUXEO_DB_TYPE:default},docker,${env:NUXEO_DB_HOST:docker}");
         assertEquals("default,docker,10.0.0.1", String.join(",",configGenerator.getTemplateList()));

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io.plugins.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.junit.Assert.assertNotNull;
 
@@ -26,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -116,8 +116,8 @@ public class TestLayoutExport {
         InputStream expected = new FileInputStream(
                 FileUtils.getResourcePathFromContext("layout-export-" + langFilePath + ".json"));
 
-        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
-        String writtenString = IOUtils.toString(written, StandardCharsets.UTF_8);
+        String expectedString = IOUtils.toString(expected, UTF_8);
+        String writtenString = IOUtils.toString(written, UTF_8);
         // order of select options may depend on directory database => do not
         // check order of element by using the NON_EXTENSIBLE mode
         JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
@@ -146,8 +146,8 @@ public class TestLayoutExport {
         InputStream expected = new FileInputStream(
                 FileUtils.getResourcePathFromContext("layout-instance-export-" + langFilePath + ".json"));
 
-        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
-        String writtenString = IOUtils.toString(written, StandardCharsets.UTF_8);
+        String expectedString = IOUtils.toString(expected, UTF_8);
+        String writtenString = IOUtils.toString(written, UTF_8);
         // order of select options may depend on directory database => do not
         // check order of element by using the NON_EXTENSIBLE mode
         JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.connect.update.task.standalone.commands;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -124,7 +126,7 @@ public class UnAppend extends AbstractCommand {
             } else {
                 bak = IOUtils.backup(task.getPackage(), contentToRemove);
             }
-            FileUtils.writeStringToFile(fromFile, linesToKeep.toString());
+            FileUtils.writeStringToFile(fromFile, linesToKeep.toString(), UTF_8);
             return new Append(bak, fromFile);
         } catch (PackageException e) {
             throw e;

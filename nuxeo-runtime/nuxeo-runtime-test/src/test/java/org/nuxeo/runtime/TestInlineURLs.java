@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +42,7 @@ public class TestInlineURLs {
     URL inlineURL;
 
     @BeforeClass
-    public static void installHandler() throws Exception {
+    public static void installHandler() {
         InlineURLFactory.install();
     }
 
@@ -60,7 +60,7 @@ public class TestInlineURLs {
     @Test
     public void canRead() throws IOException {
         try (InputStream stream = inlineURL.openStream()) {
-            String inlinedContent = IOUtils.toString(stream, Charsets.UTF_8);
+            String inlinedContent = IOUtils.toString(stream, UTF_8);
             assertThat(inlinedContent, equalTo(info));
         }
     }

@@ -20,6 +20,8 @@
  */
 package org.nuxeo.runtime.osgi;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,9 +32,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -241,8 +243,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             return false;
         }
         Iterator<URL> it = provider.iterator();
-        ArrayList<URL> props = new ArrayList<>();
-        ArrayList<URL> xmls = new ArrayList<>();
+        List<URL> props = new ArrayList<>();
+        List<URL> xmls = new ArrayList<>();
         while (it.hasNext()) {
             URL url = it.next();
             String path = url.getPath();
@@ -252,9 +254,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 props.add(url);
             }
         }
-        Comparator<URL> comp = (o1, o2) -> o1.getPath().compareTo(o2.getPath());
-
-        Collections.sort(xmls, comp);
+        xmls.sort(Comparator.comparing(URL::getPath));
         for (URL url : props) {
             loadProperties(url);
         }
@@ -276,7 +276,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
         File blacklistFile = new File(env.getConfig(), "blacklist");
         if (blacklistFile.isFile()) {
-            Set<String> lines = FileUtils.readLines(blacklistFile)
+            Set<String> lines = FileUtils.readLines(blacklistFile, UTF_8)
                                          .stream()
                                          .map(String::trim)
                                          .filter(line -> !line.isEmpty())
@@ -554,7 +554,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             // JarFileBundle (for ex. in nxshell)
             file = new File(location);
         }
-        if (file != null && file.exists()) {
+        if (file.exists()) {
             log.debug("getBundleFile: " + name + " bound to file: " + file);
             return file;
         } else {

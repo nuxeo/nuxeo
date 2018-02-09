@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -109,7 +110,7 @@ public class BlobOperationsTest {
     }
 
     @After
-    public void clearRepo() throws Exception {
+    public void clearRepo() {
         Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
@@ -149,7 +150,7 @@ public class BlobOperationsTest {
         File file = Framework.createTempFile("nx-test-blob-", ".tmp");
         try {
             CreateBlob.skipProtocolCheck = true;
-            FileUtils.writeStringToFile(file, "blob content");
+            FileUtils.writeStringToFile(file, "blob content", UTF_8);
             OperationChain chain = new OperationChain("testChain");
             chain.add(FetchContextDocument.ID);
             chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
@@ -252,7 +253,7 @@ public class BlobOperationsTest {
         assertSame(blob, out);
 
         File file = new File(dir, "test-" + blob.getFilename());
-        assertEquals(blob.getString(), FileUtils.readFileToString(file));
+        assertEquals(blob.getString(), FileUtils.readFileToString(file, UTF_8));
 
         file.delete();
 
@@ -263,7 +264,7 @@ public class BlobOperationsTest {
         assertSame(blob, out);
 
         file = new File(dir, blob.getFilename());
-        assertEquals(blob.getString(), FileUtils.readFileToString(file));
+        assertEquals(blob.getString(), FileUtils.readFileToString(file, UTF_8));
         file.delete();
 
         dir.delete();
@@ -309,7 +310,7 @@ public class BlobOperationsTest {
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = Framework.createTempFile("test", ".txt");
-        FileUtils.writeStringToFile(tmpFile, "Content");
+        FileUtils.writeStringToFile(tmpFile, "Content", UTF_8);
         Blob blob = Blobs.createBlob(tmpFile);
         blob.setFilename("initial_name.txt");
         Framework.trackFile(tmpFile, blob);

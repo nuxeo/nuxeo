@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -55,7 +56,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -269,7 +269,7 @@ public class OAuth2ChallengeFixture {
             String error = extractParameter(redirect, ERROR_PARAM);
             assertEquals(ACCESS_DENIED, error);
             String errorDescription = extractParameter(redirect, ERROR_DESCRIPTION_PARAM);
-            assertEquals(URLEncoder.encode("Access denied by the user", StandardCharsets.UTF_8.name()),
+            assertEquals(URLEncoder.encode("Access denied by the user", UTF_8.name()),
                     errorDescription);
             String state = extractParameter(redirect, STATE_PARAM);
             assertEquals(STATE, state);

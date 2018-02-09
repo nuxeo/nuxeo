@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -32,7 +33,6 @@ import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
@@ -90,7 +90,7 @@ public class TestBlob2 {
         assertTrue(Arrays.equals("some content".getBytes(), blob.getByteArray()));
 
         try (InputStream in = blob.getStream()) {
-            String result = IOUtils.toString(in);
+            String result = IOUtils.toString(in, UTF_8);
             assertEquals("some content", result);
         }
 

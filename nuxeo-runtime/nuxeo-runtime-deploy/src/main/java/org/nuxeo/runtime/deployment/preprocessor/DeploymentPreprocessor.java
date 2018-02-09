@@ -20,6 +20,8 @@
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -356,7 +358,7 @@ public class DeploymentPreprocessor {
             if (td.template != null) {
                 File file = new File(td.baseDir, td.installPath);
                 file.getParentFile().mkdirs(); // make sure parents exists
-                FileUtils.writeStringToFile(file, td.template.getText());
+                FileUtils.writeStringToFile(file, td.template.getText(), UTF_8);
             }
         }
 

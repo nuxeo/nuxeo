@@ -18,6 +18,7 @@
  */
 package org.nuxeo.connect.update.standalone.registry;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -67,8 +68,8 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     protected void createFakeBundles() throws Exception {
         // create some fake bundles
-        FileUtils.writeStringToFile(new File(bundles, "b1-1.0.jar"), "b1-1.0.jar");
-        FileUtils.writeStringToFile(new File(bundles, "b2-1.0.jar"), "b2-1.0.jar");
+        FileUtils.writeStringToFile(new File(bundles, "b1-1.0.jar"), "b1-1.0.jar", UTF_8);
+        FileUtils.writeStringToFile(new File(bundles, "b2-1.0.jar"), "b2-1.0.jar", UTF_8);
     }
 
     public UpdateManager getManager() throws Exception {
@@ -133,13 +134,14 @@ public abstract class SharedFilesTest extends PackageTestCase {
     }
 
     protected void ensureFiles(String... names) throws Exception {
-        HashSet<String> set = new HashSet<String>(Arrays.asList(bundles.list()));
+        HashSet<String> set = new HashSet<>(Arrays.asList(bundles.list()));
         assertEquals("Number of files in " + bundles.toString(), names.length, set.size());
         for (String name : names) {
             assertTrue("Missing file: " + name, set.contains(name));
         }
         for (String name : names) {
-            assertEquals("Wrong file content for " + name, name, FileUtils.readFileToString(new File(bundles, name)));
+            assertEquals("Wrong file content for " + name, name,
+                    FileUtils.readFileToString(new File(bundles, name), UTF_8));
         }
     }
 

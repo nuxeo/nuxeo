@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class RestServiceTest extends BaseRestTest {
 
     @Before
-    public void doBefore() throws Exception {
+    public void doBefore() {
         DocumentModel doc = session.createDocumentModel("/", "folder1", "Folder");
         doc = session.createDocument(doc);
         for (int i = 0; i < 3; i++) {
@@ -74,7 +74,7 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace("\"changeToken\":null", "\"changeToken\":\"1-0\"");
 
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = org.apache.commons.io.FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
         assertEqualsJson(expected, json);
     }
 
@@ -87,7 +87,7 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
         json = json.replace("\"changeToken\":null", "\"changeToken\":\"1-0\"");
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = org.apache.commons.io.FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
         assertEqualsJson(expected, json);
     }
 

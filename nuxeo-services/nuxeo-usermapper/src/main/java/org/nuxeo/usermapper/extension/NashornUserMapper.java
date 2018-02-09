@@ -20,9 +20,10 @@
 
 package org.nuxeo.usermapper.extension;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.script.ScriptContext;
@@ -66,7 +67,7 @@ public class NashornUserMapper extends AbstractUserMapper {
             bindings.put("nuxeoPrincipal", principal);
             bindings.put("userObject", userObject);
             bindings.put("params", params);
-            session.run(new ByteArrayInputStream(wrapperSource.getBytes(StandardCharsets.UTF_8)));
+            session.run(new ByteArrayInputStream(wrapperSource.getBytes(UTF_8)));
             return bindings.get("userObject");
         } catch (Exception e) {
             throw new NuxeoException("Error while executing JavaScript mapper", e);
@@ -92,7 +93,7 @@ public class NashornUserMapper extends AbstractUserMapper {
             mapper.put("profileAttributes", profileAttributes);
             mapper.put("userAttributes", userAttributes);
             mapper.put("userObject", userObject);
-            session.run(new ByteArrayInputStream(mapperSource.getBytes(StandardCharsets.UTF_8)));
+            session.run(new ByteArrayInputStream(mapperSource.getBytes(UTF_8)));
         } catch (Exception e) {
             throw new NuxeoException("Error while executing JavaScript mapper", e);
         }

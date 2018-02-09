@@ -18,6 +18,8 @@
  */
 package org.nuxeo.common.xmap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -518,7 +520,7 @@ public class XMap {
 
     public void toXML(Object object, File file) throws IOException {
         String xml = toXML(object);
-        FileUtils.writeStringToFile(file, xml);
+        FileUtils.writeStringToFile(file, xml, UTF_8);
     }
 
     public void toXML(Object object, Element root) {

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.mimetype.detectors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -124,7 +126,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 String path = tempFile.getAbsolutePath();
                 path += File.separator + "mimetype";
                 File mimetypeFile = new File(path);
-                mimetype = new String[] { FileUtils.readFileToString(mimetypeFile) };
+                mimetype = new String[] { FileUtils.readFileToString(mimetypeFile, UTF_8) };
             }
         } catch (IOException e) {
             // probably not a zip file

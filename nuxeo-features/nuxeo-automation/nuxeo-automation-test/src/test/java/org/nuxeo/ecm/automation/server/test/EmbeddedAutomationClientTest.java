@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.hamcrest.Matchers.hasItem;
@@ -174,7 +175,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);
@@ -308,10 +309,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testBaseInputAndReturnValues() throws Exception {
         Object r;
         r = session.newRequest(ReturnOperation.ID).setInput(Boolean.TRUE).execute();
-        assertThat((Boolean) r, is(Boolean.TRUE));
+        assertThat(r, is(Boolean.TRUE));
 
         r = session.newRequest(ReturnOperation.ID).setInput("hello").execute();
-        assertThat((String) r, is("hello"));
+        assertThat(r, is("hello"));
 
         r = session.newRequest(ReturnOperation.ID).setInput(1).execute();
         assertThat(((Number) r).intValue(), is(1));
@@ -324,7 +325,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         Date now = DateUtils.parseDate(DateUtils.formatDate(new Date(0)));
         r = session.newRequest(ReturnOperation.ID).setInput(now).execute();
-        assertThat((Date) r, is(now));
+        assertThat(r, is(now));
     }
 
     @Test
@@ -333,11 +334,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Long parameter
         Long longParam = 500L;
         r = session.newRequest(TestNumberParamAdaptersOperation.ID).set("longParam", longParam).execute();
-        assertThat((Integer) r, is(500));
+        assertThat(r, is(500));
         // Integer parameter
         Integer integerParam = 500;
         r = session.newRequest(TestNumberParamAdaptersOperation.ID).set("longParam", integerParam).execute();
-        assertThat((Integer) r, is(500));
+        assertThat(r, is(500));
     }
 
     /**
@@ -519,7 +520,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         updateProps.put("ds:fields", fieldsDataAsJSon);
@@ -688,7 +689,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         testDoc.set("ds:fields", fieldsDataAsJSon);
@@ -749,7 +750,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         testDoc.set("ds:fields", fieldsDataAsJSon);
@@ -818,7 +819,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // send the fields representation as json
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile, UTF_8);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         testDoc.set("ds:fields", fieldsDataAsJSon);

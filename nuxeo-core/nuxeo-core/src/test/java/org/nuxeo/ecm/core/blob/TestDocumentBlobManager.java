@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -61,7 +62,7 @@ public class TestDocumentBlobManager {
     RepositoryManager repositoryManager;
 
     @Before
-    public void mockRepositoryManager() throws Exception {
+    public void mockRepositoryManager() {
         when(repositoryManager.getRepositoryNames()).thenReturn(Collections.emptyList());
     }
 
@@ -126,12 +127,12 @@ public class TestDocumentBlobManager {
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = "dummy:1";
         blob = documentBlobManager.readBlob(blobInfo, null);
-        assertEquals("foo", IOUtils.toString(blob.getStream()));
+        assertEquals("foo", IOUtils.toString(blob.getStream(), UTF_8));
 
         // read second one
         blobInfo.key = "dummy2:1";
         blob = documentBlobManager.readBlob(blobInfo, null);
-        assertEquals("bar", IOUtils.toString(blob.getStream()));
+        assertEquals("bar", IOUtils.toString(blob.getStream(), UTF_8));
     }
 
     @Test

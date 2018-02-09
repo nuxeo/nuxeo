@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -532,7 +533,7 @@ public class TestContentViewState {
         // Attach one file to the list
         File tmpFile = Framework.createTempFile("test", ".txt");
         Framework.trackFile(tmpFile, this);
-        FileUtils.writeStringToFile(tmpFile, "Content");
+        FileUtils.writeStringToFile(tmpFile, "Content", UTF_8);
         Blob blob = Blobs.createBlob(tmpFile);
         file.put("file", (Serializable) blob);
         files.add(file);

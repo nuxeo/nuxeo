@@ -19,9 +19,10 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
@@ -109,7 +110,7 @@ public class HttpConnector implements Connector {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
                     try {
-                        entity = new StringEntity(obj.toString(), StandardCharsets.UTF_8);
+                        entity = new StringEntity(obj.toString(), UTF_8);
                     } catch (UnsupportedCharsetException e) {
                         // cannot happen
                         throw new RuntimeException("Cannot encode into UTF-8", e);

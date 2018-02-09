@@ -25,6 +25,7 @@
  */
 package org.nuxeo.functionaltests;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
@@ -656,7 +657,7 @@ public abstract class AbstractTest {
         // Create tmp file, deleted on exit
         File tmpFile = Framework.createTempFile(filePrefix, fileSuffix);
         tmpFile.deleteOnExit();
-        FileUtils.writeStringToFile(tmpFile, fileContent);
+        FileUtils.writeStringToFile(tmpFile, fileContent, UTF_8);
         assertTrue(tmpFile.exists());
 
         // Check file URI protocol

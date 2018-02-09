@@ -28,9 +28,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -177,13 +177,13 @@ public abstract class AbstractBlob implements Blob, Serializable {
             return false;
         }
         Blob other = (Blob) object;
-        if (!ObjectUtils.equals(getFilename(), other.getFilename())) {
+        if (!Objects.equals(getFilename(), other.getFilename())) {
             return false;
         }
-        if (!ObjectUtils.equals(getMimeType(), other.getMimeType())) {
+        if (!Objects.equals(getMimeType(), other.getMimeType())) {
             return false;
         }
-        if (!ObjectUtils.equals(getEncoding(), other.getEncoding())) {
+        if (!Objects.equals(getEncoding(), other.getEncoding())) {
             return false;
         }
         // ignore null digests, they are sometimes lazily computed

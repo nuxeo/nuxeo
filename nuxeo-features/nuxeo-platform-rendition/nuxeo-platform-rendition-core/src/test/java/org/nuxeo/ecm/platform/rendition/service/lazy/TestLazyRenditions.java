@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendition.service.lazy;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -34,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvid
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -92,7 +91,7 @@ public class TestLazyRenditions {
         blob = rendition.getBlob();
         assertFalse(blob.getMimeType().contains("empty=true"));
         assertEquals(modificationDate, rendition.getModificationDate());
-        String data = IOUtils.toString(blob.getStream());
+        String data = IOUtils.toString(blob.getStream(), UTF_8);
         assertEquals("I am really lazy", data);
         assertNotEquals(17, blob.getLength());
 

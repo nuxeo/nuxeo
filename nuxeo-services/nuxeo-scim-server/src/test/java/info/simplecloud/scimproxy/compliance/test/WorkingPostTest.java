@@ -18,11 +18,12 @@
  */
 package info.simplecloud.scimproxy.compliance.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 
 import info.simplecloud.core.Group;
@@ -45,8 +46,7 @@ public class WorkingPostTest extends PostTest {
     protected User getUser() {
         try {
             InputStream in = this.getClass().getResourceAsStream("/user_full.json");
-            String fullUser = IOUtils.toString(in, Charsets.UTF_8);
-            // String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
+            String fullUser = IOUtils.toString(in, UTF_8);
             return new User(fullUser, Resource.ENCODING_JSON);
         } catch (Exception e) {
             e.printStackTrace();
