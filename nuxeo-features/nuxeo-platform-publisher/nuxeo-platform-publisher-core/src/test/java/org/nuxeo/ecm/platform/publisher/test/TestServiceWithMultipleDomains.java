@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -38,7 +38,7 @@ import com.google.inject.Inject;
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-@LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
 public class TestServiceWithMultipleDomains extends PublisherTestCase {
 
     @Inject

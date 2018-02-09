@@ -22,12 +22,27 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.startsWith;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+
+import javax.inject.Inject;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -50,7 +65,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.saml2.core.AuthnRequest;
@@ -65,29 +79,14 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.inject.Inject;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import com.google.common.collect.ImmutableMap;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.login.saml2" })
-@LocalDeploy("org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml")
+@Deploy("org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml")
 public class SAMLAuthenticatorTest {
 
     @Inject

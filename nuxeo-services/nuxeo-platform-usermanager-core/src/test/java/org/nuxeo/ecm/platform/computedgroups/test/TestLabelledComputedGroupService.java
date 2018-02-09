@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
@@ -45,7 +44,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml", //
         "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
 })
 public class TestLabelledComputedGroupService {

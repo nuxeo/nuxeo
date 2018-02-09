@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
@@ -42,11 +41,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test class on security based on LDAP external server. By default this tests are disabled because they required an
@@ -55,7 +53,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(ExternalLDAPDirectoryFeature.class)
-@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-external-security.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directories-external-security.xml")
 public class TestExternalLDAPSessionSecurity {
 
     public static final String READER_USER = "readerUser";

@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.usermanager", //
         "org.nuxeo.ecm.platform.query.api", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
         "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
 })
 public class TestGroupsPageProvider {

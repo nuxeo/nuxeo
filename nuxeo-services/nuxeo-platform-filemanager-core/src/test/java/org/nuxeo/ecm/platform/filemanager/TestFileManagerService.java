@@ -54,14 +54,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core" })
-@LocalDeploy({ FileManagerUTConstants.FILEMANAGER_BUNDLE + ":ecm-types-test-contrib.xml",
+@Deploy({ FileManagerUTConstants.FILEMANAGER_BUNDLE + ":ecm-types-test-contrib.xml",
         FileManagerUTConstants.FILEMANAGER_BUNDLE + ":nxfilemanager-test-contribs.xml" })
 public class TestFileManagerService {
 
@@ -283,7 +282,7 @@ public class TestFileManagerService {
     }
 
     @Test
-    @LocalDeploy(FileManagerUTConstants.FILEMANAGER_BUNDLE + ":nxfilemanager-test-override.xml")
+    @Deploy(FileManagerUTConstants.FILEMANAGER_BUNDLE + ":nxfilemanager-test-override.xml")
     public void testFileImportersMerge() throws Exception {
         FileManagerService fileManagerService = (FileManagerService) service;
 

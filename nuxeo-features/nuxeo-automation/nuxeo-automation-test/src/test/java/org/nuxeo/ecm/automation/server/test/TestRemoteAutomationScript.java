@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -42,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.4
@@ -50,8 +50,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.scripting" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.test:operation-contrib.xml",
-               "org.nuxeo.ecm.automation.test:chain-scripting-operation-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.automation.test.test:operation-contrib.xml",
+        "org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml" })
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestRemoteAutomationScript {
@@ -64,7 +64,6 @@ public class TestRemoteAutomationScript {
 
     @Inject
     HttpAutomationClient client;
-
 
     protected Documents getDocuments() throws IOException {
         // Create a simple document

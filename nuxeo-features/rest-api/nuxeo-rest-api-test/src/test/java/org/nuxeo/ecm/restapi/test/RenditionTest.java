@@ -31,7 +31,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -42,7 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core" })
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:renditions-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:renditions-test-contrib.xml")
 public class RenditionTest extends BaseTest {
 
     @Test

@@ -20,8 +20,8 @@
 
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
 
@@ -29,6 +29,6 @@ import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
  * @since 9.2
  */
 @Features(InMemoryTransientStoreFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/transientstore-test-config.xml")
+@Deploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/transientstore-test-config.xml")
 public class OAuth2InMemoryTransientStoreFeature extends SimpleFeature {
 }

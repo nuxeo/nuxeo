@@ -46,9 +46,9 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the {@link DocumentHistoryPageProvider}
@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
 @RepositoryConfig(init = Pfouh.class)
 public class TestDocumentAuditPageProvider {
 

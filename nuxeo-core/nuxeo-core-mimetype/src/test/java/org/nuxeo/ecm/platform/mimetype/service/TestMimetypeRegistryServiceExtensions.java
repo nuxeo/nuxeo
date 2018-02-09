@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /*
@@ -64,7 +63,7 @@ public class TestMimetypeRegistryServiceExtensions {
     public void setUp() throws Exception {
         wordMimeType = mimetypeRegistry.getMimetypeEntryByName("application/msword");
         pdfMimeType = mimetypeRegistry.getMimetypeEntryByName("application/pdf");
-        xmlExtension = ((MimetypeRegistryService)mimetypeRegistry).extensionRegistry.get("xml");
+        xmlExtension = ((MimetypeRegistryService) mimetypeRegistry).extensionRegistry.get("xml");
     }
 
     @Test

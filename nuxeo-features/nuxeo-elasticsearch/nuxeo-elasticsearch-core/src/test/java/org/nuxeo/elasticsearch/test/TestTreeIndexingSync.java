@@ -20,13 +20,13 @@ package org.nuxeo.elasticsearch.test;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestTreeIndexingSync extends TestTreeIndexing {
 
     @Before

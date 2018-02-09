@@ -40,9 +40,9 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public DocumentModelJsonWriterTest() {

@@ -52,7 +52,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit",
@@ -61,7 +60,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.elasticsearch.audit", "org.nuxeo.admin.center" })
 @RunWith(FeaturesRunner.class)
 @Features(RepositoryElasticSearchFeature.class)
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
+@Deploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 @SuppressWarnings("unchecked")

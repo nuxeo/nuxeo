@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,10 +34,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @since 9.2
@@ -46,7 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.directory.tests:intIdDirectory-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:intIdDirectory-contrib.xml")
 public class TestIntIdField {
 
     @Inject

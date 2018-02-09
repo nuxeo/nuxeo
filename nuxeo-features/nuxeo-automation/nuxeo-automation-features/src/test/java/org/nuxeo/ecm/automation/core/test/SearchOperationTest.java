@@ -50,13 +50,12 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.runtime.management" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-providers.xml", "org.nuxeo.ecm.automation.core:test-operations.xml" })
+@Deploy({ "org.nuxeo.ecm.automation.core:test-providers.xml", "org.nuxeo.ecm.automation.core:test-operations.xml" })
 public class SearchOperationTest {
 
     protected DocumentModel src;

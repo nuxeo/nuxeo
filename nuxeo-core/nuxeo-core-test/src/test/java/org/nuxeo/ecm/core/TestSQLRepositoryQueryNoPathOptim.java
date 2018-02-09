@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -68,7 +67,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
 
     @Before
     public void setUp() throws Exception {
-        // cannot be done through @LocalDeploy, because the framework variables
+        // cannot be done through @Deploy, because the framework variables
         // about repository configuration aren't ready yet
         assumeTrue(coreFeature.getStorageConfiguration().isVCS());
         deployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");

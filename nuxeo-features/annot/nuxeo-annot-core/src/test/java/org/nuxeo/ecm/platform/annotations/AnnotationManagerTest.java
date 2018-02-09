@@ -21,12 +21,13 @@
 
 package org.nuxeo.ecm.platform.annotations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;

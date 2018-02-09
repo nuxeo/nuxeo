@@ -21,9 +21,9 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants.ExtensionPoint;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants.ExtensionPoint;
 import org.nuxeo.ecm.platform.annotations.descriptors.AnnotabilityManagerDescriptor;
 import org.nuxeo.ecm.platform.annotations.descriptors.AnnotationIDGeneratorDescriptor;
 import org.nuxeo.ecm.platform.annotations.descriptors.EventListenerDescriptor;

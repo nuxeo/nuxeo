@@ -39,12 +39,11 @@ import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(MongoDBFeature.class)
 @Deploy("org.nuxeo.ecm.core:OSGI-INF/uidgenerator-service.xml")
-@LocalDeploy({ "org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-seqgen-test-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-seqgen-test-contrib.xml" })
 public class TestSequenceGeneratorWithMongoDB {
 
     @Inject

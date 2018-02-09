@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -43,7 +42,6 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.7
@@ -53,7 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureThumbnail {
 
     @Inject

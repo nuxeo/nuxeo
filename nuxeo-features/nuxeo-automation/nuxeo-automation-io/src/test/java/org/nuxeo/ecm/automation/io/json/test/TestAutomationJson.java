@@ -32,7 +32,6 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
@@ -41,7 +40,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, WebEngineFeatureCore.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.forms.layout.export" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.io:test-chains.xml", "org.nuxeo.ecm.automation.io:operations-contrib-test.xml" })
+@Deploy({ "org.nuxeo.ecm.automation.io:test-chains.xml", "org.nuxeo.ecm.automation.io:operations-contrib-test.xml" })
 public class TestAutomationJson {
 
     @Inject

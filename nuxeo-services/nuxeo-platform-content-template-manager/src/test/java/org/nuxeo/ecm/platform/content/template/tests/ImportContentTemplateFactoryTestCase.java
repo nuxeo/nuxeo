@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @Ignore
 @RunWith(FeaturesRunner.class)
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-mock-type-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-mock-type-contrib.xml",
         "org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-workspace-contentTemplate-contrib.xml" })
 public class ImportContentTemplateFactoryTestCase {
 

@@ -41,13 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TestCacheInvalidation.ClusterFeature.class, CacheFeature.class })
 @Deploy("org.nuxeo.runtime.pubsub")
-@LocalDeploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
+@Deploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
 public class TestCacheInvalidation {
 
     protected static final String NODE1 = "123";

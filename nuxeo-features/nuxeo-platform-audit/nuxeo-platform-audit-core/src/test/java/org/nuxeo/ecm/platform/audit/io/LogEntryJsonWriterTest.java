@@ -35,11 +35,11 @@ import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @Features(AuditFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
 public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogEntryJsonWriter, LogEntry> {
 
     public LogEntryJsonWriterTest() {

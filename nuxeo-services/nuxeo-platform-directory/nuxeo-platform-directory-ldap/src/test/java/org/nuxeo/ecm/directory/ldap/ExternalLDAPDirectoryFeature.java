@@ -29,6 +29,7 @@ import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
@@ -40,7 +41,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.ldap")
-@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
+@Deploy({ "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
         "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml" })
 public class ExternalLDAPDirectoryFeature extends SimpleFeature {
 

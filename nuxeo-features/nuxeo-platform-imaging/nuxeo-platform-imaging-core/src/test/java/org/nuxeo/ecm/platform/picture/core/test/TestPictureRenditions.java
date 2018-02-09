@@ -45,7 +45,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -58,7 +57,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureRenditions {
 
     public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("xmlExport", "zipExport",

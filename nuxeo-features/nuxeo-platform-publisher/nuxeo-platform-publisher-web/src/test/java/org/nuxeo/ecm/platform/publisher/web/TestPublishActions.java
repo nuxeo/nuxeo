@@ -20,8 +20,6 @@ package org.nuxeo.ecm.platform.publisher.web;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,12 +32,13 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessorBean;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.publisher.web")
-@LocalDeploy("org.nuxeo.ecm.platform.publisher.web:OSGI-INF/core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.publisher.web:OSGI-INF/core-types-contrib.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestPublishActions {
 

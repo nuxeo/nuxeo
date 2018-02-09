@@ -41,13 +41,13 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ BlobManagerFeature.class, DocumentBlobManagerFeature.class, MockitoFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core.api:OSGI-INF/dummy-blob-provider.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/dummy-blob-provider.xml")
 public class TestDocumentBlobManager {
 
     private static final String DUMMY = "dummy";
@@ -110,7 +110,7 @@ public class TestDocumentBlobManager {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch.xml")
+    @Deploy("org.nuxeo.ecm.core.tests:OSGI-INF/test-blob-dispatch.xml")
     public void testDispatch() throws Exception {
         DummyBlobProvider.resetAllCounters();
         // blob that's not a video gets stored on the first dummy repo
@@ -136,7 +136,7 @@ public class TestDocumentBlobManager {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch-xpath.xml")
+    @Deploy("org.nuxeo.ecm.core.tests:OSGI-INF/test-blob-dispatch-xpath.xml")
     public void testDispatchXPath() throws Exception {
         DummyBlobProvider.resetAllCounters();
         Blob blob = Blobs.createBlob("foo", "text/plain");

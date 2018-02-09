@@ -53,7 +53,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -66,7 +65,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 @Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.forms.layout.core",
         "org.nuxeo.ecm.platform.forms.layout.client", "org.nuxeo.ecm.platform.forms.layout.io.plugins",
         "org.nuxeo.ecm.platform.forms.layout.export" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
         "org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml" })
 public class TestLayoutExport {
 

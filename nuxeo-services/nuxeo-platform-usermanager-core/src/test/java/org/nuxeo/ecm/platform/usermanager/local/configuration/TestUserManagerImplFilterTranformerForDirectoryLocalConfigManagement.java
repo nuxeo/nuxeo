@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManagerTestCase;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * This will test the filter on groups transformation to manage the Directory Local Configuration. Directory Local
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author bjalon
  */
 @Deploy("org.nuxeo.ecm.directory.multi")
-@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
 public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement extends UserManagerTestCase {
 
     protected UserMultiTenantManagement umtm;

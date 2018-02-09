@@ -25,8 +25,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +44,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 /**
  * Test for parametrized chain.
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-parametrization-chain.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-parametrization-chain.xml")
 public class TestOperationChainParametrization {
 
     protected DocumentModel src;

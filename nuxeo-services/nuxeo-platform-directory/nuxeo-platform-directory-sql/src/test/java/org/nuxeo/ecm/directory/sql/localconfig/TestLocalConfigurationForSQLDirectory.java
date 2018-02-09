@@ -41,7 +41,6 @@ import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -54,7 +53,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.directory.types.contrib", //
 })
 // override user schema with intField & dateField
-@LocalDeploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
+@Deploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-for-local-configuration-bundle.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-types-with-directory-local-configuration.xml" })

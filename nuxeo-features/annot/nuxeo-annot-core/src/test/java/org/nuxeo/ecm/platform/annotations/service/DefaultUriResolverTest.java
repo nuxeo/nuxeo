@@ -21,11 +21,11 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URI;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**

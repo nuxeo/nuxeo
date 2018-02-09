@@ -18,10 +18,9 @@
  */
 package org.nuxeo.ecm.web.resources.wro;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -52,7 +51,6 @@ import org.nuxeo.ecm.web.resources.wro.processor.SassCssFlavorProcessor;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ro.isdc.wro.config.Context;
@@ -68,8 +66,8 @@ import ro.isdc.wro.util.WroTestUtils;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.web.resources.core" })
-@LocalDeploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml",
+@Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.web.resources.core", "org.nuxeo.web.resources.wro" })
+@Deploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml",
         "org.nuxeo.web.resources.wro:theme-styling-test-config.xml" })
 public class TestSassResourceProcessor {
 

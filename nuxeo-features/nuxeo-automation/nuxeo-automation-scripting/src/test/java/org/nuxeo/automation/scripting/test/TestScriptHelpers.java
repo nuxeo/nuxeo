@@ -50,7 +50,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.10
@@ -59,7 +58,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.scripting" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml" })
 public class TestScriptHelpers {
 
     @Inject

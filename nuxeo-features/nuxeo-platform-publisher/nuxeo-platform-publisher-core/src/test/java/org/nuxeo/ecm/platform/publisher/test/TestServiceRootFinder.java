@@ -47,14 +47,14 @@ import org.nuxeo.ecm.platform.publisher.impl.finder.AbstractRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.test.TestServiceRootFinder.Populate;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-@LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
 @RepositoryConfig(init = Populate.class)
 public class TestServiceRootFinder extends PublisherTestCase {
 

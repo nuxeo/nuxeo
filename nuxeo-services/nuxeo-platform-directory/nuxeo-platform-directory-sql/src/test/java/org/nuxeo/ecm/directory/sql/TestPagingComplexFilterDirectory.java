@@ -38,14 +38,14 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.filter.SQLBetweenFilter;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.directory.sql.tests:pagingDirectory-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.sql.tests:pagingDirectory-contrib.xml")
 public class TestPagingComplexFilterDirectory {
 
     private static final String DIR = "pagingDirectory";

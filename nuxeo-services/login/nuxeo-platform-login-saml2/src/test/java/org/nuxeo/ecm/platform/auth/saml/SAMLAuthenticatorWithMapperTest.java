@@ -22,7 +22,18 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Map;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +48,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.usermapper.test.UserMapperFeature;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
@@ -50,24 +60,13 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Map;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import com.google.common.collect.ImmutableMap;
 
 @RunWith(FeaturesRunner.class)
 @Features({ UserMapperFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.login.saml2" })
-@LocalDeploy({"org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml","org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml"})
+@Deploy({"org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml","org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml"})
 public class SAMLAuthenticatorWithMapperTest {
 
     @Inject

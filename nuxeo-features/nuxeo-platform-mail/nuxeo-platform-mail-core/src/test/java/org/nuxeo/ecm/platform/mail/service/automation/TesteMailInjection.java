@@ -58,7 +58,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author tiry
@@ -73,7 +72,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.core.convert.api", //
         "org.nuxeo.ecm.core.convert.plugins", //
 })
-@LocalDeploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/nxmail-automation-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/nxmail-automation-contrib.xml")
 public class TesteMailInjection {
 
     @Inject

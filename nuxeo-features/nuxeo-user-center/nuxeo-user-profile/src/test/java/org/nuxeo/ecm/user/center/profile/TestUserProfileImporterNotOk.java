@@ -32,9 +32,9 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.9.3
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ UserProfileFeature.class, DirectoryFeature.class })
 @RepositoryConfig
-@LocalDeploy({ "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-sql-directories-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-core-types-contrib.xml",
         "org.nuxeo.ecm.user.center.profile:OSGI-INF/user-profile-test-not-ok-contrib.xml" })
 public class TestUserProfileImporterNotOk extends AbstractUserProfileImporterTest {

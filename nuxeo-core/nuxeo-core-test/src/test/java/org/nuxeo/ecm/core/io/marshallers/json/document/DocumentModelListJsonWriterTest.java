@@ -30,9 +30,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelListJsonWriterTest extends
         AbstractJsonWriterTest.Local<DocumentModelListJsonWriter, List<DocumentModel>> {
 

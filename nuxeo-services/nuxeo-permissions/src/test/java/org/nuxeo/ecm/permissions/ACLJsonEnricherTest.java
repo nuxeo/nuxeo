@@ -51,14 +51,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager",
         "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml", "org.nuxeo.ecm.permissions" })
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public ACLJsonEnricherTest() {
@@ -160,7 +159,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.permissions:test-acl-enricher-compat-config.xml")
+    @Deploy("org.nuxeo.ecm.permissions:test-acl-enricher-compat-config.xml")
     public void testCompatibility() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
         JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("acls").get());

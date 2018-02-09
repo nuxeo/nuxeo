@@ -49,7 +49,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -67,7 +66,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.ecm.platform.contentview.jsf", "org.nuxeo.search.ui",
         "org.nuxeo.ecm.platform.search.core", "org.nuxeo.ecm.platform.restapi.server.search" })
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class SearchTest extends BaseTest {
 

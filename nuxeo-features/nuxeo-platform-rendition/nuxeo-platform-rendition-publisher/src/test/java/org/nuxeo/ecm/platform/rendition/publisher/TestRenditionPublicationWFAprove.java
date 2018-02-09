@@ -63,7 +63,6 @@ import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -79,7 +78,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         "org.nuxeo.ecm.platform.usermanager", TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.actions" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml",
         "org.nuxeo.ecm.platform.rendition.publisher:test-sql-directories-contrib.xml" })
 public class TestRenditionPublicationWFAprove {
 

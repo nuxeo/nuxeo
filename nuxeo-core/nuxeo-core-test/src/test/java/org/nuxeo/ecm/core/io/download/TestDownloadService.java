@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -71,7 +70,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -207,7 +205,7 @@ public class TestDownloadService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-permission.xml")
+    @Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-permission.xml")
     public void testDownloadPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
@@ -265,7 +263,7 @@ public class TestDownloadService {
      * @since 9.3
      */
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-default-download.xml")
+    @Deploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-default-download.xml")
     public void testDocumentDefaultDownloadAndPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";

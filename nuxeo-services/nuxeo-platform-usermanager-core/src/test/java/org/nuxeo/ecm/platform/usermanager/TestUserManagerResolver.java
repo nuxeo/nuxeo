@@ -43,9 +43,9 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml",
         "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-resolver.xml" })
 public class TestUserManagerResolver extends UserManagerTestCase {
 

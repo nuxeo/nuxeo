@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.3
@@ -52,7 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureImport {
 
     @Inject

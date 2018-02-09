@@ -28,16 +28,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author egiuly
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core:test-schema-contrib.xml")
+@Deploy("org.nuxeo.ecm.core:test-schema-contrib.xml")
 public class UserSuggestionActionsBeanTest extends BaseUserGroupMock {
 
     private UserSuggestionActionsBean userSuggestionActionsBean = new UserSuggestionActionsBean();

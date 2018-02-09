@@ -26,9 +26,9 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
-@LocalDeploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data3-content-template-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data3-content-template-contrib.xml")
 public class TestImportContentTemplateFactory3 extends ImportContentTemplateFactoryTestCase {
 
     @Test

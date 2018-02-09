@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-user-directories-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-user-directories-contrib.xml", //
 })
 public class TestQueryUsers {
 

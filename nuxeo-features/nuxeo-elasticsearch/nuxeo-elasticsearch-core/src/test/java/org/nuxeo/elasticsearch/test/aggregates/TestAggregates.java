@@ -64,14 +64,14 @@ import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
+@Deploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestAggregates {

@@ -50,13 +50,12 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.usermapper.test.UserMapperFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({PlatformFeature.class, UserMapperFeature.class})
 @Deploy({ "org.nuxeo.usermapper", "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.login.keycloak.test:OSGI-INF/keycloak-descriptor-bundle.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.login.keycloak.test:OSGI-INF/keycloak-descriptor-bundle.xml" })
 public class TestKeycloakAuthenticationPlugin {
 
     private KeycloakRequestAuthenticator authenticatorMock = Mockito.mock(KeycloakRequestAuthenticator.class);

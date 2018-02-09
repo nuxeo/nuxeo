@@ -32,14 +32,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.webapp.tree.nav.NavTreeDescriptor;
 import org.nuxeo.ecm.webapp.tree.nav.NavTreeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.actions.core:OSGI-INF/actions-framework.xml",
+@Deploy({ "org.nuxeo.ecm.platform.actions.core:OSGI-INF/actions-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/directorytreemanager-framework.xml",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/navtree-default-contrib.xml",

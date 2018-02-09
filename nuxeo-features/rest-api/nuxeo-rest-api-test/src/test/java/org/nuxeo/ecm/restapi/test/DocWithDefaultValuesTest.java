@@ -29,10 +29,10 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test doc creation with default values
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@LocalDeploy({ "org.nuxeo.ecm.restapi.test:test-defaultvalue-docTypes.xml" })
+@Deploy({ "org.nuxeo.ecm.restapi.test:test-defaultvalue-docTypes.xml" })
 public class DocWithDefaultValuesTest extends BaseTest {
 
     private static String createDocumentJSON(String properties) {

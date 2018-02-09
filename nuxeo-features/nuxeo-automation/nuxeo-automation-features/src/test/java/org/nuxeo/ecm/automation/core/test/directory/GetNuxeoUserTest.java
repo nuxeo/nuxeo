@@ -20,8 +20,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -38,14 +36,15 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
 public class GetNuxeoUserTest {
 
     @Inject

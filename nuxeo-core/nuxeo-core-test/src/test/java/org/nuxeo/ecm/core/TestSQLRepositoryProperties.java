@@ -37,7 +37,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -85,7 +83,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -93,7 +90,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins" })
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-restriction-contrib.xml",
         // deploy specific adapter for testing external blobs: files are stored
         // in temporary directory

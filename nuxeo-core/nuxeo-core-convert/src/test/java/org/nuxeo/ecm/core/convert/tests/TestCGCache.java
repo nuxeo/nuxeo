@@ -41,13 +41,13 @@ import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(ConvertFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
+@Deploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
         "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
 public class TestCGCache {
 

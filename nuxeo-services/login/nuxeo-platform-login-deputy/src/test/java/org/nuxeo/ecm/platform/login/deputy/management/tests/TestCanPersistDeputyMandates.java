@@ -21,8 +21,10 @@
 
 package org.nuxeo.ecm.platform.login.deputy.management.tests;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -40,14 +42,13 @@ import org.nuxeo.ecm.platform.login.deputy.management.DeputyManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.default.config", "org.nuxeo.ecm.directory.types.contrib",
         "org.nuxeo.ecm.platform.login.deputy.management" })
-@LocalDeploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
 public class TestCanPersistDeputyMandates {
 
     @Inject

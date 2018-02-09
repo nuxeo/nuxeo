@@ -36,9 +36,9 @@ import org.nuxeo.runtime.datasource.TestValidateConnection.ReportException.Caugh
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoValidationSupport;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ ContainerFeature.class, LogCaptureFeature.class })
-@LocalDeploy("org.nuxeo.runtime.datasource:sql-validate-datasource-contrib.xml")
+@Deploy("org.nuxeo.runtime.datasource:sql-validate-datasource-contrib.xml")
 @LogCaptureFeature.FilterWith(CaptureValidationErrors.class)
 public class TestValidateConnection {
 

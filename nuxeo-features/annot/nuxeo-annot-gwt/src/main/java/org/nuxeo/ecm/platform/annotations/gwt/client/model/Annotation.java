@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.user.client.Window;
-import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConfiguration;
 import org.nuxeo.ecm.platform.annotations.gwt.client.util.XPointer;
 
 import com.google.gwt.i18n.client.DateTimeFormat;

@@ -63,7 +63,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -101,7 +100,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -111,7 +109,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
 public class TestSQLRepositoryQuery {
 
@@ -1424,14 +1422,14 @@ public class TestSQLRepositoryQuery {
 
     @Test
     // NoFileSecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
     public void testSecurityManagerBasic() throws Exception {
         doTestSecurityManager();
     }
 
     @Test
     // NoFile2SecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
     public void testSecurityManagerWithTransformer() throws Exception {
         doTestSecurityManager();
     }
@@ -2243,7 +2241,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     // NoFile2SecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
     public void testQueryIterableWithTransformer() throws Exception {
         createDocs();
         IterableQueryResult res;
