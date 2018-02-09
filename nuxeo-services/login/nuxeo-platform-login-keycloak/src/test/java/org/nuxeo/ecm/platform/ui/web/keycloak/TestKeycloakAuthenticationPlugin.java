@@ -38,7 +38,6 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.connector.ResponseFacade;
 import org.apache.catalina.core.StandardContext;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keycloak.adapters.AuthOutcome;
@@ -54,7 +53,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.usermapper.test.UserMapperFeature;
 
-@Ignore("NXP-24343")
 @RunWith(FeaturesRunner.class)
 @Features({PlatformFeature.class, UserMapperFeature.class})
 @Deploy({ "org.nuxeo.usermapper", "org.nuxeo.ecm.platform.web.common" })
