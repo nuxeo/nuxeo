@@ -28,7 +28,7 @@ import org.openqa.selenium.WebElement;
 
 public class ConnectWizardPage extends AbstractWizardPage {
 
-    protected static final String REGISTER_DIV_LOCATOR = "//div[@class=\"CSS_CLASS\"]";
+    protected static final String REGISTER_DIV_LOCATOR = "//div[@class='CSS_CLASS']";
 
     public ConnectWizardPage(WebDriver driver) {
         super(driver);
@@ -37,7 +37,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
 
     @Override
     public String getTitle() {
-        WebElement title = findElementWithTimeout(By.xpath("//h3"));
+        WebElement title = findElementWithTimeout(By.xpath("//header//div[@class='label']"));
         return title.getText().trim();
     }
 
