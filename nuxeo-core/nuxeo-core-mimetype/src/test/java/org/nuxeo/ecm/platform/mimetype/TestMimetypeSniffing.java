@@ -162,6 +162,12 @@ public class TestMimetypeSniffing {
                 mimetypeRegistry.getMimetypeFromFile(getFileFromResource("test-data/hello.vsd")));
     }
 
+    @Test
+    public void testCustomMimetypExtensions() {
+        assertEquals("application/octet-stream", mimetypeRegistry.getMimetypeFromExtension("rvt"));
+        assertEquals("application/octet-stream", mimetypeRegistry.getMimetypeFromExtension("dlx"));
+    }
+
     // CSV file
     @Test
     public void testCsvDocument() throws Exception {
