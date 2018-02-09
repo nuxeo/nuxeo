@@ -41,8 +41,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
+// this should use a mock library instead
 public class MockHttpServletRequest implements HttpServletRequest {
 
     protected Map<String, String> headers = new HashMap<String, String>();
@@ -381,6 +383,21 @@ public class MockHttpServletRequest implements HttpServletRequest {
     @Override
     public void logout() throws ServletException {
         // nothing to do
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return 0;
+    }
+
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,6 +79,17 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache" })
 public class TestDownloadService {
 
+    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
+
     @Inject
     protected DownloadService downloadService;
 
@@ -96,7 +108,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -151,7 +163,7 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -188,7 +200,7 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -222,7 +234,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -280,7 +292,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -324,7 +336,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -422,7 +434,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -516,7 +528,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
