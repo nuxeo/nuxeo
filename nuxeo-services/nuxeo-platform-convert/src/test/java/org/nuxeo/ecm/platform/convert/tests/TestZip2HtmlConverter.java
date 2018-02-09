@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@Ignore("NXP-24309")
 public class TestZip2HtmlConverter extends BaseConverterTest {
 
     @Test
