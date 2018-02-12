@@ -124,13 +124,13 @@ public interface TrashService {
     Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs);
 
     /**
-     * Get all documents from the trash of the current document.
+     * Get all documents from the trash under the given parent.
      *
      * @since 7.1
-     * @param currentDoc The current/parent document of trash document.
+     * @param parent The parent document of trash document.
      * @return All documents in the trash of the current document.
      */
-    DocumentModelList getDocuments(DocumentModel currentDoc);
+    DocumentModelList getDocuments(DocumentModel parent);
 
     /**
      * Gets all document references from the trash of a Folderish document that can be purged.
