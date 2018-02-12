@@ -41,9 +41,10 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ WebEngineFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.forms.layout.core", "org.nuxeo.ecm.platform.forms.layout.export",
-        "org.nuxeo.ecm.platform.forms.layout.client:OSGI-INF/layouts-framework.xml",
-        "org.nuxeo.ecm.platform.forms.layout.export.tests:OSGI-INF/layouts-test-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client:OSGI-INF/layouts-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export.tests:OSGI-INF/layouts-test-contrib.xml")
 public class TestLayoutResource {
 
     @Rule

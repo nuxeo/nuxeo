@@ -45,8 +45,8 @@ import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml",
-        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-resolver.xml" })
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-resolver.xml")
 public class TestUserManagerResolver extends UserManagerTestCase {
 
     private static final String USER_XPATH = "umr:user";

@@ -80,10 +80,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ AuditFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.platform.dublincore" })
-@Deploy({ "org.nuxeo.ecm.platform.tag:login-config.xml", "org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml",
-        "org.nuxeo.ecm.tag.tests:test-versioning-contrib.xml" })
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.platform.tag:login-config.xml")
+@Deploy("org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.tag.tests:test-versioning-contrib.xml")
 public abstract class AbstractTestTagService {
 
     @Inject

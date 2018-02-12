@@ -28,11 +28,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 10.1
  */
 @Features(AutomationFeature.class)
-@Deploy({ //
-        "org.nuxeo.ecm.platform.forms.layout.export", // needed by automation io
-        "org.nuxeo.ecm.automation.io", // needed to serialize objects
-        "org.nuxeo.ecm.automation.server" //
-})
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.automation.server")
 public class AutomationServerFeature extends SimpleFeature {
 
 }

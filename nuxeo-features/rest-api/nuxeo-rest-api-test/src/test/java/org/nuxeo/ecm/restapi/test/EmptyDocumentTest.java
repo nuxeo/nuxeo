@@ -55,8 +55,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Features({ RestServerFeature.class, LogFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml",
-        "org.nuxeo.ecm.platform.restapi.test.test:test-dummy-listener-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-dummy-listener-contrib.xml")
 public class EmptyDocumentTest extends BaseTest {
 
     protected static final Map<String, String> HEADERS = Collections.singletonMap("properties", "*");

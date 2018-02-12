@@ -31,8 +31,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(MongoDBFeature.class)
-@Deploy({ "org.nuxeo.runtime.kv" })
-@Deploy({ "org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-keyvalue-test-contrib.xml" })
+@Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-keyvalue-test-contrib.xml")
 public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
 
     @Inject

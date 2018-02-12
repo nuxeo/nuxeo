@@ -139,9 +139,9 @@ public class TestService {
     }
 
     @Test
-    @Deploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml",
-            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml",
-            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml" })
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml")
     public void testAvailability() throws Exception {
 
         ConverterCheckResult result = null;
@@ -217,9 +217,9 @@ public class TestService {
     }
 
     @Test
-    @Deploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml",
-            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml",
-            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib5.xml" })
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib5.xml")
     public void testChainConverterAvailability() throws Exception {
 
         ConverterCheckResult result = cs.isConverterAvailable("chainAvailable");

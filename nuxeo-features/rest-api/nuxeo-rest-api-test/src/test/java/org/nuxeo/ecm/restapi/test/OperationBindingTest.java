@@ -55,7 +55,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.restapi.test:operation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.restapi.test:operation-contrib.xml")
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {

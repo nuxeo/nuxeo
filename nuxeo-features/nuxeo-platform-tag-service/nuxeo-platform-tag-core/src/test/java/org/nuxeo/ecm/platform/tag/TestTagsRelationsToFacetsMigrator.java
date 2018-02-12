@@ -59,7 +59,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class TestTagsRelationsToFacetsMigrator {
 
     protected static final int NDOCS = 100;

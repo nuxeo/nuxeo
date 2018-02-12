@@ -161,9 +161,9 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Test
     // deploy contrib where only Note and File documents are fulltext indexed
-    @Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
     public void testFulltextOnlyNoteFile() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -191,9 +191,10 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Test
     // deploy contrib where only Note and File are not fulltext indexed
-    @Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
     public void testFulltextNoteFileExcluded() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -222,9 +223,9 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Test
     // deploy contrib where fulltext configuration is mixed include types should have the priority
-    @Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-mixed-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
-            "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-fulltext-mixed-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
     public void testFulltextMixedConfig() throws Exception {
         DocumentModelList dml;
         createDocs();

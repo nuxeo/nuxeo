@@ -28,10 +28,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @Features({ ManagementFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics",
-        "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
-@Deploy({ "org.nuxeo.ecm.platform.audit:nxaudit-ds.xml",
-        "org.nuxeo.ecm.platform.audit:test-stream-audit-contrib.xml" })
+@Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.audit")
+@Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:test-stream-audit-contrib.xml")
 public class StreamAuditFeature extends AuditFeature {
 
     @Override

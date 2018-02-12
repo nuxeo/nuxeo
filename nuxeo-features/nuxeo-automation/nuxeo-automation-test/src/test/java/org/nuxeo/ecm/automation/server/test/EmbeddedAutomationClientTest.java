@@ -122,11 +122,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml", "org.nuxeo.ecm.automation.test" })
-@Deploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml", "org.nuxeo.ecm.automation.test:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.url.api")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml")
+@Deploy("org.nuxeo.ecm.automation.test")
+@Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.test:test-mvalues.xml")
+@Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
 @Features({ EmbeddedAutomationServerFeature.class, AuditFeature.class })
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)

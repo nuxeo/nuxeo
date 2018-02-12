@@ -39,8 +39,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, WebEngineFeatureCore.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.forms.layout.export" })
-@Deploy({ "org.nuxeo.ecm.automation.io:test-chains.xml", "org.nuxeo.ecm.automation.io:operations-contrib-test.xml" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
+@Deploy("org.nuxeo.ecm.automation.io:test-chains.xml")
+@Deploy("org.nuxeo.ecm.automation.io:operations-contrib-test.xml")
 public class TestAutomationJson {
 
     @Inject

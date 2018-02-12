@@ -54,8 +54,9 @@ import ro.isdc.wro.util.WroTestUtils;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.web.resources.core", "org.nuxeo.web.resources.wro" })
-@Deploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml" })
+@Deploy("org.nuxeo.web.resources.core")
+@Deploy("org.nuxeo.web.resources.wro")
+@Deploy("org.nuxeo.web.resources.wro:webresources-test-config.xml")
 public class TestNuxeoWroModelFactory {
 
     static final String BUNDLE = "org.nuxeo.web.resources.rest";

@@ -49,9 +49,12 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.restapi.io",
-        "org.nuxeo.ecm.platform.restapi.server" })
+@Deploy("org.nuxeo.ecm.platform.url.api")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.restapi.io")
+@Deploy("org.nuxeo.ecm.platform.restapi.server")
 @Jetty(port = 18090)
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestHttpHelpers {

@@ -39,10 +39,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class CollectionOperationsTestCase {
 
     protected static final String TEST_FILE_NAME = "testFile";

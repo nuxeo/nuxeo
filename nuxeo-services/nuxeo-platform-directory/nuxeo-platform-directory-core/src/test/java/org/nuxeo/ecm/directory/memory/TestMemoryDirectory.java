@@ -61,7 +61,9 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({RuntimeFeature.class, ClientLoginFeature.class})
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.directory" })
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
 public class TestMemoryDirectory {
 

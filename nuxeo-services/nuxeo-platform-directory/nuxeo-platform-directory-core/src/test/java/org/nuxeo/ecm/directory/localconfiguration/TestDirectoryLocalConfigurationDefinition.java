@@ -51,7 +51,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DirectoryLocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.api" })
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory:types-for-test-directory-local-configuration.xml")
 public class TestDirectoryLocalConfigurationDefinition {
 

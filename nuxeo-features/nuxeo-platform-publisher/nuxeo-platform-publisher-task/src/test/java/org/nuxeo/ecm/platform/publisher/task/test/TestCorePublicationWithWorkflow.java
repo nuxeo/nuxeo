@@ -60,23 +60,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.versioning.api", //
-        "org.nuxeo.ecm.platform.versioning", //
-        "org.nuxeo.ecm.relations", //
-        "org.nuxeo.ecm.relations.jena", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.publisher.core.contrib", //
-        "org.nuxeo.ecm.platform.publisher.core", //
-        "org.nuxeo.ecm.platform.publisher.task", //
-        "org.nuxeo.ecm.platform.publisher.task.test", //
-        "org.nuxeo.ecm.platform.task.api", //
-        "org.nuxeo.ecm.platform.task.core", //
-        "org.nuxeo.ecm.platform.task.testing", //
-})
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
+@Deploy("org.nuxeo.ecm.platform.publisher.task")
+@Deploy("org.nuxeo.ecm.platform.publisher.task.test")
+@Deploy("org.nuxeo.ecm.platform.task.api")
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
 public abstract class TestCorePublicationWithWorkflow {
 
     @Inject

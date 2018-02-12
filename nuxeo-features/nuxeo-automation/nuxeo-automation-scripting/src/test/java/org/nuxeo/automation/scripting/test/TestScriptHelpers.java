@@ -57,8 +57,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.scripting" })
-@Deploy({ "org.nuxeo.ecm.automation.scripting:automation-scripting-contrib.xml" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.scripting")
+@Deploy("org.nuxeo.ecm.automation.scripting:automation-scripting-contrib.xml")
 public class TestScriptHelpers {
 
     @Inject

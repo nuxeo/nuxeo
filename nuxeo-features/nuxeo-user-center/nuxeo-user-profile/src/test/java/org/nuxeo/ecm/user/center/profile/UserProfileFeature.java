@@ -33,10 +33,14 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features(PlatformFeature.class)
 // @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common",
-        "org.nuxeo.ecm.user.center.profile" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.user.center.profile")
 public class UserProfileFeature extends SimpleFeature {
 
     protected File dir;

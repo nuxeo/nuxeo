@@ -20,7 +20,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.runtime.metrics" })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.runtime.management:isolated-server.xml")
 @Features(RuntimeFeature.class)
 public class ManagementFeature extends SimpleFeature {

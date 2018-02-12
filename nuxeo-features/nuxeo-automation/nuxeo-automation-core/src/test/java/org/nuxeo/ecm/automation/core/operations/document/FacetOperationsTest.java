@@ -90,7 +90,7 @@ public class FacetOperationsTest {
         session.save();
 
     }
-    
+
     @After
     public void clearRepo() {
         session.removeChildren(session.getRootDocument().getRef());
@@ -110,7 +110,7 @@ public class FacetOperationsTest {
         DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
 
         assertNotNull(resultDoc);
-        assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));        
+        assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));
 
     }
 
@@ -172,7 +172,7 @@ public class FacetOperationsTest {
 
         assertNotNull(resultDoc);
         assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));
-        
+
         resultDoc.refresh();
         assertFalse("Doc should not have the facet after refresh", resultDoc.hasFacet(THE_FACET));
 
@@ -193,7 +193,7 @@ public class FacetOperationsTest {
 
         assertNotNull(resultDoc);
         assertFalse("The doc should not have the facet.", resultDoc.hasFacet(THE_FACET));
-        
+
         resultDoc.refresh();
         assertTrue("Doc should have the facet after refresh", resultDoc.hasFacet(THE_FACET));
     }

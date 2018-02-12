@@ -41,6 +41,7 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
+    @Override
     public boolean isAnnotable(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null) { // not a nuxeo uri

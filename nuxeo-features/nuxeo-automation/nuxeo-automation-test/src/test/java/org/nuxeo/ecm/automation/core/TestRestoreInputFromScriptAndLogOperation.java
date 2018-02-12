@@ -44,7 +44,8 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
 @LogCaptureFeature.FilterOn(loggerName = "loggerName", logLevel =  "ERROR")
 public class TestRestoreInputFromScriptAndLogOperation {
     @Inject

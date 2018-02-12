@@ -49,7 +49,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
 public class TestRenditionProvider {
 
     public static final String PDF_RENDITION_DEFINITION = "pdf";

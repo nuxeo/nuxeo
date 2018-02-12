@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/defaultvalue-docTypes.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/defaultvalue-docTypes.xml")
 public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public DocumentModelJsonReaderTest() {

@@ -46,8 +46,8 @@ import com.google.inject.Provider;
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.ldap")
-@Deploy({ "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml" })
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
 public class InternalLDAPDirectoryFeature extends SimpleFeature {
 
     protected MockLdapServer server;

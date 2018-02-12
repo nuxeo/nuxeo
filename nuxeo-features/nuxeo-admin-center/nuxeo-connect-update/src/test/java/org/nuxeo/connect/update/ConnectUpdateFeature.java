@@ -28,8 +28,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 9.3
  */
 @Features(ContainerFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
-        "org.nuxeo.runtime.reload" })
+@Deploy("org.nuxeo.connect.client")
+@Deploy("org.nuxeo.connect.client.wrapper")
+@Deploy("org.nuxeo.connect.update")
+@Deploy("org.nuxeo.runtime.reload")
 public class ConnectUpdateFeature extends SimpleFeature {
 
 }

@@ -46,9 +46,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
-@Deploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml",
-        "org.nuxeo.ecm.directory.tests:test-directory-delete-contrib.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directory-delete-contrib.xml")
 public class TestDirectoryDeleteConstraints {
 
     @Inject

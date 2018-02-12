@@ -23,7 +23,6 @@ package org.nuxeo.ecm.admin.permissions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -47,8 +46,8 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
  * @since 9.1
  */
 @Features({ TransientStoreFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.admin.center:OSGI-INF/core-types-contrib.xml",
-        "org.nuxeo.admin.center:OSGI-INF/pageproviders-contrib.xml" })
+@Deploy("org.nuxeo.admin.center:OSGI-INF/core-types-contrib.xml")
+@Deploy("org.nuxeo.admin.center:OSGI-INF/pageproviders-contrib.xml")
 public abstract class AbstractPermissionsPurge {
 
     @Inject

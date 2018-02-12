@@ -47,8 +47,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.automation",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml"})
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.elasticsearch.core")
+@Deploy("org.nuxeo.elasticsearch.automation")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.elasticsearch.test:chain-test-contrib.xml")
 public class TestElasticsearchAutomation {
 

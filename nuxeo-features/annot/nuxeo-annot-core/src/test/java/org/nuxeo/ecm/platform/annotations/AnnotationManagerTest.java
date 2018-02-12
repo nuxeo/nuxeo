@@ -43,6 +43,7 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
 
     private final AnnotationManager manager = new AnnotationManager();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

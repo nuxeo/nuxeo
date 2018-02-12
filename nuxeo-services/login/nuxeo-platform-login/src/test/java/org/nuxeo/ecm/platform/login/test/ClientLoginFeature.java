@@ -40,8 +40,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 8.3
  */
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.login:dummy-client-login-config.xml" })
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.login:dummy-client-login-config.xml")
 public class ClientLoginFeature extends SimpleFeature {
 
     protected LoginContext logContext = null;

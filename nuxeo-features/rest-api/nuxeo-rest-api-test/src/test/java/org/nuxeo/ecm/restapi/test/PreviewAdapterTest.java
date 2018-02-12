@@ -49,7 +49,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview" })
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.preview")
 public class PreviewAdapterTest extends BaseTest {
 
     @Test

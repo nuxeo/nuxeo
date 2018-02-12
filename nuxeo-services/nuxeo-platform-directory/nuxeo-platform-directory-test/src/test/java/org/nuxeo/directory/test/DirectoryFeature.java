@@ -20,8 +20,13 @@
 
 package org.nuxeo.directory.test;
 
-import com.google.inject.Binder;
-import com.google.inject.name.Names;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
@@ -44,24 +49,20 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.inject.Binder;
+import com.google.inject.name.Names;
 
 /**
  * @since 9.2
  */
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.directory.mongodb" })
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.directory.sql")
+@Deploy("org.nuxeo.directory.mongodb")
 public class DirectoryFeature extends SimpleFeature {
 
     public static final String USER_DIRECTORY_NAME = "userDirectory";

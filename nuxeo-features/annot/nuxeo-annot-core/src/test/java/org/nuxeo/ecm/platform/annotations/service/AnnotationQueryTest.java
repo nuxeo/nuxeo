@@ -43,13 +43,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations", //
-        "org.nuxeo.ecm.annotations", //
-        "org.nuxeo.ecm.relations.jena", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.types.api", //
-})
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.annotations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
 public class AnnotationQueryTest {
 

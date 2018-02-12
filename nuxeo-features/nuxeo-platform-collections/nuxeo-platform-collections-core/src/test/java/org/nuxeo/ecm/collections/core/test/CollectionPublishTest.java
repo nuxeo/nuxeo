@@ -46,7 +46,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CollectionFeature.class)
-@Deploy({ "org.nuxeo.ecm.user.center.dashboard", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.user.center.dashboard")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class CollectionPublishTest {
 
     protected static final String TEST_FILE_NAME = "testFile";

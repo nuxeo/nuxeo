@@ -49,9 +49,9 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.scripting" })
-@Deploy({ "org.nuxeo.ecm.automation.test.test:operation-contrib.xml",
-        "org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.automation.scripting")
+@Deploy("org.nuxeo.ecm.automation.test.test:operation-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml")
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestRemoteAutomationScript {

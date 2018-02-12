@@ -235,6 +235,7 @@ public class ImageAnnotater extends AbstractAnnotater implements AnnotationChang
         decorator.updateAnnotatedArea(ax, ay, bx2, by2, image2, divElement);
     }
 
+    @Override
     public void onChange(AnnotationModel model, ChangeEvent ce) {
         if (model.getNewAnnotation() == null && ce == ChangeEvent.annotation) {
             processing = false;

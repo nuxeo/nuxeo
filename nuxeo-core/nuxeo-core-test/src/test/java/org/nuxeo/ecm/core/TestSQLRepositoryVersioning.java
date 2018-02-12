@@ -71,8 +71,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-updatedoc-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-updatedoc-contrib.xml")
 public class TestSQLRepositoryVersioning {
 
     @Inject

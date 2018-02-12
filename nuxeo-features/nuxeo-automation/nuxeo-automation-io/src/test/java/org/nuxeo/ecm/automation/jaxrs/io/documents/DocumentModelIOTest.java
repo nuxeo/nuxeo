@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.io" })
+@Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.automation.io:testdoc-core-contrib.xml")
 public class DocumentModelIOTest {
 

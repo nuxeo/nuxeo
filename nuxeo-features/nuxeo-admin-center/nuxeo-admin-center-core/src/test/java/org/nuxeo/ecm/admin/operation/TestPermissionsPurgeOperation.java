@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.admin.center:OSGI-INF/operation-contrib.xml" })
+@Deploy("org.nuxeo.admin.center:OSGI-INF/operation-contrib.xml")
 public class TestPermissionsPurgeOperation extends AbstractPermissionsPurge {
 
     @Inject

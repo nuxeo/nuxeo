@@ -53,7 +53,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.platform.versioning.api" })
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
 @RepositoryConfig(init = Populate.class)
 public class TestPublicationRelations extends PublisherTestCase {
 

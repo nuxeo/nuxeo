@@ -54,7 +54,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.annotation.core", "org.nuxeo.ecm.platform.query.api" })
+@Deploy("org.nuxeo.ecm.annotation.core")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 public class TestAnnotationService {
 
     @Inject

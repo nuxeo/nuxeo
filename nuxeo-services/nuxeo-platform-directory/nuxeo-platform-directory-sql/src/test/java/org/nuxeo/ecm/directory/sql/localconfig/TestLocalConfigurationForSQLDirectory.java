@@ -48,15 +48,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, SQLDirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-})
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.sql")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
 // override user schema with intField & dateField
-@Deploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml",
-        "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-for-local-configuration-bundle.xml",
-        "org.nuxeo.ecm.directory.sql.tests:test-types-with-directory-local-configuration.xml" })
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml")
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-for-local-configuration-bundle.xml")
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-types-with-directory-local-configuration.xml")
 public class TestLocalConfigurationForSQLDirectory {
 
     @Inject

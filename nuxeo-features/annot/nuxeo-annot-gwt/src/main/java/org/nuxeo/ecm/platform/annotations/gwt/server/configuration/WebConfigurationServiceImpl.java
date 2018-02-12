@@ -63,6 +63,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     private NuxeoPrincipal currentUser;
 
+    @Override
     public WebConfiguration getWebConfiguration(String url) {
         WebAnnotationConfigurationService config = Framework.getService(WebAnnotationConfigurationService.class);
         WebConfiguration conf = new WebConfiguration();

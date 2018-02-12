@@ -46,8 +46,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.default.config", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.platform.login.deputy.management" })
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.default.config")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.platform.login.deputy.management")
 @Deploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
 public class TestCanPersistDeputyMandates {
 

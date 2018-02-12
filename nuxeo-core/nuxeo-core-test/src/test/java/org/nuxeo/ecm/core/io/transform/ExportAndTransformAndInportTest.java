@@ -33,9 +33,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/export-docTypes.xml", //
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/import-docTypes.xml", //
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/other-repo.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/export-docTypes.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/import-docTypes.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/other-repo.xml")
 public class ExportAndTransformAndInportTest extends BaseExport {
 
     public void runImport(DocumentModel root, File source) throws IOException {

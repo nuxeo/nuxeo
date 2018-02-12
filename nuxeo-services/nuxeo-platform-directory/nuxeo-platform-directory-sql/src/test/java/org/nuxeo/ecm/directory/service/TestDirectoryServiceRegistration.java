@@ -44,8 +44,8 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml")
 public class TestDirectoryServiceRegistration {
 
     @Inject

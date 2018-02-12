@@ -76,6 +76,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         listeners = configurationService.getListeners();
     }
 
+    @Override
     public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         checkUrl(annotation);
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
@@ -119,6 +120,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         }
     }
 
+    @Override
     public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) {
         checkPermission(annotation, user, configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
@@ -131,6 +133,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         }
     }
 
+    @Override
     public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) {
         checkPermission(annotation, user, configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
@@ -143,6 +146,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         }
     }
 
+    @Override
     public Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl) {
         for (EventListener listener : listeners) {
             listener.beforeAnnotationRead(user, annotationId);
@@ -155,10 +159,12 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl, result);
     }
 
+    @Override
     public Graph getAnnotationGraph() {
         return service.getAnnotationGraph();
     }
 
+    @Override
     public List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user) {
         String baseUrl = null;
         if (!uri.toString().startsWith("urn")) {
@@ -187,6 +193,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return service.getAnnotationsCount(resolver.translateToGraphURI(uri), user);
     }
 
+    @Override
     public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         checkPermission(annotation, user, configurationService.getUpdateAnnotationPermission());
         for (EventListener listener : listeners) {

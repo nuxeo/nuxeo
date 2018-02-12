@@ -62,11 +62,13 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.forms.layout.core",
-        "org.nuxeo.ecm.platform.forms.layout.client", "org.nuxeo.ecm.platform.forms.layout.io.plugins",
-        "org.nuxeo.ecm.platform.forms.layout.export" })
-@Deploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
-        "org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.io.plugins")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml")
 public class TestLayoutExport {
 
     protected static final String TEST_CATEGORY = "standalone";

@@ -42,8 +42,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml",
-        "org.nuxeo.ecm.platform.rendition.core:test-stored-rendition-manager-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-stored-rendition-manager-contrib.xml")
 public class TestStoredRenditionManager {
 
     @Inject

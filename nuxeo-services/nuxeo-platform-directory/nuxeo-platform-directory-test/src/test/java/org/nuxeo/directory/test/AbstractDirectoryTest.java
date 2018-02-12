@@ -62,8 +62,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * @since 9.2
  */
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
 public abstract class AbstractDirectoryTest {
 
     protected static final String USER_DIR = "userDirectory";

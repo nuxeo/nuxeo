@@ -61,15 +61,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.task.core", //
-        "org.nuxeo.ecm.platform.task.testing", //
-})
-@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml", //
-        "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml", //
-        "org.nuxeo.ecm.platform.task.core.test:OSGI-INF/pageproviders-contrib.xml", //
-})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.task.core.test:OSGI-INF/pageproviders-contrib.xml")
 public class TaskPageProvidersTest {
 
     @Inject

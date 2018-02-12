@@ -43,7 +43,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.notification.core", "org.nuxeo.ecm.platform.notification.api" })
+@Deploy("org.nuxeo.ecm.platform.notification.core")
+@Deploy("org.nuxeo.ecm.platform.notification.api")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class UserSubscriptionAdapterTest {
 

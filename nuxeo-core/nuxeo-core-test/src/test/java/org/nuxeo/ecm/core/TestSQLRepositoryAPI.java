@@ -126,11 +126,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-})
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml" })
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryAPI {
 
     @Inject
@@ -306,7 +305,7 @@ public class TestSQLRepositoryAPI {
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((Serializable[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof List);
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     @Test
@@ -472,7 +471,7 @@ public class TestSQLRepositoryAPI {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     @Test

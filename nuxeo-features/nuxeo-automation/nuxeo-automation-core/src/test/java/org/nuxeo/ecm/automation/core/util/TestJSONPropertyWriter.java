@@ -69,8 +69,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.schema" })
-@Deploy({ "org.nuxeo.ecm.webengine.core:OSGI-INF/json-service.xml" })
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.webengine.core:OSGI-INF/json-service.xml")
 public class TestJSONPropertyWriter {
 
     public static final String SCHEMA_NAME = "schema";

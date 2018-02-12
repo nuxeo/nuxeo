@@ -59,9 +59,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @SuppressWarnings("unchecked")
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@Deploy("org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:schemas-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestPageProvider {
 
     @Inject

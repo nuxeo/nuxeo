@@ -43,8 +43,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestPictureResize {
 
     @Inject

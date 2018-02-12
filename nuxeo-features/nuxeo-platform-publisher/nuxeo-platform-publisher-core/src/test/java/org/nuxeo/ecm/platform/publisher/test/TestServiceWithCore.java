@@ -54,7 +54,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author tiry
  */
 @RepositoryConfig(cleanup = Granularity.METHOD, init = Populate.class)
-@Deploy({ "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.platform.versioning.api" })
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
 public class TestServiceWithCore extends PublisherTestCase {
 
     public static class Populate implements RepositoryInit {

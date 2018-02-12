@@ -45,6 +45,7 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
+    @Override
     public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {

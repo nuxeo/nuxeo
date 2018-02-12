@@ -174,7 +174,7 @@ public class Annotation {
     }
 
     public void setStartContainer(Container container) {
-        this.startContainer = container;
+        startContainer = container;
     }
 
     public boolean hasStartContainer() {
@@ -186,7 +186,7 @@ public class Annotation {
     }
 
     public void setEndContainer(Container container) {
-        this.endContainer = container;
+        endContainer = container;
     }
 
     public boolean hasEndContainer() {

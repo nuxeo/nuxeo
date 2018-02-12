@@ -63,9 +63,13 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, PlatformFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.ecm.platform.contentview.jsf", "org.nuxeo.search.ui",
-        "org.nuxeo.ecm.platform.search.core", "org.nuxeo.ecm.platform.restapi.server.search" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.webapp.types")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
+@Deploy("org.nuxeo.search.ui")
+@Deploy("org.nuxeo.ecm.platform.search.core")
+@Deploy("org.nuxeo.ecm.platform.restapi.server.search")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class SearchTest extends BaseTest {

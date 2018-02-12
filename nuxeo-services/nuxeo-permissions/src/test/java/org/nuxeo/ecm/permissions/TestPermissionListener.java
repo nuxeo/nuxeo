@@ -68,7 +68,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.permissions" })
+@Deploy("org.nuxeo.ecm.permissions")
 public class TestPermissionListener {
 
     @Inject

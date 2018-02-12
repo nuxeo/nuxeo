@@ -29,9 +29,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.runtime.pubsub" })
-@Deploy({ "org.nuxeo.runtime.stream:test-stream-contrib.xml",
-        "org.nuxeo.runtime.stream:test-stream-pubsub-contrib.xml" })
+@Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.runtime.pubsub")
+@Deploy("org.nuxeo.runtime.stream:test-stream-contrib.xml")
+@Deploy("org.nuxeo.runtime.stream:test-stream-pubsub-contrib.xml")
 public class TestStreamPubSubProvider extends TestMemPubSubProvider {
 
     @Test

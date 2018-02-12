@@ -88,13 +88,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins" })
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-restriction-contrib.xml",
-        // deploy specific adapter for testing external blobs: files are stored
-        // in temporary directory
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-externalblob-adapters-contrib.xml", })
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-restriction-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-externalblob-adapters-contrib.xml")
 public class TestSQLRepositoryProperties {
 
     @Inject
@@ -297,13 +295,13 @@ public class TestSQLRepositoryProperties {
         // this tests on a property that is internally a list, not an array (yes we still have those!)
         assertEquals(ListProperty.class, doc.getProperty("participants").getClass());
         String[] values = { null, "bar" };
-        doc.setPropertyValue("participants", (Serializable) values);
+        doc.setPropertyValue("participants", values);
         session.saveDocument(doc);
         session.save();
         nextTransaction();
         session = coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
-        assertEquals(Arrays.asList(values), (List<?>) doc.getPropertyValue("participants"));
+        assertEquals(Arrays.asList(values), doc.getPropertyValue("participants"));
     }
 
     @Test

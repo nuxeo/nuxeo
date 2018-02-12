@@ -42,8 +42,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:test-directories-tsv-bundle.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-tsv-bundle.xml")
 public class TestDirectoryWithTSVInit {
 
     private static final String SCHEMA = "user";

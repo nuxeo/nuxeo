@@ -39,14 +39,11 @@ import com.google.inject.name.Names;
 
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(init = CoreDirectoryInit.class)
-@Deploy({ //
-        "org.nuxeo.ecm.directory.api", //
-        "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-})
-@Deploy({ //
-        "org.nuxeo.ecm.directory.core.tests:core/types-config.xml",
-        "org.nuxeo.ecm.directory.core.tests:core/core-directory-config.xml" })
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.directory.core.tests:core/types-config.xml")
+@Deploy("org.nuxeo.ecm.directory.core.tests:core/core-directory-config.xml")
 public class CoreDirectoryFeature extends SimpleFeature {
 
     public static final String CORE_DIRECTORY_NAME = "userCoreDirectory";

@@ -43,8 +43,11 @@ import com.google.inject.Provider;
  * @since 5.6-HF02
  */
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.scripting", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.runtime.management" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.scripting")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.runtime.management")
 public class AutomationFeature extends SimpleFeature {
 
     protected final OperationContextProvider contextProvider = new OperationContextProvider();

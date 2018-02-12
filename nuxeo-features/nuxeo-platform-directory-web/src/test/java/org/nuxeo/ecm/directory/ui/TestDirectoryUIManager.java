@@ -48,9 +48,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({
-        // deploy directory ui service
-        "org.nuxeo.ecm.actions", "org.nuxeo.ecm.directory.web" })
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.directory.web")
 // deploy test dirs + ui config
 @Deploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-sql-contrib.xml")
 public class TestDirectoryUIManager {

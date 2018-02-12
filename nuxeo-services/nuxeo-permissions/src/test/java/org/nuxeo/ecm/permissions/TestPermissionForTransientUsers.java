@@ -61,7 +61,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class, TokenAuthenticationServiceFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.permissions" })
+@Deploy("org.nuxeo.ecm.permissions")
 public class TestPermissionForTransientUsers {
 
     @Inject

@@ -61,8 +61,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.audit:test-audit-contrib.xml",
-        "org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml")
 public class TestPageProvider {
 
     protected static final List<String> entriesIdx = Arrays.asList(new String[] { "3", "7", "7", "8", "1", "8", "7",

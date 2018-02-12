@@ -58,8 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.permissions" })
-@Deploy({ "org.nuxeo.ecm.permissions:test-listeners-contrib.xml" })
+@Deploy("org.nuxeo.ecm.permissions")
+@Deploy("org.nuxeo.ecm.permissions:test-listeners-contrib.xml")
 public class TestPermissionGrantedNotification {
 
     @Inject

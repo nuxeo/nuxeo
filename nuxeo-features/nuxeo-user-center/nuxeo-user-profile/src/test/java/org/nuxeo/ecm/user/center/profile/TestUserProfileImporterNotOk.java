@@ -42,9 +42,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ UserProfileFeature.class, DirectoryFeature.class })
 @RepositoryConfig
-@Deploy({ "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-sql-directories-contrib.xml",
-        "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-core-types-contrib.xml",
-        "org.nuxeo.ecm.user.center.profile:OSGI-INF/user-profile-test-not-ok-contrib.xml" })
+@Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-sql-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/user-profile-test-not-ok-contrib.xml")
 public class TestUserProfileImporterNotOk extends AbstractUserProfileImporterTest {
 
     @Test

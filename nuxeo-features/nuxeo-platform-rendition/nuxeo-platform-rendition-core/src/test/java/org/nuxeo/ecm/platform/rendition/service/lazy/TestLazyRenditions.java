@@ -43,6 +43,7 @@ import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvid
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
@@ -53,7 +54,6 @@ import com.google.inject.Inject;
 @Features({ RenditionFeature.class, TransientStoreFeature.class })
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 /**
- *
  * Check that LazyRendition work via Nuxeo native API
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>

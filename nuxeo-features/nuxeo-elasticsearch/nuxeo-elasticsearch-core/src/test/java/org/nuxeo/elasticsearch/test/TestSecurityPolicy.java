@@ -56,14 +56,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch" + ".core:security-policy-contrib.xml" })
-// @Deploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:security-policy-contrib.xml")
 public class TestSecurityPolicy {
-
-    private static final String IDX_NAME = "nxutest";
-
-    private static final String TYPE_NAME = "doc";
 
     @Inject
     protected WorkManager workManager;
