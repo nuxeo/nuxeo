@@ -42,7 +42,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
@@ -62,7 +61,7 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.schema",
         "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.platform.el", "org.nuxeo.targetplatforms.core" })
-@LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
+@Deploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
         "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestTargetPlatformService {
 

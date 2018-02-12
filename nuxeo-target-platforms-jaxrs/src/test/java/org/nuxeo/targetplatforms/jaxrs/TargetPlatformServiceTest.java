@@ -40,7 +40,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -50,7 +49,7 @@ import com.sun.jersey.api.client.WebResource;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.core.test", "org.nuxeo.targetplatforms.jaxrs" })
-@LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
+@Deploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
         "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TargetPlatformServiceTest extends BaseTest {
 
