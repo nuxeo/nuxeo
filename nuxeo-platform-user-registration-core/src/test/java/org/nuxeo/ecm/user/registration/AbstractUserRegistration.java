@@ -32,7 +32,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -41,7 +40,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.user.invite", "org.nuxeo.ecm.user.registration" })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.user.registration:test-types-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.user.registration:test-types-contrib.xml" })
 public abstract class AbstractUserRegistration {
 
     @Inject
