@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOComponent;
@@ -52,7 +51,7 @@ import com.google.inject.Inject;
 
 @Deploy({ "org.nuxeo.segmentio.connector" })
 @RunWith(FeaturesRunner.class)
-@LocalDeploy("org.nuxeo.segmentio.connector:segmentio-contribs.xml")
+@Deploy("org.nuxeo.segmentio.connector:segmentio-contribs.xml")
 @Features(CoreFeature.class)
 public class TestSegmentIOService {
 
