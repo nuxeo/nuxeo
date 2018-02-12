@@ -24,12 +24,12 @@ import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tests.pattern.KafkaHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 9.2
  */
-@LocalDeploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
+@Deploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
 public class TestDocumentImportKafka extends TestDocumentImport {
 
     @BeforeClass

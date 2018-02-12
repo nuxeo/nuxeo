@@ -40,7 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test dynamic root creation
@@ -50,7 +49,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping2-contrib.xml")
+@Deploy("nuxeo-importer-xml-parser:test-ImporterMapping2-contrib.xml")
 public class TestMapperServiceWithDynamicRoot {
 
     @Inject

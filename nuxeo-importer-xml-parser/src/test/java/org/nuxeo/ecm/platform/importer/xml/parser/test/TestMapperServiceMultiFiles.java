@@ -19,6 +19,17 @@
  */
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -33,17 +44,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Verifying Service mapping with multiple file attachments
@@ -55,7 +55,7 @@ import static org.junit.Assert.assertNotNull;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping-Multi-files-contrib.xml")
+@Deploy("nuxeo-importer-xml-parser:test-ImporterMapping-Multi-files-contrib.xml")
 public class TestMapperServiceMultiFiles {
 
     @Inject

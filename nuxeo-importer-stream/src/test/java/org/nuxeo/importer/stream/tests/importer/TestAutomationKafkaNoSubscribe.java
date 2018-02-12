@@ -23,12 +23,12 @@ import java.util.Map;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 9.2
  */
-@LocalDeploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
+@Deploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
 public class TestAutomationKafkaNoSubscribe extends TestAutomation {
 
     @BeforeClass

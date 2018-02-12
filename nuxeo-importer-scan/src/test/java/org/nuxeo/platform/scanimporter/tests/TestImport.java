@@ -33,10 +33,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@LocalDeploy({ "org.nuxeo.ecm.platform.scanimporter.test:needed-contribution-for-factory-deployment.xml",
+@Deploy({ "org.nuxeo.ecm.platform.scanimporter.test:needed-contribution-for-factory-deployment.xml",
         "org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/core-type-test-contrib.xml" })
 public class TestImport extends ImportTestCase {
 
@@ -49,7 +48,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
     public void testImport() throws Exception {
 
         String testPath = deployTestFiles("test3");
@@ -90,7 +89,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
     public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
@@ -121,7 +120,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
     public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
@@ -153,7 +152,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
     public void shouldSkipInitialContainerCreationSkipped() throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
@@ -178,7 +177,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
     public void testDocTypeMappingInImport() throws Exception {
 
         String testPath = deployTestFiles("test4");
@@ -209,7 +208,7 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib6.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib6.xml")
     public void shouldImportWithNoBlobMapping() throws Exception {
         // Exact same test than above but without blob mapping.
         String testPath = deployTestFiles("test4");

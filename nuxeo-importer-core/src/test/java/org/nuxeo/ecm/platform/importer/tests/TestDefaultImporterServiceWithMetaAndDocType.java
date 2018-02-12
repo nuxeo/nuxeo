@@ -39,7 +39,6 @@ import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Thibaud Arguillere
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.platform.importer.core", //
 })
-@LocalDeploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-service-contrib-metadata-with-doctype.xml")
+@Deploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-service-contrib-metadata-with-doctype.xml")
 public class TestDefaultImporterServiceWithMetaAndDocType {
 
     private static final String kIMPORT_FOLDER_NAME = "metadatas-with-doctype";

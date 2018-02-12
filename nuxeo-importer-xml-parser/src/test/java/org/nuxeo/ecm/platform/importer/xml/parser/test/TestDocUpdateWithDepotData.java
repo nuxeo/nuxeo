@@ -18,14 +18,9 @@
  */
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,19 +38,15 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy({"nuxeo-importer-xml-parser:test-ImporterMapping3-contrib.xml"})
+@Deploy({"nuxeo-importer-xml-parser:test-ImporterMapping3-contrib.xml"})
 
 public class TestDocUpdateWithDepotData {
 

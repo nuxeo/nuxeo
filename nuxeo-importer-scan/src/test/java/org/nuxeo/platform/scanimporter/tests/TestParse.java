@@ -33,8 +33,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileBlobHolder;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 public class TestParse extends ImportTestCase {
 
@@ -42,7 +41,7 @@ public class TestParse extends ImportTestCase {
     protected ScannedFileMapperService sfms;
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib1.xml")
     public void testSimpleParse() throws Exception {
 
         String testPath = deployTestFiles("test1");
@@ -75,7 +74,7 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib2.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib2.xml")
     public void testRSParse() throws Exception {
 
         String testPath = deployTestFiles("test2");
@@ -96,7 +95,7 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib4.xml")
     public void testSimpleDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");
@@ -121,7 +120,7 @@ public class TestParse extends ImportTestCase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib5.xml")
+    @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib5.xml")
     public void testCustomDocTypeMapping() throws Exception {
 
         String testPath = deployTestFiles("test4");

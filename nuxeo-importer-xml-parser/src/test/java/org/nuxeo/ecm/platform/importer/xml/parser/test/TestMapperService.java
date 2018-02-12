@@ -47,7 +47,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Verify Service mapping
@@ -58,7 +57,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping-contrib.xml")
+@Deploy("nuxeo-importer-xml-parser:test-ImporterMapping-contrib.xml")
 public class TestMapperService {
 
     @Inject
