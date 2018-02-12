@@ -18,6 +18,16 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -33,17 +43,6 @@ import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 8.4
@@ -53,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.video.convert",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.video.core:OSGI-INF/core-types-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.video.core:OSGI-INF/core-types-contrib.xml",
         "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-commandlines-contrib.xml",
         "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-operations-contrib.xml",
         "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-service.xml" })
