@@ -38,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.template.context.SimpleContextBuilder;
 
 import net.sf.jxls.transformer.XLSTransformer;
@@ -57,7 +56,7 @@ import net.sf.jxls.transformer.XLSTransformer;
         "org.nuxeo.template.manager", //
         "org.nuxeo.template.manager.jxls", //
 })
-@LocalDeploy("org.nuxeo.template.manager.jxls.tests:OSGI-INF/testxlstransformer-config.xml")
+@Deploy("org.nuxeo.template.manager.jxls.tests:OSGI-INF/testxlstransformer-config.xml")
 public class TestXLSTransformer {
 
     @Inject

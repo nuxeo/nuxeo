@@ -64,7 +64,6 @@ import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
@@ -83,7 +82,7 @@ import org.nuxeo.template.processors.HtmlBodyExtractor;
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.template.manager" })
-@LocalDeploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
+@Deploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
