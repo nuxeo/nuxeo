@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -362,7 +363,7 @@ public class CmisSuiteSession2 {
             CloseableHttpResponse response) throws IOException {
         String content;
         try (InputStream is = response.getEntity().getContent()) {
-            content = IOUtils.toString(is);
+            content = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
         assertEquals(content, HttpServletResponse.SC_CREATED, response.getStatusLine().getStatusCode());
         JsonNode root = mapper.readTree(content);
@@ -385,7 +386,7 @@ public class CmisSuiteSession2 {
             throws IOException {
         String content;
         try (InputStream is = response.getEntity().getContent()) {
-            content = IOUtils.toString(is);
+            content = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
         assertEquals(content, HttpServletResponse.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
         JsonNode root = mapper.readTree(content);

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -40,7 +41,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -120,7 +120,7 @@ public class CasPortal {
             throw new Error("Cannot validate ticket");
         }
         try (InputStream in = connection.getInputStream()) {
-            String content = IOUtils.toString(in, Charsets.UTF_8);
+            String content = IOUtils.toString(in, StandardCharsets.UTF_8);
             String iou = extractProxyGrantingTicket(content);
             return proxyGrantingTickets.remove(iou);
         }
@@ -145,7 +145,7 @@ public class CasPortal {
             throw new Error("Cannot get service ticket for proxy");
         }
         try (InputStream in = proxyConnection.getInputStream()) {
-            String proxyContent = IOUtils.toString(in, Charsets.UTF_8);
+            String proxyContent = IOUtils.toString(in, StandardCharsets.UTF_8);
             return extractProxyTicket(proxyContent);
         }
     }
