@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@LocalDeploy({ "org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-config.xml" })
+@Deploy({ "org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-config.xml" })
 public class TestOneDriveBlobProvider extends OneDriveTestCase {
 
     @Inject

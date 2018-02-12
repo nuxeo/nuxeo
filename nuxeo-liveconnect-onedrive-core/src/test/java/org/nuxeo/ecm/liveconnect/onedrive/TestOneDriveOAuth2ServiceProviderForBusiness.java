@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.liveconnect.onedrive;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,12 +30,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.onedrive.client.OneDriveAPI;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 8.2
  */
-@LocalDeploy("org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-onedrive-business-config.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-onedrive-business-config.xml")
 public class TestOneDriveOAuth2ServiceProviderForBusiness extends OneDriveTestCase {
 
     @Inject
