@@ -25,6 +25,7 @@ import static org.nuxeo.apidoc.listener.AttributesExtractorStater.ATTRIBUTES_PRO
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class TestExtractor {
     public void testParser() throws Exception {
         File xmlFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(
                 "apidoc-sample-fragment-contrib.xml");
-        String xml = FileUtils.readFileToString(xmlFile);
+        String xml = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
         String html = XMLContributionParser.prettyfy(xml);
     }
 
@@ -122,7 +123,7 @@ public class TestExtractor {
     }
 
     @Test
-    public void testAttributesExtractedAtCreation() throws InterruptedException {
+    public void testAttributesExtractedAtCreation() {
         DocumentModel myDoc = session.createDocumentModel("/", "mydoc", ExtensionInfo.TYPE_NAME);
         myDoc.setPropertyValue("file:content", getBlob());
         myDoc = session.createDocument(myDoc);
@@ -135,7 +136,7 @@ public class TestExtractor {
     }
 
     @Test
-    public void testOnExistingDocument() throws InterruptedException {
+    public void testOnExistingDocument() {
         // Disable listener to simulate exisiting document before new attributes field
         eventServiceAdmin.setListenerEnabledFlag(AttributesExtractorStater.class.getSimpleName(), false);
 

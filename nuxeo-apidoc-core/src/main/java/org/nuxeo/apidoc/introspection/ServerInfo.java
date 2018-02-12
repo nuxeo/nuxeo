@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,7 +49,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -207,7 +207,7 @@ public class ServerInfo {
                 File manifest = new File(jarFile, META_INF_MANIFEST_MF);
                 if (manifest.exists()) {
                     InputStream is = new FileInputStream(manifest);
-                    String mf = IOUtils.toString(is, Charsets.UTF_8);
+                    String mf = IOUtils.toString(is, StandardCharsets.UTF_8);
                     binfo.setManifest(mf);
                 }
                 // find and parse pom.xml
@@ -244,7 +244,7 @@ public class ServerInfo {
                     ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);
                     if (mfEntry != null) {
                         try (InputStream mfStream = zFile.getInputStream(mfEntry)) {
-                            String mf = IOUtils.toString(mfStream, Charsets.UTF_8);
+                            String mf = IOUtils.toString(mfStream, StandardCharsets.UTF_8);
                             binfo.setManifest(mf);
                         }
                     }

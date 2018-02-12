@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -187,18 +187,18 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
             String xml;
             if (jar.getAbsolutePath().endsWith(".xml")) {
                 try (InputStream in = new FileInputStream(jar)) {
-                    xml = IOUtils.toString(in, Charsets.UTF_8);
+                    xml = IOUtils.toString(in, StandardCharsets.UTF_8);
                 }
             } else if (jar.isDirectory()) {
                 File file = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
                 if (!file.exists()) {
                     return "Unable to locate file :" + file.getAbsolutePath();
                 }
-                xml = FileUtils.readFileToString(file);
+                xml = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             } else {
                 try (ZipFile jarArchive = new ZipFile(jar)) {
                 ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
-                    xml = IOUtils.toString(jarArchive.getInputStream(entry), Charsets.UTF_8);
+                    xml = IOUtils.toString(jarArchive.getInputStream(entry), StandardCharsets.UTF_8);
                 }
             }
             return DocumentationHelper.secureXML(xml);

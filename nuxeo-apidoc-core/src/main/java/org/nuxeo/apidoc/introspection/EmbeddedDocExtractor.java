@@ -20,13 +20,13 @@ package org.nuxeo.apidoc.introspection;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.apidoc.documentation.DefaultDocumentationType;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
@@ -49,7 +49,7 @@ public class EmbeddedDocExtractor {
 
             try (InputStream is = jarFile.getInputStream(entry)) {
                 if (entry.getName().startsWith(PARENT_DOC_PREFIX) && !entry.isDirectory()) {
-                    String content = IOUtils.toString(is, Charsets.UTF_8);
+                    String content = IOUtils.toString(is, StandardCharsets.UTF_8);
                     String name = new Path(entry.getName()).lastSegment();
                     if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 
@@ -64,7 +64,7 @@ public class EmbeddedDocExtractor {
                     }
                 }
                 if (entry.getName().startsWith(DOC_PREFIX) && !entry.isDirectory()) {
-                    String content = IOUtils.toString(is, Charsets.UTF_8);
+                    String content = IOUtils.toString(is, StandardCharsets.UTF_8);
                     String name = new Path(entry.getName()).lastSegment();
                     if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 

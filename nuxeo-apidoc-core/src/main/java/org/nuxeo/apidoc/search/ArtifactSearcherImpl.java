@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.text.StrBuilder;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleGroupDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
@@ -59,20 +59,28 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     protected NuxeoArtifact mapDoc2Artifact(DocumentModel doc) {
         NuxeoArtifact artifact = null;
 
-        if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
-            artifact = new BundleGroupDocAdapter(doc);
-        } else if (doc.getType().equals(BundleInfo.TYPE_NAME)) {
-            artifact = new BundleInfoDocAdapter(doc);
-        } else if (doc.getType().equals(ComponentInfo.TYPE_NAME)) {
-            artifact = new ComponentInfoDocAdapter(doc);
-        } else if (doc.getType().equals(ExtensionPointInfo.TYPE_NAME)) {
-            artifact = new ExtensionPointInfoDocAdapter(doc);
-        } else if (doc.getType().equals(ExtensionInfo.TYPE_NAME)) {
-            artifact = new ExtensionInfoDocAdapter(doc);
-        } else if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
-            artifact = new RepositoryDistributionSnapshot(doc);
-        } else if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
-            artifact = new ServiceInfoDocAdapter(doc);
+        switch (doc.getType()) {
+            case BundleGroup.TYPE_NAME:
+                artifact = new BundleGroupDocAdapter(doc);
+                break;
+            case BundleInfo.TYPE_NAME:
+                artifact = new BundleInfoDocAdapter(doc);
+                break;
+            case ComponentInfo.TYPE_NAME:
+                artifact = new ComponentInfoDocAdapter(doc);
+                break;
+            case ExtensionPointInfo.TYPE_NAME:
+                artifact = new ExtensionPointInfoDocAdapter(doc);
+                break;
+            case ExtensionInfo.TYPE_NAME:
+                artifact = new ExtensionInfoDocAdapter(doc);
+                break;
+            case DistributionSnapshot.TYPE_NAME:
+                artifact = new RepositoryDistributionSnapshot(doc);
+                break;
+            case ServiceInfo.TYPE_NAME:
+                artifact = new ServiceInfoDocAdapter(doc);
+                break;
         }
 
         return artifact;
@@ -200,20 +208,27 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         String targetId = matchingDocumentationItem.getTarget();
         String targetType = matchingDocumentationItem.getTargetType();
         NuxeoArtifact artifact;
-        if (targetType.equals(BundleGroup.TYPE_NAME)) {
-            artifact = snap.getBundleGroup(targetId);
-        } else if (targetType.equals(BundleInfo.TYPE_NAME)) {
-            artifact = snap.getBundle(targetId);
-        } else if (targetType.equals(ComponentInfo.TYPE_NAME)) {
-            artifact = snap.getComponent(targetId);
-        } else if (targetType.equals(ExtensionPointInfo.TYPE_NAME)) {
-            artifact = snap.getExtensionPoint(targetId);
-        } else if (targetType.equals(ExtensionInfo.TYPE_NAME)) {
-            artifact = snap.getContribution(targetId);
-        } else if (targetType.equals(ServiceInfo.TYPE_NAME)) {
-            artifact = snap.getService(targetId);
-        } else {
-            return null;
+        switch (targetType) {
+            case BundleGroup.TYPE_NAME:
+                artifact = snap.getBundleGroup(targetId);
+                break;
+            case BundleInfo.TYPE_NAME:
+                artifact = snap.getBundle(targetId);
+                break;
+            case ComponentInfo.TYPE_NAME:
+                artifact = snap.getComponent(targetId);
+                break;
+            case ExtensionPointInfo.TYPE_NAME:
+                artifact = snap.getExtensionPoint(targetId);
+                break;
+            case ExtensionInfo.TYPE_NAME:
+                artifact = snap.getContribution(targetId);
+                break;
+            case ServiceInfo.TYPE_NAME:
+                artifact = snap.getService(targetId);
+                break;
+            default:
+                return null;
         }
         return resolveInTree(session, distribId, artifact, searchedType);
     }
