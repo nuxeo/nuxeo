@@ -34,14 +34,14 @@ import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests the {@link FileSystemChangeFinder} on a repository with clustering enabled.
  *
  * @since 8.2
  */
-@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);

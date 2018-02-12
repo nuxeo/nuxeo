@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.elasticsearch.audit",
         "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.drive.elasticsearch" })
-@LocalDeploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
+@Deploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
 public class ESAuditFeature extends SimpleFeature {
 
     @Override

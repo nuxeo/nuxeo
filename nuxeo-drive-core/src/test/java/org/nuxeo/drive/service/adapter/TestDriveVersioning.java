@@ -51,9 +51,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -130,7 +130,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml",
+@Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-policy-contrib.xml" })
 public class TestDriveVersioning {
 
@@ -342,7 +342,7 @@ public class TestDriveVersioning {
     }
 
     @Test
-    @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-not-drive-contrib.xml" })
+    @Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-not-drive-contrib.xml" })
     public void testAutomaticVersioning() throws Exception {
 
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
@@ -529,7 +529,7 @@ public class TestDriveVersioning {
     }
 
     @Test
-    @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-contrib.xml" })
+    @Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-contrib.xml" })
     public void testAutomaticVersioningAndDriveForceVersionDisabled() throws Exception {
 
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);

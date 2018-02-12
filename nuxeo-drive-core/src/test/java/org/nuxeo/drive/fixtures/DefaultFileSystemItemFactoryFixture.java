@@ -73,10 +73,10 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -86,7 +86,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml" })
+@Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml" })
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
@@ -368,7 +368,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml")
+    @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml")
     public void testPermissionCheckOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
         try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
@@ -408,7 +408,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml",
+    @Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml",
             "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permission-check-not-optimized-contrib.xml" })
     public void testPermissionCheckNotOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
@@ -1051,7 +1051,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
+    @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     public void testBlobException() throws Exception {
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
     }

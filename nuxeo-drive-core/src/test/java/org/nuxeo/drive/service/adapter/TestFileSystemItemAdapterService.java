@@ -62,10 +62,10 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests the {@link FileSystemItemAdapterService}.
@@ -74,7 +74,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
 @RepositoryConfig(cleanup=Granularity.METHOD)
 public class TestFileSystemItemAdapterService {
 

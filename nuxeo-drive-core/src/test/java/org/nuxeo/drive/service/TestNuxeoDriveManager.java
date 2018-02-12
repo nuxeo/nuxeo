@@ -65,9 +65,9 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests for {@link NuxeoDriveManager}
@@ -576,7 +576,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-reset-sync-roots-on-copy-disabled-contrib.xml")
+    @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-reset-sync-roots-on-copy-disabled-contrib.xml")
     public void testResetSyncRootsOnCopyDisabled() {
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder_1_1, session);
         // Copy a sync root

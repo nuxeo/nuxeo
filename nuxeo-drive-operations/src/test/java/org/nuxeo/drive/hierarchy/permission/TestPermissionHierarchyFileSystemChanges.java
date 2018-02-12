@@ -74,7 +74,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -362,7 +361,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </pre>
      */
     @Test
-    @LocalDeploy("org.nuxeo.drive.operations.test:OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml")
+    @Deploy("org.nuxeo.drive.operations.test:OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml")
     public void testRootlessItems() throws Exception {
         commitAndWaitForAsyncCompletion();
 
