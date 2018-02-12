@@ -47,9 +47,9 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaSizeService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(QuotaFeature.class)
-@LocalDeploy("org.nuxeo.ecm.quota.core:exclude-blob-contrib.xml")
+@Deploy("org.nuxeo.ecm.quota.core:exclude-blob-contrib.xml")
 public class TestExcludedBlob {
 
     @Inject
