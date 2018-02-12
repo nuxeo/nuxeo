@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -70,17 +71,31 @@ public class WorkComputation extends AbstractComputation {
                 new WorkHolder(work).run();
                 workIds.add(work.getId());
             }
-        } catch (Exception e) {
-            // TODO: check what to catch exactly we don't want to kill the computation on error
-            log.warn(String.format("Work id: %s title: %s, raise an exception, work is marked as completed",
-                    work.getId(), work.getTitle()), e);
-        } finally {
             work.cleanUp(true, null);
-            workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
             context.askForCheckpoint();
+        } catch (Exception e) {
+            if (ExceptionUtils.hasInterruptedCause(e)) {
+                Thread.currentThread().interrupt();
+                // propagate the interruption to stop the computation thread
+                // thread has been interrupted we don't want to mark the work as completed.
+                log.warn(
+                        String.format("Work id: %s title: %s, has been interrupted, it will be rescheduled, record: %s",
+                                work.getId(), work.getTitle(), record));
+            } else {
+                // Report an error on the work and continue
+                log.error(String.format("Work id: %s title: %s is in error, the work is skipped, record: %s",
+                        work.getId(), work.getTitle(), record));
+                context.askForCheckpoint();
+            }
+            // Cleanup should take care of logging error, but better to dup this in debug
+            log.debug("Exception during work " + work.getId(), e);
+            work.cleanUp(false, e);
+        } finally {
+            workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
         }
     }
 
+    @SuppressWarnings("squid:S2093")
     public static Work deserialize(byte[] data) {
         // TODO: switch to commons-lang3 SerializationUtils
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
@@ -96,11 +111,12 @@ public class WorkComputation extends AbstractComputation {
                     in.close();
                 }
             } catch (IOException ex) {
-                // ignore close exception
+                // ignore close exception so we cannot use a try-with-resources squid:S2093
             }
         }
     }
 
+    @SuppressWarnings("squid:S2093")
     public static byte[] serialize(Work work) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out;
@@ -110,13 +126,12 @@ public class WorkComputation extends AbstractComputation {
             out.flush();
             return bos.toByteArray();
         } catch (IOException e) {
-            System.out.println("Error " + e.getMessage());
             throw new RuntimeException(e);
         } finally {
             try {
                 bos.close();
             } catch (IOException ex) {
-                // ignore close exception
+                // ignore close exception so we cannot use a try-with-resources squid:S2093
             }
         }
     }
