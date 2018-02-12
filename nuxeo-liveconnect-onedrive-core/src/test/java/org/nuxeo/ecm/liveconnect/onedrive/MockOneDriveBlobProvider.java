@@ -21,6 +21,7 @@ package org.nuxeo.ecm.liveconnect.onedrive;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
@@ -57,7 +58,7 @@ public class MockOneDriveBlobProvider extends OneDriveBlobProvider {
         public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws OneDriveAPIException {
             try {
                 String name = String.format(FILE_FILE_METADATA_FORMAT, getId());
-                String content = IOUtils.toString(getClass().getResource(name));
+                String content = IOUtils.toString(getClass().getResource(name), StandardCharsets.UTF_8);
 
                 return new Metadata(JsonObject.readFrom(content));
             } catch (IOException e) {
@@ -69,7 +70,7 @@ public class MockOneDriveBlobProvider extends OneDriveBlobProvider {
         public OneDrivePermission.Metadata createSharedLink(OneDriveSharingLink.Type type) throws OneDriveAPIException {
             try {
                 String name = String.format(FILE_PERMISSION_METADATA_FORMAT, getId());
-                String content = IOUtils.toString(getClass().getResource(name));
+                String content = IOUtils.toString(getClass().getResource(name), StandardCharsets.UTF_8);
 
                 OneDrivePermission permission = new OneDrivePermission(getApi(), getId(), "PERMISSION_ID");
                 return permission.new Metadata(JsonObject.readFrom(content));

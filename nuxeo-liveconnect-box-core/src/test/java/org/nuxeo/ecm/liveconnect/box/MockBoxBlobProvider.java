@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.liveconnect.box;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
@@ -36,7 +37,7 @@ public class MockBoxBlobProvider extends BoxBlobProvider {
     protected BoxFile.Info retrieveBoxFileInfo(LiveConnectFileInfo fileInfo) throws IOException {
         String fileId = fileInfo.getFileId();
         String name = String.format(FILE_INFO_FORMAT, fileId);
-        String content = IOUtils.toString(getClass().getResource(name));
+        String content = IOUtils.toString(getClass().getResource(name), StandardCharsets.UTF_8);
 
         return new BoxFile(null, fileId).new Info(content);
     }

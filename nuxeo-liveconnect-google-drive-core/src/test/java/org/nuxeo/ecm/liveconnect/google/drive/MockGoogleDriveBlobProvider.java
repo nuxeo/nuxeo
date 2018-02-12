@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,7 +105,7 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
             if (is == null) {
                 return null;
             }
-            json = IOUtils.toString(is);
+            json = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
         return JSON_PARSER.parseAndClose(new StringReader(json), klass);
     }
