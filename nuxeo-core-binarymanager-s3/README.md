@@ -75,6 +75,12 @@ by S3 itself. To activate-this mode, use:
 
 See http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html for more.
 
+If you want to use Server-Side Encryption with AWS KMS–Managed Keys, specify your key id with:
+
+- nuxeo.s3storage.crypt.kms.key = your-key-id
+
+See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html for more.
+
 # Enable CloudFront Direct Download
 
 Please, read carefully the [CloudFront documentation](https://aws.amazon.com/fr/documentation/cloudfront/) to understand how you bind a CloudFront distribution to a S3 bucket.
