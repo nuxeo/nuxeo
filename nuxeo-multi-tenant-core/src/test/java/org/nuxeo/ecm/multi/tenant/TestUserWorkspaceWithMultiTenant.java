@@ -20,8 +20,6 @@ package org.nuxeo.ecm.multi.tenant;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,7 +37,8 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.default.config" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestUserWorkspaceWithMultiTenant {
 

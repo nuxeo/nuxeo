@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -38,7 +37,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.default.config" })
-@LocalDeploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
         "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml" })
 public class TestMultiTenantHelper {
 

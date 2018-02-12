@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.multi.tenant;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
@@ -36,7 +36,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.8
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Jetty(port = 18080)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache",
         "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.default.config" })
-@LocalDeploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml" })
 public class TestRestAPIWithMultiTenant {
 

@@ -41,8 +41,6 @@ import javax.inject.Inject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +72,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -86,7 +85,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.default.config" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestMultiTenantService {
 
