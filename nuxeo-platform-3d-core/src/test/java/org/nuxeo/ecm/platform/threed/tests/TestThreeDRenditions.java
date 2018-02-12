@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -63,7 +62,6 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test 3D renditions
@@ -75,7 +73,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
+@Deploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
         "org.nuxeo.ecm.platform.threed.convert" })
 public class TestThreeDRenditions {
 
@@ -162,7 +160,7 @@ public class TestThreeDRenditions {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
+    @Deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void shouldExposeOnlyExposedAsRenditions() throws Exception {
         ThreeD threeD = getTestThreeD();
@@ -195,7 +193,7 @@ public class TestThreeDRenditions {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
+    @Deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();

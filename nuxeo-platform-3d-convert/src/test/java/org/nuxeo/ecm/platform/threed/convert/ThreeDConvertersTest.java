@@ -18,24 +18,24 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_3DSTUDIO;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_COLLADA;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_FILMBOX;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STANFORD;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STEREOLITHOGRAPHY;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_WAVEFRONT;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PIPELINE_COMMAND;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_COMMAND;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_3D_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -45,24 +45,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_3DSTUDIO;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_COLLADA;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_EXTENSIBLE_3D_GRAPHICS;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_FILMBOX;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STANFORD;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STEREOLITHOGRAPHY;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_WAVEFRONT;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PIPELINE_COMMAND;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_COMMAND;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_3D_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
+import javax.inject.Inject;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Test 3D converters
@@ -71,7 +71,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
+@Deploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
     "org.nuxeo.ecm.platform.commandline.executor" })
 public class ThreeDConvertersTest {
 
