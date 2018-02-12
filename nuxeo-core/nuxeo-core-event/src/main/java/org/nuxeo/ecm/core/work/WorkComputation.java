@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -70,14 +71,20 @@ public class WorkComputation extends AbstractComputation {
                 new WorkHolder(work).run();
                 workIds.add(work.getId());
             }
-        } catch (Exception e) {
-            // TODO: check what to catch exactly we don't want to kill the computation on error
-            log.warn(String.format("Work id: %s title: %s, raise an exception, work is marked as completed",
-                    work.getId(), work.getTitle()), e);
-        } finally {
             work.cleanUp(true, null);
-            workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
             context.askForCheckpoint();
+        } catch (Exception e) {
+            if (ExceptionUtils.hasInterruptedCause(e)) {
+                Thread.currentThread().interrupt();
+                log.warn(String.format("Work id: %s title: %s interrupted", work.getId(), work.getTitle()), e);
+            } else {
+                log.warn(String.format("Work id: %s title: %s, raise an exception, work is marked as completed",
+                        work.getId(), work.getTitle()), e);
+                context.askForCheckpoint();
+            }
+            work.cleanUp(false, e);
+        } finally {
+            workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
         }
     }
 
