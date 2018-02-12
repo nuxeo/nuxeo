@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.platform.shibboleth.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -30,10 +33,6 @@ import org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml" })
 public class TestShibbolethGroupService {
 
     @Inject
