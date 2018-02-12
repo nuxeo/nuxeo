@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author ldoguin
@@ -67,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.routing.dm", //
         "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml", //
 })
-@LocalDeploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
 public class TestRoutingTaskService {
 
     @Inject

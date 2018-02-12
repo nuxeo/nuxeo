@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author arussel
@@ -67,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.filemanager.core", //
         "org.nuxeo.ecm.platform.routing.core", //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml",
         "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml",
         "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})

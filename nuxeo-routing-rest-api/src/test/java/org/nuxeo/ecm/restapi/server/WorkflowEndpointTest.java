@@ -79,7 +79,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -861,7 +860,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * @since 9.3
      */
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.restapi.server.routing:test-disable-task-deletion-listener.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.server.routing:test-disable-task-deletion-listener.xml")
     public void testFetchTaskTargetDocumentsDeleted() throws IOException {
         final String createdWorflowInstanceId;
         DocumentModel note = RestServerInit.getNote(0, session);

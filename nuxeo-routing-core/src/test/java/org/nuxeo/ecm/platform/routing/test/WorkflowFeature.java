@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.routing.test;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(AutomationFeature.class)
@@ -34,7 +33,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.routing.api", "org.nuxeo.ecm.platform.routing.core" //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml",
         "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})
