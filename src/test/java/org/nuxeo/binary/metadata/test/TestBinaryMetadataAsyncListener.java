@@ -36,16 +36,16 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml",
+@Deploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataAsyncListener {

@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.1
@@ -50,7 +49,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
+@Deploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD)

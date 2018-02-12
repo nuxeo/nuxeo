@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.1
@@ -57,7 +56,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
+@Deploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
