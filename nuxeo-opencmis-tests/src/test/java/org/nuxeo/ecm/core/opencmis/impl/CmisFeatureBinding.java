@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Feature that creates a local CMIS binding.
  */
 @Features(CmisFeatureConfiguration.class)
-@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 public class CmisFeatureBinding extends SimpleFeature {
 
 }

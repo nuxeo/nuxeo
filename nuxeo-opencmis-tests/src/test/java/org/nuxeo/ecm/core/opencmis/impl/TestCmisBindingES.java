@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the high-level session using a local connection.
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.elasticsearch.audit", //
         "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml" //
 })
-@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 public class TestCmisBindingES extends TestCmisBinding {
 
     @Override

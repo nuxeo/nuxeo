@@ -122,7 +122,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -134,7 +133,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Features(CmisFeature.class)
 //required for JsonFactoryManager service used indirectly in #testComplexProperties by NuxeoPropertyData.convertComplexPropertyToCMIS
 @Deploy({"org.nuxeo.ecm.webengine.core"})
-@LocalDeploy({ //
+@Deploy({ //
         "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml", //
         "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml", //
 })

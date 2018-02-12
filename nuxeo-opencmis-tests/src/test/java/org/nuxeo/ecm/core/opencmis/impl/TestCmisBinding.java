@@ -62,8 +62,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -163,11 +163,11 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -178,7 +178,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
-@LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCmisBinding extends TestCmisBindingBase {
 
@@ -2325,7 +2325,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
      * @see https://jira.nuxeo.com/browse/NXP-19858
      */
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-relax-cmis-spec.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-relax-cmis-spec.xml")
     public void testQueryMultiContainsRelaxingSpec() throws Exception {
 
         assumeFalse("DBS does not support multiple CONTAINS", coreFeature.getStorageConfiguration().isDBS());
@@ -3085,7 +3085,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/cancelcheckout-error-draft.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/cancelcheckout-error-draft.xml")
     public void testCancelCheckoutErrorOnDraft() {
         // initial VersioningState.CHECKEDOUT
         waitForAsyncCompletion();
@@ -3105,7 +3105,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/comment-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/comment-listener-contrib.xml")
     public void testCheckInWithChanges() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -3628,7 +3628,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     // deploy a security policy with a query transformer not expressible as a query
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml")
     public void testQueryWithSecurityPolicyNotExpressibleInQuery() throws Exception {
         assumeFalse("Testing case where NXQL query transformers are not supported", supportsNXQLQueryTransformers());
 
@@ -3651,7 +3651,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     // deploy a security policy with a CMISQL query transformer
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib2.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib2.xml")
     public void testQueryWithSecurityPolicyAndCMISQLQueryTransformer() throws Exception {
         assumeFalse("Testing case where Elasticsearch is not used", useElasticsearch());
         assumeFalse("Testing case where NXQL query transformers are not supported", supportsNXQLQueryTransformers());
@@ -3671,7 +3671,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     // deploy a security policy with a NXQL query transformer
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib3.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib3.xml")
     public void testQueryWithSecurityPolicyAndNXQLQueryTransformer() throws Exception {
         assumeFalse("Testing case where Elasticsearch is not used", useElasticsearch());
         assumeTrue("Testing case where NXQL query transformers are supported", supportsNXQLQueryTransformers());
@@ -3842,7 +3842,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     // listener that will cause a RecoverableClientException to be thrown
     // when a doc whose name starts with "throw" is created
-    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml")
     public void testRecoverableException() throws Exception {
         try {
             createDocument("throw_foo", rootFolderId, "File");
