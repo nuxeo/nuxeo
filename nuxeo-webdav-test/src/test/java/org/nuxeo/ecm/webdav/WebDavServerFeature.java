@@ -18,10 +18,19 @@
  */
 package org.nuxeo.ecm.webdav;
 
-import java.io.IOException;
+import java.io.File;
+import java.lang.reflect.Field;
 
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
 import javax.ws.rs.core.Application;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.webengine.app.WebEngineFilter;
@@ -32,8 +41,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.sun.grizzly.http.embed.GrizzlyWebServer;
-import com.sun.grizzly.http.servlet.ServletAdapter;
 import com.sun.jersey.api.core.ApplicationAdapter;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -50,60 +57,86 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
         "org.nuxeo.ecm.platform.filemanager.core.listener" })
 public class WebDavServerFeature extends WebEngineFeature {
 
-    static boolean DEBUG = false;
+    protected static final int PORT = 9998;
 
-    static String BASE_URI = "http://localhost/";
+    protected static final String HOST = "localhost";
 
-    static int PORT = 9998;
+    protected static final String CONTEXT = "/";
 
-    private GrizzlyWebServer gws;
+    protected Tomcat tomcat;
 
     @Override
-    public void beforeRun(FeaturesRunner runner) {
-        startGrizzly();
-    }
-
-    private void startGrizzly() {
-        // static content is linked from here
-        String path = "src/main/resources/www";
-
-        gws = new GrizzlyWebServer(PORT, path);
-
-        ServletAdapter jerseyAdapter = new ServletAdapter();
-        Application app = new org.nuxeo.ecm.webdav.Application();
-        ApplicationAdapter conf = new ApplicationAdapter(app);
-        conf.getFeatures().put(ResourceConfig.FEATURE_MATCH_MATRIX_PARAMS, Boolean.TRUE);
-        jerseyAdapter.setServletInstance(new ServletContainer(conf));
-        jerseyAdapter.addRootFolder(path);
-        jerseyAdapter.setHandleStaticResources(true);
-        jerseyAdapter.setContextPath("");
-        // session cleanup
-        jerseyAdapter.addFilter(new RequestContextFilter(), "RequestContextFilter", null);
-        jerseyAdapter.addFilter(new SessionCleanupFilter(), "SessionCleanupFilter", null);
-        jerseyAdapter.addFilter(new NuxeoAuthenticationFilter(), "NuxeoAuthenticationFilter", null);
-        jerseyAdapter.addFilter(new WebEngineFilter(), "WebEngineFilter", null);
-
-        if (DEBUG) {
-            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
-                    "com.sun.jersey.api.container.filter.LoggingFilter");
-            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
-                    "com.sun.jersey.api.container.filter.LoggingFilter");
-        }
-        jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");
-
-        gws.addGrizzlyAdapter(jerseyAdapter, new String[] { "" });
-
-        // let Grizzly run
-        try {
-            gws.start();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        setUpTomcat();
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
-        gws.stop();
+        tearDownTomcat();
     }
+
+    protected void setUpTomcat() throws Exception {
+        tomcat = new Tomcat();
+        tomcat.setBaseDir("."); // for tmp dir
+        tomcat.setHostname(HOST);
+        tomcat.setPort(PORT);
+        ProtocolHandler p = tomcat.getConnector().getProtocolHandler();
+        AbstractEndpoint<?> endpoint = (AbstractEndpoint<?>) getFieldValue(p, "endpoint");
+        endpoint.setMaxKeepAliveRequests(1); // vital for clean shutdown
+
+        File docBase = new File(".");
+        Context context = tomcat.addContext(CONTEXT, docBase.getAbsolutePath());
+
+        Application app = new org.nuxeo.ecm.webdav.Application();
+        ApplicationAdapter conf = new ApplicationAdapter(app);
+        conf.getFeatures().put(ResourceConfig.FEATURE_MATCH_MATRIX_PARAMS, Boolean.TRUE);
+        String servletName = "testServlet";
+        Servlet servlet = new ServletContainer(conf);
+        tomcat.addServlet(CONTEXT, servletName, servlet);
+        context.addServletMappingDecoded("/*", servletName);
+        addFilter(context, servletName, "RequestContextFilter", new RequestContextFilter());
+        addFilter(context, servletName, "SessionCleanupFilter", new SessionCleanupFilter());
+        addFilter(context, servletName, "NuxeoAuthenticationFilter", new NuxeoAuthenticationFilter());
+        addFilter(context, servletName, "WebEngineFilter", new WebEngineFilter());
+
+        tomcat.start();
+    }
+
+    protected void addFilter(Context context, String servletName, String filterName, Filter filter) {
+        FilterDef filterDef = new FilterDef();
+        filterDef.setFilterName(filterName);
+        filterDef.setFilterClass(filter.getClass().getName());
+        context.addFilterDef(filterDef);
+        FilterMap filterMap = new FilterMap();
+        filterMap.setFilterName(filterName);
+        filterMap.addServletName(servletName);
+        context.addFilterMap(filterMap);
+    }
+
+    protected void tearDownTomcat() throws Exception {
+        if (tomcat != null) {
+            tomcat.stop();
+            tomcat.destroy();
+            Thread.sleep(100);
+            tomcat = null;
+        }
+    }
+
+    protected static Object getFieldValue(Object object, String name) throws ReflectiveOperationException {
+        Class<? extends Object> klass = object.getClass();
+        Field f = null;
+        while (f == null && klass != Object.class) {
+            try {
+                f = klass.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                klass = klass.getSuperclass();
+            }
+        }
+        if (f == null) {
+            throw new NoSuchFieldException("No field " + name + " on " + object.getClass().getName());
+        }
+        f.setAccessible(true);
+        return f.get(object);
+    }
+
 }

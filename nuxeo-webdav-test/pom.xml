@@ -116,8 +116,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.grizzly</groupId>
-      <artifactId>grizzly-servlet-webserver</artifactId>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
       <scope>test</scope>
     </dependency>
 
