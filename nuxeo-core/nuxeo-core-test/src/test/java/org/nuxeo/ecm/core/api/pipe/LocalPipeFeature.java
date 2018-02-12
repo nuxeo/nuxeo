@@ -22,7 +22,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.event.test:test-LocalPipes.xml" })
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.event.test:test-LocalPipes.xml")
 public class LocalPipeFeature extends SimpleFeature {
 
 }

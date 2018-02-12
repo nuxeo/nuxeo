@@ -37,12 +37,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations", //
-        "org.nuxeo.ecm.annotations", //
-        "org.nuxeo.ecm.annotations.repository", //
-        "org.nuxeo.ecm.relations.jena", //
-        "org.nuxeo.ecm.platform.url.core", //
-})
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.annotations")
+@Deploy("org.nuxeo.ecm.annotations.repository")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.url.core")
 public class AnnotationsRepositoryServiceTest {
 
     @Test

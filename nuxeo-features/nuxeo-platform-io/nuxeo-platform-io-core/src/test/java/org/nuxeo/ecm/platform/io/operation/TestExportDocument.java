@@ -19,6 +19,17 @@
 
 package org.nuxeo.ecm.platform.io.operation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -33,24 +44,13 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.io.api", "org.nuxeo.ecm.platform.io.core" })
+@Deploy("org.nuxeo.ecm.platform.io.api")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 public class TestExportDocument {
 
     @Inject

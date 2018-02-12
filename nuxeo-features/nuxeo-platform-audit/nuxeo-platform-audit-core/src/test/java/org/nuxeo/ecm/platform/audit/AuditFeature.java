@@ -37,7 +37,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 
 @Features({ManagementFeature.class, PlatformFeature.class})
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {
 

@@ -62,7 +62,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.automation.core")
 public class TestBulkDownloadOperation {
 
     private static final int MAX_DOC = 10;

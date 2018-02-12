@@ -92,8 +92,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml",
-        "org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 public class TestRenditionService {
 
     public static final String RENDITION_CORE = "org.nuxeo.ecm.platform.rendition.core";

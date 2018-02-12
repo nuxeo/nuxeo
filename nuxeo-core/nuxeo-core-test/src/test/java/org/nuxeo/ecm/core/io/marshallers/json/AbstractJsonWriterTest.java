@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  *     ...
  * }
  * </pre>
- *
  * </p>
  *
  * @param <WriterClass> The marshaller type to test.
@@ -66,8 +65,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 public abstract class AbstractJsonWriterTest<WriterClass extends Writer<MarshalledType>, MarshalledType> {
 
-    @Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml",
-            "org.nuxeo.ecm.core.io:OSGI-INF/marshallers-contrib.xml" })
+    @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml")
+    @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/marshallers-contrib.xml")
     public static abstract class Local<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
             AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
@@ -81,7 +80,7 @@ public abstract class AbstractJsonWriterTest<WriterClass extends Writer<Marshall
 
     }
 
-    @Deploy({ "org.nuxeo.ecm.core.io" })
+    @Deploy("org.nuxeo.ecm.core.io")
     public static abstract class External<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
             AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
@@ -108,7 +107,8 @@ public abstract class AbstractJsonWriterTest<WriterClass extends Writer<Marshall
         this(writerClass, marshalledClass, marshalledClass);
     }
 
-    public AbstractJsonWriterTest(Class<WriterClass> writerClass, Class<?> marshalledClass, Type marshalledGenericType) {
+    public AbstractJsonWriterTest(Class<WriterClass> writerClass, Class<?> marshalledClass,
+            Type marshalledGenericType) {
         super();
         this.writerClass = writerClass;
         this.marshalledClass = marshalledClass;

@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.permissions" })
+@Deploy("org.nuxeo.ecm.permissions")
 public class TestDirectorySecurity {
 
     private static final String DIR_NAME = "aceinfo";

@@ -187,26 +187,26 @@ public class ResetSchemaTest {
             assertNull(target2.getProperty(schema, entry.getKey()));
         }
     }
-    
+
     @Test
     public void shouldNotSaveTheDocument() throws Exception {
-    	
+
         target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
         target1 = session.saveDocument(target1);
-        
+
         OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSouldNotSaveTheDocument");
         chain.add(ResetSchema.ID).set("schema", "common").set("saveDocument", false);
         service.run(context, chain);
-        
+
         String value = (String) target1.getPropertyValue("common:icon-expanded");
         assertNull(value);
-        
+
         target1.refresh();
         value = (String) target1.getPropertyValue("common:icon-expanded");
         assertEquals("Target document should not have been saved when saveDocument is false", "icon-expanded-target1", value);
-        
+
     }
 
 }

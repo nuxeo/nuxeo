@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml" })
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml")
 public class DocWithDefaultValuesTest extends BaseTest {
 
     private static String createDocumentJSON(String properties) {

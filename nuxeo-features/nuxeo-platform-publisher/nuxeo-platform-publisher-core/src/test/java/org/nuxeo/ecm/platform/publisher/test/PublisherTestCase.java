@@ -24,7 +24,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.publisher.core.contrib", "org.nuxeo.ecm.platform.publisher.core" })
+@Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
 public abstract class PublisherTestCase extends AbstractRepositoryTestCase {
 
 }

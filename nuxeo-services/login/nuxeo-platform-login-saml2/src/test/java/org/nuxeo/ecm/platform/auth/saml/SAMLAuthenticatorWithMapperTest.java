@@ -65,9 +65,9 @@ import com.google.common.collect.ImmutableMap;
 @RunWith(FeaturesRunner.class)
 @Features({ UserMapperFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.login.saml2" })
-@Deploy({ "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/test-sql-directory.xml",
-        "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml" })
+@Deploy("org.nuxeo.ecm.platform.login.saml2")
+@Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/test-sql-directory.xml")
+@Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
 public class SAMLAuthenticatorWithMapperTest {
 
     @Inject

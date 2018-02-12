@@ -39,7 +39,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.url.core" })
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.platform.url.core")
 public class TestMobileBannerHelper {
 
     public static final String BASE_URL = "http://localhost:8080/nuxeo/";

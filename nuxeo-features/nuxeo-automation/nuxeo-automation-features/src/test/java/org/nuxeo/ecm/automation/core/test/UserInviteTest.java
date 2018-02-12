@@ -41,8 +41,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.user.invite" })
-@Deploy({ "org.nuxeo.ecm.user.invite:test-invite-contrib.xml" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.user.invite")
+@Deploy("org.nuxeo.ecm.user.invite:test-invite-contrib.xml")
 public class UserInviteTest {
 
     @Inject

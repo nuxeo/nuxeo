@@ -49,8 +49,8 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 @Features({ ManagementFeature.class, ContainerFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.management.jtajca" })
-@Deploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
+@Deploy("org.nuxeo.ecm.core.management.jtajca")
+@Deploy("org.nuxeo.ecm.core.management.jtajca:login-config.xml")
 public class JtajcaManagementFeature extends SimpleFeature {
 
     protected static ObjectName nameOf(Class<?> itf) {
@@ -185,7 +185,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
             // if components are restarted (due to a hot deploy) while in a test method we need to register
             // a deploy handler to recreate the tx checker.
             next.exec(action, args);
-            JtajcaManagementFeature.this.txChecker = new TxChecker(runner);
+            txChecker = new TxChecker(runner);
         }
     }
 

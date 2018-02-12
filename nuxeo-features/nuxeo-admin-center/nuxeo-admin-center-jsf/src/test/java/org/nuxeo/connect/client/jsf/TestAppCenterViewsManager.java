@@ -23,13 +23,18 @@ package org.nuxeo.connect.client.jsf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.packages.PackageManager;
@@ -44,15 +49,15 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import javax.inject.Inject;
-import java.util.List;
+import com.google.common.collect.Lists;
 
 /**
  * @author Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, MockitoFeature.class })
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper" })
+@Deploy("org.nuxeo.connect.client")
+@Deploy("org.nuxeo.connect.client.wrapper")
 public class TestAppCenterViewsManager {
 
     private AppCenterViewsManager appCenterViewsManager;

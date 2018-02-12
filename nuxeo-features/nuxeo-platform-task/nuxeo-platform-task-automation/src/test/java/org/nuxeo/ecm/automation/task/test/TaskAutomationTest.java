@@ -62,8 +62,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.task.automation",
-        "org.nuxeo.ecm.platform.task.core", "org.nuxeo.ecm.platform.task.testing" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.task.automation")
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
 @Deploy("org.nuxeo.ecm.platform.task.automation:test-operations.xml")
 public class TaskAutomationTest {
 

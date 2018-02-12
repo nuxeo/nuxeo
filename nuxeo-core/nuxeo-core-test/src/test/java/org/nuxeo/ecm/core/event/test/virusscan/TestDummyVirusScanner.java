@@ -54,10 +54,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.test" })
-@Deploy({ "org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml",
-        "org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test")
+@Deploy("org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml")
 public class TestDummyVirusScanner {
 
     @Inject

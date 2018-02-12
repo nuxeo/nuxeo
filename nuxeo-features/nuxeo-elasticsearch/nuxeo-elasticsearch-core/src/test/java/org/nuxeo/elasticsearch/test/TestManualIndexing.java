@@ -54,8 +54,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@Deploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestManualIndexing {
 
     private static final String IDX_NAME = "nxutest";

@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache" })
+@Deploy("org.nuxeo.ecm.core.cache")
 public class TransientStoreFeature extends SimpleFeature {
 
     @Override

@@ -35,8 +35,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * Test class for LDAP directory that use cache
  */
 @Deploy("org.nuxeo.ecm.core.cache")
-@Deploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-directory-cache-config.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-directory-redis-cache-config.xml" })
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directory-cache-config.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directory-redis-cache-config.xml")
 public class TestCachedLDAPSession extends TestLDAPSession {
 
     protected final static String ENTRY_CACHE_NAME = "ldap-entry-cache";

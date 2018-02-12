@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml" })
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml")
 @Features(CoreFeature.class)
 public class TestReaderRegistry {
 

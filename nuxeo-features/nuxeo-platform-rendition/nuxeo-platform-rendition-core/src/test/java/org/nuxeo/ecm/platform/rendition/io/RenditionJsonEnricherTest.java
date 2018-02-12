@@ -34,10 +34,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core",
-          "org.nuxeo.ecm.actions",
-          "org.nuxeo.ecm.automation.core" })
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
 public class RenditionJsonEnricherTest
     extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 

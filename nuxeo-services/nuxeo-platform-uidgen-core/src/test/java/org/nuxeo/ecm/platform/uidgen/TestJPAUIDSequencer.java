@@ -38,9 +38,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.persistence", //
-        "org.nuxeo.ecm.platform.uidgen.core", //
-})
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
 @Deploy("org.nuxeo.ecm.platform.uidgen.core.tests:OSGI-INF/uidgenerator-test-contrib.xml")
 public class TestJPAUIDSequencer {
 

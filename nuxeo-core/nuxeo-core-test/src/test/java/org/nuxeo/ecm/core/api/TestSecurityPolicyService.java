@@ -56,8 +56,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
-        "org.nuxeo.ecm.core.test.tests:test-security-policy-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:test-security-policy-contrib.xml")
 public class TestSecurityPolicyService {
 
     @Inject

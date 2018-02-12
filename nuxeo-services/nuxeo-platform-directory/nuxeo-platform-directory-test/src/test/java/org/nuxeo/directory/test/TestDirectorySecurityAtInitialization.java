@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
-@Deploy({ "org.nuxeo.ecm.directory.tests:intIdDirectory-with-data-contrib.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:intIdDirectory-with-data-contrib.xml")
 public class TestDirectorySecurityAtInitialization {
 
     private static final String TEST_DIRECTORY = "testIdDirectory";

@@ -53,7 +53,7 @@ public class TestPersistenceProvider {
         // clean all entities
         Query q = em.createQuery("select id from DummyEntity");
         @SuppressWarnings("unchecked")
-        List<String> list = (List<String>) q.getResultList();
+        List<String> list = q.getResultList();
         for (String id : list) {
             DummyEntity entity = em.find(DummyEntity.class, id);
             em.remove(entity);

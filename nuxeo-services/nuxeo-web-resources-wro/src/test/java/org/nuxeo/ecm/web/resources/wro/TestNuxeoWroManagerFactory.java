@@ -68,8 +68,9 @@ import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.web.resources.core", "org.nuxeo.web.resources.wro" })
-@Deploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml" })
+@Deploy("org.nuxeo.web.resources.core")
+@Deploy("org.nuxeo.web.resources.wro")
+@Deploy("org.nuxeo.web.resources.wro:webresources-test-config.xml")
 public class TestNuxeoWroManagerFactory {
 
     @Mock

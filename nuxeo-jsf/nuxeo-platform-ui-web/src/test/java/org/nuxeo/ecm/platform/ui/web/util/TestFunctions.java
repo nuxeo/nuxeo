@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-properties.xml" })
+@Deploy("org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-properties.xml")
 public class TestFunctions {
 
     @Inject

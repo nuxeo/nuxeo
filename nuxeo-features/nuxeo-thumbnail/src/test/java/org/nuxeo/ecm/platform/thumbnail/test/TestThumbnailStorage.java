@@ -49,12 +49,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.url.core", //
-        "org.nuxeo.ecm.platform.web.common" //
-})
+@Deploy("org.nuxeo.ecm.platform.thumbnail")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-listener-contrib.xml")
 public class TestThumbnailStorage {
 

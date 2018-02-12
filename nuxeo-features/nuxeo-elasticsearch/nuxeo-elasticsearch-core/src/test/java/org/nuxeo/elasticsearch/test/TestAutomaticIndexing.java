@@ -88,7 +88,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 public class TestAutomaticIndexing {
 
@@ -793,7 +795,7 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(1, ret.totalSize());
         Assert.assertEquals("v3", ret.get(0).getTitle());
         String versionSeriesId = ret.get(0).getVersionSeriesId();
-        
+
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
         Assert.assertEquals(4, ret.totalSize());
     }

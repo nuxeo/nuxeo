@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.core:test-enc.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class OperationsEncodingTest {

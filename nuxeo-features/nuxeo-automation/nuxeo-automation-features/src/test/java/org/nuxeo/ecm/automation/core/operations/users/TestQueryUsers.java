@@ -52,13 +52,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.automation.features", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager", //
-})
-@Deploy({ "org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml", //
-})
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
 public class TestQueryUsers {
 
     public static final String USERNAME = "testuser";

@@ -47,17 +47,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.schema", //
-        "org.nuxeo.ecm.core.api", //
-        "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.core.event", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.query.api", //
-})
-@Deploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
-        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
-})
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestGroupsPageProvider {
 
     protected static final String PROVIDER_NAME = "groups_listing";

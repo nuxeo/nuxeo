@@ -36,7 +36,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.automation.core")
 public class PropertiesValueTrimmingCustomContributionTest extends PropertiesTestAbstract {
 
     @Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/test-properties-contrib.xml")

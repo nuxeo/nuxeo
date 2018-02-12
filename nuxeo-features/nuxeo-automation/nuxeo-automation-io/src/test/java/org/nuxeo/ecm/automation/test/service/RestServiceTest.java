@@ -47,7 +47,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.actions" })
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
 public class RestServiceTest extends BaseRestTest {
 

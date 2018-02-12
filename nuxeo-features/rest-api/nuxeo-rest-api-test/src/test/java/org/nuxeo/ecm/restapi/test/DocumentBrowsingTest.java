@@ -80,10 +80,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types" })
+@Deploy("org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test

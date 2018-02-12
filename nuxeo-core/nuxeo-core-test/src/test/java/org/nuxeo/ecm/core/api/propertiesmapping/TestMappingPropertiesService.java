@@ -44,8 +44,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
-        "org.nuxeo.ecm.core.test.tests:test-propertiesmapping-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:test-propertiesmapping-contrib.xml")
 @Features(CoreFeature.class)
 public class TestMappingPropertiesService {
 

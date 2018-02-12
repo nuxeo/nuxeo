@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-service-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-service-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentValidationService {
@@ -180,7 +180,7 @@ public class TestDocumentValidationService {
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, (Serializable) new String[] {});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {});
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"nowValid"});
@@ -192,8 +192,8 @@ public class TestDocumentValidationService {
         // so I am going to use the field directly.
         Field field = metamodel.getField(STRING_LIST_PROPS_FIELD);
         checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, null));
-        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) Collections.emptyList()));
-        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) new String[] {}));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, Collections.emptyList()));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, new String[] {}));
     }
 
     @Test

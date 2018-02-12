@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 8.10
  */
 @Features({PlatformFeature.class, AutomationFeature.class})
-@Deploy({ "org.nuxeo.usermapper" })
+@Deploy("org.nuxeo.usermapper")
 public class UserMapperFeature extends SimpleFeature {
 
 }

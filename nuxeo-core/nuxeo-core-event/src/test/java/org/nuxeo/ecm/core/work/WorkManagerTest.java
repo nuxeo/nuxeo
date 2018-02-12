@@ -61,7 +61,8 @@ import org.nuxeo.runtime.trackers.files.FileEvent;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.event.test:test-workmanager-config.xml" })
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 public class WorkManagerTest {
 
     protected static class CreateFile extends AbstractWork implements Serializable {
@@ -114,7 +115,7 @@ public class WorkManagerTest {
 
         protected MetricsTracker(String queueId) {
             this.queueId = queueId;
-            this.initialMetrics = service.getMetrics(QUEUE);
+            initialMetrics = service.getMetrics(QUEUE);
         }
 
         public void assertDiff(long scheduled, long running, long completed, long canceled) {
@@ -278,7 +279,7 @@ public class WorkManagerTest {
         assertEquals(1 + initSyncEvntCount, WorkFailureEventListener.getCount());
 
         eventService.waitForAsyncCompletion();
-        
+
         assertEquals(1 + initCount, DummyPostCommitEventListener.handledCount());
         assertEquals(1 + initEvtCount, DummyPostCommitEventListener.eventCount());
     }

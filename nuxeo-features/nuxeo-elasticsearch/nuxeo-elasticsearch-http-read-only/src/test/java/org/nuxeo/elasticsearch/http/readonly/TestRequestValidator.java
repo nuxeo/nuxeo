@@ -43,7 +43,7 @@ public class TestRequestValidator {
 
     @Before
     public void initValidator() {
-        this.validator = new RequestValidator();
+        validator = new RequestValidator();
     }
 
     @Test

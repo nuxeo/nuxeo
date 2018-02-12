@@ -242,22 +242,22 @@ public class CopySchemaTest {
             assertEquals(source.getProperty(schema, pair.getKey()), target2.getProperty(schema, pair.getKey()));
         }
     }
-    
+
     @Test
     public void shouldNotSaveTheDocument() throws Exception {
 
         source.setPropertyValue("common:icon-expanded", "icon-expanded-source");
         source = session.saveDocument(source);
-        
+
         target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
         target1 = session.saveDocument(target1);
-        
+
         OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSaveParameters_1");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", "common").set("saveDocument", false);
         service.run(context, chain);
-        
+
         String value = (String) target1.getPropertyValue("common:icon-expanded");
         assertEquals("icon-expanded-source", value);
 

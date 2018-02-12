@@ -65,13 +65,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.mail", //
-        "org.nuxeo.ecm.platform.mail.types", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-})
+@Deploy("org.nuxeo.ecm.platform.mail")
+@Deploy("org.nuxeo.ecm.platform.mail.types")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.api")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
 @Deploy("org.nuxeo.ecm.platform.mail.test:OSGI-INF/nxmail-automation-contrib.xml")
 public class TesteMailInjection {
 

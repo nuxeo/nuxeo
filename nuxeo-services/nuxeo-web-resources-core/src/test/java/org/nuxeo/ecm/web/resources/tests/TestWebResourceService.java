@@ -49,8 +49,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.web.resources.core" })
-@Deploy({ TestWebResourceService.BUNDLE + ":webresources-test-config.xml" })
+@Deploy("org.nuxeo.web.resources.core")
+@Deploy("org.nuxeo.web.resources.core:webresources-test-config.xml")
 @LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl", logLevel = "ERROR")
 public class TestWebResourceService {
 

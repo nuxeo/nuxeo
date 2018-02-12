@@ -27,7 +27,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 9.3
  */
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.kv", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.api" })
+@Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.api")
 @Deploy("org.nuxeo.ecm.core.cache.test:OSGI-INF/test-kvbts-config.xml")
 public class KeyValueBlobTransientStoreFeature extends SimpleFeature {
 

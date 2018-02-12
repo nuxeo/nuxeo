@@ -50,7 +50,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations", "org.nuxeo.ecm.platform.dublincore" })
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.relations:relation-core-test-contrib.xml")
 public class TestRelationDocument {
 

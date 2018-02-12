@@ -77,10 +77,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.relations.io.tests:io-test-framework.xml", //
-        "org.nuxeo.ecm.relations.io.tests:io-relations-test-contrib.xml", //
-        "org.nuxeo.ecm.relations.io.tests:jena-test-bundle.xml", //
-})
+@Deploy("org.nuxeo.ecm.relations.io.tests:io-test-framework.xml")
+@Deploy("org.nuxeo.ecm.relations.io.tests:io-relations-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.relations.io.tests:jena-test-bundle.xml")
 public class TestIORelationAdapter {
 
     private static final String graphName = "myrelations";

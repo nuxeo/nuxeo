@@ -39,7 +39,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.url.core.test" })
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.url.core.test")
 public class TestDocumentViewCodecPriority {
 
     @Inject

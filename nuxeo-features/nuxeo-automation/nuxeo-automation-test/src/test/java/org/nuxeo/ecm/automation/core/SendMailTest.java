@@ -18,13 +18,12 @@
  */
 package org.nuxeo.ecm.automation.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
-import com.dumbster.smtp.SmtpMessage;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,17 +45,17 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.dumbster.smtp.SmtpMessage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, FakeSmtpMailServerFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.notification.core", "org.nuxeo.ecm.platform.notification.api",
-        "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core" })
+@Deploy("org.nuxeo.ecm.platform.notification.core")
+@Deploy("org.nuxeo.ecm.platform.notification.api")
+@Deploy("org.nuxeo.ecm.platform.url.api")
+@Deploy("org.nuxeo.ecm.platform.url.core")
 public class SendMailTest {
 
     protected DocumentModel src;

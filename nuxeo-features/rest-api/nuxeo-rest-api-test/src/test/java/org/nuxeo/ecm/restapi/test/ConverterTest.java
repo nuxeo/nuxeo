@@ -56,7 +56,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.convert" })
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.platform.convert")
 public class ConverterTest extends BaseTest {
 
     @Inject

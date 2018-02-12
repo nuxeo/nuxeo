@@ -39,7 +39,7 @@ import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class TestDocumentWrapperGetRef {

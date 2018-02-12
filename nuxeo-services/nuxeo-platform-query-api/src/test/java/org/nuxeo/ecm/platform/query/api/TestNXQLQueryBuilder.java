@@ -49,8 +49,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy({ "org.nuxeo.ecm.platform.query.api.test:test-schemas-contrib.xml",
-        "org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api.test:test-schemas-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml")
 public class TestNXQLQueryBuilder {
 
     @Test

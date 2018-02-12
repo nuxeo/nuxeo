@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 // Look at the @Test(expected=...) to understand the tests
 // for those tests, both saveDocument, createDocument and importDocument validation context are enable by default
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentValidationActivation {

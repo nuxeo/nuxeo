@@ -19,6 +19,17 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -34,20 +45,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
-
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class TestTagOperations {
 
     private static final String TAG_1 = "1";

@@ -37,8 +37,11 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features({ ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory.multi" })
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.directory.multi")
 @Deploy("org.nuxeo.ecm.directory.multi.tests:schemas-config.xml")
 public class MultiDirectoryFeature extends SimpleFeature {
 

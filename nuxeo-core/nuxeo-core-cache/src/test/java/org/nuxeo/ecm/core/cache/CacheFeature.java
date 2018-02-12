@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.cache;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -35,7 +34,7 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
-@Deploy({ "org.nuxeo.ecm.core.cache" })
+@Deploy("org.nuxeo.ecm.core.cache")
 @Features(RuntimeFeature.class)
 public class CacheFeature extends SimpleFeature {
 

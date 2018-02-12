@@ -54,9 +54,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@Deploy({ "org.nuxeo.ecm.automation.core:test-providers.xml",
-        "org.nuxeo.ecm.automation.core:test-operations.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.core:test-providers.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CoreProviderTest {
 

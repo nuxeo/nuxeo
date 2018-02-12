@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 9.1
  */
-@Deploy({"org.nuxeo.ecm.core.test.tests"})
+@Deploy("org.nuxeo.ecm.core.test.tests")
 @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
 public class TestAutoVersioning extends AbstractTestVersioning {
 

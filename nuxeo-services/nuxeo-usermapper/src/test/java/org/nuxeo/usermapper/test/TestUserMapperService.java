@@ -39,9 +39,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(UserMapperFeature.class)
 @Deploy("org.nuxeo.usermapper:usermapper-contribs.xml")
-@Deploy({"org.nuxeo.ecm.platform.userworkspace.api",
-    "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
-"org.nuxeo.ecm.user.center.profile"})
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.user.center.profile")
 /**
  *
  * @author tiry
