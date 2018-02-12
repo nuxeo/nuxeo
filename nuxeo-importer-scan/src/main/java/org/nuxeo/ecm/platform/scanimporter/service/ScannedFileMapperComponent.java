@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.scanimporter.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,13 +77,13 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
     @Override
     public ScanFileBlobHolder parseMetaData(File xmlFile) throws IOException {
 
-        Map<String, Serializable> data = new HashMap<String, Serializable>();
+        Map<String, Serializable> data = new HashMap<>();
 
         if (mappingDesc == null) {
             return null;
         }
 
-        String xmlData = FileUtils.readFileToString(xmlFile);
+        String xmlData = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
 
         Document xmlDoc;
         try {
@@ -102,7 +103,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
             }
             if (nodes.size() == 1) {
                 DefaultElement elem = (DefaultElement) nodes.get(0);
-                String value = null;
+                String value;
                 if ("TEXT".equals(fieldMap.getSourceAttribute())) {
                     value = elem.getText();
                 } else {
@@ -114,10 +115,10 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
                     data.put(target, value);
                     continue;
                 } else if ("integer".equalsIgnoreCase(fieldMap.getTargetType())) {
-                    data.put(target, Integer.parseInt(value));
+                    data.put(target, Integer.valueOf(value));
                     continue;
                 } else if ("double".equalsIgnoreCase(fieldMap.getTargetType())) {
-                    data.put(target, Double.parseDouble(value));
+                    data.put(target, Double.valueOf(value));
                     continue;
                 } else if ("date".equalsIgnoreCase(fieldMap.getTargetType())) {
                     try {
@@ -127,7 +128,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
                     }
                     continue;
                 } else if ("boolean".equalsIgnoreCase(fieldMap.getTargetType())) {
-                    data.put(target, Boolean.parseBoolean(value));
+                    data.put(target, Boolean.valueOf(value));
                     continue;
                 }
                 log.error("Unknown target type, please look the scan importer configuration: "
@@ -138,7 +139,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
         }
 
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
 
         for (ScanFileBlobMapping blobMap : mappingDesc.getBlobMappings()) {
             List<?> nodes;
@@ -184,8 +185,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
         if (mapper != null) {
             targetType = mapper.getTargetDocumentType(xmlDoc, xmlFile);
         }
-        ScanFileBlobHolder bh = new ScanFileBlobHolder(blobs, data, targetType);
-        return bh;
+        return new ScanFileBlobHolder(blobs, data, targetType);
     }
 
     public ScanFileMappingDescriptor getMappingDesc() {
