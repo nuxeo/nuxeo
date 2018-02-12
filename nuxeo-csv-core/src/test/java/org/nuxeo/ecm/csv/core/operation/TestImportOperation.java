@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -59,7 +58,7 @@ import com.google.inject.Inject;
 @Features({ PlatformFeature.class, CoreFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.csv.core", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.types.core" })
-@LocalDeploy({ "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
+@Deploy({ "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
 public class TestImportOperation {
 

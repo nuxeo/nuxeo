@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 @Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
@@ -49,7 +48,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
         "org.nuxeo.ecm.platform.dublincore", //
         "org.nuxeo.ecm.csv.core" //
 })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
+@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
