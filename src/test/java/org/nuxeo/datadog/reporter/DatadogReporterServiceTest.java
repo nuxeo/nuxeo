@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
@@ -34,7 +33,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.datadog.reporter")
-@LocalDeploy("org.nuxeo.datadog.reporter:datadog-contrib.xml")
+@Deploy("org.nuxeo.datadog.reporter:datadog-contrib.xml")
 public class DatadogReporterServiceTest {
 
 
