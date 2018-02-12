@@ -279,8 +279,9 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     protected static final Map<String, String> systemPropNameMap;
 
     static {
-        systemPropNameMap = new HashMap<String, String>();
+        systemPropNameMap = new HashMap<>();
         systemPropNameMap.put(FULLTEXT_JOBID_SYS_PROP, Model.FULLTEXT_JOBID_PROP);
+        systemPropNameMap.put(IS_TRASHED_SYS_PROP, Model.MAIN_IS_TRASHED_PROP);
     }
 
     @Override
@@ -525,7 +526,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     public List<String> getVersionsIds() {
         String versionSeriesId = getVersionSeriesId();
         Collection<Document> versions = session.getVersions(versionSeriesId);
-        List<String> ids = new ArrayList<String>(versions.size());
+        List<String> ids = new ArrayList<>(versions.size());
         for (Document version : versions) {
             ids.add(version.getUUID());
         }
@@ -570,7 +571,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         }
         // not optimized as this method doesn't seem to be used
         List<Document> children = session.getChildren(getNode());
-        List<String> ids = new ArrayList<String>(children.size());
+        List<String> ids = new ArrayList<>(children.size());
         for (Document child : children) {
             ids.add(child.getUUID());
         }
