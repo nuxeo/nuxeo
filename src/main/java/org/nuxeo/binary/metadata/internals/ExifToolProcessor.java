@@ -34,11 +34,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
@@ -226,7 +226,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
      * @since 8.3
      */
     private String buildCommandTag(String tag, Object value) {
-        return "-" + tag + "=" + ObjectUtils.toString(value);
+        return "-" + tag + "=" + Objects.toString(value);
     }
 
     /**
