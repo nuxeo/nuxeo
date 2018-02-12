@@ -20,6 +20,7 @@ package org.nuxeo.audit.storage.stream;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -36,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.10
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ StreamAuditFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.audit.storage.directory", "org.nuxeo.runtime.stream" })
-@LocalDeploy({ "org.nuxeo.audit.storage.directory:OSGI-INF/test-stream-audit-storage-contrib.xml" })
+@Deploy({ "org.nuxeo.audit.storage.directory:OSGI-INF/test-stream-audit-storage-contrib.xml" })
 public class TestStreamAuditStorageWriter {
 
     @Test
