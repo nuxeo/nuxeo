@@ -23,9 +23,11 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +61,16 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractTrashService implements TrashService {
 
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
+
+    @Override
+    public void trashDocument(DocumentModel doc) {
+        trashDocuments(Collections.singletonList(doc));
+    }
+
+    @Override
+    public void untrashDocument(DocumentModel doc) {
+        undeleteDocuments(Collections.singletonList(doc));
+    }
 
     @Override
     public boolean folderAllowsDelete(DocumentModel folder) {
@@ -229,7 +241,13 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc) {
+        notifyEvent(session, eventId, doc, Collections.emptyMap());
+    }
+
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc,
+            Map<String, Serializable> options) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
+        ctx.setProperties(new HashMap<>(options));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());

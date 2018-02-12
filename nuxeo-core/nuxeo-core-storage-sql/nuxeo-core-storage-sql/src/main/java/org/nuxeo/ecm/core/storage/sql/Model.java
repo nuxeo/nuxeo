@@ -145,6 +145,16 @@ public class Model {
     // for soft-delete
     public static final String MAIN_DELETED_TIME_KEY = "deletedtime";
 
+    /**
+     * @since 10.1
+     */
+    public static final String MAIN_IS_TRASHED_PROP = "ecm:isTrashed";
+
+    /**
+     * @since 10.1
+     */
+    public static final String MAIN_IS_TRASHED_KEY = "istrashed";
+
     public static final String UID_SCHEMA_NAME = "uid";
 
     public static final String UID_MAJOR_VERSION_KEY = "major_version";
@@ -178,16 +188,6 @@ public class Model {
     public static final String MISC_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
 
     public static final String MISC_LIFECYCLE_STATE_KEY = "lifecyclestate";
-
-    /**
-     * @since 10.1
-     */
-    public static final String MISC_IS_TRASHED_PROP = "ecm:isTrashed";
-
-    /**
-     * @since 10.1
-     */
-    public static final String MISC_IS_TRASHED_KEY = "istrashed";
 
     public static final String ACL_TABLE_NAME = "acls";
 
@@ -1281,6 +1281,8 @@ public class Model {
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_RETENTION_ACTIVE_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
                 MAIN_IS_RETENTION_ACTIVE_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_IS_TRASHED_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_TRASHED_KEY, false,
+                        BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (changeTokenEnabled) {
             addPropertyInfo(MAIN_SYS_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_CHANGE_TOKEN_KEY,
                     false, LongType.INSTANCE, ColumnType.LONG);

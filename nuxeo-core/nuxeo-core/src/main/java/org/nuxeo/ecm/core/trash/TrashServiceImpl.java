@@ -67,7 +67,7 @@ public class TrashServiceImpl extends DefaultComponent {
             if (MIGRATION_STATE_LIFECYCLE.equals(state)) {
                 return new LifeCycleTrashService();
             } else if (MIGRATION_STATE_PROPERTY.equals(state)) {
-                throw new UnsupportedOperationException("Not yet implemented");
+                return new PropertyTrashService();
             } else {
                 throw new IllegalStateException("Unknown migration state: " + state);
             }

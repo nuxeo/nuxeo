@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestTrashService {
+public abstract class AbstractTestTrashService {
 
     @Inject
     protected CoreSession session;
@@ -82,7 +81,7 @@ public class TestTrashService {
         principal = session.getPrincipal();
     }
 
-    public void createDocuments() throws Exception {
+    public void createDocuments() {
         fold = session.createDocumentModel("/", "fold", "Folder");
         // use File as document type as Note is now automatically versioned on each update
         fold = session.createDocument(fold);
@@ -102,7 +101,7 @@ public class TestTrashService {
     }
 
     @Test
-    public void testNameMangling() throws Exception {
+    public void testNameMangling() {
         createDocuments();
         String mangled = trashService.mangleName(doc1);
         assertTrue(mangled, mangled.startsWith("doc1._"));
@@ -119,7 +118,7 @@ public class TestTrashService {
     }
 
     @Test
-    public void testBase() throws Exception {
+    public void testBase() {
         createDocuments();
         assertTrue(trashService.folderAllowsDelete(fold));
         assertTrue(trashService.checkDeletePermOnParents(Arrays.asList(doc1, doc2)));
@@ -133,15 +132,14 @@ public class TestTrashService {
         TrashInfo info = trashService.getTrashInfo(Arrays.asList(fold, doc1, doc3), principal, false, false);
         assertEquals(3, info.docs.size());
         assertEquals(2, info.rootRefs.size());
-        assertEquals(new HashSet<Path>(Arrays.asList(new Path("/fold"), new Path("/doc3"))), info.rootPaths);
+        assertEquals(new HashSet<>(Arrays.asList(new Path("/fold"), new Path("/doc3"))), info.rootPaths);
 
-        DocumentModel above = trashService.getAboveDocument(doc1,
-                new HashSet<Path>(Arrays.asList(new Path("/fold/doc1"))));
+        DocumentModel above = trashService.getAboveDocument(doc1, Collections.singleton(new Path("/fold/doc1")));
         assertEquals(above.getPathAsString(), fold.getId(), above.getId());
     }
 
     @Test
-    public void testTrashPurgeUndelete() throws Exception {
+    public void testTrashPurgeUndelete() {
         createDocuments();
         // file with name from collision
         DocumentModel doc4 = session.createDocumentModel("/", "doc4.1400676936345", "Note");
@@ -185,10 +183,10 @@ public class TestTrashService {
         fold = session.getDocument(new IdRef(fold.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         doc4 = session.getDocument(new IdRef(doc4.getId()));
-        assertEquals("project", doc2.getCurrentLifeCycleState());
-        assertEquals("project", doc4.getCurrentLifeCycleState());
+        assertFalse(doc2.isTrashed());
+        assertFalse(doc4.isTrashed());
         // fold also undeleted
-        assertEquals("project", fold.getCurrentLifeCycleState());
+        assertFalse(fold.isTrashed());
         // check name restored
         assertEquals("fold", fold.getName());
         // name still unchanged
@@ -203,14 +201,14 @@ public class TestTrashService {
         // undelete doc3
         trashService.undeleteDocuments(Collections.singletonList(doc3));
         doc3 = session.getDocument(new IdRef(doc3.getId()));
-        assertEquals("project", doc3.getCurrentLifeCycleState());
+        assertFalse(doc3.isTrashed());
         // check it was renamed again during undelete
         assertFalse("doc3".equals(doc3.getName()));
         assertFalse(doc3delname.equals(doc3.getName()));
     }
 
     @Test
-    public void testUndeleteChildren() throws Exception {
+    public void testUndeleteChildren() {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));
 
@@ -233,23 +231,23 @@ public class TestTrashService {
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
-        assertEquals("project", fold.getCurrentLifeCycleState());
+        assertFalse(fold.isTrashed());
         // children done by async BulkLifeCycleChangeListener
-        assertEquals("project", doc1.getCurrentLifeCycleState());
-        assertEquals("project", doc2.getCurrentLifeCycleState());
+        assertFalse(doc1.isTrashed());
+        assertFalse(doc2.isTrashed());
     }
 
     @Test
-    public void testTrashFolderContainingProxy() throws Exception {
+    public void testTrashFolderContainingProxy() {
         createDocuments();
         DocumentRef versionRef = session.checkIn(doc3.getRef(), VersioningOption.MAJOR, null);
         DocumentModel version = session.getDocument(versionRef);
         DocumentModel proxy = session.createProxy(versionRef, fold.getRef());
         session.save();
 
-        assertEquals("project", fold.getCurrentLifeCycleState());
-        assertEquals("project", proxy.getCurrentLifeCycleState());
-        assertEquals("project", version.getCurrentLifeCycleState());
+        assertFalse(fold.isTrashed());
+        assertFalse(proxy.isTrashed());
+        assertFalse(version.isTrashed());
 
         // now delete the folder
         trashService.trashDocuments(Collections.singletonList(fold));
@@ -259,12 +257,12 @@ public class TestTrashService {
         fold.refresh();
         version.refresh();
         assertTrue(fold.isTrashed());
-        assertEquals("project", version.getCurrentLifeCycleState());
+        assertFalse(version.isTrashed());
         assertFalse(session.exists(proxy.getRef()));
     }
 
     @Test
-    public void testProxy() throws Exception {
+    public void testProxy() {
         createDocuments();
         DocumentRef verRef = doc3.checkIn(null, null);
         DocumentModel proxy = session.createProxy(verRef, fold.getRef());
@@ -278,9 +276,9 @@ public class TestTrashService {
      * @since 7.3
      */
     @Test
-    public void testDeleteTwice() throws Exception {
+    public void testDeleteTwice() {
         createDocuments();
-        List<DocumentModel> dd = new ArrayList<DocumentModel>();
+        List<DocumentModel> dd = new ArrayList<>();
         dd.add(doc1);
         trashService.trashDocuments(dd);
         trashService.trashDocuments(dd);
@@ -288,35 +286,22 @@ public class TestTrashService {
     }
 
     @Test
-    public void testPlacelessDocument() throws Exception {
+    public void testPlacelessDocument() {
         DocumentModel doc4 = session.createDocumentModel(null, "doc4", "Note");
         doc4 = session.createDocument(doc4);
         session.save();
-        DocumentModel above = trashService.getAboveDocument(doc4, new HashSet<Path>(Arrays.asList(new Path("/"))));
+        DocumentModel above = trashService.getAboveDocument(doc4, Collections.singleton(new Path("/")));
         assertNull(above);
         trashService.trashDocuments(Collections.singletonList(doc4));
         assertFalse(session.exists(doc4.getRef()));
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-keep.xml")
-    public void testTrashCheckedInDocumentKeepCheckedIn() throws Exception {
+    public void testTrashCheckedInDocumentDefault() {
         doTestTrashCheckedInDocument(true);
     }
 
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-dontkeep.xml")
-    public void testTrashCheckedInDocumentDontKeepCheckedIn() throws Exception {
-        doTestTrashCheckedInDocument(false);
-    }
-
-    // default platform behavior
-    @Test
-    public void testTrashCheckedInDocumentDefault() throws Exception {
-        doTestTrashCheckedInDocument(true);
-    }
-
-    protected void doTestTrashCheckedInDocument(boolean expectCheckedIn) throws Exception {
+    protected void doTestTrashCheckedInDocument(boolean expectCheckedIn) {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
@@ -344,7 +329,7 @@ public class TestTrashService {
 
         // make sure it's still checked in (or not if compat)
         doc = session.getDocument(new IdRef(doc.getId()));
-        assertEquals("project", doc.getCurrentLifeCycleState());
+        assertFalse(doc.isTrashed());
         if (expectCheckedIn) {
             assertFalse(doc.isCheckedOut());
         } else {

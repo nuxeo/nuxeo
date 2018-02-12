@@ -88,6 +88,8 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String SYSPROP_FULLTEXT_JOBID = "fulltextJobId";
 
+    public static final String SYSPROP_IS_TRASHED = "isTrashed";
+
     public static final String KEY_PREFIX = "ecm:";
 
     public static final String KEY_ID = "ecm:id";
@@ -241,6 +243,7 @@ public class DBSDocument extends BaseDocument<State> {
     static {
         systemPropNameMap = new HashMap<>();
         systemPropNameMap.put(SYSPROP_FULLTEXT_JOBID, KEY_FULLTEXT_JOBID);
+        systemPropNameMap.put(SYSPROP_IS_TRASHED, KEY_IS_TRASHED);
     }
 
     public DBSDocument(DBSDocumentState docState, DocumentType type, DBSSession session, boolean readonly) {

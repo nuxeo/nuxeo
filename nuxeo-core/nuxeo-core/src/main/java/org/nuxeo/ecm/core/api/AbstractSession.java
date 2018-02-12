@@ -97,6 +97,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -133,6 +134,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
+    /**
+     * @deprecated since 10.1, new trash behavior is: always keep checkedIn state
+     */
+    @Deprecated
     public static final String TRASH_KEEP_CHECKED_IN_PROPERTY = "org.nuxeo.trash.keepCheckedIn";
 
     // @since 9.1 disable ecm:isLatestVersion and ecm:isLatestMajorVersion updates for performance purpose
@@ -2053,7 +2058,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public boolean isTrashed(DocumentRef docRef) {
-        return LifeCycleConstants.DELETED_STATE.equals(getCurrentLifeCycleState(docRef));
+        return Framework.getService(TrashService.class).isTrashed(this, docRef);
     }
 
     @Override
@@ -2083,11 +2088,28 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
+        // backward compat - used to forward deprecated call to followTransition("deleted") to trash service
+        boolean needToCheckDeleteTransitions = !Boolean.parseBoolean(
+                String.valueOf(options.remove(TrashService.IS_ALREADY_CALLED)));
+        boolean deleteTransitions = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
+                || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
+        // we need to exclude proxy because trash service will remove them
+        if (needToCheckDeleteTransitions && deleteTransitions && !doc.isProxy()) {
+            // retrieve document model to give to trash service
+            DocumentModel docModel = readModel(doc);
+            docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+            TrashService trashService = Framework.getService(TrashService.class);
+            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                trashService.trashDocument(docModel);
+            } else {
+                trashService.untrashDocument(docModel);
+            }
+            return true;
+        }
+
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
-            boolean deleteOrUndelete = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
-                    || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
-            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class)
-                                              .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
+            if (!deleteTransitions || Framework.getService(ConfigurationService.class)
+                                               .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
                 checkOut(docRef);
                 doc = resolveReference(docRef);
             }

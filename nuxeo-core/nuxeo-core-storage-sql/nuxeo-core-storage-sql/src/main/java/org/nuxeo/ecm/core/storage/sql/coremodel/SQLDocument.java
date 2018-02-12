@@ -32,6 +32,8 @@ public interface SQLDocument extends Document {
 
     String FULLTEXT_JOBID_SYS_PROP = "fulltextJobId";
 
+    String IS_TRASHED_SYS_PROP = "isTrashed";
+
     /**
      * Returns the node with info about the hierarchy location.
      */

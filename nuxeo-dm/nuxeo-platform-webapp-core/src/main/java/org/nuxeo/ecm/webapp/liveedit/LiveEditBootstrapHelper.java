@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -489,11 +490,13 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * @since 5.4
      */
     public boolean isLiveEditable(DocumentModel document, Blob blob) {
-        if (document.isImmutable()) {
+        // NXP-24034: testing new trash state needs to have an existing document in DB
+        // NXP-14476: Testing trashed state is part of the "mutable_document" filter
+        DocumentRef docRef = document.getRef();
+        if (!documentManager.exists(docRef) || documentManager.isTrashed(docRef)) {
             return false;
         }
-        // NXP-14476: Testing trashed state is part of the "mutable_document" filter
-        if (document.isTrashed()) {
+        if (document.isImmutable()) {
             return false;
         }
         if (blob == null) {
@@ -591,9 +594,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             log.warn("cannot check live editable state of null DocumentModel");
             return false;
         }
-
+        // NXP-24034: testing new trash state needs to have an existing document in DB
         // NXP-14476: Testing trashed state is part of the "mutable_document" filter
-        if (documentModel.isTrashed()) {
+        DocumentRef docRef = documentModel.getRef();
+        if (!documentManager.exists(docRef) || documentManager.isTrashed(docRef)) {
             return false;
         }
 
@@ -602,7 +606,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
 
-        String cacheKey = documentModel.getRef() + "__" + propertyName;
+        String cacheKey = docRef + "__" + propertyName;
         Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
         if (cachedEditableBlob == null) {
 
@@ -610,7 +614,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 return cacheBlobToFalse(cacheKey);
             }
 
-            if (!documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
+            if (!documentManager.hasPermission(docRef, SecurityConstants.WRITE_PROPERTIES)) {
                 // the lock state is check as a extension to the
                 // SecurityPolicyManager
                 return cacheBlobToFalse(cacheKey);
