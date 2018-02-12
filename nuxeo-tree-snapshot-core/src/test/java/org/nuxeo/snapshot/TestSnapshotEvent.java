@@ -18,6 +18,10 @@
  */
 package org.nuxeo.snapshot;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
+import static org.nuxeo.snapshot.CreateLeafListener.DO_NOT_CHANGE_CHILD_FLAG;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -27,17 +31,12 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
-import static org.nuxeo.snapshot.CreateLeafListener.DO_NOT_CHANGE_CHILD_FLAG;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.snapshot" })
-@LocalDeploy({ "org.nuxeo.snapshot:snapshot-listener-contrib.xml" })
+@Deploy({ "org.nuxeo.snapshot:snapshot-listener-contrib.xml" })
 public class TestSnapshotEvent extends AbstractTestSnapshot {
 
     @Test

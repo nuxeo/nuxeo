@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         "org.nuxeo.ecm.platform.query.api", TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.snapshot" })
-@LocalDeploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
+@Deploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
 public class TestTreePublication {
 
     @Inject
