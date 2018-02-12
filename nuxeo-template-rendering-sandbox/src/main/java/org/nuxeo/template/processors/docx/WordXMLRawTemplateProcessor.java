@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
         File xmlCustomFile = new File(workingDir.getAbsolutePath() + "/docProps/custom.xml");
 
-        String xmlContent = FileUtils.readFileToString(xmlCustomFile);
+        String xmlContent = FileUtils.readFileToString(xmlCustomFile, StandardCharsets.UTF_8);
 
         Document xmlDoc;
         try {
@@ -126,7 +127,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
         File newZipFile = Framework.createTempFile("newWordXMLTemplate", ".docx");
         xmlCustomFile.delete();
         File newXMLFile = new File(xmlCustomFile.getAbsolutePath());
-        FileUtils.writeStringToFile(newXMLFile, newXMLContent);
+        FileUtils.writeStringToFile(newXMLFile, newXMLContent, StandardCharsets.UTF_8);
 
         File[] files = workingDir.listFiles();
         ZipUtils.zip(files, newZipFile);
@@ -246,7 +247,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     if (InputType.StringValue.equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), xmlValue);
                     } else if (InputType.BooleanValue.equals(param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
+                        adaptedDoc.setPropertyValue(param.getSource(), Boolean.valueOf(xmlValue));
                     } else if (InputType.DateValue.equals(param.getType())) {
                         SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         try {
@@ -259,7 +260,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     if (InputType.StringValue.equals(param.getType())) {
                         param.setStringValue(xmlValue);
                     } else if (InputType.BooleanValue.equals(param.getType())) {
-                        param.setBooleanValue(new Boolean(xmlValue));
+                        param.setBooleanValue(Boolean.valueOf(xmlValue));
                     } else if (InputType.DateValue.equals(param.getType())) {
                         SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         try {

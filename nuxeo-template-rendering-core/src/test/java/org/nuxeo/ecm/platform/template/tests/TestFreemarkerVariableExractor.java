@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -43,7 +44,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
     public void testExtractor() throws Exception {
 
         File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("data/testFM.tpl");
-        String content = FileUtils.readFileToString(file);
+        String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
         List<String> vars = FreeMarkerVariableExtractor.extractVariables(content);
 

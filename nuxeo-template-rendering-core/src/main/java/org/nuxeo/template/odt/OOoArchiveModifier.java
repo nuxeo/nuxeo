@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -84,7 +85,7 @@ public class OOoArchiveModifier {
         }
 
         File xmlManifestFile = new File(unzipDir.getPath() + "/META-INF/manifest.xml");
-        String xmlManifest = FileUtils.readFileToString(xmlManifestFile);
+        String xmlManifest = FileUtils.readFileToString(xmlManifestFile, StandardCharsets.UTF_8);
         int idx = xmlManifest.indexOf("</manifest:manifest>");
         xmlManifest = xmlManifest.substring(0, idx) + blobsManifest.toString() + xmlManifest.substring(idx);
         FileUtils.writeByteArrayToFile(xmlManifestFile, xmlManifest.getBytes());
