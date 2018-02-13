@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 9.2
  */
-@Deploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
+@Deploy("org.nuxeo.importer.stream.test:test-kafka-config-contrib.xml")
 public class TestDocumentImportKafka extends TestDocumentImport {
 
     @BeforeClass
