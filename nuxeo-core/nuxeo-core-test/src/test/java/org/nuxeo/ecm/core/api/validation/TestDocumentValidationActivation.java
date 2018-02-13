@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.core.api.validation;
 
+import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.COMPLEX_MANDATORY;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.SIMPLE_FIELD;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_ARRAY_FIELD;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_PROPS_FIELD;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -70,6 +74,9 @@ public class TestDocumentValidationActivation {
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
     }
 
@@ -124,6 +131,9 @@ public class TestDocumentValidationActivation {
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
     }
 
@@ -198,6 +208,9 @@ public class TestDocumentValidationActivation {
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
     }

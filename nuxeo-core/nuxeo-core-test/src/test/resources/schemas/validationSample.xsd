@@ -84,5 +84,12 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="required_complexType" nillable="false" nxsv:nillable="false">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="a_string" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>
 
