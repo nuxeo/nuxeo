@@ -77,6 +77,8 @@ public class TestDocumentValidationService {
 
     public static final String STRING_LIST_ARRAY_FIELD = "vs:anotherSimpleList";
 
+    public static final String COMPLEX_MANDATORY = "vs:required_complexType";
+
     private static final String SCHEMA = "validationSample";
 
     @Inject
@@ -96,7 +98,9 @@ public class TestDocumentValidationService {
         doc = session.createDocument(doc);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
-
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.saveDocument(doc);
     }
 
@@ -192,6 +196,17 @@ public class TestDocumentValidationService {
         checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) new String[] {}));
     }
 
+    @Test
+    public void testMandatoryComplexType() {
+        Property complexMand = doc.getProperty(COMPLEX_MANDATORY);
+        complexMand.setValue(Collections.emptyMap());
+        checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
+        Map complex = new HashMap();
+        complex.put("a_string", null);
+        complexMand.setValue(complex);
+        checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
+    }
+    
     @Test
     public void testFieldComplexWithViolation1() {
         Field field = metamodel.getField(COMPLEX_FIELD);

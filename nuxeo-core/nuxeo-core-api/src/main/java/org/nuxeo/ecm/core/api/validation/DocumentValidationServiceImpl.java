@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DataModel;
@@ -429,7 +430,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             if (value instanceof Map) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> castedValue = (Map<String, Object>) value;
-                if (value == null || castedValue.isEmpty()) {
+                if (castedValue.isEmpty() || castedValue.values().stream().allMatch(Objects::isNull)) {
                     if (!field.isNillable()) {
                         addNotNullViolation(violations, schema, path);
                     }
