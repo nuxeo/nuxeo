@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@Deploy({ "org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-config.xml" })
+@Deploy({ "org.nuxeo.ecm.liveconnect.onedrive.core.tests:OSGI-INF/test-config.xml" })
 public class TestOneDriveBlobProvider extends OneDriveTestCase {
 
     @Inject

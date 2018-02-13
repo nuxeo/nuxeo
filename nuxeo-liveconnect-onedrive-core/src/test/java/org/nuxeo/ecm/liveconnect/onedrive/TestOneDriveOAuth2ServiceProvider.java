@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 8.2
  */
-@Deploy("org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/test-onedrive-config.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.onedrive.core.tests:OSGI-INF/test-onedrive-config.xml")
 public class TestOneDriveOAuth2ServiceProvider extends OneDriveTestCase {
 
     @Inject

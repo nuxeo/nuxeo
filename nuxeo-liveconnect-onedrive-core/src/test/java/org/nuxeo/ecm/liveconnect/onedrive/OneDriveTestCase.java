@@ -33,12 +33,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth",
+@Deploy({ "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.core.mimetype",
+        "org.nuxeo.ecm.platform.oauth",
         "org.nuxeo.ecm.default.config" })
 @Deploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
-        "org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.onedrive:OSGI-INF/onedrive-pageprovider-contrib.xml" })
+        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml",
+        "org.nuxeo.ecm.liveconnect.onedrive.core:OSGI-INF/cache-config.xml",
+        "org.nuxeo.ecm.liveconnect.onedrive.core:OSGI-INF/onedrive-pageprovider-contrib.xml" })
 public class OneDriveTestCase {
 
     // same as in test XML contrib

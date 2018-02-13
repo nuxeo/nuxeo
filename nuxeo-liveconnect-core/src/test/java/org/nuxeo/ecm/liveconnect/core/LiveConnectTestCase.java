@@ -37,12 +37,18 @@ import org.nuxeo.runtime.test.runner.LogFeature;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class, LogFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.default.config" })
-@Deploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
+@Deploy({ "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.core.mimetype",
+        "org.nuxeo.ecm.platform.oauth",
+        "org.nuxeo.ecm.default.config",
+        "org.nuxeo.ecm.liveconnect.core" })
+@Deploy({
+        "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
+        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml",
         "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-cache-config.xml",
         "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-config.xml",
-        "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-pageprovider-contrib.xml" })
+        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-pageprovider-contrib.xml"
+})
 public class LiveConnectTestCase {
 
     // same as in test XML contrib

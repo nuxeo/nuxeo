@@ -32,12 +32,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.cache", //
 })
-@Deploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
+@Deploy({
+        "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
+        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml",
         "org.nuxeo.ecm.liveconnect.google.drive.core:OSGI-INF/cache-config.xml",
         "org.nuxeo.ecm.liveconnect.google.drive.core:OSGI-INF/core-types-contrib.xml",
-        "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.google.drive.core:OSGI-INF/test-googledrive-config.xml",
-        "org.nuxeo.ecm.liveconnect.google.drive.core:OSGI-INF/googledrive-pageprovider-contrib.xml" })
+        "org.nuxeo.ecm.liveconnect.google.drive.core.test:OSGI-INF/test-googledrive-config.xml",
+        "org.nuxeo.ecm.liveconnect.google.drive.core:OSGI-INF/googledrive-pageprovider-contrib.xml"
+})
 public class GoogleDriveTestCase {
 
     protected static final String USERNAME = "tester";
