@@ -33,7 +33,9 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.csv.core", "org.nuxeo.ecm.csv.jsf" })
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.csv.core")
+@Deploy("org.nuxeo.ecm.csv.jsf")
 public class TestCSVService {
 
     @Inject

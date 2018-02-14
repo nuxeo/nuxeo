@@ -37,21 +37,20 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 @Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.login", //
-        "org.nuxeo.ecm.platform.web.common", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
-        "org.nuxeo.ecm.core.io", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.csv.core" //
-})
-@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.csv.core")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
+@Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml")
 public class AbstractCSVImporterTest {
 
     @Inject

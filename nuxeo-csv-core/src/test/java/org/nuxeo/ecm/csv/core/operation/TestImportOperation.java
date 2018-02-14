@@ -56,10 +56,12 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, CoreFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.csv.core", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.types.core" })
-@Deploy({ "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
+@Deploy("org.nuxeo.ecm.csv.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml")
 public class TestImportOperation {
 
     private static final int TIMEOUT_SECONDS = 20;
