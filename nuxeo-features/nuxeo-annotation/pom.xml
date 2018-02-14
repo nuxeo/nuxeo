@@ -14,5 +14,6 @@
   <modules>
     <module>nuxeo-annotation-api</module>
     <module>nuxeo-annotation-core</module>
+    <module>nuxeo-annotation-rest-api</module>
   </modules>
 </project>
