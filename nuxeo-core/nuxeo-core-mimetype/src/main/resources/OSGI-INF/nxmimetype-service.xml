@@ -1385,7 +1385,8 @@
     <fileExtension name="key" mimetype="application/vnd.apple.keynote" ambiguous="false" />
     <fileExtension name="numbers" mimetype="application/vnd.apple.numbers" ambiguous="false" />
     <fileExtension name="pages" mimetype="application/vnd.apple.pages" ambiguous="false" />
-
+    <fileExtension name="rvt" mimetype="application/octet-stream" ambiguous="false" />
+    <fileExtension name="dlx" mimetype="application/octet-stream" ambiguous="false" />
   </extension>
 
 </component>
