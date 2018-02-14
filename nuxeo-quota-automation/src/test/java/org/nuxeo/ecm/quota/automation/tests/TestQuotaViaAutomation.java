@@ -58,7 +58,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation", "org.nuxeo.ecm.automation.core" })
+@Deploy("org.nuxeo.ecm.quota.core")
+@Deploy("org.nuxeo.ecm.quota.automation")
+@Deploy("org.nuxeo.ecm.automation.core")
 public class TestQuotaViaAutomation {
 
     @Inject

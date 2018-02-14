@@ -27,9 +27,11 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @author dmetzler
  */
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.quota.core",
-        "org.nuxeo.ecm.platform.content.template" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.quota.core")
+@Deploy("org.nuxeo.ecm.platform.content.template")
 public class QuotaFeature extends SimpleFeature {
 
 }
