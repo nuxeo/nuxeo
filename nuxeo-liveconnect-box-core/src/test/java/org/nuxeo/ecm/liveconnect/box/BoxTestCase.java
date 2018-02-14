@@ -32,14 +32,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.ecm.core.mimetype",
-        "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.liveconnect.box.core" })
-@Deploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
-        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/test-box-config.xml",
-        "org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/box-pageprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.mimetype")
+@Deploy("org.nuxeo.ecm.platform.oauth")
+@Deploy("org.nuxeo.ecm.liveconnect.box.core")
+@Deploy("org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/cache-config.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/test-box-config.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.box.core:OSGI-INF/box-pageprovider-contrib.xml")
 public class BoxTestCase {
 
     // same as in test XML contrib

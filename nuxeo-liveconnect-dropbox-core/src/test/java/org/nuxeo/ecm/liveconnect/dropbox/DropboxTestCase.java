@@ -30,16 +30,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.ecm.core.mimetype",
-        "org.nuxeo.ecm.platform.oauth" })
-@Deploy({
-        "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
-        "org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.dropbox.core:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect.dropbox.core:OSGI-INF/dropbox-pageprovider-contrib.xml",
-        "org.nuxeo.ecm.liveconnect.dropbox.core.tests:OSGI-INF/test-dropbox-config.xml"
-})
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.mimetype")
+@Deploy("org.nuxeo.ecm.platform.oauth")
+@Deploy("org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.core:OSGI-INF/liveconnect-workmanager-contrib.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.dropbox.core:OSGI-INF/cache-config.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.dropbox.core:OSGI-INF/dropbox-pageprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.liveconnect.dropbox.core.tests:OSGI-INF/test-dropbox-config.xml")
 public class DropboxTestCase {
 
     protected static final String USERID = "tester@example.com";
