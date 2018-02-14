@@ -98,7 +98,7 @@ elasticsearch.networkHost=127.0.0.1
 # if false load from document from VCS
 elasticsearch.fetchDocFromEs=false
 # Comma separated list of CorePageProvider names to supersede by Elasticsearch
-elasticsearch.override.pageproviders=default_search,default_document_suggestion,DEFAULT_DOCUMENT_SUGGESTION,advanced_document_content,domain_documents,expired_search
+elasticsearch.override.pageproviders=default_search,default_document_suggestion,DEFAULT_DOCUMENT_SUGGESTION,advanced_document_content,domain_documents,expired_search,default_trash_search
 # Reindexing option, number of documents to process per worker @since 6.0-HF02
 elasticsearch.reindex.bucketReadSize=500
 # Reindexing option, number of documents to submit to Elasticsearch per bulk command @since 6.0-HF02
