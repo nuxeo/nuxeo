@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 8.4
  */
 @Features(RedisFeature.class)
-@Deploy({ "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-redis-sync-root-cache-contrib.xml" })
+@Deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-redis-sync-root-cache-contrib.xml")
 @BlacklistComponent("org.nuxeo.drive.sync.roots.cache.test")
 public class NuxeoDriveRedisCacheFeature extends SimpleFeature {
 

@@ -58,8 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ NuxeoDriveFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({"org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml"})
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml")
 public class TestESSyncRootFolderItem {
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";

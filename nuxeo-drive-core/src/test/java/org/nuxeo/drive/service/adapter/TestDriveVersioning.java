@@ -130,8 +130,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml",
-        "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-policy-contrib.xml" })
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-policy-contrib.xml")
 public class TestDriveVersioning {
 
     private static final int VERSIONING_DELAY = 1000; // ms

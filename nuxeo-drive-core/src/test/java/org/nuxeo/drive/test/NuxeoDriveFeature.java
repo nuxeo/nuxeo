@@ -22,21 +22,21 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ PlatformFeature.class, SQLAuditFeature.class })
-@Deploy({ "org.nuxeo.drive.core", //
-        "org.nuxeo.ecm.core.io", //
-        "org.nuxeo.runtime.reload", //
-        "org.nuxeo.ecm.core.cache", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.userworkspace.core", //
-        "org.nuxeo.ecm.platform.collections.core", //
-        "org.nuxeo.ecm.platform.web.common", //
-        "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.webapp.types", //
-        "org.nuxeo.ecm.platform.tag" })
-@Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
-        "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
-        "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
+@Deploy("org.nuxeo.drive.core")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.runtime.reload")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.webapp.types")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml")
 public class NuxeoDriveFeature extends SimpleFeature {
 
 }

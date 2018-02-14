@@ -86,7 +86,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml" })
+@Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml")
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);

@@ -42,12 +42,14 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 8.2
  */
 @Features({ AutomationFeature.class, AuditFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", "org.nuxeo.admin.center",
-        "org.nuxeo.elasticsearch.audit",
-        "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
-        "org.nuxeo.drive.elasticsearch" })
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
+@Deploy("org.nuxeo.elasticsearch.seqgen")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
+@Deploy("org.nuxeo.admin.center")
+@Deploy("org.nuxeo.elasticsearch.audit")
+@Deploy("org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml")
+@Deploy("org.nuxeo.drive.elasticsearch")
 @Deploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
 public class ESAuditFeature extends SimpleFeature {
 

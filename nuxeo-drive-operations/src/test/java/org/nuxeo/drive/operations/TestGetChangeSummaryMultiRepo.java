@@ -64,8 +64,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ H2OnlyFeature.class, NuxeoDriveAutomationFeature.class })
-@Deploy({ "org.nuxeo.drive.operations:test-other-repository-config.xml",
-        "org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml" })
+@Deploy("org.nuxeo.drive.operations:test-other-repository-config.xml")
+@Deploy("org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml")
 @Jetty(port = 18080)
 public class TestGetChangeSummaryMultiRepo {
 
