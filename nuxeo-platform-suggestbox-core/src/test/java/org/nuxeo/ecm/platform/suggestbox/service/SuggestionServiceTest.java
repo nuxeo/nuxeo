@@ -58,16 +58,15 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.webapp.types", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.platform.suggestbox.core", //
-})
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.webapp.types")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.platform.suggestbox.core")
 public class SuggestionServiceTest {
 
     @Inject

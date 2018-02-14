@@ -40,7 +40,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.suggestbox.core", "org.nuxeo.ecm.platform.suggestbox.core.test" })
+@Deploy("org.nuxeo.ecm.platform.suggestbox.core")
+@Deploy("org.nuxeo.ecm.platform.suggestbox.core.test")
 public class SuggesterGroupMergeTest {
 
     @Inject
