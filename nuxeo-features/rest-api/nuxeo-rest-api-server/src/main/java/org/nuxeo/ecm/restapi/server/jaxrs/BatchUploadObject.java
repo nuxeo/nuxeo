@@ -55,6 +55,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerConstants;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -184,16 +185,15 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 mimeType = blob.getMimeType();
             }
             uploadedSize = blob.getLength();
-            try (InputStream is = blob.getStream()) {
-                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
-                        uploadChunkIndex, fileSize);
-            }
+            addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
+                    fileSize);
         } else {
             if (fileName != null) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
             }
             try (InputStream is = request.getInputStream()) {
-                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
+                Blob blob = Blobs.createBlob(is);
+                addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount,
                         uploadChunkIndex, fileSize);
             }
         }
@@ -226,22 +226,22 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return Long.parseLong(contentLength);
     }
 
-    protected void addStream(String uploadType, String batchId, String fileIdx, InputStream is, String fileName,
+    protected void addBlob(String uploadType, String batchId, String fileIdx, Blob blob, String fileName,
             String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize)
-                    throws IOException {
+            throws IOException {
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Uploading chunk [index=%d / total=%d] (%s) for file %s", uploadChunkIndex,
                         chunkCount, uploadedSizeDisplay, fileName));
             }
-            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, chunkCount, uploadChunkIndex,
+            Framework.getService(BatchManager.class).addBlob(batchId, fileIdx, blob, chunkCount, uploadChunkIndex,
                     fileName, mimeType, fileSize);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Uploading file %s (%s)", fileName, uploadedSizeDisplay));
             }
-            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, fileName, mimeType);
+            Framework.getService(BatchManager.class).addBlob(batchId, fileIdx, blob, fileName, mimeType);
         }
     }
 

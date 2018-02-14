@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.RestBinding;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -118,13 +119,19 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public void addStream(String batchId, String index, InputStream is, String name, String mime) throws IOException {
+        Blob blob = Blobs.createBlob(is);
+        addBlob(batchId, index, blob, name, mime);
+    }
+
+    @Override
+    public void addBlob(String batchId, String index, Blob blob, String name, String mime) throws IOException {
         uploadInProgress.incrementAndGet();
         try {
             Batch batch = getBatch(batchId);
             if (batch == null) {
                 batch = initBatchInternal(batchId);
             }
-            batch.addFile(index, is, name, mime);
+            batch.addFile(index, blob, name, mime);
             log.debug(String.format("Added file %s [%s] to batch %s", index, name, batch.getKey()));
         } finally {
             uploadInProgress.decrementAndGet();
@@ -134,13 +141,20 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     @Override
     public void addStream(String batchId, String index, InputStream is, int chunkCount, int chunkIndex, String name,
             String mime, long fileSize) throws IOException {
+        Blob blob = Blobs.createBlob(is);
+        addBlob(batchId, index, blob, chunkCount, chunkIndex, name, mime, fileSize);
+    }
+
+    @Override
+    public void addBlob(String batchId, String index, Blob blob, int chunkCount, int chunkIndex, String name,
+            String mime, long fileSize) throws IOException {
         uploadInProgress.incrementAndGet();
         try {
             Batch batch = getBatch(batchId);
             if (batch == null) {
                 batch = initBatchInternal(batchId);
             }
-            batch.addChunk(index, is, chunkCount, chunkIndex, name, mime, fileSize);
+            batch.addChunk(index, blob, chunkCount, chunkIndex, name, mime, fileSize);
             log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIndex, index, name,
                     batch.getKey()));
         } finally {
