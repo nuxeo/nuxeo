@@ -45,11 +45,17 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
-        "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
-        "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
-        "org.nuxeo.ecm.platform.query.api", TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.snapshot" })
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
+@Deploy("org.nuxeo.ecm.platform.publisher.task")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
+@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
+@Deploy("org.nuxeo.snapshot")
 @Deploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
 public class TestTreePublication {
 

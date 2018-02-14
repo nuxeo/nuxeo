@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.snapshot" })
+@Deploy("org.nuxeo.snapshot")
 public class TestSnapshotOperations extends AbstractTestSnapshot {
 
     @Test

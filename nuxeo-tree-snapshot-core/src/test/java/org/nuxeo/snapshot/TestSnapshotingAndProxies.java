@@ -40,7 +40,7 @@ import org.nuxeo.snapshot.SnapshotableAdapter;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.snapshot" })
+@Deploy("org.nuxeo.snapshot")
 public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
 
     // helper method that provides children listing using different technics

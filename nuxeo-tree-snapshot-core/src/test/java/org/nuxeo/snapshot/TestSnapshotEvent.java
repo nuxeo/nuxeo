@@ -35,8 +35,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.snapshot" })
-@Deploy({ "org.nuxeo.snapshot:snapshot-listener-contrib.xml" })
+@Deploy("org.nuxeo.snapshot")
+@Deploy("org.nuxeo.snapshot:snapshot-listener-contrib.xml")
 public class TestSnapshotEvent extends AbstractTestSnapshot {
 
     @Test

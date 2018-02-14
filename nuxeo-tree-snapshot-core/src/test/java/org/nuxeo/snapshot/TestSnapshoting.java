@@ -43,7 +43,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.snapshot" })
+@Deploy("org.nuxeo.snapshot")
 public class TestSnapshoting extends AbstractTestSnapshot {
 
     @Inject
