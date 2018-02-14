@@ -36,7 +36,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.dmk-adaptor", "org.nuxeo.runtime.management" })
+@Deploy("org.nuxeo.dmk-adaptor")
+@Deploy("org.nuxeo.runtime.management")
 public class TestDMKAdaptor {
 
     @Test
