@@ -25,6 +25,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -34,6 +35,11 @@ import java.io.OutputStream;
  * @since 6.0
  */
 public class JsonWebengineWriter {
+
+    /**
+     * since 9.10-HF02
+     */
+    public static final String WRITE_STACK_TRACE_PROPERTY = "nuxeo.rest.write.exception.stack.trace";
 
     static JsonFactoryManager jsonFactoryManager;
 
@@ -60,8 +66,10 @@ public class JsonWebengineWriter {
         // jg.writeStringField("help_url", eh.getHelpUrl());
         // jg.writeStringField("request_id", eh.getRequestId());
         jg.writeStringField("message", webException.getMessage());
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         if (jsonFactoryManager.isStackDisplay()
-                || MediaType.valueOf(MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
+                || (MediaType.valueOf(MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)
+                        && configurationService.isBooleanPropertyTrue(WRITE_STACK_TRACE_PROPERTY))) {
             jg.writeStringField("stacktrace", webException.getStackTraceString());
             jg.writeObjectField("exception", webException.getCause());
         }

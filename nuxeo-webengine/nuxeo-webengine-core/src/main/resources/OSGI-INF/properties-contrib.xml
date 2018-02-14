@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.core.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables the whole exception stack trace to be written in the response when using the REST API.
+      Defaults to true for backward compatibility.
+    </documentation>
+    <property name="nuxeo.rest.write.exception.stack.trace">true</property>
+  </extension>
+
+</component>
