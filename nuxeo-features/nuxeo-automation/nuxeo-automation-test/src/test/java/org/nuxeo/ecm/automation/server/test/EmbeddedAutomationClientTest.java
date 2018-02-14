@@ -945,6 +945,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             fail("Unexpected " + wrongDoc);
         } catch (RemoteException e) {
             assertNotNull(e);
+            assertNotNull(e.getRemoteCause());
             assertNotNull(e.getRemoteStackTrace());
         } catch (Exception e) {
             fail();
@@ -1084,5 +1085,18 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 .execute();
         assertEquals("hello", folder.getString("dc:title"));
         assertNull(folder.getString("dc:description"));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.automation.test.test:test-no-stack-trace-properties.xml")
+    public void shouldNotHaveTheRemoteCause() throws IOException {
+        try {
+            // get a wrong doc
+            Document wrongDoc = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
+            fail("Unexpected " + wrongDoc);
+        } catch (RemoteException e) {
+            assertNotNull(e);
+            assertNull(e.getRemoteCause());
+        }
     }
 }
