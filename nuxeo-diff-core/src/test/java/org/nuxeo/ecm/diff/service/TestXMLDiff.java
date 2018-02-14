@@ -60,7 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.diff.core" })
+@Deploy("org.nuxeo.diff.core")
 public class TestXMLDiff extends DiffTestCase {
 
     private static final Log LOGGER = LogFactory.getLog(TestXMLDiff.class);
