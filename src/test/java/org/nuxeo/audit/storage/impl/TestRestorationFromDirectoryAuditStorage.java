@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, MongoDBAuditFeature.class })
-@Deploy({ "org.nuxeo.audit.storage.directory" })
+@Deploy("org.nuxeo.audit.storage.directory")
 public class TestRestorationFromDirectoryAuditStorage {
 
     @Test

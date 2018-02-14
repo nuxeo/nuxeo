@@ -74,7 +74,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ AuditFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.audit.storage.directory" })
+@Deploy("org.nuxeo.audit.storage.directory")
 public class TestDirectoryAuditStorage {
 
     protected static DirectoryAuditStorage storage;
