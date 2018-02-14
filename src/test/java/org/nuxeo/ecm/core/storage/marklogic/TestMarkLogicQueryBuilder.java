@@ -49,13 +49,12 @@ import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
-@LocalDeploy("org.nuxeo.ecm.core.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     protected static DBSExpressionEvaluator newEvaluator(DBSSession session, SelectClause select, Expression expression,
