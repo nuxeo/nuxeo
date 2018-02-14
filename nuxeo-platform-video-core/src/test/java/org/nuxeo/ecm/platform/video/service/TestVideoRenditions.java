@@ -59,12 +59,17 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.video.convert",
-        "org.nuxeo.ecm.platform.video.core", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.rendition.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.platform.video.convert")
+@Deploy("org.nuxeo.ecm.platform.video.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class TestVideoRenditions {
 
     public static final String DELTA_MP4 = "DELTA.mp4";

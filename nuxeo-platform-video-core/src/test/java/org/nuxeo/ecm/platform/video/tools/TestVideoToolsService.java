@@ -50,12 +50,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.video.convert",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
-@Deploy({ "org.nuxeo.ecm.platform.video.core:OSGI-INF/core-types-contrib.xml",
-        "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-commandlines-contrib.xml",
-        "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-service.xml" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.video.convert")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.video.core:OSGI-INF/core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-commandlines-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-operations-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-service.xml")
 public class TestVideoToolsService extends BaseVideoToolsTest {
 
     @Inject
