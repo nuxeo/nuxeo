@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFUtilsTest {
 
     private File pdfFile;

@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFPageExtractorTest {
 
     private FileBlob pdfFileBlob, encryptedPdfFileBlob;

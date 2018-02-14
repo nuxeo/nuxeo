@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFLinksTest {
 
     private static final String PDF_LINKED_2_LOCAL_PATH = TestUtils.PDF_LINKED_2_PATH.replace("files/", "");

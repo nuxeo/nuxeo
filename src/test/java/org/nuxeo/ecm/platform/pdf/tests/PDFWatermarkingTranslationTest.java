@@ -36,7 +36,7 @@ import java.io.IOException;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFWatermarkingTranslationTest {
 
     private static long PAGE_WIDTH = 400;

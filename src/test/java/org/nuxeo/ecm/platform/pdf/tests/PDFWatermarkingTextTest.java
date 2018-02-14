@@ -43,7 +43,7 @@ import java.io.IOException;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFWatermarkingTextTest {
 
     private static final String TEXT_WATERMARK = "(c) Test Text Watermark";

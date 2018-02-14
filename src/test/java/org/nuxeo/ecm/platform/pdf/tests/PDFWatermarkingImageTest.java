@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+@Deploy("org.nuxeo.ecm.platform.pdf")
 public class PDFWatermarkingImageTest {
 
     private static final String PDF_PATH = "/files/test-watermark.pdf";
