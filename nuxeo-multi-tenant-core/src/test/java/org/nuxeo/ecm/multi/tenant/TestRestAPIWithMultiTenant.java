@@ -44,10 +44,13 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = MultiTenantRepositoryInit.class)
 @Jetty(port = 18080)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.default.config" })
-@Deploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
-        "org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml" })
+@Deploy("org.nuxeo.ecm.multi.tenant")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.default.config")
+@Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml")
 public class TestRestAPIWithMultiTenant {
 
     @Inject

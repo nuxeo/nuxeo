@@ -82,11 +82,15 @@ import junit.framework.Assert;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.default.config" })
-@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
-        "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
+@Deploy("org.nuxeo.ecm.multi.tenant")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.default.config")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
+@Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 public class TestMultiTenantService {
 
     @Inject
