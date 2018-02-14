@@ -45,8 +45,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@Deploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
+@Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml")
+@Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataAsyncListener {
 

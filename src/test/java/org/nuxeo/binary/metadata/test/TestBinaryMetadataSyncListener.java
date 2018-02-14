@@ -46,12 +46,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.tag" })
-@Deploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml"})
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml")
+@Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
+@Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataSyncListener {
 
