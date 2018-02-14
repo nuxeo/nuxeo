@@ -78,8 +78,10 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractAutomationClientTest {
@@ -132,6 +134,7 @@ public abstract class AbstractAutomationClientTest {
     public void testRemoteErrorHandling() throws Exception {
         // assert document removed
         try {
+            session.newRequest(JsonStackToggleDisplayOperation.ID).execute();
             session.newRequest(FetchDocument.ID).set("value", "/automation-test-folder/unexisting").execute();
             fail("request is supposed to return 404");
         } catch (RemoteException e) {
@@ -145,6 +148,8 @@ public abstract class AbstractAutomationClientTest {
             }
             String className = ((RemoteThrowable) remoteCause).getOtherNodes().get("className").textValue();
             assertThat(className, is(DocumentNotFoundException.class.getName()));
+        } finally {
+            session.newRequest(JsonStackToggleDisplayOperation.ID).execute();
         }
     }
 

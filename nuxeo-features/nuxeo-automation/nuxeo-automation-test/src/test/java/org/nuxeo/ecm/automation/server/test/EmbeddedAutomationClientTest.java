@@ -373,7 +373,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             doc = (Document) session.newRequest("exitError").setInput(root).execute();
             fail("expected error");
         } catch (RemoteException t) {
-            assertTrue(t.getRemoteStackTrace().contains("termination error"));
+            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getStatus());
+            assertEquals("Failed to invoke operation: exitError", t.getMessage());
         }
         // test the note was not created
         try {
@@ -968,12 +969,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             fail();
         } catch (RemoteException e) {
             assertNotNull(e);
-            RemoteThrowable cause = (RemoteThrowable) e.getRemoteCause();
-            while (cause.getCause() != null && cause.getCause() != cause) {
-                cause = (RemoteThrowable) cause.getCause();
-            }
-            assertEquals("Exception Message", cause.getMessage());
-            assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").textValue());
+            assertEquals("Failed to invoke operation: Test.HttpStatus", e.getMessage());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
