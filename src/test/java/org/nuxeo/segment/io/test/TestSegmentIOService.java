@@ -49,7 +49,7 @@ import org.nuxeo.segment.io.SegmentIOUserFilter;
 import com.github.segmentio.models.Options;
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.segmentio.connector" })
+@Deploy("org.nuxeo.segmentio.connector")
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.segmentio.connector:segmentio-contribs.xml")
 @Features(CoreFeature.class)
