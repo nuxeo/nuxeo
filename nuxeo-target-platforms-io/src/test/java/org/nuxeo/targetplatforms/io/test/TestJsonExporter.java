@@ -55,11 +55,19 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features({RuntimeFeature.class, DirectoryFeature.class})
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io",
-        "org.nuxeo.ecm.platform.el", "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io", })
-@Deploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
-        "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.platform.el")
+@Deploy("org.nuxeo.targetplatforms.core")
+@Deploy("org.nuxeo.targetplatforms.io")
+@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
+@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestJsonExporter {
 
     @Inject

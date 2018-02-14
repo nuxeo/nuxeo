@@ -48,9 +48,11 @@ import com.sun.jersey.api.client.WebResource;
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.core.test", "org.nuxeo.targetplatforms.jaxrs" })
-@Deploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
-        "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
+@Deploy("org.nuxeo.targetplatforms.core")
+@Deploy("org.nuxeo.targetplatforms.core.test")
+@Deploy("org.nuxeo.targetplatforms.jaxrs")
+@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
+@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TargetPlatformServiceTest extends BaseTest {
 
     private static final String URL = "http://localhost:18090/target-platforms";

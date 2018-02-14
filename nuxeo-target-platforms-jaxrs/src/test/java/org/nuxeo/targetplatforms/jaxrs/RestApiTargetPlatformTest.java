@@ -25,8 +25,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.core.test", "org.nuxeo.targetplatforms.jaxrs" })
-@Deploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
+@Deploy("org.nuxeo.targetplatforms.core")
+@Deploy("org.nuxeo.targetplatforms.core.test")
+@Deploy("org.nuxeo.targetplatforms.jaxrs")
+@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class RestApiTargetPlatformTest extends BaseTest {
 
     @Test
