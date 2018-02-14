@@ -49,12 +49,12 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  * @since 5.8
  */
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.platform.filemanager.api", //
-        "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.filemanager.core.listener" })
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core.listener")
 public class WebDavServerFeature extends WebEngineFeature {
 
     protected static final int PORT = 9998;
