@@ -159,22 +159,29 @@ public class Batch {
      * Adds a file with the given {@code index} to the batch.
      *
      * @return The key of the new {@link BatchFileEntry}.
+     * @deprecated since 10.1, use the {@link Blob}-based signature instead
      */
+    @Deprecated
     public String addFile(String index, InputStream is, String name, String mime) throws IOException {
-        String mimeType = mime;
-        if (mimeType == null) {
-            mimeType = "application/octet-stream";
-        }
-        Blob blob = Blobs.createBlob(is, mime);
-        blob.setFilename(name);
+        Blob blob = Blobs.createBlob(is);
+        return addFile(index, blob, name, mime);
+    }
 
+    /**
+     * Adds a file with the given {@code index} to the batch.
+     *
+     * @return The key of the new {@link BatchFileEntry}.
+     * @since 10.1
+     */
+    public String addFile(String index, Blob blob, String name, String mime) throws IOException {
+        blob.setFilename(name);
+        blob.setMimeType(mime);
         String fileEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
         TransientStore ts = bm.getTransientStore();
         ts.putBlobs(fileEntryKey, Collections.singletonList(blob));
         ts.putParameter(fileEntryKey, CHUNKED_PARAM_NAME, String.valueOf(false));
         ts.putParameter(key, index, fileEntryKey);
-
         return fileEntryKey;
     }
 
@@ -183,22 +190,33 @@ public class Batch {
      *
      * @return The key of the {@link BatchFileEntry}.
      * @since 7.4
+     * @deprecated since 10.1, use the {@link Blob}-based signature instead
      */
+    @Deprecated
     public String addChunk(String index, InputStream is, int chunkCount, int chunkIndex, String fileName,
             String mimeType, long fileSize) throws IOException {
-        BatchManager bm = Framework.getService(BatchManager.class);
         Blob blob = Blobs.createBlob(is);
+        return addChunk(index, blob, chunkCount, chunkIndex, fileName, mimeType, fileSize);
+    }
 
+    /**
+     * Adds a chunk with the given {@code chunkIndex} to the batch file with the given {@code index}.
+     *
+     * @return The key of the {@link BatchFileEntry}.
+     * @since 10.1
+     */
+    public String addChunk(String index, Blob blob, int chunkCount, int chunkIndex, String fileName, String mimeType,
+            long fileSize) throws IOException {
         String fileEntryKey = key + "_" + index;
         BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry == null) {
             fileEntry = new BatchFileEntry(fileEntryKey, chunkCount, fileName, mimeType, fileSize);
+            BatchManager bm = Framework.getService(BatchManager.class);
             TransientStore ts = bm.getTransientStore();
             ts.putParameters(fileEntryKey, fileEntry.getParams());
             ts.putParameter(key, index, fileEntryKey);
         }
         fileEntry.addChunk(chunkIndex, blob);
-
         return fileEntryKey;
     }
 

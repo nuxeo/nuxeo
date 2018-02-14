@@ -71,7 +71,7 @@ public class CreatePictureTest {
         String mimeType = "image/jpeg";
 
         String batchId = batchManager.initBatch();
-        batchManager.addStream(batchId, "1", source.getStream(), fileName, mimeType);
+        batchManager.addBlob(batchId, "1", source, fileName, mimeType);
 
         StringBuilder fakeJSON = new StringBuilder("{ ");
         fakeJSON.append(" \"type\" : \"blob\"");

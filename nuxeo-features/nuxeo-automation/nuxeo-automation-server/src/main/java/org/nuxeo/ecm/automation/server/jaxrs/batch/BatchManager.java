@@ -47,8 +47,18 @@ public interface BatchManager {
      * Adds an inputStream as a blob to a batch. Will create a new {@link Batch} if needed.
      * <p>
      * Streams are persisted as temporary files.
+     *
+     * @deprecated since 10.1, use {@link #addBlob(String, String, Blob, String, String)} instead
      */
+    @Deprecated
     void addStream(String batchId, String index, InputStream is, String name, String mime) throws IOException;
+
+    /**
+     * Adds a blob to a batch. Will create a new {@link Batch} if needed.
+     *
+     * @since 10.1
+     */
+    void addBlob(String batchId, String index, Blob blob, String name, String mime) throws IOException;
 
     /**
      * Adds an inputStream as a chunk to a batch. Will create a new {@link Batch} if needed.
@@ -56,9 +66,19 @@ public interface BatchManager {
      * Streams are persisted as temporary files.
      *
      * @since 7.4
+     * @deprecated since 10.1, use {@link #addBlob(String, String, Blob, int, int, String, String, long)} instead
      */
+    @Deprecated
     void addStream(String batchId, String index, InputStream is, int chunkCount, int chunkIndex, String name,
             String mime, long fileSize) throws IOException;
+
+    /**
+     * Adds a blob as a chunk to a batch. Will create a new {@link Batch} if needed.
+     *
+     * @since 10.1
+     */
+    void addBlob(String batchId, String index, Blob blob, int chunkCount, int chunkIndex, String name, String mime,
+            long fileSize) throws IOException;
 
     /**
      * Returns true if there is a batch for the given {@code batchId}, false otherwise.
