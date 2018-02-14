@@ -38,9 +38,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.user.invite", "org.nuxeo.ecm.user.registration" })
+@Deploy("org.nuxeo.ecm.user.invite")
+@Deploy("org.nuxeo.ecm.user.registration")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.user.registration:test-types-contrib.xml" })
+@Deploy("org.nuxeo.ecm.user.registration:test-types-contrib.xml")
 public abstract class AbstractUserRegistration {
 
     @Inject
