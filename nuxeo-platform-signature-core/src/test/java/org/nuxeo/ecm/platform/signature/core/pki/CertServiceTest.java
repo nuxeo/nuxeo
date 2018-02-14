@@ -53,8 +53,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
-        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test" })
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.platform.signature.core")
+@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class CertServiceTest {
 
     @Inject

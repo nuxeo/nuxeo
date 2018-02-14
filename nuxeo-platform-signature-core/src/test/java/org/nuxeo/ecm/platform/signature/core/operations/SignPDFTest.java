@@ -57,7 +57,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform" + ".signature.core.test" })
+@Deploy("org.nuxeo.ecm.platform.signature.core")
+@Deploy("org.nuxeo.ecm.platform"+".signature.core.test")
 public class SignPDFTest {
 
     protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";

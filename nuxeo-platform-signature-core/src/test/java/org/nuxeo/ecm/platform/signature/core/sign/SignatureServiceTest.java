@@ -72,12 +72,12 @@ import com.lowagie.text.pdf.PdfReader;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.signature.core", //
-        "org.nuxeo.ecm.platform.signature.core.test" })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.signature.core")
+@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class SignatureServiceTest {
 
     @Inject

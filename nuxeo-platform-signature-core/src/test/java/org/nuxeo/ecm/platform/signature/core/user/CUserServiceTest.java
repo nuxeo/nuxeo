@@ -43,9 +43,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test" })
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.signature.core")
+@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class CUserServiceTest {
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";

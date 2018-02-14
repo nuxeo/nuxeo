@@ -56,12 +56,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test",
-        "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.mimetype", //
-        "org.nuxeo.ecm.core.cache", //
-        "org.nuxeo.ecm.platform.convert" })
+@Deploy("org.nuxeo.ecm.platform.signature.core")
+@Deploy("org.nuxeo.ecm.platform.signature.core.test")
+@Deploy("org.nuxeo.ecm.core.convert.api")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.mimetype")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.platform.convert")
 public class SignPDFDocumentTest {
 
     protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
