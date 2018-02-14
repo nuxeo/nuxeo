@@ -64,20 +64,17 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     protected static final String ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
 
     @Override
-    public Annotation createAnnotation(CoreSession session, String documentId, String xpath,
-            Annotation annotation) {
+    public Annotation createAnnotation(CoreSession session, Annotation annotation) {
 
         // Create annotation as a placeless document
         DocumentModel annotationModel = session.createDocumentModel(null, ANNOTATION_NAME, ANNOTATION_DOC_TYPE);
-        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, documentId);
-        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpath);
         setAnnotationProperties(annotationModel, annotation);
         annotationModel = session.createDocument(annotationModel);
         return new AnnotationImpl(annotationModel);
     }
 
     @Override
-    public Annotation getAnnotation(CoreSession session, String documentId, String xpath, String annotationId) {
+    public Annotation getAnnotation(CoreSession session, String annotationId) {
         DocumentModel annotationModel = session.getDocument(new IdRef(annotationId));
         return new AnnotationImpl(annotationModel);
     }
@@ -94,12 +91,12 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public void updateAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation) {
+    public void updateAnnotation(CoreSession session, Annotation annotation) {
         String annotationId = annotation.getId();
         IdRef annotationRef = new IdRef(annotationId);
         if (!session.exists(annotationRef)) {
             if (log.isWarnEnabled()) {
-                log.warn("The annotation " + annotationId + " on document " + xpath
+                log.warn("The annotation " + annotationId + " on document blob " + annotation.getXpath()
                         + " does not exist. Update operation is ignored.");
             }
             return;
@@ -110,17 +107,19 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public void deleteAnnotation(CoreSession session, String documentId, String xpath, String annotationId)
+    public void deleteAnnotation(CoreSession session, String annotationId)
             throws IllegalArgumentException {
         IdRef annotationRef = new IdRef(annotationId);
         if (!session.exists(annotationRef)) {
             throw new IllegalArgumentException(
-                    "The annotation " + annotationId + " on the document " + xpath + " does not exist.");
+                    "The annotation " + annotationId + " does not exist.");
         }
         session.removeDocument(annotationRef);
     }
 
     protected void setAnnotationProperties(DocumentModel annotationModel, Annotation annotation) {
+        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, annotation.getDocumentId());
+        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
         annotationModel.setPropertyValue(ANNOTATION_COLOR_PROPERTY, annotation.getColor());
         annotationModel.setPropertyValue(ANNOTATION_DATE_PROPERTY, annotation.getDate());
         annotationModel.setPropertyValue(ANNOTATION_FLAGS_PROPERTY, annotation.getFlags());
