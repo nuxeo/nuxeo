@@ -44,6 +44,34 @@ public interface Annotation {
     void setId(String id);
 
     /**
+     * Gets the annotated document id.
+     *
+     * @return the annotated document id
+     */
+    String getDocumentId();
+
+    /**
+     * Sets the annotated document id.
+     *
+     * @param documentId the annotated document id
+     */
+    void setDocumentId(String documentId);
+
+    /**
+     * Gets the xpath of annotated blob in the document.
+     *
+     * @return the xpath
+     */
+    String getXpath();
+
+    /**
+     * Sets the xpath of annotated blob in the document.
+     *
+     * @param xpath the xpath
+     */
+    void setXpath(String xpath);
+
+    /**
      * Gets annotation color.
      * 
      * @return the color, expressed in hexadecimal
@@ -99,34 +127,6 @@ public interface Annotation {
      * @param name the name
      */
     void setName(String name);
-
-    /**
-     * Gets the annotated document id.
-     * 
-     * @return the annotated document id
-     */
-    String getDocumentId();
-
-    /**
-     * Sets the annotated document id.
-     *
-     * @param documentId the annotated document id
-     */
-    void setDocumentId(String documentId);
-
-    /**
-     * Gets the xpath of annotated blob in the document.
-     *
-     * @return the xpath
-     */
-    String getXpath();
-
-    /**
-     * Sets the xpath of annotated blob in the document.
-     *
-     * @param xpath the xpath
-     */
-    void setXpath(String xpath);
 
     /**
      * Gets annotation last modifier.

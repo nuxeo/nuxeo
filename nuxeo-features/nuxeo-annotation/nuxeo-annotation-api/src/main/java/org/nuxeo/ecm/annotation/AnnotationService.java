@@ -35,23 +35,19 @@ public interface AnnotationService {
      * Creates an annotation on a document.
      *
      * @param session the core session
-     * @param documentId the annotated document id
-     * @param xpath the annotated blob xpath in the document
      * @param annotation the annotation to create
      * @return the created annotation
      */
-    Annotation createAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation);
+    Annotation createAnnotation(CoreSession session, Annotation annotation);
 
     /**
      * Gets an annotation.
      *
      * @param session the core session
-     * @param documentId the annotated document id
-     * @param xpath the annotated blob xpath in the document
      * @param annotationId the annotation id
      * @return the annotation, or {@code null} if the annotation with the given id was not found
      */
-    Annotation getAnnotation(CoreSession session, String documentId, String xpath, String annotationId);
+    Annotation getAnnotation(CoreSession session, String annotationId);
 
     /**
      * Gets all annotations for a document.
@@ -67,22 +63,18 @@ public interface AnnotationService {
      * Updates an annotation for a document.
      *
      * @param session the core session
-     * @param documentId the annotated document id
-     * @param xpath the annotated blob xpath in the document
      * @param annotation the annotation containing the modifications
      */
-    void updateAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation);
+    void updateAnnotation(CoreSession session, Annotation annotation);
 
     /**
      * Deletes an annotation for a document.
      *
      * @param session the core session
-     * @param documentId the annotated document id
-     * @param xpath the annotated blob xpath in the document
      * @param annotationId the annotation id
      * @throws IllegalArgumentException if no annotation was found with the given id
      */
-    void deleteAnnotation(CoreSession session, String documentId, String xpath, String annotationId)
+    void deleteAnnotation(CoreSession session, String annotationId)
             throws IllegalArgumentException;
 
 }
