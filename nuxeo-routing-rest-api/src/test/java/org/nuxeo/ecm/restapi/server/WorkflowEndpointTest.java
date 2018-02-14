@@ -93,10 +93,15 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
-        "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
-        "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
-        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.actions" })
+@Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
+@Deploy("org.nuxeo.ecm.automation.test")
+@Deploy("org.nuxeo.ecm.platform.restapi.io")
+@Deploy("org.nuxeo.ecm.platform.restapi.test")
+@Deploy("org.nuxeo.ecm.platform.restapi.server")
+@Deploy("org.nuxeo.ecm.platform.routing.default")
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.actions")
 public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     @Inject

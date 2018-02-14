@@ -24,19 +24,19 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.userworkspace.core", //
-        "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.task.api", //
-        "org.nuxeo.ecm.platform.task.core", //
-        "org.nuxeo.ecm.platform.routing.api", "org.nuxeo.ecm.platform.routing.core" //
-})
-@Deploy({ "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml",
-        "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.task.api")
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.routing.api")
+@Deploy("org.nuxeo.ecm.platform.routing.core")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml")
 public class WorkflowFeature extends SimpleFeature {
 
 }

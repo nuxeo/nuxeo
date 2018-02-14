@@ -53,23 +53,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.platform.userworkspace.core", //
-        "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.task.api", //
-        "org.nuxeo.ecm.platform.task.core", //
-        "org.nuxeo.ecm.platform.filemanager.api", //
-        "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.routing.core", //
-})
-@Deploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml",
-        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-sql-directories-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml",
-        "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.task.api")
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.routing.core")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-sql-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml")
 public class DocumentRoutingTestCase {
 
     public static final String ROOT_PATH = "/";

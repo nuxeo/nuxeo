@@ -29,18 +29,18 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  */
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.task.core:OSGI-INF/task-core-types-contrib.xml",
-        "org.nuxeo.ecm.platform.task.core:OSGI-INF/TaskService.xml",
-        "org.nuxeo.ecm.platform.task.core:OSGI-INF/task-adapter-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-service.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-persister-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-core-types-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-adapter-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-life-cycle-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-engine-service.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml" })
+@Deploy("org.nuxeo.ecm.platform.task.core:OSGI-INF/task-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.task.core:OSGI-INF/TaskService.xml")
+@Deploy("org.nuxeo.ecm.platform.task.core:OSGI-INF/task-adapter-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-service.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-persister-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-adapter-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-life-cycle-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-engine-service.xml")
+@Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml")
 public class DocumentRoutingFeature extends SimpleFeature {
 
 }
