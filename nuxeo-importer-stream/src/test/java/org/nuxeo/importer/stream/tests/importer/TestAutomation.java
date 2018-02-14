@@ -46,8 +46,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.importer.stream", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.core.io" })
+@Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.importer.stream")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.importer.stream:test-stream-contrib.xml")
 public abstract class TestAutomation {
 

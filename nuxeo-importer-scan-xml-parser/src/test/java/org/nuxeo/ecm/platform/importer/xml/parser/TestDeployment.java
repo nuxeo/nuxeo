@@ -37,9 +37,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml",
-        "nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml" })
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml")
+@Deploy("nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml")
 public class TestDeployment {
 
     private static final Log log = LogFactory.getLog(TestDeployment.class);

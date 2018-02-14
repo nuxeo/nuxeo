@@ -57,7 +57,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.ecm.platform.dublincore" })
+@Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
 public abstract class TestDocumentImport {
 
     protected static final Log log = LogFactory.getLog(TestDocumentImport.class);

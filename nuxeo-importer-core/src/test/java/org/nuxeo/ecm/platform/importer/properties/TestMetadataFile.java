@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.api" })
+@Deploy("org.nuxeo.ecm.core.api")
 public class TestMetadataFile {
 
     @Inject

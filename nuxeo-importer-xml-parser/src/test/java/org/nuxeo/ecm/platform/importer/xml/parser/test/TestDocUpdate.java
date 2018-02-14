@@ -43,7 +43,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@Deploy({"nuxeo-importer-xml-parser:test-ImporterMapping-MultiValue-contrib.xml"})
+@Deploy("nuxeo-importer-xml-parser:test-ImporterMapping-MultiValue-contrib.xml")
 
 public class TestDocUpdate {
 

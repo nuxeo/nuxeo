@@ -41,9 +41,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.importer.core", //
-        "org.nuxeo.ecm.platform.scanimporter", //
-})
+@Deploy("org.nuxeo.ecm.platform.importer.core")
+@Deploy("org.nuxeo.ecm.platform.scanimporter")
 public abstract class ImportTestCase {
 
     @Inject

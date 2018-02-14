@@ -47,19 +47,15 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({
-    "org.nuxeo.ecm.platform.content.template",
-    "org.nuxeo.ecm.platform.importer.core",
-    "org.nuxeo.ecm.platform.filemanager.core",
-    "org.nuxeo.ecm.platform.types.core",
-    "org.nuxeo.ecm.platform.video.core",
-    "org.nuxeo.ecm.platform.audio.core",
-    "org.nuxeo.ecm.platform.picture.core",
-    "org.nuxeo.ecm.platform.tag"
-})
-@Deploy({
-    "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml"
-})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.importer.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.video.core")
+@Deploy("org.nuxeo.ecm.platform.audio.core")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml")
 public class TestImporterWithFileManager {
 
     @Inject

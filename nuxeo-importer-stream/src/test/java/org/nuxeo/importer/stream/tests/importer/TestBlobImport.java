@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.stream" })
+@Deploy("org.nuxeo.runtime.stream")
 public abstract class TestBlobImport {
     protected static final Log log = LogFactory.getLog(TestBlobImport.class);
 
