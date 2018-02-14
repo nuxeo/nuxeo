@@ -121,6 +121,46 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="default_trash_search">
+      <trackUsage>true</trackUsage>
+      <whereClause docType="DefaultSearch">
+        <fixedPart>
+          ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
+          AND ecm:mixinType != 'HiddenInNavigation'
+          AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
+          AND ecm:isCheckedInVersion = 0
+          AND ecm:currentLifeCycleState = 'deleted'
+          AND ecm:parentId IS NOT NULL
+          AND SORTED_COLUMN IS NOT NULL
+        </fixedPart>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="default_search" name="ecm_fulltext" />
+        </predicate>
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="default_search" name="ecm_path" />
+        </predicate>
+      </whereClause>
+      <aggregates>
+        <aggregate id="dc_creator_agg" type="terms" parameter="dc:creator">
+          <field schema="default_search" name="dc_creator_agg" />
+          <properties>
+            <property name="size">10</property>
+          </properties>
+        </aggregate>
+        <aggregate id="common_size_agg" type="range" parameter="file:content.length">
+          <field schema="default_search" name="common_size_agg" />
+          <ranges>
+            <range key="tiny" to="102400"/>
+            <range key="small" from="102401" to="1048576"/>
+            <range key="medium" from="1048577" to="10485760"/>
+            <range key="big" from="10485761" to="104857600" />
+            <range key="huge" from="104857601" />
+          </ranges>
+        </aggregate>
+      </aggregates>
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="simple_search">
       <trackUsage>true</trackUsage>
       <whereClause docType="DefaultSearch">
