@@ -52,11 +52,10 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.xdocreport", //
-})
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.xdocreport")
 public abstract class SimpleTemplateDocTestCase {
 
     protected abstract Blob getTemplateBlob() throws IOException;

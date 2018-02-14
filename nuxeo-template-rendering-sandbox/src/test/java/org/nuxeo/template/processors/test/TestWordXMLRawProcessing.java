@@ -51,9 +51,8 @@ import org.nuxeo.template.processors.docx.WordXMLRawTemplateProcessor;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-})
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
 public class TestWordXMLRawProcessing {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";

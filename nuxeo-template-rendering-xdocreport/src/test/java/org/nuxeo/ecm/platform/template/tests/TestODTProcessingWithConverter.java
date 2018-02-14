@@ -62,15 +62,14 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.preview", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.xdocreport", //
-})
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.preview")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.xdocreport")
 public class TestODTProcessingWithConverter {
 
     @Inject

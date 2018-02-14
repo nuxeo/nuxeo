@@ -48,9 +48,8 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-})
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
 public class TestAdapters {
 
     @Inject

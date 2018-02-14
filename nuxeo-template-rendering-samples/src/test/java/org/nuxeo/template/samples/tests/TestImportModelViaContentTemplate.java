@@ -47,14 +47,13 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-    "org.nuxeo.template.manager.api", //
-    "org.nuxeo.template.manager", //
-    "org.nuxeo.template.manager.jaxrs", //
-    "org.nuxeo.template.manager.samples", //
-    "org.nuxeo.ecm.core.io", //
-    "studio.extensions.template-module-demo", //
-})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.jaxrs")
+@Deploy("org.nuxeo.template.manager.samples")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("studio.extensions.template-module-demo")
 public class TestImportModelViaContentTemplate {
 
   @Inject

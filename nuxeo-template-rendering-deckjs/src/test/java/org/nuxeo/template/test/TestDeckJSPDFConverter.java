@@ -44,10 +44,16 @@ import org.nuxeo.template.deckjs.DeckJSConverterConstants;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs",
-        "org.nuxeo.template.deckjs", "org.nuxeo.template.manager.samples", "studio.extensions.template-module-demo",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.jaxrs")
+@Deploy("org.nuxeo.template.deckjs")
+@Deploy("org.nuxeo.template.manager.samples")
+@Deploy("studio.extensions.template-module-demo")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestDeckJSPDFConverter {
 
     @Inject

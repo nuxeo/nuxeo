@@ -44,14 +44,13 @@ import org.nuxeo.template.samples.importer.ModelImporter;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.jaxrs", //
-        "studio.extensions.template-module-demo", //
-        "org.nuxeo.template.manager.samples", //
-        "org.nuxeo.template.manager.samples.no-init.test", //
-})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.jaxrs")
+@Deploy("studio.extensions.template-module-demo")
+@Deploy("org.nuxeo.template.manager.samples")
+@Deploy("org.nuxeo.template.manager.samples.no-init.test")
 public class TestImportModel {
 
     @Inject

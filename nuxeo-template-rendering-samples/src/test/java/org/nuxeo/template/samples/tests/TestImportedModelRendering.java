@@ -51,11 +51,20 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.convert",
-    "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api",
-    "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport",
-    "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples", "org.nuxeo.ecm.core.io",
-    "studio.extensions.template-module-demo", "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.preview")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.jaxrs")
+@Deploy("org.nuxeo.template.manager.xdocreport")
+@Deploy("org.nuxeo.template.manager.jxls")
+@Deploy("org.nuxeo.template.manager.samples")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("studio.extensions.template-module-demo")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestImportedModelRendering {
 
   DocumentModel rootDocument;

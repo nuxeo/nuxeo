@@ -59,13 +59,12 @@ import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.preview", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.xdocreport", //
-})
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.preview")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.template.manager.api")
+@Deploy("org.nuxeo.template.manager")
+@Deploy("org.nuxeo.template.manager.xdocreport")
 public class TestProcessingWithFileNote {
 
     @Inject
