@@ -46,7 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "nuxeo-fsexporter" })
+@Deploy("nuxeo-fsexporter")
 public class TestFSExporterAccents {
 
     @Inject
