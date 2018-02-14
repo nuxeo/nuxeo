@@ -109,6 +109,10 @@
         {
             "path": "/emptyDocAdapter.{format}",
             "description": "Initialize an empty document"
+        },
+        {
+            "path": "/annotationAdapter.{format}",
+            "description": "Manage annotations on a document"
         }
     ],
     "authorizations": {

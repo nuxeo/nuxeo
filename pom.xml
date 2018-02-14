@@ -1290,6 +1290,11 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.annotation</groupId>
+        <artifactId>nuxeo-annotation-rest-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-api</artifactId>
         <version>${nuxeo.features.version}</version>

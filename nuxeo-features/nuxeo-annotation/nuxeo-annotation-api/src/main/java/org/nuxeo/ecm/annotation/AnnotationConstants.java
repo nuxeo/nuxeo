@@ -57,4 +57,32 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_SECURITY_PROPERTY = "annotation:security";
 
+    public static final String ANNOTATION_ID = "id";
+
+    public static final String ANNOTATION_COLOR = "color";
+
+    public static final String ANNOTATION_DATE = "date";
+
+    public static final String ANNOTATION_FLAGS = "flags";
+
+    public static final String ANNOTATION_NAME = "name";
+
+    public static final String ANNOTATION_DOCUMENT_ID = "documentId";
+
+    public static final String ANNOTATION_XPATH = "xpath";
+
+    public static final String ANNOTATION_LAST_MODIFIER = "lastModifier";
+
+    public static final String ANNOTATION_PAGE = "page";
+
+    public static final String ANNOTATION_POSITION = "position";
+
+    public static final String ANNOTATION_CREATION_DATE = "creationDate";
+
+    public static final String ANNOTATION_OPACITY = "opacity";
+
+    public static final String ANNOTATION_SUBJECT = "subject";
+
+    public static final String ANNOTATION_SECURITY = "security";
+
 }
