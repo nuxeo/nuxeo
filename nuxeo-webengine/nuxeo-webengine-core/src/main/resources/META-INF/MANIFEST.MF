@@ -43,7 +43,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,
  OSGI-INF/authentication-contrib.xml,
- OSGI-INF/json-service.xml
+ OSGI-INF/json-service.xml,
+ OSGI-INF/properties-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: com.sun.jersey.core.spi.component,
  com.sun.jersey.spi.container.servlet,
