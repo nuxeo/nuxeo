@@ -132,11 +132,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
 //required for JsonFactoryManager service used indirectly in #testComplexProperties by NuxeoPropertyData.convertComplexPropertyToCMIS
-@Deploy({"org.nuxeo.ecm.webengine.core"})
-@Deploy({ //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml", //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml", //
-})
+@Deploy("org.nuxeo.ecm.webengine.core")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CmisSuiteSession {
 

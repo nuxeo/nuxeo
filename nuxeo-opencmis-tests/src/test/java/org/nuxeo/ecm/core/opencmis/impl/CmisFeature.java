@@ -32,40 +32,40 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * Feature for CMIS tests.
  */
 @Features({ CoreFeature.class, AuditFeature.class })
-@Deploy({ "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
-        "org.nuxeo.ecm.core.query", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.ws", //
-        "org.nuxeo.ecm.core.io", //
-        // deployed for fulltext indexing
-        "org.nuxeo.ecm.platform.convert", //
-        // MyDocType
-        "org.nuxeo.ecm.core.opencmis.tests", //
-        // MIME Type Icon Updater for renditions
-        "org.nuxeo.ecm.platform.filemanager.api", //
-        "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.filemanager.core.listener", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        // Rendition Service
-        "org.nuxeo.ecm.actions", //
-        "org.nuxeo.ecm.platform.rendition.api", //
-        "org.nuxeo.ecm.platform.rendition.core", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.thumbnail", //
-        "org.nuxeo.ecm.platform.url.core", //
-        // NuxeoCmisServiceFactoryManager registration
-        "org.nuxeo.ecm.core.opencmis.bindings", //
-        // QueryMaker registration
-        "org.nuxeo.ecm.core.opencmis.impl", //
-        // these deployments needed for NuxeoAuthenticationFilter.loginAs
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.platform.login", //
-        "org.nuxeo.ecm.platform.web.common" })
-@Deploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml", //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml", //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml"})
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.sql")
+@Deploy("org.nuxeo.ecm.core.query")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.core.io")
+// deployed for fulltext indexing
+@Deploy("org.nuxeo.ecm.platform.convert")
+// MyDocType
+@Deploy("org.nuxeo.ecm.core.opencmis.tests")
+// MIME Type Icon Updater for renditions
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core.listener")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+// Rendition Service
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.rendition.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.thumbnail")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+// NuxeoCmisServiceFactoryManager registration
+@Deploy("org.nuxeo.ecm.core.opencmis.bindings")
+// QueryMaker registration
+@Deploy("org.nuxeo.ecm.core.opencmis.impl")
+// these deployments needed for NuxeoAuthenticationFilter.loginAs
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml")
 public class CmisFeature extends SimpleFeature {
 
     @Override

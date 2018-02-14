@@ -73,8 +73,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * <p>
  * This is abstract, so subclasses can specify if AtomPub, Browser Bindings or Web Services are used
  */
-@Deploy({ "org.nuxeo.ecm.platform.web.common" // for request controller
-})
+@Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     private static final Log log = LogFactory.getLog(CmisFeatureSessionHttp.class);

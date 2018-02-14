@@ -27,18 +27,17 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * <p>
  * Uses Elasticsearch audit.
  */
-@Deploy({ "org.nuxeo.ecm.automation.io", //
-        "org.nuxeo.ecm.webengine.jaxrs",//  required by webengine.core
-        "org.nuxeo.ecm.webengine.core", //
-        "org.nuxeo.ecm.core.persistence", //
-        "org.nuxeo.ecm.platform.uidgen.core", //
-        "org.nuxeo.elasticsearch.core", //
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml", //
-        "org.nuxeo.elasticsearch.seqgen", //
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", //
-        "org.nuxeo.elasticsearch.audit", //
-        "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml" //
-})
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.webengine.jaxrs")
+@Deploy("org.nuxeo.ecm.webengine.core")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
+@Deploy("org.nuxeo.elasticsearch.core")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.seqgen")
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit")
+@Deploy("org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 public class TestCmisBindingES extends TestCmisBinding {
 

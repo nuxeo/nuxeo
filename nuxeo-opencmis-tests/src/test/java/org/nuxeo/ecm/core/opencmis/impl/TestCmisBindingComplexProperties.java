@@ -69,10 +69,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
-@Deploy({ "org.nuxeo.ecm.webengine.jaxrs", // required by webengine.core (to avoid NPEs at startup)
-        "org.nuxeo.ecm.webengine.core", //
-        "org.nuxeo.ecm.automation.core" //
-})
+@Deploy("org.nuxeo.ecm.webengine.jaxrs")
+@Deploy("org.nuxeo.ecm.webengine.core")
+@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
