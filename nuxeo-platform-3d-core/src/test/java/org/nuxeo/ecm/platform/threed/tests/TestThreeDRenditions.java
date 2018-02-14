@@ -70,11 +70,17 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
-        "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
-@Deploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
-        "org.nuxeo.ecm.platform.threed.convert" })
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.rendition.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.threed.api")
+@Deploy("org.nuxeo.ecm.platform.threed.core")
+@Deploy("org.nuxeo.ecm.platform.threed.convert")
 public class TestThreeDRenditions {
 
     public static final List<String> OVERRIDDEN_RENDITION_DEFINITION_NAMES = Arrays.asList("mini_top", "mini_left",

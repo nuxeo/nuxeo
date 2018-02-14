@@ -71,8 +71,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
-    "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy("org.nuxeo.ecm.platform.threed.convert")
+@Deploy("org.nuxeo.ecm.platform.threed.api")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class ThreeDConvertersTest {
 
     protected static final String TEST_MODEL = "suzanne";

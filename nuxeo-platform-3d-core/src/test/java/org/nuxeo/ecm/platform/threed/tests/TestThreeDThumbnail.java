@@ -68,11 +68,15 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core" })
-@Deploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
-        "org.nuxeo.ecm.platform.threed.convert" })
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.platform.threed.api")
+@Deploy("org.nuxeo.ecm.platform.threed.core")
+@Deploy("org.nuxeo.ecm.platform.threed.convert")
 public class TestThreeDThumbnail {
 
     @Inject
