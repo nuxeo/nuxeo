@@ -486,6 +486,22 @@ public class TestMultiDirectory {
     }
 
     @Test
+    public void testQueryWithRange() {
+        // reference query with no ranges
+        assertEquals(4, dir.query(Collections.emptyMap(), null).size());
+        // queries with invalid/ignored ranges
+        assertEquals(4, dir.query(Collections.emptyMap(), null, null, false, 0, 0).size());
+        assertEquals(4, dir.query(Collections.emptyMap(), null, null, false, -1, -1).size());
+        // 1 result
+        assertEquals(1, dir.query(Collections.emptyMap(), null, null, false, 1, 0).size());
+        assertEquals(1, dir.query(Collections.emptyMap(), null, null, false, 1, 1).size());
+        assertEquals(1, dir.query(Collections.emptyMap(), null, null, false, 1, 2).size());
+        assertEquals(1, dir.query(Collections.emptyMap(), null, null, false, 1, 3).size());
+        // empty because offset == size
+        assertEquals(0, dir.query(Collections.emptyMap(), null, null, false, 1, 4).size());
+    }
+
+    @Test
     public void testQueryFulltext() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         Set<String> fulltext = new HashSet<String>();

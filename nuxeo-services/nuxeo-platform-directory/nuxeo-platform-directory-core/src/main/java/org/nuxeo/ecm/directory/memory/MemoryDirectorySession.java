@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -207,7 +207,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) throws DirectoryException {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<String, Object>();
@@ -249,7 +249,7 @@ public class MemoryDirectorySession extends BaseSession {
         if (orderBy != null && !orderBy.isEmpty()) {
             getDirectory().orderEntries(results, orderBy);
         }
-        return results;
+        return applyQueryLimits(results, limit, offset);
     }
 
     @Override
