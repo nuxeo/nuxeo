@@ -619,9 +619,8 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) {
+            boolean fetchReferences, int limit, int offset) {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -744,7 +743,7 @@ public class MultiDirectorySession extends BaseSession {
         if (orderBy != null && !orderBy.isEmpty()) {
             getDirectory().orderEntries(results, orderBy);
         }
-        return results;
+        return applyQueryLimits(results, limit, offset);
     }
 
     @Override

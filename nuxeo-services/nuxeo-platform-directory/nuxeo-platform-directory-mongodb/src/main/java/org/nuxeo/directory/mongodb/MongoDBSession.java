@@ -242,12 +242,6 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException {
-        return query(filter, fulltext, orderBy, fetchReferences, -1, 0);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) throws DirectoryException {
 
         if (!hasPermission(SecurityConstants.READ)) {
