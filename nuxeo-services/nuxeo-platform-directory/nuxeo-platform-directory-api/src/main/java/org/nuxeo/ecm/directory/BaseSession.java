@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -443,6 +443,22 @@ public abstract class BaseSession implements Session, EntrySource {
         getDirectory().invalidateCaches();
     }
 
+    /**
+     * Applies offset and limit to a DocumentModelList
+     *
+     * @param results the query results without limit and offet
+     * @param limit maximum number of results ignored if less than 1
+     * @param offset number of rows skipped before starting, will be 0 if less than 0.
+     * @return the result with applied limit and offset
+     * @since 10.1
+     * @see Session#query(Map, Set, Map, boolean, int, int)
+     */
+    protected DocumentModelList applyQueryLimits(DocumentModelList results, int limit, int offset) {
+        offset = Math.max(0, offset);
+        int toIndex = limit >= 1 ? Math.min(results.size(), offset + limit) : results.size();
+        return new DocumentModelListImpl(results.subList(offset, toIndex));
+    }
+
     @Override
     public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
         return query(filter, Collections.emptySet());
@@ -462,20 +478,7 @@ public abstract class BaseSession implements Session, EntrySource {
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
-        return query(filter, fulltext, orderBy, fetchReferences, 0, 0);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
-        log.info("Call an unoverrided query with offset and limit.");
-        DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
-        int toIndex = offset + limit;
-        if (toIndex > entries.size()) {
-            toIndex = entries.size();
-        }
-
-        return new DocumentModelListImpl(entries.subList(offset, toIndex));
+        return query(filter, fulltext, orderBy, fetchReferences, -1, 0);
     }
 
     @Override
