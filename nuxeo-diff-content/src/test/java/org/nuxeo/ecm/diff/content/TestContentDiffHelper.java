@@ -46,11 +46,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-framework.xml")
-@Deploy("org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.url.core")
-@Deploy("org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml")
-@Deploy("org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-framework.xml",
+        "org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-contrib.xml", "org.nuxeo.ecm.platform.url.core",
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml",
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml" })
 public class TestContentDiffHelper {
 
     @Inject

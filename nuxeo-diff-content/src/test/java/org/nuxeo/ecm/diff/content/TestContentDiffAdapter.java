@@ -54,8 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = ContentDiffRepositoryInit.class)
-@Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml")
-@Deploy("org.nuxeo.diff.content")
+@Deploy({ "org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml", "org.nuxeo.diff.content" })
 public class TestContentDiffAdapter {
 
     @Inject

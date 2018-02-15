@@ -59,14 +59,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml")
-@Deploy("org.nuxeo.diff.core")
-@Deploy("org.nuxeo.diff.test")
-@Deploy("org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml")
-@Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml")
-@Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml")
-@Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml")
-@Deploy("org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml", "org.nuxeo.diff.core",
+        "org.nuxeo.diff.test", "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml", "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml",
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml",
+        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml" })
 public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTestCase {
 
     @Inject

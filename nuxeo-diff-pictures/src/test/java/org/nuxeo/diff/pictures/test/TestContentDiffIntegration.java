@@ -49,14 +49,10 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml")
-@Deploy("org.nuxeo.diff.content")
-@Deploy("org.nuxeo.diff.pictures")
-@Deploy("org.nuxeo.ecm.platform.rendition.core")
-@Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.platform.picture.core")
-@Deploy("org.nuxeo.ecm.platform.commandline.executor")
-@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy({ "org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml", "org.nuxeo.diff.content",
+        "org.nuxeo.diff.pictures", "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.tag" })
 public class TestContentDiffIntegration {
 
     protected static final String ISLAND_PNG = "island.png";

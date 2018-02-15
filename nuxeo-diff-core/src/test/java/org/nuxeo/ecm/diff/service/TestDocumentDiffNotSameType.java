@@ -50,9 +50,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DocumentDiffNotSameTypeRepositoryInit.class)
-@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml")
-@Deploy("org.nuxeo.diff.core")
-@Deploy("org.nuxeo.diff.test")
+@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml", "org.nuxeo.diff.core",
+        "org.nuxeo.diff.test" })
 public class TestDocumentDiffNotSameType extends DiffTestCase {
 
     @Inject

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.diff.test")
+@Deploy({ "org.nuxeo.diff.test" })
 public class TestComplexPropertyHelper {
 
     @Inject

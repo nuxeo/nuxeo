@@ -53,9 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml")
-@Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml")
-@Deploy("org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml")
+@Deploy({ "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml",
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml",
+        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml" })
 public class TestDiffDisplayContribOverride {
 
     @Inject
