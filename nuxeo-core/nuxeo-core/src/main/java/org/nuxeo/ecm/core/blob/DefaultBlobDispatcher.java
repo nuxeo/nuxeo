@@ -18,6 +18,16 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.runtime.api.Framework;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,16 +39,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Document.BlobAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default blob dispatcher, that uses the repository name as the blob provider.
@@ -220,7 +220,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return doc.getRepositoryName();
         }
         for (Rule rule : rules) {
-            boolean allClausesMatch = true;
+            boolean allClausesMatch = false;
             for (Clause clause : rule.clauses) {
                 String xpath = clause.xpath;
                 Object value;
@@ -256,7 +256,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     } catch (PropertyNotFoundException e) {
                         try {
                             value = doc.getPropertyValue(xpath);
-                        } catch (IllegalArgumentException e2) {
+                        } catch (IllegalArgumentException | PropertyNotFoundException e2) {
                             continue;
                         }
                     }
