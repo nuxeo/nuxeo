@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,16 @@ public class RuntimeDeployment {
 
     SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, HashSet::new);
 
+    /**
+     * @Deprecated since 10.1 with @LocalDeploy
+     */
+    @Deprecated
     Map<String, Collection<String>> localContribs = new HashMap<>();
 
+    /**
+     * @Deprecated since 10.1 with @LocalDeploy
+     */
+    @Deprecated
     SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, HashSet::new);
 
     /**
@@ -115,6 +123,10 @@ public class RuntimeDeployment {
         }
     }
 
+    /**
+     * @Deprecated since 10.1 with @LocalDeploy
+     */
+    @Deprecated
     protected void index(LocalDeploy config) {
         if (config == null) {
             return;
@@ -187,6 +199,7 @@ public class RuntimeDeployment {
                     }
                 }
                 // deploy local contribs
+                // this block is dreprecated since 10.1 with @LocalDeploy
                 for (String resource : localIndex.removeAll(name)) {
                     URL url = runner.getTargetTestResource(resource);
                     if (url == null) {
@@ -212,6 +225,7 @@ public class RuntimeDeployment {
                 errors.addSuppressed(error);
             }
         }
+        // this block is dreprecated since 10.1 with @LocalDeploy
         for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
                 contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));

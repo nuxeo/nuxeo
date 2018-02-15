@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017O Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class HotDeployer {
     public HotDeployer(FeaturesRunner runner, RuntimeHarness harness) {
         this.runner = runner;
         this.harness = harness;
-        this.head = new DefaultDeployHandler();
+        head = new DefaultDeployHandler();
     }
 
     /**
@@ -51,8 +51,8 @@ public class HotDeployer {
      * call the next action
      */
     public HotDeployer addHandler(ActionHandler action) {
-        action.next = this.head;
-        this.head = action;
+        action.next = head;
+        head = action;
         return this;
     }
 
@@ -61,14 +61,14 @@ public class HotDeployer {
      */
     public boolean removeHandler(ActionHandler handler) {
         ActionHandler p = null;
-        ActionHandler h = this.head;
+        ActionHandler h = head;
         while (h != null && h != handler) {
             p = h;
             h = h.next;
         }
         if (h != null) {
             if (p == null) {
-                this.head = h.next;
+                head = h.next;
             } else {
                 p.next = h.next;
             }
@@ -81,12 +81,10 @@ public class HotDeployer {
     /**
      * Deploy the given list of contributions. The format is [@]bundleId[:componentPath]. If no component path is
      * specified then the bundle identified by the bundleId part will be deployed. If a componentPath is given
-     * {@link RuntimeHarness#deployContrib(String,String)} will be used to deploy the contribution. If
-     * bundleId:componentPath expression is prefixed by a '@' character then
-     * {@link RuntimeHarness#deployTestContrib(String,String)} will be used to deploy the contribution.
+     * {@link RuntimeHarness#deployContrib(String,String)} will be used to deploy the contribution.
      */
     public void deploy(String... contribs) throws Exception {
-        this.head.exec(DEPLOY_ACTION, contribs);
+        head.exec(DEPLOY_ACTION, contribs);
         reinject();
     }
 
@@ -94,7 +92,7 @@ public class HotDeployer {
      * Restart the components and preserve the current registry state.
      */
     public void restart() throws Exception {
-        this.head.exec(RESTART_ACTION);
+        head.exec(RESTART_ACTION);
         reinject();
     }
 
@@ -102,7 +100,7 @@ public class HotDeployer {
      * Restart the components and revert to the initial registry snapshot if any.
      */
     public void reset() throws Exception {
-        this.head.exec(RESET_ACTION);
+        head.exec(RESET_ACTION);
         reinject();
     }
 
