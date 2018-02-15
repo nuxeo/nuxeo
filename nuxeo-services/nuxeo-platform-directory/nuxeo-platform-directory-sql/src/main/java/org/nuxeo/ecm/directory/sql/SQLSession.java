@@ -426,12 +426,6 @@ public class SQLSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) {
-        return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) throws DirectoryException {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
