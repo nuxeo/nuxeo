@@ -79,7 +79,7 @@ public class HotDeployer {
     }
 
     /**
-     * Deploy the given list of contributions. The format is [@]bundleId[:componentPath]. If no component path is
+     * Deploy the given list of contributions. The format is bundleId[:componentPath]. If no component path is
      * specified then the bundle identified by the bundleId part will be deployed. If a componentPath is given
      * {@link RuntimeHarness#deployContrib(String,String)} will be used to deploy the contribution.
      */

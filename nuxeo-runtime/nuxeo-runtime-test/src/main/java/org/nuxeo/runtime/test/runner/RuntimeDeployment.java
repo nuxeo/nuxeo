@@ -57,13 +57,13 @@ public class RuntimeDeployment {
     SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, HashSet::new);
 
     /**
-     * @Deprecated since 10.1 with @LocalDeploy
+     * @deprecated since 10.1
      */
     @Deprecated
     Map<String, Collection<String>> localContribs = new HashMap<>();
 
     /**
-     * @Deprecated since 10.1 with @LocalDeploy
+     * @deprecated since 10.1
      */
     @Deprecated
     SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, HashSet::new);
@@ -124,7 +124,7 @@ public class RuntimeDeployment {
     }
 
     /**
-     * @Deprecated since 10.1 with @LocalDeploy
+     * @deprecated since 10.1, use {@link #index(Deploy)}
      */
     @Deprecated
     protected void index(LocalDeploy config) {
