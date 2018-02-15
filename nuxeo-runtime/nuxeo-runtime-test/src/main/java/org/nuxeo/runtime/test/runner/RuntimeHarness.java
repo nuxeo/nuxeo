@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,10 @@ public interface RuntimeHarness {
      */
     void undeployContrib(String bundle, String contrib) throws Exception;
 
+    /**
+     * @Deprecated since 10.1 with @LocalDeploy
+     */
+    @Deprecated
     RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
 
     /**
@@ -82,7 +86,9 @@ public interface RuntimeHarness {
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
+     * @Deprecated since 10.1 with @LocalDeploy
      */
+    @Deprecated
     RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
 
     /**

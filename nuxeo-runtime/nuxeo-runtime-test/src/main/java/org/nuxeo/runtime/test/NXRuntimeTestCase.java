@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -469,14 +469,20 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
+     * @Deprecated since 10.1 with @LocalDeploy
      */
     @Override
+    @Deprecated
     public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
         URL url = targetResourceLocator.getTargetTestResource(contrib);
         return deployTestContrib(bundle, url);
     }
 
+    /**
+     * @Deprecated since 10.1 with @LocalDeploy
+     */
     @Override
+    @Deprecated
     public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
         if (b == null) {
@@ -783,8 +789,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
         runtime.getComponentManager().reset();
         for (String[] ar : deploymentStack) {
-            for (int i = 0, len = ar.length; i < len; i++) {
-                deployContrib(ar[i]);
+            for (String element : ar) {
+                deployContrib(element);
             }
         }
         applyInlineDeployments();

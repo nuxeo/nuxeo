@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
@@ -36,11 +36,14 @@ import java.lang.annotation.Target;
  * Example:
  *
  * <pre>
- * @Deploy("org.nuxeo.runtime")
- * @Deploy("org.nuxeo.core:OSGI-INF/component.xml")
+ * &#64;Deploy("org.nuxeo.runtime")
+ * &#64;Deploy("org.nuxeo.core:OSGI-INF/component.xml")
  * </pre>
+ *
+ * @Deprecated since 10.1 use @Deploy instead
  */
 @Inherited
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface LocalDeploy {
