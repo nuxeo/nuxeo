@@ -41,7 +41,6 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 @Deploy("org.nuxeo.ecm.webengine.jaxrs")
 @Deploy("org.nuxeo.ecm.webengine.base")
 @Deploy("org.nuxeo.ecm.webengine.ui")
-@Deploy("org.nuxeo.ecm.webengine.gwt")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:login-anonymous-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:login-config.xml")
