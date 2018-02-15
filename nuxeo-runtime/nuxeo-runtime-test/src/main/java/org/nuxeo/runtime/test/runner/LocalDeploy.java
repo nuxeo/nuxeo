@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
  * &#64;Deploy("org.nuxeo.core:OSGI-INF/component.xml")
  * </pre>
  *
- * @Deprecated since 10.1 use @Deploy instead
+ * @deprecated since 10.1, use {@link Deploy}
  */
 @Inherited
 @Deprecated

@@ -469,7 +469,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
-     * @Deprecated since 10.1 with @LocalDeploy
+     * @deprecated since 10.1, use {@link #deployContrib(String, String)}
      */
     @Override
     @Deprecated
@@ -479,7 +479,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     /**
-     * @Deprecated since 10.1 with @LocalDeploy
+     * @deprecated since 10.1, use {@link #deployContrib(String, String)}
      */
     @Override
     @Deprecated
