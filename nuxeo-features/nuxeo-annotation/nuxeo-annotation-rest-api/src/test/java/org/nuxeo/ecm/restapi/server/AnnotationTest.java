@@ -24,7 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -231,10 +233,13 @@ public class AnnotationTest extends BaseTest {
         assertEquals(2, node3.size());
 
         assertEquals(annotation1.getId(), node1.get(0).get("id").textValue());
-        assertEquals(annotation2.getId(), node2.get(0).get("id").textValue());
-        assertEquals(annotation3.getId(), node2.get(1).get("id").textValue());
-        assertEquals(annotation4.getId(), node3.get(0).get("id").textValue());
-        assertEquals(annotation5.getId(), node3.get(1).get("id").textValue());
+
+        List<String> node2List = Arrays.asList(node2.get(0).get("id").textValue(), node2.get(1).get("id").textValue());
+        assertTrue(node2List.contains(annotation2.getId()));
+        assertTrue(node2List.contains(annotation3.getId()));
+        List<String> node3List = Arrays.asList(node3.get(0).get("id").textValue(), node3.get(1).get("id").textValue());
+        assertTrue(node3List.contains(annotation4.getId()));
+        assertTrue(node3List.contains(annotation5.getId()));
     }
 
 }
