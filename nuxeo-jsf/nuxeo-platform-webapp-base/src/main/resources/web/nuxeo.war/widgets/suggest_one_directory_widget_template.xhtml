@@ -13,13 +13,13 @@
 
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
     <h:outputText
-      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
   </c:if>
 
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <h:outputText
-      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+      value="#{select2Actions.resolveSingleDirectoryEntryLabel(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
     </nxp:html>
   </c:if>
 
@@ -38,8 +38,8 @@
       cache="true">
       <ui:include src="/incl/select2_js.xhtml" />
 
-      <a4j:region rendered="#{not empty field_0 || widget.mode == 'edit'}">
-        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+      <a4j:region rendered="#{not empty field || widget.mode == 'edit'}">
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
           required="#{widgetProperty_required}" var="currentValue">
           <nxu:validateDocumentConstraint />
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
