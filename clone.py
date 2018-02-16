@@ -48,6 +48,9 @@ Git alias of remote URL (default: %default)""")
                           dest='fallback_branch', default=None, help="""a
 branch to fallback on when the wanted branch doesn't exist locally neither
 remotely (default: %default)""")
+        parser.add_option("--rebase", action="store_true", 
+                          dest='rebase', default=False, help="""rebase
+onto fallback""")
         parser.add_option('-n', "--nodrivemapping", action="store_true",
                           dest='no_drive_mapping', default=False,
                           help="""deactivate current directory mapping to a
@@ -74,7 +77,7 @@ If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
         if options.mp_only:
             repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '', options.fallback_branch)
         else:
-            repo.clone(version, options.fallback_branch, options.with_optionals, options.marketplace_conf)
+            repo.clone(version, options.fallback_branch, options.rebase, options.with_optionals, options.marketplace_conf)
     #pylint: disable=C0103
     except ExitException, e:
         if e.message is not None:
