@@ -14,7 +14,7 @@
 
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <h:outputText value=", "
@@ -25,7 +25,7 @@
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <br />
@@ -53,7 +53,7 @@
       <ui:include src="/incl/select2_js.xhtml" />
 
       <a4j:region>
-        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
           required="#{widgetProperty_required}" var="currentValue">
           <f:converter converterId="select2Converter" />
           <nxu:validateDocumentConstraint />
