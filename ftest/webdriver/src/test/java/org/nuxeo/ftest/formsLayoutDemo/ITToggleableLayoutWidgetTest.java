@@ -117,7 +117,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         Select2WidgetElement viewSuggest = new Select2WidgetElement(driver,
-                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+                "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
         assertEquals("Europe/France", viewSuggest.getText());
 
         String toggleButtonId = "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_headerForm:nxw_toggleableLayoutStudioWidget_header_toggleAction";
@@ -147,12 +147,12 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         viewSuggest = new Select2WidgetElement(driver,
-                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+                "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
         assertEquals("Europe/Germany", viewSuggest.getText());
 
         navigateTo(pageId);
         viewSuggest = new Select2WidgetElement(driver,
-                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+                "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
         assertEquals("Europe/France", viewSuggest.getText());
     }
 
