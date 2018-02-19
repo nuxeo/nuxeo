@@ -33,9 +33,10 @@
   </c:if>
 
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-    <h:panelGroup layout="block" styleClass="select2-container select2-container-disabled">
+    <h:panelGroup layout="block" styleClass="select2-container select2-container-disabled"
+      id="#{widget.id}_select2">
       <ui:repeat var="item"
-        value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+        value="#{select2Actions.resolveMultipleDirectoryEntryFullLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
         rendered="#{not empty field}">
         <a href="javascript:void(0)" onclick="return false;" class="select2-choice">
           <h:outputText styleClass="select2-chosen" value="#{item}" />
