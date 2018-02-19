@@ -24,10 +24,10 @@ import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR_PROP
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_NAME_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION_PROPERTY;
@@ -51,8 +51,6 @@ public class AnnotationImpl implements Annotation {
 
     protected String flags;
 
-    protected String name;
-
     protected String documentId;
 
     protected String xpath;
@@ -75,11 +73,10 @@ public class AnnotationImpl implements Annotation {
     }
 
     protected AnnotationImpl(DocumentModel annotationModel) {
-        id = annotationModel.getId();
+        id = (String) annotationModel.getPropertyValue(ANNOTATION_ID_PROPERTY);
         color = (String) annotationModel.getPropertyValue(ANNOTATION_COLOR_PROPERTY);
         date = (Calendar) annotationModel.getPropertyValue(ANNOTATION_DATE_PROPERTY);
         flags = (String) annotationModel.getPropertyValue(ANNOTATION_FLAGS_PROPERTY);
-        name = (String) annotationModel.getPropertyValue(ANNOTATION_NAME_PROPERTY);
         documentId = (String) annotationModel.getPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY);
         xpath = (String) annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY);
         lastModifier = (String) annotationModel.getPropertyValue(ANNOTATION_LAST_MODIFIER_PROPERTY);
@@ -131,16 +128,6 @@ public class AnnotationImpl implements Annotation {
     @Override
     public void setFlags(String flags) {
         this.flags = flags;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

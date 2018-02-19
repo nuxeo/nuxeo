@@ -31,13 +31,13 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_DOC_TYPE = "Annotation";
 
+    public static final String ANNOTATION_ID_PROPERTY = "annotation:annotationId";
+
     public static final String ANNOTATION_COLOR_PROPERTY = "annotation:color";
 
     public static final String ANNOTATION_DATE_PROPERTY = "annotation:date";
 
     public static final String ANNOTATION_FLAGS_PROPERTY = "annotation:flags";
-
-    public static final String ANNOTATION_NAME_PROPERTY = "annotation:name";
 
     public static final String ANNOTATION_DOCUMENT_ID_PROPERTY = "annotation:documentId";
 
@@ -64,8 +64,6 @@ public class AnnotationConstants {
     public static final String ANNOTATION_DATE = "date";
 
     public static final String ANNOTATION_FLAGS = "flags";
-
-    public static final String ANNOTATION_NAME = "name";
 
     public static final String ANNOTATION_DOCUMENT_ID = "documentId";
 
