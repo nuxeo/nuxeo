@@ -104,11 +104,11 @@ public class Select2ActionsBean implements Serializable {
 
     protected static final String SELECT2_RESOURCES_MARKER = "SELECT2_RESOURCES_MARKER";
 
-    private static List<String> formatList(JSONArray array) {
+    private static List<String> formatList(JSONArray array, String key) {
         List<String> result = new ArrayList<String>();
         if (array != null) {
             for (int i = 0; i < array.size(); i++) {
-                result.add(array.getJSONObject(i).getString(Select2Common.LABEL));
+                result.add(array.getJSONObject(i).getString(key));
             }
         }
         return result;
@@ -415,6 +415,7 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected JSONObject getSingleUserReference(final String storedReference, final boolean prefixed,
             final String firstLabelField, final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
@@ -615,7 +616,20 @@ public class Select2ActionsBean implements Serializable {
     public List<String> resolveMultipleDirectoryEntryLabels(final Object value, final String directoryName,
             final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
         return formatList(
-                getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName));
+                getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName),
+                SuggestConstants.LABEL);
+    }
+
+    /**
+     * Returns the entries full labels (parent labels included, if any).
+     *
+     * @since 10.1
+     */
+    public List<String> resolveMultipleDirectoryEntryFullLabels(final Object value, final String directoryName,
+            final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        return formatList(
+                getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName),
+                SuggestConstants.ABSOLUTE_LABEL);
     }
 
     @SuppressWarnings("rawtypes")
@@ -749,8 +763,10 @@ public class Select2ActionsBean implements Serializable {
             final String firstLabelField, final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
-        return formatList(getMultipleUserReference(value, prefixed, firstLabelField, secondLabelField, thirdLabelField,
-                hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon));
+        return formatList(
+                getMultipleUserReference(value, prefixed, firstLabelField, secondLabelField, thirdLabelField,
+                        hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon),
+                SuggestConstants.LABEL);
     }
 
     protected DocumentModel resolveReference(final String repo, final String storedReference,
@@ -840,6 +856,21 @@ public class Select2ActionsBean implements Serializable {
             return "";
         }
         return obj.optString(Select2Common.LABEL);
+    }
+
+    /**
+     * Returns the entry label as well as parent label if any.
+     *
+     * @since 10.1
+     */
+    public String resolveSingleDirectoryEntryFullLabel(final String storedReference, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        JSONObject obj = getSingleDirectoryEntry(storedReference, directoryName, localize, keySeparator, dbl10n,
+                labelFieldName);
+        if (obj == null) {
+            return "";
+        }
+        return obj.optString(SuggestConstants.ABSOLUTE_LABEL);
     }
 
     public String resolveSingleReference(final String storedReference, final String repo, final String operationName,
