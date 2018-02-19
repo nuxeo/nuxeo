@@ -24,10 +24,11 @@
   </c:if>
 
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-    <h:panelGroup layout="block" styleClass="select2-container select2-container-disabled">
+    <h:panelGroup layout="block" styleClass="select2-container select2-container-disabled"
+      id="#{widget.id}_select2">
       <a href="javascript:void(0)" onclick="return false;" class="select2-choice">
         <h:outputText styleClass="select2-chosen"
-          value="#{select2Actions.resolveSingleDirectoryEntryLabel(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+          value="#{select2Actions.resolveSingleDirectoryEntryFullLabel(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
       </a>
     </h:panelGroup>
   </c:if>
