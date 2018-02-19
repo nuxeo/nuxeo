@@ -69,7 +69,7 @@ public class TestAnnotationService {
         DocumentModel docToAnnotate = session.createDocumentModel("/", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
-        String annotationId = "xxx";
+        String annotationId = "foo";
         String xpathToAnnotate = "files:files/0/file";
         Calendar annotationDate = Calendar.getInstance();
         long annotationPage = 42L;
@@ -100,7 +100,7 @@ public class TestAnnotationService {
         DocumentModel docToAnnotate = session.createDocumentModel("/", "testDoc", "File");
         DocumentModel annotationModel = session.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
 
-        String annotationId = "xxx";
+        String annotationId = "foo";
         String xpathToAnnotate = "files:files/0/file";
         String annotationLastModifier = "bob";
         long annotationPage = 13L;
@@ -139,7 +139,7 @@ public class TestAnnotationService {
         long annotationPage = 42L;
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setId("xxx");
+        annotation.setId("foo");
         annotation.setPosition(annotationPosition);
         annotation.setPage(annotationPage);
         annotation.setDocumentId(docToAnnotate.getId());
@@ -175,7 +175,7 @@ public class TestAnnotationService {
 
         DocumentModel annotationModel = session.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
 
-        String annotationId = "xxx";
+        String annotationId = "foo";
         String xpathToAnnotate = "files:files/0/file";
         annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
         annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);

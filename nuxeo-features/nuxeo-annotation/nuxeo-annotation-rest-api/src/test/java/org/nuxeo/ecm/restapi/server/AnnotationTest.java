@@ -22,6 +22,7 @@ package org.nuxeo.ecm.restapi.server;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -58,8 +59,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.restapi.server.annotation", "org.nuxeo.ecm.annotation.api",
-        "org.nuxeo.ecm.annotation.core" })
+@Deploy("org.nuxeo.ecm.annotation.api")
+@Deploy("org.nuxeo.ecm.annotation.core")
+@Deploy("org.nuxeo.ecm.platform.restapi.server.annotation")
 public class AnnotationTest extends BaseTest {
 
     @Inject
@@ -102,7 +104,7 @@ public class AnnotationTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         Calendar now = Calendar.getInstance();
-        annotation.setId("xxx");
+        annotation.setId("foo");
         annotation.setCreationDate(now);
         annotation.setPage(42L);
         annotation.setDocumentId(file.getId());
@@ -130,7 +132,7 @@ public class AnnotationTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         annotation.setOpacity(0.5);
-        annotation.setId("xxx");
+        annotation.setId("foo");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
@@ -160,7 +162,7 @@ public class AnnotationTest extends BaseTest {
         String xpath = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setId("xxx");
+        annotation.setId("foo");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
