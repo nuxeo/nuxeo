@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
@@ -47,15 +46,14 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 9.3
@@ -77,12 +75,24 @@ public class TestBulkDownloadOperation {
     protected AutomationService automationService;
 
     @Inject
-    WorkManager workManager;
+    CoreFeature coreFeature;
 
     @Test
     public void iCanBulkDownloadFiles() throws IOException, OperationException, InterruptedException {
+        testWithNbFiles(MAX_DOC);
+    }
+
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void iCanBulkDownloadASingleFile() throws IOException, OperationException, InterruptedException {
+        testWithNbFiles(1);
+    }
+
+    protected void testWithNbFiles(int nbDocs) throws IOException, OperationException, InterruptedException {
         DocumentModelList docs = new DocumentModelListImpl();
-        for (int i = 0; i < MAX_DOC; i++) {
+        for (int i = 0; i < nbDocs; i++) {
             DocumentModel doc = session.createDocumentModel("/", "TestFile" + i, "File");
             doc.setProperty("dublincore", "title", "TestTitle" + i);
 
@@ -98,6 +108,8 @@ public class TestBulkDownloadOperation {
             docs.add(doc);
         }
 
+        coreFeature.waitForAsyncCompletion();
+
         OperationChain chain = new OperationChain("test-chain");
         chain.add(BulkDownload.ID);
 
@@ -107,7 +119,7 @@ public class TestBulkDownloadOperation {
         Blob resultBlob = (Blob) automationService.run(ctx, BulkDownload.ID);
 
         assertNotNull(resultBlob);
-        awaitZipWorks();
+        coreFeature.waitForAsyncCompletion();
         if (resultBlob instanceof AsyncBlob) {
             TransientStoreService tss = Framework.getService(TransientStoreService.class);
             TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
@@ -118,19 +130,13 @@ public class TestBulkDownloadOperation {
             assertTrue(resultBlob instanceof FileBlob);
         }
         assertTrue(resultBlob.getLength() > 0);
-        assertEquals(resultBlob.getMimeType(), "application/zip");
+        assertEquals("application/zip", resultBlob.getMimeType());
 
         try (CloseableFile source = resultBlob.getCloseableFile()) {
             try (ZipFile zip = new ZipFile(source.getFile())) {
-                assertEquals(MAX_DOC, zip.size());
+                assertEquals(nbDocs, zip.size());
             }
         }
     }
 
-    protected void awaitZipWorks() throws InterruptedException {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
-        assertTrue(workManager.awaitCompletion("blobs", 30, TimeUnit.SECONDS));
-    }
 }

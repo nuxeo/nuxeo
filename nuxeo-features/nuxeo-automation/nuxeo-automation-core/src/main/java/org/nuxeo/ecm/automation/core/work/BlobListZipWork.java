@@ -150,17 +150,12 @@ public class BlobListZipWork extends TransientStoreWork {
         }
         Blob blob;
         String finalFilename = StringUtils.isNotBlank(this.filename) ? this.filename : this.id;
-        if (blobList.size() == 1) {
-            blob = blobList.get(0);
-            blob.setFilename(finalFilename);
-        } else {
-            try {
-                blob = BlobUtils.zip(blobList, finalFilename);
-            } catch (IOException e) {
-                TransientStore ts = getTransientStore();
-                ts.putParameter(key, DownloadService.TRANSIENT_STORE_PARAM_ERROR, e.getMessage());
-                throw new NuxeoException("Exception while zipping blob list", e);
-            }
+        try {
+            blob = BlobUtils.zip(blobList, finalFilename);
+        } catch (IOException e) {
+            TransientStore ts = getTransientStore();
+            ts.putParameter(key, DownloadService.TRANSIENT_STORE_PARAM_ERROR, e.getMessage());
+            throw new NuxeoException("Exception while zipping blob list", e);
         }
         updateAndCompleteStoreEntry(Collections.singletonList(blob));
     }
