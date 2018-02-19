@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_I
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_NAME;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION;
@@ -67,7 +66,6 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
         jg.writeStringField(ANNOTATION_DATE, date);
 
         jg.writeStringField(ANNOTATION_FLAGS, entity.getFlags());
-        jg.writeStringField(ANNOTATION_NAME, entity.getName());
         jg.writeStringField(ANNOTATION_DOCUMENT_ID, entity.getDocumentId());
         jg.writeStringField(ANNOTATION_XPATH, entity.getXpath());
         jg.writeStringField(ANNOTATION_LAST_MODIFIER, entity.getLastModifier());

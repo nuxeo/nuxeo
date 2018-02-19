@@ -115,20 +115,6 @@ public interface Annotation {
     void setFlags(String flags);
 
     /**
-     * Gets annotation name.
-     * 
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * Sets annotation name.
-     * 
-     * @param name the name
-     */
-    void setName(String name);
-
-    /**
      * Gets annotation last modifier.
      * 
      * @return the last modifier

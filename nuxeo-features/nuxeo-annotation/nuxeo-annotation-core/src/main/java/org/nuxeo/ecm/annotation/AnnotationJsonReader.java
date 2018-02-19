@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_I
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_NAME;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION;
@@ -70,7 +69,6 @@ public class AnnotationJsonReader extends EntityJsonReader<Annotation> {
         }
 
         annotation.setFlags(jn.get(ANNOTATION_FLAGS).textValue());
-        annotation.setName(jn.get(ANNOTATION_NAME).textValue());
         annotation.setDocumentId(jn.get(ANNOTATION_DOCUMENT_ID).textValue());
         annotation.setXpath(jn.get(ANNOTATION_XPATH).textValue());
         annotation.setLastModifier(jn.get(ANNOTATION_LAST_MODIFIER).textValue());

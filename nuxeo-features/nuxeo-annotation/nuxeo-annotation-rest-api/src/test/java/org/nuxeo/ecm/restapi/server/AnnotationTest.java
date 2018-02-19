@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,8 +38,6 @@ import org.nuxeo.ecm.annotation.AnnotationImpl;
 import org.nuxeo.ecm.annotation.AnnotationJsonWriter;
 import org.nuxeo.ecm.annotation.AnnotationService;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.restapi.test.BaseTest;
@@ -104,6 +102,7 @@ public class AnnotationTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         Calendar now = Calendar.getInstance();
+        annotation.setId("xxx");
         annotation.setCreationDate(now);
         annotation.setPage(42L);
         annotation.setDocumentId(file.getId());
@@ -131,14 +130,13 @@ public class AnnotationTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         annotation.setOpacity(0.5);
-        annotation.setName("testAnnotation");
+        annotation.setId("xxx");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
 
-        annotation.setName("testUpdatedAnnotation");
         annotation.setSecurity("Private");
 
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
@@ -151,7 +149,6 @@ public class AnnotationTest extends BaseTest {
 
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
             assertEquals(0.5, updatedAnnotation.getOpacity(), 0.0);
-            assertEquals("testUpdatedAnnotation", updatedAnnotation.getName());
             assertEquals("Private", updatedAnnotation.getSecurity());
         }
     }
@@ -163,19 +160,19 @@ public class AnnotationTest extends BaseTest {
         String xpath = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
+        annotation.setId("xxx");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
-        DocumentRef annotationRef = new IdRef(annotation.getId());
 
-        assertTrue(session.exists(annotationRef));
+        assertNotNull(annotationService.getAnnotation(session, annotation.getId()));
 
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
                 "id/" + file.getId() + "/@annotation/" + annotation.getId())) {
             fetchInvalidations();
-            assertFalse(session.exists(annotationRef));
+            assertNull(annotationService.getAnnotation(session, annotation.getId()));
         }
     }
 
