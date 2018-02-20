@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -139,6 +140,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         collection.createIndex(Indexes.ascending(LOG_DOC_UUID)); // query by doc id
         collection.createIndex(Indexes.ascending(LOG_EVENT_DATE)); // query by date range
         collection.createIndex(Indexes.ascending(LOG_EVENT_ID)); // query by type of event
+        collection.createIndex(Indexes.ascending(LOG_DOC_PATH)); // query by path
         cursorService = new CursorService<>(doc -> {
             Object id = doc.remove(MONGODB_ID);
             if (id != null) {
@@ -209,6 +211,8 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
                 filterList.add(Filters.gt(leftName, rightValue));
             } else if (Operator.IN.equals(operator)) {
                 filterList.add(Filters.in(leftName, (List<?>) rightValue));
+            } else if (Operator.STARTSWITH.equals(operator)) {
+                filterList.add(Filters.regex(leftName, "^" + Pattern.quote(String.valueOf(rightValue))));
             }
         }
         return Filters.and(filterList);
