@@ -103,6 +103,7 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -320,6 +321,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     boolQuery.must(QueryBuilders.rangeQuery(leftName).gt(rightValue));
                 } else if (Operator.IN.equals(operator)) {
                     boolQuery.must(QueryBuilders.termsQuery(leftName, (List<?>) rightValue));
+                } else if (Operator.STARTSWITH.equals(operator)) {
+                    boolQuery.must(NxqlQueryConverter.makeStartsWithQuery(leftName, rightValue));
                 }
             }
             query = boolQuery;

@@ -50,6 +50,8 @@ public class LogEntryProvider implements BaseLogEntryProvider {
 
     private static final Log log = LogFactory.getLog(LogEntryProvider.class);
 
+    public static final String LIKE = "LIKE";
+
     protected final EntityManager em;
 
     private LogEntryProvider(EntityManager em) {
@@ -61,7 +63,12 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     public void append(List<LogEntry> entries) {
-        entries.forEach(em::merge);
+        entries.forEach(e -> {
+            if (em.contains(e)) {
+                log.warn("Log entry already exists for id " + e.getId());
+            }
+            em.merge(e);
+        });
     }
 
     protected void doPersist(LogEntry entry) {
@@ -158,7 +165,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             String currentQueryParameterName = currentFilterMapEntry.getQueryParameterName();
             String currentColumnName = currentFilterMapEntry.getColumnName();
 
-            if ("LIKE".equals(currentOperator)) {
+            if (LIKE.equals(currentOperator)) {
                 queryStr.append(" AND log.")
                         .append(currentColumnName)
                         .append(" LIKE :")
@@ -188,7 +195,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             String currentQueryParameterName = currentFilterMapEntry.getQueryParameterName();
             Object currentObject = currentFilterMapEntry.getObject();
 
-            if ("LIKE".equals(currentOperator)) {
+            if (LIKE.equals(currentOperator)) {
                 query.setParameter(currentQueryParameterName, "%" + currentObject + "%");
             } else {
                 query.setParameter(currentQueryParameterName, currentObject);
@@ -286,11 +293,10 @@ public class LogEntryProvider implements BaseLogEntryProvider {
                 queryStr.append(" AND");
             }
             String leftName = getFieldName.apply(predicate.lvalue);
-            Operator operator = predicate.operator;
             queryStr.append(" log.")
                     .append(leftName)
                     .append(" ")
-                    .append(operator)
+                    .append(toString(predicate.operator))
                     .append(" :")
                     .append(leftName);
         }
@@ -321,8 +327,10 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             String leftName = getFieldName.apply(predicate.lvalue);
             Operator operator = predicate.operator;
             Object rightValue = Literals.valueOf(predicate.rvalue);
-            if ("LIKE".equals(operator.toString())) {
+            if (Operator.LIKE.equals(operator)) {
                 rightValue = "%" + rightValue + "%";
+            } else if (Operator.STARTSWITH.equals(operator)) {
+                rightValue = rightValue + "%";
             }
             query.setParameter(leftName, rightValue);
         }
@@ -338,6 +346,16 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         }
 
         return doPublish(query.getResultList());
+    }
+
+    /**
+     * A string representation of an Operator
+     */
+    protected String toString(Operator operator) {
+        if (Operator.STARTSWITH.equals(operator)) {
+            return LIKE;
+        }
+        return operator.toString();
     }
 
     /*

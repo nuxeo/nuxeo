@@ -22,19 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -44,13 +38,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.platform.audit.AbstractAuditStorageTest;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
-import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -58,12 +49,9 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 @RunWith(FeaturesRunner.class)
 @Features(MongoDBAuditFeature.class)
-public class TestAuditWithMongoDB {
+public class TestAuditWithMongoDB extends AbstractAuditStorageTest {
 
     @Inject
     protected CoreSession session;
@@ -246,64 +234,20 @@ public class TestAuditWithMongoDB {
         Assert.assertEquals(id3, entries.get(1).getId());
     }
 
+    @Override
     @Test
-    public void testSaveAndScroll() throws Exception {
+    public void testStartsWith() throws Exception {
+        super.testStartsWith();
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        assertNotNull(audit);
+        // A partial match is supported by the mongo
+        assertStartsWithCount(NUM_OF_EVENTS / 2, "/is/eve");
+        assertStartsWithCount(NUM_OF_EVENTS / 2, "/is/od");
+    }
 
-        MongoDBAuditBackend mongoDBBackend = (MongoDBAuditBackend) audit.getBackend();
-
-        String idForAuditStorage = "idForAuditStorage";
-        ObjectMapper mapper = new ObjectMapper();
-        List<String> jsonEntries = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-        for (int i = 1; i <= 42; i++) {
-            ObjectNode logEntryJson = mapper.createObjectNode();
-            logEntryJson.put(LOG_ID, Integer.valueOf(i).longValue());
-            logEntryJson.put(LOG_EVENT_ID, idForAuditStorage);
-            jsonEntries.add(mapper.writeValueAsString(logEntryJson));
-            ids.add(Long.valueOf(i));
-        }
-        // Save JSON entries into backend
-        mongoDBBackend.append(jsonEntries);
-
-        LogEntryGen.flushAndSync();
-
-        // Query all logs
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, idForAuditStorage));
-        // builder.predicates()
-        List<LogEntry> logs = mongoDBBackend.queryLogs(builder);
-        assertEquals(42, logs.size());
-
-        ScrollResult<String> scrollResult = mongoDBBackend.scroll(builder, 5, 10);
-        int total = 0;
-        while (scrollResult.hasResults()) {
-            assertTrue(scrollResult.getResults().size() <= 5);
-            jsonEntries = scrollResult.getResults();
-            List<LogEntry> entries = jsonEntries.stream().map(json -> {
-                try {
-                    return mapper.readValue(json, LogEntryImpl.class);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }).collect(Collectors.toList());
-            for (LogEntry entry : entries) {
-                assertTrue(ids.remove(Long.valueOf(entry.getId())));
-                assertEquals(idForAuditStorage, entry.getEventId());
-            }
-            total += entries.size();
-            scrollResult = mongoDBBackend.scroll(scrollResult.getScrollId());
-        }
-        assertEquals(42, total);
-        assertTrue(ids.isEmpty());
-
-        // assert we can get a single log entry by its id
-        LogEntry logEntry = mongoDBBackend.getLogEntryByID(4);
-        assertNotNull(logEntry);
-        assertEquals(4, logEntry.getId());
-        assertEquals(idForAuditStorage, logEntry.getEventId());
+    @Override
+    protected void flush() throws Exception {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
 }
