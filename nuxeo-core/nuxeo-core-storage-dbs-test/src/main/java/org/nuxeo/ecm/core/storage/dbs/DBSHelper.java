@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Test helper interface for backend definied as addon.
+ * Test helper interface for backend defined as addon.
  */
 public interface DBSHelper {
 

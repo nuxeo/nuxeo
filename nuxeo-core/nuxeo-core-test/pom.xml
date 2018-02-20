@@ -109,16 +109,17 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-dbs</artifactId>
-      <type>test-jar</type>
-      <scope>compile</scope>
+      <artifactId>nuxeo-core-storage-dbs-test</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-mem</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-mongodb</artifactId>
@@ -196,6 +197,7 @@
       <artifactId>groovy-all</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>

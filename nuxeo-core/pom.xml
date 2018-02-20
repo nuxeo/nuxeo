@@ -39,11 +39,12 @@
     <module>nuxeo-core-management-test</module>
     <module>nuxeo-core-mimetype</module>
     <module>nuxeo-core-mongodb</module>
-    <module>nuxeo-core-test</module>
     <module>nuxeo-core-storage-dbs</module>
+    <module>nuxeo-core-storage-dbs-test</module>
     <module>nuxeo-core-storage-mem</module>
     <module>nuxeo-core-storage-mongodb</module>
     <module>nuxeo-core-redis</module>
+    <module>nuxeo-core-test</module>
     <module>nuxeo-platform-commandline-executor</module>
   </modules>
 

@@ -559,10 +559,8 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-storage-dbs</artifactId>
+        <artifactId>nuxeo-core-storage-dbs-test</artifactId>
         <version>${nuxeo.core.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
