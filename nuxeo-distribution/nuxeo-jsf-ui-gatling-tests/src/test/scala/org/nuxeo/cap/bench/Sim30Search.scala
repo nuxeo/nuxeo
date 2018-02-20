@@ -32,11 +32,11 @@ object ScnSearch {
         feed(Feeders.users).repeat(10) {
           feed(Feeders.fulltextSearch)
             .randomSwitch(
-              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document", comment = "Search All")),
-              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document", sortBy = "dc:modified", sortOrder = "DESC", comment = "Search All sorted")),
-              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:primaryType='Folder'", sortBy = "dc:title", comment = "Search folders sorted")),
-              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/Bench_Gatling/u09/t/g/f' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", comment = "Search on path")),
-              60.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext.dc:title = '${term}' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", comment = "Search fulltext"))
+              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document", comment = "Search: All")),
+              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document", sortBy = "dc:modified", sortOrder = "DESC", comment = "Search: All sorted")),
+              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:primaryType='Folder'", sortBy = "dc:title", comment = "Search: Folders sorted")),
+              10.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/Bench_Gatling/u09/t/g/f' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", comment = "Search: With path")),
+              60.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext.dc:title = '${term}' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", comment = "Search: Fulltext"))
             )
             .pause(pause)
         }

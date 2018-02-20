@@ -70,7 +70,7 @@ object NuxeoRest {
     }
   }
 
-  def s3Upload() = {
+  def s3Upload(comment: String = "") = {
     exec(session => {
             val script = Parameters.getAwsS3Script() + " " + Parameters.getAwsConf() + " " +
               Parameters.getAwsS3Bucket() + " " + session("blobFilename").as[String] + " " +
@@ -85,7 +85,7 @@ object NuxeoRest {
               .set("bucket", Parameters.getAwsS3Bucket())
           }
       ).exec(
-          http("Direct s3 upload ${type}")
+          http(comment + "Direct s3 upload ${type}")
               .put("https://${bucket}.s3.amazonaws.com/${blobFilename}")
               .header("Host", "${bucket}.s3.amazonaws.com")
               .header("Date", "${awsDate}")
@@ -97,25 +97,25 @@ object NuxeoRest {
   }
 
   /** Create a document with direct s3 upload simulation */
-  def createDocumentDirectUploadS3() = {
+  def createDocumentDirectUploadS3(comment: String = "") = {
       exec(
           // this will redirect to GET /api/v1/upload/batch-id<UID> with STS info
-          http("Get a batch id")
+          http(comment + "Get a batch id")
              .post("/api/v1/upload/new/s3")
             .headers(Headers.base)
             .basicAuth("${user}", "${password}")
             .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
       ).exec(
-          s3Upload()
+          s3Upload(comment)
       ).exec(
-          http("Complete upload")
-          .post("/api/v1/upload/${batchId}/complete")
+          http(comment + "Complete upload")
+          .post("/api/v1/upload/${batchId}/0/complete")
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
           .body(StringBody("""{"name": "${blobFilename}","bucket": "${bucket}","key": "${blobFilename}","fileSize": 1234}"""))
       ).exec(
-        http("Create ${type}")
+        http(comment + "Create ${type}")
           .post(Constants.GAT_API_PATH + "/${parentPath}")
           .headers(Headers.base)
           .header("Content-Type", "application/json")
@@ -155,17 +155,35 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
-  def downloadBlob() = {
+  def downloadBlob(comment: String = "Download: ${type} blob") = {
     exec()
       .doIf("${blobPath.exists()}") {
         exec(
-          http("Download blob ${type}")
+          http(comment)
             .post(Constants.GAT_API_PATH + "/${url}/@op/Blob.Get")
             .headers(Headers.base)
             .header("Content-Type", "application/json")
             .basicAuth("${user}", "${password}")
             .body(StringBody("""{"params":{}}"""))
             .check(status.in(200, 412)) // 412 happens when blob has been already known ETAG
+        )
+      }
+  }
+
+  def directS3DownloadBlob(comment: String = "Download: ") = {
+    exec()
+      .doIf("${blobPath.exists()}") {
+        exec(
+          http(comment + "Ask url")
+            .post(Constants.GAT_API_PATH + "/${url}/@op/Blob.Get")
+            .headers(Headers.base)
+            .header("Content-Type", "application/json")
+            .basicAuth("${user}", "${password}")
+            .body(StringBody("""{"params":{}}"""))
+            .disableFollowRedirect
+            .check(status.in(302)).check(header("Location").saveAs("s3url"))
+        ).exec(
+          http(comment + "S3 Download ${type}").get("${s3url}").check(status.in(200))
         )
       }
   }

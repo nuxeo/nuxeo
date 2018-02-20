@@ -57,9 +57,8 @@ object ScnNavigationDownload {
         feed(Feeders.users).repeat(5) {
           feed(documents)
             .randomSwitch(
-              70.0 -> exec(NuxeoRest.getDocument("Get document")),
-              // TODO download the blob
-              30.0 -> exec(NuxeoRest.getParentFolderOfCurrentDocument("Get document folder")),)
+              70.0 -> exec(NuxeoRest.getDocument("Download: view document")),
+              30.0 -> exec(NuxeoRest.directS3DownloadBlob()))
             .pause(pause)
         }
       }
@@ -74,6 +73,7 @@ class Sim30Navigation extends Simulation {
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
+    .disableCaching // do not optimize download of file
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()

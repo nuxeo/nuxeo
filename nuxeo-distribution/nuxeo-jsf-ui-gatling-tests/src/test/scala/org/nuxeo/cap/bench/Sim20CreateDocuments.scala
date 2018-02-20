@@ -60,7 +60,7 @@ object ScnCreateDocumentsDirectUpload {
       during(duration, "counterName") {
         feed(documents)
           .feed(Feeders.users)
-          .exec(NuxeoRest.s3Upload())
+          .exec(NuxeoRest.createDocumentDirectUploadS3("Upload: "))
           .pause(pause)
       }
     ).feed(Feeders.admins)
@@ -71,6 +71,7 @@ class Sim20CreateDocuments extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
+    .disableCaching // because of s3 upload
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
