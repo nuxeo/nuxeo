@@ -60,6 +60,10 @@ public class Predicates {
         return createPredicate(name, Operator.GT, value);
     }
 
+    public static Predicate startsWith(String name, Object value) {
+        return createPredicate(name, Operator.STARTSWITH, value);
+    }
+
     public static Predicate in(String name, Iterable<?> values) {
         return createPredicate(name, Operator.IN, StreamSupport.stream(values.spliterator(), false));
     }
