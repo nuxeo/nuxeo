@@ -69,6 +69,57 @@ object NuxeoRest {
     }
   }
 
+  /** Create a document with direct s3 upload simulation */
+  def createDocumentDirectUploadS3() = {
+      exec(
+        // this will redirect to GET /api/v1/upload/batch-id<UID> with STS info
+        http("Get a batch id")
+          .post("/api/v1/upload/new/s3")
+          .headers(Headers.base)
+          .basicAuth("${user}", "${password}")
+          .asJSON.check(jsonPath("$.batchId").saveAs("batchId").jsonPath("$.").saveAs("bucket"))
+      ).exec(session => {
+            val script = "/home/ben/dev/nuxeo.git/nuxeo-distribution/nuxeo-jsf-ui-gatling-tests/scripts/awsS3Sign.sh " +
+              bucket + " " + session("blobFilename").as[String] + " " + session("blobMimeType").as[String]
+            val scriptOutput: String = script.!!
+            val dateHeader: String = scriptOutput.substring(0, scriptOutput.indexOf('|'))
+            val authorizationHeader: String = scriptOutput.substring(scriptOutput.indexOf('|') + 1).trim()
+            println("Upload " + session("blobFilename").as[String])
+            session.set("awsDate", dateHeader)
+              .set("awsAuth", authorizationHeader)
+          })
+          .exec(
+            http("s3 upload ${type}")
+              .put("https://" + bucket + ".s3.amazonaws.com/${blobFilename}")
+              .header("Host", bucket + ".s3.amazonaws.com")
+              .header("Date", "${awsDate}")
+              .header("Content-Type", "${blobMimeType}")
+              .header("Authorization", "${awsAuth}")
+              .body(RawFileBody("${blobPath}"))
+              .check(status.in(200))
+          )
+
+
+        http("Dircet upload to s3 ${type}")
+
+          .post("/api/v1/upload/${batchId}/0")
+          .headers(Headers.base)
+          .header("X-File-Name", "${blobFilename}")
+          .header("Content-Type", "${blobMimeType}")
+          .basicAuth("${user}", "${password}")
+          .body(RawFileBody("${blobPath}"))
+      ).exec(
+        http("Create ${type} with blob")
+          .post(Constants.GAT_API_PATH + "/${parentPath}")
+          .headers(Headers.base)
+          .header("Content-Type", "application/json")
+          .basicAuth("${user}", "${password}")
+          .body(StringBody(session => session("payload").as[String].replaceAll("_BATCH_ID_", session("batchId").as[String])))
+          .check(status.saveAs("status"))
+          .check(status.in(201))
+     )
+  }
+
   /** Create again a document with a different name */
   def createAgainDocument() = {
     createDocument()
