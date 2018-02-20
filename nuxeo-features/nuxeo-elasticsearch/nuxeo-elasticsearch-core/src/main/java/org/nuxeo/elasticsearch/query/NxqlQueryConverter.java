@@ -463,7 +463,7 @@ public final class NxqlQueryConverter {
         return ret;
     }
 
-    private static QueryBuilder makeStartsWithQuery(String name, Object value) {
+    public static QueryBuilder makeStartsWithQuery(String name, Object value) {
         QueryBuilder filter;
         String indexName = name + ".children";
         if ("/".equals(value)) {

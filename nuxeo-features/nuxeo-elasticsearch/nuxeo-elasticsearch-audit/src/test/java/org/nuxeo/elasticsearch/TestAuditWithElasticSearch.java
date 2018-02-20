@@ -23,17 +23,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -43,12 +37,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
+import org.nuxeo.ecm.platform.audit.AbstractAuditStorageTest;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
-import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -60,9 +51,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.core.persistence",
         "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.core",
         "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
@@ -72,7 +60,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
-public class TestAuditWithElasticSearch {
+public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
 
     @Inject
     protected CoreSession session;
@@ -261,64 +249,18 @@ public class TestAuditWithElasticSearch {
         assertEquals(id3, entries.get(1).getId());
     }
 
+    @Override
     @Test
-    public void testSaveAndScroll() throws Exception {
+    public void testStartsWith() throws Exception {
+        super.testStartsWith();
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        assertNotNull(audit);
-
-        ESAuditBackend esBackend = (ESAuditBackend) audit.getBackend();
-
-        String idForAuditStorage = "idForAuditStorage";
-        ObjectMapper mapper = new ObjectMapper();
-        List<String> jsonEntries = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-        for (int i = 1; i <= 42; i++) {
-            ObjectNode logEntryJson = mapper.createObjectNode();
-            logEntryJson.put(LOG_ID, Integer.valueOf(i).longValue());
-            logEntryJson.put(LOG_EVENT_ID, idForAuditStorage);
-            jsonEntries.add(mapper.writeValueAsString(logEntryJson));
-            ids.add(Long.valueOf(i));
-        }
-        // Save JSON entries into backend
-        esBackend.append(jsonEntries);
-
-        LogEntryGen.flushAndSync();
-
-        // Query all logs
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, idForAuditStorage));
-        // builder.predicates()
-        List<LogEntry> logs = esBackend.queryLogs(builder);
-        assertEquals(42, logs.size());
-
-        ScrollResult<String> scrollResult = esBackend.scroll(builder, 5, 10);
-        int total = 0;
-        while (scrollResult.hasResults()) {
-            assertTrue(scrollResult.getResults().size() <= 5);
-            jsonEntries = scrollResult.getResults();
-            List<LogEntry> entries = jsonEntries.stream().map(json -> {
-                try {
-                    return mapper.readValue(json, LogEntryImpl.class);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }).collect(Collectors.toList());
-            for (LogEntry entry : entries) {
-                assertTrue(ids.remove(Long.valueOf(entry.getId())));
-                assertEquals(idForAuditStorage, entry.getEventId());
-            }
-            total += entries.size();
-            scrollResult = esBackend.scroll(scrollResult.getScrollId());
-        }
-        assertEquals(42, total);
-        assertTrue(ids.isEmpty());
-
-        // assert we can get a single log entry by its id
-        LogEntry logEntry = esBackend.getLogEntryByID(4);
-        assertNotNull(logEntry);
-        assertEquals(4, logEntry.getId());
-        assertEquals(idForAuditStorage, logEntry.getEventId());
+        // A partial match is not supported by Elastic
+        assertStartsWithCount(0, "/is/eve");
+        assertStartsWithCount(0, "/is/od");
     }
 
+    @Override
+    protected void flush() throws Exception {
+        LogEntryGen.flushAndSync();
+    }
 }
