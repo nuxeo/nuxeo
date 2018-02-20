@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -246,25 +245,11 @@ public class Batch {
         }
         if (fileEntry.isChunked()) {
             for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
-                // Remove chunk entry from the store and delete blobs from the file system
-                List<Blob> chunkBlobs = ts.getBlobs(chunkEntryKey);
-                if (chunkBlobs != null) {
-                    for (Blob blob : chunkBlobs) {
-                        FileUtils.deleteQuietly(blob.getFile().getParentFile());
-                    }
-                }
                 ts.remove(chunkEntryKey);
             }
             fileEntry.beforeRemove();
         }
-        // Remove file entry from the store and delete blobs from the file system
         String fileEntryKey = fileEntry.getKey();
-        List<Blob> fileBlobs = ts.getBlobs(fileEntryKey);
-        if (fileBlobs != null) {
-            for (Blob blob : fileBlobs) {
-                FileUtils.deleteQuietly(blob.getFile().getParentFile());
-            }
-        }
         ts.remove(fileEntryKey);
         return true;
     }
