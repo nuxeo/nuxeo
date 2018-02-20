@@ -19,6 +19,7 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
+import scala.sys.process._
 import scala.util.Random
 
 object NuxeoRest {
@@ -69,47 +70,52 @@ object NuxeoRest {
     }
   }
 
-  /** Create a document with direct s3 upload simulation */
-  def createDocumentDirectUploadS3() = {
-      exec(
-        // this will redirect to GET /api/v1/upload/batch-id<UID> with STS info
-        http("Get a batch id")
-          .post("/api/v1/upload/new/s3")
-          .headers(Headers.base)
-          .basicAuth("${user}", "${password}")
-          .asJSON.check(jsonPath("$.batchId").saveAs("batchId").jsonPath("$.").saveAs("bucket"))
-      ).exec(session => {
-            val script = "/home/ben/dev/nuxeo.git/nuxeo-distribution/nuxeo-jsf-ui-gatling-tests/scripts/awsS3Sign.sh " +
-              bucket + " " + session("blobFilename").as[String] + " " + session("blobMimeType").as[String]
+  def s3Upload() = {
+    exec(session => {
+            val script = Parameters.getAwsS3Script() + " " + Parameters.getAwsConf() + " " +
+              Parameters.getAwsS3Bucket() + " " + session("blobFilename").as[String] + " " +
+              session("blobMimeType").as[String]
+            println(script)
             val scriptOutput: String = script.!!
             val dateHeader: String = scriptOutput.substring(0, scriptOutput.indexOf('|'))
             val authorizationHeader: String = scriptOutput.substring(scriptOutput.indexOf('|') + 1).trim()
             println("Upload " + session("blobFilename").as[String])
             session.set("awsDate", dateHeader)
               .set("awsAuth", authorizationHeader)
-          })
-          .exec(
-            http("s3 upload ${type}")
-              .put("https://" + bucket + ".s3.amazonaws.com/${blobFilename}")
-              .header("Host", bucket + ".s3.amazonaws.com")
+              .set("bucket", Parameters.getAwsS3Bucket())
+          }
+      ).exec(
+          http("Direct s3 upload ${type}")
+              .put("https://${bucket}.s3.amazonaws.com/${blobFilename}")
+              .header("Host", "${bucket}.s3.amazonaws.com")
               .header("Date", "${awsDate}")
               .header("Content-Type", "${blobMimeType}")
               .header("Authorization", "${awsAuth}")
               .body(RawFileBody("${blobPath}"))
               .check(status.in(200))
-          )
+      )
+  }
 
-
-        http("Dircet upload to s3 ${type}")
-
-          .post("/api/v1/upload/${batchId}/0")
-          .headers(Headers.base)
-          .header("X-File-Name", "${blobFilename}")
-          .header("Content-Type", "${blobMimeType}")
-          .basicAuth("${user}", "${password}")
-          .body(RawFileBody("${blobPath}"))
+  /** Create a document with direct s3 upload simulation */
+  def createDocumentDirectUploadS3() = {
+      exec(
+          // this will redirect to GET /api/v1/upload/batch-id<UID> with STS info
+          http("Get a batch id")
+             .post("/api/v1/upload/new/s3")
+            .headers(Headers.base)
+            .basicAuth("${user}", "${password}")
+            .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
       ).exec(
-        http("Create ${type} with blob")
+          s3Upload()
+      ).exec(
+          http("Complete upload")
+          .post("/api/v1/upload/${batchId}/complete")
+          .headers(Headers.base)
+          .header("Content-Type", "application/json")
+          .basicAuth("${user}", "${password}")
+          .body(StringBody("""{"name": "${blobFilename}","bucket": "${bucket}","key": "${blobFilename}","fileSize": 1234}"""))
+      ).exec(
+        http("Create ${type}")
           .post(Constants.GAT_API_PATH + "/${parentPath}")
           .headers(Headers.base)
           .header("Content-Type", "application/json")
@@ -120,7 +126,7 @@ object NuxeoRest {
      )
   }
 
-  /** Create again a document with a different name */
+  /** Create a document that may already exists, in this case Nuxeo will change the doc name */
   def createAgainDocument() = {
     createDocument()
   }

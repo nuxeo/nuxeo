@@ -49,5 +49,16 @@ object Parameters {
     Integer.getInteger("nbNodes", default)
   }
 
+  def getAwsConf(default: String = "/path/to/.aws/credential"): String = {
+    System.getProperty("awsConf", default)
+  }
+
+  def getAwsS3Script(default: String = "./scripts/awsS3Sign.sh"): String = {
+    System.getProperty("awsS3Script", default)
+  }
+
+  def getAwsS3Bucket(default: String = "a-bucket-name-for-direct-upload"): String = {
+    System.getProperty("awsS3Bucket", default)
+  }
 
 }
