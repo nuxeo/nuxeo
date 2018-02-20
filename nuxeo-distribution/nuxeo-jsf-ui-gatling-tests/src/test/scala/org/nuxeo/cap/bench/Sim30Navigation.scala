@@ -49,6 +49,26 @@ object ScnNavigation {
 
 }
 
+object ScnNavigationDownload {
+
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
+    scenario("Download").exec(
+      during(duration, "counterName") {
+        feed(Feeders.users).repeat(5) {
+          feed(documents)
+            .randomSwitch(
+              70.0 -> exec(NuxeoRest.getDocument("Get document")),
+              // TODO download the blob
+              30.0 -> exec(NuxeoRest.getParentFolderOfCurrentDocument("Get document folder")),)
+            .pause(pause)
+        }
+      }
+    )
+  }
+
+}
+
+
 class Sim30Navigation extends Simulation {
 
   val httpProtocol = http

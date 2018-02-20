@@ -51,7 +51,20 @@ object ScnCreateAgainDocuments {
       }
     ).feed(Feeders.admins)
   }
+}
 
+object ScnCreateDocumentsDirectUpload {
+
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
+    scenario("DirectUpload").exec(
+      during(duration, "counterName") {
+        feed(documents)
+          .feed(Feeders.users)
+          .exec(NuxeoRest.s3Upload())
+          .pause(pause)
+      }
+    ).feed(Feeders.admins)
+  }
 }
 
 class Sim20CreateDocuments extends Simulation {
