@@ -617,7 +617,7 @@ public class Select2ActionsBean implements Serializable {
             final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
         return formatList(
                 getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName),
-                SuggestConstants.LABEL);
+                Select2Common.LABEL);
     }
 
     /**
@@ -629,7 +629,7 @@ public class Select2ActionsBean implements Serializable {
             final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
         return formatList(
                 getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName),
-                SuggestConstants.ABSOLUTE_LABEL);
+                Select2Common.ABSOLUTE_LABEL);
     }
 
     @SuppressWarnings("rawtypes")
@@ -766,7 +766,7 @@ public class Select2ActionsBean implements Serializable {
         return formatList(
                 getMultipleUserReference(value, prefixed, firstLabelField, secondLabelField, thirdLabelField,
                         hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon),
-                SuggestConstants.LABEL);
+                Select2Common.LABEL);
     }
 
     protected DocumentModel resolveReference(final String repo, final String storedReference,
@@ -870,7 +870,7 @@ public class Select2ActionsBean implements Serializable {
         if (obj == null) {
             return "";
         }
-        return obj.optString(SuggestConstants.ABSOLUTE_LABEL);
+        return obj.optString(Select2Common.ABSOLUTE_LABEL);
     }
 
     public String resolveSingleReference(final String storedReference, final String repo, final String operationName,
