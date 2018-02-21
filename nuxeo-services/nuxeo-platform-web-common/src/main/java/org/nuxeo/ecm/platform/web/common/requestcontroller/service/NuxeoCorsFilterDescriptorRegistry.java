@@ -78,8 +78,8 @@ public class NuxeoCorsFilterDescriptorRegistry extends ContributionFragmentRegis
 
     public NuxeoCorsFilterDescriptor getFirstMatchingDescriptor(String uri) {
         for (NuxeoCorsFilterDescriptor filterDesc : descs.values()) {
-            Pattern pattern = Pattern.compile(filterDesc.pattern);
-            if (pattern.matcher(uri).matches()) {
+            Pattern pattern = filterDesc.pattern;
+            if (pattern == null || pattern.matcher(uri).matches()) {
                 return filterDesc;
             }
         }
