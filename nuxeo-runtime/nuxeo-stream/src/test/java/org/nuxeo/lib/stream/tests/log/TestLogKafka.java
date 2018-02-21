@@ -43,7 +43,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -150,8 +149,8 @@ public class TestLogKafka extends TestLog {
         appender.append(0, KeyValueMessage.of("id5"));
 
         //Get the time and wait 3 seconds
+        Thread.sleep(3000L);
         Instant now = Instant.now();
-        Thread.sleep(3000);
 
         appender.append(0, KeyValueMessage.of("id6"));
         appender.append(0, KeyValueMessage.of("id7"));
@@ -168,8 +167,6 @@ public class TestLogKafka extends TestLog {
             LogOffset logOffset = tailer.offsetForTimestamp(logPartition, now.toEpochMilli());
             tailer.seek(logOffset);
             tailer.commit();
-            assertEquals("After moving the tailer, we should have a lag of 4.",
-                    4, manager.getLag(logName, GROUP).lag());
             Assert.assertEquals("id6", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id7", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id8", tailer.read(DEF_TIMEOUT).message().key());
