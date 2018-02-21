@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  *
- * $Id: TestNuxeoPrincipalImpl.java 28443 2008-01-02 18:16:28Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.usermanager;
@@ -28,26 +27,27 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Florent Guillaume
  */
-public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+public class TestNuxeoPrincipalImpl {
 
     @Test
     public void testEquals() {
@@ -63,7 +63,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testHasCode() throws Exception {
+    public void testHasCode() {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
         NuxeoPrincipalImpl b = new NuxeoPrincipalImpl("foo");
         assertEquals(a.hashCode(), b.hashCode());
@@ -82,8 +82,8 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         Map<String, Serializable> aContextData = a.getModel().getContextData();
         Map<String, Serializable> bContextData = b.getModel().getContextData();
         assertEquals(aContextData.size(), bContextData.size());
-        assertTrue((Boolean) aContextData.get("readonly"));
-        assertTrue((Boolean) bContextData.get("readonly"));
+        assertTrue((boolean) aContextData.get("readonly"));
+        assertTrue((boolean) bContextData.get("readonly"));
     }
 
 }

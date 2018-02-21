@@ -21,27 +21,25 @@ package org.nuxeo.ecm.core.uidgen;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 7.4
  */
-public class TestUIDSequencer extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-uidgenerator-contrib.xml")
+public class TestUIDSequencer {
 
+    @Inject
     protected UIDGeneratorService service;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/test-uidgenerator-contrib.xml");
-        service = Framework.getService(UIDGeneratorService.class);
-    }
 
     @Test
     public void testSequencer() {

@@ -49,6 +49,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.runtime.datasource");
+        deployBundle("org.nuxeo.runtime.kv");
+        deployBundle("org.nuxeo.runtime.migration");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
