@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.picture;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER;
 
 import java.io.IOException;
 import java.util.List;
@@ -117,6 +118,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
         workingDocument.putContextData("disableAuditLogger", Boolean.TRUE);
         workingDocument.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
         session.saveDocument(workingDocument);
 
         firePictureViewsGenerationDoneEvent(workingDocument);
