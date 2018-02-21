@@ -21,20 +21,32 @@
 
 package org.nuxeo.ecm.platform.web.requestcontroller;
 
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import javax.servlet.FilterConfig;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import com.thetransactioncompany.cors.CORSConfiguration;
+import com.thetransactioncompany.cors.CORSFilter;
+import com.thetransactioncompany.cors.Origin;
 
 public class TestService extends NXRuntimeTestCase {
 
@@ -122,22 +134,33 @@ public class TestService extends NXRuntimeTestCase {
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
 
-        String uri = "";
-        FilterConfig fc;
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        String uri;
+        CORSFilter filter;
+        CORSConfiguration config;
 
-        RequestControllerService rcs = (RequestControllerService) rcm;
-        assertNull(rcs.computeCorsFilterConfigForUri("/dummy/uri"));
+        uri = "/dummy/uri";
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = rcm.getCorsFilterForRequest(request);
+        assertNull(filter);
 
         uri = "/nuxeo/site/minimal/something/long/dummy.html";
-        fc = rcs.computeCorsFilterConfigForUri(uri);
-        assertEquals("-1", fc.getInitParameter("cors.maxAge"));
-        assertEquals(null, fc.getInitParameter("cors.allowOrigin"));
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = rcm.getCorsFilterForRequest(request);
+        config = filter.getConfiguration();
+        assertEquals(-1, config.maxAge);
+        assertEquals(Collections.emptySet(), config.allowedOrigins);
 
         uri = "/nuxeo/site/dummy/";
-        fc = rcs.computeCorsFilterConfigForUri(uri);
-        assertEquals("3600", fc.getInitParameter("cors.maxAge"));
-        assertEquals("http://example.com http://example.com:8080", fc.getInitParameter("cors.allowOrigin"));
-        assertEquals("false", fc.getInitParameter("cors.supportsCredentials"));
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = rcm.getCorsFilterForRequest(request);
+        config = filter.getConfiguration();
+        assertEquals(3600, config.maxAge);
+        Set<Origin> expectedOrigins = new HashSet<>();
+        expectedOrigins.add(new Origin("http://example.com"));
+        expectedOrigins.add(new Origin("http://example.com:8080"));
+        assertEquals(expectedOrigins, config.allowedOrigins);
+        assertFalse(config.supportsCredentials);
     }
 
     @Test
