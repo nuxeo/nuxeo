@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.thetransactioncompany.cors.CORSFilter;
 
 /**
  * Runtime component that implements the {@link RequestControllerManager} interface. Contains both the Extension point
@@ -59,8 +62,6 @@ public class RequestControllerService extends DefaultComponent implements Reques
     // @GuardedBy("itself")
     protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(
             250);
-
-    protected static final Map<String, FilterConfig> filterConfigCache = new LRUCachingMap<>(250);
 
     protected static final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
 
@@ -109,28 +110,21 @@ public class RequestControllerService extends DefaultComponent implements Reques
     /* Service interface */
 
     @Override
-    public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
+    public CORSFilter getCorsFilterForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        FilterConfig filterConfig = null;
-        synchronized (filterConfigCache) {
-            filterConfig = filterConfigCache.get(uri);
-        }
-
-        if (filterConfig == null) {
-            filterConfig = computeCorsFilterConfigForUri(uri);
-            synchronized (filterConfigCache) {
-                filterConfigCache.put(uri, filterConfig);
-            }
-        }
-
-        return filterConfig;
+        NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
+        return descriptor == null ? null : descriptor.getFilter();
     }
 
-    public FilterConfig computeCorsFilterConfigForUri(String uri) {
+    @Override
+    @Deprecated
+    public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
+        String uri = request.getRequestURI();
         NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
         return descriptor != null ? descriptor.buildFilterConfig() : null;
     }
 
+    @Override
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
         RequestFilterConfig config = null;

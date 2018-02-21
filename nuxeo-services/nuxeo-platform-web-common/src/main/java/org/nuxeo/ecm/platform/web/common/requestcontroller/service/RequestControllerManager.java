@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
+import com.thetransactioncompany.cors.CORSFilter;
+
 /**
  * Interface for the service used to manage what {@link HttpServletRequest} must be protected by the Filter.
  *
@@ -34,11 +36,21 @@ public interface RequestControllerManager {
     RequestFilterConfig getConfigForRequest(HttpServletRequest request);
 
     /**
+     * Get contributed CORS Filter for an HttpServletRequest.
+     *
+     * @return the CORS filter if there is a matching request, otherwise {@code null}
+     * @since 10.1
+     */
+    CORSFilter getCorsFilterForRequest(HttpServletRequest request);
+
+    /**
      * Get contributed FilterConfig for an HttpServletRequest.
      *
-     * @since 5.7.2
      * @return filter config to init CorsFilter if there is a matching request, null otherwise.
+     * @since 5.7.2
+     * @deprecated since 10.1, unused, use {@link getCorsFilterForRequest} instead
      */
+    @Deprecated
     FilterConfig getCorsConfigForRequest(HttpServletRequest request);
 
     /**
