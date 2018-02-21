@@ -16,11 +16,13 @@
  * Contributors:
  *     Mathieu Guillaume
  *     Florent Guillaume
+ *     Luís Duarte
  */
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,6 +51,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
@@ -428,6 +434,85 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         return new S3FileStorage();
     }
 
+    @Override
+    public String writeBlob(Blob blob) throws IOException {
+        // Attempt to do S3 Copy if the Source Blob provider is also S3
+        if (blob instanceof ManagedBlob) {
+            ManagedBlob managedBlob = (ManagedBlob) blob;
+            BlobProvider blobProvider = Framework.getService(BlobManager.class)
+                                                 .getBlobProvider(managedBlob.getProviderId());
+            if (blobProvider instanceof S3BinaryManager && blobProvider != this) {
+                // use S3 direct copy as the source blob provider is also S3
+                String key = copyBlob((S3BinaryManager) blobProvider, managedBlob.getKey());
+                if (key != null) {
+                    return key;
+                }
+            }
+        }
+        return super.writeBlob(blob);
+    }
+
+    /**
+     * Copies a blob. Returns {@code null} if the copy was not possible.
+     *
+     * @param sourceBlobProvider the source blob provider
+     * @param blobKey the source blob key
+     * @return the copied blob key, or {@code null} if the copy was not possible
+     * @throws IOException
+     * @since 10.1
+     */
+    protected String copyBlob(S3BinaryManager sourceBlobProvider, String blobKey) throws IOException {
+        String digest = blobKey;
+        int colon = digest.indexOf(':');
+        if (colon >= 0) {
+            digest = digest.substring(colon + 1);
+        }
+        String sourceBucketName = sourceBlobProvider.bucketName;
+        String sourceKey = sourceBlobProvider.bucketNamePrefix + digest;
+        String key = bucketNamePrefix + digest;
+        long t0 = 0;
+        if (log.isDebugEnabled()) {
+            t0 = System.currentTimeMillis();
+            log.debug("copying blob " + sourceKey + " to " + key);
+        }
+
+        try {
+            amazonS3.getObjectMetadata(bucketName, key);
+            if (log.isDebugEnabled()) {
+                log.debug("blob " + key + " is already in S3");
+            }
+            return digest;
+        } catch (AmazonServiceException e) {
+            if (!isMissingKey(e)) {
+                throw new IOException(e);
+            }
+            // object does not exist, just continue
+        }
+
+        // not already present -> copy the blob
+        ObjectMetadata sourceMetadata;
+        try {
+            sourceMetadata = amazonS3.getObjectMetadata(sourceBucketName, sourceKey);
+        } catch (AmazonServiceException e) {
+            throw new NuxeoException("Source blob does not exists: s3://" + sourceBucketName + "/" + sourceKey, e);
+        }
+        try {
+            if (sourceMetadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
+                S3Utils.copyFileMultipart(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+            } else {
+                S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+            }
+            if (log.isDebugEnabled()) {
+                long dtms = System.currentTimeMillis() - t0;
+                log.debug("copied blob " + sourceKey + " to " + key + " in " + dtms + "ms");
+            }
+            return digest;
+        } catch (AmazonServiceException e) {
+            log.warn("direct S3 copy not supported, please check your keys and policies", e);
+            return null;
+        }
+    }
+
     public class S3FileStorage implements FileStorage {
 
         @Override
@@ -454,7 +539,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     if (useServerSideEncryption) {
                         ObjectMetadata objectMetadata = new ObjectMetadata();
                         if (isNotBlank(serverSideKMSKeyID)) {
-                            SSEAwsKeyManagementParams keyManagementParams = 
+                            SSEAwsKeyManagementParams keyManagementParams =
                                 new SSEAwsKeyManagementParams(serverSideKMSKeyID);
                             request = request.withSSEAwsKeyManagementParams(keyManagementParams);
                         } else {
