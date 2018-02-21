@@ -33,7 +33,11 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_ID_PROPERTY = "annotation:annotationId";
 
+    public static final String ANNOTATION_TYPE_PROPERTY = "annotation:type";
+
     public static final String ANNOTATION_COLOR_PROPERTY = "annotation:color";
+
+    public static final String ANNOTATION_INTERIOR_COLOR_PROPERTY = "annotation:interiorColor";
 
     public static final String ANNOTATION_DATE_PROPERTY = "annotation:date";
 
@@ -57,9 +61,17 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_SECURITY_PROPERTY = "annotation:security";
 
+    public static final String ANNOTATION_CONTENT_PROPERTY = "annotation:content";
+
+    public static final String ANNOTATION_PARENT_ID_PROPERTY = "annotation:parentId";
+
     public static final String ANNOTATION_ID = "id";
 
+    public static final String ANNOTATION_TYPE = "type";
+
     public static final String ANNOTATION_COLOR = "color";
+
+    public static final String ANNOTATION_INTERIOR_COLOR = "interiorColor";
 
     public static final String ANNOTATION_DATE = "date";
 
@@ -82,5 +94,9 @@ public class AnnotationConstants {
     public static final String ANNOTATION_SUBJECT = "subject";
 
     public static final String ANNOTATION_SECURITY = "security";
+
+    public static final String ANNOTATION_CONTENT = "content";
+
+    public static final String ANNOTATION_PARENT_ID = "parentId";
 
 }

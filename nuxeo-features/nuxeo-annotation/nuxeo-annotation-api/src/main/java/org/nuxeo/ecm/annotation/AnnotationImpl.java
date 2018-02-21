@@ -21,10 +21,14 @@
 package org.nuxeo.ecm.annotation;
 
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CONTENT_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_INTERIOR_COLOR_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_TYPE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER_PROPERTY;
@@ -45,7 +49,11 @@ public class AnnotationImpl implements Annotation {
 
     protected String id;
 
+    protected String type;
+
     protected String color;
+
+    protected String interiorColor;
 
     protected Calendar date;
 
@@ -69,12 +77,18 @@ public class AnnotationImpl implements Annotation {
 
     protected String security;
 
+    protected String content;
+
+    protected String parentId;
+
     public AnnotationImpl() {
     }
 
     protected AnnotationImpl(DocumentModel annotationModel) {
         id = (String) annotationModel.getPropertyValue(ANNOTATION_ID_PROPERTY);
+        type = (String) annotationModel.getPropertyValue(ANNOTATION_TYPE_PROPERTY);
         color = (String) annotationModel.getPropertyValue(ANNOTATION_COLOR_PROPERTY);
+        interiorColor = (String) annotationModel.getPropertyValue(ANNOTATION_INTERIOR_COLOR_PROPERTY);
         date = (Calendar) annotationModel.getPropertyValue(ANNOTATION_DATE_PROPERTY);
         flags = (String) annotationModel.getPropertyValue(ANNOTATION_FLAGS_PROPERTY);
         documentId = (String) annotationModel.getPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY);
@@ -88,6 +102,8 @@ public class AnnotationImpl implements Annotation {
                 ? (double) annotationModel.getPropertyValue(ANNOTATION_OPACITY_PROPERTY) : 0d;
         subject = (String) annotationModel.getPropertyValue(ANNOTATION_SUBJECT_PROPERTY);
         security = (String) annotationModel.getPropertyValue(ANNOTATION_SECURITY_PROPERTY);
+        content = (String) annotationModel.getPropertyValue(ANNOTATION_CONTENT_PROPERTY);
+        parentId = (String) annotationModel.getPropertyValue(ANNOTATION_PARENT_ID_PROPERTY);
     }
 
     @Override
@@ -101,6 +117,16 @@ public class AnnotationImpl implements Annotation {
     }
 
     @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
     public String getColor() {
         return color;
     }
@@ -108,6 +134,16 @@ public class AnnotationImpl implements Annotation {
     @Override
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public String getInteriorColor() {
+        return interiorColor;
+    }
+
+    @Override
+    public void setInteriorColor(String color) {
+        interiorColor = color;
     }
 
     @Override
@@ -218,6 +254,26 @@ public class AnnotationImpl implements Annotation {
     @Override
     public void setSecurity(String security) {
         this.security = security;
+    }
+
+    @Override
+    public String getContent() {
+        return content;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public String getParentId() {
+        return parentId;
+    }
+
+    @Override
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
 }

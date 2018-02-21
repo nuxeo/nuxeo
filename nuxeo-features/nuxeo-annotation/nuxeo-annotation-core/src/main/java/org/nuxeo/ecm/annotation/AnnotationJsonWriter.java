@@ -20,17 +20,21 @@
 package org.nuxeo.ecm.annotation;
 
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CONTENT;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_INTERIOR_COLOR;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PARENT_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SECURITY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SUBJECT;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_TYPE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -57,7 +61,9 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
     @Override
     protected void writeEntityBody(Annotation entity, JsonGenerator jg) throws IOException {
         jg.writeStringField(ANNOTATION_ID, entity.getId());
+        jg.writeStringField(ANNOTATION_TYPE, entity.getType());
         jg.writeStringField(ANNOTATION_COLOR, entity.getColor());
+        jg.writeStringField(ANNOTATION_INTERIOR_COLOR, entity.getInteriorColor());
 
         String date = null;
         if (entity.getDate() != null) {
@@ -81,5 +87,7 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
         jg.writeNumberField(ANNOTATION_OPACITY, entity.getOpacity());
         jg.writeStringField(ANNOTATION_SUBJECT, entity.getSubject());
         jg.writeStringField(ANNOTATION_SECURITY, entity.getSecurity());
+        jg.writeStringField(ANNOTATION_CONTENT, entity.getContent());
+        jg.writeStringField(ANNOTATION_PARENT_ID, entity.getParentId());
     }
 }
