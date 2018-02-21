@@ -33,7 +33,7 @@ The component exposing these extension points is:
 ### Document creation activator (documentMapping)
 
 Here is a typical contribution of this documentMapping extension point:
-
+```xml
 	<extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
 	    point="documentMapping">
 	    <docConfig tagName="seance">
@@ -43,6 +43,7 @@ Here is a typical contribution of this documentMapping extension point:
 	      <postCreationAutomationChain>myChain</postCreationAutomationChain>
 	    </docConfig>
 	</extension>
+```
   
 You can see that :
 
@@ -84,7 +85,7 @@ In this parameter, you must give the name of the document to create. If no name 
 ### Metadata injection activator
 
 Here is a typical contribution of this documentMapping extension point:
-
+```xml
 	  <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
 	    point="attributeMapping">
 	    <attributeConfig tagName="titre" docProperty="dc:title" xmlPath="text()"/>
@@ -96,6 +97,7 @@ Here is a typical contribution of this documentMapping extension point:
 	    </attributeConfig>
 
 	  </extension>
+```
 
 As explained in the introduction of this documentation, metadata injection activator is:
 
@@ -153,12 +155,14 @@ test2/@test | …<br>\<test1><div style="margin-left: 10px;">\<test2 **test='val
 MVEL expression let you define complex computation based on the java syntax.
 
 For instance, you can create a string as usual:
-
+```java
 	String test = "This is a String";
+```
 
 You can also call standard static method for instance (semicolon is optional)
-
+```java
 	System.out.println("Hello world!")
+```
 
 You have also access to some elements into your code that lets you interact with the parser and the context of the evaluation. Here is the list of objects available into the context:
 
@@ -176,9 +180,10 @@ You have also access to some elements into your code that lets you interact with
 
 Here is some interesting functions available in Fn:
 
-Function                                           | Comment
-:--------------------------------------------------|:------
-Fn.mkdir(rootPath, separator, value, documentType) | This function is equivalent to mkdir -p in shell syntax. rootPath + value splited by the given seperator is used to express the document structure to create and documentType is the document type that will be created for missing structure. For instance, let's have a repository containing `/default-domain` document:<br> calling `Fn.mkdir('/default-domain/1', '|@', '2|@3|@4', 'Folder')` will create folders `/default-domain/1`, `/default-domain/1/2`, `/default-domain/1/2/3` 
+Function                                           | Comment 
+:--------------------------------------------------|:--------
+`Fn.mkdir(rootPath, separator, value, documentType)` | This function is equivalent to mkdir -p in shell syntax. `rootPath` + `value` split by the given `seperator` is used to express the document structure to create. `documentType` is the document type that will be created for missing structure. For instance, let's have a repository containing `/default-domain` document:<br> calling <code>Fn.mkdir('/default-domain/1', '&#124;@', '2&#124;@3&#124;@4', 'Folder')</code> will create folders `/default-domain/1`, `/default-domain/1/2`, `/default-domain/1/2/3`
+`Fn.parseDate(source, format)` | This function will parse the `source` date string with the given `format` compatible with the `java.text.SimpleDateFormat` class.
 
 
 ## Advanced examples
@@ -188,7 +193,7 @@ Fn.mkdir(rootPath, separator, value, documentType) | This function is equivalent
 #### Example 1
 
 This following configuration:
-
+```xml
     <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
       point="documentMapping">
 
@@ -208,18 +213,20 @@ This following configuration:
       </docConfig>
 
     </extension>
+```
 
 with the following xml fragment:
-
+```xml
 	<html>
 	  <head>
 	    <meta name="RCDirection" content="Dir1/Sec1.1" />
 	    <meta name="RCIdentifiant" content="DGAL/C98 - 8010" />
 	  </head>
 	...
+```
 
 Will be equivalent to this following code ():
-
+```java
     // This computation is because the parent evaluation with the Fn.mkdir part.
     // This happends if the Dir1/Sec1.1 documents doesn't exist in root 
     // => see Fn.mkdir description above
@@ -238,11 +245,12 @@ Will be equivalent to this following code ():
 	// MVEL expression remove space and replace slash by minus
 	String name = "DGA-C98-8010";
 	doc = session.createDocumentModel(path, name, "Instruction");
-	
+```
+
 #### Example 2
 
 This following configuration:
-
+```xml
 	  <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
 	      point="documentMapping">
 	    <docConfig tagName="seance">
@@ -263,19 +271,19 @@ This following configuration:
 	      </parent>
 	    </docConfig>
 	  </extension>
-
+```
 with the following xml fragment:
-
+```xml
 	<?xml version="1.0" encoding="UTF-8"?>
 	<depot idDepot="3" xmlns:webdelibdossier="http://www.adullact.org/webdelib/infodossier/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmine" date="10/11/2012">
 	  <seance idSeance="12"> <!--identifiant de la seance-->
 	    <typeSeance>Conseil Général</typeSeance> <!--type de la séance-->
 	    <dateSeance>2013-02-07 14:00:00</dateSeance> <!--date de la séance-->
-
+```
 
 
 Will first cleanup each document with id 3 (idDepot attribute value) because these lines in configuration:
-
+```java
 	        idDepot = xml.selectNodes('//@idDepot')[0].getText();
 	        query = 'SELECT * FROM WebDelibActe WHERE webdelib_common:adu_id = \'' + idDepot + '\'';
 	        org.nuxeo.ecm.core.api.DocumentModelList previousVersionActes = session.query(query);
@@ -283,22 +291,21 @@ Will first cleanup each document with id 3 (idDepot attribute value) because the
 	        for (previousVersionActe : previousVersionActes) {
 	          session.removeDocument(previousVersionActe.getRef());
 	        }
-	        
-and then create a WebDelibSeance with a name 12 and into the root/2013/02/07 container (if missing container WebDelibStructure is created)
+```        
+and then create a WebDelibSeance with a name 12 and into the `root/2013/02/07` container (if missing container WebDelibStructure is created)
 
 ### Metadata injection activators
-
-
+```xml
     <attributeConfig tagName="titre" docProperty="dc:title"        
       xmlPath="text()" />
-      
+```      
 ____
-      
+```xml   
     <attributeConfig tagName="seance" docProperty="webdelib_common:adu_id"
       xmlPath="../@idDepot" />
-
+```
 ____
-      
+```xml   
     <attributeConfig tagName="dateSeance" docProperty="webdelibseance:date_seance"
       xmlPath="#{
       String date = currentElement.selectNodes('text()')[0].getText().trim();
@@ -307,9 +314,9 @@ ____
       }
       return Fn.parseDate(date, 'yyyy-MM-dd HH:mm:ss')
       }" />
-
+```
 ____
-
+```xml
     <attributeConfig tagName="//seance/document[@type='convocation']"
       docProperty="file:content">
       <mapping documentProperty="filename">@nom</mapping>
@@ -317,41 +324,43 @@ ____
       <mapping documentProperty="encoding">encoding/text()</mapping>
       <mapping documentProperty="content">@nom</mapping>
     </attributeConfig>
-
+```
 ____
-
+```xml
     <attributeConfig tagName="//dossierActe" docProperty="webdelibacte:idActe"
       xmlPath="@idActe" />
+```
 ____
-
+```xml
     <attributeConfig tagName="//meta[@name='RCIdentifiant']" docProperty="dc:title"
       xmlPath="#{
               valueFound = xml.selectNodes('//meta[@name=\'RCIdentifiant\']/@content')[0].getText();
               String title = valueFound.replace(' ', '');
               return title;
                }" />
+```
 ____
-
+```xml
     <attributeConfig tagName="//meta[@name='RCDate']" docProperty="gedeiCommun:date_publication"
       xmlPath="#{
               valueFound = currentElement.attribute('content').getValue().trim();
               return Fn.parseDate(valueFound, 'yyyy-MM-dd');
               }" />
-
+```
 ____
-
+```xml
     <attributeConfig tagName="body" docProperty="inst:diffusion"
       xmlPath="#{
         return 'members';
               }" />
-
+```
 ____
-
+```xml
     <attributeConfig tagName="//meta[@name='RCDescription']" docProperty="inst:resume"
       xmlPath="@content" />
-
+```
 ____
-
+```xml
      <attributeConfig tagName="body"
        docProperty="file:content">
       <mapping documentProperty="filename">#{return source.getName()}</mapping>
@@ -359,8 +368,7 @@ ____
         #{ return source.getName(); }
       </mapping>
     </attributeConfig>
-
-
+```
 
 ### Full examples
 
@@ -370,40 +378,40 @@ You can look the unit test of the [XML Parser project](https://github.com/nuxeo/
 # Calling the service
 
 Finally how you call the parser service ? As usual in Nuxeo, this is quite simple:
-
+```java
     DocumentModel root = session.getRootDocument();
 	File xml = File("/where/is/my/umbrella");
     XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
     importer.importDocuments(root, xml);
-
+```
 But you can also give a zip file and the service will parse each xml document inside:
-
+```java
     File zipXml = FileUtils.getResourceFileFromContext("/it/is/in/the/kitchen/export.zip");
     DocumentModel root = session.getRootDocument();
 
     XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
     importer.importDocuments(root, zipXml);
-
+```
 
 ### Updating existing documents
 
 The importer can update properties for documents already existing in a repository. The criterion for checking that a document exists is by PathRef - meaning that when the importer encounters a document which has the same computed path as an existing document, the importer will update the existing document with the information mapped from the source file. To enable this option add *updateExistingDocuments="true* to a docConfig definition. 
 Example:
-
+```xml
 	<extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent" point="documentMapping">
 		<docConfig tagName="seance" updateExistingDocuments="true">
 		...
-		
+```
 ### Overwrite list attributes while updating existing documents
 
 The default behavior will append any list items found while updating an existing document. To overwrite a list attribute with items from a new source file, add *overwrite="true"* to the attributeConfig definition for the list attribute. Note that it will be necessary to have a separate attributeConfig for a list member. For example: 
-
+```xml
 	<attributeConfig tagName="subjects" docProperty="dc:subjects" overwrite="true" />
 	<attributeConfig tagName="subject" docProperty="dc:subjects" xmlPath="text()" />
-
+```
 ### Deferred save
 
 During an import, documents are placed on a stack and saved either when the document is created or updated successfully or at the end of the import process. The default behavior is to save when the document is created or updated. To defer saving objects to the end of an import process, the *importDocuments* method takes a third optional parameter (set to *true*):
-
+```java
 	importer.importDocuments(root, xml, true);
-
+```
