@@ -37,10 +37,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml")
@@ -54,7 +50,7 @@ public class TestLabelledComputedGroupService {
     protected UserManager um;
 
     @Test
-    public void testContrib() throws Exception {
+    public void testContrib() {
 
         NuxeoGroup group = cgs.getComputedGroup("Grp1", um.getGroupConfig());
         assertNotNull(group);

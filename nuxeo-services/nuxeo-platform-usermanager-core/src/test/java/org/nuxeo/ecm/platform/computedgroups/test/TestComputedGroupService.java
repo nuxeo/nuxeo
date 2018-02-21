@@ -54,10 +54,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml")
@@ -71,7 +67,7 @@ public class TestComputedGroupService {
     protected UserManager um;
 
     @Test
-    public void testContrib() throws Exception {
+    public void testContrib() {
         ComputedGroupsServiceImpl component = (ComputedGroupsServiceImpl) cgs;
 
         GroupComputerDescriptor desc = component.getComputerDescriptors().get(0);
@@ -103,7 +99,7 @@ public class TestComputedGroupService {
     }
 
     @Test
-    public void testUserManagerIntegration() throws Exception {
+    public void testUserManagerIntegration() {
 
         boolean isUserManagerWithComputedGroups = false;
         if (um instanceof UserManagerWithComputedGroups) {
@@ -158,18 +154,18 @@ public class TestComputedGroupService {
     }
 
     @Test
-    public void testResolveMembersInVirtualGroup() throws Exception {
+    public void testResolveMembersInVirtualGroup() {
         List<String> users = um.getUsersInGroupAndSubGroups("Grp1");
         assertEquals(2, users.size());
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.usermanager.tests:companycomputedgroups-contrib.xml")
-    public void testCompanyComputer() throws Exception {
+    public void testCompanyComputer() {
         dotTestCompanyComputer();
     }
 
-    public void dotTestCompanyComputer() throws Exception {
+    public void dotTestCompanyComputer() {
 
         Map<String, Serializable> filter = new HashMap<>();
         HashSet<String> fulltext = new HashSet<>();

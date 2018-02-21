@@ -25,46 +25,41 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestDocumentModel extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.runtime.migration")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.schema")
+public class TestDocumentModel {
 
     @Test
-    public void testDocumentModelImpl() throws Exception {
+    public void testDocumentModelImpl() {
         DocumentModel model = new DocumentModelImpl("my type");
 
         assertEquals("my type", model.getType());
-
-        // assertNull(model.getACP());
-        // assertNull(model.getAdapter(Object.class));
 
         assertNull(model.getDataModel("toto"));
         assertTrue(model.getDataModels().isEmpty());
         assertTrue(model.getDataModelsCollection().isEmpty());
 
-        @SuppressWarnings("deprecation")
         Set<String> facets = model.getFacets();
         assertEquals(Collections.emptySet(), facets);
-        @SuppressWarnings("deprecation")
         String[] schemas = model.getSchemas();
         assertEquals(0, schemas.length);
         assertEquals(Collections.emptySet(), model.getFacets());
@@ -99,7 +94,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
 
     // this test needs the CoreSessionService available (for DocumentModelImpl.writeReplace)
     @Test
-    public void testSerialization() throws IOException, ClassNotFoundException {
+    public void testSerialization() {
         DocumentModelImpl original = new DocumentModelImpl("my type");
         original.attach("somesessionid");
         // check it's attached
