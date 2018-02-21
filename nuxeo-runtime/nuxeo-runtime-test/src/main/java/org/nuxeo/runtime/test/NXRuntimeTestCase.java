@@ -254,10 +254,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Override
     public void fireFrameworkStarted() throws Exception {
         if (frameworkStarted) {
-            // avoid starting twice the runtime (fix situations where tests are starting themselves the runtime)
-            // If this happens the faulty test should be fixed
-            // TODO NXP-22534 - throw an exception?
-            return;
+            throw new IllegalStateException("fireFrameworkStarted must not be called more than once");
         }
         frameworkStarted = true;
         boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback()
