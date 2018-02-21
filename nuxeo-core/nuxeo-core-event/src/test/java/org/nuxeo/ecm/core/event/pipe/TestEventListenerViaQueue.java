@@ -48,7 +48,6 @@ public class TestEventListenerViaQueue extends TestEventServiceComponent {
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test", "test-LocalQueues.xml");
 
-        fireFrameworkStarted();
         // 2 quartz threads launched by the event contribs above
         Thread.sleep(100);
         initialThreadCount = Thread.activeCount();
