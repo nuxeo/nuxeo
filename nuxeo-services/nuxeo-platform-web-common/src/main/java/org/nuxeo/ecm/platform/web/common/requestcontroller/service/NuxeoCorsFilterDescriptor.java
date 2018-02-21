@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,27 @@
  *
  * Contributors:
  *     Arnaud Kervern
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
 import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.regex.Pattern;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+
+import com.thetransactioncompany.cors.CORSFilter;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -74,15 +78,38 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
     @XNode("@maxAge")
     protected int maxAge = -1;
 
-    protected String pattern = "";
+    protected Pattern pattern;
 
     @XNode("pattern")
-    public void setPattern(String pattern) {
-        this.pattern = Framework.expandVars(pattern);
+    public void setPattern(String patternString) {
+        patternString = Framework.expandVars(patternString);
+        if (!StringUtils.isBlank(patternString)) {
+            pattern = Pattern.compile(patternString);
+        }
     }
 
-    public FilterConfig buildFilterConfig() {
-        final Dictionary<String, String> parameters = buildDictionary();
+    // volatile for double-checked locking
+    protected volatile CORSFilter filter;
+
+    public CORSFilter getFilter() {
+        if (filter == null) {
+            synchronized (this) {
+                if (filter == null) {
+                    CORSFilter corsFilter = new CORSFilter();
+                    try {
+                        corsFilter.init(buildFilterConfig());
+                    } catch (ServletException e) {
+                        throw new NuxeoException(e);
+                    }
+                    filter = corsFilter;
+                }
+            }
+        }
+        return filter;
+    }
+
+    protected FilterConfig buildFilterConfig() {
+        Dictionary<String, String> parameters = buildDictionary();
 
         return new FilterConfig() {
             @Override
@@ -106,10 +133,6 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
                 return parameters.keys();
             }
         };
-    }
-
-    public boolean isMatching(HttpServletRequest request) {
-        return !StringUtils.isEmpty(pattern) && request.getRequestURI().matches(pattern);
     }
 
     public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {
@@ -152,9 +175,11 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
             maxAge = o.maxAge;
         }
 
-        if (!StringUtils.isEmpty(o.pattern)) {
+        if (o.pattern != null) {
             pattern = o.pattern;
         }
+
+        filter = null; // recomputed on first access
     }
 
     protected Dictionary<String, String> buildDictionary() {
