@@ -33,31 +33,36 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class TestAction extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.actions:OSGI-INF/actions-framework.xml")
+@Deploy("org.nuxeo.ecm.actions.tests:test-actions-contrib.xml")
+public class TestAction {
 
-    ActionService as;
+    @Inject
+    protected HotDeployer hotDeployer;
 
-    @Override
-    public void setUp() throws Exception {
-        deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        as = (ActionService) runtime.getComponent(ActionService.ID);
+    public ActionService getService() {
+        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
     }
 
     @Test
     public void testActionExtensionPoint() {
+        ActionService as = getService();
         Collection<Action> actions = as.getActionRegistry().getActions();
         assertEquals(9, actions.size());
 
@@ -117,12 +122,12 @@ public class TestAction extends NXRuntimeTestCase {
 
     @Test
     public void testFilterExtensionPoint() {
-        Collection<ActionFilter> filters = as.getFilterRegistry().getFilters();
+        Collection<ActionFilter> filters = getService().getFilterRegistry().getFilters();
         assertEquals(5, filters.size());
 
-        ActionFilter f1 = as.getFilter("MyCustomFilter");
-        DefaultActionFilter f2 = (DefaultActionFilter) as.getFilter("theFilter");
-        DefaultActionFilter f3 = (DefaultActionFilter) as.getFilter("createChild");
+        ActionFilter f1 = getService().getFilter("MyCustomFilter");
+        DefaultActionFilter f2 = (DefaultActionFilter) getService().getFilter("theFilter");
+        DefaultActionFilter f3 = (DefaultActionFilter) getService().getFilter("createChild");
 
         assertSame(DummyFilter.class, f1.getClass());
         assertSame(DefaultActionFilter.class, f2.getClass());
@@ -179,20 +184,20 @@ public class TestAction extends NXRuntimeTestCase {
 
     @Test
     public void testActionOverride() throws Exception {
-        Action viewAction = as.getAction("TAB_VIEW");
+        Action viewAction = getService().getAction("TAB_VIEW");
         assertNotNull(viewAction);
         assertEquals(2, viewAction.getCategories().length);
         assertFalse(Arrays.asList(viewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, viewAction.getFilterIds().size());
         assertTrue(viewAction.getFilterIds().contains("MyCustomFilter"));
 
-        Action disabledAction = as.getAction("disabledAction");
+        Action disabledAction = getService().getAction("disabledAction");
         assertFalse(disabledAction.isEnabled());
 
         // deploy override
-        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
-        Action oviewAction = as.getAction("TAB_VIEW");
+        Action oviewAction = getService().getAction("TAB_VIEW");
         assertNotNull(oviewAction);
         assertEquals("newConfirm", oviewAction.getConfirm());
         assertEquals(3, oviewAction.getCategories().length);
@@ -209,29 +214,29 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("newFilter3", filterIds.get(4));
 
         // check corresponding filters are registered correctly
-        ActionFilter filter = as.getFilter("foo");
+        ActionFilter filter = getService().getFilter("foo");
         assertNull(filter);
-        filter = as.getFilter("MyCustomFilter");
+        filter = getService().getFilter("MyCustomFilter");
         assertNotNull(filter);
         // no filter by that name
-        filter = as.getFilter("newFilterId1");
+        filter = getService().getFilter("newFilterId1");
         assertNull(filter);
         // no filter by that name
-        filter = as.getFilter("newFilterId4");
+        filter = getService().getFilter("newFilterId4");
         assertNull(filter);
-        filter = as.getFilter("newFilter2");
+        filter = getService().getFilter("newFilter2");
         assertNotNull(filter);
-        filter = as.getFilter("newFilter3");
+        filter = getService().getFilter("newFilter3");
         assertNotNull(filter);
 
-        disabledAction = as.getAction("disabledAction");
+        disabledAction = getService().getAction("disabledAction");
         assertFalse(disabledAction.isEnabled());
     }
 
     // NXP-7287: test override of inner filter
     @Test
     public void testActionOverrideOfInnerFilter() throws Exception {
-        Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        Action previewAction = getService().getAction("TAB_WITH_LOCAL_FILTER");
         assertNotNull(previewAction);
         assertEquals(1, previewAction.getCategories().length);
         assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
@@ -239,7 +244,7 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("local_filter"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) getService().getFilter("local_filter");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -247,16 +252,16 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter defined in action", previewRules[0].types[0]);
 
         // deploy override
-        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
-        Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        Action opreviewAction = getService().getAction("TAB_WITH_LOCAL_FILTER");
         assertNotNull(opreviewAction);
         assertEquals(1, opreviewAction.getCategories().length);
         assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
         assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) getService().getFilter("local_filter");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
@@ -266,51 +271,10 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter overriden globally", opreviewRules[1].types[0]);
     }
 
-    // NXP-9677: test override of inner filter after uninstall of the first
-    // contribution
-    @Test
-    public void testActionUninstallOverrideOfInnerFilter() throws Exception {
-        Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(previewAction);
-        assertEquals(1, previewAction.getCategories().length);
-        assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertFalse(Arrays.asList(previewAction.getCategories()).contains("OVERRIDE"));
-        List<String> previewFilterIds = previewAction.getFilterIds();
-        assertEquals(1, previewFilterIds.size());
-        assertTrue(previewFilterIds.contains("local_filter"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
-        FilterRule[] previewRules = previewFilter.getRules();
-        assertNotNull(previewRules);
-        assertEquals(1, previewRules.length);
-        assertTrue(previewRules[0].grant);
-        assertEquals("filter defined in action", previewRules[0].types[0]);
-
-        // uninstall first, this time
-        ComponentManager cmgr = Framework.getRuntime().getComponentManager();
-        cmgr.stop();
-        undeployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
-        // deploy override
-        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-innerfilter-contrib.xml");
-
-        Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
-        assertNotNull(opreviewAction);
-        assertEquals(1, opreviewAction.getCategories().length);
-        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
-        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
-        assertEquals(1, opreviewAction.getFilterIds().size());
-        assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
-        FilterRule[] opreviewRules = opreviewFilter.getRules();
-        assertNotNull(opreviewRules);
-        assertEquals(1, opreviewRules.length);
-        assertFalse(opreviewRules[0].grant);
-        assertEquals("filter re-defined in action", opreviewRules[0].types[0]);
-    }
-
     // NXP-7287: test override by inner filter
     @Test
     public void testActionOverrideByInnerFilter() throws Exception {
-        Action previewAction = as.getAction("TAB_WITH_GLOBAL_FILTER");
+        Action previewAction = getService().getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(previewAction);
         assertEquals(1, previewAction.getCategories().length);
         assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
@@ -318,7 +282,7 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("filter_defined_globally"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("filter_defined_globally");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) getService().getFilter("filter_defined_globally");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -326,16 +290,16 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter defined in its extension point", previewRules[0].types[0]);
 
         // deploy override
-        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
-        Action opreviewAction = as.getAction("TAB_WITH_GLOBAL_FILTER");
+        Action opreviewAction = getService().getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(opreviewAction);
         assertEquals(2, opreviewAction.getCategories().length);
         assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
         assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("filter_defined_globally"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("filter_defined_globally");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) getService().getFilter("filter_defined_globally");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
@@ -369,11 +333,11 @@ public class TestAction extends NXRuntimeTestCase {
      */
     @Test
     public void testActionClone() {
-        Action action1 = as.getAction("viewHiddenInfo");
+        Action action1 = getService().getAction("viewHiddenInfo");
         assertTrue(action1.getAvailable());
         action1.setAvailable(false);
         assertFalse(action1.getAvailable());
-        Action action2 = as.getAction("viewHiddenInfo");
+        Action action2 = getService().getAction("viewHiddenInfo");
         assertTrue(action2.getAvailable());
         // check first action has not changed
         assertFalse(action1.getAvailable());
@@ -382,7 +346,7 @@ public class TestAction extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testActionProperties() throws Exception {
-        Action action = as.getAction("actionTestProperties");
+        Action action = getService().getAction("actionTestProperties");
         assertTrue(action.getAvailable());
         Map<String, Serializable> properties = action.getProperties();
         assertEquals(3, properties.size());
@@ -403,9 +367,9 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("subMapProperty", subMapProperties.get("subMapProperty"));
 
         // deploy override
-        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
-        action = as.getAction("actionTestProperties");
+        action = getService().getAction("actionTestProperties");
         properties = action.getProperties();
         assertEquals(4, properties.size());
         // Test added single property
@@ -414,8 +378,49 @@ public class TestAction extends NXRuntimeTestCase {
 
     @Test
     public void testUnknownAction() throws Exception {
-        Action a = as.getAction("FOO", null, true);
-        assertNull(a);
+        assertNull(getService().getAction("FOO", null, true));
+    }
+
+    // NXP-9677: test override of inner filter after uninstall of the first
+    // contribution
+    @Test
+    public void testActionUninstallOverrideOfInnerFilter() throws Exception {
+
+        ActionService as = getService();
+
+        Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        assertNotNull(previewAction);
+        assertEquals(1, previewAction.getCategories().length);
+        assertTrue(Arrays.asList(previewAction.getCategories()).contains("VIEW_ACTION_LIST"));
+        assertFalse(Arrays.asList(previewAction.getCategories()).contains("OVERRIDE"));
+        List<String> previewFilterIds = previewAction.getFilterIds();
+        assertEquals(1, previewFilterIds.size());
+        assertTrue(previewFilterIds.contains("local_filter"));
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
+        FilterRule[] previewRules = previewFilter.getRules();
+        assertTrue(previewRules[0].grant);
+        assertEquals("filter defined in action", previewRules[0].types[0]);
+
+        // uninstall first, this time
+        hotDeployer.undeploy("org.nuxeo.ecm.actions.tests:test-actions-contrib.xml");
+        // deploy override
+        hotDeployer.deploy("org.nuxeo.ecm.actions.tests:test-actions-override-innerfilter-contrib.xml");
+
+        as = getService();
+
+        Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        assertNotNull(opreviewAction);
+        assertEquals(1, opreviewAction.getCategories().length);
+        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
+        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
+        assertEquals(1, opreviewAction.getFilterIds().size());
+        assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
+        FilterRule[] opreviewRules = opreviewFilter.getRules();
+        assertNotNull(opreviewRules);
+        assertEquals(1, opreviewRules.length);
+        assertFalse(opreviewRules[0].grant);
+        assertEquals("filter re-defined in action", opreviewRules[0].types[0]);
     }
 
 }

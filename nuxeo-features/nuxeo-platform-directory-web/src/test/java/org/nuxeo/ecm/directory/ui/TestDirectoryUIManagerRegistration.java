@@ -25,45 +25,36 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.web")
+@Deploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-contrib.xml")
+public class TestDirectoryUIManagerRegistration {
 
-    DirectoryService dirService;
+    @Inject
+    protected DirectoryService dirService;
 
-    DirectoryUIManager service;
-
-    @Override
-    public void setUp() throws Exception {
-        // required by directory
-        deployBundle("org.nuxeo.ecm.core.cache");
-        // deploy directory
-        deployBundle("org.nuxeo.ecm.directory");
-        // deploy directory ui service
-        deployBundle("org.nuxeo.ecm.directory.web");
-
-        // deploy test dirs + ui config
-        deployContrib("org.nuxeo.ecm.directory.web.tests", "OSGI-INF/test-directory-ui-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(DirectoryUIManager.class);
-        assertNotNull(service);
-
-        dirService = Framework.getService(DirectoryService.class);
-        assertNotNull(dirService);
-    }
+    @Inject
+    protected DirectoryUIManager service;
 
     @Test
     public void testDirectoryUIRegistration() throws Exception {
@@ -97,8 +88,8 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-override-contrib.xml")
     public void testDirectoryUIOverride() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-override-contrib.xml");
 
         List<String> dirs = service.getDirectoryNames();
         assertNotNull(dirs);

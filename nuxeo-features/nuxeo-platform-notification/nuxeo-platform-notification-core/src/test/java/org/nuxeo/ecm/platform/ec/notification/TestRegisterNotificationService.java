@@ -32,35 +32,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
-public class TestRegisterNotificationService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestRegisterNotificationService {
 
     private static final String BUNDLE_TEST_NAME = "org.nuxeo.ecm.platform.notification.core.tests";
 
-    EmailHelper mailHelper = new EmailHelper();
+    protected EmailHelper mailHelper = new EmailHelper();
 
-    @Override
+    @Inject
+    protected HotDeployer hotDeployer;
+
+    @Before
     public void setUp() throws Exception {
         File propertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
         InputStream notificationsProperties = new FileInputStream(propertiesFile);
-        runtime.loadProperties(notificationsProperties);
-        deployContrib("org.nuxeo.ecm.platform.notification.core", "OSGI-INF/NotificationService.xml");
+        ((OSGiRuntimeService) Framework.getRuntime()).loadProperties(notificationsProperties);
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml");
     }
 
     @Test
+    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml")
     public void testRegistration() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib.xml");
 
         List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
 
@@ -91,29 +105,23 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml")
     public void testRegistrationDisabled() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml");
-        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
-
-        assertEquals(0, notifications.size());
+        assertEquals(0, getService().getNotificationsForEvents("testEvent").size());
     }
 
     @Test
     public void testRegistrationOverrideWithDisabled() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib.xml");
-        List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
-
-        assertEquals(1, notifications.size());
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml");
-        notifications = getService().getNotificationsForEvents("testEvent");
-
-        assertEquals(0, notifications.size());
+        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml");
+        assertEquals(1, getService().getNotificationsForEvents("testEvent").size());
+        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml");
+        assertEquals(0, getService().getNotificationsForEvents("testEvent").size());
     }
 
     @Test
+    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml")
+    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml")
     public void testRegistrationOverride() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib.xml",
-                BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml");
 
         List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
         assertEquals(0, notifications.size());
@@ -144,7 +152,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     @Test
     public void testExpandVarsInGeneralSettings() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib.xml");
+        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml");
 
         assertEquals("http://localhost:8080/nuxeo/", getService().getServerUrlPrefix());
         assertEquals("[Nuxeo5]", getService().getEMailSubjectPrefix());
@@ -152,7 +160,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         // this one should not be expanded
         assertEquals("java:/Mail", getService().getMailSessionJndiName());
 
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml");
+        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml");
 
         assertEquals("http://testServerPrefix/nuxeo", getService().getServerUrlPrefix());
         assertEquals("testSubjectPrefix", getService().getEMailSubjectPrefix());
@@ -162,9 +170,9 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy(BUNDLE_TEST_NAME + ":notification-veto-contrib.xml")
+    @Deploy(BUNDLE_TEST_NAME + ":notification-veto-contrib-overridden.xml")
     public void testVetoRegistration() throws Exception {
-        pushInlineDeployments(BUNDLE_TEST_NAME + ":notification-veto-contrib.xml",
-                BUNDLE_TEST_NAME + ":notification-veto-contrib-overridden.xml");
 
         Collection<NotificationListenerVeto> vetos = getService().getNotificationVetos();
         assertEquals(2, vetos.size());
@@ -175,7 +183,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     }
 
-    public NotificationService getService() {
+    protected NotificationService getService() {
         return (NotificationService) Framework.getService(NotificationManager.class);
     }
 

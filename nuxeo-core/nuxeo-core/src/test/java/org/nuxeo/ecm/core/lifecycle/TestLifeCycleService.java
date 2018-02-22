@@ -29,28 +29,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.CoreUTConstants;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test the lifecycle service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestLifeCycleService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/LifeCycleService.xml")
+@Deploy("org.nuxeo.ecm.core.tests:LifeCycleManagerTestExtensions.xml")
+public class TestLifeCycleService {
 
     private LifeCycleService lifeCycleService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/LifeCycleService.xml");
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE, "LifeCycleManagerTestExtensions.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         lifeCycleService = NXCore.getLifeCycleService();
         assertNotNull(lifeCycleService);
     }
@@ -215,9 +217,8 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.tests:LifeCycleManagerReverseTestExtensions.xml")
     public void testLifeCycleReverse() throws Exception {
-
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":LifeCycleManagerReverseTestExtensions.xml");
 
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
 

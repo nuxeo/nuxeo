@@ -22,17 +22,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
-public class TestExtensionPoint extends NXRuntimeTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
-        deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.test.tests:BaseXPoint.xml")
+@Deploy("org.nuxeo.runtime.test.tests:OverridingXPoint.xml")
+public class TestExtensionPoint {
 
     @Test
     public void testOverride() {

@@ -25,8 +25,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
@@ -36,53 +41,55 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestEventServiceComponent extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.ecm.core.event")
+public class TestEventServiceComponent {
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected int initialThreadCount;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         Framework.getProperties().setProperty(PostCommitEventExecutor.TIMEOUT_MS_PROP, "300"); // 0.3s
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.ecm.core.event");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         Thread.sleep(100);
         initialThreadCount = Thread.activeCount();
         DummyPostCommitEventListener.handledCountReset();
         DummyPostCommitEventListener.eventCountReset();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         Event commit = new EventImpl("commit", new EventContextImpl());
         commit.setIsCommitEvent(true);
-        EventService service = Framework.getService(EventService.class);
+        EventService service = getService();
         service.fireEvent(commit);
         service.waitForAsyncCompletion();
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-disabling-listeners1.xml")
     public void testDisablingListener() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-disabling-listeners1.xml");
 
-        EventServiceImpl serviceImpl = (EventServiceImpl) Framework.getService(EventService.class);
-
-        List<EventListenerDescriptor> eventListenerDescriptors = serviceImpl.getEventListenerList()
-                                                                            .getSyncPostCommitListenersDescriptors();
+        List<EventListenerDescriptor> eventListenerDescriptors = getService().getEventListenerList()
+                                                                             .getSyncPostCommitListenersDescriptors();
         assertEquals(1, eventListenerDescriptors.size());
 
         EventListenerDescriptor eventListenerDescriptor = eventListenerDescriptors.get(0);
         assertTrue(eventListenerDescriptor.isEnabled());
 
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-disabling-listeners2.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.event:test-disabling-listeners2.xml");
 
-        serviceImpl = (EventServiceImpl) Framework.getService(EventService.class);
-        eventListenerDescriptors = serviceImpl.getEventListenerList().getSyncPostCommitListenersDescriptors();
+        eventListenerDescriptors = getService().getEventListenerList().getSyncPostCommitListenersDescriptors();
         assertEquals(1, eventListenerDescriptors.size());
 
         eventListenerDescriptor = eventListenerDescriptors.get(0);
@@ -90,10 +97,10 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml")
     public void testAsync() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-async-listeners.xml");
 
-        EventService service = Framework.getService(EventService.class);
+        EventService service = getService();
 
         // send two events, only one of which is recognized by the listener
         // (the other is filtered out of the bundle passed to this listener)
@@ -114,10 +121,10 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml")
     public void testAsyncRetry() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-async-listeners.xml");
 
-        EventService service = Framework.getService(EventService.class);
+        EventService service = getService();
 
         // send two events, only one of which is recognized by the listener
         // (the other is filtered out of the bundle passed to this listener)
@@ -171,9 +178,45 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         assertEquals(2, DummyPostCommitEventListener.eventCount());
     }
 
+    /**
+     * Test that when the event service component is deactivated, the threads of the async event executor are shut down.
+     */
+    @Test
+    @Ignore
+    @Deploy("org.nuxeo.ecm.core.event:test-PostCommitListeners3.xml")
+    public void testAsyncEventExecutorShutdown() throws Exception {
+        // send an async event to make sure the async event executor spawned
+        // some threads
+        // load contrib
+
+        // send event
+        EventService service = getService();
+        Event test1 = new EventImpl("test1", new EventContextImpl());
+        test1.setIsCommitEvent(true);
+        service.fireEvent(test1);
+        // wait for async processing to be done
+        service.waitForAsyncCompletion(2 * 1000);
+        assertEquals(1, DummyPostCommitEventListener.handledCount());
+        // can still fire events
+        Event test2 = new EventImpl("test1", new EventContextImpl());
+        test2.setIsCommitEvent(true);
+        service.fireEvent(test2);
+        // now stop service
+        // this is called by EventServiceComponent.deactivate() in real life
+        ((EventServiceImpl) service).shutdown(2 * 1000);
+        ((EventServiceImpl) service).init();
+        assertEquals(2, DummyPostCommitEventListener.handledCount());
+        Thread.sleep(2 * 1000);
+        assertEquals("Threads not dead", 0, Thread.activeCount() - initialThreadCount);
+    }
+
+    protected EventServiceImpl getService() {
+        return (EventServiceImpl) Framework.getService(EventService.class);
+    }
+
     protected void doTestSyncPostCommit(boolean bulk, boolean error, boolean timeout, int expectedHandled,
             int expectedEvents) throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-sync-postcommit-listeners.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.event:test-sync-postcommit-listeners.xml");
 
         EventServiceAdmin eventServiceAdmin = Framework.getService(EventServiceAdmin.class);
         try {
@@ -190,7 +233,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
 
     private void doTestSyncPostCommit(boolean error, boolean timeout, int expectedHandled, int expectedEvents)
             throws Exception {
-        EventService service = Framework.getService(EventService.class);
+        EventService service = getService();
 
         // Send 4 events, only 2 of which are recognized by the listeners
         // (the last one is filtered out of the bundle passed to the listeners
@@ -223,38 +266,6 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
             // wait for listeners to finish
             Thread.sleep(2000);
         }
-    }
-
-    /**
-     * Test that when the event service component is deactivated, the threads of the async event executor are shut down.
-     */
-    @Test
-    @Ignore
-    public void testAsyncEventExecutorShutdown() throws Exception {
-        // send an async event to make sure the async event executor spawned
-        // some threads
-        // load contrib
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-PostCommitListeners3.xml");
-
-        // send event
-        EventService service = Framework.getService(EventService.class);
-        Event test1 = new EventImpl("test1", new EventContextImpl());
-        test1.setIsCommitEvent(true);
-        service.fireEvent(test1);
-        // wait for async processing to be done
-        service.waitForAsyncCompletion(2 * 1000);
-        assertEquals(1, DummyPostCommitEventListener.handledCount());
-        // can still fire events
-        Event test2 = new EventImpl("test1", new EventContextImpl());
-        test2.setIsCommitEvent(true);
-        service.fireEvent(test2);
-        // now stop service
-        // this is called by EventServiceComponent.deactivate() in real life
-        ((EventServiceImpl) service).shutdown(2 * 1000);
-        ((EventServiceImpl) service).init();
-        assertEquals(2, DummyPostCommitEventListener.handledCount());
-        Thread.sleep(2 * 1000);
-        assertEquals("Threads not dead", 0, Thread.activeCount() - initialThreadCount);
     }
 
 }

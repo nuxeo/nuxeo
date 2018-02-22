@@ -21,22 +21,32 @@
 
 package org.nuxeo.ecm.platform.mail.fetcher;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.mail.service.MailService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Alexandre Russel
  */
-public class TestPropertiesFetcher extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.webapp.base")
+@Deploy("org.nuxeo.ecm.platform.mail")
+@Deploy("org.nuxeo.ecm.platform.mail.test")
+public class TestPropertiesFetcher {
 
     private static final String VALUE2 = "value2";
 
@@ -46,23 +56,15 @@ public class TestPropertiesFetcher extends NXRuntimeTestCase {
 
     private static final String KEY1 = "key1";
 
-    MailService propertiesFetcherService;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.webapp.base");
-        deployBundle("org.nuxeo.ecm.platform.mail");
-        deployBundle("org.nuxeo.ecm.platform.mail.test");
-        propertiesFetcherService = Framework.getService(MailService.class);
-    }
+    @Inject
+    public MailService propertiesFetcherService;
 
     @Test
     public void testService() throws Exception {
         assertNotNull(propertiesFetcherService);
         PropertiesFetcher fetcher = propertiesFetcherService.getFetcher("testFactory");
         assertNotNull(fetcher);
-        Map<String, String> configuration = new HashMap<String, String>();
+        Map<String, String> configuration = new HashMap<>();
         configuration.put(KEY1, VALUE1);
         configuration.put(KEY2, VALUE2);
         fetcher.configureFetcher(configuration);

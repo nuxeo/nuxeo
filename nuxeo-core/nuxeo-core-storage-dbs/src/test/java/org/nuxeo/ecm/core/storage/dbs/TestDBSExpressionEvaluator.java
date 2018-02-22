@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -29,16 +28,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.storage.dbs.tests:OSGI-INF/test-complex.xml")
+public class TestDBSExpressionEvaluator {
 
     // always return a List<Serializable> that is Serializable
     private static final ArrayList<Object> list(Object... values) {
@@ -54,21 +59,6 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
         return diff;
     }
 
-    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush) {
-        ListDiff listDiff = new ListDiff();
-        listDiff.diff = diff;
-        listDiff.rpush = rpush;
-        return listDiff;
-    }
-
-    private static final ListDiff listDiff(Object... diffs) {
-        return listDiff(list(diffs), null);
-    }
-
-    private static final ListDiff rpush(Object... values) {
-        return listDiff(null, list(values));
-    }
-
     private static final State state(Serializable... values) {
         return stateDiff(values);
     }
@@ -80,14 +70,6 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
             map.put((String) values[i], values[i + 1]);
         }
         return map;
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.storage.dbs.tests", "OSGI-INF/test-complex.xml");
     }
 
     @Test

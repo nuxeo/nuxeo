@@ -27,9 +27,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.Test;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestManageRuntimeService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestManageRuntimeService {
 
     private final RuntimeServiceMBeanAdapter adapterUnderTest = new RuntimeServiceMBeanAdapter();
 

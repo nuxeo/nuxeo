@@ -22,35 +22,31 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.security.Principal;
 
 import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @author Benjamin JALON
  */
+@Deploy("org.nuxeo.ecm.platform.login.cas2")
+@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-yes-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-cas-contrib.xml")
 public class TestCASAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
 
     protected static final String TICKET_KEY = "ticket";
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.login.cas2");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-yes-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/login-cas-contrib.xml");
-    }
 
     @Test
     public void testCASAuthentication() throws Exception {

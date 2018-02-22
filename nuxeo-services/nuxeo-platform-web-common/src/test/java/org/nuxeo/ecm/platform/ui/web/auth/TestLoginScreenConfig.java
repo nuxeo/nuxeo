@@ -34,37 +34,38 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.sun.jersey.api.uri.UriComponent;
 
-public class TestLoginScreenConfig extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig.xml")
+public class TestLoginScreenConfig {
 
-    private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
-
-    private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
-
-    @Override
+    @Before
     public void setUp() throws Exception {
-
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
-        deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig.xml");
-
         Properties properties = Framework.getProperties();
         properties.setProperty(PRODUCT_VERSION, "LTS-2015");
         properties.setProperty(DISTRIBUTION_VERSION, "7.10");
         properties.setProperty(DISTRIBUTION_PACKAGE, "zip");
-
     }
 
     private PluggableAuthenticationService getAuthService() {
@@ -74,6 +75,9 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         return authService;
     }
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testSimpleConfig() {
@@ -147,7 +151,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
-        pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-loginscreenconfig-merge.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge.xml");
 
         authService = getAuthService();
         config = authService.getLoginScreenConfig();
@@ -195,24 +199,6 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertTrue(config.getSupportedLocales().contains("es_ES"));
         assertTrue(config.getSupportedLocales().contains("fr"));
         assertTrue(config.getSupportedLocales().contains("de"));
-    }
-
-    @Test
-    public void testUndeployConfig() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        assertNotNull(authService);
-
-        LoginScreenConfig config = authService.getLoginScreenConfig();
-        assertNotNull(config);
-
-        ComponentManager cmgr = Framework.getRuntime().getComponentManager();
-        cmgr.stop();
-        undeployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig.xml");
-        cmgr.start();
-
-        authService = getAuthService();
-        config = authService.getLoginScreenConfig();
-        assertNull(config);
     }
 
     @Test
@@ -273,5 +259,20 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertThat(query.keySet()).contains("why");
         assertFalse(query.keySet().contains(PRODUCT_VERSION));
         assertThat(query.get("why")).contains("testing");
+    }
+
+    @Test
+    public void testUndeployConfig() throws Exception {
+        PluggableAuthenticationService authService = getAuthService();
+        assertNotNull(authService);
+
+        LoginScreenConfig config = authService.getLoginScreenConfig();
+        assertNotNull(config);
+
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig.xml");
+
+        authService = getAuthService();
+        config = authService.getLoginScreenConfig();
+        assertNull(config);
     }
 }

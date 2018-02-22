@@ -292,7 +292,7 @@ public class RuntimeDeployment {
 
         protected final Statement base;
 
-        public DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
+        protected DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
                 Statement base) {
             this.runner = runner;
             this.harness = harness;

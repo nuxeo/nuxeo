@@ -54,6 +54,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.transaction.RollbackException;
@@ -65,6 +66,7 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
@@ -92,9 +94,12 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapperConnector;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
+@Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib.xml")
 public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
@@ -105,11 +110,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected boolean pathOptimizationsEnabled;
 
+    @Inject
+    protected HotDeployer hotDeployer;
+
     @Override
+    @Before
     public void setUp() throws Exception {
-        pathOptimizationsEnabled = true; // changed in a few tests
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-backend-core-types-contrib.xml");
+        pathOptimizationsEnabled = true; // changed in a few tests
     }
 
     @Override
@@ -146,15 +154,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-longname.xml")
     public void testSchemaWithLongName() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-longname.xml");
         Session session = repository.getConnection();
         session.getRootNode();
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-reservedfieldname.xml")
     public void testSchemaWithReservedFieldName() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-reservedfieldname.xml");
         Session session = repository.getConnection();
         session.getRootNode();
     }
@@ -653,8 +661,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-contrib.xml")
     public void testSmallText() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-contrib.xml");
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "Restriction", false);
@@ -671,8 +679,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-big-contrib.xml")
     public void testBigText() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-big-contrib.xml");
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "RestrictionBig", false);
@@ -1995,7 +2003,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             nodes.add(child);
             // update graph
             addEdge(graph, parent.getId().toString(), child.getId().toString());
-            if ((i % 5) == 0) {
+            if (i % 5 == 0) {
                 // move a random node under a random parent
                 int ip, ic;
                 Node p, c;
@@ -2569,7 +2577,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         String type;
         if (shadow) {
             // deploy another contrib where TestDoc4 also has the proxy schema
-            pushInlineDeployments(
+            hotDeployer.deploy(
                     "org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib-2.xml");
             type = "TestDoc4";
         } else {

@@ -19,10 +19,10 @@
 package org.nuxeo.ecm.core.work;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -31,50 +31,56 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class WorkManagerTXTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
+public class WorkManagerTXTest {
 
     protected static final String CATEGORY = "SleepWork";
 
     protected static final String QUEUE = "SleepWork";
 
+    @Inject
     protected WorkManager service;
 
     void assertMetrics(long scheduled, long running, long completed, long cancelled) {
         assertEquals(new WorkQueueMetrics(QUEUE, scheduled, running, completed, cancelled), service.getMetrics(QUEUE));
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-config.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(WorkManager.class);
-        assertNotNull(service);
+    @Before
+    public void postSetUp() throws Exception {
         assertMetrics(0, 0, 0, 0);
         TransactionHelper.startTransaction();
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        super.tearDown();
+        /**
+         * NXP-22534 This fix has to be discussed
+         */
+        Framework.getRuntime().getComponentManager().reset();
+        Framework.getRuntime().getComponentManager().start();
     }
 
     @Test
@@ -102,6 +108,16 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         TransactionHelper.commitOrRollbackTransaction();
         assertMetrics(0, 0, 0, 0);
 
+    }
+
+    @Test
+    public void testWorkRetryAfterExceptionDuringWork() {
+        doTestWorkRetryAfterException(false, "");
+    }
+
+    @Test
+    public void testWorkRetryAfterExceptionDuringCommit() {
+        doTestWorkRetryAfterException(true, "end ");
     }
 
     public static class TestWork extends AbstractWork {
@@ -193,16 +209,6 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
                 }
             }
         }
-    }
-
-    @Test
-    public void testWorkRetryAfterExceptionDuringWork() {
-        doTestWorkRetryAfterException(false, "");
-    }
-
-    @Test
-    public void testWorkRetryAfterExceptionDuringCommit() {
-        doTestWorkRetryAfterException(true, "end ");
     }
 
     protected void doTestWorkRetryAfterException(boolean throwDuringXAResourceEnd, String messagePrefix) {

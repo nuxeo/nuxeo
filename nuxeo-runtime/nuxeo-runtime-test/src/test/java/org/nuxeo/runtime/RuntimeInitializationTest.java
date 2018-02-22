@@ -22,28 +22,39 @@ package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertFalse;
 
+import javax.inject.Inject;
+
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
-public class RuntimeInitializationTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class RuntimeInitializationTest {
+
+    @Inject
+    protected HotDeployer hotDeployer;
+
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp1.xml")
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp2.xml")
     public void testContributions() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
+        // do nothing
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp1.xml")
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp2.xml")
     @Ignore("Deactivated for now since duplicate contributions are still allowed.")
     public void testContributionsWithDuplicateComponent() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
         boolean success = false;
         try {
-            deployContrib("org.nuxeo.runtime.test.tests", "CopyOfMyComp2.xml");
+            hotDeployer.deploy("org.nuxeo.runtime.test.tests:CopyOfMyComp2.xml");
             success = true;
         } catch (AssertionError e) {
             // OK.

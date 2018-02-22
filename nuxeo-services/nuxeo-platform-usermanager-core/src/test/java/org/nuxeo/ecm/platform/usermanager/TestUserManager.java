@@ -40,8 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Ignore;
@@ -63,7 +61,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author George Lefter
@@ -72,9 +69,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserManager extends UserManagerTestCase {
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Test
     public void testExistingSetup() throws Exception {

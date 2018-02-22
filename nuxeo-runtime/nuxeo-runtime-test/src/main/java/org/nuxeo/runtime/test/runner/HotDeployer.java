@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.security.InvalidParameterException;
+
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -28,11 +30,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class HotDeployer {
 
-    public static final String DEPLOY_ACTION = "deploy";
+    protected static final String DEPLOY_ACTION = "deploy";
 
-    public static final String RESTART_ACTION = "restart";
+    protected static final String UNDEPLOY_ACTION = "undeploy";
 
-    public static final String RESET_ACTION = "reset";
+    protected static final String RESTART_ACTION = "restart";
+
+    protected static final String RESET_ACTION = "reset";
 
     protected FeaturesRunner runner;
 
@@ -79,12 +83,17 @@ public class HotDeployer {
     }
 
     /**
-     * Deploy the given list of contributions. The format is bundleId[:componentPath]. If no component path is
-     * specified then the bundle identified by the bundleId part will be deployed. If a componentPath is given
+     * Deploy the given list of contributions. The format is bundleId[:componentPath]. If no component path is specified
+     * then the bundle identified by the bundleId part will be deployed. If a componentPath is given
      * {@link RuntimeHarness#deployContrib(String,String)} will be used to deploy the contribution.
      */
     public void deploy(String... contribs) throws Exception {
         head.exec(DEPLOY_ACTION, contribs);
+        reinject();
+    }
+
+    public void undeploy(String... contribs) throws Exception {
+        head.exec(UNDEPLOY_ACTION, contribs);
         reinject();
     }
 
@@ -104,7 +113,7 @@ public class HotDeployer {
         reinject();
     }
 
-    public void reinject() {
+    protected void reinject() {
         runner.getInjector().injectMembers(runner.getTargetTestInstance());
     }
 
@@ -137,11 +146,27 @@ public class HotDeployer {
         public void exec(String action, String... args) throws Exception {
             if (DEPLOY_ACTION.equals(action)) {
                 deploy(args);
+            } else if (UNDEPLOY_ACTION.equals(action)) {
+                undeploy(args);
             } else if (RESTART_ACTION.equals(action)) {
                 restart();
             } else if (RESET_ACTION.equals(action)) {
                 reset();
             }
+        }
+
+        public void undeploy(String... contribs) throws Exception {
+            if (contribs != null && contribs.length > 0) {
+                for (String contrib : contribs) {
+                    int i = contrib.indexOf(':');
+                    if (i == -1) {
+                        throw new InvalidParameterException("Cannot undeploy bundle " + contrib);
+                    }
+                    harness.undeployContrib(contrib.substring(0, i), contrib.substring(i + 1));
+                }
+            }
+            // use false to prevent removing the local test method deployments
+            Framework.getRuntime().getComponentManager().refresh(false);
         }
 
         public void deploy(String... contribs) throws Exception {

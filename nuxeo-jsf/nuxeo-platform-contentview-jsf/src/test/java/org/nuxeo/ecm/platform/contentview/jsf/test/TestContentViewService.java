@@ -30,7 +30,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
@@ -41,27 +44,27 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestContentViewService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf:OSGI-INF/contentview-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+public class TestContentViewService {
 
+    @Inject
     protected ContentViewService service;
 
-    @Override
-    public void setUp() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testRegistration() throws Exception {
@@ -134,7 +137,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertTrue(contentView.getShowFilterForm());
         assertFalse(contentView.getShowRefreshCommand());
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         // check content view has been disabled correctly
         contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
@@ -228,7 +231,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", orderedNames.get(5));
 
         // check after override too
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames();
         assertNotNull(names);
@@ -290,7 +293,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(0, names.size());
 
         // check after override too
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames("foo");
         assertNotNull(names);
@@ -360,7 +363,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC", pp.getName());
 
         // check after override too
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         pp = cv.getPageProvider(null, null, -1L, -1L);
@@ -376,7 +379,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_PP", pp.getName());
 
         // check after override too
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         cv = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         pp = cv.getPageProvider(null, null, -1L, -1L);
@@ -386,7 +389,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
     @Test
     public void testSetResultLayoutByName() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -437,7 +440,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
 
         // override page provider directly on page provider service
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-pageprovider-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-pageprovider-override-contrib.xml");
         ppService = Framework.getService(PageProviderService.class);
 
         cv = service.getContentView("NAMED_PAGE_PROVIDER");
@@ -449,7 +452,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
 
         // override again the complete content view definition
-        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
         ppService = Framework.getService(PageProviderService.class);
 
         cv = service.getContentView("NAMED_PAGE_PROVIDER");

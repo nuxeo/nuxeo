@@ -26,11 +26,23 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import javax.inject.Inject;
 
-public class TestSchedulerService extends NXRuntimeTestCase {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-eventlistener.xml")
+public class TestSchedulerService {
 
     protected void waitUntilDummyEventListenerIsCalled(int maxRetry) throws Exception {
         waitUntilDummyEventListenerIsCalled(maxRetry, 1);
@@ -46,16 +58,17 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         }
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-eventlistener.xml");
+    @Inject
+    protected HotDeployer hotDeployer;
+
+    @Before
+    public void setUp() throws Exception {
         DummyEventListener.setCount(0);
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml")
     public void testScheduleRegistration() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml");
 
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
@@ -74,7 +87,6 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         service.registerSchedule(schedule);
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
 
-        long count = DummyEventListener.getCount();
         boolean unregistered = service.unregisterSchedule(schedule.id);
         // schedule can happen again, it hasn't been unregistered after first
         // launch.
@@ -91,7 +103,6 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         schedule.eventCategory = "default";
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.SECOND, 3);
-        @SuppressWarnings("boxing")
         String cronExpression = String.format("%s %s %s %s %s ? %s", cal.get(Calendar.SECOND), //
                 cal.get(Calendar.MINUTE), //
                 cal.get(Calendar.HOUR_OF_DAY), //
@@ -112,13 +123,13 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml")
     public void testDisableSchedule() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml");
 
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
-        pushInlineDeployments("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-disabled-config.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-disabled-config.xml");
 
         count = DummyEventListener.getCount();
         Thread.sleep(5000);
@@ -127,13 +138,13 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml")
     public void testOverrideSchedule() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-config.xml");
 
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
-        pushInlineDeployments("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-override-config.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-override-config.xml");
 
         long newCount = DummyEventListener.getNewCount();
         int retry = 0;

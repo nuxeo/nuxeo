@@ -30,12 +30,15 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
+import org.nuxeo.runtime.test.runner.Deploy;
 
+@Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib.xml")
 public class TestSQLBackendUpgrade extends SQLBackendTestCase {
 
     @BeforeClass
@@ -44,20 +47,15 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseDerby));
     }
 
+    @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-backend-core-types-contrib.xml");
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
     }
 
-    @Override
-    protected void postSetUp() throws Exception {
-        // we do the repository creation in setUpTestProp after setting up upgrade properties
-    }
-
-    @Override
     @After
+    @Override
     public void tearDown() throws Exception {
         JDBCMapper.testProps.clear();
         super.tearDown();

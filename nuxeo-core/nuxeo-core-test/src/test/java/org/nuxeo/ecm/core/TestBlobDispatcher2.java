@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestBlobDispatcher2 {
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer hotDeployer;
 
     @Inject
     protected CoreSession session;
@@ -73,16 +73,12 @@ public class TestBlobDispatcher2 {
         assertEquals(foo_key, key);
 
         // now install dispatch
-        harness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-blob-dispatcher.xml");
-        try {
-            // check that blob still readable
-            doc = session.getDocument(doc.getRef());
-            blob = (Blob) doc.getPropertyValue("file:content");
-            try (InputStream in = blob.getStream()) {
-                assertEquals("foo", IOUtils.toString(in, UTF_8));
-            }
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-blob-dispatcher.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-blob-dispatcher.xml");
+        // check that blob still readable
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        try (InputStream in = blob.getStream()) {
+            assertEquals("foo", IOUtils.toString(in, UTF_8));
         }
     }
 

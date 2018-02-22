@@ -29,6 +29,7 @@ import javax.security.auth.login.LoginContext;
 
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @author Benjamin JALON
@@ -36,8 +37,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 public class TestAuthenticator extends AbstractAuthenticator {
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-yes-contrib.xml")
     public void testAuthentication() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-yes-contrib.xml");
 
         initRequest();
         setLoginPasswordInHeader("Administrator", "Administrator", request);
@@ -52,8 +53,8 @@ public class TestAuthenticator extends AbstractAuthenticator {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-no-contrib.xml")
     public void testNoAuthentication() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-no-contrib.xml");
 
         initRequest();
         setLoginPasswordInHeader("Administrator", "Administrator", request);
