@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
@@ -57,6 +59,8 @@ import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
+import org.nuxeo.ecm.automation.core.operations.document.TrashDocument;
+import org.nuxeo.ecm.automation.core.operations.document.UntrashDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction;
@@ -74,6 +78,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -493,6 +499,33 @@ public class CoreOperationsTest {
             doc = session.getDocument(new PathRef("/src/note"));
             assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
         }
+    }
+
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void testTrashUntrash() throws IOException, OperationException {
+        DocumentModel parent = session.getDocument(src.getParentRef());
+        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(TrashDocument.ID);
+        src = (DocumentModel) service.run(ctx, chain);
+        Framework.getService(TrashService.class).getDocuments(parent);
+        assertEquals(1, Framework.getService(TrashService.class).getDocuments(parent).size());
+
+        ctx = new OperationContext(session);
+        ctx.setInput(src);
+        chain = new OperationChain("testChain");
+        chain.add(UntrashDocument.ID);
+        service.run(ctx, chain);
+
+        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
     }
 
     @Test
