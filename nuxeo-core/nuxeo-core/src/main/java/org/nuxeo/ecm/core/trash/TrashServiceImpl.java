@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -49,12 +52,15 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     private static final Log log = LogFactory.getLog(TrashServiceImpl.class);
+
+    public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'deleted' AND ecm:parentId = '%s'";
 
     @Override
     public boolean folderAllowsDelete(DocumentModel folder) {
@@ -418,10 +424,39 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     @Override
     public DocumentModelList getDocuments(DocumentModel currentDoc) {
         CoreSession session = currentDoc.getCoreSession();
-        DocumentModelList docs = session.query(
-                String.format("SELECT * FROM " + "Document WHERE " + "ecm:mixinType != 'HiddenInNavigation' AND "
-                        + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = "
-                        + "'deleted' AND ecm:parentId = '%s'", currentDoc.getId()));
+        DocumentModelList docs = session.query(String.format(
+                TRASHED_QUERY,
+                currentDoc.getId()));
         return docs;
     }
+
+    @Override
+    public List<DocumentRef> getPurgeableDocumentRefs(DocumentModel parent) {
+        List<DocumentRef> refs = new ArrayList<>();
+        CoreSession session = parent.getCoreSession();
+        if (!session.hasPermission(parent.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
+            return refs;
+        }
+        try (IterableQueryResult result = session.queryAndFetch(String.format(TRASHED_QUERY, parent.getId()),
+                NXQL.NXQL)) {
+            for (Map<String, Serializable> map : result) {
+                DocumentRef ref = new IdRef((String) map.get(NXQL.ECM_UUID));
+                if (!session.hasPermission(ref, SecurityConstants.REMOVE)) {
+                    continue;
+                }
+                DocumentModel doc = session.getDocument(ref);
+                if (doc.isLocked()) {
+                    String locker = getDocumentLocker(doc);
+                    NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                    if (principal != null && !((NuxeoPrincipal) principal).isAdministrator()
+                            && !principal.getName().equals(locker)) {
+                        continue;
+                    }
+                }
+                refs.add(new IdRef((String) map.get(NXQL.ECM_UUID)));
+            }
+        }
+        return refs;
+    }
+
 }

@@ -133,6 +133,15 @@ public interface TrashService {
     DocumentModelList getDocuments(DocumentModel currentDoc);
 
     /**
+     * Gets all document references from the trash of a Folderish document that can be purged.
+     *
+     * @since 10.1
+     * @param parent the Folderish document
+     * @return all the purgeable documents in the trash of the parent document
+     */
+    List<DocumentRef> getPurgeableDocumentRefs(DocumentModel parent);
+
+    /**
      * Mangles the name of a document to avoid collisions with non-trashed documents when it's in the trash.
      *
      * @param doc the document
