@@ -55,6 +55,7 @@ import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
+import org.nuxeo.ecm.automation.core.operations.document.EmptyTrash;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle;
@@ -526,6 +527,33 @@ public class CoreOperationsTest {
         service.run(ctx, chain);
 
         assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+    }
+
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void testEmptyTrash() throws IOException, OperationException {
+        DocumentModel parent = session.getDocument(src.getParentRef());
+        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(TrashDocument.ID);
+        src = (DocumentModel) service.run(ctx, chain);
+        Framework.getService(TrashService.class).getDocuments(parent);
+        assertEquals(1, Framework.getService(TrashService.class).getDocuments(parent).size());
+
+        ctx = new OperationContext(session);
+        chain = new OperationChain("testChain");
+        chain.add(EmptyTrash.ID).set("parent", parent);
+        service.run(ctx, chain);
+
+        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+        assertEquals(1, session.getChildren(parent.getRef()).size());
     }
 
     @Test
