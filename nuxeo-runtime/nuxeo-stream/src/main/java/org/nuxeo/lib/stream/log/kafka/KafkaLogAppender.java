@@ -65,12 +65,15 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
 
     protected final String name;
 
+    protected final KafkaNamespace ns;
+
     protected KafkaProducer<String, Bytes> producer;
 
     protected boolean closed;
 
-    private KafkaLogAppender(String topic, String name, Properties producerProperties, Properties consumerProperties) {
-        this.topic = topic;
+    private KafkaLogAppender(KafkaNamespace ns, String name, Properties producerProperties, Properties consumerProperties) {
+        this.ns = ns;
+        this.topic = ns.getTopicName(name);
         this.name = name;
         this.producerProps = producerProperties;
         this.consumerProps = consumerProperties;
@@ -81,9 +84,9 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         }
     }
 
-    public static <M extends Externalizable> KafkaLogAppender<M> open(String topic, String name,
+    public static <M extends Externalizable> KafkaLogAppender<M> open(KafkaNamespace ns, String name,
             Properties producerProperties, Properties consumerProperties) {
-        return new KafkaLogAppender<>(topic, name, producerProperties, consumerProperties);
+        return new KafkaLogAppender<>(ns, name, producerProperties, consumerProperties);
     }
 
     @Override
@@ -172,7 +175,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         // TODO: find a better way, this is expensive to create a consumer each time
         // but this is needed, an open consumer is not properly updated
         Properties props = (Properties) consumerProps.clone();
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, group);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ns.getKafkaGroup(group));
         try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
             consumer.assign(Collections.singletonList(topicPartition));
             long last = consumer.position(topicPartition);
