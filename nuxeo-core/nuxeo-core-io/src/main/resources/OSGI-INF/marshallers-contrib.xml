@@ -25,6 +25,7 @@
     <register class="org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.types.SchemaListJsonWriter" enable="true" />
     <!-- enrichers -->
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.FirstAccessibleAncestorJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher" enable="true" />
