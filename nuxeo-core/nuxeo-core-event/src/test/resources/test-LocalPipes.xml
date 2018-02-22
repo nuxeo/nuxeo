@@ -4,7 +4,7 @@
   <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="dispatcher">
-    <eventDispatcher name="dispatcher" class="org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher">
+    <eventDispatcher name="dispatcher" class="org.nuxeo.ecm.core.event.pipe.TestableSimpleEventBundlePipeDispatcher">
     </eventDispatcher>
   </extension>
 

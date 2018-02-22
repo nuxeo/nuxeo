@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -58,9 +57,6 @@ public class EventOperationsTest {
 
     @Inject
     CoreSession session;
-
-    @Inject
-    RuntimeHarness harness;
 
     @Inject
     EventHandlerRegistry registry;

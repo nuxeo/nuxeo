@@ -47,7 +47,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @since 7.4
@@ -59,9 +58,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-track-contrib.xml")
 public class TestPageProviderTracking {
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected CoreSession coreSession;
@@ -84,7 +80,8 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingProperty() throws Exception {
 
-        Framework.getProperties().setProperty(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME, "CURRENT_DOCUMENT_CHILDREN2");
+        Framework.getProperties().setProperty(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME,
+                "CURRENT_DOCUMENT_CHILDREN2");
 
         PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
         assertFalse(def.isUsageTrackingEnabled());

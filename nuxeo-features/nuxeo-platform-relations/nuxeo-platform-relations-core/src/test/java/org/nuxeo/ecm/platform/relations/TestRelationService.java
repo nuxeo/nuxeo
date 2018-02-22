@@ -208,7 +208,7 @@ public class TestRelationService {
             nameSpaces.add(qn.getNamespace());
         }
 
-        HashSet<String> expectedNameSpaces = new HashSet<>(
+        Set<String> expectedNameSpaces = new HashSet<>(
                 Arrays.asList("http://nuxeo.org/nxrelations/test2/", "http://nuxeo.org/nxrelations/test/"));
 
         assertEquals(expectedNameSpaces, nameSpaces);

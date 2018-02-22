@@ -53,8 +53,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
+@RunWith(FeaturesRunner.class)
+@Features(RepositoryElasticSearchFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.runtime.metrics")
@@ -67,14 +68,11 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Deploy("org.nuxeo.elasticsearch.seqgen")
 @Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit")
-@RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
 @Deploy("org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:nxaudit-ds.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
-@SuppressWarnings("unchecked")
 public class TestAuditMigration {
 
     public static final String DEFAULT_AUDIT_STORAGE = "defaultAuditStorage";
@@ -86,13 +84,10 @@ public class TestAuditMigration {
     protected ElasticSearchAdmin esa;
 
     @Inject
-    protected RuntimeHarness harness;
+    protected TransactionalFeature txFeature;
 
     @Inject
-    TransactionalFeature txFeature;
-
-    @Inject
-    AutomationService automationService;
+    protected AutomationService automationService;
 
     protected DefaultAuditBackend jpaBackend;
 

@@ -21,29 +21,28 @@ package org.nuxeo.ecm.platform.audit.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestRegisterAuditAction extends NXRuntimeTestCase {
-
-    ActionService as;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.audit.web.tests", "actions-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.audit.web.tests", "nxauditclient-bundle.xml");
-        as = (ActionService) runtime.getComponent(ActionService.ID);
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.audit.web.tests:actions-bundle.xml")
+@Deploy("org.nuxeo.ecm.platform.audit.web.tests:nxauditclient-bundle.xml")
+public class TestRegisterAuditAction {
 
     @Test
     public void testRegistration() {
+        ActionService as = (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
         Action act1 = as.getAction("TAB_CONTENT_HISTORY");
 
         assertEquals("action.view.history", act1.getLabel());

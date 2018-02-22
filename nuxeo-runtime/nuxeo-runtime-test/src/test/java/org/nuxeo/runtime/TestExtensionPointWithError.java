@@ -25,17 +25,29 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestExtensionPointWithError extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.test.tests:BaseXPoint.xml")
+public class TestExtensionPointWithError {
 
     protected List<Appender> savedAppenders;
 
@@ -60,10 +72,11 @@ public class TestExtensionPointWithError extends NXRuntimeTestCase {
         }
     };
 
-    @Override
-    protected void setUp() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
+    @Inject
+    protected HotDeployer hotDeployer;
 
+    @Before
+    public void setUp() throws Exception {
         // save appenders
         Logger rootLogger = Logger.getRootLogger();
         @SuppressWarnings("unchecked")
@@ -76,11 +89,11 @@ public class TestExtensionPointWithError extends NXRuntimeTestCase {
         loggingEvents.clear();
 
         // add contribution with error
-        deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint-witherror.xml");
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:OverridingXPoint-witherror.xml");
     }
 
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         // restore appenders
         Logger rootLogger = Logger.getRootLogger();
         rootLogger.removeAllAppenders();
@@ -104,10 +117,12 @@ public class TestExtensionPointWithError extends NXRuntimeTestCase {
         assertEquals(1, loggingEvents.size());
         LoggingEvent event = loggingEvents.get(0);
         assertEquals(Level.ERROR, event.getLevel());
-        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror", event.getRenderedMessage());
+        assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror",
+                event.getRenderedMessage());
         Throwable t = event.getThrowableInformation().getThrowable();
         assertEquals(RuntimeException.class, t.getClass());
-        assertEquals("Cannot load class: this-is-not-a-class while processing component: OverridingXPoint-witherror", t.getMessage());
+        assertEquals("Cannot load class: this-is-not-a-class while processing component: OverridingXPoint-witherror",
+                t.getMessage());
     }
 
 }

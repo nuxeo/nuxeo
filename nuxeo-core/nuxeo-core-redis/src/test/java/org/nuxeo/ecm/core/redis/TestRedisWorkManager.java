@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
@@ -31,7 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestRedisWorkManager extends WorkManagerTest {
 
-    private boolean monitorRedis = false;
+    private final boolean monitorRedis = false;
+
     private RedisExecutor redisExecutor;
 
     @Override
@@ -39,9 +41,8 @@ public class TestRedisWorkManager extends WorkManagerTest {
         return true;
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         RedisFeature.setup(harness);
         if (monitorRedis) {
             redisExecutor = Framework.getService(RedisExecutor.class);
@@ -56,14 +57,4 @@ public class TestRedisWorkManager extends WorkManagerTest {
         super.testWorkManagerWork();
     }
 
-    private void stopMonitorRedis() {
-        monitorRedis = false;
-        if (redisExecutor != null) {
-            redisExecutor.stopMonitor();
-        }
-    }
-
-    private void startMonitorRedis() {
-        monitorRedis = true;
-    }
 }

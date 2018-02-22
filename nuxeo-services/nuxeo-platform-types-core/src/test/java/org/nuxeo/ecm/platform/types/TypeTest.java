@@ -32,38 +32,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TypeTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.platform.types.core.tests:types-bundle.xml")
+@Deploy("org.nuxeo.ecm.platform.types.core.tests:test-core-types-bundle.xml")
+@Deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-bundle.xml")
+public class TypeTest {
 
-    TypeService typeService;
+    @Inject
+    public SchemaManager schemaManager;
 
-    SchemaManager schemaManager;
+    @Inject
+    protected HotDeployer hotDeployer;
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "types-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        schemaManager = Framework.getService(SchemaManager.class);
-        typeService = (TypeService) runtime.getComponent(TypeService.ID);
+    private TypeService getTypeService() {
+        return (TypeService) Framework.getRuntime().getComponent(TypeService.ID);
     }
 
     @Test
     public void testTypesExtensionPoint() {
-        Collection<Type> types = typeService.getTypeRegistry().getTypes();
+        Collection<Type> types = getTypeService().getTypeRegistry().getTypes();
         assertEquals(6, types.size());
 
-        Type type = typeService.getTypeRegistry().getType("MyDocType");
+        Type type = getTypeService().getTypeRegistry().getType("MyDocType");
         assertEquals("MyDocType", type.getId());
         assertEquals("type icon", type.getIcon());
         assertEquals("type label", type.getLabel());
@@ -97,7 +102,7 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testTypeViews() {
-        Type type = typeService.getTypeRegistry().getType("MyDocType");
+        Type type = getTypeService().getTypeRegistry().getType("MyDocType");
         assertNotNull(type);
 
         assertEquals("default_view", type.getDefaultView());
@@ -109,7 +114,7 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testAllowedSubTypes() {
-        Type type = typeService.getTypeRegistry().getType("MyDocType");
+        Type type = getTypeService().getTypeRegistry().getType("MyDocType");
         Map<String, SubType> allowed = type.getAllowedSubTypes();
         assertEquals(2, allowed.size());
         assertTrue(allowed.containsKey("MyOtherDocType"));
@@ -123,17 +128,17 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testDeploymentOverride() throws Exception {
-        Collection<Type> types = typeService.getTypeRegistry().getTypes();
+        Collection<Type> types = getTypeService().getTypeRegistry().getTypes();
         assertEquals(6, types.size());
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
         // One removed
-        types = typeService.getTypeRegistry().getTypes();
+        types = getTypeService().getTypeRegistry().getTypes();
         assertEquals(6, types.size());
 
         // The Other changed
-        Type type = typeService.getTypeRegistry().getType("MyDocType");
+        Type type = getTypeService().getTypeRegistry().getType("MyDocType");
         assertNotNull(type);
 
         assertEquals("MyDocType", type.getId());
@@ -196,16 +201,16 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutOverride() throws Exception {
-        Type type = typeService.getTypeRegistry().getType("DocTypeWithLayout");
+        Type type = getTypeService().getTypeRegistry().getType("DocTypeWithLayout");
         assertEquals("doc type with layout", type.getLabel());
         assertEquals(2, type.getLayouts().size());
         assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
         // Test layout is left unchanged
-        type = typeService.getTypeRegistry().getType("DocTypeWithLayout");
+        type = getTypeService().getTypeRegistry().getType("DocTypeWithLayout");
         assertEquals("overridden doc type, but layout left unchanged", type.getLabel());
         assertEquals(2, type.getLayouts().size());
         assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
@@ -214,15 +219,15 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutOverrideWithAppend() throws Exception {
-        Type type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        Type type = getTypeService().getTypeRegistry().getType("DocTypeTestLayoutOverride");
         assertEquals("doc type with layout to override", type.getLabel());
         assertEquals(2, type.getLayouts().size());
         assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
-        type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        type = getTypeService().getTypeRegistry().getType("DocTypeTestLayoutOverride");
         // Test layout is left unchanged
         assertEquals(2, type.getLayouts().size());
         assertEquals(2, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
@@ -231,54 +236,53 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testHotReload() throws Exception {
-        Type type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        Type type = getTypeService().getTypeRegistry().getType("DocTypeTestLayoutOverride");
         assertEquals("doc type with layout to override", type.getLabel());
         assertEquals(2, type.getLayouts().size());
         assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
         // check the one to be removed is there
-        Type typeToBeRemoved = typeService.getTypeRegistry().getType("MyOtherDocType");
+        Type typeToBeRemoved = getTypeService().getTypeRegistry().getType("MyOtherDocType");
         assertNotNull(typeToBeRemoved);
         assertEquals("initial alternative doc type", typeToBeRemoved.getLabel());
         assertEquals("initial icon", typeToBeRemoved.getIcon());
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
-        type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        type = getTypeService().getTypeRegistry().getType("DocTypeTestLayoutOverride");
         // Test layout is left unchanged
         assertEquals(2, type.getLayouts().size());
         assertEquals(2, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(1, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
         // check the one to be removed is not there
-        typeToBeRemoved = typeService.getTypeRegistry().getType("MyOtherDocType");
+        typeToBeRemoved = getTypeService().getTypeRegistry().getType("MyOtherDocType");
         assertNull(typeToBeRemoved);
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-remove-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-remove-bundle.xml");
 
         // check the one to be removed is back there again and has not been
         // merged with the contribution before removal
-        typeToBeRemoved = typeService.getTypeRegistry().getType("MyOtherDocType");
+        typeToBeRemoved = getTypeService().getTypeRegistry().getType("MyOtherDocType");
         assertNotNull(typeToBeRemoved);
         assertEquals("Resurrected doc type", typeToBeRemoved.getLabel());
         assertNull(typeToBeRemoved.getIcon());
 
-        // undeploy org.nuxeo.ecm.platform.types.core.tests:test-types-override-remove-bundle.xml contribution
-        popInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-remove-bundle.xml");
 
         // check the one to be removed is not there
-        typeToBeRemoved = typeService.getTypeRegistry().getType("MyOtherDocType");
+        typeToBeRemoved = getTypeService().getTypeRegistry().getType("MyOtherDocType");
         assertNull(typeToBeRemoved);
 
         // undeploy org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml contribution
-        popInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
-        type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        type = getTypeService().getTypeRegistry().getType("DocTypeTestLayoutOverride");
         assertEquals("doc type with layout to override", type.getLabel());
         assertEquals(2, type.getLayouts().size());
         assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
         // check the one to be removed is back there again and again and again
-        typeToBeRemoved = typeService.getTypeRegistry().getType("MyOtherDocType");
+        typeToBeRemoved = getTypeService().getTypeRegistry().getType("MyOtherDocType");
         assertNotNull(typeToBeRemoved);
         assertEquals("initial alternative doc type", typeToBeRemoved.getLabel());
         assertEquals("initial icon", typeToBeRemoved.getIcon());
@@ -299,39 +303,37 @@ public class TypeTest extends NXRuntimeTestCase {
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // deploy ecm contribution to override types
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
         assertSubtypes("MyDocType", testMyDocTypeSubtypes2);
-        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from typeService
+        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from getTypeService()
         assertSubtypes("MyDocType2", testMyDocType2Subtypes1, Arrays.asList("MyDocType", "MyHiddenDocType"));
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // deploy core contribution to override types
-        pushInlineDeployments("org.nuxeo.ecm.platform.types.core.tests:test-core-types-override-bundle.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.types.core.tests:test-core-types-override-bundle.xml");
 
         assertSubtypes("MyDocType", testMyDocTypeSubtypes2);
-        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from typeService
+        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from getTypeService()
         assertSubtypes("MyDocType2", testMyDocType2Subtypes2, testMyDocType2Subtypes3);
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // undeploy org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml - first one deployed
-        popInlineDeployments(0);
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.types.core.tests:test-types-override-bundle.xml");
 
         assertSubtypes("MyDocType", testMyDocTypeSubtypes1);
         assertSubtypes("MyDocType2", testMyDocType2Subtypes2);
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // undeploy org.nuxeo.ecm.platform.types.core.tests:test-core-types-override-bundle.xml - last one deployed
-        // undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-override-bundle.xml");
-        popInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.types.core.tests:test-core-types-override-bundle.xml");
 
         assertSubtypes("MyDocType", testMyDocTypeSubtypes1);
         assertSubtypes("MyDocType2", testMyDocType2Subtypes1);
         assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
         // undeploy original ecm contribution to override types
-        undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
-        applyInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.types.core.tests:test-types-bundle.xml");
 
         assertSubtypes("MyDocType", Collections.emptyList());
         assertSubtypes("MyDocType2", testMyDocType2Subtypes3, Collections.emptyList());
@@ -339,7 +341,7 @@ public class TypeTest extends NXRuntimeTestCase {
     }
 
     protected Collection<String> getEcmSubtypes(String type) {
-        Collection<Type> ecmSubtypes = typeService.getAllowedSubTypes(type);
+        Collection<Type> ecmSubtypes = getTypeService().getAllowedSubTypes(type);
         Set<String> result = new HashSet<>();
         for (Type t : ecmSubtypes) {
             result.add(t.id);

@@ -22,7 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.DummyContribution;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
@@ -30,24 +33,21 @@ import org.nuxeo.runtime.model.persistence.ContributionBuilder;
 import org.nuxeo.runtime.model.persistence.ContributionPersistenceManager;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class TestContributionPersistence extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.test.tests:BaseXPoint.xml")
+public class TestContributionPersistence {
 
+    @Inject
     protected ContributionPersistenceManager mgr;
-
-    @Override
-    public void setUp() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        mgr = Framework.getService(ContributionPersistenceManager.class);
-    }
 
     @Test
     public void test1() throws Exception {
@@ -73,8 +73,8 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
         assertFalse(mgr.isInstalled(c1));
 
         mgr.installContribution(c1);
-        applyInlineDeployments();
-        postSetUp();
+        Framework.getRuntime().getComponentManager().refresh();
+        mgr = Framework.getService(ContributionPersistenceManager.class);
 
         assertTrue(mgr.isPersisted(c1));
         assertTrue(mgr.isInstalled(c1));
@@ -88,8 +88,8 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
         assertEquals(2, MyListener.getCounter());
 
         mgr.uninstallContribution(c1);
-        removeInlineDeployments();
-        postSetUp();
+        Framework.getRuntime().getComponentManager().refresh();
+        mgr = Framework.getService(ContributionPersistenceManager.class);
 
         assertTrue(mgr.isPersisted(c1));
         assertFalse(mgr.isInstalled(c1));

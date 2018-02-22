@@ -48,14 +48,16 @@ import javax.crypto.KeyGenerator;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.binary.AESBinaryManager;
-import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestAESBinaryManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestAESBinaryManager {
 
     private static final String KEY_STORE_TYPE = "JCEKS";
 

@@ -27,38 +27,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.CoreUTConstants;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-public class TestSecurityService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/SecurityService.xml")
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/permissions-contrib.xml")
+public class TestSecurityService {
 
     private SecurityService service;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         service = NXCore.getSecurityService();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        service = null;
     }
 
     // TODO: Make this test independent of the permissions-contrib.xml file.
@@ -92,7 +89,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     protected List<String> permStrings(List<UserVisiblePermission> perms) {
-        List<String> list = new ArrayList<String>(perms.size());
+        List<String> list = new ArrayList<>(perms.size());
         for (UserVisiblePermission perm : perms) {
             list.add(perm.getPermission());
         }
@@ -120,9 +117,9 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     @Test
+    // deploy a new atomic permission and a new compound permission
+    @Deploy("org.nuxeo.ecm.core.tests:permissions-override1-contrib.xml")
     public void testOverridedPermissions1() throws Exception {
-        // deploy a new atomic permission and a new compound permission
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 
@@ -154,8 +151,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.tests:permissions-override1-contrib.xml")
     public void testOverridedVisiblePermission1() throws Exception {
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
@@ -180,9 +177,9 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     @Test
+    // deploy a new atomic permission and a new compound permission
+    @Deploy("org.nuxeo.ecm.core.tests:permissions-override2-contrib.xml")
     public void testOverriddenPermissions2() throws Exception {
-        // deploy a new atomic permission and a new compound permission
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 
@@ -199,8 +196,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.tests:permissions-override2-contrib.xml")
     public void testOverridedVisiblePermission2() throws Exception {
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
@@ -222,8 +219,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.tests:permissions-override3-contrib.xml")
     public void testOverridedVisiblePermission3() throws Exception {
-        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":permissions-override3-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();

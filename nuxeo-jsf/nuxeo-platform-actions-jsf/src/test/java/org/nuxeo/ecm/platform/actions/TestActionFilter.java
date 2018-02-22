@@ -26,16 +26,28 @@ import static org.junit.Assert.assertTrue;
 
 import javax.faces.context.FacesContext;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestActionFilter extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.actions:OSGI-INF/actions-framework.xml")
+@Deploy("org.nuxeo.ecm.actions.jsf.tests:test-filters-contrib.xml")
+@Deploy("org.nuxeo.ecm.actions.jsf.tests:test-filters-override-contrib.xml")
+public class TestActionFilter {
 
     protected DocumentModel doc;
 
@@ -43,17 +55,9 @@ public class TestActionFilter extends NXRuntimeTestCase {
 
     protected MockFacesContext facesContext;
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-contrib.xml");
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-override-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        as = (ActionService) runtime.getComponent(ActionService.ID);
+    @Before
+    public void before() throws Exception {
+        as = (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
         facesContext = new MockFacesContext();
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
@@ -244,8 +248,8 @@ public class TestActionFilter extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.actions.jsf.tests:test-actions-contrib.xml")
     public void testGetAction() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.actions.jsf.tests:test-actions-contrib.xml");
 
         DocumentModel doc = new MockDocumentModel("Workspace", new String[0]);
         Action action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), true);

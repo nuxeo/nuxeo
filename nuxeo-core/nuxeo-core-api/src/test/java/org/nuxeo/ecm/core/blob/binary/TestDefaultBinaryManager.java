@@ -27,15 +27,25 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestDefaultBinaryManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestDefaultBinaryManager {
 
     private static final String CONTENT = "this is a file au caf\u00e9";
 
@@ -43,10 +53,19 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
     private static final String CONTENT_SHA1 = "3f3bdf817537faa28483eabc69a4bb3912cf0c6c";
 
+    @After
+    public void after() throws Exception {
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.emptyMap());
+        File directory = binaryManager.getStorageDir();
+        binaryManager.close();
+        Assert.assertTrue(FileUtils.deleteQuietly(directory));
+    }
+
     @Test
+    @Deploy("org.nuxeo.ecm.core.api")
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-default-blob-provider.xml")
     public void testDefaultBinaryManager() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-default-blob-provider.xml");
 
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize("repo", Collections.emptyMap());
@@ -67,7 +86,9 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         // get MD5 binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        try (InputStream stream = binary.getStream()) {
+            assertEquals(CONTENT, IOUtils.toString(stream, "UTF-8"));
+        }
         assertEquals("MD5", binary.getDigestAlgorithm());
         assertEquals(CONTENT_MD5, binary.getDigest());
 

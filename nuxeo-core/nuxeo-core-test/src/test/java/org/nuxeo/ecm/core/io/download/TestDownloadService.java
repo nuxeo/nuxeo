@@ -168,7 +168,6 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -205,7 +204,6 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -239,7 +237,6 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -419,7 +416,7 @@ public class TestDownloadService {
     @Test
     public void testTransientCleanup() throws IOException {
         // transfert temporary file into a blob
-        Path path = Files.createTempFile("pfouh","pfouh");
+        Path path = Files.createTempFile("pfouh", "pfouh");
         FileBlob blob = new FileBlob("pfouh");
         Files.move(path, blob.getFile().toPath(), REPLACE_EXISTING);
 
@@ -439,7 +436,6 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);

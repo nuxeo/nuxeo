@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -62,9 +61,6 @@ public class TestSecurityPolicyService {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
         try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
@@ -104,13 +100,14 @@ public class TestSecurityPolicyService {
             assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
             setTestPermissions(fooUser.getName(), READ);
             assertTrue(session.hasPermission(fooUser, folderRef, READ));
-            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)), Arrays.asList(READ));
+            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)),
+                    Arrays.asList(READ));
         }
 
         // open session as anonymous and set access on user info
         try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
             data.put("accessLevel", Long.valueOf(3));
             documentModelImpl.addDataModel(new DataModelImpl("user", data));
             ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);

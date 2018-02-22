@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
@@ -40,14 +41,15 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestTypes extends NXRuntimeTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+public class TestTypes {
 
     // ANY type
     @Test
@@ -299,8 +301,8 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml")
     public void testFieldFromXpath() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml");
 
         SchemaManager sm = Framework.getService(SchemaManager.class);
         assertNotNull(sm);
@@ -363,8 +365,8 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml")
     public void testSchemaFromType() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml");
 
         Schema schema = getSchema("foo");
         assertNull(schema);

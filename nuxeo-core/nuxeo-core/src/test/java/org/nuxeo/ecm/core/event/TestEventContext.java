@@ -24,8 +24,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * This test probably should be in org.nuxeo.ecm.core.event.test.EventListenerTest but this would create dependency
@@ -34,7 +37,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public class TestEventContext extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestEventContext {
 
     @Test
     public void testEventContext() {

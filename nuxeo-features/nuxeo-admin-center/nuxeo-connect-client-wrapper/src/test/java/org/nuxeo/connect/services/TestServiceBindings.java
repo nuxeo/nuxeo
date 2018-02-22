@@ -19,39 +19,32 @@
 
 package org.nuxeo.connect.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.connect.connector.ConnectConnector;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestServiceBindings extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.connect.client");
-        deployBundle("org.nuxeo.connect.client.wrapper");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.connect.client")
+@Deploy("org.nuxeo.connect.client.wrapper")
+public class TestServiceBindings {
 
     @Test
     public void testServicesLookup() {
-        ConnectRegistrationService crs = Framework.getService(ConnectRegistrationService.class);
-        assertNotNull(crs);
-
-        ConnectConnector connector = Framework.getService(ConnectConnector.class);
-        assertNotNull(connector);
-
-        ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
-        assertNotNull(cdm);
-
-        PackageManager pm = Framework.getService(PackageManager.class);
-        assertNotNull(pm);
+        assertNotNull(Framework.getService(ConnectRegistrationService.class));
+        assertNotNull(Framework.getService(ConnectConnector.class));
+        assertNotNull(Framework.getService(ConnectDownloadManager.class));
+        assertNotNull(Framework.getService(PackageManager.class));
     }
 
 }

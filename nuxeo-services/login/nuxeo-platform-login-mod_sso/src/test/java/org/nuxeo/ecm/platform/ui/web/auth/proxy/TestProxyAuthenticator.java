@@ -22,42 +22,41 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.proxy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.jboss.seam.mock.MockHttpServletRequest;
 import org.jboss.seam.mock.MockHttpServletResponse;
 import org.jboss.seam.mock.MockHttpSession;
 import org.jboss.seam.mock.MockServletContext;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Patrick Turcotte
  */
-public class TestProxyAuthenticator extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
-        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mod_sso-descriptor-bundle.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.login.mod_sso.test")
+@Deploy("org.nuxeo.ecm.platform.login.mod_sso.test:OSGI-INF/mod_sso-descriptor-bundle.xml")
+public class TestProxyAuthenticator {
 
     @Test
     public void testProxyAuthenticationWithoutReplacement() throws Exception {
 
         ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("ssoHeaderName", "remote_user");
         // Redirect requires prefilter configuration, skipping...
         parameters.put("ssoNeverRedirect", "true");
@@ -84,7 +83,7 @@ public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
         ProxyAuthenticator proxyAuth = new ProxyAuthenticator();
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("ssoHeaderName", "remote_user");
         // Redirect requires prefilter configuration, skipping...
         parameters.put("ssoNeverRedirect", "true");

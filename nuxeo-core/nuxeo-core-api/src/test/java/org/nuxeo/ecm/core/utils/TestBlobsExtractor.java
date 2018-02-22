@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,18 +40,17 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestBlobsExtractor extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-propmodel-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-blobsextractor-types-contrib.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-propmodel-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blobsextractor-types-contrib.xml")
+public class TestBlobsExtractor {
 
     protected Blob createBlob(String filename) {
         return Blobs.createBlob("dummy", null, null, filename);
@@ -216,6 +215,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         List<Property> properties = new BlobsExtractor().getBlobsProperties(doc);
         assertEquals(0, properties.size());
     }
+
     @Test
     public void testWithRepositoryConfiguration() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
@@ -290,7 +290,7 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         assertTrue(blobs.contains(blob3));
 
         // only the blob of file (no schema prefix)
-        // the /data part is ignored  because we do prefix match of existing properties (???)
+        // the /data part is ignored because we do prefix match of existing properties (???)
         // <field>content/data</field>
         pathProps = new HashSet<String>();
         pathProps.add("content/data");

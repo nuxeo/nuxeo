@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -131,26 +129,19 @@ public class WorkManagerTest {
 
     protected static final String QUEUE = "SleepWork";
 
-    protected WorkManagerImpl service;
-
     protected boolean dontClearCompletedWork;
 
     @Inject
-    protected EventService eventService;
+    public WorkManager service;
+
+    @Inject
+    public EventService eventService;
 
     @Inject
     public FeaturesRunner runner;
 
     @Inject
-    protected RuntimeHarness harness;
-
-    protected FileEventsTrackingFeature feature;
-
-    @Before
-    public void setUp() throws Exception {
-        feature = runner.getFeature(FileEventsTrackingFeature.class);
-        service = (WorkManagerImpl) Framework.getService(WorkManager.class);
-    }
+    public RuntimeHarness harness;
 
     void assertWorkIdsEquals(List<String> expected, Work.State state) {
         List<String> actual = service.listWorkIds(QUEUE, state);
@@ -430,7 +421,7 @@ public class WorkManagerTest {
         descr.id = "SleepWork";
         descr.processing = Boolean.TRUE;
         descr.categories = Collections.emptySet();
-        service.activateQueue(descr);
+        ((WorkManagerImpl) service).activateQueue(descr);
 
         Thread.sleep(duration / 2);
         assertMetrics(0, 1, 0, 0);
@@ -465,7 +456,7 @@ public class WorkManagerTest {
         descr.id = "SleepWork";
         descr.processing = Boolean.TRUE;
         descr.categories = Collections.emptySet();
-        service.activateQueue(descr);
+        ((WorkManagerImpl) service).activateQueue(descr);
 
         Thread.sleep(duration / 2);
         assertMetrics(0, 1, 0, 0);
@@ -476,6 +467,7 @@ public class WorkManagerTest {
 
     @Test
     public void transientFilesWorkAreCleaned() throws Exception {
+        FileEventsTrackingFeature feature = runner.getFeature(FileEventsTrackingFeature.class);
         final File file = feature.resolveAndCreate(new File("pfouh"));
         service.schedule(new CreateFile(file));
         service.awaitCompletion(5, TimeUnit.SECONDS);

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertSame;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
@@ -31,9 +32,15 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestQueryMakerService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.storage.sql:OSGI-INF/querymaker-service.xml")
+public class TestQueryMakerService {
 
     protected QueryMakerDescriptor desc;
 
@@ -71,12 +78,6 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
                 QueryFilter queryFilter, Object... params) {
             throw new UnsupportedOperationException();
         }
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql", "OSGI-INF/querymaker-service.xml");
     }
 
     @Test

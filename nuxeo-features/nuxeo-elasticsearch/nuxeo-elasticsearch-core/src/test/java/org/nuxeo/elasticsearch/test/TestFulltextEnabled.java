@@ -44,7 +44,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -72,13 +71,10 @@ public class TestFulltextEnabled {
     protected WorkManager workManager;
 
     @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
     protected CoreFeature coreFeature;
 
     @Inject
-    ElasticSearchAdmin esa;
+    protected ElasticSearchAdmin esa;
 
     private int commandProcessed;
 

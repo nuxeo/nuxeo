@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
@@ -30,12 +34,28 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Florent Guillaume
  */
-public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
+@Ignore("NXP-22534")
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.storage")
+@Deploy("org.nuxeo.ecm.core.storage.sql")
+@Deploy("org.nuxeo.ecm.platform.el")
+@Deploy("org.nuxeo.ecm.core.storage:OSGI-INF/test-repo-ds.xml")
+public abstract class SQLBackendTestCase {
 
     private static final String REPOSITORY_NAME = "test";
 
@@ -45,26 +65,15 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.runtime.datasource");
-        deployBundle("org.nuxeo.runtime.kv");
-        deployBundle("org.nuxeo.runtime.migration");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.storage");
-        deployBundle("org.nuxeo.ecm.core.storage.sql");
-        deployBundle("org.nuxeo.ecm.platform.el");
         DatabaseHelper.DATABASE.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage", "OSGI-INF/test-repo-ds.xml");
+        repository = newRepository(-1);
     }
 
-    @Override
-    protected void postSetUp() throws Exception {
-        repository = newRepository(-1);
+    @After
+    public void tearDown() throws Exception {
+        closeRepository();
     }
 
     protected Repository newRepository(long clusteringDelay) throws Exception {
@@ -113,11 +122,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         descr.name = name;
         descr.klass = DefaultBinaryManager.class;
         return descr;
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        closeRepository();
     }
 
     protected void closeRepository() throws Exception {

@@ -21,19 +21,30 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.net.URL;
 import java.util.Map;
 
 import javax.naming.directory.SearchControls;
 
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestLDAPDescriptors extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestLDAPDescriptors {
 
     protected LDAPDirectoryDescriptor descriptor;
 
@@ -45,10 +56,8 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
-    @Override
-    @Test
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         XMap xmap = new XMap();
         xmap.register(LDAPServerDescriptor.class);
         xmap.register(LDAPDirectoryDescriptor.class);

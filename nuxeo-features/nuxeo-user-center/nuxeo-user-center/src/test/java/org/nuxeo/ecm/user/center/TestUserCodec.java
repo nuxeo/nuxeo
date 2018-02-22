@@ -27,18 +27,30 @@ import static org.nuxeo.ecm.user.center.UserCodec.DEFAULT_USERS_TAB;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class TestUserCodec extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestUserCodec {
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     private DocumentView getDocumentView(String username, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
@@ -73,8 +85,8 @@ public class TestUserCodec extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.user.center:OSGI-INF/user-group-codec-properties.xml")
     public void shouldGetDocumentView() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.user.center:OSGI-INF/user-group-codec-properties.xml");
 
         UserCodec codec = new UserCodec();
         String url = "user/bender";
@@ -117,7 +129,7 @@ public class TestUserCodec extends NXRuntimeTestCase {
         assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
         assertEquals("zoidberg@planet-express.com", docView.getParameter("username"));
 
-        pushInlineDeployments("org.nuxeo.ecm.user.center.tests:OSGI-INF/test-user-group-codec-properties.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.user.center.tests:OSGI-INF/test-user-group-codec-properties.xml");
 
         url = "user/bender%20bending";
         docView = codec.getDocumentViewFromUrl(url);
