@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
@@ -57,16 +57,7 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  * @since 5.7.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, DirectoryFeature.class })
-@Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.runtime.datasource")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.cache")
-@Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.ecm.platform.el")
+@Features(DirectoryFeature.class )
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
@@ -78,12 +69,12 @@ public class TestTargetPlatformService {
     protected TargetPlatformService service;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
             public void run(DirectoryService service, Session session) {
-                for (DocumentModel doc : session.getEntries()) {
+                for (DocumentModel doc : session.query(Collections.emptyMap())) {
                     session.deleteEntry(doc.getId());
                 }
             }
@@ -114,7 +105,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatform() throws Exception {
+    public void testGetTargetPlatform() {
         TargetPlatform tp;
         List<TargetPackage> tps;
         List<String> tpIds;

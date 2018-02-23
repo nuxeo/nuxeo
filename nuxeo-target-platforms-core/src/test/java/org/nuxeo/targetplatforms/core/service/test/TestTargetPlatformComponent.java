@@ -32,7 +32,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.service.TargetPlatformService;
@@ -43,16 +42,7 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, DirectoryFeature.class })
-@Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.runtime.datasource")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.cache")
-@Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.ecm.platform.el")
+@Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,7 +39,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
@@ -54,16 +53,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, DirectoryFeature.class})
-@Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.runtime.datasource")
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.cache")
-@Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.ecm.platform.el")
+@Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.io")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
@@ -74,12 +64,12 @@ public class TestJsonExporter {
     protected TargetPlatformService service;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
             public void run(DirectoryService service, Session session) {
-                for (DocumentModel doc : session.getEntries()) {
+                for (DocumentModel doc : session.query(Collections.emptyMap())) {
                     session.deleteEntry(doc.getId());
                 }
             }
@@ -90,12 +80,7 @@ public class TestJsonExporter {
         String path = FileUtils.getResourcePathFromContext(filepath);
         String expected = IOUtils.toString(new FileInputStream(path), "UTF-8");
         String actual = out.toString();
-        try {
-            JSONAssert.assertEquals(expected, actual, true);
-        } catch (AssertionError e) {
-            // System.err.println(actual);
-            throw e;
-        }
+        JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
@@ -123,7 +108,7 @@ public class TestJsonExporter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
         checkJsonEquals("target-platform-instance-export.json", out);
-        tpi = service.getTargetPlatformInstance("cap-5.8", Arrays.asList("nuxeo-dm-5.8"));
+        tpi = service.getTargetPlatformInstance("cap-5.8", Collections.singletonList("nuxeo-dm-5.8"));
         assertNotNull(tpi);
         out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
