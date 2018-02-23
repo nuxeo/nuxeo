@@ -89,4 +89,8 @@
     </proxies>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
+    <property schema="test-properties" name="removedProperty" fallback="removedPropertyFallback" />
+  </extension>
+
 </component>
