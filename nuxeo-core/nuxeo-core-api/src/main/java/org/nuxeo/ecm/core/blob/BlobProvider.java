@@ -59,6 +59,16 @@ public interface BlobProvider {
     void close();
 
     /**
+     * Checks whether this blob provider is transient: blobs may disappear after a while, so a caller should not rely on
+     * them being available forever.
+     *
+     * @since 10.1
+     */
+    default boolean isTransient() {
+        return false;
+    }
+
+    /**
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfo the blob information
