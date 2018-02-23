@@ -20,6 +20,16 @@
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,28 +47,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy("org.nuxeo.ecm.platform.signature.core")
-@Deploy("org.nuxeo.ecm.platform"+".signature.core.test")
+@Features({ SignatureCoreFeature.class, PlatformFeature.class, AutomationFeature.class })
 public class SignPDFTest {
 
     protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
@@ -73,19 +70,16 @@ public class SignPDFTest {
     protected CUserService cUserService;
 
     @Inject
-    protected SignatureService signatureService;
-
-    @Inject
     protected UserManager userManager;
 
     @Inject
     protected DirectoryService directoryService;
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    AutomationService automationService;
+    protected AutomationService automationService;
 
     protected File origPdfFile;
 
@@ -95,7 +89,7 @@ public class SignPDFTest {
      * Signing Prerequisite: a user with a certificate needs to be present
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         DocumentModel userModel = userManager.getBareUserModel();
         userModel.setProperty("user", "username", DEFAULT_USER_ID);
         userModel.setProperty("user", "firstName", "Homer");
@@ -109,7 +103,7 @@ public class SignPDFTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // delete certificates associated with user ids
         try (Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME)) {
             sqlSession.deleteEntry(DEFAULT_USER_ID);

@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,26 +37,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.runtime.management")
-@Deploy("org.nuxeo.ecm.platform.signature.core")
-@Deploy("org.nuxeo.ecm.platform.signature.core.test")
+@Features(SignatureCoreFeature.class)
 public class CertServiceTest {
 
     @Inject
@@ -79,8 +70,6 @@ public class CertServiceTest {
 
     /**
      * Replace root keystore from the config file with a custom one loaded from a test resource file
-     *
-     * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
@@ -112,7 +101,7 @@ public class CertServiceTest {
     }
 
     @Test
-    public void testGetCertificate() throws Exception {
+    public void testGetCertificate() {
         KeyStore keystore = generateUserKeystore();
         Certificate cert = certService.getCertificate(keystore, getAliasId(getUserInfo(), AliasType.CERT));
         assertNotNull(cert.getPublicKey());
@@ -127,9 +116,8 @@ public class CertServiceTest {
         assertTrue(keystore.containsAlias(userid + "cert"));
     }
 
-    protected KeyStore generateUserKeystore() throws Exception {
-        KeyStore keystore = certService.initializeUser(getUserInfo(), USER_KEYSTORE_PASSWORD);
-        return keystore;
+    protected KeyStore generateUserKeystore() {
+        return certService.initializeUser(getUserInfo(), USER_KEYSTORE_PASSWORD);
     }
 
     protected String getAliasId(UserInfo userInfo, AliasType aliasType) {
@@ -137,29 +125,27 @@ public class CertServiceTest {
         return alias.getId(aliasType);
     }
 
-    protected UserInfo getPDFCAInfo() throws Exception {
+    protected UserInfo getPDFCAInfo() {
         Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
+        userFields = new HashMap<>();
         userFields.put(CNField.CN, "PDFCA");
         userFields.put(CNField.C, "US");
         userFields.put(CNField.OU, "CA");
         userFields.put(CNField.O, "Nuxeo");
         userFields.put(CNField.UserID, "PDFCA");
         userFields.put(CNField.Email, "pdfca@nuxeo.com");
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
+        return new UserInfo(userFields);
     }
 
-    protected UserInfo getUserInfo() throws Exception {
+    protected UserInfo getUserInfo() {
         Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
+        userFields = new HashMap<>();
         userFields.put(CNField.CN, "Wojciech Sulejman");
         userFields.put(CNField.C, "US");
         userFields.put(CNField.OU, "IT");
         userFields.put(CNField.O, "Nuxeo");
         userFields.put(CNField.UserID, "wsulejman");
         userFields.put(CNField.Email, "wsulejman@nuxeo.com");
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
+        return new UserInfo(userFields);
     }
 }

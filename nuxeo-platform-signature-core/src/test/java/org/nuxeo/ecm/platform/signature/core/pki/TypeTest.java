@@ -38,9 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -52,19 +50,13 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features(SignatureCoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.runtime.management")
-@Deploy("org.nuxeo.common")
-@Deploy("org.nuxeo.ecm.platform.signature.core")
-@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class TypeTest {
 
     @Inject
@@ -133,7 +125,7 @@ public class TypeTest {
         }
     }
 
-    public UserInfo getUserInfo(String userID) throws Exception {
+    public UserInfo getUserInfo(String userID) {
         Map<CNField, String> userFields;
         userFields = new HashMap<>();
         userFields.put(CNField.CN, "Wojciech Sulejman");
@@ -142,8 +134,7 @@ public class TypeTest {
         userFields.put(CNField.O, "Nuxeo");
         userFields.put(CNField.UserID, userID);
         userFields.put(CNField.Email, "wsulejman@nuxeo.com");
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
+        return new UserInfo(userFields);
     }
 
 }

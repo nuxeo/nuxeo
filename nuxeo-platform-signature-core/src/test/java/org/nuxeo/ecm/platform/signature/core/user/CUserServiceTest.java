@@ -29,28 +29,22 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features(SignatureCoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.runtime.management")
-@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.usermanager.api")
-@Deploy("org.nuxeo.ecm.platform.signature.core")
-@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class CUserServiceTest {
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";
@@ -66,7 +60,7 @@ public class CUserServiceTest {
     protected DocumentModel user;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         DocumentModel userModel = userManager.getBareUserModel();
         userModel.setProperty("user", "username", USER_ID);
         userModel.setProperty("user", "firstName", "Homer");
@@ -76,13 +70,13 @@ public class CUserServiceTest {
         user = userManager.createUser(userModel);
     }
 
-    public void testCreateCert() throws Exception {
+    public void testCreateCert() {
         DocumentModel certificate = cUserService.createCertificate(user, USER_KEYSTORE_PASSWORD);
         assertTrue(certificate.getPropertyValue("cert:userid").equals(USER_ID));
     }
 
     @Test
-    public void testGetCertificate() throws Exception {
+    public void testGetCertificate() {
         // try to retrieve a certificate that does not yet exist
         DocumentModel retrievedCertificate = cUserService.getCertificate(USER_ID);
         assertNull(retrievedCertificate);

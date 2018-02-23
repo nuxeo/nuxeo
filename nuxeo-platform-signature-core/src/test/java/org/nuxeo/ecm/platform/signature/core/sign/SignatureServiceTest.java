@@ -46,12 +46,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -62,6 +60,7 @@ import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.signature.core.SignatureCoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -70,14 +69,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.lowagie.text.pdf.PdfReader;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features(SignatureCoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.convert")
-@Deploy("org.nuxeo.ecm.platform.signature.core")
-@Deploy("org.nuxeo.ecm.platform.signature.core.test")
 public class SignatureServiceTest {
 
     @Inject
@@ -123,7 +120,7 @@ public class SignatureServiceTest {
      * Signing Prerequisite: a user with a certificate needs to be present
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         DocumentModel userModel = userManager.getBareUserModel();
         userModel.setProperty("user", "username", DEFAULT_USER_ID);
@@ -153,7 +150,7 @@ public class SignatureServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
         // delete certificates associated with user ids
         try (Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME)) {
@@ -179,16 +176,15 @@ public class SignatureServiceTest {
         assertEquals(SIGNED_OTHER, ssi.getSigningStatus(signedBlob, user2));
 
         // try for the same user to sign the certificate again
-        Blob signedBlobTwice = null;
         try {
-            signedBlobTwice = signatureService.signPDF(signedBlob, null, user, USER_KEY_PASSWORD, "test reason");
+            signatureService.signPDF(signedBlob, null, user, USER_KEY_PASSWORD, "test reason");
             fail("Should raise AlreadySignedException");
         } catch (AlreadySignedException e) {
             // ok
         }
 
         // try for the second user to sign the certificate
-        signedBlobTwice = signatureService.signPDF(signedBlob, null, user2, USER_KEY_PASSWORD, "test reason");
+        Blob signedBlobTwice = signatureService.signPDF(signedBlob, null, user2, USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlobTwice);
         assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlobTwice, user));
         assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlobTwice, user2));
@@ -272,7 +268,7 @@ public class SignatureServiceTest {
         assertNull(swb.blob);
 
         // unsigned PDF attached
-        List<Map<String, Serializable>> fileList = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> fileList = new ArrayList<>();
         fileList.add(Collections.singletonMap("file", pdfBlob));
         doc.setPropertyValue("files:files", (Serializable) fileList);
         swb = signatureService.getSigningStatus(doc, null);
@@ -308,7 +304,7 @@ public class SignatureServiceTest {
                 SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
         assertEquals(Collections.emptyList(), doc.getPropertyValue("files:files"));
     }
@@ -323,7 +319,7 @@ public class SignatureServiceTest {
                 SigningDisposition.ATTACH, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(txtBlob, doc.getPropertyValue("file:content"));
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
@@ -341,7 +337,7 @@ public class SignatureServiceTest {
                 SigningDisposition.ARCHIVE, "foo archive.txt");
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
@@ -361,7 +357,7 @@ public class SignatureServiceTest {
                 SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
         assertEquals(Collections.emptyList(), doc.getPropertyValue("files:files"));
     }
@@ -376,7 +372,7 @@ public class SignatureServiceTest {
                 SigningDisposition.ATTACH, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(pdfBlob, doc.getPropertyValue("file:content"));
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
@@ -407,7 +403,7 @@ public class SignatureServiceTest {
     @Test
     public void testResignDocument() throws Exception {
         Blob pdfBlob = Blobs.createBlob(signedPdfFile, "application/pdf", null, "foo.pdf");
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(pdfBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(pdfBlob));
 
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) pdfBlob);
