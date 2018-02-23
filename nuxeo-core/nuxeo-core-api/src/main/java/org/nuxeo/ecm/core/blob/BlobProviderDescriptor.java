@@ -33,6 +33,14 @@ public class BlobProviderDescriptor {
 
     public static final String PREVENT_USER_UPDATE = "preventUserUpdate";
 
+    /**
+     * Flags this blob provider as transient: blobs may disappear after a while, so a caller should not rely on them
+     * being available forever.
+     *
+     * @since 10.1
+     */
+    public static final String TRANSIENT = "transient";
+
     @XNode("@name")
     public String name = "";
 
