@@ -73,7 +73,7 @@ object NuxeoRest {
   def s3Upload(comment: String = "") = {
     exec(session => {
             val script = Parameters.getAwsS3Script() + " " + Parameters.getAwsConf() + " " +
-              Parameters.getAwsS3Bucket() + " " + session("blobFilename").as[String] + " " +
+              Parameters.getAwsS3Bucket() + " " + session("user").as[String] + "-" + session("blobFilename").as[String] + " " +
               session("blobMimeType").as[String]
             println(script)
             val scriptOutput: String = script.!!
@@ -86,7 +86,7 @@ object NuxeoRest {
           }
       ).exec(
           http(comment + "Direct s3 upload ${type}")
-              .put("https://${bucket}.s3.amazonaws.com/${blobFilename}")
+              .put("https://${bucket}.s3.amazonaws.com/${user}-${blobFilename}")
               .header("Host", "${bucket}.s3.amazonaws.com")
               .header("Date", "${awsDate}")
               .header("Content-Type", "${blobMimeType}")
@@ -113,7 +113,7 @@ object NuxeoRest {
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
-          .body(StringBody("""{"name": "${blobFilename}","bucket": "${bucket}","key": "${blobFilename}","fileSize": 1234}"""))
+          .body(StringBody("""{"name": "${blobFilename}","bucket": "${bucket}","key": "${user}-${blobFilename}","fileSize": 1234}"""))
       ).exec(
         http(comment + "Create ${type}")
           .post(Constants.GAT_API_PATH + "/${parentPath}")
@@ -174,7 +174,7 @@ object NuxeoRest {
     exec()
       .doIf("${blobPath.exists()}") {
         exec(
-          http(comment + "Ask url")
+            http(comment + "Ask S3 url")
             .post(Constants.GAT_API_PATH + "/${url}/@op/Blob.Get")
             .headers(Headers.base)
             .header("Content-Type", "application/json")
@@ -182,8 +182,9 @@ object NuxeoRest {
             .body(StringBody("""{"params":{}}"""))
             .disableFollowRedirect
             .check(status.in(302)).check(header("Location").saveAs("s3url"))
-        ).exec(
-          http(comment + "S3 Download ${type}").get("${s3url}").check(status.in(200))
+// Skip the download because it creates memory pb on gatling
+//        ).exec(
+//          http(comment + "S3 Download ${type}").get("${s3url}").check(status.in(200))
         )
       }
   }
