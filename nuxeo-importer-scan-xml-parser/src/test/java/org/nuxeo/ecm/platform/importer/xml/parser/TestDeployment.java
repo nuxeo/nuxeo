@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -37,17 +35,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml")
 @Deploy("nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml")
 public class TestDeployment {
 
-    private static final Log log = LogFactory.getLog(TestDeployment.class);
-
     @Test
-    public void testImport() throws Exception {
+    public void testImport() {
         DefaultImporterService service = Framework.getService(DefaultImporterService.class);
         assertNotNull(service);
 
