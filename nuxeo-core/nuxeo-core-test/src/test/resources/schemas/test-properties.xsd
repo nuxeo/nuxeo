@@ -103,4 +103,6 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="removedPropertyFallback" type="xs:string" />
+
 </xs:schema>
