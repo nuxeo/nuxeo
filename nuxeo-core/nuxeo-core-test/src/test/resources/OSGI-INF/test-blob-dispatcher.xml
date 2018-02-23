@@ -13,6 +13,11 @@
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
       <property name="path">binaries2</property>
     </blobprovider>
+    <blobprovider name="transient">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="transient">true</property>
+      <property name="path">binaries3</property>
+    </blobprovider>
     <blobprovider name="dummy">
       <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
     </blobprovider>

@@ -260,15 +260,18 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         if (blob instanceof ManagedBlob) {
             ManagedBlob managedBlob = (ManagedBlob) blob;
             String currentProviderId = managedBlob.getProviderId();
-            // is it something we don't have to dispatch?
-            if (!blobDispatcher.getBlobProviderIds().contains(currentProviderId)) {
-                // not something we have to dispatch, reuse the key
-                return managedBlob.getKey();
-            }
-            dispatch = blobDispatcher.getBlobProvider(doc, blob);
-            if (dispatch.providerId.equals(currentProviderId)) {
-                // same provider, just reuse the key
-                return managedBlob.getKey();
+            // is the blob non-transient, so that reusing the key is an option?
+            if (!getBlobProvider(currentProviderId).isTransient()) {
+                // is it something we don't have to dispatch?
+                if (!blobDispatcher.getBlobProviderIds().contains(currentProviderId)) {
+                    // not something we have to dispatch, reuse the key
+                    return managedBlob.getKey();
+                }
+                dispatch = blobDispatcher.getBlobProvider(doc, blob);
+                if (dispatch.providerId.equals(currentProviderId)) {
+                    // same provider, just reuse the key
+                    return managedBlob.getKey();
+                }
             }
         }
         if (dispatch == null) {
