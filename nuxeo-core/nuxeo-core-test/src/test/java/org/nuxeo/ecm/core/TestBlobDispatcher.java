@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -60,6 +60,9 @@ public class TestBlobDispatcher {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected BlobManager blobManager;
 
     @Test
     public void testDirectBlob() throws Exception {
@@ -95,7 +98,7 @@ public class TestBlobDispatcher {
     public void testAlreadyManagedBlob() throws Exception {
         // register blob in provider by hand
         Blob b = Blobs.createBlob("foo", "video/mp4");
-        String key = Framework.getService(BlobManager.class).getBlobProvider("dummy").writeBlob(b);
+        String key = blobManager.getBlobProvider("dummy").writeBlob(b);
         key = "dummy:" + key;
 
         // create a blob already managed and not corresponding to a dispatch target
@@ -112,6 +115,28 @@ public class TestBlobDispatcher {
         assertTrue(blob.getClass().getName(), blob instanceof SimpleManagedBlob);
         String key2 = ((ManagedBlob) blob).getKey();
         assertEquals(key, key2);
+    }
+
+    @Test
+    public void testAlreadyManagedBlobButTransient() throws Exception {
+        // write Java blob to provider
+        Blob b = Blobs.createBlob("foo", "video/mp4");
+        BlobProvider blobProvider = blobManager.getBlobProvider("transient");
+        String key = blobProvider.writeBlob(b);
+        // re-read the now managed blob
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = key;
+        Blob blob = blobProvider.readBlob(blobInfo);
+        assertEquals("transient", ((ManagedBlob) blob).getProviderId());
+
+        // save the transient blob in a document
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check that it was dispatched and is now stored in a non-transient blob provider
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("test", ((ManagedBlob) blob).getProviderId());
     }
 
     @Test
