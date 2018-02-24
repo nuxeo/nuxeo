@@ -272,41 +272,23 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
 
         // validate choice in respect to other submitted values
-        switch (choice) {
-        case tempKeep:
-            // re-submit stored values
-            if (isLocalValueSet()) {
-                toValidate.setBlob(previous.getConvertedBlob());
-                toValidate.setFilename(previous.getConvertedFilename());
+        if (InputFileChoice.tempKeep.equals(choice) || InputFileChoice.keep.equals(choice)) {
+            if (isLocalValueSet() || InputFileChoice.keep.equals(choice)) {
+                // re-submit stored values
+                toValidate.setInfo(previous);
             }
             validateBlob(context, toValidate);
             if (getEditFilename()) {
                 validateFilename(context, toValidate);
             }
-            break;
-        case keep:
-            // re-submit stored values
-            toValidate.setBlob(previous.getConvertedBlob());
-            toValidate.setFilename(previous.getConvertedFilename());
-            validateBlob(context, toValidate);
-            if (getEditFilename()) {
-                validateFilename(context, toValidate);
-            }
-            break;
-        case upload:
+        } else if (InputFileChoice.upload.equals(choice)) {
+            toValidate.setFilename(null);
             validateBlob(context, toValidate);
             if (isValid()) {
                 toValidate.setChoice(InputFileChoice.tempKeep);
-            }
-            break;
-        case delete:
-            toValidate.setBlob(null);
-            toValidate.setFilename(null);
-            break;
-        case none:
-            toValidate.setBlob(null);
-            toValidate.setFilename(null);
-            break;
+	    }
+        } else if (InputFileChoice.delete.equals(choice) || InputFileChoice.none.equals(choice)) {
+            toValidate.setInfo(null);
         }
 
         if (!isValid()) {
