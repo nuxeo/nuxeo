@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.forms;
 import java.io.IOException;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,8 +35,12 @@ public class FileWidgetElement extends AbstractWidgetElement {
         super(driver, id);
     }
 
-    enum InputFileChoice {
-        none, keep, upload, delete, tempKeep,
+    public enum InputFileChoice {
+        none, keep, upload, delete, tempKeep;
+
+        public String getOptionId() {
+            return "choice" + name();
+        }
     }
 
     /**
@@ -43,7 +48,7 @@ public class FileWidgetElement extends AbstractWidgetElement {
      */
     public String getEditChoice() {
         for (InputFileChoice choice : InputFileChoice.values()) {
-            String subid = "choice" + choice.name();
+            String subid = choice.getOptionId();
             if (hasSubElement(subid) && getSubElement(subid).isSelected()) {
                 return choice.name();
             }
@@ -65,19 +70,71 @@ public class FileWidgetElement extends AbstractWidgetElement {
         String fileToUploadPath = AbstractTest.getTmpFileToUploadPath(prefix, suffix, content);
         WebElement upRadioButton = getSubElement("choiceupload");
         upRadioButton.click();
-        WebElement fileInput = getSubElement("upload");
-        fileInput.sendKeys(fileToUploadPath);
+        uploadFile(fileToUploadPath);
     }
 
+    /**
+     * Uploads file with given path.
+     *
+     * @throws IOException
+     * @since 9.1
+     */
+    public void uploadFile(String filePath) throws IOException {
+        selectChoice(InputFileChoice.upload);
+        WebElement fileInput = getSubElement("upload");
+        fileInput.sendKeys(filePath);
+    }
+
+    /**
+     * Selects available option that should result in no file being present on the document.
+     */
     public void removeFile() {
-        if (hasSubElement("choicenone")) {
-            WebElement delRadioButton = getSubElement("choicenone");
-            delRadioButton.click();
-        } else if (hasSubElement("choicedelete")) {
-            WebElement delRadioButton = getSubElement("choicedelete");
-            delRadioButton.click();
+        if (hasChoice(InputFileChoice.none)) {
+            selectChoice(InputFileChoice.none);
+        } else if (hasChoice(InputFileChoice.delete)) {
+            selectChoice(InputFileChoice.delete);
         } else {
             throw new NoSuchElementException("No delete choice available on widget");
+        }
+    }
+
+    /**
+     * Selects available option that should result in keeping selected file.
+     *
+     * @since 10.1
+     */
+    public void keepFile() {
+        if (hasChoice(InputFileChoice.keep)) {
+            selectChoice(InputFileChoice.keep);
+        } else if (hasChoice(InputFileChoice.tempKeep)) {
+            selectChoice(InputFileChoice.tempKeep);
+        } else {
+            throw new NoSuchElementException("No keep choice available on widget");
+        }
+    }
+
+    /**
+     * Returns true if given option is presented on file widget radio options.
+     *
+     * @since 10.1
+     */
+    public boolean hasChoice(InputFileChoice choice) {
+        return hasSubElement(choice.getOptionId());
+    }
+
+    /**
+     * Select given choice on file widget radio options.
+     *
+     * @since 10.1
+     * @throws NoSuchElementException if option is not available.
+     */
+    public void selectChoice(InputFileChoice choice) {
+        String id = choice.getOptionId();
+        if (hasSubElement(id)) {
+            Locator.waitUntilEnabled(getSubElement(id));
+            getSubElement(id).click();
+        } else {
+            throw new NoSuchElementException("No '" + choice.name() + "' choice available on widget");
         }
     }
 
