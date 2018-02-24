@@ -278,7 +278,6 @@ public class TestDocumentModelWithDeprecatedProperty {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSetDeprecatedScalarPropertiesWithFallbackOnComplex() throws Exception {
         testProperties("scalar2scalar", "scalarfallback", "test scalar");
     }
