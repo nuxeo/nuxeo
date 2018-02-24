@@ -311,12 +311,13 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 uploaderService.getJSFBlobUploader(choice).validateUpload(this, context, submitted);
                 if (isValid()) {
                     submitted.setChoice(InputFileChoice.KEEP_TEMP);
+                } else {
+                    // re-submit stored values
+                    submitted.setInfo(previous);
                 }
             } catch (ValidatorException e) {
-                // set file to null: blob is null but file is not required
-                submitted.setBlob(null);
-                submitted.setFilename(null);
-                submitted.setChoice(InputFileChoice.NONE);
+                // re-submit stored values
+                submitted.setInfo(previous);
             }
         } else if (InputFileChoice.DELETE.equals(choice) || InputFileChoice.NONE.equals(choice)) {
             submitted.setInfo(null);
