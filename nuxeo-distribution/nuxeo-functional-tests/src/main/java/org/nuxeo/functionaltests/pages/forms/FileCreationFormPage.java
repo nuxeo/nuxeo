@@ -106,4 +106,14 @@ public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
         return fileWidget.getFilename(true);
     }
 
+    /**
+     * Returns the element error message if any.
+     *
+     * @since 10.1
+     */
+    public String getSelectedFileErrorMessage() {
+        LayoutElement layout = new LayoutElement(driver, "document_create:nxl_file");
+        return layout.getSubElement("nxw_file:nxw_file_message").getText();
+    }
+
 }
