@@ -101,7 +101,8 @@ public class InputFileInfo implements Serializable {
                 if (upFile.available() == 0) {
                     throw new ConverterException(INVALID_FILE_MESSAGE);
                 }
-                convertedBlob = FileUtils.createSerializableBlob(upFile, getConvertedFilename(), getConvertedMimeType());
+                convertedBlob = FileUtils.createSerializableBlob(upFile, getConvertedFilename(),
+                        getConvertedMimeType());
             } catch (ConverterException e) {
             } catch (Exception e) {
                 throw new ConverterException(INVALID_FILE_MESSAGE);
@@ -161,6 +162,21 @@ public class InputFileInfo implements Serializable {
         } else {
             return first.equals(second);
         }
+    }
+
+    /**
+     * Restores information on blob and filename from given {@link InputFileInfo}.
+     *
+     * @since 10.1
+     */
+    public void setInfo(InputFileInfo previous) {
+        if (previous == null) {
+            setBlob(null);
+            setFilename(null);
+            return;
+        }
+        setBlob(previous.getConvertedBlob());
+        setFilename(previous.getConvertedFilename());
     }
 
     @Override
