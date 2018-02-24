@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.api.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -29,12 +30,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -389,11 +390,37 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    @Ignore
     public void testSetRemovedScalarPropertiesWithFallbackOnBlob() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
-        doc.setProperties("file", Collections.singletonMap("filename", "test filename"));
-        assertEquals("test filename", ((Blob) doc.getProperties("file").get("content")).getFilename());
+        // compat on set not work alright if Blob is null in the first place (cannot set value on null blob), still
+        // works alright on get:
+        assertNull(((Blob) doc.getPropertyValue("file:filename")));
+        assertNull(doc.getPropertyValue("file:content"));
+
+        // fill value
+        StringBlob blob = new StringBlob("test content");
+        blob.setFilename("first filename");
+        doc.setPropertyValue("file:content", blob);
+        assertEquals("first filename", ((Blob) doc.getPropertyValue("file:content")).getFilename());
+        // check property retrieval, failing because of phantom props
+        // assertEquals("first filename", doc.getProperty("file:content/name").getValue());
+        assertNull(doc.getProperty("file:content/name").getValue());
+        assertTrue(doc.getProperty("file:content/name").isPhantom());
+        // check xpath retrieval, failing similarly
+        // assertEquals("first filename", doc.getPropertyValue("file:content/name"));
+        assertNull(doc.getPropertyValue("file:content/name"));
+        // check compat retrieval
+        assertNull(doc.getPropertyValue("file:filename"));
+
+        // check compat
+        doc.setPropertyValue("file:filename", "test filename");
+        assertEquals("test filename", ((Blob) doc.getPropertyValue("file:content")).getFilename());
+        // check property retrieval
+        assertEquals("test filename", doc.getProperty("file:content/name").getValue());
+        // check xpath retrieval
+        assertEquals("test filename", doc.getPropertyValue("file:content/name"));
+        // check compat retrieval
+        assertEquals("test filename", doc.getPropertyValue("file:filename"));
     }
 
     /**

@@ -25,6 +25,7 @@
     <property schema="removed" name="complex2complex" fallback="complexfallback" />
     <property schema="removed" name="list/*/renamed" fallback="list/*/scalar" />
     <property schema="removed" name="blobnameRem" fallback="blobfallback/name" />
+    <property schema="file" name="filename" fallback="content/name" />
   </extension>
 
 </component>
