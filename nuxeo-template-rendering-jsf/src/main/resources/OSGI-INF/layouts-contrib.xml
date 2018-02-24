@@ -14,7 +14,7 @@
       <translated>true</translated>
       <fields>
         <field>file:content</field>
-        <field>file:content/filename</field>
+        <field>file:content/name</field>
         <field>contextData['templateId']</field>
       </fields>
       <widgetModes>
