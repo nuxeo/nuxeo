@@ -117,7 +117,8 @@ public class TestVideoService {
         List<String> output = new ArrayList<String>();
         output.add("Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'DELTA.mp4':");
         output.add("Duration: 00:00:08.38, start: 0.000000, bitrate: 930 kb/s");
-        output.add("Stream #0.0(und): Video: h264 (High), yuv420p, 768x480 [PAR 1:1 DAR 8:5], 927 kb/s, 23.98 fps, 23.98 tbr, 10k tbn, 47.96 tbc");
+        output.add(
+                "Stream #0.0(und): Video: h264 (High), yuv420p, 768x480 [PAR 1:1 DAR 8:5], 927 kb/s, 23.98 fps, 23.98 tbr, 10k tbn, 47.96 tbc");
         return output;
     }
 

@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 import org.nuxeo.ecm.platform.video.tools.VideoTool;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for converters doing video conversions.

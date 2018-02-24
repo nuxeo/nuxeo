@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConversionStatus;
@@ -89,9 +88,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager != null && workManager.isStarted()) {
             try {
-                workManager.shutdownQueue(
-                        workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION), 10,
-                        TimeUnit.SECONDS);
+                workManager.shutdownQueue(workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
+                        10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
@@ -104,30 +102,34 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case VIDEO_CONVERSIONS_EP:
-                videoConversions.addContribution((VideoConversion) contribution);
-                break;
-            case DEFAULT_VIDEO_CONVERSIONS_EP:
-                automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
-                break;
-            case CONFIGURATION_EP:
-                configuration = (Configuration) contribution;
-                break;
+        case VIDEO_CONVERSIONS_EP:
+            videoConversions.addContribution((VideoConversion) contribution);
+            break;
+        case DEFAULT_VIDEO_CONVERSIONS_EP:
+            automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
+            break;
+        case CONFIGURATION_EP:
+            configuration = (Configuration) contribution;
+            break;
+        default:
+            break;
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case VIDEO_CONVERSIONS_EP:
-                videoConversions.removeContribution((VideoConversion) contribution);
-                break;
-            case DEFAULT_VIDEO_CONVERSIONS_EP:
-                automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
-                break;
-            case CONFIGURATION_EP:
-                configuration = DEFAULT_CONFIGURATION;
-                break;
+        case VIDEO_CONVERSIONS_EP:
+            videoConversions.removeContribution((VideoConversion) contribution);
+            break;
+        case DEFAULT_VIDEO_CONVERSIONS_EP:
+            automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
+            break;
+        case CONFIGURATION_EP:
+            configuration = DEFAULT_CONFIGURATION;
+            break;
+        default:
+            break;
         }
     }
 
