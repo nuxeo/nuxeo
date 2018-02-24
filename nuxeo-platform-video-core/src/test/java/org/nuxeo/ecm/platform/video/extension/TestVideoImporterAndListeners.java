@@ -59,6 +59,8 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.service.VideoService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -396,6 +398,7 @@ public class TestVideoImporterAndListeners {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @SuppressWarnings("unchecked")
     public void testVideoConversions() throws IOException, InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
         Blob video = Blobs.createBlob(getTestFile());
@@ -406,7 +409,6 @@ public class TestVideoImporterAndListeners {
         doc = session.getDocument(doc.getRef());
 
         // expecting video conversions since they are activated for this test
-        @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
                 "vid:transcodedVideos");
         assertEquals(2, transcodedVideos.size());
@@ -416,6 +418,18 @@ public class TestVideoImporterAndListeners {
         conversion = transcodedVideos.get(1);
         assertEquals("WebM 480p", conversion.get("name"));
         assertTrue(((Blob) conversion.get("content")).getLength() > 0);
+
+        // launching conversions on the same video shouldn't store duplicated transcoded videos
+        VideoService videoService = Framework.getService(VideoService.class);
+        videoService.launchAutomaticConversions(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        assertEquals(2, transcodedVideos.size());
+        assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
+        assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
     }
 
     @Test

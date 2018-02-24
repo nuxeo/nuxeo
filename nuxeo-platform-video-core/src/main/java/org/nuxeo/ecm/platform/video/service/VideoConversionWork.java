@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
@@ -159,6 +160,10 @@ public class VideoConversionWork extends AbstractWork {
                 TRANSCODED_VIDEOS_PROPERTY);
         if (transcodedVideos == null) {
             transcodedVideos = new ArrayList<>();
+        } else {
+            transcodedVideos = transcodedVideos.stream()
+                                               .filter(map -> !transcodedVideo.getName().equals(map.get("name")))
+                                               .collect(Collectors.toList());
         }
         transcodedVideos.add(transcodedVideo.toMap());
         doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, (Serializable) transcodedVideos);
