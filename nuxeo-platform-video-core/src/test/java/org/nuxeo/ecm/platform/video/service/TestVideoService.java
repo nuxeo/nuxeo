@@ -22,26 +22,21 @@ package org.nuxeo.ecm.platform.video.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_TYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -120,32 +115,6 @@ public class TestVideoService {
         output.add(
                 "Stream #0.0(und): Video: h264 (High), yuv420p, 768x480 [PAR 1:1 DAR 8:5], 927 kb/s, 23.98 fps, 23.98 tbr, 10k tbn, 47.96 tbc");
         return output;
-    }
-
-    @Test
-    // temporary ignore
-    @Ignore
-    public void testAsynchronousVideoConversion() throws IOException, InterruptedException {
-        Video video = getTestVideo();
-        DocumentModel doc = session.createDocumentModel("/", "video", VIDEO_TYPE);
-        doc.setPropertyValue("file:content", (Serializable) video.getBlob());
-        doc = session.createDocument(doc);
-        session.save();
-
-        videoService.launchConversion(doc, "WebM 480p");
-
-        while (videoService.getProgressStatus(doc.getRepositoryName(), doc.getId(), "WebM 480p") != null) {
-            // wait for the conversion to complete
-            Thread.sleep(2000);
-        }
-
-        session.save();
-        doc = session.getDocument(doc.getRef());
-        assertNotNull(doc);
-        @SuppressWarnings("unchecked")
-        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
-        assertNotNull(transcodedVideos);
-        assertEquals(1, transcodedVideos.size());
     }
 
 }

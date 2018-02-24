@@ -16,6 +16,7 @@
  * Contributors:
  *     Thomas Roger
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.platform.video.service;
 
@@ -26,10 +27,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
@@ -41,8 +44,6 @@ import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.api.Framework;
-
-import com.google.common.base.Objects;
 
 /**
  * Work running a defined video conversion.
@@ -78,49 +79,55 @@ public class VideoConversionWork extends AbstractWork {
 
     @Override
     public String getTitle() {
-        return "Video Conversion " + conversionName;
+        return "Video Conversion: " + conversionName;
     }
 
     @Override
     public void work() {
-        setStatus("Extracting");
         setProgress(Progress.PROGRESS_INDETERMINATE);
-
-        Video originalVideo = null;
+        DocumentModel doc;
+        Video originalVideo;
         try {
             openSystemSession();
-            originalVideo = getVideoToConvert();
+            doc = session.getDocument(new IdRef(docId));
+            originalVideo = getVideoToConvert(doc);
+            Blob originalBlob;
+            if (originalVideo == null || (originalBlob = originalVideo.getBlob()) == null
+                    || originalBlob.getLength() == 0) {
+                resetTranscodedVideos(doc);
+                return;
+            }
             commitOrRollbackTransaction();
         } finally {
             cleanUp(true, null);
         }
 
-        if (originalVideo == null) {
-            setStatus("Nothing to process");
-            return;
-        }
-
         // Perform the actual conversion
-        VideoService service = Framework.getService(VideoService.class);
+        log.debug(String.format("Processing %s conversion of Video document %s.", conversionName, doc));
         setStatus("Transcoding");
+        VideoService service = Framework.getService(VideoService.class);
         TranscodedVideo transcodedVideo = service.convert(originalVideo, conversionName);
 
         // Saving it to the document
         startTransaction();
         setStatus("Saving");
         openSystemSession();
-        DocumentModel doc = session.getDocument(new IdRef(docId));
+        doc = session.getDocument(new IdRef(docId));
         saveNewTranscodedVideo(doc, transcodedVideo);
         fireVideoConversionsDoneEvent(doc);
+        log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
         setStatus("Done");
     }
 
-    protected Video getVideoToConvert() {
-        DocumentModel doc = session.getDocument(new IdRef(docId));
+    @Override
+    public boolean isIdempotent() {
+        // when the video is updated the work id is the same
+        return false;
+    }
 
     @Override
     public boolean equals(Object other) {
-        return super.equals(other) && Objects.equal(this, other);
+        return super.equals(other) && Objects.equals(this, other);
     }
 
     @Override
@@ -130,12 +137,20 @@ public class VideoConversionWork extends AbstractWork {
         builder.append(conversionName);
         return builder.toHashCode();
     }
+
+    protected Video getVideoToConvert(DocumentModel doc) {
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
-        Video video = videoDocument.getVideo();
-        if (video == null) {
-            log.warn("No original video to transcode for: " + doc);
+        return videoDocument.getVideo();
+    }
+
+    protected void resetTranscodedVideos(DocumentModel doc) {
+        log.warn(String.format("No original video to transcode, resetting transcoded videos of document %s.", doc));
+        setStatus("No video to process");
+        doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
-        return video;
+        session.saveDocument(doc);
     }
 
     protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) {

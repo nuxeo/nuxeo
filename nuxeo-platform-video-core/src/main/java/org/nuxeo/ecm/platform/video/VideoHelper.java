@@ -104,7 +104,7 @@ public class VideoHelper {
     public static void updateStoryboard(DocumentModel docModel, Blob video) {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
-            docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, null);
+            docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, 0);
             return;
         }
 
@@ -224,7 +224,7 @@ public class VideoHelper {
 
     public static void updateVideoInfo(DocumentModel docModel, Blob video) {
         VideoInfo videoInfo = getVideoInfo(video);
-        if (videoInfo == null) {
+        if (videoInfo == null || video.getLength() == 0) {
             docModel.setPropertyValue("vid:info", (Serializable) VideoInfo.EMPTY_INFO.toMap());
             return;
         }
@@ -232,7 +232,7 @@ public class VideoHelper {
     }
 
     public static VideoInfo getVideoInfo(Blob video) {
-        if (video == null) {
+        if (video == null || video.getLength() == 0) {
             return null;
         }
         try {

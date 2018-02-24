@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.video.extension;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +39,6 @@ import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -45,13 +46,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -63,10 +62,10 @@ import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Tests that the VideoImporter class works by importing a sample video
+ * Tests that the VideoImporter class works by importing a sample video and that the VideoChangedListener schedules the
+ * different works to update the Video document info, storyboard, previews and conversions.
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -83,6 +82,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.filemanager.api")
 @Deploy("org.nuxeo.ecm.platform.filemanager.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
+// contribution to deactivate the unwanted works: fulltextExtractor, fulltextUpdater and videoConversion
+@Deploy("org.nuxeo.ecm.platform.video.core:test-video-workmanager-config.xml")
 public class TestVideoImporterAndListeners {
 
     // http://www.elephantsdream.org/
@@ -99,16 +100,13 @@ public class TestVideoImporterAndListeners {
     protected CoreSession session;
 
     @Inject
-    protected EventServiceAdmin eventServiceAdmin;
-
-    @Inject
     protected FileManager fileManagerService;
 
     @Inject
     protected CommandLineExecutorService cles;
 
     @Inject
-    protected EventService eventService;
+    protected TransactionalFeature txFeature;
 
     private File getTestFile() {
         return new File(FileUtils.getResourcePathFromContext("test-data/sample.mpg"));
@@ -122,20 +120,6 @@ public class TestVideoImporterAndListeners {
         }
         blob.setFilename(path);
         return new SimpleBlobHolder(blob);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions", false);
-        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
-    }
-
-    protected void waitForAsyncCompletion() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-        eventService.waitForAsyncCompletion();
     }
 
     @Test
@@ -167,7 +151,13 @@ public class TestVideoImporterAndListeners {
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("0.0", docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
+
+        docModelResult = session.getDocument(docModelResult.getRef());
+
+        // no video blob so expecting null/empty values for info, storyboard and conversions
+        assertNull(docModelResult.getPropertyValue(DURATION_PROPERTY));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:storyboard"));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:transcodedVideos"));
     }
 
     @Test
@@ -181,15 +171,11 @@ public class TestVideoImporterAndListeners {
 
         DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, "/", true,
                 "test-data/sample.mpg");
-
         assertNotNull(docModel);
-        DocumentRef ref = docModel.getRef();
-        session.save();
 
-        // reopen session
-        session = coreFeature.reopenCoreSession();
+        txFeature.nextTransaction();
+        docModel = session.getDocument(docModel.getRef());
 
-        docModel = session.getDocument(ref);
         assertEquals("Video", docModel.getType());
         assertEquals("sample.mpg", docModel.getTitle());
 
@@ -199,14 +185,16 @@ public class TestVideoImporterAndListeners {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
 
-        waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         // the test video is very short, no storyboard:
         Serializable duration = docModel.getPropertyValue(DURATION_PROPERTY);
         if (!Double.valueOf(0.05).equals(duration)) { // ffmpeg 2.2.1
             assertEquals(0.04, duration);
         }
-        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                "vid:storyboard");
         assertNotNull(storyboard);
         assertEquals(0, storyboard.size());
 
@@ -220,17 +208,19 @@ public class TestVideoImporterAndListeners {
         assertNotNull(docModel);
         docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
         docModel = session.createDocument(docModel);
-        session.save();
 
-        waitForAsyncCompletion();
-
+        txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
+
         // the test video last around 10 minutes
         Serializable duration = docModel.getPropertyValue(DURATION_PROPERTY);
         if (!Double.valueOf(653.81).equals(duration)) { // ffmpeg 2.2.1
             assertEquals(653.8, duration);
         }
-        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        // check storyboard
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                "vid:storyboard");
         assertNotNull(storyboard);
         assertEquals(9, storyboard.size());
 
@@ -271,13 +261,12 @@ public class TestVideoImporterAndListeners {
         docModel.setPropertyValue("file:content", null);
         docModel = session.saveDocument(docModel);
 
-        session.save();
-        waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         docModel = session.getDocument(docModel.getRef());
 
-        assertTrue(docModel.getProperty("vid:storyboard").getValue(List.class).isEmpty());
-        assertTrue(docModel.getProperty("picture:views").getValue(List.class).isEmpty());
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:storyboard"));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue("picture:views"));
     }
 
     @Test
@@ -292,12 +281,10 @@ public class TestVideoImporterAndListeners {
 
         DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
                 "test-data/sample.mpg");
-        session.save();
 
-        // reopen session
-        session = coreFeature.reopenCoreSession();
-
+        txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
+
         assertEquals("Video", docModel.getType());
         assertEquals("sample.mpg", docModel.getTitle());
 
@@ -329,6 +316,110 @@ public class TestVideoImporterAndListeners {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
+    @SuppressWarnings("unchecked")
+    public void testVideoUpdate() throws Exception {
+        // create a Video document without any video blob
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        doc = session.createDocument(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // no video blob so expecting zero/empty values for info, storyboard, previews and conversions
+        Double duration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
+        assertEquals(0.0, duration, 0.0);
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "vid:storyboard");
+        assertEquals(Collections.emptyList(), storyboard);
+        List<Map<String, Serializable>> previews = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "picture:views");
+        assertEquals(Collections.emptyList(), previews);
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "vid:transcodedVideos");
+        assertEquals(Collections.emptyList(), transcodedVideos);
+
+        // update document with a video blob
+        Blob video = Blobs.createBlob(getTestFile());
+        doc.setPropertyValue("file:content", (Serializable) video);
+        session.saveDocument(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // expecting info, storyboard and previews but no conversions since they are deactivated for the tests
+        duration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
+        assertTrue(duration > 0.0);
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:storyboard");
+        assertNotEquals(Collections.emptyList(), storyboard);
+        previews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertNotEquals(Collections.emptyList(), previews);
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        assertEquals(Collections.emptyList(), transcodedVideos);
+
+        // update document with a different video blob
+        video = Blobs.createBlob(new File(FileUtils.getResourcePathFromContext("test-data/ccdemo.mov")));
+        doc.setPropertyValue("file:content", (Serializable) video);
+        session.saveDocument(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // expecting different info, storyboard and previews
+        Double updatedDuration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
+        assertNotEquals(duration, updatedDuration);
+        List<Map<String, Serializable>> updatedStoryboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "vid:storyboard");
+        assertNotEquals(Collections.emptyList(), updatedStoryboard);
+        assertNotEquals(((Blob) storyboard.get(0).get("content")).getLength(),
+                ((Blob) updatedStoryboard.get(0).get("content")).getLength());
+        List<Map<String, Serializable>> updatedPreviews = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "picture:views");
+        assertNotEquals(Collections.emptyList(), updatedPreviews);
+        assertNotEquals(((Blob) previews.get(0).get("content")).getLength(),
+                ((Blob) updatedPreviews.get(0).get("content")).getLength());
+
+        // remove video blob from document
+        doc.setPropertyValue("file:content", null);
+        session.saveDocument(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // no video blob so expecting zero/empty values for info, storyboard and previews
+        updatedDuration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
+        assertEquals(0.0, updatedDuration, 0.0);
+        updatedStoryboard = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:storyboard");
+        assertEquals(Collections.emptyList(), updatedStoryboard);
+        updatedPreviews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
+        assertEquals(Collections.emptyList(), updatedPreviews);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    public void testVideoConversions() throws IOException, InterruptedException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
+        Blob video = Blobs.createBlob(getTestFile());
+        doc.setPropertyValue("file:content", (Serializable) video);
+        doc = session.createDocument(doc);
+
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // expecting video conversions since they are activated for this test
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "vid:transcodedVideos");
+        assertEquals(2, transcodedVideos.size());
+        Map<String, Serializable> conversion = transcodedVideos.get(0);
+        assertEquals("MP4 480p", conversion.get("name"));
+        assertTrue(((Blob) conversion.get("content")).getLength() > 0);
+        conversion = transcodedVideos.get(1);
+        assertEquals("WebM 480p", conversion.get("name"));
+        assertTrue(((Blob) conversion.get("content")).getLength() > 0);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
     public void testConfiguration() throws Exception {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
@@ -337,13 +428,14 @@ public class TestVideoImporterAndListeners {
         assertNotNull(docModel);
         docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath("test-data/sample.mpg").getBlob());
         docModel = session.createDocument(docModel);
-        session.save();
 
-        waitForAsyncCompletion();
-
+        txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
 
-        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        // check storyboard
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                "vid:storyboard");
         assertNotNull(storyboard);
         assertEquals(2, storyboard.size());
     }

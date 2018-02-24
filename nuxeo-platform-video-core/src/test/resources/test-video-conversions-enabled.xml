@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.video.work.conversions.test" version="1.0">
+
+  <require>org.nuxeo.video.work.config.test</require>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="videoConversion" queueing="true">
+      <category>videoConversion</category>
+    </queue>
+  </extension>
+
+</component>

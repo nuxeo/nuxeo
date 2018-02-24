@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -86,7 +85,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
         }
         // delete the file as we need only the path for ffmpeg
         try {
-            Files.delete(Paths.get(outFile.getCanonicalPath()));
+            Files.delete(outFile.toPath());
         } catch (IOException e) {
             throw new ConversionException("Unable to delete the temporary video conversion file.", e);
         }

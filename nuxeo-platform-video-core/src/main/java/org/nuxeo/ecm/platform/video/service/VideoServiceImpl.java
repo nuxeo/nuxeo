@@ -141,11 +141,9 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public void launchConversion(DocumentModel doc, String conversionName) {
         WorkManager workManager = Framework.getService(WorkManager.class);
-        if (workManager == null) {
-            throw new RuntimeException("No WorkManager available");
-        }
         VideoConversionWork work = new VideoConversionWork(doc.getRepositoryName(), doc.getId(), conversionName);
-        workManager.schedule(work);
+        log.debug(String.format("Scheduling work: %s conversion of Video document %s.", conversionName, doc));
+        workManager.schedule(work, true);
     }
 
     @Override

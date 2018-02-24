@@ -39,8 +39,6 @@ public class VideoConstants {
 
     public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
 
-    public static final String VIDEO_CHANGED_EVENT = "videoChanged";
-
     /**
      * @since 7.10
      */

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.video.work.config.test" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.video.workmanager</require>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="fulltextExtractor" queueing="false">
+      <name>Fulltext extractor queue deactivated for test purpose</name>
+      <category>fulltextExtractor</category>
+    </queue>
+    <queue id="fulltextUpdater" queueing="false">
+      <name>Fulltext updater queue deactivated for test purpose</name>
+      <category>fulltextUpdater</category>
+    </queue>
+    <queue id="videoConversion" queueing="false">
+      <name>Video conversion queue deactivated for test purpose</name>
+      <category>videoConversion</category>
+    </queue>
+  </extension>
+
+</component>

@@ -11,18 +11,6 @@
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="videoStoryboardListener" async="true" postCommit="true"
-      class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener"
-      priority="10">
-      <event>videoChanged</event>
-    </listener>
-
-    <listener name="videoAutomaticConversions" async="true" postCommit="true"
-      class="org.nuxeo.ecm.platform.video.listener.VideoAutomaticConversionListener"
-      priority="20">
-      <event>videoChanged</event>
-    </listener>
-
   </extension>
 
 </component>

@@ -21,34 +21,31 @@ package org.nuxeo.ecm.platform.video.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.CTX_FORCE_INFORMATIONS_GENERATION;
-import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
-import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
+
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.video.VideoHelper;
+import org.nuxeo.ecm.platform.video.service.VideoInfoWork;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core event listener to trigger the {@link org.nuxeo.ecm.platform.video.VideoConstants#VIDEO_CHANGED_EVENT} event if
- * the main video has changed. This is useful to update the video information, thumbnails and story board in a dedicated
- * async event listener.
+ * Light synchronous listener that schedules an asynchronous work to process the video info of a document.
+ * <p>
+ * This {@link VideoInfoWork} will in turn schedule two asynchronous works to process the video storyboard and
+ * conversions.
  *
- * @author ogrisel
  * @since 5.5
  */
 public class VideoChangedListener implements EventListener {
@@ -63,38 +60,39 @@ public class VideoChangedListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET) && !doc.isProxy()) {
-            boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_INFORMATIONS_GENERATION));
-            Property origVideoProperty = doc.getProperty("file:content");
-            if (forceGeneration || DOCUMENT_CREATED.equals(event.getName()) || origVideoProperty.isDirty()) {
-
-                Blob video = (Blob) origVideoProperty.getValue();
-                updateVideoInfo(doc, video);
-
-                if (BEFORE_DOC_UPDATE.equals(event.getName())) {
-                    doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
-                    doc.setPropertyValue(STORYBOARD_PROPERTY, null);
-                    doc.setPropertyValue(PICTURE_VIEWS_PROPERTY, null);
-                }
-
-                // only trigger the event if we really have a video
-                if (video != null) {
-                    Event trigger = docCtx.newEvent(VIDEO_CHANGED_EVENT);
-                    EventService eventService = Framework.getService(EventService.class);
-                    eventService.fireEvent(trigger);
+        String eventName = event.getName();
+        if (shouldProcess(doc, eventName)) {
+            if (BEFORE_DOC_UPDATE.equals(eventName)) {
+                try {
+                    resetProperties(doc);
+                } catch (IOException e) {
+                    throw new NuxeoException(
+                            String.format("Error while resetting video properties of document %s.", doc), e);
                 }
             }
+            scheduleAsyncProcessing(doc);
         }
     }
 
-    protected void updateVideoInfo(DocumentModel doc, Blob video) {
-        try {
-            VideoHelper.updateVideoInfo(doc, video);
-        } catch (NuxeoException e) {
-            // may happen if ffmpeg is not installed
-            log.error(String.format("Unable to retrieve video info: %s", e.getMessage()));
-            log.debug(e, e);
-        }
+    protected boolean shouldProcess(DocumentModel doc, String eventName) {
+        return doc.hasFacet(VIDEO_FACET) && !doc.isProxy()
+                && (Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_INFORMATIONS_GENERATION))
+                        || DOCUMENT_CREATED.equals(eventName) || doc.getProperty("file:content").isDirty());
+    }
+
+    protected void resetProperties(DocumentModel doc) throws IOException {
+        log.debug(String.format("Resetting video info, storyboard, previews and conversions of document %s.", doc));
+        VideoHelper.updateVideoInfo(doc, null);
+        VideoHelper.updateStoryboard(doc, null);
+        VideoHelper.updatePreviews(doc, null);
+        doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
+    }
+
+    protected void scheduleAsyncProcessing(DocumentModel doc) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        VideoInfoWork work = new VideoInfoWork(doc.getRepositoryName(), doc.getId());
+        log.debug(String.format("Scheduling work: video info of document %s.", doc));
+        workManager.schedule(work, true);
     }
 
 }
