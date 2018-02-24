@@ -298,19 +298,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
 
         // validate choice in respect to other submitted values
-        if (InputFileChoice.KEEP_TEMP.equals(choice)) {
-            // re-submit stored values
-            if (isLocalValueSet()) {
-                submitted.setBlob(previous.getConvertedBlob());
-                submitted.setFilename(previous.getConvertedFilename());
+        if (InputFileChoice.KEEP_TEMP.equals(choice) || InputFileChoice.KEEP.equals(choice)) {
+            if (isLocalValueSet() || InputFileChoice.KEEP.equals(choice)) {
+                // re-submit stored values
+                submitted.setInfo(previous);
             }
-            if (getEditFilename()) {
-                validateFilename(context, submitted);
-            }
-        } else if (InputFileChoice.KEEP.equals(choice)) {
-            // re-submit stored values
-            submitted.setBlob(previous.getConvertedBlob());
-            submitted.setFilename(previous.getConvertedFilename());
             if (getEditFilename()) {
                 validateFilename(context, submitted);
             }
@@ -327,8 +319,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 submitted.setChoice(InputFileChoice.NONE);
             }
         } else if (InputFileChoice.DELETE.equals(choice) || InputFileChoice.NONE.equals(choice)) {
-            submitted.setBlob(null);
-            submitted.setFilename(null);
+            submitted.setInfo(null);
         }
 
         // will need this to call declared validators
