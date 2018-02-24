@@ -286,6 +286,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
             validateBlob(context, toValidate);
             if (isValid()) {
                 toValidate.setChoice(InputFileChoice.tempKeep);
+            } else {
+                // re-submit stored values
+                toValidate.setInfo(previous);
 	    }
         } else if (InputFileChoice.delete.equals(choice) || InputFileChoice.none.equals(choice)) {
             toValidate.setInfo(null);
