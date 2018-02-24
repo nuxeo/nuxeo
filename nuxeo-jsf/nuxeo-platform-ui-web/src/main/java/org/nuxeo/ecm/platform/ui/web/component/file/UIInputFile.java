@@ -243,12 +243,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (submitted == null) {
             return;
         }
-        InputFileInfo toValidate = submitted.clone();
 
         // validate choice
         InputFileChoice choice;
         try {
-            choice = toValidate.getConvertedChoice();
+            choice = submitted.getConvertedChoice();
         } catch (ConverterException ce) {
             ComponentUtils.addErrorMessage(context, this, ce.getMessage());
             setValid(false);
@@ -259,7 +258,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             setValid(false);
             return;
         }
-        toValidate.setChoice(choice);
+        submitted.setChoice(choice);
 
         InputFileInfo previous = getPreviousFileInfoValue();
         InputFileChoice previousChoice = previous.getConvertedChoice();
@@ -275,39 +274,33 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (InputFileChoice.tempKeep.equals(choice) || InputFileChoice.keep.equals(choice)) {
             if (isLocalValueSet() || InputFileChoice.keep.equals(choice)) {
                 // re-submit stored values
-                toValidate.setInfo(previous);
+                submitted.setInfo(previous);
             }
-            validateBlob(context, toValidate);
             if (getEditFilename()) {
-                validateFilename(context, toValidate);
+                validateFilename(context, submitted);
             }
         } else if (InputFileChoice.upload.equals(choice)) {
-            toValidate.setFilename(null);
-            validateBlob(context, toValidate);
+            validateBlob(context, submitted);
             if (isValid()) {
-                toValidate.setChoice(InputFileChoice.tempKeep);
+                submitted.setChoice(InputFileChoice.tempKeep);
             } else {
                 // re-submit stored values
-                toValidate.setInfo(previous);
-	    }
+                submitted.setInfo(previous);
+            }
         } else if (InputFileChoice.delete.equals(choice) || InputFileChoice.none.equals(choice)) {
-            toValidate.setInfo(null);
-        }
-
-        if (!isValid()) {
-            return;
+            submitted.setInfo(null);
         }
 
         // will need this to call declared validators
-        super.validateValue(context, toValidate);
+        super.validateValue(context, submitted);
 
         // If our value is valid, store the new value, erase the
         // "submitted" value, and emit a ValueChangeEvent if appropriate
         if (isValid()) {
-            setValue(toValidate);
+            setValue(submitted);
             setSubmittedValue(null);
-            if (compareValues(previous, toValidate)) {
-                queueEvent(new ValueChangeEvent(this, previous, toValidate));
+            if (compareValues(previous, submitted)) {
+                queueEvent(new ValueChangeEvent(this, previous, submitted));
             }
         }
     }
@@ -376,7 +369,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (blob != null && blob.getLength() == 0) {
             submitted.setBlob(null);
             submitted.setFilename(null);
-            submitted.setChoice(InputFileChoice.none.name());
             String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
                     : InputFileInfo.EMPTY_FILE_MESSAGE;
             ComponentUtils.addErrorMessage(context, this, message);
