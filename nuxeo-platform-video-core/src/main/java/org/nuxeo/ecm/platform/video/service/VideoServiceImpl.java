@@ -92,7 +92,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                         10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             }
         }
         videoConversions = null;

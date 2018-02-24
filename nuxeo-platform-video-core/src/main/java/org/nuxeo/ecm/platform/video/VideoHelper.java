@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -81,7 +80,7 @@ public class VideoHelper {
 
     // TODO NXP-4792 OG: make this configurable somehow though an extension point. The imaging package need a similar
     // refactoring, try to make both consistent
-    public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<>();
+    protected static final List<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<>();
 
     // Utility class.
     private VideoHelper() {
@@ -102,7 +101,7 @@ public class VideoHelper {
      * Update the JPEG story board and duration in seconds of a Video document from the video blob content.
      */
     @SuppressWarnings("unchecked")
-    public static void updateStoryboard(DocumentModel docModel, Blob video) throws PropertyException {
+    public static void updateStoryboard(DocumentModel docModel, Blob video) {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
             docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, null);

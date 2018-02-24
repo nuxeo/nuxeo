@@ -26,6 +26,8 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PA
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,19 +55,18 @@ import org.nuxeo.ecm.platform.video.tools.VideoTool;
  */
 public abstract class BaseVideoConversionConverter extends CommandLineBasedConverter {
 
-    protected final String OUTPUT_TMP_PATH = "converterTmpPath";
+    protected static final String OUTPUT_TMP_PATH = "converterTmpPath";
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
-            Map<String, Serializable> stringSerializableMap) throws ConversionException {
+            Map<String, Serializable> stringSerializableMap) {
         Map<String, Blob> cmdBlobParams = new HashMap<>();
         cmdBlobParams.put(INPUT_FILE_PATH_PARAMETER, blobHolder.getBlob());
         return cmdBlobParams;
     }
 
     @Override
-    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
-            throws ConversionException {
+    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         Map<String, String> cmdStringParams = new HashMap<>();
 
         String baseDir = getTmpDirectory(parameters);
@@ -84,7 +85,11 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
             throw new ConversionException("Unable to get Blob for holder", e);
         }
         // delete the file as we need only the path for ffmpeg
-        outFile.delete();
+        try {
+            Files.delete(Paths.get(outFile.getCanonicalPath()));
+        } catch (IOException e) {
+            throw new ConversionException("Unable to delete the temporary video conversion file.", e);
+        }
         cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
         String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
         cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
@@ -110,7 +115,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     }
 
     @Override
-    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
+    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) {
         String outputPath = cmdParameters.getParameter(OUTPUT_FILE_PATH_PARAMETER);
         Blob blob = VideoTool.getTemporaryBlob(outputPath, getVideoMimeType());
         String outFileName = cmdParameters.getParameter(OUTPUT_FILE_NAME_PARAMETER);

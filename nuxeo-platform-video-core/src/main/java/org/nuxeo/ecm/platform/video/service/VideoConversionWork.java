@@ -20,12 +20,14 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,6 +41,8 @@ import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.base.Objects;
 
 /**
  * Work running a defined video conversion.
@@ -113,6 +117,19 @@ public class VideoConversionWork extends AbstractWork {
 
     protected Video getVideoToConvert() {
         DocumentModel doc = session.getDocument(new IdRef(docId));
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) && Objects.equal(this, other);
+    }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder builder = new HashCodeBuilder();
+        builder.appendSuper(super.hashCode());
+        builder.append(conversionName);
+        return builder.toHashCode();
+    }
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         Video video = videoDocument.getVideo();
         if (video == null) {
@@ -123,12 +140,13 @@ public class VideoConversionWork extends AbstractWork {
 
     protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                TRANSCODED_VIDEOS_PROPERTY);
         if (transcodedVideos == null) {
             transcodedVideos = new ArrayList<>();
         }
         transcodedVideos.add(transcodedVideo.toMap());
-        doc.setPropertyValue("vid:transcodedVideos", (Serializable) transcodedVideos);
+        doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, (Serializable) transcodedVideos);
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
@@ -147,11 +165,9 @@ public class VideoConversionWork extends AbstractWork {
         String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
         for (String workId : workIds) {
-            if (workId.startsWith(idPrefix)) {
-                if (++worksCount > 1) {
-                    // another work scheduled
-                    return;
-                }
+            if (workId.startsWith(idPrefix) && ++worksCount > 1) {
+                // another work scheduled
+                return;
             }
         }
 
