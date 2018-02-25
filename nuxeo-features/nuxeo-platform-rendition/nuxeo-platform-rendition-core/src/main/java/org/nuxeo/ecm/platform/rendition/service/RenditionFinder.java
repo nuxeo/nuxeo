@@ -92,7 +92,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
                     return;
                 }
             }
-            query.append("ecm:isCheckedInVersion = 1 AND ");
+            query.append("ecm:isVersion = 1 AND ");
         } else {
             String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
             Calendar sourceLastModified = (Calendar) source.getPropertyValue(modificationDatePropertyName);

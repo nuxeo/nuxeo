@@ -167,8 +167,8 @@
           <fixedPart>
             ecm:mixinType = 'SavedSearch'
             AND cvd:contentViewName IS NOT NULL
-            AND ecm:isProxy = 0 AND
-            ecm:isCheckedInVersion = 0
+            AND ecm:isProxy = 0
+            AND ecm:isVersion = 0
             AND ecm:isTrashed = 0
             AND ecm:parentId = ?
             AND SORTED_COLUMN IS NOT NULL

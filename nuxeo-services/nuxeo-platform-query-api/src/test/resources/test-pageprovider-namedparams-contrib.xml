@@ -75,7 +75,7 @@
         <predicate parameter="dc:title" operator="=">
           <field name="parameter1" />
         </predicate>
-        <predicate parameter="ecm:isCheckedInVersion" operator="=">
+        <predicate parameter="ecm:isVersion" operator="=">
           <field xpath="np:isCheckedIn" />
         </predicate>
         <predicate parameter="dc:issued" operator="BETWEEN">

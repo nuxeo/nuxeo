@@ -572,7 +572,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                         + " ecm:mixinType = '" + getConfiguration(configurationName).getRequestDocType()
                         + "' AND docinfo:documentId = '%s' AND"
                         + getConfiguration(configurationName).getUserInfoUsernameField()
-                        + " = '%s' AND ecm:isCheckedInVersion = 0";
+                        + " = '%s' AND ecm:isVersion = 0";
                 query = String.format(query, docId, username);
                 registrationDocs.addAll(session.query(query));
             }

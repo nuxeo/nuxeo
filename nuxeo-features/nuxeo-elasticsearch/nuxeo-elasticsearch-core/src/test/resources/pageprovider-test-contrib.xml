@@ -51,7 +51,7 @@
           <field name="modified_max" schema="advanced_search" />
         </predicate>
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
@@ -281,7 +281,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
         ecm:mixinType != 'HiddenInNavigation' AND dc:title IN ('Note 1','Note 2')
-        AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        AND ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort ascending="true" column="dc:title" />
       <pageSize>50</pageSize>

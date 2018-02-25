@@ -46,7 +46,7 @@
         <property name="coreSession">#{documentManager}</property>
         <pattern>
           SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
           AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />

@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
 
     protected DocumentModelList getVersion() {
-        return session.query("select * from Document where ecm:isCheckedInVersion=1");
+        return session.query("select * from Document where ecm:isVersion = 1");
     }
 
     @Test

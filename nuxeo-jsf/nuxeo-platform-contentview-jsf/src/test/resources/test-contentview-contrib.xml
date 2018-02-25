@@ -13,7 +13,7 @@
         <property name="checkQueryCache">true</property>
         <pattern>
           SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
+          ecm:isVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
           AND ecm:parentId != ? AND ecm:currentLifeCycleState NOT IN ?
         </pattern>
         <sort column="dc:title" ascending="true" />
@@ -62,7 +62,7 @@
         <whereClause docType="File">
           <fixedPart statement="SELECT * FROM Folder">
             ecm:parentId = ? AND
-            ecm:isCheckedInVersion = 0 AND
+            ecm:isVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation'
             AND ecm:isTrashed = 0
@@ -82,7 +82,7 @@
         <property name="coreSession">#{documentManager}</property>
         <pattern>
           SELECT * FROM Folder WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
           AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />
@@ -96,7 +96,7 @@
         <property name="coreSession">#{documentManager}</property>
         <pattern>
           SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
           AND ecm:isTrashed = 0
         </pattern>
         <sort column="dc:title" ascending="true" />
@@ -161,7 +161,7 @@
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
           <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:parentId = ? AND ecm:isVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation' AND ecm:isTrashed = 0
           </fixedPart>
@@ -305,7 +305,7 @@
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_PP">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
+        ecm:isVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
         AND ecm:parentId != ? AND ecm:currentLifeCycleState NOT IN ?
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -316,7 +316,7 @@
       <whereClause docType="File">
         <fixedPart statement="SELECT * FROM Folder">
           ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND
+          ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND
           ecm:isTrashed = 0
@@ -333,7 +333,7 @@
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <pattern>
         SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />

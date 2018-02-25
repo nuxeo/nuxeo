@@ -34,7 +34,7 @@
 
           <fixedPart>
             ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
+            ecm:mixinType != 'Folderish' AND ecm:isVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />

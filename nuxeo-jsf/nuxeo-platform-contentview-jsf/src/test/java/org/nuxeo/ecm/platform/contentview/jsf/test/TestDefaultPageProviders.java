@@ -269,7 +269,7 @@ public class TestDefaultPageProviders {
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -289,7 +289,7 @@ public class TestDefaultPageProviders {
 
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -362,7 +362,7 @@ public class TestDefaultPageProviders {
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -382,7 +382,7 @@ public class TestDefaultPageProviders {
 
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -543,7 +543,7 @@ public class TestDefaultPageProviders {
         assertTrue(pp instanceof CoreQueryAndFetchPageProvider);
         assertEquals(
                 String.format("SELECT dc:title FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryAndFetchPageProvider) pp).getCurrentQuery());
 
@@ -552,7 +552,7 @@ public class TestDefaultPageProviders {
 
         assertEquals(
                 String.format("SELECT dc:title FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:isVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryAndFetchPageProvider) pp).getCurrentQuery());
 
@@ -672,7 +672,7 @@ public class TestDefaultPageProviders {
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
-                String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
+                String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -702,7 +702,7 @@ public class TestDefaultPageProviders {
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
-                String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
+                String.format("SELECT * FROM Folder WHERE ecm:parentId = '%s'" + " AND ecm:isVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -725,7 +725,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format(
                         "SELECT * FROM Folder WHERE ecm:fulltext.dc:title = 'number0'" + " AND (ecm:parentId = '%s'"
-                                + " AND ecm:isCheckedInVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
+                                + " AND ecm:isVersion = 0" + " AND ecm:mixinType != 'HiddenInNavigation'"
                                 + " AND ecm:isTrashed = 0) ORDER BY dc:title",
                         parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
@@ -763,7 +763,7 @@ public class TestDefaultPageProviders {
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
+                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isVersion = 0"
                         + " AND ecm:mixinType != 'HiddenInNavigation'"
                         + " AND ecm:isTrashed = 0 ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());

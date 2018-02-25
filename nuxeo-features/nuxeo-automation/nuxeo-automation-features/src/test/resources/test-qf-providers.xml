@@ -10,7 +10,7 @@
       <pattern>
         SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId = ?
         AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
         AND
         ecm:isTrashed = 0
       </pattern>
@@ -24,7 +24,7 @@
       <pattern>
         SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId =
         :parentIdVar AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+        ecm:isVersion = 0 AND ecm:mixinType !=
         'HiddenInNavigation'
         AND
         ecm:isTrashed = 0
@@ -39,7 +39,7 @@
       <pattern>
         SELECT dc:title, ecm:uuid FROM Document WHERE ecm:parentId =
         :npd:title AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+        ecm:isVersion = 0 AND ecm:mixinType !=
         'HiddenInNavigation'
         AND
         ecm:isTrashed = 0

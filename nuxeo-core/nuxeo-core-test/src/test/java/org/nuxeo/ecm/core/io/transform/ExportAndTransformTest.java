@@ -28,7 +28,7 @@ public class ExportAndTransformTest extends BaseExport {
 
         DocumentModel root = createSomethingToExport(session);
 
-        DocumentModelList versions = session.query("select * from Document where ecm:isCheckedInVersion = 1");
+        DocumentModelList versions = session.query("select * from Document where ecm:isVersion = 1");
 
         assertEquals(2, versions.size());
 

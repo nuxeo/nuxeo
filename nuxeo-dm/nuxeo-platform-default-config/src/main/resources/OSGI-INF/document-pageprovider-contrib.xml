@@ -17,7 +17,7 @@
           <field schema="advanced_search" name="modified_max" />
         </predicate>
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
@@ -30,7 +30,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <whereClause docType="AdvancedContent">
         <fixedPart>
-          ecm:isCheckedInVersion = 0 AND
+          ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
@@ -79,7 +79,7 @@
           <field schema="advanced_search" name="modified_max" />
         </predicate>
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 1
         </fixedPart>
@@ -101,7 +101,7 @@
           <field schema="advanced_search" name="modified_max" />
         </predicate>
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
@@ -123,7 +123,7 @@
           <field schema="advanced_search" name="modified_max" />
         </predicate>
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
