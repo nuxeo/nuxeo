@@ -72,7 +72,7 @@ var NXQLRE = new RegExp(
 const QUERY_FIXED_PART =
     'ecm:mixinType != \'HiddenInNavigation\' AND ' +
     'ecm:isProxy = 0 AND ' +
-    'ecm:isCheckedInVersion = 0 AND ' +
+    'ecm:isVersion = 0 AND ' +
     'ecm:currentLifeCycleState != \'deleted\'';
 
 /**
