@@ -17,7 +17,7 @@
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
           </predicate>
-          <fixedPart>ecm:parentId = ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+          <fixedPart>ecm:parentId = ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isVersion = 0 AND ecm:isTrashed = 0
            AND dss:totalSize >=1024</fixedPart>
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
@@ -55,7 +55,7 @@
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
             <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
           </predicate>
-          <fixedPart>ecm:path STARTSWITH ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+          <fixedPart>ecm:path STARTSWITH ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isVersion = 0 AND ecm:isTrashed = 0
            AND dss:totalSize >=1024</fixedPart>
         </whereClause>
         <parameter>#{documentManager.getRootDocument().getPathAsString()}</parameter>

@@ -59,7 +59,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
     @Override
     public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
         log.debug("Starting initial Quota computation for path: " + path);
-        String query = "SELECT ecm:uuid FROM Document WHERE ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0";
+        String query = "SELECT ecm:uuid FROM Document WHERE ecm:isVersion = 0 AND ecm:isProxy = 0";
         DocumentModel root;
         if (path == null) {
             root = session.getRootDocument();
