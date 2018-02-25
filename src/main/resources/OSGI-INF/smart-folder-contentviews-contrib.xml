@@ -23,7 +23,7 @@
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">
           SELECT * FROM Document ? ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+          'HiddenInNavigation' AND ecm:isVersion = 0 AND
           ecm:isTrashed = 0
         </pattern>
         <parameter>
