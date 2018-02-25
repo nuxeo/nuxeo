@@ -121,16 +121,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     /** Route models that have been validated. */
     private static final String ROUTE_MODEL_WITH_ID_QUERY = String.format(
-            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isCheckedInVersion  = 0  AND ecm:isProxy = 0 ",
+            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     /** Route models that have been validated. */
     private static final String ROUTE_MODEL_DOC_ID_WITH_ID_QUERY = String.format(
-            "SELECT ecm:uuid FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isCheckedInVersion  = 0  AND ecm:isProxy = 0 ",
+            "SELECT ecm:uuid FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
-            + " ecm:parentId = '%s' AND ecm:isCheckedInVersion  = 0 AND "
+            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND "
             + "ecm:isTrashed = 0 ORDER BY ecm:pos";
 
     public static final String CHAINS_TO_TYPE_XP = "chainsToType";

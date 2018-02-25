@@ -11,7 +11,7 @@
         <pattern>
           SELECT * FROM Document WHERE ecm:mixinType IN
           ('RoutingTask')
-          AND ecm:isCheckedInVersion = 0 AND
+          AND ecm:isVersion = 0 AND
           ecm:isTrashed = 0 AND
           ecm:currentLifeCycleState !=
           'cancelled' AND
@@ -52,7 +52,7 @@
           </predicate>
           <fixedPart>
             ecm:mixinType IN ('RoutingTask') AND
-            ecm:isCheckedInVersion = 0 AND
+            ecm:isVersion = 0 AND
             ecm:currentLifeCycleState =
             'opened' AND ecm:isProxy = 0
           </fixedPart>
@@ -90,7 +90,7 @@
         </parameter>
         <whereClause docType="Document">
           <fixedPart>
-            ecm:uuid IN (?) AND ecm:isCheckedInVersion = 0 AND
+            ecm:uuid IN (?) AND ecm:isVersion = 0 AND
             ecm:isProxy = 0
           </fixedPart>
         </whereClause>

@@ -89,7 +89,7 @@ public class GetTaskNamesOperation {
     protected DocumentModelList getAllUserOpenTask(CoreSession session, Locale locale, String searchTerm,
             boolean partialMatch) {
         DocumentModelList list = new DocumentModelListImpl();
-        String query = "Select * from TaskDoc where ecm:mixinType IN ('RoutingTask') AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
+        String query = "Select * from TaskDoc where ecm:mixinType IN ('RoutingTask') AND ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
         Map<String, DocumentModel> results = new HashMap<String, DocumentModel>();
         DocumentModelList docs = session.query(query);
         int i = 0;

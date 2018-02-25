@@ -8,7 +8,7 @@
     <coreQueryPageProvider name="default_section_suggestion">
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Section WHERE dc:title LIKE '?%' AND ecm:mixinType !=
-        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        'HiddenInNavigation' AND ecm:isVersion = 0 AND
         ecm:isTrashed = 0
       </pattern>
       <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
