@@ -50,7 +50,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
     protected EventService eventService;
 
     protected String getContentHash() throws Exception {
-        DocumentModelList alldocs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
+        DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         StringBuffer sb = new StringBuffer();
         for (DocumentModel doc : alldocs) {
             sb.append(doc.getId());
@@ -99,7 +99,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("0.1", snapshot.getDocument().getVersionLabel());
 
         // check that the facet has been added for all child
-        DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1 order by ecm:path");
+        DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 1 order by ecm:path");
         for (DocumentModel doc : docs) {
             if (doc.isFolder() && !doc.hasFacet(Snapshot.FACET)) {
                 System.out.println("ERR : doc " + doc.getPathAsString() + " has no shapshot schema");

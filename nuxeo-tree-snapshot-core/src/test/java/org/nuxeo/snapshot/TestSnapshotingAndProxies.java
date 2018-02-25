@@ -76,7 +76,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     @Override
     protected void dumpDBContent() throws Exception {
         System.out.println("\nDumping Live docs in repository");
-        DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
+        DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         for (DocumentModel doc : docs) {
             StringBuffer sb = new StringBuffer();
             sb.append(doc.getPathAsString());
@@ -105,7 +105,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     @Override
     protected void dumpVersionsContent() throws Exception {
         System.out.println("\nDumping versions in repository");
-        DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1");
+        DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 1");
         for (DocumentModel doc : docs) {
             StringBuffer sb = new StringBuffer();
             sb.append(doc.getPathAsString());
@@ -128,7 +128,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     }
 
     protected String getContentHash() throws Exception {
-        DocumentModelList alldocs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
+        DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         StringBuffer sb = new StringBuffer();
         for (DocumentModel doc : alldocs) {
             sb.append(doc.getId());
