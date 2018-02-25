@@ -1745,13 +1745,13 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy <> 1");
         assertEquals(9, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 1");
         assertIdSet(dml, versionId, noteVersionId);
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 0");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
         assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isVersion = 0");
         assertEquals(7, dml.size()); // 7 folder/docs
 
         // filter out proxies explicitely, keeps live and version
@@ -1763,7 +1763,7 @@ public class TestSQLRepositoryQuery {
         assertIdSet(dml, proxyId);
 
         // only keep versions
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isVersion = 1");
         assertIdSet(dml, versionId);
 
         // "deep" isProxy
@@ -1863,7 +1863,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQuerySpecialFields() throws Exception {
-        // ecm:isProxy and ecm:isCheckedInVersion are already tested in
+        // ecm:isProxy and ecm:isVersion are already tested in
         // testQueryWithProxies
 
         // ecm:path already tested in testStartsWith

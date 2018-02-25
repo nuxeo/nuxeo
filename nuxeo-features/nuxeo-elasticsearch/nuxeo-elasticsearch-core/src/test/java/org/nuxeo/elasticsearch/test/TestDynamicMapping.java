@@ -75,15 +75,15 @@ public class TestDynamicMapping extends TestMapping {
         Assert.assertEquals(0, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
     }
 }

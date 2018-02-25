@@ -22,7 +22,7 @@
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
             ecm:isTrashed = 0 AND
-            ecm:isCheckedInVersion = 0
+            ecm:isVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
@@ -68,7 +68,7 @@
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
             ecm:isTrashed = 0 AND
-            ecm:isCheckedInVersion = 0
+            ecm:isVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />

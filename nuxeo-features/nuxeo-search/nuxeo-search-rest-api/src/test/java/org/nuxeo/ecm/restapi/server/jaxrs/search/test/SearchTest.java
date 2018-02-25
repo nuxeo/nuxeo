@@ -135,7 +135,7 @@ public class SearchTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
+                        + "        AND ecm:isVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());

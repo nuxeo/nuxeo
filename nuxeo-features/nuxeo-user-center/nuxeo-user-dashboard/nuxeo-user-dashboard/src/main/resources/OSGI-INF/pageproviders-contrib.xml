@@ -20,7 +20,7 @@
         SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:mixinType != 'SystemDocument' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 1
+        ecm:isVersion = 0 AND ecm:isProxy = 1
       </pattern>
       <sort column="dc:issued" ascending="false" />
       <pageSize>5</pageSize>
@@ -32,7 +32,7 @@
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:mixinType != 'SystemDocument' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
+        ecm:isVersion = 0 AND ecm:isProxy = 0 AND
         ecm:isTrashed = 0 AND ecm:path STARTSWITH ?
       </pattern>
       <sort column="dc:modified" ascending="true" />
@@ -77,7 +77,7 @@
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:mixinType != 'SystemDocument' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
+        ecm:isVersion = 0 AND ecm:isProxy = 0 AND
         ecm:isTrashed = 1
       </pattern>
       <sort column="dc:modified" ascending="true" />
@@ -88,7 +88,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND
+        ecm:isVersion = 0 AND ecm:isTrashed = 0 AND
         collectionMember:collectionIds/* = ?
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -99,7 +99,7 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND
+        ecm:isVersion = 0 AND ecm:isTrashed = 0 AND
         ecm:acl/*1/grant = 1 AND
         ecm:acl/*1/permission IN ('Read', 'ReadWrite', 'ReadRemove', 'Everything') AND
         ecm:acl/*1/principal IN ?

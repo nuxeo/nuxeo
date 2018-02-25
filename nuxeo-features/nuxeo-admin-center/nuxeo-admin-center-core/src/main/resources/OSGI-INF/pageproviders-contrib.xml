@@ -10,7 +10,7 @@
         <fixedPart
             statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
           ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:isCheckedInVersion = 0
+          AND ecm:isVersion = 0
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>
         <predicate parameter="ecm:acl/*1/principal" operator="IN">
@@ -27,7 +27,7 @@
     <coreQueryPageProvider name="permissions_search_folders">
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE dc:title LIKE '?%' AND ecm:mixinType = 'Folderish'
-        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND
         ecm:isTrashed = 0
       </pattern>
       <pageSize>10</pageSize>
@@ -61,7 +61,7 @@
                    statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission,
               ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
           ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:isCheckedInVersion = 0
+          AND ecm:isVersion = 0
           AND SORTED_COLUMN IS NOT NULL
           ?
         </fixedPart>

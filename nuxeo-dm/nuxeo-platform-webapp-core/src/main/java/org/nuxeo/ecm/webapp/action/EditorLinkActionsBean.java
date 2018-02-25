@@ -86,7 +86,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
         constraints.add("ecm:mixinType != 'Folderish'");
         constraints.add("ecm:mixinType != 'HiddenInNavigation'");
         // no archived revisions
-        constraints.add("ecm:isCheckedInVersion = 0");
+        constraints.add("ecm:isVersion = 0");
         // search keywords
         final String query = String.format("SELECT * FROM Document WHERE %s",
                 StringUtils.join(constraints.toArray(), " AND "));

@@ -147,7 +147,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
             String query = "select * from " + USER_PROFILE_DOCTYPE + " where ecm:parentId='" + userWorkspace.getId()
                     + "' " + " AND ecm:isProxy = 0 "
-                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0";
+                    + " AND ecm:isVersion = 0 AND ecm:isTrashed = 0";
             DocumentModelList children = session.query(query);
             if (!children.isEmpty()) {
                 userProfileDocRef = children.get(0).getRef();

@@ -89,7 +89,7 @@
         <predicate parameter="dc:title" operator="=">
           <field name="parameter1" />
         </predicate>
-        <predicate parameter="ecm:isCheckedInVersion" operator="=">
+        <predicate parameter="ecm:isVersion" operator="=">
           <field xpath="np:isCheckedIn" />
         </predicate>
         <predicate parameter="dc:issued" operator="BETWEEN">
@@ -114,7 +114,7 @@
       <property name="searchAllRepositories">true</property>
       <pattern quoteParameters="false">
         SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isTrashed = 0
         AND dc:subjects IN (?)
       </pattern>

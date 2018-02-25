@@ -9,7 +9,7 @@
 <!--
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
       <pattern>
-        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
@@ -21,7 +21,7 @@
       name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
       <whereClause docType="File">
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+          ecm:parentId = ? AND ecm:isVersion = 0 AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">

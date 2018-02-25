@@ -2785,7 +2785,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <searchDocumentType>all_documents_cv</searchDocumentType>
-        <pattern>SELECT * FROM Document WHERE (ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0)</pattern>
+        <pattern>SELECT * FROM Document WHERE (ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0)</pattern>
         <sort column="dc:title" ascending="true"/>
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
@@ -2816,7 +2816,7 @@
           <predicate parameter="dc:title" operator="=">
             <field schema="testSearch_cv" name="dublincore_title"/>
           </predicate>
-          <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0</fixedPart>
+          <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0</fixedPart>
         </whereClause>
         <searchDocumentType>testSearch_cv</searchDocumentType>
         <pageSize>10</pageSize>

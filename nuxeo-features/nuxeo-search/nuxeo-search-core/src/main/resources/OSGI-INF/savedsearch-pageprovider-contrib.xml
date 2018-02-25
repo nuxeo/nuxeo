@@ -10,7 +10,7 @@
         AND ((saved:query IS NOT NULL AND saved:queryLanguage IS NOT NULL)
               OR saved:providerName IS NOT NULL)
         AND ecm:isProxy = 0
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -23,7 +23,7 @@
         AND ((saved:query IS NOT NULL AND saved:queryLanguage IS NOT NULL)
               OR saved:providerName IS NOT NULL)
         AND ecm:isProxy = 0
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isTrashed = 0
         AND saved:providerName = :pageProvider
       </pattern>
@@ -37,7 +37,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'SavedSearch'
         AND cvd:contentViewName IS NOT NULL
         AND dc:creator = ? AND ecm:isProxy = 0
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isTrashed = 0
         AND SORTED_COLUMN IS NOT NULL
       </pattern>
@@ -50,7 +50,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'SavedSearch'
         AND cvd:contentViewName IS NOT NULL
         AND dc:creator != ? AND ecm:isProxy = 0
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isTrashed = 0
         AND SORTED_COLUMN IS NOT NULL
       </pattern>
