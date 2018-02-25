@@ -269,7 +269,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                     String.format("SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
             sb.append(" AND ecm:isTrashed = 0");
             sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
-            // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
+            // Don't need to add ecm:isVersion = 0 because versions are already excluded by the
             // ecm:ancestorId clause since they have no path
             String query = sb.toString();
             if (log.isDebugEnabled()) {
