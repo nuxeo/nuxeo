@@ -246,7 +246,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         StringBuffer sb = new StringBuffer(
                 "select * from Document where ecm:mixinType = 'Template' AND ecm:isTrashed = 0");
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
-            sb.append(" AND ecm:isCheckedInVersion = 0");
+            sb.append(" AND ecm:isVersion = 0");
         }
         if (targetType != null) {
             sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')");
@@ -258,7 +258,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         StringBuffer sb = new StringBuffer(
             "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = " + NXQL.escapeString(name));
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
-            sb.append(" AND ecm:isCheckedInVersion = 0");
+            sb.append(" AND ecm:isVersion = 0");
         }
         return sb.toString();
     }
@@ -306,7 +306,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     @Override
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
         StringBuffer sb = new StringBuffer(
-                "select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
+                "select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ");
         sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/" + TemplateBinding.TEMPLATE_ID_KEY);
         sb.append(" = '");
         sb.append(source.getId());

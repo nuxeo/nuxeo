@@ -89,7 +89,7 @@ public class ModelImporter {
 
     protected static final String RAW_RESOURCES_ROOT = "rawsamples";
 
-    protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:isTrashed = 0 order by dc:created ASC";
+    protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isVersion = 0  AND  ecm:isTrashed = 0 order by dc:created ASC";
 
     protected final CoreSession session;
 

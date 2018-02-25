@@ -458,10 +458,10 @@
         </fields>
         <properties widgetMode="edit">
           <property name="documentSchemas">dublincore,common</property>
-          <property name="query">SELECT * FROM nxtrProject 
-WHERE dc:title ILIKE ? 
-AND ecm:isProxy = 0 
-AND ecm:isCheckedInVersion = 0 
+          <property name="query">SELECT * FROM nxtrProject
+WHERE dc:title ILIKE ?
+AND ecm:isProxy = 0
+AND ecm:isVersion = 0
 AND ecm:currentLifeCycleState != 'deleted' </property>
         </properties>
       </widget>
@@ -535,10 +535,10 @@ AND ecm:currentLifeCycleState != 'deleted' </property>
         </fields>
         <properties widgetMode="edit">
           <property name="documentSchemas">dublincore,common</property>
-          <property name="query">SELECT * FROM nxtrProject 
-WHERE dc:title ILIKE ? 
-AND ecm:isProxy = 0 
-AND ecm:isCheckedInVersion = 0 
+          <property name="query">SELECT * FROM nxtrProject
+WHERE dc:title ILIKE ?
+AND ecm:isProxy = 0
+AND ecm:isVersion = 0
 AND ecm:currentLifeCycleState != 'deleted' </property>
         </properties>
       </widget>

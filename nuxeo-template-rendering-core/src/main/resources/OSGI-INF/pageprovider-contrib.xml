@@ -8,7 +8,7 @@
       <pattern escapeParameters="true" quoteParameters="false">
         SELECT * FROM Document WHERE ecm:mixinType = 'TemplateBased' AND
         ecm:isTrashed = 0 AND
-        nxts:bindings/*/templateId IN (?) AND ecm:isCheckedInVersion = ?
+        nxts:bindings/*/templateId IN (?) AND ecm:isVersion = ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
