@@ -17,7 +17,7 @@ The operation “ExportStructureToFS” has the 3 parameters:
 - File System Target: where the export will be done on the File System
 - Query: optional parameter. By default the query called by the exporter is:
 
-SELECT * FROM Document ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !='deleted'
+SELECT * FROM Document ecm:mixinType !='HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:currentLifeCycleState !='deleted'
 
 
 ## Customization

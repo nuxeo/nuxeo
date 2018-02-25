@@ -55,7 +55,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
                 query = customQuery + " where ecm:parentId = ?";
             }
         } else {
-            query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0";
+            query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0";
         }
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
