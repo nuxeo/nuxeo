@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.nuxeo.common.utils.Path;
@@ -51,6 +50,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,16 +61,6 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractTrashService implements TrashService {
 
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
-
-    @Override
-    public void trashDocument(DocumentModel doc) {
-        trashDocuments(Collections.singletonList(doc));
-    }
-
-    @Override
-    public void untrashDocument(DocumentModel doc) {
-        undeleteDocuments(Collections.singletonList(doc));
-    }
 
     @Override
     public boolean folderAllowsDelete(DocumentModel folder) {
@@ -102,7 +92,7 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
-    public boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) {
+    public boolean canPurgeOrUntrash(List<DocumentModel> docs, Principal principal) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -222,6 +212,12 @@ public abstract class AbstractTrashService implements TrashService {
         return doc;
     }
 
+    @Override
+    public DocumentModel getAboveDocument(DocumentModel doc, Principal principal) {
+        TrashInfo info = getTrashInfo(Collections.singletonList(doc), principal, false, false);
+        return getAboveDocument(doc, info.rootPaths);
+    }
+
     protected static boolean underOneOf(Path testedPath, Set<Path> paths) {
         for (Path path : paths) {
             if (path != null && path.isPrefixOf(testedPath)) {
@@ -237,6 +233,39 @@ public abstract class AbstractTrashService implements TrashService {
             return;
         }
         session.removeDocuments(docRefs.toArray(new DocumentRef[docRefs.size()]));
+        session.save();
+    }
+
+    @Override
+    public void purgeDocumentsUnder(DocumentModel parent) {
+        if (parent == null || !parent.hasFacet(FacetNames.FOLDERISH)) {
+            throw new UnsupportedOperationException("Empty trash can only be performed on a Folderish document");
+        }
+        CoreSession session = parent.getCoreSession();
+        if (!session.hasPermission(parent.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
+            return;
+        }
+        try (IterableQueryResult result = session.queryAndFetch(String.format(TRASHED_QUERY, parent.getId()),
+                NXQL.NXQL)) {
+            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            StreamSupport.stream(result.spliterator(), false)
+                         .map(map -> map.get(NXQL.ECM_UUID).toString())
+                         .map(IdRef::new)
+                         // check user has permission to remove document
+                         .filter(ref -> session.hasPermission(ref, SecurityConstants.REMOVE))
+                         // check user has permission to remove a locked document
+                         .filter(ref -> {
+                             if (principal == null || principal.isAdministrator()) {
+                                 // administrator can remove anything
+                                 return true;
+                             } else {
+                                 // only lock owner can remove locked document
+                                 DocumentModel doc = session.getDocument(ref);
+                                 return !doc.isLocked() || principal.getName().equals(getDocumentLocker(doc));
+                             }
+                         })
+                         .forEach(session::removeDocument);
+        }
         session.save();
     }
 
@@ -262,35 +291,6 @@ public abstract class AbstractTrashService implements TrashService {
     public DocumentModelList getDocuments(DocumentModel parent) {
         CoreSession session = parent.getCoreSession();
         return session.query(String.format(TRASHED_QUERY, parent.getId()));
-    }
-
-    @Override
-    public List<DocumentRef> getPurgeableDocumentRefs(DocumentModel parent) {
-        CoreSession session = parent.getCoreSession();
-        if (!session.hasPermission(parent.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
-            return Collections.emptyList();
-        }
-        try (IterableQueryResult result = session.queryAndFetch(String.format(TRASHED_QUERY, parent.getId()),
-                NXQL.NXQL)) {
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-            return StreamSupport.stream(result.spliterator(), false)
-                                .map(map -> map.get(NXQL.ECM_UUID).toString())
-                                .map(IdRef::new)
-                                // check user has permission to remove document
-                                .filter(ref -> session.hasPermission(ref, SecurityConstants.REMOVE))
-                                // check user has permission to remove a locked document
-                                .filter(ref -> {
-                                    if (principal == null || principal.isAdministrator()) {
-                                        // administrator can remove anything
-                                        return true;
-                                    } else {
-                                        // only lock owner can remove locked document
-                                        DocumentModel doc = session.getDocument(ref);
-                                        return !doc.isLocked() || principal.getName().equals(getDocumentLocker(doc));
-                                    }
-                                })
-                                .collect(Collectors.toList());
-        }
     }
 
     /**

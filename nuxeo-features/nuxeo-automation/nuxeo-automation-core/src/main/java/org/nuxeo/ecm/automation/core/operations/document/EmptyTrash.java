@@ -23,9 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 
 /**
@@ -37,20 +35,14 @@ public class EmptyTrash {
     public static final String ID = "Document.EmptyTrash";
 
     @Context
-    protected CoreSession session;
-
-    @Context
     protected TrashService trashService;
 
     @Param(name = "parent", description = "A Folderish document whose trash will be emptied")
-    DocumentModel parent;
+    protected DocumentModel parent;
 
     @OperationMethod()
     public void run() {
-        if (parent == null || !parent.hasFacet(FacetNames.FOLDERISH)) {
-            throw new UnsupportedOperationException("Empty trash can only be performed on a Folderish document");
-        }
-        trashService.purgeDocuments(session, trashService.getPurgeableDocumentRefs(parent));
+        trashService.purgeDocumentsUnder(parent);
     }
 
 }

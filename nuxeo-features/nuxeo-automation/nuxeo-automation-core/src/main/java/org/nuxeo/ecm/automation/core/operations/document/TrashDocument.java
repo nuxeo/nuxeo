@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import java.util.Collections;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -46,7 +44,7 @@ public class TrashDocument {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        trashService.trashDocuments(Collections.singletonList(doc));
+        trashService.trashDocument(doc);
         // return doc with updated deleted markers
         return session.getDocument(doc.getRef());
     }

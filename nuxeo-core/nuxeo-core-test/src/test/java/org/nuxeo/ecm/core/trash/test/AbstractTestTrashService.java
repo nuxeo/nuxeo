@@ -42,15 +42,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -64,7 +63,7 @@ public abstract class AbstractTestTrashService {
     protected TrashService trashService;
 
     @Inject
-    protected EventService eventService;
+    protected TransactionalFeature transactionalFeature;
 
     protected DocumentModel fold;
 
@@ -94,12 +93,6 @@ public abstract class AbstractTestTrashService {
         session.save();
     }
 
-    protected void nextTransaction() {
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
-    }
-
     @Test
     public void testNameMangling() {
         createDocuments();
@@ -107,7 +100,7 @@ public abstract class AbstractTestTrashService {
         assertTrue(mangled, mangled.startsWith("doc1._"));
         assertTrue(mangled, mangled.endsWith("_.trashed"));
 
-        trashService.trashDocuments(Collections.singletonList(doc1));
+        trashService.trashDocument(doc1);
         doc1 = session.getDocument(doc1.getRef());
 
         mangled = doc1.getName();
@@ -125,9 +118,9 @@ public abstract class AbstractTestTrashService {
         assertTrue(trashService.canDelete(Collections.singletonList(fold), principal, false));
         assertTrue(trashService.canDelete(Collections.singletonList(doc1), principal, false));
         assertTrue(trashService.canDelete(Collections.singletonList(doc2), principal, false));
-        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(fold), principal));
-        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(doc1), principal));
-        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(doc2), principal));
+        assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(fold), principal));
+        assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(doc1), principal));
+        assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(doc2), principal));
 
         TrashInfo info = trashService.getTrashInfo(Arrays.asList(fold, doc1, doc3), principal, false, false);
         assertEquals(3, info.docs.size());
@@ -135,6 +128,10 @@ public abstract class AbstractTestTrashService {
         assertEquals(new HashSet<>(Arrays.asList(new Path("/fold"), new Path("/doc3"))), info.rootPaths);
 
         DocumentModel above = trashService.getAboveDocument(doc1, Collections.singleton(new Path("/fold/doc1")));
+        assertEquals(above.getPathAsString(), fold.getId(), above.getId());
+
+        // test new method return the same result
+        above = trashService.getAboveDocument(doc1, Collections.singleton(new Path("/fold/doc1")));
         assertEquals(above.getPathAsString(), fold.getId(), above.getId());
     }
 
@@ -148,7 +145,7 @@ public abstract class AbstractTestTrashService {
 
         trashService.trashDocuments(Arrays.asList(fold, doc1, doc3, doc4));
 
-        nextTransaction();
+        transactionalFeature.nextTransaction();
 
         // refetch as lifecycle state is cached
         fold = session.getDocument(new IdRef(fold.getId()));
@@ -172,20 +169,20 @@ public abstract class AbstractTestTrashService {
         // when recursing, don't change name
         assertEquals("doc2", doc2.getName());
 
-        assertTrue(trashService.canPurgeOrUndelete(Arrays.asList(fold, doc1, doc2, doc3, doc4), principal));
+        assertTrue(trashService.canPurgeOrUntrash(Arrays.asList(fold, doc1, doc2, doc3, doc4), principal));
 
         // purge doc1
         trashService.purgeDocuments(session, Collections.singletonList(doc1.getRef()));
         assertFalse(session.exists(doc1.getRef()));
 
-        // undelete doc2 and doc4
-        trashService.undeleteDocuments(Arrays.asList(doc2, doc4));
+        // untrash doc2 and doc4
+        trashService.untrashDocuments(Arrays.asList(doc2, doc4));
         fold = session.getDocument(new IdRef(fold.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         doc4 = session.getDocument(new IdRef(doc4.getId()));
         assertFalse(doc2.isTrashed());
         assertFalse(doc4.isTrashed());
-        // fold also undeleted
+        // fold also untrashed
         assertFalse(fold.isTrashed());
         // check name restored
         assertEquals("fold", fold.getName());
@@ -198,21 +195,45 @@ public abstract class AbstractTestTrashService {
         DocumentModel doc3bis = session.createDocumentModel("/", "doc3", "Note");
         doc3bis = session.createDocument(doc3bis);
         assertEquals("doc3", doc3bis.getName());
-        // undelete doc3
-        trashService.undeleteDocuments(Collections.singletonList(doc3));
+        // untrash doc3
+        trashService.untrashDocument(doc3);
         doc3 = session.getDocument(new IdRef(doc3.getId()));
         assertFalse(doc3.isTrashed());
-        // check it was renamed again during undelete
+        // check it was renamed again during untrash
         assertFalse("doc3".equals(doc3.getName()));
         assertFalse(doc3delname.equals(doc3.getName()));
     }
 
     @Test
-    public void testUndeleteChildren() {
+    public void testTrashPurgeDocumentsUnder() {
         createDocuments();
-        trashService.trashDocuments(Collections.singletonList(fold));
+        trashService.trashDocument(doc1);
 
-        nextTransaction();
+        transactionalFeature.nextTransaction();
+
+        assertFalse(session.isTrashed(fold.getRef()));
+        assertTrue(session.isTrashed(doc1.getRef()));
+        assertFalse(session.isTrashed(doc2.getRef()));
+        assertFalse(session.isTrashed(doc3.getRef()));
+
+        // doc1 is now trashed but not doc2 - purgeDocumentsUnder of fold should only purge doc1
+        trashService.purgeDocumentsUnder(fold);
+
+        transactionalFeature.nextTransaction();
+
+        assertFalse(session.isTrashed(fold.getRef()));
+        assertFalse(session.exists(doc1.getRef()));
+        assertFalse(session.isTrashed(doc2.getRef()));
+        assertFalse(session.isTrashed(doc3.getRef()));
+
+    }
+
+    @Test
+    public void testUntrashChildren() {
+        createDocuments();
+        trashService.trashDocument(fold);
+
+        transactionalFeature.nextTransaction();
 
         // refetch as lifecycle state is cached
         fold = session.getDocument(new IdRef(fold.getId()));
@@ -223,10 +244,10 @@ public abstract class AbstractTestTrashService {
         assertTrue(doc1.isTrashed());
         assertTrue(doc2.isTrashed());
 
-        // undelete fold
-        trashService.undeleteDocuments(Collections.singletonList(fold));
+        // untrash fold
+        trashService.untrashDocument(fold);
 
-        nextTransaction();
+        transactionalFeature.nextTransaction();
 
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
@@ -249,10 +270,10 @@ public abstract class AbstractTestTrashService {
         assertFalse(proxy.isTrashed());
         assertFalse(version.isTrashed());
 
-        // now delete the folder
-        trashService.trashDocuments(Collections.singletonList(fold));
+        // now trash the folder
+        trashService.trashDocument(fold);
 
-        nextTransaction();
+        transactionalFeature.nextTransaction();
 
         fold.refresh();
         version.refresh();
@@ -269,7 +290,7 @@ public abstract class AbstractTestTrashService {
         session.save();
         assertTrue(trashService.canDelete(Collections.singletonList(proxy), principal, false));
         assertFalse(trashService.canDelete(Collections.singletonList(proxy), principal, true));
-        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy), principal));
+        assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(proxy), principal));
     }
 
     /**
@@ -292,7 +313,9 @@ public abstract class AbstractTestTrashService {
         session.save();
         DocumentModel above = trashService.getAboveDocument(doc4, Collections.singleton(new Path("/")));
         assertNull(above);
-        trashService.trashDocuments(Collections.singletonList(doc4));
+        above = trashService.getAboveDocument(doc4, principal);
+        assertNull(above);
+        trashService.trashDocument(doc4);
         assertFalse(session.exists(doc4.getRef()));
     }
 
@@ -313,7 +336,7 @@ public abstract class AbstractTestTrashService {
         session.save();
 
         // trash
-        trashService.trashDocuments(Collections.singletonList(doc));
+        trashService.trashDocument(doc);
 
         // make sure it's still checked in (or not if compat)
         doc = session.getDocument(new IdRef(doc.getId()));
@@ -324,8 +347,8 @@ public abstract class AbstractTestTrashService {
             assertTrue(doc.isCheckedOut());
         }
 
-        // undelete
-        trashService.undeleteDocuments(Collections.singletonList(doc));
+        // untrash
+        trashService.untrashDocument(doc);
 
         // make sure it's still checked in (or not if compat)
         doc = session.getDocument(new IdRef(doc.getId()));
