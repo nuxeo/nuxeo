@@ -8,7 +8,7 @@
         <property name="maxResults">PAGE_SIZE</property>
         <pattern quoteParameters="false" escapeParameters="true">
           SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+          'HiddenInNavigation' AND ecm:isVersion = 0 AND
           ecm:isTrashed = 0 AND ecm:parentId IS NOT NULL
         </pattern>
         <pageSize>10</pageSize>
