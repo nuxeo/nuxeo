@@ -22,12 +22,10 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,11 +51,8 @@ public class FirstAccessibleAncestorJsonEnricher extends AbstractJsonEnricher<Do
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         TrashService trashService = Framework.getService(TrashService.class);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
-            TrashInfo info = trashService.getTrashInfo(Collections.singletonList(document),
-                    wrapper.getSession().getPrincipal(), false, false);
-            DocumentModel above = trashService.getAboveDocument(document, info.rootPaths);
-            jg.writeFieldName(NAME);
-            writeEntity(above, jg);
+            DocumentModel above = trashService.getAboveDocument(document, wrapper.getSession().getPrincipal());
+            writeEntityField(NAME, above, jg);
         }
     }
 

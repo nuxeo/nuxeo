@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -47,9 +44,8 @@ public class UntrashDocument {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
-        List<DocumentModel> docs = Collections.singletonList(doc);
-        if (trashService.canPurgeOrUndelete(docs, session.getPrincipal())) {
-            trashService.undeleteDocuments(docs);
+        if (trashService.canPurgeOrUntrash(doc, session.getPrincipal())) {
+            trashService.untrashDocument(doc);
             return session.getDocument(doc.getRef());
         } else {
             throw new NuxeoException("Cannot untrash these documents");

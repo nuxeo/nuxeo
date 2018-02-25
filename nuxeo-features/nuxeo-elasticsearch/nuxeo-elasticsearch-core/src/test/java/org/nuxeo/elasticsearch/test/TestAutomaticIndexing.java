@@ -521,15 +521,14 @@ public class TestAutomaticIndexing {
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(1, ret.totalSize());
-        trashService.undeleteDocuments(Collections.singletonList(doc));
+        trashService.untrashDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(2, ret.totalSize());
 
         SearchResponse searchResponse = searchAll();
