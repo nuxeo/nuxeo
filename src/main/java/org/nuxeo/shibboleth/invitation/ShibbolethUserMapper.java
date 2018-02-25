@@ -134,7 +134,7 @@ public class ShibbolethUserMapper implements UserMapper {
                         + "ecm:mixinType = '"
                         + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getRequestDocType() + "' AND "
                         + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getUserInfoUsernameField()
-                        + " = '%s' AND ecm:isCheckedInVersion = 0";
+                        + " = '%s' AND ecm:isVersion = 0";
                 query = String.format(query, email);
                 registrationDocuments.addAll(session.query(query));
                 Map<String, DocumentModel> targetDocuments = new HashMap<>();
