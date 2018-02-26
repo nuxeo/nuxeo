@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -40,8 +40,8 @@ public class BlobDispatcherDescriptor {
     @XNode("class")
     public Class<? extends BlobDispatcher> klass;
 
-    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties = new HashMap<String, String>();
+    @XNodeMap(value = "property", key = "@name", type = LinkedHashMap.class, componentType = String.class)
+    public Map<String, String> properties = new LinkedHashMap<>();
 
     private BlobDispatcher instance;
 
