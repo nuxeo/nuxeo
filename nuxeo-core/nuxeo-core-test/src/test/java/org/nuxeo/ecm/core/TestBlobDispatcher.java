@@ -88,11 +88,13 @@ public class TestBlobDispatcher {
         try (InputStream in = blob1.getStream()) {
             assertEquals("foo", IOUtils.toString(in, UTF_8));
         }
+        assertEquals("test", ((ManagedBlob) blob1).getProviderId());
 
         blob2 = (Blob) doc2.getPropertyValue("file:content");
         try (InputStream in = blob2.getStream()) {
             assertEquals("bar", IOUtils.toString(in, UTF_8));
         }
+        assertEquals("test2", ((ManagedBlob) blob2).getProviderId());
     }
 
     @Test
