@@ -256,8 +256,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     } catch (PropertyNotFoundException e) {
                         try {
                             value = doc.getPropertyValue(xpath);
-                        } catch (IllegalArgumentException e2) {
-                            continue;
+                        } catch (PropertyNotFoundException e2) {
+                            allClausesMatch = false;
+                            break;
                         }
                     }
                 }
