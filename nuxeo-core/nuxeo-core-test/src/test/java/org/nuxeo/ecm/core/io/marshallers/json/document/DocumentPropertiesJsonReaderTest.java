@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.io.marshallers.json.document;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,11 +31,16 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
 public class DocumentPropertiesJsonReaderTest
         extends AbstractJsonWriterTest.Local<DocumentPropertyJsonWriter, Property> {
 
@@ -51,7 +57,7 @@ public class DocumentPropertiesJsonReaderTest
                 "  \"note:note\": \"note content\" }";
 
         DocumentPropertiesJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentPropertiesJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(propertiesJson);
+        JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson);
         JsonNode jn = jp.readValueAsTree();
         List<Property> properties = reader.read(jn);
         assertNotNull(properties);
@@ -64,4 +70,22 @@ public class DocumentPropertiesJsonReaderTest
         assertEquals("note", noteSchema.getName());
     }
 
+    @Test
+    public void testMultiValueDate() throws IOException {
+        String propertiesJson = "{ \"dc:title\": \"A title\"," + //
+                "\"tst2:dates\":[\"2018-02-20T23:00:00.000Z\",\"2018-02-04T23:00:00.000Z\"]," + //
+                "\"dc:created\": \"2018-02-20T23:00:00.000Z\" }";
+
+        DocumentPropertiesJsonReader reader = registry.getInstance(CtxBuilder.get(),DocumentPropertiesJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson);
+        JsonNode jn = jp.readValueAsTree();
+        List<Property> properties = reader.read(jn);
+        assertEquals(3, properties.size());
+        Property dateListProperty = properties.get(1);
+        assertEquals("tst2:dates", dateListProperty.getName());
+        assertTrue(dateListProperty.isList());
+        Type listType = ((ListType) dateListProperty.getType()).getFieldType();
+        assertEquals(DateType.ID, listType.getName());
+        assertEquals(DateType.ID, properties.get(2).getType().getName());
+    }
 }
