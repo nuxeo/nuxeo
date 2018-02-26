@@ -209,6 +209,10 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         if (timers.isEmpty()) {
             return;
         }
+        if (tailer != null && tailer.assignments().isEmpty()) {
+            // needed to ensure single source across multiple nodes
+            return;
+        }
         long now = System.currentTimeMillis();
         final boolean[] timerUpdate = { false };
         // filter and order timers
