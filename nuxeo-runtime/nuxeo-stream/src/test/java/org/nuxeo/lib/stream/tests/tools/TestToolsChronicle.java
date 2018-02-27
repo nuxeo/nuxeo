@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -56,7 +57,7 @@ public class TestToolsChronicle extends TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                appender.append(key, Record.of(key, value.getBytes("UTF-8")));
+                appender.append(key, new Record(key, value.getBytes("UTF-8"), Watermark.ofNow().getValue(), null ));
             }
             LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
             tailer.read(Duration.ofMillis(10));
