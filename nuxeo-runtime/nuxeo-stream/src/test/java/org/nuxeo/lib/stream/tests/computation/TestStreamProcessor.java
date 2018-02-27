@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
@@ -33,6 +34,7 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -88,6 +90,8 @@ public abstract class TestStreamProcessor {
             // shutdown brutally so there is no more processing in background
             processor.shutdown();
 
+            Latency latency = processor.getLatency("COUNTER");
+            assertEquals(latency.toString(), 0, latency.latency());
             // read the results
             int result = readCounterFrom(manager, "output");
             int expected = nbRecords * settings.getConcurrency("GENERATOR");

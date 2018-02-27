@@ -18,13 +18,11 @@
  */
 package org.nuxeo.lib.stream.log;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.io.Externalizable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -109,6 +107,25 @@ public interface LogManager extends AutoCloseable {
      */
     default LogLag getLag(String name, String group) {
         return LogLag.of(getLagPerPartition(name, group));
+    }
+
+    /**
+     * Returns the lag with latency. Timestamps used to compute the latency are extracted from the records. This
+     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(String, String)}
+     *
+     * @since 10.1
+     */
+    <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group,
+            Function<M, Long> timestampExtractor);
+
+    /**
+     * Returns the latency between consumer {@code group} and producers for a Log.
+     *
+     * @since 10.1
+     */
+    default <M extends Externalizable> Latency getLatency(String name, String group,
+            Function<M, Long> timestampExtractor) {
+        return Latency.of(getLatencyPerPartition(name, group, timestampExtractor));
     }
 
     /**

@@ -26,6 +26,7 @@ import org.nuxeo.lib.stream.tools.command.Command;
 import org.nuxeo.lib.stream.tools.command.CopyCommand;
 import org.nuxeo.lib.stream.tools.command.HelpCommand;
 import org.nuxeo.lib.stream.tools.command.LagCommand;
+import org.nuxeo.lib.stream.tools.command.LatencyCommand;
 import org.nuxeo.lib.stream.tools.command.PositionCommand;
 import org.nuxeo.lib.stream.tools.command.TailCommand;
 
@@ -40,6 +41,7 @@ public class CommandRegistry {
         ret.add(new CatCommand());
         ret.add(new TailCommand());
         ret.add(new LagCommand());
+        ret.add(new LatencyCommand());
         ret.add(new CopyCommand());
         ret.add(new PositionCommand());
         return ret;
