@@ -32,8 +32,7 @@ public class WorkSchedulePath implements Serializable {
 
     public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
 
-    protected static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack",
-            "false")) || log.isTraceEnabled();
+    protected static Boolean captureStack;
 
     public static final WorkSchedulePath EMPTY = new WorkSchedulePath();
 
@@ -56,13 +55,19 @@ public class WorkSchedulePath implements Serializable {
         }
     }
 
-    public static boolean toggleCaptureStack() {
-        captureStack = !captureStack;
-        return captureStack;
+    public static synchronized boolean toggleCaptureStack() {
+        captureStack = Boolean.valueOf(!isCaptureStackEnabled());
+        return captureStack.booleanValue();
     }
 
-    public static boolean isCaptureStackEnabled() {
-        return captureStack;
+    public static synchronized boolean isCaptureStackEnabled() {
+        if (captureStack == null) {
+            captureStack = Boolean.valueOf(log.isTraceEnabled()
+                    || Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack", "false")));
+            // we don't do the initialization as a static field init because
+            // the Framework may not be initialized when the class is loaded
+        }
+        return captureStack.booleanValue();
     }
 
     public static void newInstance(Work work) {
@@ -106,7 +111,7 @@ public class WorkSchedulePath implements Serializable {
     protected WorkSchedulePath(WorkSchedulePath parent, Work work) {
         parentPath = parent.getPath();
         name = name(work);
-        scheduleStackTrace = captureStack ? new Trace(parent.scheduleStackTrace) : null;
+        scheduleStackTrace = isCaptureStackEnabled() ? new Trace(parent.scheduleStackTrace) : null;
     }
 
     public String getPath() {
