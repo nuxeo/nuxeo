@@ -79,7 +79,7 @@ public abstract class TestTools {
 
     @Test
     public void testLagForLog() {
-        run(String.format("lag %s --log-name %s", getManagerOptions(), LOG_NAME));
+        run(String.format("lag %s --verbose --log-name %s", getManagerOptions(), LOG_NAME));
     }
 
     @Test

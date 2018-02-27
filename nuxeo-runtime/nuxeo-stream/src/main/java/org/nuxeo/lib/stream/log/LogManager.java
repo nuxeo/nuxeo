@@ -108,19 +108,7 @@ public interface LogManager extends AutoCloseable {
      * Returns the lag between consumer {@code group} and producers for a Log.
      */
     default LogLag getLag(String name, String group) {
-        final long[] end = { 0 };
-        final long[] pos = { Long.MAX_VALUE };
-        final long[] lag = { 0 };
-        final long[] endMessages = { 0 };
-        getLagPerPartition(name, group).forEach(item -> {
-            if (item.lowerOffset() > 0) {
-                pos[0] = min(pos[0], item.lowerOffset());
-            }
-            end[0] = max(end[0], item.upperOffset());
-            endMessages[0] += item.upper();
-            lag[0] += item.lag();
-        });
-        return new LogLag(pos[0], end[0], lag[0], endMessages[0]);
+        return LogLag.of(getLagPerPartition(name, group));
     }
 
     /**
