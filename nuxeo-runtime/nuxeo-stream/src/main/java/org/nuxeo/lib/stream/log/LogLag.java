@@ -18,6 +18,11 @@
  */
 package org.nuxeo.lib.stream.log;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import java.util.List;
+
 /**
  * Represent the number of messages between 2 offsets
  *
@@ -49,6 +54,22 @@ public class LogLag {
 
     public static LogLag of(long lag) {
         return new LogLag(0, lag, lag, lag);
+    }
+
+    public static LogLag of(List<LogLag> lags) {
+        final long[] end = { 0 };
+        final long[] pos = { Long.MAX_VALUE };
+        final long[] lag = { 0 };
+        final long[] endMessages = { 0 };
+        lags.forEach(item -> {
+            if (item.lowerOffset() > 0) {
+                pos[0] = min(pos[0], item.lowerOffset());
+            }
+            end[0] = max(end[0], item.upperOffset());
+            endMessages[0] += item.upper();
+            lag[0] += item.lag();
+        });
+        return new LogLag(pos[0] == Long.MAX_VALUE ? 0 : pos[0], end[0], lag[0], endMessages[0]);
     }
 
     /**
