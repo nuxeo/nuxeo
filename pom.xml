@@ -97,6 +97,7 @@
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
+    <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-drive-server</module>
