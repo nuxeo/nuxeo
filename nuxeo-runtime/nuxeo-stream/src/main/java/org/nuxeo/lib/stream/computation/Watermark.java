@@ -55,6 +55,10 @@ final public class Watermark implements Comparable<Watermark> {
                 (watermarkValue & 1L) == 1L);
     }
 
+    public static Watermark ofNow() {
+        return ofTimestamp(System.currentTimeMillis(), (short) 0);
+    }
+
     public static Watermark ofTimestamp(long timestamp) {
         return ofTimestamp(timestamp, (short) 0);
     }
