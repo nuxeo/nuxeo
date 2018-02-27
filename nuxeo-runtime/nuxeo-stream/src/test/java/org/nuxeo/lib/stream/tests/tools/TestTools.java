@@ -83,9 +83,15 @@ public abstract class TestTools {
     }
 
     @Test
+    public void testLatency() {
+        run(String.format("latency %s --verbose", getManagerOptions()));
+    }
+
+    @Test
     public void testPosition() {
         run("help position");
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, 123));
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s",
+                getManagerOptions(), LOG_NAME, 123));
     }
 
     @Test
@@ -136,7 +142,6 @@ public abstract class TestTools {
         run("");
     }
 
-
     protected void run(String commandLine) {
         boolean result = runCommand(commandLine);
         assertTrue(String.format("Unexpected failure in command: \"%s\"", commandLine), result);
@@ -150,7 +155,7 @@ public abstract class TestTools {
     private boolean runCommand(String commandLine) {
         System.out.println("# stream.sh " + commandLine);
         String[] args = commandLine.split(" ");
-        return (boolean) new Main().run(args);
+        return new Main().run(args);
     }
 
 }
