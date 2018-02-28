@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class RuntimeDeployment {
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
-    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, HashSet::new);
+    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, LinkedHashSet::new);
 
     /**
      * @deprecated since 10.1
@@ -66,7 +67,7 @@ public class RuntimeDeployment {
      * @deprecated since 10.1
      */
     @Deprecated
-    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, HashSet::new);
+    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, LinkedHashSet::new);
 
     /**
      * @deprecated since 9.2 we cannot undeploy components while they are started. So we don't need anymore to store the
