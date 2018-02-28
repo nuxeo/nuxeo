@@ -107,7 +107,7 @@ public class AutomationResource extends ModuleRoot {
                     return ResponseHelper.blobs((List<Blob>) list);
                 }
             } else if (obj instanceof Blob) {
-                return ResponseHelper.blob((Blob) obj);
+                return obj; // BlobWriter will do all the processing and call the DownloadService
             }
             return ResponseHelper.notFound();
         } catch (MessagingException | IOException e) {
