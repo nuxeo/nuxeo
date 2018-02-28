@@ -205,20 +205,28 @@ public class Request extends HashMap<String, String> {
         return null;
     }
 
-    protected void handleException(int status, String ctype, InputStream stream) throws RemoteException, IOException {
+    protected void handleException(int status, String ctype, InputStream stream) throws RemoteException {
         if (stream == null) {
             throw new RemoteException(status, "ServerError", "Server Error", "");
-        } else if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
-            String content = IOUtils.read(stream);
-            RemoteException e;
+        }
+        String content;
+        try {
+            content = IOUtils.read(stream);
+        } catch (IOException e) {
+            // typically: org.apache.http.ConnectionClosedException: Premature end of chunk coded message body:
+            // closing chunk expected
+            throw new RemoteException(status, "ServerError", "Server Error", "");
+        }
+        if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             try {
-                e = ExceptionMarshaller.readException(content);
+                throw ExceptionMarshaller.readException(content);
             } catch (IOException t) {
+                // JSON decoding error in the payload
                 throw new RemoteException(status, "ServerError", "Server Error", content);
             }
-            throw e;
         } else {
-            throw new RemoteException(status, "ServerError", "Server Error", IOUtils.read(stream));
+            // no JSON payload
+            throw new RemoteException(status, "ServerError", "Server Error", content);
         }
     }
 
