@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>6.0-HF45-SNAPSHOT</version>
+    <version>6.0-HF46-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -21,7 +21,7 @@
   </modules>
 
   <properties>
-    <nuxeo.importer.version>6.0-HF45-SNAPSHOT</nuxeo.importer.version>
+    <nuxeo.importer.version>6.0-HF46-SNAPSHOT</nuxeo.importer.version>
   </properties>
 
   <dependencyManagement>
