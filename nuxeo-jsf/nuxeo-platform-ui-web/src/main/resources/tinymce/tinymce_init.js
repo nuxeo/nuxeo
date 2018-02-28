@@ -81,6 +81,8 @@ function toggleTinyMCE(id) {
 
 function removeTinyMCE(id) {
   tinyMCE.execCommand('mceRemoveEditor', false, id);
+  var escId = id.replace(/:/g, "\\:");
+  jQuery('#' + escId).show();
 }
 
 function addTinyMCE(id) {
