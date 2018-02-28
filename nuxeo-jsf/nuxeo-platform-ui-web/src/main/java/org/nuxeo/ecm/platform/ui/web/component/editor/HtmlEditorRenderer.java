@@ -122,8 +122,11 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                                                       .append("');")
                                                       .toString();
             writer.writeText(scriptContent, null);
-            String ajaxScriptContent = "jsf.ajax.addOnEvent(function(data) {if (data.status == \"success\") {"
-                    + scriptContent + "}});";
+            String ajaxScriptContent = "jsf.ajax.addOnEvent(function(data) {" //
+                    + "if (data.status === 'success') {" //
+                    + "removeTinyMCE('" + clientId + "');" //
+                    + "addTinyMCE('" + clientId + "');" //
+                    + "}});";
             writer.writeText(ajaxScriptContent, null);
             String scriptContent2 = "jQuery(document.getElementById('" + clientId
                     + "')).closest('form').bind('ajaxsubmit', function() { var editor = tinyMCE.editors['" + clientId
