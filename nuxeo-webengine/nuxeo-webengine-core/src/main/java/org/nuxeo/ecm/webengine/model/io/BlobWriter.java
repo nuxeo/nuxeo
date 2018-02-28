@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.JSONBlob;
 import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -72,8 +73,25 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         // Ensure transaction is committed before writing blob to response
         commitAndReopenTransaction();
         if (Framework.isTestModeSet()) {
+            // TODO remove this test-specific code
+            String filename = blob.getFilename();
+            if (filename != null) {
+                String contentDisposition = DownloadHelper.getRFC2231ContentDisposition(request, filename);
+                response.setHeader("Content-Disposition", contentDisposition);
+            }
+            response.setContentType(blob.getMimeType());
+            if (blob.getEncoding() != null) {
+                try {
+                    response.setCharacterEncoding(blob.getEncoding());
+                } catch (IllegalArgumentException e) {
+                    // ignore invalid encoding
+                }
+            }
             transferBlob(blob, entityStream);
         } else {
+            // we don't want JAX-RS default headers (like Content-Type: text/plain)
+            // to be written, we control everything from the DownloadService
+            httpHeaders.clear();
             DownloadService downloadService = Framework.getService(DownloadService.class);
             String reason = blob instanceof JSONBlob ? "webengine" : "download";
             downloadService.downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
