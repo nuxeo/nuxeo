@@ -10,7 +10,7 @@ nuxeo.cache.ttl=20
 nuxeo.cache.concurrencylevel=50
 
 # Use Elasticsearch for all page provider
-elasticsearch.override.pageproviders=default_search,document_content,section_content,document_content,tree_children,default_document_suggestion,simple_search,advanced_search,nxql_search,DEFAULT_DOCUMENT_SUGGESTION,REST_API_SEARCH_ADAPTER,all_collections
+elasticsearch.override.pageproviders=default_search,document_content,section_content,document_content,tree_children,default_document_suggestion,simple_search,advanced_search,nxql_search,DEFAULT_DOCUMENT_SUGGESTION,REST_API_SEARCH_ADAPTER
 
 # Disable db fulltext indexing
 nuxeo.vcs.fulltext.search.disabled=true
