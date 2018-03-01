@@ -1,0 +1,139 @@
+/*
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
+package org.nuxeo.lib.stream.tools.command;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.nuxeo.lib.stream.computation.AbstractComputation;
+import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
+
+/**
+ * @since 10.1
+ */
+public class LatencyTrackerComputation extends AbstractComputation {
+
+    protected static final String OUTPUT_STREAM = "o1";
+
+    protected final LogManager manager;
+
+    protected final List<String> logNames;
+
+    protected final int intervalMs;
+
+    protected final int count;
+
+    protected final boolean verbose;
+
+    protected int remaining;
+
+    protected final List<LogPartitionGroup> logGroups = new ArrayList<>();
+
+    public LatencyTrackerComputation(LogManager manager, List<String> logNames, String computationName,
+            int intervalSecond, int count, boolean verbose) {
+        super(computationName, 1, 1);
+        this.manager = manager;
+        this.logNames = logNames;
+        this.intervalMs = 1000 * intervalSecond;
+        this.count = count;
+        this.remaining = count;
+        this.verbose = verbose;
+    }
+
+    @Override
+    public void init(ComputationContext context) {
+        info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
+                intervalMs));
+        logNames.forEach(name -> {
+            for (String group : manager.listConsumerGroups(name)) {
+                logGroups.add(new LogPartitionGroup(group, name, 0));
+            }
+        });
+        context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
+    }
+
+    @Override
+    public void processTimer(ComputationContext context, String key, long timestamp) {
+        if (remaining == 0) {
+            debug("Exiting after " + count + " captures");
+            context.askToTerminate();
+            return;
+        }
+        debug(String.format("Tracking latency %d/%d", count - remaining, count));
+        for (LogPartitionGroup logGroup : logGroups) {
+            List<Latency> latencies;
+            try {
+                latencies = manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
+                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()));
+            } catch (IllegalStateException e) {
+                error("log does not contains Record: " + logGroup);
+                continue;
+            }
+            int partition = 0;
+            for (Latency latency : latencies) {
+                String recordKey = String.format("%s:%s:%s", logGroup.group, logGroup.name, partition);
+                byte[] value;
+                try {
+                    value = latency.asJson().getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException("Faild to byte encoding " + latency, e);
+                }
+                Record record = new Record(recordKey, value, Watermark.ofTimestamp(latency.upper()).getValue(), null);
+                debug("out: " + record);
+                context.produceRecord(OUTPUT_STREAM, record);
+                context.setSourceLowWatermark(latency.upper());
+                partition++;
+            }
+        }
+        context.askForCheckpoint();
+        context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
+        remaining--;
+    }
+
+    @Override
+    public void destroy() {
+        info("Good bye");
+    }
+
+    @Override
+    public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+        error("Receiving a record is not expected!: " + record);
+    }
+
+    protected void debug(String msg) {
+        if (verbose) {
+            System.out.println(msg);
+        }
+    }
+
+    protected void info(String msg) {
+        System.out.println(msg);
+    }
+
+    protected void error(String msg) {
+        System.err.println(msg);
+    }
+}

@@ -38,13 +38,8 @@ import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
-import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
-import org.nuxeo.lib.stream.log.LogRecord;
-import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 /**
@@ -87,6 +82,16 @@ public class LogStreamProcessor implements StreamProcessor {
         for (ComputationPool pool : pools) {
             // TODO: consider decreasing timeout
             if (!pool.waitForAssignments(timeout)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        for (ComputationPool pool : pools) {
+            if (!pool.isTerminated()) {
                 return false;
             }
         }
@@ -155,7 +160,8 @@ public class LogStreamProcessor implements StreamProcessor {
         long now = System.currentTimeMillis();
         List<Latency> latencies = new ArrayList<>();
         ancestorsComputations.forEach(comp -> topology.getMetadata(comp).inputStreams().forEach(stream -> {
-            latencies.add(manager.<Record>getLatency(stream, comp, (rec -> Watermark.ofValue(rec.watermark).getTimestamp())));
+            latencies.add(manager.<Record> getLatency(stream, comp,
+                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp())));
         }));
         return Latency.of(latencies);
     }

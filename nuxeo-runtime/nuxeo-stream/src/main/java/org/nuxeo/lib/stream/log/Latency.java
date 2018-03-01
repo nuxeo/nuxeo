@@ -18,9 +18,13 @@
  */
 package org.nuxeo.lib.stream.log;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,6 +54,19 @@ public class Latency {
             throw new IllegalArgumentException("Lag found: " + lag);
         }
         return new Latency(0, upper, lag);
+    }
+
+    public static Latency fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode obj = mapper.readTree(json);
+            long lower = obj.get("low").asLong();
+            long upper = obj.get("up").asLong();
+            long lag = obj.get("lag").asLong();
+            return new Latency(lower,  upper, LogLag.of(lag));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid json: " + json, e);
+        }
     }
 
     public static Latency of(List<Latency> latencies) {
@@ -95,4 +112,8 @@ public class Latency {
         return "Latency{" + "lat=" + latency() + ", lower=" + lower + ", upper=" + upper + ", lag=" + lag + '}';
     }
 
+    public String asJson() {
+        return String.format("{\"lat\":\"%s\",\"low\":\"%s\",\"up\":\"%s\",\"lag\":\"%s\"}",
+                latency(), lower, upper, lag.lag);
+    }
 }

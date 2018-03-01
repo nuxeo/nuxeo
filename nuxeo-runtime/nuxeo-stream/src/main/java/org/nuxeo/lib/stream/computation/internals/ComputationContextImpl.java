@@ -43,6 +43,8 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected long lowWatermark;
 
+    protected boolean terminateFlag;
+
     public ComputationContextImpl(ComputationMetadataMapping metadata) {
         this.metadata = metadata;
         this.timers = new HashMap<>();
@@ -97,6 +99,15 @@ public class ComputationContextImpl implements ComputationContext {
     @Override
     public void askForCheckpoint() {
         checkpointFlag = true;
+    }
+
+    @Override
+    public void askToTerminate() {
+        terminateFlag = true;
+    }
+
+    public boolean requireTerminate() {
+        return terminateFlag;
     }
 
 }

@@ -54,4 +54,11 @@ public interface ComputationContext {
      * Ask for checkpoint in order to send records, save input stream offset positions.
      */
     void askForCheckpoint();
+
+    /**
+     * Ask to terminate this computation.
+     *
+     * @since 10.1
+     */
+    void askToTerminate();
 }
