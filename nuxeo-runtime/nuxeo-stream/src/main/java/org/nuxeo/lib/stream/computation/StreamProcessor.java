@@ -91,4 +91,10 @@ public interface StreamProcessor {
      */
     boolean waitForAssignments(Duration timeout) throws InterruptedException;
 
+    /**
+     * True if there is no active processing threads.
+     *
+     * @since 10.1
+     */
+    boolean isTerminated();
 }

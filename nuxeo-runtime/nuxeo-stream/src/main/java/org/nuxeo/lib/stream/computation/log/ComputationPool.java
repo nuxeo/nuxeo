@@ -89,6 +89,10 @@ public class ComputationPool {
         log.debug(metadata.name() + ": Pool started, threads: " + threads);
     }
 
+    public boolean isTerminated() {
+        return threadPool.isTerminated();
+    }
+
     public boolean waitForAssignments(Duration timeout) throws InterruptedException {
         log.info(metadata.name() + ": Wait for partitions assignments");
         if (threadPool == null || threadPool.isTerminated()) {

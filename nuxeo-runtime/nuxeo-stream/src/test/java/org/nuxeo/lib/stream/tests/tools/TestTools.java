@@ -112,6 +112,12 @@ public abstract class TestTools {
     }
 
     @Test
+    public void testTracker() {
+        //run(String.format("tracker %s --verbose -l ALL -o %s-out -i 2 -c 3", getManagerOptions(), LOG_NAME));
+        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 2 -c 3", getManagerOptions(), LOG_NAME, LOG_NAME));
+    }
+
+    @Test
     public void testHelpOption() {
         run("-h");
     }
