@@ -121,4 +121,12 @@
     </filter>
 
   </extension>
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+             point="permissionsVisibility">
+
+    <visibility type="EasyShareFolder">
+      <item show="true" order="20">ReadCanCollect</item>
+    </visibility>
+
+  </extension>
 </component>
