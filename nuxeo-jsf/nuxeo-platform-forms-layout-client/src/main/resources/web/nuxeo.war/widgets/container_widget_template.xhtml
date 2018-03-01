@@ -58,6 +58,7 @@
     <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault}" />
     <ui:param name="foldableBoxStyleClass" value="widgetPanel containerWidgetPanel #{widgetProperty_styleClass}" />
     <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
+    <ui:param name="headerFormId" value="" />
 
     <ui:define name="foldable_box_header_content">
       <ui:include src="/widgets/incl/widget_label_template.xhtml">
