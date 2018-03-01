@@ -234,11 +234,17 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             lastTimerExecution = now;
             setThreadName("timer");
             checkpointIfNecessary();
+            if (context.requireTerminate()) {
+                stop = true;
+            }
         }
-
     }
 
     protected void processRecord() throws InterruptedException {
+        if (context.requireTerminate()) {
+            stop = true;
+            return;
+        }
         if (tailer == null) {
             return;
         }
