@@ -39,7 +39,8 @@ limitations under the License.
                  value="{{searchTerm}}"
                  type="search"
                  placeholder="[[i18n('assetsSearch.fullText.placeholder')]]"
-                 autofocus>
+                 autofocus
+                 on-keydown="_checkForEnter">
     </nuxeo-input>
 
     <!-- Asset type -->
@@ -123,16 +124,16 @@ limitations under the License.
         },
         searchTerm: {
           type: String,
-          notify: true,
-          observer: '_addFullTextSearch'
+          notify: true
         }
       },
 
       clear: function() {
         this.searchTerm = '';
+        this._search();
       },
 
-      _addFullTextSearch: function() {
+      _search: function() {
         if (this.searchTerm) {
           this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm) + '*');
         } else {
@@ -142,6 +143,12 @@ limitations under the License.
             // ecm_fulltext removal being observed
             delete this.params.ecm_fulltext;
           }
+        }
+      },
+
+      _checkForEnter: function(e) {
+        if (e.keyCode === 13) {
+          this._search();
         }
       }
 
