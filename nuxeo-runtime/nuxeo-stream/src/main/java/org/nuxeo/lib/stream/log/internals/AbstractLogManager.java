@@ -119,7 +119,7 @@ public abstract class AbstractLogManager implements LogManager {
 
     @Override
     public <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group,
-            Function<M, Long> timestampExtractor) {
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor) {
         long now = System.currentTimeMillis();
         List<LogLag> lags = getLagPerPartition(name, group);
         List<Latency> ret = new ArrayList<>(lags.size());
@@ -132,7 +132,7 @@ public abstract class AbstractLogManager implements LogManager {
         for (LogLag lag : lags) {
             if (lag.upper() == lag.lower()) {
                 // empty partition don't try to read
-                ret.add(new Latency(0, now, lag));
+                ret.add(new Latency(0, now, lag, null));
                 partition++;
                 continue;
             }
@@ -145,7 +145,8 @@ public abstract class AbstractLogManager implements LogManager {
                 } else {
                     try {
                         long timestamp = timestampExtractor.apply(record.message());
-                        ret.add(new Latency(timestamp, now, lag));
+                        String key = keyExtractor.apply(record.message());
+                        ret.add(new Latency(timestamp, now, lag, key));
                     } catch (ClassCastException e) {
                         throw new IllegalStateException("Unexpected record type" + e.getMessage());
                     }

@@ -110,13 +110,15 @@ public interface LogManager extends AutoCloseable {
     }
 
     /**
-     * Returns the lag with latency. Timestamps used to compute the latency are extracted from the records. This
-     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(String, String)}
+     * Returns the lag with latency. Timestamps used to compute the latencies are extracted from the records. This
+     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(String, String)}.
+     * <br/>
+     * Two functions need to be provided to extract the timestamp and a key from a record.
      *
      * @since 10.1
      */
     <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group,
-            Function<M, Long> timestampExtractor);
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor);
 
     /**
      * Returns the latency between consumer {@code group} and producers for a Log.
@@ -124,8 +126,8 @@ public interface LogManager extends AutoCloseable {
      * @since 10.1
      */
     default <M extends Externalizable> Latency getLatency(String name, String group,
-            Function<M, Long> timestampExtractor) {
-        return Latency.of(getLatencyPerPartition(name, group, timestampExtractor));
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor) {
+        return Latency.of(getLatencyPerPartition(name, group, timestampExtractor, keyExtractor));
     }
 
     /**
