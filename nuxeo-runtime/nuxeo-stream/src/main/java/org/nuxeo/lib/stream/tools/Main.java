@@ -148,4 +148,8 @@ public class Main {
         options.addOption("k", "nuxeo-kafka", false, "Use the default Nuxeo Kafka configuration");
     }
 
+    public LogManager getLogManager(String[] args) {
+        run(args);
+        return manager;
+    }
 }

@@ -18,12 +18,27 @@
  */
 package org.nuxeo.lib.stream.tests.tools;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.LogLag;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.LogRecord;
+import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.Main;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * @since 9.3
@@ -88,21 +103,69 @@ public abstract class TestTools {
     }
 
     @Test
-    public void testPosition() {
-        run("help position");
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s",
-                getManagerOptions(), LOG_NAME, 123));
-    }
-
-    @Test
     public void testPositionToEnd() {
-        run(String.format("position %s --log-name %s --group anotherGroup --to-end", getManagerOptions(), LOG_NAME));
-        run(String.format("lag %s --log-name %s", getManagerOptions(), LOG_NAME));
+        run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
+        LogLag lag = getManager().getLag(LOG_NAME, "anotherGroup");
+        assertEquals(lag.toString(), 0, lag.lag());
     }
 
     @Test
-    public void testReset() {
-        run(String.format("position --reset %s --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
+    public void testPositionReset() {
+        run(String.format("position %s --reset --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
+        LogLag lag = getManager().getLag(LOG_NAME, "anotherGroup");
+        assertTrue(lag.toString(), lag.lag() > 0);
+    }
+
+    @Test
+    public void testPositionAfterDate() {
+        run("help position");
+        runShouldFail(String.format("position %s --after-date %s --log-name %s --group anotherGroup",
+                Instant.now(), getManagerOptions(), LOG_NAME));
+    }
+
+    @Test
+    public void testPositionToWatermark() throws InterruptedException {
+        // move before all records, lag is maximum
+        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+                Instant.now().minus(30, ChronoUnit.DAYS), LOG_NAME));
+        LogManager manager = getManager();
+        LogLag lag = manager.getLag(LOG_NAME, "anotherGroup");
+        assertTrue(lag.toString(), lag.lag() > 1);
+
+        // move to the position to the last record, lag = 1
+        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+                Instant.now().plus(1, ChronoUnit.DAYS), LOG_NAME));
+        lag = manager.getLag(LOG_NAME, "anotherGroup");
+        assertEquals(lag.toString(), 1, lag.lag());
+
+        // get the watermark of the second record
+        long timestamp;
+        String key;
+        LogPartition logPartition;
+        try (LogTailer<Record> tailer = manager.createTailer("tools", LOG_NAME)) {
+            tailer.toStart();
+            tailer.read(Duration.ofSeconds(1));
+            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
+            assertNotNull(rec);
+            timestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
+            key = rec.message().key;
+            logPartition = rec.offset().partition();
+        }
+        // move to the watermark corresponding to the second record
+        run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
+                Instant.ofEpochMilli(timestamp), LOG_NAME));
+        // open a tailer with the moved group we should be on the same record
+        try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", logPartition)) {
+            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
+            assertNotNull(rec);
+            assertEquals(rec.toString(), key, rec.message().key);
+        }
+    }
+
+    @Test
+    public void testPositionTimeTravel() {
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --after-date %s",
+                getManagerOptions(), LOG_NAME, 123));
     }
 
     @Test
@@ -158,10 +221,18 @@ public abstract class TestTools {
         assertFalse(String.format("Expecting failure on command: \"%s\"", commandLine), result);
     }
 
-    private boolean runCommand(String commandLine) {
+    protected boolean runCommand(String commandLine) {
         System.out.println("# stream.sh " + commandLine);
         String[] args = commandLine.split(" ");
         return new Main().run(args);
+    }
+
+    protected LogManager getManager() {
+        String commandLine = "test " + getManagerOptions();
+        String[] args = commandLine.split(" ");
+        LogManager ret = new Main().getLogManager(args);
+        assertNotNull(ret);
+        return ret;
     }
 
 }

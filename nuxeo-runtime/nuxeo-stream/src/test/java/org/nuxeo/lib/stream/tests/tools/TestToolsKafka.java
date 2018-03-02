@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -66,7 +67,7 @@ public class TestToolsKafka extends TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                appender.append(key, Record.of(key, value.getBytes("UTF-8")));
+                appender.append(key, new Record(key, value.getBytes("UTF-8"), Watermark.ofNow().getValue(), null));
             }
             LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
             tailer.read(Duration.ofMillis(10));
@@ -80,11 +81,11 @@ public class TestToolsKafka extends TestTools {
     }
 
     @Test
-    @Override
-    public void testPosition() {
-        super.testPosition();
-        run(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
+    public void testPositionAfterDateKafka() {
+        run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(),
+                LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --after-date %s",
+                getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
     }
 
     @Override
