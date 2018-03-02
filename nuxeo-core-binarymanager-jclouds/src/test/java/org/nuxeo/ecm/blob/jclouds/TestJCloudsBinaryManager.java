@@ -28,17 +28,24 @@ import org.apache.commons.io.IOUtils;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.options.ListContainerOptions;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestJCloudsBinaryManager {
 
     private static final String CONTENT = "this is a file au caf\u00e9";
 
@@ -54,24 +61,20 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
 
     protected JCloudsBinaryManager binaryManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         Properties properties = Framework.getProperties();
         properties.setProperty(JCloudsBinaryManager.BLOBSTORE_PROVIDER_KEY, "transient");
         properties.setProperty(JCloudsBinaryManager.BLOBSTORE_MAP_NAME_KEY, "nuxeojunittest");
         properties.setProperty(JCloudsBinaryManager.BLOBSTORE_IDENTITY_KEY, "unused");
         properties.setProperty(JCloudsBinaryManager.BLOBSTORE_SECRET_KEY, "unused");
-
         binaryManager = new JCloudsBinaryManager();
         binaryManager.initialize("repo", Collections.emptyMap());
-
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         removeObjects();
-        super.tearDown();
     }
 
     @Test
@@ -129,7 +132,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // another binary we'll keep
         binaryManager.getBinary(Blobs.createBlob(CONTENT3));
 
-        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // GC in non-delete mode
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
@@ -148,7 +151,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         Assert.assertEquals(1, status.numBinariesGC);
         // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
         // assertEquals(3, status.sizeBinariesGC);
-        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
         gc = binaryManager.getGarbageCollector();
@@ -163,7 +166,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         Assert.assertEquals(1, status.numBinariesGC);
         // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
         // assertEquals(3, status.sizeBinariesGC);
-        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
         gc = binaryManager.getGarbageCollector();
@@ -184,7 +187,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
      * Lists all objects that look like MD5 digests.
      */
     protected Set<String> listObjects() {
-        Set<String> digests = new HashSet<String>();
+        Set<String> digests = new HashSet<>();
         ListContainerOptions options = ListContainerOptions.NONE;
         for (;;) {
             PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container,
