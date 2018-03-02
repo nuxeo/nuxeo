@@ -18,17 +18,24 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import java.io.Externalizable;
 import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 
 /**
@@ -64,39 +71,57 @@ public class PositionCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder()
-                      .longOpt("to-timestamp")
-                      .desc("Sets the committed positions for the group to a specific timestamp."
-                              + " The record timestamp used depends on the implementation, for Kafka this is the LogAppendTime. "
-                              + " The timestamp is specified in ISO-8601 format, eg. " + Instant.now()
+                      .longOpt("after-date")
+                      .desc("Sets the committed positions for the group to a specific date."
+                              + " The date used to find the offset depends on the implementation, for Kafka this is the"
+                              + " LogAppendTime. The position is set to the earliest offset whose timestamp is greater than or equal to the given date."
+                              + " The date is specified in ISO-8601 format, eg. " + Instant.now()
                               + ". If no record offset is found with an appropriate timestamp then the command fails.")
                       .hasArg()
-                      .argName("TIMESTAMP")
+                      .argName("DATE")
+                      .build());
+        options.addOption(
+                Option.builder()
+                      .longOpt("to-watermark")
+                      .desc("Sets the committed positions for the group to a specific date."
+                              + " The date used to find the offset is contained in a record watermark. "
+                              + " This means that the LOG_NAME is expected to be a computation stream with records with populated watermark."
+                              + " The position is set to the biggest record offset with a watermark date inferior or equals to the given date.\""
+                              + " The date is specified in ISO-8601 format, eg. " + Instant.now()
+                              + ". If no record offset is found with an appropriate timestamp then the command fails.")
+                      .hasArg()
+                      .argName("DATE")
                       .build());
     }
 
     @Override
-    public boolean run(LogManager manager, CommandLine cmd) {
+    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         String name = cmd.getOptionValue("log-name");
         String group = cmd.getOptionValue("group", "tools");
 
-        if (cmd.hasOption("to-timestamp")) {
-            long timestamp = parseTimestamp(cmd.getOptionValue("to-timestamp"));
+        if (cmd.hasOption("after-date")) {
+            long timestamp = getTimestampFromDate(cmd.getOptionValue("after-date"));
             if (timestamp >= 0) {
-                return positionToTimestamp(manager, group, name, timestamp);
+                return positionAfterDate(manager, group, name, timestamp);
+            }
+        } else if (cmd.hasOption("to-watermark")) {
+            long timestamp = getTimestampFromDate(cmd.getOptionValue("to-watermark"));
+            if (timestamp >= 0) {
+                return positionToWatermark(manager, group, name, timestamp);
             }
         } else if (cmd.hasOption("to-end")) {
             return toEnd(manager, group, name);
         } else if (cmd.hasOption("reset")) {
             return reset(manager, group, name);
+        } else {
+            System.err.println("Invalid option, try 'help position'");
         }
-        System.err.println("Invalid option, try 'help position'");
         return false;
     }
 
     protected boolean toEnd(LogManager manager, String group, String name) {
         LogLag lag = manager.getLag(name, group);
-
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             tailer.toEnd();
             tailer.commit();
         }
@@ -108,39 +133,95 @@ public class PositionCommand extends Command {
     protected boolean reset(LogManager manager, String group, String name) {
         LogLag lag = manager.getLag(name, group);
         long pos = lag.lower();
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             tailer.reset();
         }
         System.out.println(String.format("# Reset log %s, group: %s, from: %s to 0", name, group, pos));
         return true;
     }
 
-    protected boolean positionToTimestamp(LogManager manager, String group, String name, long timestamp) {
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
-            int size = manager.getAppender(name).size();
+    protected boolean positionAfterDate(LogManager manager, String group, String name, long timestamp) {
+        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             boolean movedOffset = false;
-            for (int partition = 0; partition < size; partition++) {
+            for (int partition = 0; partition < manager.getAppender(name).size(); partition++) {
                 LogPartition logPartition = new LogPartition(name, partition);
                 LogOffset logOffset = tailer.offsetForTimestamp(logPartition, timestamp);
-                if (logOffset != null) {
-                    tailer.seek(logOffset);
-                    movedOffset = true;
-                    System.out.println(
-                            String.format("# Set log %s, group: %s, to offset %s", name, group, logOffset.offset()));
-                } else {
+                if (logOffset == null) {
                     System.err.println(String.format("# Could not find an offset for group: %s, partition: %s", group,
                             logPartition));
+                    continue;
                 }
+                tailer.seek(logOffset);
+                movedOffset = true;
+                System.out.println(
+                        String.format("# Set log %s, group: %s, to offset %s", name, group, logOffset.offset()));
             }
             if (movedOffset) {
                 tailer.commit();
                 return true;
             }
         }
+        System.err.println("No offset found for the specified date");
         return false;
     }
 
-    protected long parseTimestamp(String timestamp) {
+    protected boolean positionToWatermark(LogManager manager, String group, String name, long timestamp)
+            throws InterruptedException {
+        String newGroup = "tools";
+        int size = manager.getAppender(name).size();
+        List<LogOffset> offsets = new ArrayList<>(size);
+        List<LogLag> lags = manager.getLagPerPartition(name, newGroup);
+        int partition = 0;
+        // find the offsets first
+        for (LogLag lag : lags) {
+            if (lag.lag() == 0) {
+                // empty partition nothing to do
+                offsets.add(null);
+            } else {
+                try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, partition))) {
+                    offsets.add(searchWatermarkOffset(tailer, timestamp));
+                }
+            }
+            partition++;
+        }
+        if (offsets.stream().noneMatch(Objects::nonNull)) {
+            if (LogLag.of(lags).upper() == 0) {
+                System.err.println("No offsets found because log is empty");
+                return false;
+            }
+            System.err.println("Timestamp: " + timestamp + " is earlier as any records, resetting positions");
+            return reset(manager, group, name);
+        }
+        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
+            offsets.stream().filter(Objects::nonNull).forEach(tailer::seek);
+            tailer.commit();
+            offsets.stream().filter(Objects::nonNull).forEach(
+                    offset -> System.out.println("# Moving consumer to: " + offset));
+        }
+        return true;
+    }
+
+    protected LogOffset searchWatermarkOffset(LogTailer<Record> tailer, long timestamp) throws InterruptedException {
+        Duration durationFirst = Duration.ofMillis(1000);
+        Duration duration = Duration.ofMillis(100);
+        LogOffset lastOffset = null;
+        for (LogRecord<Record> rec = tailer.read(durationFirst); rec != null; rec = tailer.read(duration)) {
+            long recTimestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
+            if (recTimestamp == timestamp) {
+                return rec.offset();
+            } else if (recTimestamp > timestamp) {
+                return lastOffset;
+            }
+            if (recTimestamp == 0) {
+                throw new IllegalArgumentException("Cannot find position because Record has empty watermark: " + rec);
+            }
+            lastOffset = rec.offset();
+        }
+        // not found return last offset of partition
+        return lastOffset;
+    }
+
+    protected long getTimestampFromDate(String timestamp) {
         try {
             Instant instant = Instant.parse(timestamp);
             return instant.toEpochMilli();

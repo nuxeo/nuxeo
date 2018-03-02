@@ -32,6 +32,8 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
+ * A computation that sends periodically latencies information.
+ *
  * @since 10.1
  */
 public class LatencyTrackerComputation extends AbstractComputation {
@@ -87,8 +89,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
             List<Latency> latencies;
             try {
                 latencies = manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
-                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()),
-                        (rec -> rec.key));
+                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
             } catch (IllegalStateException e) {
                 error("log does not contains Record: " + logGroup);
                 continue;
