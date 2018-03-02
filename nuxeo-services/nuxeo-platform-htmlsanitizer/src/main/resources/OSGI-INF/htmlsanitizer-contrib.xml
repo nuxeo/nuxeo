@@ -11,7 +11,7 @@
     point="sanitizer">
     <sanitizer name="default">
       <!-- <field>dc:description</field> -->
-      <field filter="mime_type" filterValue="text/plain,text/x-web-markdown" sanitize="false">note</field>
+      <field filter="mime_type" filterValue="text/plain,text/x-web-markdown,text/xml" sanitize="false">note</field>
       <field>webc:welcomeText</field>
       <field filter="webp:isRichtext" filterValue="true">webp:content</field>
       <field>comment:text</field>
