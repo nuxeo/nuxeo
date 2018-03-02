@@ -45,6 +45,7 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries;
+import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -316,6 +317,34 @@ public class DirectoryOperationsTest {
         assertEquals("oceania", entry.get("id"));
         assertEquals("label.directories.continent.oceania", entry.get("label"));
         assertEquals(0, entry.get("obsolete"));
+    }
+
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void shouldSuggestProperEntries() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "continent");
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("fakeChain");
+        chain.add(oparams);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+        assertEquals(7, entries.size());
+
+        Map<String, Object> entry = entries.get(0);
+        assertEquals("africa", entry.get("id"));
+        assertEquals(0, entry.get("obsolete"));
+        assertEquals("continent", entry.get("directoryName"));
+        assertNotNull(entry.get("properties"));
     }
 
 }

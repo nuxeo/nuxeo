@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -103,6 +105,7 @@ public class SuggestDirectoryEntries {
             isRoot = false;
             // build JSON object for this entry
             obj = new JSONObject();
+            JSONObject properties = new JSONObject();
             for (Field field : schema.getFields()) {
                 QName fieldName = field.getName();
                 String key = fieldName.getLocalName();
@@ -115,7 +118,7 @@ public class SuggestDirectoryEntries {
                     obj.element(SuggestConstants.LABEL, value);
                 }
                 obj.element(key, value);
-
+                properties.element(key, value);
             }
             if (displayObsoleteEntries) {
                 if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
@@ -123,6 +126,9 @@ public class SuggestDirectoryEntries {
                     obj.element(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
+            obj.element("directoryName", directoryName);
+            obj.element("properties", properties);
+            obj.element(MarshallingConstants.ENTITY_FIELD_NAME, DirectoryEntryJsonWriter.ENTITY_TYPE);
         }
 
         @Override
