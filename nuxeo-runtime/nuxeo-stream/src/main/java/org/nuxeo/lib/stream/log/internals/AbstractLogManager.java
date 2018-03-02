@@ -123,20 +123,17 @@ public abstract class AbstractLogManager implements LogManager {
         long now = System.currentTimeMillis();
         List<LogLag> lags = getLagPerPartition(name, group);
         List<Latency> ret = new ArrayList<>(lags.size());
-        LogLag logLag = LogLag.of(lags);
-        if (logLag.lag() == 0) {
-            lags.forEach(lag -> ret.add(Latency.noLatency(now, lag)));
-            return ret;
-        }
         int partition = 0;
         for (LogLag lag : lags) {
-            if (lag.upper() == lag.lower()) {
-                // empty partition don't try to read
+            if (lag.upper() == 0 || lag.lower() == 0) {
+                // empty partition or the group has not consumed any message
                 ret.add(new Latency(0, now, lag, null));
                 partition++;
                 continue;
             }
-            LogOffset offset = new LogOffsetImpl(name, partition, lag.lowerOffset());
+            // the committed offset point to the next record to process, here we want the last committed offset
+            // which is the previous one
+            LogOffset offset = new LogOffsetImpl(name, partition, lag.lowerOffset() - 1);
             try (LogTailer<M> tailer = createTailer("tools", offset.partition())) {
                 tailer.seek(offset);
                 LogRecord<M> record = tailer.read(Duration.ofSeconds(1));

@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
@@ -70,11 +71,10 @@ public class TestToolsChronicle extends TestTools {
 
     }
 
-    @Override
-    public void testPosition() {
-        super.testPosition();
+    @Test
+    public void testPositionAfterDateChronicle() {
         try {
-            run(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
+            run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
             fail();
         } catch (UnsupportedOperationException uoe) {
             assertTrue(uoe.getMessage().contains("does not support seek by timestamp"));
