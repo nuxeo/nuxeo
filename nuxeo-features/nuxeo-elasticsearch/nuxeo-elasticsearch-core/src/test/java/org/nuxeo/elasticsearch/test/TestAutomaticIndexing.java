@@ -796,7 +796,7 @@ public class TestAutomaticIndexing {
         String versionSeriesId = ret.get(0).getVersionSeriesId();
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
-        Assert.assertEquals(4, ret.totalSize());
+        Assert.assertEquals(3, ret.totalSize());
     }
 
     @Test
