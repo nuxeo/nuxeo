@@ -87,7 +87,8 @@ public class LatencyTrackerComputation extends AbstractComputation {
             List<Latency> latencies;
             try {
                 latencies = manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
-                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()));
+                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()),
+                        (rec -> rec.key));
             } catch (IllegalStateException e) {
                 error("log does not contains Record: " + logGroup);
                 continue;

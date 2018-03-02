@@ -18,8 +18,7 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -85,7 +84,7 @@ public class LatencyCommand extends Command {
         }
         try {
             consumers.forEach(group -> renderLatency(group, manager.<Record> getLatencyPerPartition(name, group,
-                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()))));
+                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key))));
         } catch (IllegalStateException e) {
             // happen when this is not a stream of Record
             System.err.println(e.getMessage());
@@ -93,23 +92,28 @@ public class LatencyCommand extends Command {
     }
 
     protected void renderLatency(String group, List<Latency> latencies) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         System.out.println(String.format("### Group: %s", group));
         System.out.println(
-                "| partition | lag | latency_ms | latency | watermark_ts | watermark | date | pos | end | posOffset | endOffset |\n"
-                        + "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |");
+                "| partition | lag | latencyMs | latency | posTimestamp | posDate | curDate | pos | end | posOffset | endOffset | posKey |\n"
+                        + "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |");
         Latency all = Latency.of(latencies);
-        System.out.println(String.format("|All|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|", all.lag().lag(), all.latency(),
-                formatInterval(all.latency()), all.lower(), dateFormat.format(new Date(all.lower())),
-                dateFormat.format(new Date(all.upper())), all.lag().lower(), all.lag().upper(), all.lag().lowerOffset(),
-                all.lag().upperOffset()));
+        System.out.println(String.format("|All|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|", all.lag().lag(), all.latency(),
+                formatInterval(all.latency()), all.lower(), formatDate(all.lower()), formatDate(all.upper()),
+                all.lag().lower(), all.lag().upper(), all.lag().lowerOffset(), all.lag().upperOffset(), all.key()));
         if (verbose && latencies.size() > 1) {
             AtomicInteger i = new AtomicInteger();
-            latencies.forEach(lat -> System.out.println(String.format("|%d|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|",
+            latencies.forEach(lat -> System.out.println(String.format("|%d|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|",
                     i.getAndIncrement(), lat.lag().lag(), lat.latency(), formatInterval(lat.latency()), lat.lower(),
-                    dateFormat.format(new Date(lat.lower())), dateFormat.format(new Date(lat.upper())),
-                    lat.lag().lower(), lat.lag().upper(), lat.lag().lowerOffset(), lat.lag().upperOffset())));
+                    formatDate(lat.lower()), formatDate(lat.upper()), lat.lag().lower(), lat.lag().upper(),
+                    lat.lag().lowerOffset(), lat.lag().upperOffset(), lat.key())));
         }
+    }
+
+    protected String formatDate(long timestamp) {
+        if (timestamp > 0) {
+            return Instant.ofEpochMilli(timestamp).toString();
+        }
+        return "NA";
     }
 
     protected static String formatInterval(final long l) {
