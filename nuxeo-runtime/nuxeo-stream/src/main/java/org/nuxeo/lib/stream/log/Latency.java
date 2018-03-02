@@ -18,16 +18,15 @@
  */
 package org.nuxeo.lib.stream.log;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Extends LogLag with lower and upper timestamps to express lag as a latency.
@@ -41,11 +40,14 @@ public class Latency {
 
     protected long upper;
 
-    public Latency(long lower, long upper, LogLag lag) {
+    protected String key;
+
+    public Latency(long lower, long upper, LogLag lag, String key) {
         Objects.requireNonNull(lag);
         this.lower = lower;
         this.upper = upper;
         this.lag = lag;
+        this.key = key;
     }
 
     public static Latency noLatency(long upper, LogLag lag) {
@@ -53,7 +55,7 @@ public class Latency {
         if (lag.lag() != 0) {
             throw new IllegalArgumentException("Lag found: " + lag);
         }
-        return new Latency(0, upper, lag);
+        return new Latency(0, upper, lag, null);
     }
 
     public static Latency fromJson(String json) {
@@ -63,7 +65,8 @@ public class Latency {
             long lower = obj.get("low").asLong();
             long upper = obj.get("up").asLong();
             long lag = obj.get("lag").asLong();
-            return new Latency(lower,  upper, LogLag.of(lag));
+            String key = obj.get("key") == null ? null : obj.get("key").asText();
+            return new Latency(lower, upper, LogLag.of(lag), key);
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid json: " + json, e);
         }
@@ -73,13 +76,15 @@ public class Latency {
         LogLag lag = LogLag.of(latencies.stream().map(Latency::lag).collect(Collectors.toList()));
         final long[] start = { Long.MAX_VALUE };
         final long[] end = { 0 };
+        final String[] key = { "" };
         latencies.forEach(item -> {
-            if (item.lower > 0) {
-                start[0] = min(start[0], item.lower);
+            if (item.lower > 0 && item.lower < start[0]) {
+                start[0] = item.lower;
+                key[0] = item.key;
             }
             end[0] = max(end[0], item.upper);
         });
-        return new Latency(start[0] == Long.MAX_VALUE ? 0 : start[0], end[0], lag);
+        return new Latency(start[0] == Long.MAX_VALUE ? 0 : start[0], end[0], lag, key[0]);
     }
 
     /**
@@ -107,13 +112,21 @@ public class Latency {
         return lag;
     }
 
+    /**
+     * Returns the key associated with the lower timestamp.
+     */
+    public String key() {
+        return key;
+    }
+
     @Override
     public String toString() {
-        return "Latency{" + "lat=" + latency() + ", lower=" + lower + ", upper=" + upper + ", lag=" + lag + '}';
+        return "Latency{" + "lat=" + latency() + ", lower=" + lower + ", upper=" + upper + ", key=" + key + ", lag="
+                + lag + '}';
     }
 
     public String asJson() {
-        return String.format("{\"lat\":\"%s\",\"low\":\"%s\",\"up\":\"%s\",\"lag\":\"%s\"}",
-                latency(), lower, upper, lag.lag);
+        return String.format("{\"lat\":\"%s\",\"low\":\"%s\",\"up\":\"%s\",\"lag\":\"%s\"%s}", latency(), lower, upper,
+                lag.lag, key == null ? "" : ",\"key\":\"" + key + "\"");
     }
 }

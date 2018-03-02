@@ -161,7 +161,8 @@ public class LogStreamProcessor implements StreamProcessor {
         List<Latency> latencies = new ArrayList<>();
         ancestorsComputations.forEach(comp -> topology.getMetadata(comp).inputStreams().forEach(stream -> {
             latencies.add(manager.<Record> getLatency(stream, comp,
-                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp())));
+                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()),
+                    (rec -> rec.key)));
         }));
         return Latency.of(latencies);
     }
