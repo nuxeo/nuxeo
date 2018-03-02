@@ -19,7 +19,6 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
@@ -353,13 +352,10 @@ public abstract class TestStreamProcessor {
         // The computation has an unused input stream with a single partition,
         // only the computation instance affected to the partition is generating new records.
         Topology topology = Topology.builder()
-                .addComputation(
-                        () -> new ComputationSource("GENERATOR", 1, nbRecords, 1, targetTimestamp, true),
-                        Collections.singletonList("o1:s1"))
-                .build();
-        Settings settings = new Settings(2, 1)
-                .setConcurrency("GENERATOR", 2)
-                .setPartitions("s1", 1);
+                                    .addComputation(() -> new ComputationSource("GENERATOR", 1, nbRecords, 1,
+                                            targetTimestamp, true), Collections.singletonList("o1:s1"))
+                                    .build();
+        Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
         try (LogManager manager = getLogManager()) {
             StreamProcessor processor = getStreamProcessor(manager);
             processor.init(topology, settings).start();
@@ -370,6 +366,8 @@ public abstract class TestStreamProcessor {
         }
     }
 
+    // ---------------------------------
+    // helpers
     protected int readCounterFrom(LogManager manager, String stream) throws InterruptedException {
         int partitions = manager.getAppender(stream).size();
         int ret = 0;
