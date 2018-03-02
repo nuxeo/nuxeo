@@ -53,6 +53,12 @@ limitations under the License.
           </template>
         </nuxeo-data-table-column>
 
+        <nuxeo-data-table-column name="[[i18n('label.type')]]" field="type" hidden>
+          <template>
+            <nuxeo-tag>[[item.type]]</nuxeo-tag>
+          </template>
+        </nuxeo-data-table-column>
+
         <nuxeo-data-table-column name="[[i18n('label.dublincore.modified')]]" field="dc:modified" sort-by="dc:modified" flex="50">
           <template>
             <nuxeo-date datetime="[[item.properties.dc:modified]]"></nuxeo-date>
