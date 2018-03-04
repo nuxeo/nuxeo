@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="test-jobfactory" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+
+    <schedule id="testSchedulerMultipleExecutions">
+      <event>testSchedulerMultipleExecutions</event>
+      <cronExpression>0 * * * * ?</cronExpression>
+    </schedule>
+
+    <schedule id="testSchedulerSingleExecution"
+        jobFactoryClass="org.nuxeo.ecm.core.scheduler.SingleExecutionEventJobFactory">
+      <event>testSchedulerSingleExecution</event>
+      <cronExpression>0 * * * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+</component>
