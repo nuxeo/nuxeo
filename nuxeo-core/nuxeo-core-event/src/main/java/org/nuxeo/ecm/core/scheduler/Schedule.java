@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Florent Munch
  */
 package org.nuxeo.ecm.core.scheduler;
 
@@ -34,6 +35,14 @@ public interface Schedule extends Serializable {
      * @return the schedule job id.
      */
     String getId();
+
+    /**
+     * Returns an instance of the {@link EventJobFactory} ({@link DefaultEventJobFactory} by default).
+     *
+     * @since 10.2
+     * @return An instance of {@link EventJobFactory}.
+     */
+    EventJobFactory getJobFactory();
 
     /**
      * Returns the event id.
