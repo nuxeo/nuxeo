@@ -97,6 +97,7 @@ public class FolderResource extends ExistingResource {
     }
 
     @PROPFIND
+    @Produces({ "application/xml", "text/xml" })
     public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws IOException,
             JAXBException {
 
