@@ -102,6 +102,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @PROPFIND
+    @Produces({ "application/xml", "text/xml" })
     public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) {
 
         if (depth == null) {

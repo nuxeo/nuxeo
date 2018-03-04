@@ -355,6 +355,11 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testGetFolderPropertiesAcceptApplicationXml() throws Exception {
+        checkAccept("application/xml");
+    }
+
+    @Test
     public void testGetFolderPropertiesAcceptTextMisc() throws Exception {
         checkAccept("text/html, image/jpeg;q=0.9, image/png;q=0.9, text/*;q=0.9, image/*;q=0.9, */*;q=0.8");
     }

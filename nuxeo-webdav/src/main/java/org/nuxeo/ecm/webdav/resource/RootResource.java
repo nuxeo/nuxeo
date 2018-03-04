@@ -86,6 +86,7 @@ public class RootResource {
     }
 
     @PROPFIND
+    @Produces({ "application/xml", "text/xml" })
     public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth)
             throws IOException, JAXBException, URISyntaxException {
         Object resource = findResource("");
