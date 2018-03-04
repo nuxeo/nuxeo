@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Florent Munch
  */
 package org.nuxeo.ecm.core.scheduler;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * ScheduleImpl extension definition.
@@ -31,6 +33,12 @@ public class ScheduleImpl implements Schedule {
 
     @XNode("@id")
     public String id;
+
+    /**
+     * @since 10.2
+     */
+    @XNode("@jobFactoryClass")
+    public Class<? extends EventJobFactory> jobFactoryClass = DefaultEventJobFactory.class;
 
     @XNode("event")
     public String eventId;
@@ -60,6 +68,15 @@ public class ScheduleImpl implements Schedule {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public EventJobFactory getJobFactory() {
+        try {
+            return jobFactoryClass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException("Failed to instantiate job factory " + jobFactoryClass, e);
+        }
     }
 
     @Override

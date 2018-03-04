@@ -25,7 +25,7 @@
       <p/>
       For instance :
       <code>
-        <schedule id="mySchedule">
+        <schedule id="mySchedule" jobFactoryClass="org.nuxeo.ecm.core.scheduler.DefaultEventJobFactory">
           <username>Administrator</username>
           <event>myEvent</event>
           <eventCategory>default</eventCategory>
@@ -33,8 +33,10 @@
           <cronExpression>0 0 3 1 * ?</cronExpression>
         </schedule>
       </code>
+      jobFactoryClass is optional and defaults to org.nuxeo.ecm.core.scheduler.DefaultEventJobFactory.
 
       @see org.quartz.CronTrigger
+      @see org.nuxeo.ecm.core.scheduler.EventJobFactory
       @see http://www.quartz-scheduler.org/docs/api/1.8.1/org/quartz/CronExpression.html
       @see http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
     </documentation>
