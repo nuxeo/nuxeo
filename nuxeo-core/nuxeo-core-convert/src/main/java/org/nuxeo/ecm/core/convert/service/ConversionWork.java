@@ -23,7 +23,12 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.runtime.api.Framework;
@@ -45,6 +50,11 @@ public class ConversionWork extends TransientStoreWork {
 
     protected String inputEntryKey;
 
+    /**
+     * @since 10.1
+     */
+    protected ManagedBlob managedBlob;
+
     public ConversionWork(String converterName, String destinationMimeType, BlobHolder blobHolder,
             Map<String, Serializable> parameters) {
         if (converterName == null && destinationMimeType == null) {
@@ -61,8 +71,29 @@ public class ConversionWork extends TransientStoreWork {
     }
 
     protected void storeInputBlobHolder(BlobHolder blobHolder) {
-        inputEntryKey = entryKey + "_input";
-        putBlobHolder(inputEntryKey, blobHolder);
+        if (!storeManagedBlob(blobHolder)) {
+            // standard conversion
+            inputEntryKey = entryKey + "_input";
+            putBlobHolder(inputEntryKey, blobHolder);
+        }
+    }
+
+    /**
+     * @since 10.1
+     */
+    protected boolean storeManagedBlob(BlobHolder blobHolder) {
+        Blob blob = blobHolder.getBlob();
+        if (!(blob instanceof ManagedBlob) || !(blob instanceof Serializable) || blobHolder.getBlobs().size() > 1) {
+            return false;
+        }
+
+        ManagedBlob mBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(mBlob);
+        if (blobProvider.canConvert(mBlob, destinationMimeType)) {
+            this.managedBlob = mBlob;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -88,13 +119,15 @@ public class ConversionWork extends TransientStoreWork {
     }
 
     protected BlobHolder retrieveInputBlobHolder() {
-        return getBlobHolder(inputEntryKey);
+        return managedBlob != null ? new SimpleBlobHolder(managedBlob) : getBlobHolder(inputEntryKey);
     }
 
     @Override
     public void cleanUp(boolean ok, Exception e) {
         super.cleanUp(ok, e);
-        removeBlobHolder(inputEntryKey);
+        if (inputEntryKey != null) {
+            removeBlobHolder(inputEntryKey);
+        }
     }
 
     @Override
