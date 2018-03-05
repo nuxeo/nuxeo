@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob.binary;
 
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,8 @@ public class BinaryBlobProvider implements BlobProvider {
 
     protected boolean supportsUserUpdate;
 
+    protected boolean transientFlag;
+
     public BinaryBlobProvider(BinaryManager binaryManager) {
         this.binaryManager = binaryManager;
     }
@@ -55,6 +58,7 @@ public class BinaryBlobProvider implements BlobProvider {
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         binaryManager.initialize(blobProviderId, properties);
         supportsUserUpdate = supportsUserUpdateDefaultTrue(properties);
+        transientFlag = Boolean.parseBoolean(properties.get(TRANSIENT));
     }
 
     @Override
@@ -64,6 +68,11 @@ public class BinaryBlobProvider implements BlobProvider {
 
     protected boolean supportsUserUpdateDefaultTrue(Map<String, String> properties) {
         return !Boolean.parseBoolean(properties.get(PREVENT_USER_UPDATE));
+    }
+
+    @Override
+    public boolean isTransient() {
+        return transientFlag;
     }
 
     /**
