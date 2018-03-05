@@ -77,6 +77,8 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
     public static final String FETCH_TARGET_DOCUMENT = TARGET_DOCUMENT_IDS;
 
+    public static final String FETCH_WORKFLOW_INITATIOR = "workflowInitiator";
+
     protected static final String USER_PREFIX = "user";
 
     protected static final String GROUP_PREFIX = "group";
@@ -115,6 +117,13 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeStringField("workflowInstanceId", workflowInstanceId);
             if (workflowInstance != null) {
                 jg.writeStringField("workflowModelName", workflowInstance.getModelName());
+                writeWorkflowInitiator(jg, workflowInstance.getInitiator());
+                jg.writeStringField("workflowTitle", workflowInstance.getTitle());
+                jg.writeStringField("workflowLifeCycleState",
+                        workflowInstance.getDocument().getCurrentLifeCycleState());
+                jg.writeStringField("graphResource", DocumentRouteWriter.getGraphResourceURL(
+                        workflowInstance.getDocumentRoute(wrapper.getSession()), ctx));
+
             }
             jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
             jg.writeStringField("directive", item.getDirective());
@@ -237,6 +246,17 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             }
         }
 
+    }
+
+    protected void writeWorkflowInitiator(JsonGenerator jg, String workflowInitiator) throws IOException {
+        if (ctx.getFetched(ENTITY_TYPE).contains(FETCH_WORKFLOW_INITATIOR)) {
+            NuxeoPrincipal principal = userManager.getPrincipal(workflowInitiator);
+            if (principal != null) {
+                writeEntityField("workflowInitiator", principal, jg);
+                return;
+            }
+        }
+        jg.writeStringField("workflowInitiator", workflowInitiator);
     }
 
     protected static ActionContext createActionContext(CoreSession session) {
