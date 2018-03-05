@@ -1053,6 +1053,51 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     /**
+     * @since 10.1
+     */
+    @Test
+    public void testTaskWorkflowInfo() throws IOException {
+        final String createdWorflowInstanceId;
+        // Create a workflow
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdWorflowInstanceId = node.get("id").getTextValue();
+        }
+
+        // Fetch the user's tasks and check the workflow related info
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, node.get("entries").size());
+            JsonNode taskNode = node.get("entries").getElements().next();
+            assertEquals(createdWorflowInstanceId, taskNode.get("workflowInstanceId").getTextValue());
+            assertEquals("SerialDocumentReview", taskNode.get("workflowModelName").getTextValue());
+            assertEquals("Administrator", taskNode.get("workflowInitiator").getTextValue());
+            assertEquals("wf.serialDocumentReview.SerialDocumentReview", taskNode.get("workflowTitle").getTextValue());
+            assertEquals("running", taskNode.get("workflowLifeCycleState").getTextValue());
+            assertEquals(String.format("http://localhost:18090/api/v1/workflow/%s/graph", createdWorflowInstanceId),
+                    taskNode.get("graphResource").getTextValue());
+        }
+
+        // Check the workflowInitiator task fetch property
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + TaskWriter.ENTITY_TYPE, TaskWriter.FETCH_WORKFLOW_INITATIOR);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/task/", queryParams)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode taskNode = node.get("entries").getElements().next();
+            JsonNode initiatorNode = taskNode.get("workflowInitiator");
+            assertEquals("user", initiatorNode.get("entity-type").getTextValue());
+            assertEquals("Administrator", initiatorNode.get("id").getTextValue());
+            assertTrue(initiatorNode.get("isAdministrator").getBooleanValue());
+            JsonNode properties = initiatorNode.get("properties");
+            ArrayNode groups = (ArrayNode) properties.get("groups");
+            assertEquals(1, groups.size());
+            assertEquals("administrators", groups.get(0).getTextValue());
+        }
+    }
+
+    /**
      * @since 9.1
      */
     protected void awaitCleanupWorks() throws InterruptedException {

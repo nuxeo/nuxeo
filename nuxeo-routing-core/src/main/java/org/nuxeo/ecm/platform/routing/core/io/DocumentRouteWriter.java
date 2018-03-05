@@ -116,14 +116,7 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
             writeVariables(item, jg, registry, ctx, schemaManager);
 
             jg.writeEndObject();
-            String graphResourceUrl = "";
-            if (item.isValidated()) {
-                // it is a model
-                graphResourceUrl = ctx.getBaseUrl() + "api/v1/workflowModel/" + item.getDocument().getName() + "/graph";
-            } else {
-                // it is an instance
-                graphResourceUrl = ctx.getBaseUrl() + "api/v1/workflow/" + item.getDocument().getId() + "/graph";
-            }
+            String graphResourceUrl = getGraphResourceURL(item, ctx);
             jg.writeStringField("graphResource", graphResourceUrl);
         }
     }
@@ -156,4 +149,20 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
         }
     }
 
+    /**
+     * @since 10.1
+     */
+    public static String getGraphResourceURL(DocumentRoute route, RenderingContext ctx) {
+        StringBuilder sb = new StringBuilder(ctx.getBaseUrl());
+        sb.append("api/v1/");
+        if (route.isValidated()) {
+            // it is a model
+            sb.append("workflowModel/").append(route.getDocument().getName());
+        } else {
+            // it is an instance
+            sb.append("workflow/").append(route.getDocument().getId());
+        }
+        sb.append("/graph");
+        return sb.toString();
+    }
 }
