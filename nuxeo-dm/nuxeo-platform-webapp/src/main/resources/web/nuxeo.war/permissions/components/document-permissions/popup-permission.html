@@ -5,6 +5,11 @@
 
 <dom-module id="popup-permission">
     <template>
+        <style>
+          .paperDropdownMenu {
+            min-width: 180px;
+          }
+        </style>
         <nuxeo-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
         <nuxeo-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
 
@@ -36,7 +41,7 @@
                 <!-- Right row -->
                 <div layout horizontal>
                     <div><span class="required">[[i18n('label.permissions.right', 'Right')]]</span></div>
-                    <paper-dropdown-menu no-animations>
+                    <paper-dropdown-menu class="paperDropdownMenu" no-animations>
                         <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
                             <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
                                 <paper-item permission="[[permission]]">[[i18n(permission, permission)]]</paper-item>
