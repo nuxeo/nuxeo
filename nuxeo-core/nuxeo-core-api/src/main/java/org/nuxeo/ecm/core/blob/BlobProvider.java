@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
@@ -147,6 +148,23 @@ public interface BlobProvider {
      */
     default Map<String, URI> getAvailableConversions(ManagedBlob blob, UsageHint hint) throws IOException {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Checks if the conversion to the given {@code mimeType} is supported by the {@code blob}.
+     *
+     * @param blob the managed blob
+     * @param mimeType the destination mime type
+     * @return {@code true} if this managed blob supports the conversion to the given mime type
+     * @since 10.1
+     */
+    default boolean canConvert(ManagedBlob blob, String mimeType) {
+        try {
+            Map<String, URI> availableConversions = getAvailableConversions(blob, UsageHint.STREAM);
+            return availableConversions.containsKey(mimeType);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     /**
