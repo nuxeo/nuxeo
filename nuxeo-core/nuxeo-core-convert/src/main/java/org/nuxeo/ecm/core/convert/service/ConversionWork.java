@@ -75,8 +75,9 @@ public class ConversionWork extends TransientStoreWork {
         }
 
         ConversionService conversionService = Framework.getService(ConversionService.class);
-        BlobHolder result = converterName != null ? conversionService.convert(converterName, inputBlobHolder,
-                parameters) : conversionService.convertToMimeType(destinationMimeType, inputBlobHolder, parameters);
+        BlobHolder result = converterName != null
+                ? conversionService.convert(converterName, inputBlobHolder, parameters)
+                : conversionService.convertToMimeType(destinationMimeType, inputBlobHolder, parameters);
         if (result == null) {
             return;
         }
