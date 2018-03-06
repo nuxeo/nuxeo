@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -52,55 +53,48 @@ public class NuxeoDeployer implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
-        Lifecycle lf = event.getLifecycle();
-        if (lf instanceof ContainerBase) {
-            ContainerBase container = (ContainerBase) lf;
-            handleEvent(container, event);
+        Lifecycle lifecycle = event.getLifecycle();
+        String type = event.getType();
+
+        if (lifecycle instanceof Container && Lifecycle.BEFORE_START_EVENT.equals(type)) {
+            Container container = (Container) lifecycle;
+            preprocess(container);
         }
     }
 
-    protected void handleEvent(ContainerBase container, LifecycleEvent event) {
+    protected void preprocess(Container container) {
         try {
             ClassLoader parentCl = container.getParentClassLoader();
-            String type = event.getType();
-            if (type == Lifecycle.BEFORE_START_EVENT) {
-                File homeDir = resolveHomeDirectory();
-                File bundles = new File(homeDir, "bundles");
-                File lib = new File(homeDir, "lib");
-                File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
-                File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
-                if (deployerJar == null || commonJar == null) {
-                    System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
-                            + bundles);
-                    return;
-                }
-                ArrayList<URL> urls = new ArrayList<URL>();
-                File[] files = lib.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.getPath().endsWith(".jar")) {
-                            urls.add(f.toURI().toURL());
-                        }
+            File homeDir = resolveHomeDirectory();
+            File bundles = new File(homeDir, "bundles");
+            File lib = new File(homeDir, "lib");
+            File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
+            File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
+            if (deployerJar == null || commonJar == null) {
+                System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
+                        + bundles);
+                return;
+            }
+            ArrayList<URL> urls = new ArrayList<URL>();
+            File[] files = lib.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.getPath().endsWith(".jar")) {
+                        urls.add(f.toURI().toURL());
                     }
                 }
-                files = bundles.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.getPath().endsWith(".jar")) {
-                            urls.add(f.toURI().toURL());
-                        }
+            }
+            files = bundles.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.getPath().endsWith(".jar")) {
+                        urls.add(f.toURI().toURL());
                     }
                 }
-                urls.add(homeDir.toURI().toURL());
-                urls.add(new File(homeDir, "config").toURI().toURL());
-                URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl);
-                // URLClassLoader cl = new URLClassLoader(new URL[]
-                // {deployerJar.toURI().toURL(),
-                // commonJar.toURI().toURL(),
-                // xercesJar.toURI().toURL(),
-                // new File(homeDir, "config").toURI().toURL() // for log4j
-                // config
-                // }, parentCl);
+            }
+            urls.add(homeDir.toURI().toURL());
+            urls.add(new File(homeDir, "config").toURI().toURL());
+            try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl)) {
                 System.out.println("# Running Nuxeo Preprocessor ...");
                 Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
                 Method main = klass.getMethod("main", String[].class);
@@ -129,6 +123,16 @@ public class NuxeoDeployer implements LifecycleListener {
             tomcatHome = System.getProperty("catalina.home");
         }
         return tomcatHome;
+    }
+
+    /**
+     * @deprecated Since 10.1, use {@link #preprocess(Container)} instead.
+     */
+    @Deprecated
+    protected void handleEvent(ContainerBase container, LifecycleEvent event) {
+        if (Lifecycle.BEFORE_START_EVENT.equals(event.getType())) {
+            preprocess(container);
+        }
     }
 
 }
