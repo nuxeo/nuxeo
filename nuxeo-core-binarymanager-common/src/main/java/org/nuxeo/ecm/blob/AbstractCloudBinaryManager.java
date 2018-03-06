@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -78,6 +79,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected int directDownloadExpire;
 
+    protected boolean transientFlag;
+
     public static final String CACHE_SIZE_PROPERTY = "cachesize";
 
     public static final String CACHE_COUNT_PROPERTY = "cachecount";
@@ -109,6 +112,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         if (directDownloadExpire < 0) {
             directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
+
+        transientFlag = Boolean.parseBoolean(getProperty(BlobProviderDescriptor.TRANSIENT));
 
         // Setup remote client
         setupCloudClient();
@@ -232,5 +237,10 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         } else {
             return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }
+    }
+
+    @Override
+    public boolean isTransient() {
+        return transientFlag;
     }
 }
