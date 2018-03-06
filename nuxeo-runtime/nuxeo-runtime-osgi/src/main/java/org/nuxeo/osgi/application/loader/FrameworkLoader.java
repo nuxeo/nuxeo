@@ -21,7 +21,6 @@ package org.nuxeo.osgi.application.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -402,8 +401,6 @@ public class FrameworkLoader {
         msg.append("  * Log Directory = ").append(env.getLog()).append(newline);
         msg.append("  * Configuration Directory = ").append(env.getConfig()).append(newline);
         msg.append("  * Temp Directory = ").append(env.getTemp()).append(newline);
-        // System.out.println(" * System Bundle = "+systemBundle);
-        // System.out.println(" * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         msg.append(hr);
         return msg;
     }
