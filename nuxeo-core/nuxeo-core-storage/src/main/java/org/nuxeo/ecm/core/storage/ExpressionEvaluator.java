@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,8 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
@@ -272,8 +275,16 @@ public abstract class ExpressionEvaluator {
                 || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
         }
-        Reference ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
-        StringLiteral val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        Reference ref;
+        Literal val;
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            ref = new Reference(NXQL.ECM_ISTRASHED);
+            val = new BooleanLiteral(true); // give true to match equalsDeleted mechanism
+        } else {
+            ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
+            val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        }
         boolean equalsDeleted = op == Operator.EQ ^ v == 0;
         if (equalsDeleted) {
             return walkEq(ref, val);

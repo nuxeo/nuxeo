@@ -171,4 +171,14 @@ public class LifeCycleTrashService extends AbstractTrashService {
         session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
 
+    @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case TRASHED_STATE_IS_DEDICATED_PROPERTY:
+            return false;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
+    }
+
 }

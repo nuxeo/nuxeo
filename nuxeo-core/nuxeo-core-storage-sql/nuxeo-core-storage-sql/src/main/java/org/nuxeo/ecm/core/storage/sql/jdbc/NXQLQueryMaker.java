@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+
 import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -83,6 +85,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.ArraySubQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
@@ -1347,7 +1350,12 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 // ok
             } else if (NXQL.ECM_ISTRASHED.equals(name)) {
-                name = NXQL.ECM_LIFECYCLESTATE; // column actually used
+                TrashService trashService = Framework.getService(TrashService.class);
+                if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+                    // ok
+                } else {
+                    name = NXQL.ECM_LIFECYCLESTATE; // column actually used
+                }
             } else if (NXQL.ECM_TAG.equals(name) || name.startsWith(ECM_TAG_STAR)) {
                 hasTag = true;
             } else if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
@@ -1591,6 +1599,9 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 // toplevel ones have been extracted by the analyzer
                 throw new QueryParseException("Cannot use non-toplevel " + name + " in query");
+            } else if (NXQL.ECM_ISTRASHED.equals(name)) {
+                table = hierTable;
+                fragmentKey = Model.MAIN_IS_TRASHED_KEY;
             } else if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 propertyName = Model.MISC_LIFECYCLE_STATE_PROP;
             } else if (NXQL.ECM_VERSIONLABEL.equals(name)) {
@@ -2122,12 +2133,17 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitExpressionIsTrashed(Expression node) {
-            String name = ((Reference) node.lvalue).name;
-            boolean bool = getBooleanRValue(name, node);
-            Operator op = bool ? Operator.EQ : Operator.NOTEQ;
-            visitReference(new Reference(NXQL.ECM_LIFECYCLESTATE));
-            visitOperator(op);
-            visitStringLiteral(LifeCycleConstants.DELETED_STATE);
+            TrashService trashService = Framework.getService(TrashService.class);
+            if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+                visitExpressionWhereFalseIsNull(node);
+            } else {
+                String name = ((Reference) node.lvalue).name;
+                boolean bool = getBooleanRValue(name, node);
+                Operator op = bool ? Operator.EQ : Operator.NOTEQ;
+                visitReference(new Reference(NXQL.ECM_LIFECYCLESTATE));
+                visitOperator(op);
+                visitStringLiteral(LifeCycleConstants.DELETED_STATE);
+            }
         }
 
         private boolean getBooleanRValue(String name, Expression node) {
