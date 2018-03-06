@@ -123,4 +123,14 @@ public class PropertyTrashService extends AbstractTrashService {
         return docRefs;
     }
 
+    @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case TRASHED_STATE_IS_DEDICATED_PROPERTY:
+            return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
+    }
+
 }

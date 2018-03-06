@@ -96,6 +96,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -117,6 +118,9 @@ public class TestSQLRepositoryQuery {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected TrashService trashService;
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
@@ -2123,14 +2127,24 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testIsTrashed() throws Exception {
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
+    public void testIsTrashedWithProperty() throws Exception {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
     }
 
     @Test
-    public void testLifeCycleStateDeleted() throws Exception {
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
+    public void testIsTrashedWithLifeCycle() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
+    public void testLifeCycleStateDeletedForTrash() throws Exception {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
@@ -2146,8 +2160,8 @@ public class TestSQLRepositoryQuery {
         assertEquals(0, dml.size());
 
         // put a doc in the trash
-        assertTrue(session.followTransition(new PathRef("/testfolder1/testfile1"), "delete"));
-        session.save();
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        trashService.trashDocument(file1);
 
         dml = session.query(sqlNotTrashed);
         assertEquals(7, dml.size());

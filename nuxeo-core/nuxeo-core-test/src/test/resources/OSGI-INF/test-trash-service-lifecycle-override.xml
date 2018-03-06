@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.trash.service.properties.override">
+
+  <require>org.nuxeo.ecm.core.trash.service.migrator</require>
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+    <migration id="trash-storage">
+      <defaultState>lifecycle</defaultState>
+    </migration>
+  </extension>
+
+</component>

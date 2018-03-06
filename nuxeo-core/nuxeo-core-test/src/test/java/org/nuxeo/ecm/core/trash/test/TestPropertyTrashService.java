@@ -23,7 +23,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 10.1
  */
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-property-trash-service-override.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
 public class TestPropertyTrashService extends AbstractTestTrashService {
 
 }

@@ -26,6 +26,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * @deprecated since 10.1 along with {@link LifeCycleTrashService}.
  */
 @Deprecated
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
 public class TestLifeCycleTrashService extends AbstractTestTrashService {
 
     @Test
