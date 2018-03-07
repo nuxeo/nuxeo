@@ -1645,11 +1645,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkReturnedValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE);
-        if (useElasticsearch()) {
-            checkReturnedValue(PropertyIds.VERSION_LABEL, "0.0");
-        } else {
-            checkReturnedValue(PropertyIds.VERSION_LABEL, null);
-        }
+        checkReturnedValue(PropertyIds.VERSION_LABEL, null);
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE);
         checkReturnedValue(PropertyIds.IS_PRIVATE_WORKING_COPY, Boolean.TRUE);
