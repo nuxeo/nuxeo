@@ -299,7 +299,11 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Login failed for %s on request %s",
+                        cachableUserIdent.getUserInfo().getUserName(), httpRequest.getRequestURI()));
+            }
+            log.debug(e, e);
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             Throwable cause = e.getCause();
             if (cause instanceof DirectoryException) {
@@ -307,6 +311,13 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (rootCause instanceof NamingException
                         && rootCause.getMessage().contains("LDAP response read timed out")
                         || rootCause instanceof SocketException) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Exception root cause is either a NamingException with \"LDAP response read timed out\""
+                                        + " or a SocketException, setting the status code to %d,"
+                                        + " more relevant than an illegitimate 401.",
+                                HttpServletResponse.SC_GATEWAY_TIMEOUT));
+                    }
                     httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 }
                 return DIRECTORY_ERROR_PRINCIPAL;
