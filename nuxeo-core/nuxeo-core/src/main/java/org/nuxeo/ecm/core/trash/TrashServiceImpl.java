@@ -22,33 +22,31 @@ package org.nuxeo.ecm.core.trash;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
+import org.nuxeo.runtime.migration.MigrationService.StatusChangeNotifier;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class TrashServiceImpl extends DefaultComponent {
 
-    /**
-     * @since 10.1
-     */
+    /** @since 10.2 */
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.trash.TrashService");
+
+    /** @since 10.1 */
     public static final String MIGRATION_ID = "trash-storage"; // also in XML
 
-    /**
-     * @since 10.1
-     */
+    /** @since 10.1 */
     public static final String MIGRATION_STATE_LIFECYCLE = "lifecycle"; // also in XML
 
-    /**
-     * @since 10.1
-     */
+    /** @since 10.1 */
     public static final String MIGRATION_STATE_PROPERTY = "property"; // also in XML
 
-    /**
-     * @since 10.1
-     */
+    /** @since 10.1 */
     public static final String MIGRATION_STEP_LIFECYCLE_TO_PROPERTY = "lifecycle-to-property"; // also in XML
 
     protected volatile TrashService trashService;
 
     // called under synchronized (this)
+    @SuppressWarnings("deprecation")
     protected TrashService recomputeTrashService() {
         MigrationService migrationService = Framework.getService(MigrationService.class);
         MigrationStatus status = migrationService.getStatus(MIGRATION_ID);
@@ -58,7 +56,7 @@ public class TrashServiceImpl extends DefaultComponent {
         if (status.isRunning()) {
             String step = status.getStep();
             if (MIGRATION_STEP_LIFECYCLE_TO_PROPERTY.equals(step)) {
-                throw new UnsupportedOperationException("Not yet implemented");
+                return new BridgeTrashService(new LifeCycleTrashService(), new PropertyTrashService());
             } else {
                 throw new IllegalStateException("Unknown migration step: " + step);
             }
@@ -85,6 +83,32 @@ public class TrashServiceImpl extends DefaultComponent {
             }
         }
         return (T) trashService;
+    }
+
+    /**
+     * Callback class to notify of migration status changes.
+     *
+     * @since 10.2
+     */
+    public static class TrashServiceStatusChangeNotifier implements StatusChangeNotifier {
+
+        @Override
+        public void notifyStatusChange() {
+            TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime()
+                                                                        .getComponent(TrashServiceImpl.NAME);
+            trashService.invalidateTrashServiceImplementation();
+        }
+    }
+
+    /**
+     * Called when the migration status changes, to recompute the new service.
+     *
+     * @since 10.2
+     */
+    protected void invalidateTrashServiceImplementation() {
+        synchronized (this) {
+            trashService = recomputeTrashService();
+        }
     }
 
 }
