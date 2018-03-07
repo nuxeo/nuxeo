@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,8 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Query builder for a MarkLogic query from an {@link Expression}.
@@ -352,8 +355,16 @@ class MarkLogicQueryBuilder {
                 || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
         }
-        Reference ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
-        StringLiteral val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        Reference ref;
+        Literal val;
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            ref = new Reference(NXQL.ECM_ISTRASHED);
+            val = new BooleanLiteral(true); // give true to match equalsDeleted mechanism
+        } else {
+            ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
+            val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+        }
         boolean equalsDeleted = op == Operator.EQ ^ v == 0;
         return walkEq(ref, val, equalsDeleted);
     }
