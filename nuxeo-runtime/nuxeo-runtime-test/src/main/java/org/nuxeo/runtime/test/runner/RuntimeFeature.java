@@ -26,14 +26,13 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.RuntimeHarnessImpl;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
 
 import com.google.inject.Binder;
@@ -69,7 +68,7 @@ public class RuntimeFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        harness = new NXRuntimeTestCase(runner.getTargetTestClass());
+        harness = new RuntimeHarnessImpl(runner.getTargetTestClass());
         deployment = RuntimeDeployment.onTest(runner);
         deployer = new HotDeployer(runner, harness);
     }
@@ -126,22 +125,15 @@ public class RuntimeFeature extends SimpleFeature {
 
     @Rule
     public MethodRule onCleanupURLStreamHandlers() {
-        return new MethodRule() {
-
+        return (base, method, target) -> new Statement() {
             @Override
-            public Statement apply(final Statement base, FrameworkMethod method, Object target) {
-                return new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        try {
-                            base.evaluate();
-                        } finally {
-                            URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
-                        }
-                    }
-                };
+            public void evaluate() throws Throwable {
+                try {
+                    base.evaluate();
+                } finally {
+                    URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
+                }
             }
-
         };
     }
 

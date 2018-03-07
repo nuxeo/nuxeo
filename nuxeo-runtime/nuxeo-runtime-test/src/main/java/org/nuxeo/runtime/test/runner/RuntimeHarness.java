@@ -120,6 +120,10 @@ public interface RuntimeHarness {
      */
     RuntimeContext deployPartial(String bundle, Set<TargetExtensions> targetExtensions) throws Exception;
 
+    /**
+     * @deprecated since 10.2, unused and badly implemented
+     */
+    @Deprecated
     void deployFolder(File folder, ClassLoader loader) throws Exception;
 
     void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
@@ -128,7 +132,9 @@ public interface RuntimeHarness {
      * Framework properties for variable injections
      *
      * @since 5.4.2
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     Properties getProperties();
 
     /**
@@ -147,19 +153,25 @@ public interface RuntimeHarness {
 
     /**
      * @since 5.5
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     boolean isRestart();
 
     /**
      * @since 5.5
      * @throws Exception
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     void restart() throws Exception;
 
     /**
      * @throws URISyntaxException
      * @since 5.7
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     List<String> getClassLoaderFiles() throws URISyntaxException;
 
 }
