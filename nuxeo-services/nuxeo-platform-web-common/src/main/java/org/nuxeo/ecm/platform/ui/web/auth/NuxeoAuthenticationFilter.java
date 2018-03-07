@@ -673,7 +673,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (service != null) {
                     return;
                 }
-                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
+                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                               .getComponent(
+                                                                                                       PluggableAuthenticationService.NAME);
                 svc.initPreFilters();
                 new ComponentManager.Listener() {
                     // nullify service field if components are restarting
