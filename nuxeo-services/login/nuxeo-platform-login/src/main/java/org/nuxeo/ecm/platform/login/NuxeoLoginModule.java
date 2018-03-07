@@ -24,7 +24,6 @@ package org.nuxeo.ecm.platform.login;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,6 +224,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
+    @Override
     public boolean login() throws LoginException {
         if (manager == null) {
             // throw new LoginException("UserManager implementation not found");
