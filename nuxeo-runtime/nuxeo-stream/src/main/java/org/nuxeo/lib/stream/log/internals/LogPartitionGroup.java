@@ -42,6 +42,10 @@ public class LogPartitionGroup {
         this.partition = partition;
     }
 
+    public LogPartition getLogPartition() {
+        return LogPartition.of(name, partition);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
