@@ -5,6 +5,7 @@
 
     <migration id="trash-storage">
       <description label="migration.trash-storage">Migration of in the trash storage model</description>
+      <statusChangeNotifier>org.nuxeo.ecm.core.trash.TrashServiceImpl$TrashServiceStatusChangeNotifier</statusChangeNotifier>
       <defaultState>lifecycle</defaultState>
       <state id="lifecycle">
         <description label="migration.trash-storage.lifecycle">Trashed state stored as deleted lifecycle state</description>
@@ -15,6 +16,7 @@
 
       <step id="lifecycle-to-property" fromState="lifecycle" toState="property">
         <description label="migration.trash-storage.lifecycle-to-property">Migrate trashed state from lifecycle to property</description>
+        <class>org.nuxeo.ecm.core.trash.TrashedStateLifeCycleToPropertyMigrator</class>
       </step>
     </migration>
 
