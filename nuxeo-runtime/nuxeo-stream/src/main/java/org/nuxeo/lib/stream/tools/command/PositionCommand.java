@@ -45,7 +45,25 @@ import org.nuxeo.lib.stream.log.LogTailer;
  */
 public class PositionCommand extends Command {
 
+    public static final Duration FIRST_READ_TIMEOUT = Duration.ofMillis(1000);
+
+    public static final Duration READ_TIMEOUT = Duration.ofMillis(100);
+
     protected static final String NAME = "position";
+
+    protected static long getTimestampFromDate(String dateIso8601) {
+        if (dateIso8601 == null || dateIso8601.isEmpty()) {
+            return -1;
+        }
+        try {
+            Instant instant = Instant.parse(dateIso8601);
+            return instant.toEpochMilli();
+        } catch (DateTimeException e) {
+            System.err.println("Failed to read the timeout: " + e.getMessage());
+            System.err.println("The timestamp should be in ISO-8601 format, eg. " + Instant.now());
+        }
+        return -1;
+    }
 
     @Override
     public String name() {
@@ -202,10 +220,8 @@ public class PositionCommand extends Command {
     }
 
     protected LogOffset searchWatermarkOffset(LogTailer<Record> tailer, long timestamp) throws InterruptedException {
-        Duration durationFirst = Duration.ofMillis(1000);
-        Duration duration = Duration.ofMillis(100);
         LogOffset lastOffset = null;
-        for (LogRecord<Record> rec = tailer.read(durationFirst); rec != null; rec = tailer.read(duration)) {
+        for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(READ_TIMEOUT)) {
             long recTimestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
             if (recTimestamp == timestamp) {
                 return rec.offset();
@@ -217,19 +233,8 @@ public class PositionCommand extends Command {
             }
             lastOffset = rec.offset();
         }
-        // not found return last offset of partition
+        // not found returns last offset of partition
         return lastOffset;
-    }
-
-    protected long getTimestampFromDate(String timestamp) {
-        try {
-            Instant instant = Instant.parse(timestamp);
-            return instant.toEpochMilli();
-        } catch (DateTimeException e) {
-            System.err.println("Failed to read the timeout: " + e.getMessage());
-            System.err.println("The timestamp should be in ISO-8601 format, eg. " + Instant.now());
-        }
-        return -1;
     }
 
 }

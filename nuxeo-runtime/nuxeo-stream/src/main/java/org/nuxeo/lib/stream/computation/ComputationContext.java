@@ -60,5 +60,5 @@ public interface ComputationContext {
      *
      * @since 10.1
      */
-    void askToTerminate();
+    void askForTermination();
 }

@@ -49,6 +49,8 @@ public class TrackerCommand extends Command {
 
     protected static final String ALL_LOGS = "all";
 
+    protected static final String DEFAULT_LATENCIES_LOG = "_consumer_latencies";
+
     protected boolean verbose = false;
 
     protected String output;
@@ -102,7 +104,7 @@ public class TrackerCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
         logNames = getLogNames(manager, cmd.getOptionValue("log-name"));
-        output = cmd.getOptionValue("log-output");
+        output = cmd.getOptionValue("log-output", DEFAULT_LATENCIES_LOG);
         verbose = cmd.hasOption("verbose");
         interval = Integer.parseInt(cmd.getOptionValue("interval", DEFAULT_INTERVAL));
         count = Integer.parseInt(cmd.getOptionValue("count", DEFAULT_COUNT));

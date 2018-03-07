@@ -72,7 +72,7 @@ public interface StreamProcessor {
     long getLowWatermark();
 
     /**
-     * Returns the latency for a computation. This is works also for distributed computations.
+     * Returns the latency for a computation. This works also for distributed computations.
      *
      * @since 10.1
      */
