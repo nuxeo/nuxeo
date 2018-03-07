@@ -102,7 +102,7 @@ public class ComputationContextImpl implements ComputationContext {
     }
 
     @Override
-    public void askToTerminate() {
+    public void askForTermination() {
         terminateFlag = true;
     }
 

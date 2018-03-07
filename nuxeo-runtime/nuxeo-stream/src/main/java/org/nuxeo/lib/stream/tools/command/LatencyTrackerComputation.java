@@ -81,7 +81,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
     public void processTimer(ComputationContext context, String key, long timestamp) {
         if (remaining == 0) {
             debug("Exiting after " + count + " captures");
-            context.askToTerminate();
+            context.askForTermination();
             return;
         }
         debug(String.format("Tracking latency %d/%d", count - remaining, count));
@@ -96,7 +96,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
             }
             int partition = 0;
             for (Latency latency : latencies) {
-                String recordKey = String.format("%s:%s:%s", logGroup.group, logGroup.name, partition);
+                String recordKey = encodeKey(logGroup, partition);
                 byte[] value;
                 try {
                     value = latency.asJson().getBytes("UTF-8");
@@ -113,6 +113,15 @@ public class LatencyTrackerComputation extends AbstractComputation {
         context.askForCheckpoint();
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
         remaining--;
+    }
+
+    public static String encodeKey(LogPartitionGroup logGroup, int partition) {
+        return String.format("%s:%s:%s", logGroup.group, logGroup.name, partition);
+    }
+
+    public static LogPartitionGroup decodeKey(String key) {
+        String[] parts = key.split(":");
+        return new LogPartitionGroup(parts[0], parts[1], Integer.parseInt(parts[2]));
     }
 
     @Override

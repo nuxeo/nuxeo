@@ -33,4 +33,11 @@ public interface LogOffset extends Comparable<LogOffset> {
      * The position for the this {@link #partition()}.
      */
     long offset();
+
+    /**
+     * Returns the next offset corresponding to the next position in the same partition.
+     *
+     * @since 10.1
+     */
+    LogOffset nextOffset();
 }

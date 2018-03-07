@@ -90,12 +90,7 @@ public class LogStreamProcessor implements StreamProcessor {
 
     @Override
     public boolean isTerminated() {
-        for (ComputationPool pool : pools) {
-            if (!pool.isTerminated()) {
-                return false;
-            }
-        }
-        return true;
+        return pools.stream().allMatch(ComputationPool::isTerminated);
     }
 
     @Override

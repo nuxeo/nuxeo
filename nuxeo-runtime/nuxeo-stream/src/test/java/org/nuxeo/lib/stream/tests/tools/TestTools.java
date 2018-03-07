@@ -23,22 +23,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
-import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.Main;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 /**
  * @since 9.3
@@ -119,8 +117,8 @@ public abstract class TestTools {
     @Test
     public void testPositionAfterDate() {
         run("help position");
-        runShouldFail(String.format("position %s --after-date %s --log-name %s --group anotherGroup",
-                Instant.now(), getManagerOptions(), LOG_NAME));
+        runShouldFail(String.format("position %s --after-date %s --log-name %s --group anotherGroup", Instant.now(),
+                getManagerOptions(), LOG_NAME));
     }
 
     @Test
@@ -176,8 +174,47 @@ public abstract class TestTools {
 
     @Test
     public void testTracker() {
-        //run(String.format("tracker %s --verbose -l ALL -o %s-out -i 2 -c 3", getManagerOptions(), LOG_NAME));
-        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 2 -c 3", getManagerOptions(), LOG_NAME, LOG_NAME));
+        // run(String.format("tracker %s --verbose -l ALL -o %s-out -i 2 -c 3", getManagerOptions(), LOG_NAME));
+        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 2 -c 3", getManagerOptions(), LOG_NAME,
+                LOG_NAME));
+    }
+
+    @Test
+    public void testTrackerAndRestore() throws InterruptedException {
+        // Set a consumer position
+        String group = "aGroup2Track";
+        Record firstRecord;
+        Record nextRecord;
+        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
+            tailer.toStart();
+            firstRecord = tailer.read(Duration.ofSeconds(1)).message();
+            tailer.read(Duration.ofSeconds(1));
+            tailer.commit(); // commit on record 2
+            LogRecord<Record> nextLogRecord = tailer.read(Duration.ofSeconds(1));
+            nextRecord = nextLogRecord.message();
+            System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.key);
+        }
+        // track the current latencies
+        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 1 -c 1", getManagerOptions(), LOG_NAME,
+                LOG_NAME));
+
+        // reset the position
+        run(String.format("position %s --reset --log-name %s --group %s", getManagerOptions(), LOG_NAME, group));
+        // ensure that we have reset the position
+        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
+            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
+            assertEquals(firstRecord, rec.message());
+        }
+
+        // restore position
+        run(String.format("restore %s --verbose --log-name %s -i %s-latencies", getManagerOptions(), LOG_NAME,
+                LOG_NAME));
+
+        // open a tailer we should be good
+        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
+            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
+            assertEquals(nextRecord, rec.message());
+        }
     }
 
     @Test
