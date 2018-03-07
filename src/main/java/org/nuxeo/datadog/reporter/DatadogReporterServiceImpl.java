@@ -18,6 +18,7 @@
  */
 package org.nuxeo.datadog.reporter;
 
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +33,17 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
 public class DatadogReporterServiceImpl extends DefaultComponent implements DatadogReporterService {
+
+    private static final DefaultStringMatchingStrategy DEFAULT_STRING_MATCHING_STRATEGY = new DefaultStringMatchingStrategy();
+
+    private static final RegexStringMatchingStrategy REGEX_STRING_MATCHING_STRATEGY = new RegexStringMatchingStrategy();
+
+    private static final SubstringMatchingStrategy SUBSTRING_MATCHING_STRATEGY = new SubstringMatchingStrategy();
 
     protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -74,10 +82,30 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
                                   .withHost(conf.getHost())//
                                   .withTags(conf.getTags())
                                   .withTransport(httpTransport)//
-                                  .withExpansions(Expansion.ALL)//
+                                  .withExpansions(getExpansions())//
+                                  .filter(getFilter())
                                   .withMetricNameFormatter(new DefaultMetricNameFormatter())//
                                   .build();
 
+    }
+
+    private EnumSet<Expansion> getExpansions() {
+        return conf.filter.getExpansions();
+    }
+
+    public MetricFilter getFilter() {
+        final StringMatchingStrategy stringMatchingStrategy = conf.filter.getUseRegexFilters()
+                ? REGEX_STRING_MATCHING_STRATEGY
+                : (conf.filter.getUseSubstringMatching() ? SUBSTRING_MATCHING_STRATEGY
+                        : DEFAULT_STRING_MATCHING_STRATEGY);
+
+        return (name, metric) -> {
+            // Include the metric if its name is not excluded and its name is included
+            // Where, by default, with no includes setting, all names are included.
+            return !stringMatchingStrategy.containsMatch(conf.filter.getExcludes(), name)
+                    && (conf.filter.getIncludes().isEmpty()
+                            || stringMatchingStrategy.containsMatch(conf.filter.getIncludes(), name));
+        };
     }
 
     @Override
