@@ -269,7 +269,6 @@ public class TestPropertyModel {
         return true;
     }
 
-    // Duplicated from NXRuntimeTestCase
     public static URL getResource(String resource) {
         return Thread.currentThread().getContextClassLoader().getResource(resource);
     }

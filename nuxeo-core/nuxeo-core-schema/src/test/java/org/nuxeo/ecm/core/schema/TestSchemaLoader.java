@@ -47,7 +47,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.ResourceHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -75,7 +75,7 @@ public class TestSchemaLoader {
     @Test
     @Ignore
     public void testXSDReader() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/schema.xsd");
+        URL url = ResourceHelper.getResource("schema/schema.xsd");
 
         reader.loadSchema("MySchema", "", url);
         // Collection<Schema> schemas = typeMgr.getSchemas();
@@ -142,7 +142,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testSequence() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/testList.xsd");
+        URL url = ResourceHelper.getResource("schema/testList.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("testList", "", url);
         Field field = schema.getField("participants");
@@ -158,7 +158,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testList() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/testList.xsd");
+        URL url = ResourceHelper.getResource("schema/testList.xsd");
         assertNotNull(url);
 
         Schema schema = reader.loadSchema("testList", "", url);
@@ -175,7 +175,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testComplexSubList() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/testList.xsd");
+        URL url = ResourceHelper.getResource("schema/testList.xsd");
         assertNotNull(url);
 
         Schema schema = reader.loadSchema("testList", "", url);
@@ -205,7 +205,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testComplexSchema() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/policy.xsd");
+        URL url = ResourceHelper.getResource("schema/policy.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("policy", "", url);
 
@@ -229,7 +229,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testAdvancedTyping() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -246,7 +246,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testUseAttributeAsElements() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -261,7 +261,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testInlineTyping() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -298,7 +298,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testXSChoice() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -319,7 +319,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testXSNestedChoice() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -341,7 +341,7 @@ public class TestSchemaLoader {
 
     @Test
     public void testXSNestedChoiceWithList() throws Exception {
-        URL url = NXRuntimeTestCase.getResource("schema/advancedSchema.xsd");
+        URL url = ResourceHelper.getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("advancedSchema", "", url);
 
@@ -385,7 +385,7 @@ public class TestSchemaLoader {
     @Test
     public void testSchema12() throws Exception {
 
-        URL url = NXRuntimeTestCase.getResource("schema/schema12.xsd");
+        URL url = ResourceHelper.getResource("schema/schema12.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("schema12", "", url);
 
@@ -412,7 +412,7 @@ public class TestSchemaLoader {
     @Test
     public void testClassifier() throws Exception {
 
-        URL url = NXRuntimeTestCase.getResource("schema/test-classifier.xsd");
+        URL url = ResourceHelper.getResource("schema/test-classifier.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("classifier", "", url);
 
@@ -450,7 +450,7 @@ public class TestSchemaLoader {
     @Test
     public void testXSExtension() throws Exception {
 
-        URL url = NXRuntimeTestCase.getResource("schema/testExtension.xsd");
+        URL url = ResourceHelper.getResource("schema/testExtension.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("extension", "", url);
 
@@ -481,7 +481,7 @@ public class TestSchemaLoader {
     @Test
     public void testXSDRebase() throws Exception {
 
-        URL url = NXRuntimeTestCase.getResource("schema/testExtension.xsd");
+        URL url = ResourceHelper.getResource("schema/testExtension.xsd");
         assertNotNull(url);
         Schema schema = reader.loadSchema("extension", "prefix", url, "employee");
 

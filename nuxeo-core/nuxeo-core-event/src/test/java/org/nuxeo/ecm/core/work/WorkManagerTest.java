@@ -54,7 +54,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.trackers.files.FileEvent;
 
 @RunWith(FeaturesRunner.class)
@@ -139,9 +138,6 @@ public class WorkManagerTest {
 
     @Inject
     public FeaturesRunner runner;
-
-    @Inject
-    public RuntimeHarness harness;
 
     void assertWorkIdsEquals(List<String> expected, Work.State state) {
         List<String> actual = service.listWorkIds(QUEUE, state);

@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.ResourceHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,7 +68,7 @@ public class TestSchemaLoaderRestriction {
     public void setUp() throws Exception {
         SchemaManager typeMgr = Framework.getService(SchemaManager.class);
         XSDLoader reader = new XSDLoader((SchemaManagerImpl) typeMgr);
-        URL url = NXRuntimeTestCase.getResource("schema/testrestriction.xsd");
+        URL url = ResourceHelper.getResource("schema/testrestriction.xsd");
         schema = reader.loadSchema("testrestriction", "", url);
     }
 
