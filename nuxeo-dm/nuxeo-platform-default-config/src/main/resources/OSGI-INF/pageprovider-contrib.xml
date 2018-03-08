@@ -26,6 +26,7 @@
         AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
         'deleted'
       </pattern>
+      <sort column="ecm:pos" ascending="true" />
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
