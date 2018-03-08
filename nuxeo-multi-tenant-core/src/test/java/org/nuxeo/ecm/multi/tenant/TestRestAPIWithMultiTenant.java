@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
@@ -30,7 +29,6 @@ import org.nuxeo.ecm.automation.client.rest.api.RestClient;
 import org.nuxeo.ecm.automation.client.rest.api.RestResponse;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -52,12 +50,6 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml")
 public class TestRestAPIWithMultiTenant {
-
-    @Inject
-    protected MultiTenantService multiTenantService;
-
-    @Inject
-    protected DirectoryService directoryService;
 
     HttpAutomationClient client = new HttpAutomationClient("http://localhost:18080/automation/");
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,13 @@ package org.nuxeo.ecm.multi.tenant;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -43,12 +39,6 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 public class TestMultiTenantHelper {
-
-    @Inject
-    protected CoreSession session;
-
-    @Inject
-    protected UserManager userManager;
 
     /**
      * just to test it does not throw an exception.
