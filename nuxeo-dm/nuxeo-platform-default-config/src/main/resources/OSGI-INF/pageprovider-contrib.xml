@@ -25,6 +25,7 @@
         ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
         AND ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
+      <sort column="ecm:pos" ascending="true" />
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
