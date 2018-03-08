@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -62,6 +63,8 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
+    protected static final String TENANT_ID_FIELD = "tenantId";
+
     private final static Log log = LogFactory.getLog(BaseSession.class);
 
     protected final Directory directory;
@@ -83,6 +86,8 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected boolean autoincrementId;
 
+    protected boolean computeMultiTenantId;
+
     protected BaseSession(Directory directory, Class<? extends Reference> referenceClass) {
         this.directory = directory;
         schemaName = directory.getSchema();
@@ -94,6 +99,7 @@ public abstract class BaseSession implements Session, EntrySource {
         permissions = desc.permissions;
         passwordHashAlgorithm = desc.passwordHashAlgorithm;
         this.referenceClass = referenceClass;
+        computeMultiTenantId = desc.isComputeMultiTenantId();
     }
 
     /** To be implemented with a more specific return type. */
@@ -429,6 +435,12 @@ public abstract class BaseSession implements Session, EntrySource {
 
     @Override
     public void deleteEntry(String id) throws DirectoryException {
+
+        if (!canDeleteMultiTenantEntry(id)) {
+            throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                    "label.directory.error.multi.tenant.operationNotAllowed", null);
+        }
+
         checkPermission(SecurityConstants.WRITE);
         checkDeleteConstraints(id);
 
@@ -441,6 +453,25 @@ public abstract class BaseSession implements Session, EntrySource {
         }
         deleteEntryWithoutReferences(id);
         getDirectory().invalidateCaches();
+    }
+
+    protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
+        if (isMultiTenant()) {
+            // can only delete entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                DocumentModel entry = getEntry(entryId);
+                String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
+                                tenantId));
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -497,6 +528,21 @@ public abstract class BaseSession implements Session, EntrySource {
             result.add(propValue);
         }
         return result;
+    }
+
+    /**
+     * Returns {@code true} if this directory supports multi tenancy, {@code false} otherwise.
+     */
+    protected boolean isMultiTenant() {
+        return directory.isMultiTenant();
+    }
+
+    /**
+     * Returns the tenant id of the logged user if any, {@code null} otherwise.
+     */
+    protected String getCurrentTenantId() {
+        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        return principal != null ? principal.getTenantId() : null;
     }
 
     /** To be implemented for specific creation. */
