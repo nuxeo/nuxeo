@@ -46,6 +46,8 @@ import com.codahale.metrics.SharedMetricRegistries;
 
 public abstract class AbstractDirectory implements Directory {
 
+    public static final String TENANT_ID_FIELD = "tenantId";
+
     public final BaseDirectoryDescriptor descriptor;
 
     protected DirectoryFieldMapper fieldMapper;
