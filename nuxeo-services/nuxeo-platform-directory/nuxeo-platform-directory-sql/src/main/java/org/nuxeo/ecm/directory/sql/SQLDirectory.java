@@ -98,8 +98,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     public static final Log log = LogFactory.getLog(SQLDirectory.class);
 
-    public static final String TENANT_ID_FIELD = "tenantId";
-
     private final boolean nativeCase;
 
     private Table table;

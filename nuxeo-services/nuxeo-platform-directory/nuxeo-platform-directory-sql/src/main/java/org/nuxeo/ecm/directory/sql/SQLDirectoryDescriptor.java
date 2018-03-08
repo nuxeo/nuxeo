@@ -44,9 +44,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNode("nativeCase")
     public Boolean nativeCase;
 
-    @XNode("computeMultiTenantId")
-    private boolean computeMultiTenantId = true;
-
     public String getDataSourceName() {
         return dataSourceName;
     }
@@ -74,16 +71,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         return staticFilters;
     }
 
-    /**
-     * Returns {@code true} if a multi tenant id should be computed for this directory, if the directory has support for
-     * multi tenancy, {@code false} otherwise.
-     *
-     * @since 5.6
-     */
-    public boolean isComputeMultiTenantId() {
-        return computeMultiTenantId;
-    }
-
     @Override
     public void merge(BaseDirectoryDescriptor other) {
         super.merge(other);
@@ -108,7 +95,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (other.nativeCase != null) {
             nativeCase = other.nativeCase;
         }
-        computeMultiTenantId = other.computeMultiTenantId;
     }
 
     @Override
