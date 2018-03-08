@@ -111,11 +111,6 @@ public class TestMultiTenantService {
     @Inject
     protected TrashService trashService;
 
-    @Before
-    public void before() {
-        assumeTrue("DBS does not support multi-tenant", !coreFeature.getStorageConfiguration().isDBS());
-    }
-
     @After
     public void deleteAllUsersAndGroups() {
         if (userManager.getPrincipal("bender") != null) {
