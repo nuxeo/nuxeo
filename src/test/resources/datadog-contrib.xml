@@ -6,6 +6,21 @@
       <apiKey>DATADOG_API_KEY</apiKey>
       <host>testhost.com</host>
       <pollInterval>25</pollInterval>
+
+      <filter method="substring">
+        <includes>
+          <include>jvm.</include>
+          <include>nuxeo.</include>
+        </includes>
+        <excludes>
+          <exclude>jvm.useless</exclude>
+        </excludes>
+        <expansions>
+          <expansion>count</expansion>
+          <expansion>p99</expansion>
+        </expansions>
+      </filter>
+
     </configuration>
 
   </extension>
