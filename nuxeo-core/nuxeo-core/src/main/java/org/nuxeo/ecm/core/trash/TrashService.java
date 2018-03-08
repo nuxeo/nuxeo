@@ -288,6 +288,10 @@ public interface TrashService {
      * @since 10.1
      */
     enum Feature {
+        /** Trashed state is deduced from lifeCycle. */
+        TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE,
+        /** Trashed state currently in migration. */
+        TRASHED_STATE_IN_MIGRATION,
         /** Trashed state is a dedicated property. */
         TRASHED_STATE_IS_DEDICATED_PROPERTY,
     }

@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
 import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.sql.Types;
@@ -1351,7 +1353,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 // ok
             } else if (NXQL.ECM_ISTRASHED.equals(name)) {
                 TrashService trashService = Framework.getService(TrashService.class);
-                if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+                if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)
+                        || trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
                     // ok
                 } else {
                     name = NXQL.ECM_LIFECYCLESTATE; // column actually used
@@ -2134,16 +2137,26 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected void visitExpressionIsTrashed(Expression node) {
             TrashService trashService = Framework.getService(TrashService.class);
-            if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+                visitExpressionIsTrashedOnLifeCycle(node);
+            } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
+                visitExpressionIsTrashedOnLifeCycle(node);
+                buf.append(" OR ");
+                visitExpressionWhereFalseIsNull(node);
+            } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
                 visitExpressionWhereFalseIsNull(node);
             } else {
-                String name = ((Reference) node.lvalue).name;
-                boolean bool = getBooleanRValue(name, node);
-                Operator op = bool ? Operator.EQ : Operator.NOTEQ;
-                visitReference(new Reference(NXQL.ECM_LIFECYCLESTATE));
-                visitOperator(op);
-                visitStringLiteral(LifeCycleConstants.DELETED_STATE);
+                throw new UnsupportedOperationException("TrashService is in an unknown state");
             }
+        }
+
+        protected void visitExpressionIsTrashedOnLifeCycle(Expression node) {
+            String name = ((Reference) node.lvalue).name;
+            boolean bool = getBooleanRValue(name, node);
+            Operator op = bool ? Operator.EQ : Operator.NOTEQ;
+            visitReference(new Reference(NXQL.ECM_LIFECYCLESTATE));
+            visitOperator(op);
+            visitStringLiteral(LifeCycleConstants.DELETED_STATE);
         }
 
         private boolean getBooleanRValue(String name, Expression node) {

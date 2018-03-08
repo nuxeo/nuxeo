@@ -126,8 +126,11 @@ public class PropertyTrashService extends AbstractTrashService {
     @Override
     public boolean hasFeature(Feature feature) {
         switch (feature) {
-        case TRASHED_STATE_IS_DEDICATED_PROPERTY:
-            return true;
+            case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
+            case TRASHED_STATE_IN_MIGRATION:
+                return false;
+            case TRASHED_STATE_IS_DEDICATED_PROPERTY:
+                return true;
         default:
             throw new UnsupportedOperationException(feature.name());
         }

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Migrator of trashed state from lifecycle to property.
  *
- * @since 10.1 ??????
+ * @since 10.2
  */
 public class TrashedStateLifeCycleToPropertyMigrator implements Migrator {
 

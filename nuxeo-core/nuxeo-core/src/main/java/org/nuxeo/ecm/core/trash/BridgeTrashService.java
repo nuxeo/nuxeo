@@ -66,6 +66,9 @@ public class BridgeTrashService extends AbstractTrashService {
     @Override
     public boolean hasFeature(Feature feature) {
         switch (feature) {
+            case TRASHED_STATE_IN_MIGRATION:
+                return true;
+            case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
             case TRASHED_STATE_IS_DEDICATED_PROPERTY:
                 return false;
             default:
