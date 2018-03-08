@@ -37,13 +37,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -57,7 +55,7 @@ public class TestTransactedAudit {
     @Inject
     TransactionalFeature txFeature;
 
-    public void waitForAsyncCompletion() throws InterruptedException {
+    public void waitForAsyncCompletion() {
         txFeature.nextTransaction(20,  TimeUnit.SECONDS);
     }
 
@@ -85,11 +83,13 @@ public class TestTransactedAudit {
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), repo.getRepositoryName());
 
         assertThat(trail, notNullValue());
-        assertThat(trail.size(), is(3));
+        assertThat(trail.size(), is(5));
 
         boolean seenDocCreated = false;
         boolean seenDocDeleted = false;
         boolean seenDocUndeleted = false;
+        boolean seenDocTrashed = false;
+        boolean seenDocUntrashed = false;
 
         for (LogEntry entry : trail) {
             String lifeCycle = entry.getDocLifeCycle();
@@ -104,12 +104,18 @@ public class TestTransactedAudit {
                 } else if (deletedLifeCycle.equals(lifeCycle)) {
                     seenDocDeleted = true;
                 }
+            } else if (TrashService.DOCUMENT_TRASHED.equals(id)) {
+                seenDocTrashed = true;
+            } else if (TrashService.DOCUMENT_UNTRASHED.equals(id)) {
+                seenDocUntrashed = true;
             }
         }
 
         assertThat(seenDocUndeleted, is(true));
         assertThat(seenDocDeleted, is(true));
         assertThat(seenDocCreated, is(true));
+        assertThat(seenDocTrashed, is(true));
+        assertThat(seenDocUntrashed, is(true));
 
     }
 
@@ -132,7 +138,7 @@ public class TestTransactedAudit {
 
         // test audit trail
         AuditReader reader = Framework.getService(AuditReader.class);
-        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
+        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
         assertThat(trail, notNullValue());
         assertThat(trail.size(), is(1));

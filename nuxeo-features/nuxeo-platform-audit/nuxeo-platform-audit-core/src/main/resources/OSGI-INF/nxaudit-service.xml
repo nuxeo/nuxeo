@@ -51,6 +51,8 @@
           <event name="documentUnlocked" />
           <event name="documentSecurityUpdated" />
           <event name="lifecycle_transition_event" />
+          <event name="documentTrashed" />
+          <event name="documentUntrashed" />
         </extension>
       </programlisting>
     </documentation>
@@ -137,6 +139,8 @@
     <event name="sectionContentPublished" />
     <event name="documentRestored" />
     <event name="download" />
+    <event name="documentTrashed" />
+    <event name="documentUntrashed" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
