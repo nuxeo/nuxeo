@@ -24,7 +24,9 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
 import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,8 +46,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -350,23 +352,32 @@ class MarkLogicQueryBuilder {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
         }
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+        } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
+            QueryBuilder lifeCycleTrashed = walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+            QueryBuilder propertyTrashed = walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue,
+                    new BooleanLiteral(true));
+            return new CompositionQueryBuilder(new ArrayList<>(Arrays.asList(lifeCycleTrashed, propertyTrashed)),
+                    false);
+        } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new BooleanLiteral(true));
+        } else {
+            throw new UnsupportedOperationException("TrashService is in an unknown state");
+        }
+    }
+
+    protected QueryBuilder walkIsTrashed(Reference ref, Operator op, Operand initialRvalue, Literal deletedRvalue) {
         long v;
-        if (!(rvalue instanceof IntegerLiteral)
-                || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
+        if (!(initialRvalue instanceof IntegerLiteral)
+                || ((v = ((IntegerLiteral) initialRvalue).value) != 0 && v != 1)) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
         }
-        Reference ref;
-        Literal val;
-        TrashService trashService = Framework.getService(TrashService.class);
-        if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
-            ref = new Reference(NXQL.ECM_ISTRASHED);
-            val = new BooleanLiteral(true); // give true to match equalsDeleted mechanism
-        } else {
-            ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
-            val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
-        }
         boolean equalsDeleted = op == Operator.EQ ^ v == 0;
-        return walkEq(ref, val, equalsDeleted);
+        return walkEq(ref, deletedRvalue, equalsDeleted);
     }
 
     protected QueryBuilder getMarkLogicFulltextQuery(StringLiteral rvalue) {
