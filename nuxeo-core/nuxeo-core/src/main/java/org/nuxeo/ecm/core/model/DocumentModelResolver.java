@@ -30,7 +30,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
@@ -174,24 +174,29 @@ public class DocumentModelResolver implements ObjectResolver {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
                 try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
-                    try {
-                        DocumentModel doc;
-                        switch (mode) {
-                        case ID_REF:
-                            doc = session.getDocument(new IdRef(ref.ref));
-                            break;
-                        case PATH_REF:
-                            doc = session.getDocument(new PathRef(ref.ref));
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                        }
-                        // detach because we're about to close the session
-                        doc.detach(true);
-                        return doc;
-                    } catch (DocumentNotFoundException e) {
+                    DocumentModel doc;
+                    DocumentRef docRef;
+
+                    switch (mode) {
+                    case ID_REF:
+                        docRef = new IdRef(ref.ref);
+                        break;
+                    case PATH_REF:
+                        docRef = new PathRef(ref.ref);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                    }
+
+                    if (!session.exists(docRef)) {
+                        // the document doesn't exist or is not accessible by the current user
                         return null;
                     }
+
+                    doc = session.getDocument(docRef);
+                    // detach because we're about to close the session
+                    doc.detach(true);
+                    return doc;
                 } catch (LocalException le) { // no such repo
                     return null;
                 }
