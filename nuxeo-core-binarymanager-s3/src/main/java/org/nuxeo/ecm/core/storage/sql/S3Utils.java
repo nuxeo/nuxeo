@@ -164,4 +164,26 @@ public class S3Utils {
         return amazonS3.getObjectMetadata(targetBucket, targetKey);
     }
 
+    /**
+     * Gets the credentials providers for the given AWS key and secret.
+     *
+     * @param awsSecretKeyId the AWS key id
+     * @param awsSecretAccessKey the secret
+     */
+    public static AWSCredentialsProvider getAWSCredentialsProvider(String awsSecretKeyId, String awsSecretAccessKey) {
+        AWSCredentialsProvider awsCredentialsProvider;
+        if (isBlank(awsSecretKeyId) || isBlank(awsSecretAccessKey)) {
+            awsCredentialsProvider = InstanceProfileCredentialsProvider.getInstance();
+            try {
+                awsCredentialsProvider.getCredentials();
+            } catch (AmazonClientException e) {
+                throw new NuxeoException("Missing AWS credentials and no instance role found", e);
+            }
+        } else {
+            awsCredentialsProvider = new AWSStaticCredentialsProvider(
+                    new BasicAWSCredentials(awsSecretKeyId, awsSecretAccessKey));
+        }
+        return awsCredentialsProvider;
+    }
+
 }

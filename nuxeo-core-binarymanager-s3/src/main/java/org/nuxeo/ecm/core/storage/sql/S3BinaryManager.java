@@ -65,7 +65,6 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
@@ -257,16 +256,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             bucketNamePrefix += "/";
         }
         // set up credentials
-        if (isBlank(awsID) || isBlank(awsSecret)) {
-            awsCredentialsProvider = InstanceProfileCredentialsProvider.getInstance();
-            try {
-                awsCredentialsProvider.getCredentials();
-            } catch (AmazonClientException e) {
-                throw new RuntimeException("Missing AWS credentials and no instance role found", e);
-            }
-        } else {
-            awsCredentialsProvider = new BasicAWSCredentialsProvider(awsID, awsSecret);
-        }
+        awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsID, awsSecret);
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
