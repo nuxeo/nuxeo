@@ -105,7 +105,7 @@ public class TrashServiceImpl extends DefaultComponent {
      *
      * @since 10.2
      */
-    protected void invalidateTrashServiceImplementation() {
+    public void invalidateTrashServiceImplementation() {
         synchronized (this) {
             trashService = recomputeTrashService();
         }

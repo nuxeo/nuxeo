@@ -18,30 +18,32 @@
  */
 package org.nuxeo.ecm.core.trash.test;
 
-import org.junit.runners.model.FrameworkMethod;
-import org.nuxeo.ecm.core.trash.BridgeTrashService;
-import org.nuxeo.ecm.core.trash.LifeCycleTrashService;
-import org.nuxeo.ecm.core.trash.PropertyTrashService;
-import org.nuxeo.ecm.core.trash.TrashService;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_ID;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.NAME;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE_TO_PROPERTY;
+
+import javax.inject.Inject;
+
+import org.nuxeo.ecm.core.test.MigrationFeature;
+import org.nuxeo.ecm.core.trash.TrashServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @since 10.2
  */
-@Features(TestBridgeTrashService.BridgeTrashServiceFeature.class)
+@Features(MigrationFeature.class)
 public class TestBridgeTrashService extends AbstractTestTrashService {
 
-    public static class BridgeTrashServiceFeature extends SimpleFeature {
+    @Inject
+    protected MigrationFeature migrationFeature;
 
-        @Override
-        @SuppressWarnings("deprecation")
-        public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
-            TrashService first = new LifeCycleTrashService();
-            TrashService second = new PropertyTrashService();
-            ((TestBridgeTrashService) test).trashService = new BridgeTrashService(first, second);
-        }
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        migrationFeature.changeStatus(MIGRATION_ID, MIGRATION_STEP_LIFECYCLE_TO_PROPERTY);
+        TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime().getComponent(NAME);
+        trashService.invalidateTrashServiceImplementation();
     }
 
 }
