@@ -20,7 +20,9 @@ package org.nuxeo.ecm.core.storage;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
 import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -270,26 +272,34 @@ public abstract class ExpressionEvaluator {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
         }
-        long v;
-        if (!(rvalue instanceof IntegerLiteral)
-                || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
-            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
-        }
-        Reference ref;
-        Literal val;
         TrashService trashService = Framework.getService(TrashService.class);
-        if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
-            ref = new Reference(NXQL.ECM_ISTRASHED);
-            val = new BooleanLiteral(true); // give true to match equalsDeleted mechanism
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+        } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
+            Boolean lifeCycleTrashed = walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+            Boolean propertyTrashed = walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue,
+                    new BooleanLiteral(true));
+            return or(lifeCycleTrashed, propertyTrashed);
+        } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new BooleanLiteral(true));
         } else {
-            ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
-            val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
+            throw new UnsupportedOperationException("TrashService is in an unknown state");
+        }
+    }
+
+    protected Boolean walkIsTrashed(Reference ref, Operator op, Operand initialRvalue, Literal deletedRvalue) {
+        long v;
+        if (!(initialRvalue instanceof IntegerLiteral)
+                || ((v = ((IntegerLiteral) initialRvalue).value) != 0 && v != 1)) {
+            throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
         }
         boolean equalsDeleted = op == Operator.EQ ^ v == 0;
         if (equalsDeleted) {
-            return walkEq(ref, val);
+            return walkEq(ref, deletedRvalue);
         } else {
-            return walkNotEq(ref, val);
+            return walkNotEq(ref, deletedRvalue);
         }
     }
 
