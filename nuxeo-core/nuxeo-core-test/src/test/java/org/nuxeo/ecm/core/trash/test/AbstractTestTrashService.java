@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.trash.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -370,6 +372,26 @@ public abstract class AbstractTestTrashService {
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertEquals("approved", doc2.getCurrentLifeCycleState());
         assertTrue(doc2.isCheckedOut());
+    }
+
+    @Test
+    public void testFollowTransitionBackwardCompatibility() {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+        DocumentRef fileRef = file.getRef();
+
+        // following detete/undelete will trigger the trash service
+        file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        // in all cases document follow the transition + document will be trashed
+        assertEquals(LifeCycleConstants.DELETED_STATE, session.getCurrentLifeCycleState(fileRef));
+        assertTrue(session.isTrashed(fileRef));
+
+        file.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
+        // in all cases document follow the transition + document will be trashed
+        assertNotEquals(LifeCycleConstants.DELETED_STATE, session.getCurrentLifeCycleState(fileRef));
+        assertFalse(session.isTrashed(fileRef));
+
     }
 
 }

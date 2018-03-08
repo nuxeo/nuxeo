@@ -57,7 +57,7 @@ public interface AuditReader {
      *
      * @param uuid the document uuid
      * @return a list of log entries
-     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
+     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String)} instead.
      */
     @Deprecated
     default List<LogEntry> getLogEntriesFor(String uuid) {

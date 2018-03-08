@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -2088,24 +2089,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
-        // backward compat - used to forward deprecated call to followTransition("deleted") to trash service
-        boolean needToCheckDeleteTransitions = !Boolean.parseBoolean(
-                String.valueOf(options.remove(TrashService.IS_ALREADY_CALLED)));
         boolean deleteTransitions = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
                 || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
-        // we need to exclude proxy because trash service will remove them
-        if (needToCheckDeleteTransitions && deleteTransitions && !doc.isProxy()) {
-            // retrieve document model to give to trash service
-            DocumentModel docModel = readModel(doc);
-            docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
-            TrashService trashService = Framework.getService(TrashService.class);
-            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
-                trashService.trashDocument(docModel);
-            } else {
-                trashService.untrashDocument(docModel);
-            }
-            return true;
-        }
 
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
             if (!deleteTransitions || Framework.getService(ConfigurationService.class)
@@ -2128,6 +2113,18 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
         if (!docModel.isImmutable()) {
             writeModel(doc, docModel);
+        }
+        // backward compat - used to forward deprecated call followTransition("deleted") to trash service
+        // we need to exclude proxy because trash service will remove them
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            docModel = readModel(doc);
+            docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                trashService.trashDocument(docModel);
+            } else {
+                trashService.untrashDocument(docModel);
+            }
         }
         return true; // throws if error
     }
