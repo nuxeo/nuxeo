@@ -14,5 +14,6 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10
       KAFKA_OFFSETS_RETENTION_MINUTES: 20160
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 4
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
