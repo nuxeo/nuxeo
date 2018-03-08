@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
@@ -99,6 +100,28 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        DocumentModelList result = doQuery(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
+                Collections.emptyMap(), true, 1, 0, false);
+
+        if (result.isEmpty()) {
+            return null;
+        }
+
+        DocumentModel docModel = result.get(0);
+
+        if (isMultiTenant()) {
+            // check that the entry is from the current tenant, or no tenant
+            // at all
+            if (!checkEntryTenantId((String) docModel.getProperty(schemaName, TENANT_ID_FIELD))) {
+                return null;
+            }
+        }
+        return docModel;
+    }
+
+    @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
         // Make a copy of fieldMap to avoid modifying it
         fieldMap = new HashMap<>(fieldMap);
@@ -127,6 +150,20 @@ public class MongoDBSession extends BaseSession {
                 throw new DirectoryException(String.format("Entry with id %s already exists", id));
             }
         }
+
+        if (isMultiTenant()) {
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                fieldMap.put(TENANT_ID_FIELD, tenantId);
+                newDocMap.put(TENANT_ID_FIELD, tenantId);
+                if (computeMultiTenantId) {
+                    String tenantDirectoryId = computeMultiTenantDirectoryId(tenantId, id);
+                    fieldMap.put(idFieldName, tenantDirectoryId);
+                    newDocMap.put(idFieldName, tenantDirectoryId);
+                }
+            }
+        }
+
         try {
 
             for (Map.Entry<String, Field> entry : schemaFieldMap.entrySet()) {
@@ -168,13 +205,26 @@ public class MongoDBSession extends BaseSession {
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }
-        return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
+        return createEntryModel(null, schemaName, String.valueOf(fieldMap.get(idFieldName)), fieldMap, isReadOnly());
     }
 
     @Override
     protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
         Map<String, Object> fieldMap = new HashMap<>();
         List<String> referenceFieldList = new LinkedList<>();
+
+        if (isMultiTenant()) {
+            // can only update entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                    throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                            "label.directory.error.multi.tenant.operationNotAllowed", null);
+                }
+            }
+        }
+
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         for (String fieldName : schemaFieldMap.keySet()) {
             if (fieldName.equals(getIdField())) {
@@ -243,14 +293,30 @@ public class MongoDBSession extends BaseSession {
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) throws DirectoryException {
+        return doQuery(filter, fulltext, orderBy, fetchReferences, limit, offset, true);
+    }
+
+    protected DocumentModelList doQuery(Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy, boolean fetchReferences, int limit, int offset, boolean checkTenantId)
+            throws DirectoryException {
 
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
 
+        Map<String, Serializable> filterMap = new HashMap<>(filter);
+
+        if (checkTenantId && isMultiTenant()) {
+            // filter entries on the tenantId field also
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                filterMap.put(TENANT_ID_FIELD, tenantId);
+            }
+        }
+
         // Remove password as it is not possible to do queries with it
-        filter.remove(getPasswordField());
-        Document bson = buildQuery(filter, fulltext);
+        filterMap.remove(getPasswordField());
+        Document bson = buildQuery(filterMap, fulltext);
 
         DocumentModelList entries = new DocumentModelListImpl();
 
@@ -361,7 +427,15 @@ public class MongoDBSession extends BaseSession {
         if (user == null) {
             return false;
         }
+
         String storedPassword = user.getString(getPasswordField());
+        if (isMultiTenant()) {
+            // check that the entry is from the current tenant, or no tenant at all
+            if(!checkEntryTenantId(user.getString(TENANT_ID_FIELD))) {
+                storedPassword = null;
+            }
+        }
+
         return PasswordHelper.verifyPassword(password, storedPassword);
     }
 
@@ -412,6 +486,17 @@ public class MongoDBSession extends BaseSession {
         }
         String id = String.valueOf(fieldMap.get(idFieldName));
         return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
+    }
+
+    protected boolean checkEntryTenantId(String entryTenantId) {
+        // check that the entry is from the current tenant, or no tenant at all
+        String tenantId = getCurrentTenantId();
+        if (StringUtils.isNotBlank(tenantId)) {
+            if (StringUtils.isNotBlank(entryTenantId) && !entryTenantId.equals(tenantId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -77,6 +77,11 @@ public class MongoDBDirectory extends AbstractDirectory {
         return session;
     }
 
+    @Override
+    public boolean isMultiTenant() {
+        return schemaFieldMap.containsKey(TENANT_ID_FIELD);
+    }
+
     protected void initializeIfNeeded(MongoDBSession session) {
         if (!initialized) {
             synchronized (this) {
