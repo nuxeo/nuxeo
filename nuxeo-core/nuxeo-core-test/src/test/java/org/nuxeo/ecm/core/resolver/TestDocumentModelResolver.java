@@ -30,6 +30,7 @@ import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_PATH_REF;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +45,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentModelResolver;
@@ -535,6 +538,26 @@ public class TestDocumentModelResolver {
         assertEquals(doc.getPathAsString(), ((DocumentModel) entity).getPathAsString());
         // test it works: getReference
         assertEquals(idRef, readResolver.getReference(doc));
+    }
+
+    @Test
+    public void testUserWithNoAccessToDocument() {
+        String username = "foo";
+        DocumentModelResolver resolver = new DocumentModelResolver();
+        Map<String, String> params = Collections.singletonMap(PARAM_STORE, STORE_ID_REF);
+        resolver.configure(params);
+
+        DocumentModel adminDoc = resolver.fetch(DocumentModel.class, idRef);
+
+        assertNotNull(adminDoc);
+        try {
+            ClientLoginModule.getThreadLocalLogin().push(new UserPrincipal(username, Collections.emptyList(), false, false),
+                                                         null, null);
+            DocumentModel doc = resolver.fetch(DocumentModel.class, idRef);
+            assertNull(doc);
+        } finally {
+            ClientLoginModule.getThreadLocalLogin().pop();
+        }
     }
 
     private void checkMessage(DocumentModelResolver dmrr) {
