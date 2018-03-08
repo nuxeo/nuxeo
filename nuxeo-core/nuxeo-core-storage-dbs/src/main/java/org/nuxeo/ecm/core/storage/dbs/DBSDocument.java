@@ -931,6 +931,7 @@ public class DBSDocument extends BaseDocument<State> {
         case "minor_version":
             return "uid";
         case KEY_FULLTEXT_JOBID:
+        case KEY_IS_TRASHED:
         case KEY_LIFECYCLE_POLICY:
         case KEY_LIFECYCLE_STATE:
             return "__ecm__";
