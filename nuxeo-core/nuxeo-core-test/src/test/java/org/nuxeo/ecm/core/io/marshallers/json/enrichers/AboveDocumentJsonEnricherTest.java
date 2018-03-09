@@ -55,10 +55,7 @@ public class AboveDocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<
     }
 
     @Test
-    public void test() throws Exception {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
+    public void testAccessible() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/child1/child2"));
         JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc(FirstAccessibleAncestorJsonEnricher.NAME).get());
         json = json.has("contextParameters").isObject();
@@ -66,6 +63,14 @@ public class AboveDocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<
         json = json.has(FirstAccessibleAncestorJsonEnricher.NAME).isObject();
         json = json.has("path");
         json.isEquals("/child1");
+    }
+
+    @Test
+    public void testInaccessible() throws Exception {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc(FirstAccessibleAncestorJsonEnricher.NAME).get());
+        json = json.has("contextParameters").isObject();
+        json.properties(0);
     }
 
 }
