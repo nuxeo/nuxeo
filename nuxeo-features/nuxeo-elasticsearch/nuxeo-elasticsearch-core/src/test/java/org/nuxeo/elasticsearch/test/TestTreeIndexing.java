@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -402,19 +403,24 @@ public class TestTreeIndexing {
         startTransaction();
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
-        session.followTransition(ref, "delete");
+        Framework.getService(TrashService.class).trashDocument(session.getDocument(ref));
 
         TransactionHelper.commitOrRollbackTransaction();
-        // let the bulkLifeCycleChangeListener do its work
+        // let the bulkTrashedStateChangeListener do its work
         waitForCompletion();
-        assertNumberOfCommandProcessed(8);
+        // 1 moved event which triggers 1 recurse command -> 8 commands
+        // 8 trashed events -> 7 commands (one of trashed events is merged into the resulted command from moved event)
+        if (syncMode) {
+            // in sync we split recursive update into 2 commands:
+            // 1 sync non recurse + 1 async recursive
+            assertNumberOfCommandProcessed(16);
+        } else {
+            assertNumberOfCommandProcessed(15);
+        }
 
         startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
                 "select * from Document where ecm:isTrashed = 0"));
-        // for (DocumentModel doc : docs) {
-        // System.out.println(doc.getPathAsString());
-        // }
         Assert.assertEquals(2, docs.totalSize());
     }
 

@@ -829,20 +829,68 @@ public class TestNxqlConversion {
     }
 
     @Test
-    public void testConverterIsTrashed() {
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
+    public void testConverterIsTrashedWithProperty() {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
-        doTestTrashed(sqlNotTrashed, sqlTrashed);
+
+        String es = NxqlQueryConverter.toESQueryBuilder(sqlTrashed).toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"term\" : {\n" //
+                + "        \"ecm:isTrashed\" : {\n" //
+                + "          \"value\" : true,\n" //
+                + "          \"boost\" : 1.0\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"boost\" : 1.0\n" //
+                + "  }\n" //
+                + "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(sqlNotTrashed).toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"bool\" : {\n" //
+                + "        \"must_not\" : [\n" //
+                + "          {\n" //
+                + "            \"term\" : {\n" //
+                + "              \"ecm:isTrashed\" : {\n" //
+                + "                \"value\" : true,\n" //
+                + "                \"boost\" : 1.0\n" //
+                + "              }\n" //
+                + "            }\n" //
+                + "          }\n" //
+                + "        ],\n" //
+                + "        \"disable_coord\" : false,\n" //
+                + "        \"adjust_pure_negative\" : true,\n" //
+                + "        \"boost\" : 1.0\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"boost\" : 1.0\n" //
+                + "  }\n" //
+                + "}", es);
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
+    public void testConverterIsTrashedWithLifeCycle() {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
+        doTestTrashedWithLifeCycle(sqlNotTrashed, sqlTrashed);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml") // for consistency
     public void testConverterLifeCycleStateDeleted() {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
-        doTestTrashed(sqlNotTrashed, sqlTrashed);
+        doTestTrashedWithLifeCycle(sqlNotTrashed, sqlTrashed);
     }
 
-    protected void doTestTrashed(String sqlNotTrashed, String sqlTrashed) {
+    protected void doTestTrashedWithLifeCycle(String sqlNotTrashed, String sqlTrashed) {
         String es = NxqlQueryConverter.toESQueryBuilder(sqlTrashed).toString();
         assertEqualsEvenUnderWindows("{\n" //
                 + "  \"constant_score\" : {\n" //

@@ -80,6 +80,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.trash.TrashService.Feature;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -267,7 +269,17 @@ public final class NxqlQueryConverter {
             } else {
                 throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
             }
-            filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+            TrashService trashService = Framework.getService(TrashService.class);
+            if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+                filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+            } else if (trashService.hasFeature(Feature.TRASHED_STATE_IN_MIGRATION)) {
+                filter = QueryBuilders.boolQuery()
+                                      .should(QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE,
+                                              LifeCycleConstants.DELETED_STATE))
+                                      .should(QueryBuilders.termQuery(name, true));
+            } else if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+                filter = QueryBuilders.termQuery(name, true);
+            }
             if (!equalsDeleted) {
                 filter = QueryBuilders.boolQuery().mustNot(filter);
             }

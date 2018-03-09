@@ -33,6 +33,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_TAG_UPDATED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import java.util.Map;
 
@@ -44,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -134,6 +135,8 @@ public abstract class IndexingCommandsStacker {
         case DOCUMENT_TAG_UPDATED:
         case DOCUMENT_PROXY_UPDATED:
         case LifeCycleConstants.TRANSITION_EVENT:
+        case DOCUMENT_TRASHED:
+        case DOCUMENT_UNTRASHED:
         case DOCUMENT_RESTORED:
             if (doc.isProxy() && !doc.isImmutable()) {
                 stackCommand(doc.getCoreSession().getDocument(new IdRef(doc.getSourceId())), BEFORE_DOC_UPDATE, false);
