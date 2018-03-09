@@ -21,6 +21,8 @@
       <event>documentTagUpdated</event>
       <event>documentProxyUpdated</event>
       <event>childrenOrderChanged</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
   </extension>

@@ -148,6 +148,7 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
+        jg.writeBooleanField("ecm:isTrashed", doc.isTrashed());
         jg.writeBooleanField("ecm:isVersion", doc.isVersion());
         jg.writeBooleanField("ecm:isLatestVersion", doc.isLatestVersion());
         jg.writeBooleanField("ecm:isLatestMajorVersion", doc.isLatestMajorVersion());

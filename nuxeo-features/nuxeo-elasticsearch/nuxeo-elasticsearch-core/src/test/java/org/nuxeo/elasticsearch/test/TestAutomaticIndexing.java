@@ -511,16 +511,38 @@ public class TestAutomaticIndexing {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
 
-        trashService.trashDocuments(Collections.singletonList(doc));
+        shouldUnIndexUsingTrashService(doc);
+    }
 
+    @Test
+    public void shouldUnIndexUsingTrashServiceWithoutRenaming() throws Exception {
+        startTransaction();
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+
+        doc.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+        shouldUnIndexUsingTrashService(doc);
+    }
+
+    protected void shouldUnIndexUsingTrashService(DocumentModel doc) throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(2); // 2 creations
 
         startTransaction();
+        trashService.trashDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // 1 update
+
+        startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(1, ret.totalSize());
+        doc = session.getDocument(doc.getRef());
         trashService.untrashDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
