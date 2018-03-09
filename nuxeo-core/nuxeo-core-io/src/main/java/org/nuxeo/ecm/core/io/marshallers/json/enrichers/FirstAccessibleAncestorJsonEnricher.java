@@ -52,7 +52,9 @@ public class FirstAccessibleAncestorJsonEnricher extends AbstractJsonEnricher<Do
         TrashService trashService = Framework.getService(TrashService.class);
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             DocumentModel above = trashService.getAboveDocument(document, wrapper.getSession().getPrincipal());
-            writeEntityField(NAME, above, jg);
+            if (above != null) {
+                writeEntityField(NAME, above, jg);
+            }
         }
     }
 
