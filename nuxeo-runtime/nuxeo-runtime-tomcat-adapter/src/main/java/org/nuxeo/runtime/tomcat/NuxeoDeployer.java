@@ -21,9 +21,16 @@ package org.nuxeo.runtime.tomcat;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
@@ -75,26 +82,17 @@ public class NuxeoDeployer implements LifecycleListener {
                         + bundles);
                 return;
             }
-            ArrayList<URL> urls = new ArrayList<URL>();
-            File[] files = lib.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.getPath().endsWith(".jar")) {
-                        urls.add(f.toURI().toURL());
-                    }
-                }
+            List<URL> urls = new ArrayList<>();
+            PathMatcher jar = FileSystems.getDefault().getPathMatcher("glob:**.jar");
+            try (Stream<Path> stream = Files.list(lib.toPath())) {
+                stream.filter(jar::matches).map(this::toURL).forEach(urls::add);
             }
-            files = bundles.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.getPath().endsWith(".jar")) {
-                        urls.add(f.toURI().toURL());
-                    }
-                }
+            try (Stream<Path> stream = Files.list(bundles.toPath())) {
+                stream.filter(jar::matches).map(this::toURL).forEach(urls::add);
             }
             urls.add(homeDir.toURI().toURL());
             urls.add(new File(homeDir, "config").toURI().toURL());
-            try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl)) {
+            try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), parentCl)) {
                 System.out.println("# Running Nuxeo Preprocessor ...");
                 Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
                 Method main = klass.getMethod("main", String[].class);
@@ -102,8 +100,16 @@ public class NuxeoDeployer implements LifecycleListener {
                 System.out.println("# Preprocessing done.");
                 ClassLoaderUtil.releaseLoader(cl);
             }
-        } catch (IOException | ReflectiveOperationException e) {
+        } catch (IOException | ReflectiveOperationException | IllegalStateException e) {
             throw new RuntimeException("Failed to handle event", e);
+        }
+    }
+
+    protected URL toURL(Path p) {
+        try {
+            return p.toUri().toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -112,7 +118,7 @@ public class NuxeoDeployer implements LifecycleListener {
         if (home.startsWith("/")) {
             path = home;
         } else {
-            path = getTomcatHome() + "/" + home;
+            path = getTomcatHome() + '/' + home;
         }
         return new File(path);
     }
