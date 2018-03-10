@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -66,6 +67,10 @@ public class DomainEventsListener implements EventListener {
                     handleDomainLifeCycleChanged(docCtx, doc);
                 } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(eventName)) {
                     handleDomainMoved(docCtx, doc);
+                } else if (TrashService.DOCUMENT_TRASHED.equals(eventName)) {
+                    handleDomainGoesToTrashedState(doc);
+                } else if (TrashService.DOCUMENT_UNTRASHED.equals(eventName)) {
+                    handleDomainGoesFromTrashedState(doc);
                 }
             }
         }
@@ -86,17 +91,17 @@ public class DomainEventsListener implements EventListener {
         String to = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO);
 
         if (LifeCycleConstants.DELETED_STATE.equals(to)) {
-            handleDomainGoesToDeletedState(doc);
+            handleDomainGoesToTrashedState(doc);
         } else if (LifeCycleConstants.DELETED_STATE.equals(from)) {
-            handleDomainGoesFromDeletedState(doc);
+            handleDomainGoesFromTrashedState(doc);
         }
     }
 
-    protected void handleDomainGoesToDeletedState(DocumentModel doc) {
+    protected void handleDomainGoesToTrashedState(DocumentModel doc) {
         unregisterPublicationTrees(doc);
     }
 
-    protected void handleDomainGoesFromDeletedState(DocumentModel doc) {
+    protected void handleDomainGoesFromTrashedState(DocumentModel doc) {
         registerNewPublicationTrees(doc);
     }
 

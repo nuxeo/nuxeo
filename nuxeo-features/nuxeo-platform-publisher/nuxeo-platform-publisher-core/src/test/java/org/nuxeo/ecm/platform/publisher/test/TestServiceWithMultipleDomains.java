@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.publisher.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -93,7 +92,7 @@ public class TestServiceWithMultipleDomains extends PublisherTestCase {
         assertTrue(treeNames.contains("DefaultSectionsTree-another-default-domain"));
 
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
-        trashService.trashDocuments(Collections.singletonList(domain));
+        trashService.trashDocument(domain);
 
         treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());

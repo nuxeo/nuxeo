@@ -12,6 +12,8 @@
       <event>documentRemoved</event>
       <event>documentMoved</event>
       <event>lifecycle_transition_event</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
   </extension>
