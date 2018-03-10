@@ -82,6 +82,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://fast.wistia.com"));
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://js.intercomcdn.com"));
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://www.nuxeo.com/standalone-login-page"));
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://www.nuxeo.com/login-page-embedded"));
 
         // **********************
         // welcome
