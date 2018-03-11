@@ -18,6 +18,8 @@
       <event>documentCheckedOut</event>
       <event>documentRestored</event>
       <event>beforeRestoringDocument</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
      <listener name="quotaUserWorkspaceSetter" async="false"

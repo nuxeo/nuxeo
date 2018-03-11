@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.quota.size;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,7 +67,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         }
         // reset on all documents
         // this will force an update if the quota addon was installed and then removed
-        long count = 0;
+        long count;
         IterableQueryResult res = session.queryAndFetch(query, "NXQL");
         try {
             count = res.size();
@@ -292,7 +290,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, String transition) {
+    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, boolean isTrashed) {
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         if (quotaDoc == null) {
             return;
@@ -304,8 +302,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
                         + ") taken into account for trash size");
             }
         }
-        boolean isDelete = DELETE_TRANSITION.equals(transition); // otherwise undelete
-        long delta = isDelete ? size : -size;
+        long delta = isTrashed ? size : -size;
         // constraints check not needed, since the documents stays in the same folder
         updateDocumentAndAncestors(session, doc, 0, 0, delta, 0);
     }
@@ -340,11 +337,8 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         if (doc.isProxy()) {
             return false;
         }
-        if (Boolean.TRUE.equals(doc.getContextData(DISABLE_QUOTA_CHECK_LISTENER))) {
-            // avoid reentrancy
-            return false;
-        }
-        return true;
+        // avoid reentrancy
+        return !Boolean.TRUE.equals(doc.getContextData(DISABLE_QUOTA_CHECK_LISTENER));
     }
 
     /** Checks the size delta against the maximum quota specified for this document or an ancestor. */
@@ -413,7 +407,8 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             save = true;
         } else {
             if (log.isTraceEnabled()) {
-                log.trace("   update quota on: " + doc.getId() + " (" + doc.getPathAsString() + ") (" + quotaDoc.getQuotaInfo() + ")");
+                log.trace("   update quota on: " + doc.getId() + " (" + doc.getPathAsString() + ") ("
+                        + quotaDoc.getQuotaInfo() + ")");
             }
         }
         if (deltaInner != 0) {

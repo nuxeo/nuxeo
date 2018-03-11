@@ -196,7 +196,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         IterableQueryResult res = session.queryAndFetch(
                 "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'", "NXQL");
         try {
-            Map<String, String> folders = new HashMap<String, String>();
+            Map<String, String> folders = new HashMap<>();
 
             for (Map<String, Serializable> r : res) {
                 folders.put((String) r.get("ecm:uuid"), (String) r.get("ecm:parentId"));
@@ -212,7 +212,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     protected Map<String, Count> computeDocumentsCountByFolder(CoreSession session, Map<String, String> folders) {
         IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
         try {
-            Map<String, Count> foldersCount = new HashMap<String, Count>();
+            Map<String, Count> foldersCount = new HashMap<>();
             for (Map<String, Serializable> r : res) {
                 String uuid = (String) r.get("ecm:uuid");
                 if (folders.containsKey(uuid)) {
@@ -308,7 +308,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, String transition) {
+    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, boolean isTrashed) {
         // do nothing for count
     }
 

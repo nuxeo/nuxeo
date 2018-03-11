@@ -34,8 +34,9 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,7 +140,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
                 if (!DELETE_TRANSITION.equals(transition) && !UNDELETE_TRANSITION.equals(transition)) {
                     break;
                 }
-                processDocumentTrashOp(session, doc, transition);
+                processDocumentTrashOp(session, doc, DELETE_TRANSITION.equals(transition));
                 break;
             case DOCUMENT_CHECKEDIN:
                 processDocumentCheckedIn(session, doc);
@@ -152,6 +153,12 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
                 break;
             case DOCUMENT_RESTORED:
                 processDocumentRestored(session, doc);
+                break;
+            case DOCUMENT_TRASHED:
+                processDocumentTrashOp(session, doc, true);
+                break;
+            case DOCUMENT_UNTRASHED:
+                processDocumentTrashOp(session, doc, false);
                 break;
             }
         } catch (QuotaExceededException e) {
@@ -189,7 +196,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     protected abstract void processDocumentBeforeUpdate(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, String transition);
+    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, boolean isTrashed);
 
     protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc);
 

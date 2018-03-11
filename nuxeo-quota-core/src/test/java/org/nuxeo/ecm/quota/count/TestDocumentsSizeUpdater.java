@@ -1298,16 +1298,14 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doDeleteFileContent(final DocumentRef fileRef) {
-        List<DocumentModel> docs = new ArrayList<>();
-        docs.add(session.getDocument(fileRef));
-        Framework.getService(TrashService.class).trashDocuments(docs);
+        DocumentModel doc = session.getDocument(fileRef);
+        Framework.getService(TrashService.class).trashDocument(doc);
         next();
     }
 
     protected void doUndeleteFileContent() {
-        List<DocumentModel> docs = new ArrayList<>();
-        docs.add(session.getDocument(firstFileRef));
-        Framework.getService(TrashService.class).undeleteDocuments(docs);
+        DocumentModel doc = session.getDocument(firstFileRef);
+        Framework.getService(TrashService.class).untrashDocument(doc);
         next();
     }
 
