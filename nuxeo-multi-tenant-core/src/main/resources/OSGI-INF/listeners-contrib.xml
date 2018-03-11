@@ -12,6 +12,8 @@
       <event>documentCreatedByCopy</event>
       <event>documentRemoved</event>
       <event>lifecycle_transition_event</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
     <listener name="tenantAdministratorsListener" async="false"

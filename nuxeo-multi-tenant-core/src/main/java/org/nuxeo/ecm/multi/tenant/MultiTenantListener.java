@@ -26,6 +26,8 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,22 +63,27 @@ public class MultiTenantListener implements EventListener {
         }
 
         String eventName = event.getName();
-        if (DOCUMENT_CREATED.equals(eventName) || DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
+        switch (eventName) {
+        case DOCUMENT_CREATED:
+        case DOCUMENT_CREATED_BY_COPY:
+        case DOCUMENT_UNTRASHED:
             multiTenantService.enableTenantIsolationFor(session, doc);
-            session.save();
-        } else if (DOCUMENT_REMOVED.equals(eventName)) {
+            break;
+        case DOCUMENT_REMOVED:
+        case DOCUMENT_TRASHED:
             multiTenantService.disableTenantIsolationFor(session, doc);
-            session.save();
-        } else if (TRANSITION_EVENT.equals(eventName)) {
+            break;
+        case TRANSITION_EVENT:
+            // backward compatibility with previous trashed state
             String transition = (String) ctx.getProperty(TRANSTION_EVENT_OPTION_TRANSITION);
             if (DELETE_TRANSITION.equals(transition)) {
                 multiTenantService.disableTenantIsolationFor(session, doc);
-                session.save();
             } else if (UNDELETE_TRANSITION.equals(transition)) {
                 multiTenantService.enableTenantIsolationFor(session, doc);
-                session.save();
             }
+            break;
         }
+        session.save();
     }
 
 }
