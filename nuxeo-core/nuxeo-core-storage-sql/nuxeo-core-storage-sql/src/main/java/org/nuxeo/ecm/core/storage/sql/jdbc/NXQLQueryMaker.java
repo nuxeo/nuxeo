@@ -2142,9 +2142,9 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
                 visitExpressionIsTrashedOnLifeCycle(node);
                 buf.append(" OR ");
-                visitExpressionWhereFalseIsNull(node);
+                visitExpressionWhereFalseMayBeNull(node);
             } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
-                visitExpressionWhereFalseIsNull(node);
+                visitExpressionWhereFalseMayBeNull(node);
             } else {
                 throw new UnsupportedOperationException("TrashService is in an unknown state");
             }
