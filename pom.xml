@@ -134,7 +134,8 @@
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
     <richfaces.version>4.5.12.Final</richfaces.version>
     <seam.version>2.3.1.Final</seam.version>
-    <nxseam.version>2.3.1.Final.NX02</nxseam.version>
+    <nxseam.version>2.3.1.Final.NX03</nxseam.version>
+    <nxseam.remoting.version>2.3.1.Final.NX02</nxseam.remoting.version>
 
     <servlet-api.version>3.1.0</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
@@ -2488,7 +2489,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>${nxseam.version}</version>
+        <version>${nxseam.remoting.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.testng</groupId>
