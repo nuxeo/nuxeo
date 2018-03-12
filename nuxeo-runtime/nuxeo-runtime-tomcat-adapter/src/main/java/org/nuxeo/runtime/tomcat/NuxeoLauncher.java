@@ -20,7 +20,6 @@ package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.management.JMException;
 
 import org.apache.catalina.Context;
@@ -91,7 +90,7 @@ public class NuxeoLauncher implements LifecycleListener {
         try {
             MutableClassLoader cl = (MutableClassLoader) loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
-            if (Lifecycle.CONFIGURE_START_EVENT.equals(type)) {
+            if (type == Lifecycle.CONFIGURE_START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(cl, homeDir);
@@ -102,9 +101,9 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion(ServerInfo.getServerNumber());
                 bootstrap.initialize();
-            } else if (Lifecycle.START_EVENT.equals(type)) {
+            } else if (type == Lifecycle.START_EVENT) {
                 bootstrap.start(cl);
-            } else if (Lifecycle.STOP_EVENT.equals(type)) {
+            } else if (type == Lifecycle.STOP_EVENT) {
                 bootstrap.stop(cl);
             }
         } catch (IOException | JMException | ReflectiveOperationException e) {
@@ -113,7 +112,7 @@ public class NuxeoLauncher implements LifecycleListener {
     }
 
     protected File resolveHomeDirectory(NuxeoWebappLoader loader) {
-        String path;
+        String path = null;
         if (home.startsWith("/") || home.startsWith("\\") || home.contains(":/") || home.contains(":\\")) {
             // absolute
             path = home;
