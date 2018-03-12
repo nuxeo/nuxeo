@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -49,6 +51,8 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -67,6 +71,11 @@ public class SuggestUserEntries {
     public static final String ID = "UserGroup.Suggestion";
 
     public static final String POWERUSERS = "powerusers";
+
+    /**
+     * since 9.10-HF03
+     */
+    public static final String FULLNAME_SEARCH_PROPERTY = "org.nuxeo.automation.user.suggest.fullname";
 
     @Context
     protected OperationContext ctx;
@@ -149,8 +158,8 @@ public class SuggestUserEntries {
             DocumentModelList userList = null;
             DocumentModelList groupList = null;
             if (!groupOnly) {
+                userList = searchUsers();
                 Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
-                userList = userManager.searchUsers(prefix);
                 Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
                 for (DocumentModel user : userList) {
                     JSONObject obj = new JSONObject();
@@ -240,6 +249,37 @@ public class SuggestUserEntries {
         }
 
         return Blobs.createJSONBlob(result.toString());
+    }
+
+    /**
+     * If the {@link #FULLNAME_SEARCH_PROPERTY} configuration property is {@code true}, performs a full name user
+     * search, e.g. typing "John Do" returns the user with first name "John" and last name "Doe".
+     * <p>
+     * In any case, typing "John" returns the "John Doe" user and possibly other users such as "John Foo". Respectively,
+     * typing "Do" returns the "John Doe" user and possibly other users such as "Jack Donald".
+     */
+    protected DocumentModelList searchUsers() {
+        if (StringUtils.isBlank(prefix)) {
+            // empty search term
+            return new DocumentModelListImpl();
+        }
+
+        String trimmedPrefix = prefix.trim();
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(FULLNAME_SEARCH_PROPERTY)) {
+            return userManager.searchUsers(trimmedPrefix);
+        }
+        // split search term around whitespace, e.g. "John Do" -> ["John", "Do"]
+        String[] searchTerms = trimmedPrefix.split("\\s", 2);
+        return Stream.of(searchTerms)
+                     .map(userManager::searchUsers) // search on all terms, e.g. "John", "Do"
+                     // intersection between all search results to handle full name
+                     .reduce((a, b) -> {
+                         a.retainAll(b);
+                         return a;
+                     })
+                     .filter(result -> !result.isEmpty())
+                     // search on whole term to handle a whitespace within the first or last name
+                     .orElseGet(() -> userManager.searchUsers(trimmedPrefix));
     }
 
     /**
