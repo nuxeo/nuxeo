@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -150,8 +152,8 @@ public class SuggestUserEntries {
             DocumentModelList userList = null;
             DocumentModelList groupList = null;
             if (!groupOnly) {
+                userList = searchUsers();
                 Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
-                userList = userManager.searchUsers(prefix);
                 Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
                 for (DocumentModel user : userList) {
                     Map<String, Object> obj = new LinkedHashMap<>();
@@ -240,6 +242,32 @@ public class SuggestUserEntries {
         }
 
         return Blobs.createJSONBlobFromValue(result);
+    }
+
+    /**
+     * Performs a full name user search, e.g. typing "John Do" returns the user with first name "John" and last name
+     * "Doe". Typing "John" returns the "John Doe" user and possibly other users such as "John Foo". Respectively,
+     * typing "Do" returns the "John Doe" user and possibly other users such as "Jack Donald".
+     */
+    protected DocumentModelList searchUsers() {
+        if (StringUtils.isBlank(prefix)) {
+            // empty search term
+            return new DocumentModelListImpl();
+        }
+
+        String trimmedPrefix = prefix.trim();
+        // split search term around whitespace, e.g. "John Do" -> ["John", "Do"]
+        String[] searchTerms = trimmedPrefix.split("\\s", 2);
+        return Stream.of(searchTerms)
+                     .map(userManager::searchUsers) // search on all terms, e.g. "John", "Do"
+                     // intersection between all search results to handle full name
+                     .reduce((a, b) -> {
+                         a.retainAll(b);
+                         return a;
+                     })
+                     .filter(result -> !result.isEmpty())
+                     // search on whole term to handle a whitespace within the first or last name
+                     .orElseGet(() -> userManager.searchUsers(trimmedPrefix));
     }
 
     /**
