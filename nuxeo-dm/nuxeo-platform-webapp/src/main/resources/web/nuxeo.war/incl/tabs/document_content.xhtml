@@ -1,27 +1,28 @@
 <ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-    <ui:include src="/incl/document_actions.xhtml" />
-    <c:choose>
-      <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
-        <ui:include src="/incl/document_content_view.xhtml">
-          <ui:param name="contentViewCategory" value="content" />
-        </ui:include>
-      </c:when>
-      <c:otherwise>
-        <nxu:set var="contentViewName" value="document_content">
-          <ui:decorate template="/incl/content_view.xhtml" />
-        </nxu:set>
-      </c:otherwise>
-    </c:choose>
-  </c:if>
-
-  <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">
-    <ui:include src="/incl/tabs/document_trash_content.xhtml" />
-  </c:if>
+  <c:choose>
+    <c:when test="#{currentDocument.trashed}">
+      <ui:include src="/incl/tabs/document_trash_content.xhtml"/>
+    </c:when>
+    <c:otherwise>
+      <ui:include src="/incl/document_actions.xhtml"/>
+      <c:choose>
+        <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
+          <ui:include src="/incl/document_content_view.xhtml">
+            <ui:param name="contentViewCategory" value="content"/>
+          </ui:include>
+        </c:when>
+        <c:otherwise>
+          <nxu:set var="contentViewName" value="document_content">
+            <ui:decorate template="/incl/content_view.xhtml"/>
+          </nxu:set>
+        </c:otherwise>
+      </c:choose>
+    </c:otherwise>
+  </c:choose>
 
 </ui:composition>
