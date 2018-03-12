@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.core.operations.users.suggestion">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows to perform a full name user search when calling the SuggestUserEntries operation.
+      If set to true, typing "John Do" returns the user with first name "John" and last name "Doe".
+      Defaults to true, set to false for backward compatibility.
+    </documentation>
+    <property name="org.nuxeo.automation.user.suggest.fullname">true</property>
+  </extension>
+
+</component>

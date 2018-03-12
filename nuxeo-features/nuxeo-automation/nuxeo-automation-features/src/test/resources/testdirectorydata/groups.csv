@@ -1,3 +1,4 @@
-groupname, description
-"members","Group of users with read access rights"
-"administrators","Group of users with adminstrative rights"
+groupname, grouplabel, description
+"members","Group of members", "Group of users with read access rights"
+"administrators","Administrators group","Group of users with adminstrative rights"
+"myTestGroup","My test group", "Test group"
