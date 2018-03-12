@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,7 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.LifecycleState;
 import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.core.StandardHost;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 
 /**
@@ -64,23 +62,9 @@ public class NuxeoDeployer implements LifecycleListener {
         if (lifecycle instanceof Container && Lifecycle.BEFORE_START_EVENT.equals(type)) {
             Container container = (Container) lifecycle;
             preprocess(container);
-        } else if (lifecycle instanceof StandardHost && Lifecycle.AFTER_START_EVENT.equals(type)) {
-            StandardHost container = (StandardHost) lifecycle;
-            checkFailures(container);
         }
     }
 
-    protected void checkFailures(StandardHost host) {
-        boolean ok = Stream.of(host.findChildren()).map(Lifecycle::getState).allMatch(s -> s == LifecycleState.STARTED);
-        boolean strict = Boolean.getBoolean("nuxeo.start.strict");
-
-        if (!ok && strict) {
-            // Throws an exception and let Tomcat to handle it via Catalina's shutdown hook. Otherwise, we could call
-            // `#stop()` and `#destroy()` by ourselves, but that means we're making a shutdown in AFTER_STARTED
-            // lifecycle event. It would be misleading.
-            throw new IllegalStateException("Some contexts failed to start.");
-        }
-    }
     protected void preprocess(Container container) {
         try {
             ClassLoader parentCl = container.getParentClassLoader();
