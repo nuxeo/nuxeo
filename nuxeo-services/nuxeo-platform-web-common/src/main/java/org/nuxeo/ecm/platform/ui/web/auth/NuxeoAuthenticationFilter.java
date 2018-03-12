@@ -988,8 +988,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String context = httpRequest.getContextPath() + '/';
         String requestedPage = requestURI.substring(context.length());
-        int i = requestedPage.indexOf(';');
-        return i == -1 ? requestedPage : requestedPage.substring(0, i);
+        // strip ;jsessionid, but only if we don't have more path components after it
+        int i;
+        if ((i = requestedPage.indexOf(';')) >= 0 && requestedPage.indexOf('/', i) < 0) {
+            requestedPage = requestedPage.substring(0, i);
+        }
+        return requestedPage;
     }
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
