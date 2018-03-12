@@ -19,7 +19,16 @@ Contributors:
 <link rel="import" href="nuxeo-liveconnect-behavior.html">
 <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript" src="onedrive-file-picker.js"></script>
-<link rel="stylesheet" type="text/css" href="onedrive-file-picker.css">
+<script>
+  // <link rel="stylesheet" type="text/css" href="onedrive-file-picker.css">
+  // XXX we're using this instead of the above because relative href resolves differently on Chrome than the other
+  // browsers, likely related to whether you have polyfills loaded or not.
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = 'nuxeo-liveconnect/onedrive-file-picker.css'
+  document.head.appendChild(link);
+</script>
 
 <!--
 `nuxeo-liveconnect-onedrive-provider`
