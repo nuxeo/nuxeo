@@ -56,9 +56,9 @@ import org.nuxeo.lib.stream.tests.KeyValueMessage;
 public abstract class TestLog {
     protected static final Log log = LogFactory.getLog(TestLog.class);
 
-    protected static final Duration DEF_TIMEOUT = Duration.ofSeconds(1);
+    public static final Duration DEF_TIMEOUT = Duration.ofSeconds(1);
 
-    protected static final Duration SMALL_TIMEOUT = Duration.ofMillis(10);
+    public static final Duration SMALL_TIMEOUT = Duration.ofMillis(10);
 
     @Rule
     public TestName name = new TestName();

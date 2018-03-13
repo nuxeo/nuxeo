@@ -72,18 +72,18 @@ public class KafkaLogManager extends AbstractLogManager {
             Properties consumerProperties) {
         this.prefix = (prefix != null) ? prefix : "";
         this.ns = new KafkaNamespace(this.prefix);
-        this.kUtils = new KafkaUtils(zkServers);
         disableSubscribe = Boolean.valueOf(consumerProperties.getProperty(DISABLE_SUBSCRIBE_PROP, "false"));
         defaultReplicationFactor = Short.parseShort(
                 producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "1"));
         this.producerProperties = normalizeProducerProperties(producerProperties);
         this.consumerProperties = normalizeConsumerProperties(consumerProperties);
         this.adminProperties = createAdminProperties(producerProperties, consumerProperties);
+        this.kUtils = new KafkaUtils(zkServers, adminProperties);
     }
 
     @Override
     public void create(String name, int size) {
-        kUtils.createTopic(getAdminProperties(), ns.getTopicName(name), size, defaultReplicationFactor);
+        kUtils.createTopic(ns.getTopicName(name), size, defaultReplicationFactor);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     protected void checkValidPartition(LogPartition partition) {
-        int partitions = kUtils.getNumberOfPartitions(getAdminProperties(), ns.getTopicName(partition.name()));
+        int partitions = kUtils.getNumberOfPartitions(ns.getTopicName(partition.name()));
         if (partition.partition() >= partitions) {
             throw new IllegalArgumentException("Partition out of bound " + partition + " max: " + partitions);
         }
@@ -138,8 +138,7 @@ public class KafkaLogManager extends AbstractLogManager {
     @Override
     protected <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
             RebalanceListener listener) {
-        return KafkaLogTailer.createAndSubscribe(ns, names, group, (Properties) consumerProperties.clone(),
-                listener);
+        return KafkaLogTailer.createAndSubscribe(ns, names, group, (Properties) consumerProperties.clone(), listener);
     }
 
     protected Properties normalizeProducerProperties(Properties producerProperties) {
@@ -226,8 +225,8 @@ public class KafkaLogManager extends AbstractLogManager {
         if (!exists(name)) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
-        return kUtils.listConsumers(getProducerProperties(), topic).stream().filter(group -> group.startsWith(prefix))
-                .map(ns::getGroup).collect(Collectors.toList());
+        return kUtils.listConsumers(topic).stream().filter(group -> group.startsWith(prefix)).map(ns::getGroup).collect(
+                Collectors.toList());
     }
 
 }
