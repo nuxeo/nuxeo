@@ -54,6 +54,8 @@ public class ReloadHelper {
 
     public static void hotReloadPackage(String packageId) {
         log.info("Reload Studio package with id=" + packageId);
+        LocalPackage pkg = null;
+        InstallTask installTask = null;
         try {
             ReloadService reloadService = Framework.getService(ReloadService.class);
             ReloadContext reloadContext = new ReloadContext();
@@ -61,7 +63,7 @@ public class ReloadHelper {
             PackageManager pm = Framework.getService(PackageManager.class);
 
             PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
-            LocalPackage pkg = pus.getPackage(packageId);
+            pkg = pus.getPackage(packageId);
 
             // Remove package from PackageUpdateService and get its bundleName to hot reload it
             if (pkg != null) {
@@ -99,8 +101,9 @@ public class ReloadHelper {
             }
 
             // get bundles to deploy
-            InstallTask installTask = (InstallTask) pkg.getInstallTask();
+            installTask = (InstallTask) pkg.getInstallTask();
             pus.setPackageState(pkg, PackageState.INSTALLING);
+
             // in our hot reload case, we just care about the bundle
             // so get the rollback commands and then the target
             installTask.getCommands()
@@ -129,14 +132,22 @@ public class ReloadHelper {
                   .map(key -> new RollbackOptions(id, key, version.toString()))
                   .map(Rollback::new)
                   .forEachOrdered(installTask.getCommandLog()::add);
-            // write the log
-            File file = pkg.getData().getEntry(LocalPackage.UNINSTALL);
-            installTask.writeLog(file);
         } catch (BundleException | PackageException | ConnectServerError e) {
             throw new NuxeoException("Error while updating studio snapshot", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException("Error while downloading studio snapshot", e);
+        } finally {
+            if (pkg != null && installTask != null) {
+                // write the log
+                File file = pkg.getData().getEntry(LocalPackage.UNINSTALL);
+                try {
+                    installTask.writeLog(file);
+                } catch (PackageException e) {
+                    // don't rethrow inside finally
+                    log.error("Exception when writing uninstall.xml", e);
+                }
+            }
         }
     }
 
