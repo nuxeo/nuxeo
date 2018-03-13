@@ -150,7 +150,7 @@ public class TestLogChronicle extends TestLog {
                 try {
                     Thread.sleep(1100);
                 } catch (InterruptedException e) {
-                    Thread.interrupted();
+                    Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
                 }
             }
