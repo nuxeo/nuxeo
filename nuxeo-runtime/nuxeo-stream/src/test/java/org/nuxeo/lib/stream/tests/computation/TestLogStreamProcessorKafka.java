@@ -54,13 +54,13 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
     @Override
     public LogManager getLogManager() throws Exception {
         this.prefix = getTopicPrefix(testName.getMethodName());
-        return new KafkaLogManager(KafkaUtils.DEFAULT_ZK_SERVER, prefix, TestLogKafka.getProducerProps(),
+        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, TestLogKafka.getProducerProps(),
                 getConsumerProps());
     }
 
     @Override
     public LogManager getSameLogManager() throws Exception {
-        return new KafkaLogManager(KafkaUtils.DEFAULT_ZK_SERVER, prefix, TestLogKafka.getProducerProps(),
+        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, TestLogKafka.getProducerProps(),
                 getConsumerProps());
     }
 

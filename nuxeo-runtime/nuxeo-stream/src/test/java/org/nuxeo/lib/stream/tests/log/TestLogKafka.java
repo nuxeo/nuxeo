@@ -56,7 +56,6 @@ import org.nuxeo.lib.stream.tests.KeyValueMessage;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
 
 public class TestLogKafka extends TestLog {
-    public static final String DEFAULT_BOOTSTRAP_SERVER = "localhost:9092";
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
 
@@ -75,13 +74,13 @@ public class TestLogKafka extends TestLog {
 
     public static Properties getProducerProps() {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         return props;
     }
 
     public static Properties getConsumerProps() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
         // consumer are removed from a group if there more than this interval between poll
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20000);
@@ -99,7 +98,7 @@ public class TestLogKafka extends TestLog {
         if (prefix == null) {
             prefix = getPrefix();
         }
-        return new KafkaLogManager(KafkaUtils.DEFAULT_ZK_SERVER, prefix, getProducerProps(), getConsumerProps());
+        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, getProducerProps(), getConsumerProps());
     }
 
     @After

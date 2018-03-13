@@ -54,6 +54,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 import kafka.admin.AdminUtils;
 import kafka.admin.RackAwareMode;
@@ -66,9 +67,6 @@ import kafka.utils.ZkUtils;
  * @since 9.3
  */
 public class TestLibKafka {
-    protected static final String DEFAULT_ZK_SERVER = "localhost:2181";
-
-    protected static final String DEFAULT_BOOTSTRAP_SERVER = "localhost:9092";
 
     final static int TIMEOUT_MS = 6000;
 
@@ -83,14 +81,14 @@ public class TestLibKafka {
 
     @Test
     public void testCreateZkClient() {
-        ZkClient zkClient = createZkClient(DEFAULT_ZK_SERVER);
+        ZkClient zkClient = createZkClient(KafkaUtils.getZkServers());
         assertNotNull(zkClient);
         zkClient.close();
     }
 
     @Test
     public void testCreateZkUtils() {
-        ZkUtils zkUtils = createZkUtils(DEFAULT_ZK_SERVER);
+        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
         assertNotNull(zkUtils);
         zkUtils.close();
     }
@@ -100,7 +98,7 @@ public class TestLibKafka {
         String topic = "test-create-delete-topic";
         int partitions = 5;
 
-        ZkUtils zkUtils = createZkUtils(DEFAULT_ZK_SERVER);
+        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
         if (!topicExists(zkUtils, topic)) {
             createTopic(zkUtils, topic, partitions);
         }
@@ -211,7 +209,7 @@ public class TestLibKafka {
 
     protected Properties getProducerProperties() {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -224,7 +222,7 @@ public class TestLibKafka {
 
     protected Properties getConsumerProperties() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
@@ -234,7 +232,7 @@ public class TestLibKafka {
     }
 
     protected void createTopic(String topic, int partitions) {
-        ZkUtils zkUtils = createZkUtils(DEFAULT_ZK_SERVER);
+        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
         if (!topicExists(zkUtils, topic)) {
             createTopic(zkUtils, topic, partitions);
         }

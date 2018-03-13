@@ -97,9 +97,4 @@
     </profile>
   </profiles>
 
-  <properties>
-    <it.failsafe.argLine>-Xloggc:gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps
-    </it.failsafe.argLine>
-  </properties>
-
 </project>
