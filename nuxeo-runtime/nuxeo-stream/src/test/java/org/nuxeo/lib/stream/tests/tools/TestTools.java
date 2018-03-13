@@ -22,42 +22,72 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.lib.stream.tests.log.TestLog.DEF_TIMEOUT;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.tools.Main;
 
 /**
  * @since 9.3
  */
 public abstract class TestTools {
-    protected static final int NB_RECORD = 50;
+    protected static final int NB_RECORD = 10;
 
     protected static final String LOG_NAME = "myLog";
 
     protected boolean initialized;
 
-    public abstract String getManagerOptions();
+    protected Record targetRecord;
 
-    public abstract void createContent() throws Exception;
+    public abstract String getManagerOptions();
 
     @Before
     public void initContent() throws Exception {
-        if (!initialized) {
-            createContent();
-            initialized = true;
+        if (initialized) {
+            return;
         }
+        try (LogManager manager = getManager()) {
+            manager.createIfNotExists(LOG_NAME, 1);
+            LogAppender<Record> appender = manager.getAppender(LOG_NAME);
+            for (int i = 0; i < NB_RECORD; i++) {
+                String key = "key" + i;
+                String value = "Some value for " + i;
+                Record record = new Record(key, value.getBytes("UTF-8"), Watermark.ofNow().getValue(), null);
+                appender.append(key, record);
+                if (i == NB_RECORD / 2) {
+                    targetRecord = record;
+                }
+                // needed because some tests expect different watermark to work
+                Thread.sleep(2);
+            }
+            // move some positions
+            try (LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME)) {
+                tailer.toStart();
+                tailer.read(DEF_TIMEOUT);
+                tailer.read(DEF_TIMEOUT);
+                tailer.commit();
+            }
+            try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
+                tailer.read(DEF_TIMEOUT);
+                tailer.commit();
+            }
+        }
+        initialized = true;
     }
 
     @Test
@@ -86,18 +116,19 @@ public abstract class TestTools {
     }
 
     @Test
-    public void testLag() {
-        run(String.format("lag %s", getManagerOptions()));
-    }
-
-    @Test
     public void testLagForLog() {
         run(String.format("lag %s --verbose --log-name %s", getManagerOptions(), LOG_NAME));
     }
 
+    @Ignore("Takes too long on Kafka with lots of topics")
     @Test
-    public void testLatency() {
-        run(String.format("latency %s --verbose", getManagerOptions()));
+    public void testLag() {
+        run(String.format("lag %s --verbose", getManagerOptions()));
+    }
+
+    @Test
+    public void testLatencyForLog() {
+        run(String.format("latency %s --verbose --log-name %s", getManagerOptions(), LOG_NAME));
     }
 
     @Test
@@ -115,13 +146,6 @@ public abstract class TestTools {
     }
 
     @Test
-    public void testPositionAfterDate() {
-        run("help position");
-        runShouldFail(String.format("position %s --after-date %s --log-name %s --group anotherGroup", Instant.now(),
-                getManagerOptions(), LOG_NAME));
-    }
-
-    @Test
     public void testPositionToWatermark() throws InterruptedException {
         // move before all records, lag is maximum
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
@@ -136,34 +160,15 @@ public abstract class TestTools {
         lag = manager.getLag(LOG_NAME, "anotherGroup");
         assertEquals(lag.toString(), 1, lag.lag());
 
-        // get the watermark of the second record
-        long timestamp;
-        String key;
-        LogPartition logPartition;
-        try (LogTailer<Record> tailer = manager.createTailer("tools", LOG_NAME)) {
-            tailer.toStart();
-            tailer.read(Duration.ofSeconds(1));
-            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
-            assertNotNull(rec);
-            timestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
-            key = rec.message().key;
-            logPartition = rec.offset().partition();
-        }
-        // move to the watermark corresponding to the second record
+        // move to the watermark of targetRecord, this work as expected because each record as a unique timestamp
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
-                Instant.ofEpochMilli(timestamp), LOG_NAME));
+                Instant.ofEpochMilli(Watermark.ofValue(targetRecord.watermark).getTimestamp()), LOG_NAME));
         // open a tailer with the moved group we should be on the same record
-        try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", logPartition)) {
-            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
+        try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
+            LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
             assertNotNull(rec);
-            assertEquals(rec.toString(), key, rec.message().key);
+            assertEquals(targetRecord, rec.message());
         }
-    }
-
-    @Test
-    public void testPositionTimeTravel() {
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --after-date %s",
-                getManagerOptions(), LOG_NAME, 123));
     }
 
     @Test
@@ -185,10 +190,12 @@ public abstract class TestTools {
         String group = "aGroup2Track";
         Record firstRecord;
         Record nextRecord;
-        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
+        try (LogTailer<Record> tailer = getTailer(group)) {
+            read(tailer);
+            // to start is lazy an must be applied on assigned tailer (after a rebalance)
             tailer.toStart();
-            firstRecord = tailer.read(Duration.ofSeconds(1)).message();
-            tailer.read(Duration.ofSeconds(1));
+            firstRecord = read(tailer);
+            read(tailer);
             tailer.commit(); // commit on record 2
             LogRecord<Record> nextLogRecord = tailer.read(Duration.ofSeconds(1));
             nextRecord = nextLogRecord.message();
@@ -201,9 +208,9 @@ public abstract class TestTools {
         // reset the position
         run(String.format("position %s --reset --log-name %s --group %s", getManagerOptions(), LOG_NAME, group));
         // ensure that we have reset the position
-        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
-            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
-            assertEquals(firstRecord, rec.message());
+        try (LogTailer<Record> tailer = getTailer(group)) {
+            Record rec = read(tailer);
+            assertEquals(firstRecord, rec);
         }
 
         // restore position
@@ -211,9 +218,25 @@ public abstract class TestTools {
                 LOG_NAME));
 
         // open a tailer we should be good
-        try (LogTailer<Record> tailer = getManager().createTailer(group, LOG_NAME)) {
-            LogRecord<Record> rec = tailer.read(Duration.ofSeconds(1));
-            assertEquals(nextRecord, rec.message());
+        try (LogTailer<Record> tailer = getTailer(group)) {
+            Record rec = read(tailer);
+            assertEquals(nextRecord, rec);
+        }
+    }
+
+    protected LogTailer<Record> getTailer(String group) {
+        LogManager manager = getManager();
+        if (manager.supportSubscribe()) {
+            return manager.subscribe(group, Collections.singleton(LOG_NAME), null);
+        }
+        return manager.createTailer(group, LOG_NAME);
+    }
+
+    protected Record read(LogTailer<Record> tailer) throws InterruptedException {
+        try {
+            return tailer.read(DEF_TIMEOUT).message();
+        } catch (RebalanceException e) {
+            return tailer.read(DEF_TIMEOUT).message();
         }
     }
 
