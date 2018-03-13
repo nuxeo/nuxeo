@@ -60,7 +60,7 @@ public class Record implements Externalizable {
         this.key = key;
         this.data = data;
         this.watermark = watermark;
-        this.flags = flags;
+        this.flags = (flags == null) ? DEFAULT_FLAG : flags;
     }
 
     public static Record of(String key, byte[] data) {

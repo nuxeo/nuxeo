@@ -21,60 +21,29 @@ package org.nuxeo.lib.stream.tests.tools;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.computation.Watermark;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
 /**
  * @since 9.10
  */
 public class TestToolsChronicle extends TestTools {
 
-    protected Path basePath;
-
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-
-    @Override
-    public void createContent() throws Exception {
-        if (basePath != null) {
-            return;
-        }
-        basePath = folder.newFolder().toPath();
-        try (LogManager manager = new ChronicleLogManager(basePath, "1m")) {
-            manager.createIfNotExists(LOG_NAME, 1);
-            LogAppender<Record> appender = manager.getAppender(LOG_NAME);
-            for (int i = 0; i < NB_RECORD; i++) {
-                String key = "key" + i;
-                String value = "Some value for " + i;
-                appender.append(key, new Record(key, value.getBytes("UTF-8"), Watermark.ofNow().getValue(), null ));
-            }
-            LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-            tailer = manager.createTailer("anotherGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-        }
-
-    }
+    protected Path basePath;
 
     @Test
-    public void testPositionAfterDateChronicle() {
+    public void testPositionAfterDate() {
         try {
-            run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
+            run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(),
+                    LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
             fail();
         } catch (UnsupportedOperationException uoe) {
             assertTrue(uoe.getMessage().contains("does not support seek by timestamp"));
@@ -83,6 +52,18 @@ public class TestToolsChronicle extends TestTools {
 
     @Override
     public String getManagerOptions() {
-        return String.format("--chronicle %s", basePath);
+        return String.format("--chronicle %s", getBasePath());
     }
+
+    protected String getBasePath() {
+        if (basePath == null) {
+            try {
+                basePath = folder.newFolder().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return basePath.toString();
+    }
+
 }

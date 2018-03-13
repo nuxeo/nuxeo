@@ -55,6 +55,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected static final long STARVING_TIMEOUT_MS = 1000;
 
+    protected static final long INACTIVITY_BREAK_MS = 100;
+
     private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
     protected final LogManager logManager;
@@ -174,11 +176,15 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processLoop() throws InterruptedException {
+        boolean activity;
         while (continueLoop()) {
-            processTimer();
-            processRecord();
+            activity = processTimer();
+            activity |= processRecord();
             counter++;
-            // TODO: add pause for computation without inputs or without timer to prevent CPU hogs
+            if (!activity) {
+                // no timer nor record to process, take a break
+                Thread.sleep(INACTIVITY_BREAK_MS);
+            }
         }
     }
 
@@ -204,14 +210,14 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         return true;
     }
 
-    protected void processTimer() {
+    protected boolean processTimer() {
         Map<String, Long> timers = context.getTimers();
         if (timers.isEmpty()) {
-            return;
+            return false;
         }
         if (tailer != null && tailer.assignments().isEmpty()) {
             // needed to ensure single source across multiple nodes
-            return;
+            return false;
         }
         long now = System.currentTimeMillis();
         final boolean[] timerUpdate = { false };
@@ -236,16 +242,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             if (context.requireTerminate()) {
                 stop = true;
             }
+            return true;
         }
+        return false;
     }
 
-    protected void processRecord() throws InterruptedException {
+    protected boolean processRecord() throws InterruptedException {
         if (context.requireTerminate()) {
             stop = true;
-            return;
+            return true;
         }
         if (tailer == null) {
-            return;
+            return false;
         }
         Duration timeoutRead = getTimeoutDuration();
         LogRecord<Record> logRecord = null;
@@ -267,7 +275,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             checkSourceLowWatermark();
             setThreadName("record");
             checkpointIfNecessary();
+            return true;
         }
+        return false;
     }
 
     protected Duration getTimeoutDuration() {

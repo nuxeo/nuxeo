@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.I0Itec.zkclient.ZkClient;
@@ -35,6 +37,8 @@ import org.I0Itec.zkclient.ZkConnection;
 import org.I0Itec.zkclient.exception.ZkTimeoutException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.RangeAssignor;
@@ -82,8 +86,33 @@ public class KafkaUtils implements AutoCloseable {
 
     protected final ZkUtils zkUtils;
 
+    protected final Properties adminProperties;
+
+    protected AdminClient adminClient;
+
+    protected org.apache.kafka.clients.admin.AdminClient newAdminClient;
+
+    protected List<String> allConsumers;
+
+    protected long allConsumersTime;
+
+    protected static final long ALL_CONSUMERS_CACHE_TIMEOUT_MS = 2000;
+
     public KafkaUtils() {
-        this(getZkServers());
+        this(getZkServers(), getDefaultAdminProperties());
+    }
+
+    public KafkaUtils(String zkServers, Properties adminProperties) {
+        log.debug("Init zkServers: " + zkServers);
+        this.zkClient = createZkClient(zkServers);
+        this.zkUtils = createZkUtils(zkServers, zkClient);
+        this.adminProperties = adminProperties;
+    }
+
+    public static Properties getDefaultAdminProperties() {
+        Properties ret = new Properties();
+        ret.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
+        return ret;
     }
 
     public static String getZkServers() {
@@ -92,12 +121,6 @@ public class KafkaUtils implements AutoCloseable {
 
     public static String getBootstrapServers() {
         return System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
-    }
-
-    public KafkaUtils(String zkServers) {
-        log.debug("Init zkServers: " + zkServers);
-        this.zkClient = createZkClient(zkServers);
-        this.zkUtils = createZkUtils(zkServers, zkClient);
     }
 
     public static boolean kafkaDetected() {
@@ -163,20 +186,26 @@ public class KafkaUtils implements AutoCloseable {
         return ret;
     }
 
-    public void createTopicWithoutReplication(Properties properties, String topic, int partitions) {
-        createTopic(properties, topic, partitions, (short) 1);
+    public void createTopicWithoutReplication(String topic, int partitions) {
+        createTopic(topic, partitions, (short) 1);
     }
 
-    public void createTopic(Properties properties, String topic, int partitions, short replicationFactor) {
+    public void createTopic(String topic, int partitions, short replicationFactor) {
         log.info("Creating topic: " + topic + ", partitions: " + partitions + ", replications: " + replicationFactor);
-        if (AdminUtils.topicExists(zkUtils, topic)) {
-            String msg = "Cannot create Topic already exists: " + topic;
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
+        if (topicExists(topic)) {
+            throw new IllegalArgumentException("Cannot create Topic already exists: " + topic);
         }
-        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(
-                properties)) {
-            client.createTopics(Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
+        CreateTopicsResult ret = getNewAdminClient().createTopics(
+                Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
+        try {
+            ret.all().get(5, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Unable to create topics " + topic + " within the timeout", e);
         }
     }
 
@@ -189,35 +218,52 @@ public class KafkaUtils implements AutoCloseable {
         return JavaConversions.seqAsJavaList(topics);
     }
 
-    public List<String> listConsumers(Properties props, String topic) {
-        return listAllConsumers(props).stream()
-                                      .filter(consumer -> getConsumerTopics(props, consumer).contains(topic))
-                                      .collect(Collectors.toList());
+    public List<String> listConsumers(String topic) {
+        return listAllConsumers().stream().filter(consumer -> getConsumerTopics(consumer).contains(topic)).collect(
+                Collectors.toList());
     }
 
-    protected List<String> getConsumerTopics(Properties props, String group) {
-        AdminClient client = AdminClient.create(props);
-        return JavaConversions.mapAsJavaMap(client.listGroupOffsets(group))
+    protected List<String> getConsumerTopics(String group) {
+        return JavaConversions.mapAsJavaMap(getAdminClient().listGroupOffsets(group))
                               .keySet()
                               .stream()
                               .map(TopicPartition::topic)
                               .collect(Collectors.toList());
     }
 
-    public List<String> listAllConsumers(Properties props) {
-        List<String> ret = new ArrayList<>();
-        AdminClient client = AdminClient.create(props);
-        // this returns only consumer group that use the subscribe API (known by coordinator)
-        scala.collection.immutable.List<GroupOverview> groups = client.listAllConsumerGroupsFlattened();
-        Iterator<GroupOverview> iter = groups.iterator();
-        GroupOverview group;
-        while (iter.hasNext()) {
-            group = iter.next();
-            if (group != null) {
-                ret.add(group.groupId());
+    protected org.apache.kafka.clients.admin.AdminClient getNewAdminClient() {
+        if (newAdminClient == null) {
+            newAdminClient = org.apache.kafka.clients.admin.AdminClient.create(adminProperties);
+        }
+        return newAdminClient;
+    }
+
+    protected AdminClient getAdminClient() {
+        if (adminClient == null) {
+            adminClient = AdminClient.create(adminProperties);
+        }
+        return adminClient;
+    }
+
+    public List<String> listAllConsumers() {
+        long now = System.currentTimeMillis();
+        if (allConsumers == null || (now - allConsumersTime) > ALL_CONSUMERS_CACHE_TIMEOUT_MS) {
+            allConsumers = new ArrayList<>();
+            // this returns only consumer group that use the subscribe API (known by coordinator)
+            scala.collection.immutable.List<GroupOverview> groups = getAdminClient().listAllConsumerGroupsFlattened();
+            Iterator<GroupOverview> iterator = groups.iterator();
+            GroupOverview group;
+            while (iterator.hasNext()) {
+                group = iterator.next();
+                if (group != null && !allConsumers.contains(group.groupId())) {
+                    allConsumers.add(group.groupId());
+                }
+            }
+            if (!allConsumers.isEmpty()) {
+                allConsumersTime = now;
             }
         }
-        return ret;
+        return allConsumers;
     }
 
     /**
@@ -228,18 +274,15 @@ public class KafkaUtils implements AutoCloseable {
         AdminUtils.deleteTopic(zkUtils, topic);
     }
 
-    public int getNumberOfPartitions(Properties properties, String topic) {
-        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(
-                properties)) {
-            DescribeTopicsResult descriptions = client.describeTopics(Collections.singletonList(topic));
-            try {
-                return descriptions.values().get(topic).get().partitions().size();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+    public int getNumberOfPartitions(String topic) {
+        DescribeTopicsResult descriptions = getNewAdminClient().describeTopics(Collections.singletonList(topic));
+        try {
+            return descriptions.values().get(topic).get().partitions().size();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -255,17 +298,17 @@ public class KafkaUtils implements AutoCloseable {
         // (The method iterator() is ambiguous for the type Seq<Broker>)
         IterableLike<Broker, Iterable<Broker>> brokers = zkUtils.getAllBrokersInCluster();
         Broker broker;
-        Iterator<Broker> iter = brokers.iterator();
-        while (iter.hasNext()) {
-            broker = iter.next();
+        Iterator<Broker> iterator = brokers.iterator();
+        while (iterator.hasNext()) {
+            broker = iterator.next();
             if (broker != null) {
                 // don't use "Seq<EndPoint> endPoints" as it causes compilation issues with Eclipse
                 // when calling endPoints.iterator()
                 // (The method iterator() is ambiguous for the type Seq<EndPoint>)
                 IterableLike<EndPoint, Iterable<EndPoint>> endPoints = broker.endPoints();
-                Iterator<EndPoint> iter2 = endPoints.iterator();
-                while (iter2.hasNext()) {
-                    EndPoint endPoint = iter2.next();
+                Iterator<EndPoint> iterator2 = endPoints.iterator();
+                while (iterator2.hasNext()) {
+                    EndPoint endPoint = iterator2.next();
                     ret.add(endPoint.connectionString());
                 }
             }
@@ -284,6 +327,14 @@ public class KafkaUtils implements AutoCloseable {
         }
         if (zkClient != null) {
             zkClient.close();
+        }
+        if (adminClient != null) {
+            adminClient.close();
+            adminClient = null;
+        }
+        if (newAdminClient != null) {
+            newAdminClient.close();
+            newAdminClient = null;
         }
         log.debug("Closed.");
     }
