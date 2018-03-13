@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,12 +63,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RestartFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, RestartFeature.class })
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.api")
@@ -110,15 +110,6 @@ public class TestJenaGraph {
                 new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         statements.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         Collections.sort(statements);
-    }
-
-    /**
-     * NXP-22534 This fix has to be discussed
-     */
-    @After
-    public void after() {
-        Framework.getRuntime().getComponentManager().reset();
-        Framework.getRuntime().getComponentManager().start();
     }
 
     private static String getTestFile() {

@@ -18,75 +18,58 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Florent Guillaume
  */
-@Ignore("NXP-22534")
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.runtime.datasource")
-@Deploy("org.nuxeo.ecm.core.api")
-@Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.schema")
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.storage")
-@Deploy("org.nuxeo.ecm.core.storage.sql")
-@Deploy("org.nuxeo.ecm.platform.el")
-@Deploy("org.nuxeo.ecm.core.storage:OSGI-INF/test-repo-ds.xml")
+@Features(SQLBackendFeature.class)
 public abstract class SQLBackendTestCase {
 
     private static final String REPOSITORY_NAME = "test";
 
     private final Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
 
-    public Repository repository;
-
-    public Repository repository2;
+    protected RepositoryImpl repository;
 
     @Before
     public void setUp() throws Exception {
-        DatabaseHelper.DATABASE.setUp();
         repository = newRepository(-1);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        closeRepository();
-    }
-
-    protected Repository newRepository(long clusteringDelay) throws Exception {
+    protected RepositoryImpl newRepository(long clusteringDelay) {
         return newRepository(null, clusteringDelay);
     }
 
-    protected Repository newRepository(String name, long clusteringDelay) throws Exception {
+    protected RepositoryImpl newRepository(String name, long clusteringDelay) {
         RepositoryDescriptor descriptor = newDescriptor(name, clusteringDelay);
-        RepositoryImpl repo = new RepositoryImpl(descriptor);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        sqlRepositoryService.registerTestRepository(repo);
+        sqlRepositoryService.registerContribution(descriptor, "repository", null);
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        repositoryService.start(null);
         newBlobProvider(descriptor.name);
-        return repo;
+        return sqlRepositoryService.getRepositoryImpl(descriptor.name);
     }
 
     protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
@@ -124,28 +107,43 @@ public abstract class SQLBackendTestCase {
         return descr;
     }
 
-    protected void closeRepository() throws Exception {
+    @After
+    public void tearDown() throws Exception {
+        closeRepository();
+    }
+
+    protected void closeRepository() {
         Framework.getService(EventService.class).waitForAsyncCompletion();
         BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
         for (BlobProviderDescriptor blobProviderDescriptor : blobProviderDescriptors.values()) {
             blobManager.unregisterBlobProvider(blobProviderDescriptor);
         }
-        if (repository != null) {
-            repository.close();
-            repository = null;
-        }
-        if (repository2 != null) {
-            repository2.close();
-            repository2 = null;
+        clearAndClose(repository);
+    }
+
+    protected void clearAndClose(RepositoryImpl repo) {
+        if (repo != null) {
+            Session session = repo.getConnection();
+            Node rootNode = session.getRootNode();
+            session.removeNode(rootNode);
+            PartialList<Serializable> results = session.query("SELECT * FROM TestDoc", QueryFilter.EMPTY, true);
+            for (Serializable result : results) {
+                Node node = session.getNodeById(result);
+                if (node != null) {
+                    session.removeNode(node);
+                }
+            }
+            session.save();
+            repo.close();
         }
     }
 
     public boolean isSoftDeleteEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().getSoftDeleteEnabled();
+        return repository.getRepositoryDescriptor().getSoftDeleteEnabled();
     }
 
     public boolean isProxiesEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().getProxiesEnabled();
+        return repository.getRepositoryDescriptor().getProxiesEnabled();
     }
 
 }

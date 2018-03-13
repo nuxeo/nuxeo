@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc", false);
         Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc", false);
         Node folder4 = session.addChildNode(folder1, "folder4", null, "TestDoc", false);
-        Node folder5 = session.addChildNode(folder4, "folder5", null, "TestDoc", false);
         // create node in folder1
         Node node = session.addChildNode(folder1, "node", null, "TestDoc", false);
         // create version

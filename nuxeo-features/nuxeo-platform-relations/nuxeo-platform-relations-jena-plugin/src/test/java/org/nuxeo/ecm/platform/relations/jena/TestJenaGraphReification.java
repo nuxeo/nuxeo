@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,11 +49,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RestartFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-@SuppressWarnings({})
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, RestartFeature.class })
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.api")
@@ -105,15 +104,6 @@ public class TestJenaGraphReification {
         st2.addProperty(createdBy, new LiteralImpl("Prop Joe"));
         statements.add(st1);
         statements.add(st2);
-    }
-
-    /**
-     * NXP-22534 This fix has to be discussed
-     */
-    @After
-    public void after() {
-        Framework.getRuntime().getComponentManager().reset();
-        Framework.getRuntime().getComponentManager().start();
     }
 
     private static File getTestFile() {

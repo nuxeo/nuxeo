@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
     }
 
     @Test
-    public void testCreationDenied() throws Exception {
+    public void testCreationDenied() {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node doc = session.addChildNode(root, "doc", null, "TestDoc", false);
@@ -67,7 +67,7 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
         // create proxy through repo 2, which allows proxies
         // second repo with proxies allowed
         proxiesEnabled = true;
-        repository2 = newRepository("repo2", -1);
+        Repository repository2 = newRepository("repo2", -1);
         proxiesEnabled = false;
         Session session2 = repository2.getConnection();
         Node root2 = session2.getRootNode();
@@ -76,27 +76,22 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
         session2.addProxy(ver2.getId(), doc2.getId(), root2, "proxy", null);
         session2.save();
         String sql = "SELECT * FROM Document WHERE ecm:name = 'proxy'";
-        IterableQueryResult res2 = session2.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY);
-        try {
+        try (IterableQueryResult res2 = session2.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY)) {
             assertEquals(1, res2.size());
-        } finally {
-            res2.close();
         }
         session2.close();
 
         // now in repository viewed without proxies
         Session session = repository.getConnection();
         // same query should return no proxy
-        IterableQueryResult res = session.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY);
-        try {
+        try (IterableQueryResult res = session.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY)) {
             assertEquals(0, res.size());
-        } finally {
-            res.close();
         }
+        session.close();
     }
 
     @Test
-    public void testQueryOnlyProxiesDenied() throws Exception {
+    public void testQueryOnlyProxiesDenied() {
         Session session = repository.getConnection();
         String sql = "SELECT * FROM Document WHERE ecm:isProxy = 1";
         try (IterableQueryResult res = session.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY)) {
