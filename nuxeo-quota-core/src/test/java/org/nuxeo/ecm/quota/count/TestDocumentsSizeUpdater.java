@@ -566,12 +566,12 @@ public class TestDocumentsSizeUpdater {
         QuotaAware qa = getFirstSubFolder().getAdapter(QuotaAware.class);
         assertNotNull(qa);
         final long firstSubFolderTotalSize = qa.getTotalSize();
-        final long expectedNbrDocsCopied = (maxSize-firstSubFolderTotalSize)/fileSize;
+        final long expectedNbrDocsCopied = (maxSize - firstSubFolderTotalSize) / fileSize;
 
         assertEquals(nbrDocs, session.getChildren(secondFolderRef, "File").size());
         dump();
         qa = getSecondFolder().getAdapter(QuotaAware.class);
-        assertEquals(nbrDocs*fileSize, qa.getTotalSize());
+        assertEquals(nbrDocs * fileSize, qa.getTotalSize());
         // now add quota limit
         assertEquals(300L, firstSubFolderTotalSize);
         assertEquals(-1L, qa.getMaxQuota());
@@ -585,8 +585,9 @@ public class TestDocumentsSizeUpdater {
         qa = getFirstSubFolder().getAdapter(QuotaAware.class);
         assertNotNull(qa);
         assertEquals(maxSize, qa.getMaxQuota());
-        DocumentModelList docsToCopy = session.query("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = '" + getSecondFolder().getId() + "' AND dc:title = '" + title + "'");
-        List<DocumentRef> refsToCopy = new ArrayList<DocumentRef>(docsToCopy.size());
+        DocumentModelList docsToCopy = session.query("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = '"
+                + getSecondFolder().getId() + "' AND dc:title = '" + title + "'");
+        List<DocumentRef> refsToCopy = new ArrayList<>(docsToCopy.size());
         for (DocumentModel doc : docsToCopy) {
             refsToCopy.add(doc.getRef());
         }
@@ -868,6 +869,7 @@ public class TestDocumentsSizeUpdater {
 
     /**
      * NXP-17350
+     * 
      * @throws Exception
      * @since TODO
      */
@@ -1153,7 +1155,7 @@ public class TestDocumentsSizeUpdater {
         addContent(false);
     }
 
-    protected void addContent(final boolean checkInFirstFile) throws Exception {
+    protected void addContent(final boolean checkInFirstFile) {
         DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
         ws = session.createDocument(ws);
         ws = session.saveDocument(ws);
@@ -1195,32 +1197,32 @@ public class TestDocumentsSizeUpdater {
         next();
     }
 
-    protected void doMoveContent() throws Exception {
+    protected void doMoveContent() {
         session.move(firstFileRef, secondSubFolderRef, null);
         next();
     }
 
-    protected void doMoveFolderishContent() throws Exception {
+    protected void doMoveFolderishContent() {
         session.move(firstSubFolderRef, secondFolderRef, null);
         next();
     }
 
-    protected void doMoveFileContent() throws Exception {
+    protected void doMoveFileContent() {
         session.move(firstFileRef, secondFolderRef, null);
         next();
     }
 
-    protected void doUpdateContent() throws Exception {
+    protected void doUpdateContent() {
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
         ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
         ws = session.saveDocument(ws);
 
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> files = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
-            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+            Map<String, Serializable> files_entry = new HashMap<>();
             files_entry.put("file", (Serializable) getFakeBlob(70));
             files.add(files_entry);
         }
@@ -1230,29 +1232,29 @@ public class TestDocumentsSizeUpdater {
         next();
     }
 
-    protected void doCheckIn() throws Exception {
+    protected void doCheckIn() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.checkIn(VersioningOption.MINOR, null);
         next();
     }
 
-    protected void doCheckOut() throws Exception {
+    protected void doCheckOut() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.checkOut();
         next();
     }
 
-    protected void doUpdateAndVersionContent() throws Exception {
+    protected void doUpdateAndVersionContent() {
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
         ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
         ws = session.saveDocument(ws);
 
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> files = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
-            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+            Map<String, Serializable> files_entry = new HashMap<>();
             files_entry.put("file", (Serializable) getFakeBlob(70));
             files.add(files_entry);
         }
@@ -1264,7 +1266,7 @@ public class TestDocumentsSizeUpdater {
         next();
     }
 
-    protected void doSimpleVersion() throws Exception {
+    protected void doSimpleVersion() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.setPropertyValue("dc:title", "a version");
         firstFile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
@@ -1272,54 +1274,54 @@ public class TestDocumentsSizeUpdater {
         next();
     }
 
-    protected void doRemoveFirstVersion() throws Exception {
+    protected void doRemoveFirstVersion() {
         List<DocumentModel> versions = session.getVersions(firstFileRef);
         session.removeDocument(versions.get(0).getRef());
         next();
     }
 
-    protected void doRemoveContent() throws Exception {
+    protected void doRemoveContent() {
         session.removeDocument(firstFileRef);
         next();
     }
 
-    protected void doRemoveFolderishContent() throws Exception {
+    protected void doRemoveFolderishContent() {
         session.removeDocument(firstSubFolderRef);
         next();
     }
 
-    protected void doDeleteFileContent() throws Exception {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+    protected void doDeleteFileContent() {
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(session.getDocument(firstFileRef));
         Framework.getService(TrashService.class).trashDocuments(docs);
         next();
     }
 
-    protected void doDeleteFileContent(final DocumentRef fileRef) throws Exception {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+    protected void doDeleteFileContent(final DocumentRef fileRef) {
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(session.getDocument(fileRef));
         Framework.getService(TrashService.class).trashDocuments(docs);
         next();
     }
 
-    protected void doUndeleteFileContent() throws Exception {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+    protected void doUndeleteFileContent() {
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(session.getDocument(firstFileRef));
         Framework.getService(TrashService.class).undeleteDocuments(docs);
         next();
     }
 
-    protected void doCopyContent() throws Exception {
+    protected void doCopyContent() {
         session.copy(firstFileRef, secondSubFolderRef, null);
         next();
     }
 
-    protected void doCopyFolderishContent() throws Exception {
+    protected void doCopyFolderishContent() {
         session.copy(firstSubFolderRef, secondFolderRef, null);
         next();
     }
 
-    protected void dump() throws Exception {
+    protected void dump() {
         if (Boolean.TRUE.booleanValue()) {
             return;
         }
@@ -1337,7 +1339,7 @@ public class TestDocumentsSizeUpdater {
 
             if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 QuotaAware qa = doc.getAdapter(QuotaAware.class);
-                System.out.println( " " + qa.getQuotaInfo());
+                System.out.println(" " + qa.getQuotaInfo());
                 // System.out.println(" with Quota facet");
             } else {
                 System.out.println(" no Quota facet !!!");

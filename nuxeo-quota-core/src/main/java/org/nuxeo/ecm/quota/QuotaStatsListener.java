@@ -19,21 +19,21 @@
 
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,10 +54,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class QuotaStatsListener implements EventListener {
 
-    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-            DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
-            BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION, DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
-            BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
+    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED, DOCUMENT_MOVED,
+                    ABOUT_TO_REMOVE, BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION, DOCUMENT_CHECKEDIN,
+                    DOCUMENT_CHECKEDOUT, TRANSITION_EVENT, BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
     public void handleEvent(Event event) {
