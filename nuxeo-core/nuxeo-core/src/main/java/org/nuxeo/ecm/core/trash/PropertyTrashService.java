@@ -74,12 +74,14 @@ public class PropertyTrashService extends AbstractTrashService {
                 // handle placeless document
                 session.removeDocument(doc.getRef());
             } else {
+                DocumentModel docForEvent = doc;
                 if (!Boolean.parseBoolean(String.valueOf(doc.getContextData(DISABLE_TRASH_RENAMING)))) {
                     String newName = mangleName(doc);
                     session.move(docRef, doc.getParentRef(), newName);
+                    docForEvent = session.getDocument(docRef);
                 }
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
-                notifyEvent(session, DOCUMENT_TRASHED, doc,
+                notifyEvent(session, DOCUMENT_TRASHED, docForEvent,
                         Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.TRUE));
             }
         }
@@ -99,6 +101,7 @@ public class PropertyTrashService extends AbstractTrashService {
         CoreSession session = doc.getCoreSession();
         DocumentRef docRef = doc.getRef();
 
+        DocumentModel docForEvent = doc;
         // move only non placeless document
         // currently we don't trash placeless document
         DocumentRef parentRef = doc.getParentRef();
@@ -106,10 +109,11 @@ public class PropertyTrashService extends AbstractTrashService {
             String newName = unmangleName(doc);
             if (!newName.equals(doc.getName())) {
                 session.move(docRef, parentRef, newName);
+                docForEvent = session.getDocument(docRef);
             }
         }
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
-        notifyEvent(session, DOCUMENT_UNTRASHED, doc,
+        notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent,
                 Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.valueOf(processChildren)));
 
         Set<DocumentRef> docRefs = new HashSet<>();
