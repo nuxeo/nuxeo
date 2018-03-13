@@ -30,13 +30,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class HotDeployer {
 
-    protected static final String DEPLOY_ACTION = "deploy";
+    public static final String DEPLOY_ACTION = "deploy";
 
     protected static final String UNDEPLOY_ACTION = "undeploy";
 
-    protected static final String RESTART_ACTION = "restart";
+    public static final String RESTART_ACTION = "restart";
 
-    protected static final String RESET_ACTION = "reset";
+    public static final String RESET_ACTION = "reset";
 
     protected FeaturesRunner runner;
 
@@ -83,8 +83,8 @@ public class HotDeployer {
     }
 
     /**
-     * Deploy the given list of contributions. The format is bundleId[:componentPath]. If no component path is specified
-     * then the bundle identified by the bundleId part will be deployed. If a componentPath is given
+     * Deploy the given list of contributions. The format is bundleId[:componentPath]. If no component path is
+     * specified then the bundle identified by the bundleId part will be deployed. If a componentPath is given
      * {@link RuntimeHarness#deployContrib(String,String)} will be used to deploy the contribution.
      */
     public void deploy(String... contribs) throws Exception {
@@ -113,7 +113,7 @@ public class HotDeployer {
         reinject();
     }
 
-    protected void reinject() {
+    public void reinject() {
         runner.getInjector().injectMembers(runner.getTargetTestInstance());
     }
 

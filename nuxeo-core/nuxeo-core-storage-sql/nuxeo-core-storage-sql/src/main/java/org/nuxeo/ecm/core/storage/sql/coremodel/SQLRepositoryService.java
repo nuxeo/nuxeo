@@ -20,9 +20,7 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -159,12 +157,6 @@ public class SQLRepositoryService extends DefaultComponent {
         return registry.getRepositoryIds();
     }
 
-    protected final Map<String, RepositoryImpl> testRepositories = new HashMap<String, RepositoryImpl>();
-
-    public void registerTestRepository(RepositoryImpl repository) {
-        testRepositories.put(repository.getName(), repository);
-    }
-
     /**
      * Gets the low-level SQL Repository of the given name.
      *
@@ -175,12 +167,6 @@ public class SQLRepositoryService extends DefaultComponent {
     public RepositoryManagement getRepository(String repositoryName) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         org.nuxeo.ecm.core.model.Repository repository = repositoryService.getRepository(repositoryName);
-        if (repository == null) {
-            RepositoryImpl repo = testRepositories.get(repositoryName);
-            if (repo != null) {
-                return repo;
-            }
-        }
         if (repository == null) {
             throw new RuntimeException("Unknown repository: " + repositoryName);
         }
@@ -219,7 +205,7 @@ public class SQLRepositoryService extends DefaultComponent {
      * @return a list of {@link RepositoryManagement}
      */
     public List<RepositoryManagement> getRepositories() {
-        List<RepositoryManagement> repositories = new ArrayList<RepositoryManagement>();
+        List<RepositoryManagement> repositories = new ArrayList<>();
         for (String repositoryName : getRepositoryNames()) {
             repositories.add(getRepository(repositoryName));
         }
