@@ -18,9 +18,9 @@
  */
 package org.nuxeo.lib.stream.tests.computation;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +72,7 @@ public class TestComputation {
         assertEquals(0, context.getRecords("o4").size());
 
         assertEquals("foo", context.getRecords("o1").get(0).key);
-        assertEquals("bar", new String(context.getRecords("o1").get(0).data, StandardCharsets.UTF_8));
+        assertEquals("bar", new String(context.getRecords("o1").get(0).data, UTF_8));
 
         // ask to process another record
         comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes("UTF-8")));
