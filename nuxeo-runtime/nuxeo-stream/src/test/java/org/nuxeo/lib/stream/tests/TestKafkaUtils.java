@@ -26,9 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,9 +54,7 @@ public class TestKafkaUtils {
 
     protected void createDefaultTopicIfNeeded(KafkaUtils kutils) {
         if (!kutils.topicExists(DEFAULT_TOPIC)) {
-            Properties props = new Properties();
-            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kutils.getDefaultBootstrapServers());
-            kutils.createTopicWithoutReplication(props, DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
+            kutils.createTopicWithoutReplication(DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
         }
     }
 
@@ -66,9 +62,7 @@ public class TestKafkaUtils {
     public void testCreateTopic() {
         try (KafkaUtils kutils = new KafkaUtils()) {
             createDefaultTopicIfNeeded(kutils);
-            Properties props = new Properties();
-            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kutils.getDefaultBootstrapServers());
-            assertEquals(DEFAULT_TOPIC_PARTITION, kutils.getNumberOfPartitions(props, DEFAULT_TOPIC));
+            assertEquals(DEFAULT_TOPIC_PARTITION, kutils.getNumberOfPartitions(DEFAULT_TOPIC));
         }
     }
 

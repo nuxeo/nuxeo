@@ -136,7 +136,8 @@ public interface LogManager extends AutoCloseable {
     List<String> listAll();
 
     /**
-     * List the consumer groups for a Log.
+     * List the consumer groups for a Log.<br/>
+     * Note that for Kafka it returns only consumers that use the subscribe API.
      */
     List<String> listConsumerGroups(String name);
 

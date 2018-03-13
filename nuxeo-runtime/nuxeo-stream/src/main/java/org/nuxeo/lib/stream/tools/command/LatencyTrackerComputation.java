@@ -52,7 +52,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     protected int remaining;
 
-    protected final List<LogPartitionGroup> logGroups = new ArrayList<>();
+    protected List<LogPartitionGroup> logGroups;
 
     public LatencyTrackerComputation(LogManager manager, List<String> logNames, String computationName,
             int intervalSecond, int count, boolean verbose) {
@@ -69,6 +69,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
     public void init(ComputationContext context) {
         info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
                 intervalMs));
+        logGroups = new ArrayList<>();
         logNames.forEach(name -> {
             for (String group : manager.listConsumerGroups(name)) {
                 logGroups.add(new LogPartitionGroup(group, name, 0));
