@@ -131,43 +131,28 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
 
         if (!doc.hasFacet(FOLDERISH)) {
             DocumentModel parent = ancestors.get(0);
-            updateParentChildrenCount(session, parent, count);
+            updateCount(session, parent, DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, count);
         }
 
-        for (DocumentModel ancestor : ancestors) {
-            Number previous;
-            if (ancestor.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-                previous = (Number) ancestor.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
-            } else {
-                ancestor.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
-                previous = null;
-            }
-            DeltaLong descendantsCount = DeltaLong.valueOf(previous, count);
-            ancestor.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, descendantsCount);
-            // do not send notifications
-            QuotaUtils.disableListeners(ancestor);
-            DocumentModel origAncestor = ancestor;
-            session.saveDocument(ancestor);
-            QuotaUtils.clearContextData(origAncestor);
-        }
-
+        ancestors.forEach(ancestor -> updateCount(session, ancestor,
+                                                  DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, count));
         session.save();
     }
 
-    protected void updateParentChildrenCount(CoreSession session, DocumentModel parent, long count) {
+    protected void updateCount(CoreSession session, DocumentModel parent, String xpath, long count) {
         Number previous;
         if (parent.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
-            previous = (Number) parent.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
+            previous = (Number) parent.getPropertyValue(xpath);
         } else {
             parent.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
             previous = null;
         }
         DeltaLong childrenCount = DeltaLong.valueOf(previous, count);
-        parent.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, childrenCount);
+        parent.setPropertyValue(xpath, childrenCount);
         // do not send notifications
         QuotaUtils.disableListeners(parent);
         DocumentModel origParent = parent;
-        session.saveDocument(parent);
+        parent = session.saveDocument(parent);
         QuotaUtils.clearContextData(origParent);
     }
 
