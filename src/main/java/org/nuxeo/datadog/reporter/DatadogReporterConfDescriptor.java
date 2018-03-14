@@ -46,7 +46,7 @@ public class DatadogReporterConfDescriptor {
     String tags;
 
     @XNode("filter")
-    FilterDescriptor filter;
+    FilterDescriptor filter = new FilterDescriptor();
 
     public long getPollInterval() {
         return pollInterval;

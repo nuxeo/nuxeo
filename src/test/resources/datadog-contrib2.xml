@@ -1,0 +1,15 @@
+<component name="datadog.test">
+
+  <extension target="org.nuxeo.datadog.service" point="configuration">
+
+    <configuration>
+      <apiKey>DATADOG_API_KEY</apiKey>
+      <host>testhost.com</host>
+      <pollInterval>25</pollInterval>
+
+
+    </configuration>
+
+  </extension>
+
+</component>

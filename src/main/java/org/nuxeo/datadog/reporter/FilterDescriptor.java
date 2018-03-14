@@ -40,13 +40,13 @@ public class FilterDescriptor {
     protected String method;
 
     @XNodeList(value = "includes/include", type = ArrayList.class, componentType = String.class)
-    protected List<String> includes;
+    protected List<String> includes = new ArrayList<>();
 
     @XNodeList(value = "excludes/exclude", type = ArrayList.class, componentType = String.class)
-    protected List<String> excludes;
+    protected List<String> excludes = new ArrayList<>();
 
     @XNodeList(value = "expansions/expansion", type = ArrayList.class, componentType = String.class)
-    protected List<String> expansions;
+    protected List<String> expansions = new ArrayList<>();
 
     public boolean getUseSubstringMatching() {
         return "substring".equals(method);
