@@ -191,6 +191,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @LOCK
+    @Produces({ "application/xml", "text/xml" })
     public Response lock(@Context UriInfo uriInfo) {
         Prop prop = new Prop(new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
                 new Owner("Administrator"), new TimeOut(10000L), new LockToken(new HRef("urn:uuid:Administrator")),
@@ -200,6 +201,7 @@ public class VirtualFolderResource extends AbstractResource {
     }
 
     @UNLOCK
+    @Produces({ "application/xml", "text/xml" })
     public Response unlock() {
         return Response.status(204).build();
     }
