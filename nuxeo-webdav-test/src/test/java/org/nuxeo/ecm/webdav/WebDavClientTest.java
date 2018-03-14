@@ -400,10 +400,32 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
-    public void testLockUnlock() throws Exception {
+    public void testLockUnlockAcceptTextXml() throws Exception {
+        testLockUnlock("text/xml");
+    }
+
+    @Test
+    public void testLockUnlockAcceptApplicationXml() throws Exception {
+        testLockUnlock("application/xml");
+    }
+
+    @Test
+    public void testLockUnlockAcceptStar() throws Exception {
+        testLockUnlock("*/*");
+    }
+
+    @Test
+    public void testLockUnlockNoAccept() throws Exception {
+        testLockUnlock(null);
+    }
+
+    protected void testLockUnlock(String accept) throws Exception {
         String fileUri = ROOT_URI + "quality.jpg";
 
         HttpLock request = new HttpLock(fileUri, new LockInfo(Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000L, false));
+        if (accept != null) {
+            request.setHeader("Accept", accept);
+        }
         int status;
         String token;
         try (CloseableHttpResponse response = client.execute(request, context)) {
@@ -415,6 +437,9 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals("urn:uuid:Administrator", token);
 
         HttpUnlock request2 = new HttpUnlock(fileUri, token);
+        if (accept != null) {
+            request2.setHeader("Accept", accept);
+        }
         try (CloseableHttpResponse response = client.execute(request2, context)) {
             status = response.getStatusLine().getStatusCode();
         }
