@@ -45,6 +45,7 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.admin.runtime.ReloadHelper;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -90,8 +91,7 @@ public class HotReloadStudioSnapshot {
     protected boolean validate = true;
 
     @OperationMethod
-    public Blob run() {
-
+    public Blob run() throws Exception {
         if (updateInProgress) {
             return jsonHelper(inProgress, "Update in progress.", null);
         }
@@ -114,6 +114,8 @@ public class HotReloadStudioSnapshot {
         try {
             updateInProgress = true;
             return hotReloadPackage(snapshotPkg);
+        } catch (RuntimeException e) {
+            throw new OperationException(e);
         } finally {
             updateInProgress = false;
         }
