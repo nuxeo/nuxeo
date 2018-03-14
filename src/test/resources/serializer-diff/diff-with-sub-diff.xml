@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <subDiff>
+    <key xsi:type="xs:string">value2</key>
+  </subDiff>
+</document>

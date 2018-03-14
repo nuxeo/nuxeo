@@ -113,7 +113,7 @@ public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
     }
 
     @Test
-    public void testBijunction() throws Exception {
+    public void testBijunction() {
         State state = createStateForBijunction();
         Function<State, String> serializer = MarkLogicStateSerializer::serialize;
         Function<String, State> deserializer = MarkLogicStateDeserializer::deserialize;

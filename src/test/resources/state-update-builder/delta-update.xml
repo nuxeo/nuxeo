@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rapi:patch xmlns:rapi="http://marklogic.com/rest-api" xmlns:prop="http://marklogic.com/xdmp/property"
-            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <rapi:replace select="/document/ecm__minorVersion" cardinality="." apply="ml.add" xsi:type="xs:double">1.0</rapi:replace>
-</rapi:patch>
