@@ -10,63 +10,15 @@
 
   <extension-point name="configuration">
     <documentation>
-
       Configuration of the Datadog reporter :
 
-      <code>
-        <configuration>
-          <apiKey>DATADOG_API_KEY</apiKey>
-          <host>testhost.com</host>
-          <pollInterval>25</pollInterval>
-
-          <!-- Filter method can ben substring|regex|string -->
-          <filter method="substring">
-            <includes>
-              <include>jvm.</include>
-              <include>nuxeo.</include>
-            </includes>
-            <excludes>
-              <exclude>jvm.useless</exclude>
-            </excludes>
-            <expansions>
-              <expansion>count</expansion>
-              <expansion>p99</expansion>
-            </expansions>
-          </filter>
-
-
-
-        </configuration>
-      </code>
-
-      <p>
-        The filter method is applied for include and exclude, and can be one
-        of the following:
-        <ul>
-          <li>substring: matches on a substring of the metric name</li>
-          <li>regex: matches on a regex of the metric name</li>
-          <li>string: matches the metric name</li>
-        </ul>
-        Expansions can be the following values:
-        <ul>
-          <li>count</li>
-          <li>meanRate</li>
-          <li>1MinuteRate</li>
-          <li>5MinuteRate</li>
-          <li>15MinuteRate</li>
-          <li>min</li>
-          <li>mean</li>
-          <li>max</li>
-          <li>stddev</li>
-          <li>median</li>
-          <li>p75</li>
-          <li>p95</li>
-          <li>p98</li>
-          <li>p99</li>
-          <li>p999</li>
-        </ul>
-      </p>
-
+      <configuration>
+        <apiKey>DATADOG_API_KEY</apiKey>
+        <!-- Host to use. If not set, is computed from nuxeo.url -->
+        <host>myhost.com</host>
+        <pollInterval>10</pollInterval>
+        <tags>myfirsttag,mysecondtag</tags>
+      </configuration>
 
     </documentation>
     <object class="org.nuxeo.datadog.reporter.DatadogReporterConfDescriptor" />
