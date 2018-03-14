@@ -362,9 +362,31 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
-    public void testPropFindOnLockedFile() throws Exception {
+    public void testPropFindOnLockedFileAcceptTextXml() throws Exception {
+        testPropFindOnLockedFile("text/xml");
+    }
+
+    @Test
+    public void testPropFindOnLockedFileAcceptApplicationXml() throws Exception {
+        testPropFindOnLockedFile("application/xml");
+    }
+
+    @Test
+    public void testPropFindOnLockedFileAcceptStar() throws Exception {
+        testPropFindOnLockedFile("*/*");
+    }
+
+    @Test
+    public void testPropFindOnLockedFileNoAccept() throws Exception {
+        testPropFindOnLockedFile(null);
+    }
+
+    protected void testPropFindOnLockedFile(String accept) throws Exception {
         String fileUri = ROOT_URI + "quality.jpg";
         DavMethod pLock = new LockMethod(fileUri, Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000l, false);
+        if (accept != null) {
+            pLock.setRequestHeader("Accept", accept);
+        }
         client.executeMethod(pLock);
         pLock.checkSuccess();
 

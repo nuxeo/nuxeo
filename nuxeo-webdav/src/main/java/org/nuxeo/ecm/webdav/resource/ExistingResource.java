@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -249,6 +250,7 @@ public class ExistingResource extends AbstractResource {
     }
 
     @LOCK
+    @Produces({ "application/xml", "text/xml" })
     public Response lock(@Context UriInfo uriInfo) {
         String token = null;
         Prop prop = null;
@@ -276,6 +278,7 @@ public class ExistingResource extends AbstractResource {
     }
 
     @UNLOCK
+    @Produces({ "application/xml", "text/xml" })
     public Response unlock() {
         if (backend.isLocked(doc.getRef())) {
             if (!backend.canUnlock(doc.getRef())) {
