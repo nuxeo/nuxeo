@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -63,6 +64,7 @@ import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -180,9 +182,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Exception { // NOSONAR
         System.setProperty("org.nuxeo.runtime.testing", "true");
-        // super.setUp();
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -214,13 +215,11 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @After
     public void tearDown() throws Exception {
         wipeRuntime();
-        if (workingDir != null) {
-            if (!restart) {
-                if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
-                    log.warn("Cannot delete " + workingDir);
-                }
-                workingDir = null;
+        if (workingDir != null && !restart) {
+            if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
+                log.warn("Cannot delete " + workingDir);
             }
+            workingDir = null;
         }
         readUris = null;
         bundles = null;
@@ -245,7 +244,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 }
                 workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null, new File(
                         "target"));
-                workingDir.delete();
+                Files.delete(workingDir.toPath());
             }
         } catch (IOException e) {
             log.error("Could not init working directory", e);
@@ -278,7 +277,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return aRuntime;
     }
 
-    public static URL[] introspectClasspath(ClassLoader loader) {
+    public static URL[] introspectClasspath() {
         return new FastClasspathScanner().getUniqueClasspathElements().stream()
                 .map(file -> {
                     try {
@@ -290,9 +289,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      }
 
 
-    protected void initUrls() throws Exception {
-        ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
-        urls = introspectClasspath(classLoader);
+    protected void initUrls() {
+        urls = introspectClasspath();
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("URLs on the classpath: ");
@@ -312,7 +310,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * This happens for instance if a previous test had errors in its <code>setUp()</code>, because
      * <code>tearDown()</code> has not been called.
      */
-    protected void wipeRuntime() throws Exception {
+    protected void wipeRuntime() {
         // Make sure there is no active runtime (this might happen if an
         // exception is raised during a previous setUp -> tearDown is not called
         // afterwards).
@@ -576,7 +574,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 }
             }
         }
-        throw new RuntimeException("Could not resolve bundle " + bundle);
+        throw new RuntimeServiceException("Could not resolve bundle " + bundle);
     }
 
     /**
@@ -616,7 +614,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return sp[0];
     }
 
-    public BundleFile lookupBundle(String bundleName) throws Exception {
+    public BundleFile lookupBundle(String bundleName) throws Exception { // NOSONAR
         BundleFile bundleFile = bundles.get(bundleName);
         if (bundleFile != null) {
             return bundleFile;
