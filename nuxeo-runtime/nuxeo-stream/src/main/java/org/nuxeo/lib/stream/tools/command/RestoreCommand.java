@@ -85,7 +85,7 @@ public class RestoreCommand extends Command {
                                 .longOpt("log-input")
                                 .desc("Log name of the input default to " + DEFAULT_LATENCIES_LOG)
                                 .hasArg()
-                                .argName("LOG_OUTPUT")
+                                .argName("LOG_INPUT")
                                 .build());
         options.addOption(Option.builder()
                                 .longOpt("to-date")
@@ -101,11 +101,10 @@ public class RestoreCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         logNames = getLogNames(manager, cmd.getOptionValue("log-name"));
-        input = cmd.getOptionValue("log-input");
+        input = cmd.getOptionValue("log-input", DEFAULT_LATENCIES_LOG);
         date = getTimestampFromDate(cmd.getOptionValue("to-date"));
         verbose = cmd.hasOption("verbose");
         dryRun = cmd.hasOption("dry-run");
-
         return restorePosition(manager);
     }
 
@@ -121,6 +120,7 @@ public class RestoreCommand extends Command {
     }
 
     protected void updatePositions(LogManager manager, Map<LogPartitionGroup, LogOffset> offsets) {
+        System.out.println("# Update positions");
         offsets.forEach((key, offset) -> updatePosition(manager, key, offset));
     }
 
@@ -128,7 +128,7 @@ public class RestoreCommand extends Command {
         if (offset == null) {
             return;
         }
-        System.out.println("# Commit : " + key);
+        System.out.println(key + " new position: " + offset);
         try (LogTailer<Record> tailer = manager.createTailer(key.group, key.getLogPartition())) {
             tailer.seek(offset);
             tailer.commit();
@@ -138,7 +138,7 @@ public class RestoreCommand extends Command {
     protected Map<LogPartitionGroup, LogOffset> searchOffsets(LogManager manager,
             Map<LogPartitionGroup, Latency> latencies) throws InterruptedException {
         Map<LogPartitionGroup, LogOffset> ret = new HashMap<>(latencies.size());
-        System.out.println("# Searching offsets matching the latencies");
+        System.out.println("# Searching records matching the latencies lower timestamp and key");
         for (LogPartitionGroup key : latencies.keySet()) {
             ret.put(key, findOffset(manager, key, latencies.get(key)));
         }
@@ -149,7 +149,7 @@ public class RestoreCommand extends Command {
             throws InterruptedException {
         long targetWatermark = latency.lower();
         String targetKey = latency.key();
-        try (LogTailer<Record> tailer = manager.createTailer(key.group, key.getLogPartition())) {
+        try (LogTailer<Record> tailer = manager.createTailer(GROUP, key.getLogPartition())) {
             for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(
                     READ_TIMEOUT)) {
                 if (targetKey != null && !targetKey.equals(rec.message().key)) {
@@ -157,19 +157,20 @@ public class RestoreCommand extends Command {
                 }
                 long timestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
                 if (targetWatermark == timestamp) {
-                    System.out.println("Offset found: " + key + ": " + rec.offset());
+                    System.out.println(String.format("%s: offset: %s wm: %d key: %s", key, rec.offset(),
+                            rec.message().watermark, rec.message().key));
                     return rec.offset().nextOffset();
                 }
             }
         }
-        System.err.println("No offset found for: " + key);
+        System.err.println("No offset found for: " + key + ", matching: " + latency.asJson());
         return null;
     }
 
     @NotNull
     private Map<LogPartitionGroup, Latency> readLatencies(LogManager manager) throws InterruptedException {
         Map<LogPartitionGroup, Latency> latencies = new HashMap<>();
-        System.out.println("# Reading latencies from: " + input + " ...");
+        System.out.println("# Reading latencies log: " + input + ", searching for the higher timestamp <= " + date);
         try (LogTailer<Record> tailer = manager.createTailer(GROUP, input)) {
             for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(
                     READ_TIMEOUT)) {
@@ -182,13 +183,14 @@ public class RestoreCommand extends Command {
                     continue;
                 }
                 Latency latency = decodeLatency(rec.message().data);
-                if (latency != null) {
+                if (latency != null && latency.lower() > 0) {
+                    // we don't want latency.lower = 0, this means either no record either records with unset watermark
                     latencies.put(key, latency);
                 }
             }
         }
-        System.out.println("# Latencies found: ");
-        latencies.forEach((key, latency) -> System.out.println(String.format("%s: %s", key, latency)));
+        System.out.println("# Latencies found (group:log:partition -> lat)");
+        latencies.forEach((key, latency) -> System.out.println(String.format("%s: %s", key, latency.asJson())));
         return latencies;
     }
 
