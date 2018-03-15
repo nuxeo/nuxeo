@@ -37,7 +37,7 @@ declare function local:patch-document(
           let $target := $sub-document/*[fn:node-name(.) = $node-name][$index]
           return
             if (fn:empty($diff/*) and fn:string($diff) eq "NULL") then
-              (: delete the node if and only if we receive NULL as value and it's not a complex element :)
+              (: delete the node if and only if we receive NULL as value and it is not a complex element :)
               (: fn:string of <a><b>NULL</b></a> will return NULL :)
               xdmp:node-delete($target)
             else if (fn:string($diff) eq "NOP") then
