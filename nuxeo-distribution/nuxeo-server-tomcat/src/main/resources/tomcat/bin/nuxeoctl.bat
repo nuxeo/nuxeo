@@ -207,6 +207,13 @@ if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
   timeout /t 30
   goto END
 )
+REM ***** Check Java JDK
+set JAVAC=%JAVA_HOME%\bin\javac.exe
+if not exist "%JAVAC%" (
+  echo Could not find a JDK. Please ensure a Java JDK is properly installed.
+  timeout /t 30
+goto END
+)
 
 if "!JAVA_OPTS!" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 set JAVA_OPTS=%JAVA_OPTS:"=\\\"%
