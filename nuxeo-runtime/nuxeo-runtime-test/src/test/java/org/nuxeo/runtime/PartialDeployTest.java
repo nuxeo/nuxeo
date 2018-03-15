@@ -29,10 +29,12 @@ import org.junit.Test;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.StreamRef;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.test.runner.TargetExtensions;
+import org.osgi.framework.Bundle;
 
 public class PartialDeployTest extends NXRuntimeTestCase {
 
@@ -54,7 +56,25 @@ public class PartialDeployTest extends NXRuntimeTestCase {
     }
 
     @Test
-    public void deployWithExtensions() throws IOException {
+    public void deployBundleWithExtensions() throws Exception {
+        assertNull(getComponent(COMPONENT_NAME));
+        assertNull(getComponent(PARTIAL_COMPONENT_NAME));
+
+        TargetExtensions te = new TestTargetExtensions();
+        RuntimeContext context = deployPartial("org.nuxeo.runtime.test.tests", Collections.singleton(te));
+
+        assertNull(getComponent(COMPONENT_NAME));
+        assertNotNull(getComponent(PARTIAL_COMPONENT_NAME));
+        assertNumberOfExtensionsEquals(1, PARTIAL_COMPONENT_NAME);
+
+        // check that the deployed bundle's resources can be accessed through the class loader
+        Bundle bundle = context.getBundle();
+        assertNotNull(bundle);
+        assertNotNull(bundle.getResource("myres.txt"));
+    }
+
+    @Test
+    public void deployComponentWithExtensions() throws IOException {
         assertNull(getComponent(COMPONENT_NAME));
         assertNull(getComponent(PARTIAL_COMPONENT_NAME));
 
