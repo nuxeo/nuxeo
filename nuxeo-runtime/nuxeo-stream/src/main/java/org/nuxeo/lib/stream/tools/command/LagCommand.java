@@ -79,8 +79,8 @@ public class LagCommand extends Command {
 
     protected void renderLag(String group, List<LogLag> lags) {
         System.out.println("### Group: " + group);
-        System.out.println(
-                "| partition | lag | pos | end | posOffset | endOffset |\n" + "| --- | ---: | ---: | ---: | ---: |");
+        System.out.println("| partition | lag | pos | end | posOffset | endOffset |\n"
+                + "| --- | ---: | ---: | ---: | ---: | ---: |");
         LogLag all = LogLag.of(lags);
         System.out.println(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
                 all.upperOffset()));
