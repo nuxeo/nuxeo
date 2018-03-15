@@ -96,7 +96,11 @@ public class NuxeoStarter implements ServletContextListener {
             Double duration = (finishedTime - startTime) / 1000.0;
             log.info(String.format("Nuxeo framework started in %.1f sec.", duration));
         } catch (IOException | BundleException e) {
+            log.error("Exception during startup", e);
             throw new RuntimeException(e);
+        } catch (Throwable e) { // NOSONAR
+            log.error("Exception during startup", e);
+            throw e;
         }
     }
 
