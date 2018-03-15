@@ -102,7 +102,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
                 long recordWatermark = Watermark.ofTimestamp(latency.upper()).getValue();
                 String recordKey = encodeKey(logGroup, partition);
                 byte[] recordValue = encodeLatency(latency);
-                Record record = new Record(recordKey, recordValue, recordWatermark, null);
+                Record record = new Record(recordKey, recordValue, recordWatermark);
                 if (verbose) {
                     debug("out: " + record);
                 }

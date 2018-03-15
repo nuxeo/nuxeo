@@ -56,6 +56,20 @@ public class Record implements Externalizable {
 
     }
 
+    /**
+     * Creates a record using current watermark corresponding to the current time, with a default flag
+     */
+    public Record(String key, byte[] data) {
+        this(key, data, Watermark.ofNow().getValue(), DEFAULT_FLAG);
+    }
+
+    /**
+     * Creates a record using a default flag
+     */
+    public Record(String key, byte[] data, long watermark) {
+        this(key, data, watermark, DEFAULT_FLAG);
+    }
+
     public Record(String key, byte[] data, long watermark, EnumSet<Flag> flags) {
         this.key = key;
         this.data = data;
@@ -63,8 +77,11 @@ public class Record implements Externalizable {
         this.flags = (flags == null) ? DEFAULT_FLAG : flags;
     }
 
+    /**
+     * Creates a record using current timestamp and default flag
+     */
     public static Record of(String key, byte[] data) {
-        return new Record(key, data, 0, DEFAULT_FLAG);
+        return new Record(key, data);
     }
 
     @Override
