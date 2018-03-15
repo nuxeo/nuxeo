@@ -109,7 +109,7 @@
     </documentation>
 
 
-    <!--  test based document types -->
+    <!--  text based document types -->
 
     <mimetype normalized="text/plain" binary="false" iconPath="text.png">
       <mimetypes>
