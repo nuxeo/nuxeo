@@ -1,4 +1,5 @@
 perf.target=.
+nuxeo.server.http.maxThreads=100
 
 # Use a bigger pool size for db/vcs
 nuxeo.db.max-pool-size=52
