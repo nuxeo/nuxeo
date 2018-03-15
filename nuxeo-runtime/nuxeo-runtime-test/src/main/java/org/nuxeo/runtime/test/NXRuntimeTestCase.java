@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -206,7 +207,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Before
     public void startRuntime() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
-        // super.setUp();
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -226,7 +226,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * components are not yet started. If you need to perform component/service lookups use instead the
      * {@link #postSetUp()} method
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception { // NOSONAR
     }
 
     /**
@@ -235,7 +235,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      *
      * @throws Exception
      */
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception { // NOSONAR
         deploymentStack = new ArrayList<>();
     }
 
@@ -243,7 +243,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * Called after framework was started (at the end of setUp). Implementors may use this to use deployed services to
      * initialize fields etc.
      */
-    protected void postSetUp() throws Exception {
+    protected void postSetUp() throws Exception { // NOSONAR
     }
 
     /**
@@ -280,13 +280,11 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public void stopRuntime() throws Exception {
         tearDown();
         wipeRuntime();
-        if (workingDir != null) {
-            if (!restart) {
-                if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
-                    log.warn("Cannot delete " + workingDir);
-                }
-                workingDir = null;
+        if (workingDir != null && !restart) {
+            if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
+                log.warn("Cannot delete " + workingDir);
             }
+            workingDir = null;
         }
         readUris = null;
         bundles = null;
@@ -311,7 +309,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 }
                 workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null,
                         new File("target"));
-                workingDir.delete();
+                Files.delete(workingDir.toPath());
             }
         } catch (IOException e) {
             log.error("Could not init working directory", e);
@@ -344,19 +342,18 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return aRuntime;
     }
 
-    public static URL[] introspectClasspath(ClassLoader loader) {
+    public static URL[] introspectClasspath() {
         return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
             try {
                 return file.toURI().toURL();
             } catch (MalformedURLException cause) {
-                throw new Error("Could not get URL from " + file, cause);
+                throw new RuntimeServiceException("Could not get URL from " + file, cause);
             }
         }).toArray(URL[]::new);
     }
 
-    protected void initUrls() throws Exception {
-        ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
-        urls = introspectClasspath(classLoader);
+    protected void initUrls() {
+        urls = introspectClasspath();
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("URLs on the classpath: ");
@@ -376,14 +373,19 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * This happens for instance if a previous test had errors in its <code>setUp()</code>, because
      * <code>tearDown()</code> has not been called.
      */
-    protected void wipeRuntime() throws Exception {
+    protected void wipeRuntime() {
         // Make sure there is no active runtime (this might happen if an
         // exception is raised during a previous setUp -> tearDown is not called
         // afterwards).
         runtime = null;
         frameworkStarted = false;
         if (Framework.getRuntime() != null) {
-            Framework.shutdown();
+            try {
+                Framework.shutdown();
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeServiceException("Interrupted during shutdown", cause);
+            }
         }
     }
 
@@ -618,7 +620,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 }
             }
         }
-        throw new RuntimeException("Could not resolve bundle " + bundle);
+        throw new RuntimeServiceException("Could not resolve bundle " + bundle);
     }
 
     /**
@@ -658,7 +660,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return sp[0];
     }
 
-    public BundleFile lookupBundle(String bundleName) throws Exception {
+    public BundleFile lookupBundle(String bundleName) throws Exception { // NOSONAR
         BundleFile bundleFile = bundles.get(bundleName);
         if (bundleFile != null) {
             return bundleFile;
