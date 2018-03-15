@@ -87,33 +87,53 @@ public class LatencyTrackerComputation extends AbstractComputation {
         }
         debug(String.format("Tracking latency %d/%d", count - remaining, count));
         for (LogPartitionGroup logGroup : logGroups) {
-            List<Latency> latencies;
-            try {
-                latencies = manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
-                        (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
-            } catch (IllegalStateException e) {
-                error("log does not contains Record: " + logGroup);
+            List<Latency> latencies = getLatenciesForPartition(logGroup);
+            if (latencies == null) {
                 continue;
             }
-            int partition = 0;
-            for (Latency latency : latencies) {
-                String recordKey = encodeKey(logGroup, partition);
-                byte[] value;
-                try {
-                    value = latency.asJson().getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new IllegalStateException("Faild to byte encoding " + latency, e);
+            for (int partition = 0; partition < latencies.size(); partition++) {
+                Latency latency = latencies.get(partition);
+                if (latency.lower() <= 0) {
+                    // lower is the watermark timestamp for the latest processed record, without this info we cannot do
+                    // anything
+                    continue;
                 }
-                Record record = new Record(recordKey, value, Watermark.ofTimestamp(latency.upper()).getValue(), null);
-                debug("out: " + record);
+                // upper is the time when the latency has been measured it is used as the watermark
+                long recordWatermark = Watermark.ofTimestamp(latency.upper()).getValue();
+                String recordKey = encodeKey(logGroup, partition);
+                byte[] recordValue = encodeLatency(latency);
+                Record record = new Record(recordKey, recordValue, recordWatermark, null);
+                if (verbose) {
+                    debug("out: " + record);
+                }
                 context.produceRecord(OUTPUT_STREAM, record);
-                context.setSourceLowWatermark(latency.upper());
-                partition++;
+                context.setSourceLowWatermark(recordWatermark);
             }
         }
         context.askForCheckpoint();
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
         remaining--;
+    }
+
+    protected byte[] encodeLatency(Latency latency) {
+        try {
+            return latency.asJson().getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Failed to byte encoding " + latency, e);
+        }
+    }
+
+    protected List<Latency> getLatenciesForPartition(LogPartitionGroup logGroup) {
+        try {
+            return manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
+                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
+        } catch (Exception e) {
+            if (e.getCause() instanceof ClassNotFoundException || e instanceof IllegalStateException) {
+                error("log does not contains Record, remove partition: " + logGroup);
+                return null;
+            }
+            throw e;
+        }
     }
 
     public static String encodeKey(LogPartitionGroup logGroup, int partition) {
