@@ -76,9 +76,6 @@ public class AnnotationTest extends BaseTest {
         String xpath = "file:content";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setColor("000000");
-        annotation.setLastModifier("bob");
-        annotation.setPosition("0,0,0,0");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
 
@@ -90,9 +87,6 @@ public class AnnotationTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(file.getId(), node.get("documentId").textValue());
             assertEquals(xpath, node.get("xpath").textValue());
-            assertEquals("000000", node.get("color").textValue());
-            assertEquals("bob", node.get("lastModifier").textValue());
-            assertEquals("0,0,0,0", node.get("position").textValue());
         }
     }
 
@@ -105,8 +99,6 @@ public class AnnotationTest extends BaseTest {
         Annotation annotation = new AnnotationImpl();
         Calendar now = Calendar.getInstance();
         annotation.setId("foo");
-        annotation.setCreationDate(now);
-        annotation.setPage(42L);
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
@@ -116,10 +108,8 @@ public class AnnotationTest extends BaseTest {
 
         assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(annotation.getId(), node.get("id").textValue());
-        assertEquals(42L, node.get("page").longValue());
         assertEquals(file.getId(), node.get("documentId").textValue());
         assertEquals(xpath, node.get("xpath").textValue());
-        assertEquals(now.toInstant().toString(), node.get("creationDate").textValue());
     }
 
     @Test
@@ -131,15 +121,12 @@ public class AnnotationTest extends BaseTest {
         String xpath = "file:content";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setOpacity(0.5);
         annotation.setId("foo");
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
-
-        annotation.setSecurity("Private");
 
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
 
@@ -150,8 +137,6 @@ public class AnnotationTest extends BaseTest {
             fetchInvalidations();
 
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
-            assertEquals(0.5, updatedAnnotation.getOpacity(), 0.0);
-            assertEquals("Private", updatedAnnotation.getSecurity());
         }
     }
 

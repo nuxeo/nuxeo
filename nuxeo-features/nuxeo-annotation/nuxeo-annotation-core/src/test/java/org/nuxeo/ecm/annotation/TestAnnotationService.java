@@ -22,17 +22,12 @@ package org.nuxeo.ecm.annotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOC_TYPE;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION_PROPERTY;
 
 import java.util.Calendar;
 
@@ -78,8 +73,6 @@ public class TestAnnotationService {
         annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
         annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
         annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docToAnnotate.getId());
-        annotationModel.setPropertyValue(ANNOTATION_DATE_PROPERTY, annotationDate);
-        annotationModel.setPropertyValue(ANNOTATION_PAGE_PROPERTY, annotationPage);
 
         Annotation annotation = new AnnotationImpl(annotationModel);
 
@@ -89,8 +82,6 @@ public class TestAnnotationService {
         assertEquals(annotationId, annotation.getId());
         assertEquals(docToAnnotate.getId(), annotation.getDocumentId());
         assertEquals(xpathToAnnotate, annotation.getXpath());
-        assertEquals(annotationDate, annotation.getDate());
-        assertEquals(annotationPage, annotation.getPage());
 
     }
 
@@ -109,9 +100,6 @@ public class TestAnnotationService {
         annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
         annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
         annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docToAnnotate.getId());
-        annotationModel.setPropertyValue(ANNOTATION_LAST_MODIFIER_PROPERTY, annotationLastModifier);
-        annotationModel.setPropertyValue(ANNOTATION_PAGE_PROPERTY, annotationPage);
-        annotationModel.setPropertyValue(ANNOTATION_POSITION_PROPERTY, annotationPosition);
 
         annotationModel = session.createDocument(annotationModel);
         session.save();
@@ -120,11 +108,6 @@ public class TestAnnotationService {
                 (String) annotationModel.getPropertyValue(ANNOTATION_ID_PROPERTY));
 
         assertEquals(docToAnnotate.getId(), annotation.getDocumentId());
-        assertEquals(annotationLastModifier, annotation.getLastModifier());
-        assertEquals(annotationPage, annotation.getPage());
-        assertEquals(annotationPosition, annotation.getPosition());
-        assertEquals(0d, annotation.getOpacity(), 0d);
-        assertNull(annotation.getSecurity());
 
     }
 
@@ -140,30 +123,17 @@ public class TestAnnotationService {
 
         Annotation annotation = new AnnotationImpl();
         annotation.setId("foo");
-        annotation.setPosition(annotationPosition);
-        annotation.setPage(annotationPage);
         annotation.setDocumentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
 
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
-        assertEquals(annotationPage, annotation.getPage());
-        assertEquals(annotationPosition, annotation.getPosition());
-        assertNull(annotation.getSubject());
-
         long newAnnotationPage = 35L;
         String annotationSubject = "testSubject";
 
-        annotation.setPage(newAnnotationPage);
-        annotation.setSubject(annotationSubject);
-
         annotationService.updateAnnotation(session, annotation);
         annotation = annotationService.getAnnotation(session, annotation.getId());
-
-        assertEquals(newAnnotationPage, annotation.getPage());
-        assertEquals(annotationPosition, annotation.getPosition());
-        assertEquals(annotationSubject, annotation.getSubject());
 
     }
 

@@ -20,24 +20,11 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CONTENT_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_INTERIOR_COLOR_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PARENT_ID_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_TYPE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOC_TYPE;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SECURITY_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SUBJECT_PROPERTY;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -124,22 +111,9 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     protected void setAnnotationProperties(DocumentModel annotationModel, Annotation annotation) {
         annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotation.getId());
-        annotationModel.setPropertyValue(ANNOTATION_TYPE_PROPERTY, annotation.getType());
         annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, annotation.getDocumentId());
         annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
-        annotationModel.setPropertyValue(ANNOTATION_COLOR_PROPERTY, annotation.getColor());
-        annotationModel.setPropertyValue(ANNOTATION_INTERIOR_COLOR_PROPERTY, annotation.getInteriorColor());
-        annotationModel.setPropertyValue(ANNOTATION_DATE_PROPERTY, annotation.getDate());
-        annotationModel.setPropertyValue(ANNOTATION_FLAGS_PROPERTY, annotation.getFlags());
-        annotationModel.setPropertyValue(ANNOTATION_LAST_MODIFIER_PROPERTY, annotation.getLastModifier());
-        annotationModel.setPropertyValue(ANNOTATION_PAGE_PROPERTY, annotation.getPage());
-        annotationModel.setPropertyValue(ANNOTATION_POSITION_PROPERTY, annotation.getPosition());
-        annotationModel.setPropertyValue(ANNOTATION_CREATION_DATE_PROPERTY, annotation.getCreationDate());
-        annotationModel.setPropertyValue(ANNOTATION_OPACITY_PROPERTY, annotation.getOpacity());
-        annotationModel.setPropertyValue(ANNOTATION_SUBJECT_PROPERTY, annotation.getSubject());
-        annotationModel.setPropertyValue(ANNOTATION_SECURITY_PROPERTY, annotation.getSecurity());
-        annotationModel.setPropertyValue(ANNOTATION_CONTENT_PROPERTY, annotation.getContent());
-        annotationModel.setPropertyValue(ANNOTATION_PARENT_ID_PROPERTY, annotation.getParentId());
+        annotationModel.setPropertyValue(ANNOTATION_ENTITY_PROPERTY, annotation.getEntity());
     }
 
     @SuppressWarnings("unchecked")
