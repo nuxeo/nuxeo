@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
@@ -65,15 +64,15 @@ public class TestTransactedAudit {
     }
 
     @Test
-    public void canLogMultipleLifecycleTransitionsInSameTx() throws InterruptedException {
+    public void canLogMultipleLifecycleTransitionsInSameTx() {
         // generate events
         DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
         doc = repo.createDocument(doc);
         String initialLifeCycle = doc.getCurrentLifeCycleState();
-        doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        String deletedLifeCycle = doc.getCurrentLifeCycleState();
-        doc.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
-        String undeletedLifeCycle = doc.getCurrentLifeCycleState();
+        doc.followTransition("approve");
+        String approvedLifeCycle = doc.getCurrentLifeCycleState();
+        doc.followTransition("backToProject");
+        String projectLifeCycle = doc.getCurrentLifeCycleState();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         waitForAsyncCompletion();
@@ -83,13 +82,11 @@ public class TestTransactedAudit {
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), repo.getRepositoryName());
 
         assertThat(trail, notNullValue());
-        assertThat(trail.size(), is(5));
+        assertThat(trail.size(), is(3));
 
         boolean seenDocCreated = false;
-        boolean seenDocDeleted = false;
-        boolean seenDocUndeleted = false;
-        boolean seenDocTrashed = false;
-        boolean seenDocUntrashed = false;
+        boolean seenDocApproved = false;
+        boolean seenDocBackToProject = false;
 
         for (LogEntry entry : trail) {
             String lifeCycle = entry.getDocLifeCycle();
@@ -99,23 +96,17 @@ public class TestTransactedAudit {
                     seenDocCreated = true;
                 }
             } else if (LifeCycleConstants.TRANSITION_EVENT.equals(id)) {
-                if (undeletedLifeCycle.equals(lifeCycle)) {
-                    seenDocUndeleted = true;
-                } else if (deletedLifeCycle.equals(lifeCycle)) {
-                    seenDocDeleted = true;
+                if (projectLifeCycle.equals(lifeCycle)) {
+                    seenDocBackToProject = true;
+                } else if (approvedLifeCycle.equals(lifeCycle)) {
+                    seenDocApproved = true;
                 }
-            } else if (TrashService.DOCUMENT_TRASHED.equals(id)) {
-                seenDocTrashed = true;
-            } else if (TrashService.DOCUMENT_UNTRASHED.equals(id)) {
-                seenDocUntrashed = true;
             }
         }
 
-        assertThat(seenDocUndeleted, is(true));
-        assertThat(seenDocDeleted, is(true));
+        assertThat(seenDocBackToProject, is(true));
+        assertThat(seenDocApproved, is(true));
         assertThat(seenDocCreated, is(true));
-        assertThat(seenDocTrashed, is(true));
-        assertThat(seenDocUntrashed, is(true));
 
     }
 
