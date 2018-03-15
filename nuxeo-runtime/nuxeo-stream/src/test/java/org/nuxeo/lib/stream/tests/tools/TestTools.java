@@ -67,7 +67,7 @@ public abstract class TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                Record record = new Record(key, value.getBytes("UTF-8"), Watermark.ofNow().getValue(), null);
+                Record record = Record.of(key, value.getBytes("UTF-8"));
                 appender.append(key, record);
                 if (i == NB_RECORD / 2) {
                     targetRecord = record;
