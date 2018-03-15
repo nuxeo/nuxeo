@@ -1579,7 +1579,7 @@
               "dev": true,
               "requires": {
                 "path-exists": "2.1.0",
-                "pinkie-promise": "2.0.0"
+                "pinkie-promise": "2.0.1"
               },
               "dependencies": {
                 "path-exists": {
@@ -1588,12 +1588,12 @@
                   "integrity": "sha1-D+tsZPD8UY2adU3V77YscCJ2H0s=",
                   "dev": true,
                   "requires": {
-                    "pinkie-promise": "2.0.0"
+                    "pinkie-promise": "2.0.1"
                   }
                 },
                 "pinkie-promise": {
-                  "version": "2.0.0",
-                  "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.0.tgz",
+                  "version": "2.0.1",
+                  "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz",
                   "integrity": "sha1-TINTjeH25mDCngoTRGhE96foglk=",
                   "dev": true,
                   "requires": {
