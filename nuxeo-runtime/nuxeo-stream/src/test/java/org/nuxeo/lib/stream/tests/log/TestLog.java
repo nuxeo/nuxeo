@@ -788,7 +788,7 @@ public abstract class TestLog {
     }
 
     protected Record createRecord(String key) throws UnsupportedEncodingException {
-        return new Record(key, ("value" + key).getBytes("UTF-8"), Watermark.ofNow().getValue(), null);
+        return Record.of(key, ("value" + key).getBytes("UTF-8"));
     }
 
     protected String readKey(LogTailer<KeyValueMessage> tailer) throws InterruptedException {

@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.platform.audit.listener;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
@@ -126,7 +128,16 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (json == null) {
             return;
         }
-        appender.append(0, Record.of(String.valueOf(entry.getId()), json.getBytes(StandardCharsets.UTF_8)));
+        long timestamp = getTimestampForEntry(entry);
+        appender.append(0, new Record(String.valueOf(entry.getId()), json.getBytes(UTF_8),
+                Watermark.ofTimestamp(timestamp).getValue()));
+    }
+
+    protected long getTimestampForEntry(LogEntry entry) {
+        if (entry.getEventDate() != null) {
+            return entry.getEventDate().getTime();
+        }
+        return System.currentTimeMillis();
     }
 
     protected String asJson(LogEntry entry) {
