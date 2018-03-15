@@ -5,3 +5,4 @@ Import-Package: org.nuxeo.common,
  org.nuxeo.osgi,
  org.nuxeo.runtime,
  org.osgi.framework
+Nuxeo-Component: MyComp4.xml

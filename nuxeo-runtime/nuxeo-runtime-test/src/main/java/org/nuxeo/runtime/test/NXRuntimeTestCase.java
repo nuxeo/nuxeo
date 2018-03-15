@@ -492,7 +492,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Override
     public RuntimeContext deployPartial(String name, Set<TargetExtensions> targetExtensions) throws Exception {
         // Do not install bundle; we only need the Object to list his components
-        Bundle bundle = new BundleImpl(osgi, lookupBundle(name), null);
+        Bundle bundle = new BundleImpl(osgi, lookupBundle(name), getClass().getClassLoader());
 
         RuntimeContext ctx = new OSGiRuntimeContext(runtime, bundle);
         listBundleComponents(bundle).map(URLStreamRef::new).forEach(component -> {
@@ -545,10 +545,10 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         String name = bundle.getSymbolicName();
         log.debug("PartialBundle: " + name + " components: " + list);
         if (list == null) {
-            return null;
+            return Stream.empty();
+        } else {
+            return Stream.of(list.split("[, \t\n\r\f]")).map(bundle::getEntry).filter(Objects::nonNull);
         }
-
-        return Arrays.stream(list.split("[, \t\n\r\f]")).map(bundle::getEntry).filter(Objects::nonNull);
     }
 
     /**
