@@ -19,31 +19,16 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CONTENT;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_INTERIOR_COLOR;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PARENT_ID;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SECURITY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SUBJECT;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_TYPE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.annotation.AnnotationJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.util.Calendar;
 
-import org.joda.time.Instant;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -63,36 +48,9 @@ public class AnnotationJsonReader extends EntityJsonReader<Annotation> {
     protected Annotation readEntity(JsonNode jn) throws IOException {
         Annotation annotation = new AnnotationImpl();
         annotation.setId(jn.get(ANNOTATION_ID).textValue());
-        annotation.setType(jn.get(ANNOTATION_TYPE).textValue());
-        annotation.setColor(jn.get(ANNOTATION_COLOR).textValue());
-        annotation.setInteriorColor(jn.get(ANNOTATION_INTERIOR_COLOR).textValue());
-
-        String dateValue = jn.get(ANNOTATION_DATE).textValue();
-        if (dateValue != null) {
-            Calendar date = Calendar.getInstance();
-            date.setTime(Instant.parse(dateValue).toDate());
-            annotation.setDate(date);
-        }
-
-        annotation.setFlags(jn.get(ANNOTATION_FLAGS).textValue());
         annotation.setDocumentId(jn.get(ANNOTATION_DOCUMENT_ID).textValue());
         annotation.setXpath(jn.get(ANNOTATION_XPATH).textValue());
-        annotation.setLastModifier(jn.get(ANNOTATION_LAST_MODIFIER).textValue());
-        annotation.setPage(jn.get(ANNOTATION_PAGE).longValue());
-        annotation.setPosition(jn.get(ANNOTATION_POSITION).textValue());
-
-        String creationDateValue = jn.get(ANNOTATION_CREATION_DATE).textValue();
-        if (creationDateValue != null) {
-            Calendar creationDate = Calendar.getInstance();
-            creationDate.setTime(Instant.parse(creationDateValue).toDate());
-            annotation.setCreationDate(creationDate);
-        }
-
-        annotation.setOpacity(jn.get(ANNOTATION_OPACITY).doubleValue());
-        annotation.setSubject(jn.get(ANNOTATION_SUBJECT).textValue());
-        annotation.setSecurity(jn.get(ANNOTATION_SECURITY).textValue());
-        annotation.setContent(jn.get(ANNOTATION_CONTENT).textValue());
-        annotation.setParentId(jn.get(ANNOTATION_PARENT_ID).textValue());
+        annotation.setEntity(jn.get(ANNOTATION_ENTITY).textValue());
 
         return annotation;
     }
