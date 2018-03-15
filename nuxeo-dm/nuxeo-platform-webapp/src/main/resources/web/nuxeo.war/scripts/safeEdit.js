@@ -55,6 +55,11 @@
     if (field.name == 'javax.faces.ViewState') {
       return true;
     }
+    // NXP-24266: do not store 'rowIndex[]' hidden input used by JS lists
+    // as it messes up the update of list properties after restoring a draft
+    if (field.name.endsWith('rowIndex[]')) {
+      return true;
+    }
     return false;
   }
 
