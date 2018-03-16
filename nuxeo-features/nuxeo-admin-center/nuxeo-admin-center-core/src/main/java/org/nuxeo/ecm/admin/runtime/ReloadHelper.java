@@ -52,7 +52,7 @@ public class ReloadHelper {
 
     private static final Log log = LogFactory.getLog(ReloadHelper.class);
 
-    public static void hotReloadPackage(String packageId) {
+    public static synchronized void hotReloadPackage(String packageId) {
         log.info("Reload Studio package with id=" + packageId);
         LocalPackage pkg = null;
         InstallTask installTask = null;

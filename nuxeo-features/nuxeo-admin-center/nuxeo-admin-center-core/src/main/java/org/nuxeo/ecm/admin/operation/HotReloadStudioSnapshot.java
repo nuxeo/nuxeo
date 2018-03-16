@@ -76,7 +76,15 @@ public class HotReloadStudioSnapshot {
 
     public static final String ID = "Service.HotReloadStudioSnapshot";
 
-    protected static boolean updateInProgress = false;
+    protected static volatile boolean updateInProgress = false;
+
+    protected static synchronized boolean setInProgress(boolean inProgress) {
+        if (updateInProgress == inProgress) {
+            return false;
+        }
+        updateInProgress = inProgress;
+        return true;
+    }
 
     private static final Log log = LogFactory.getLog(HotReloadStudioSnapshot.class);
 
@@ -91,32 +99,31 @@ public class HotReloadStudioSnapshot {
 
     @OperationMethod
     public Blob run() throws Exception {
-        if (updateInProgress) {
-            return jsonHelper(inProgress, "Update in progress.", null);
-        }
-
-        if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
-            return jsonHelper(error, "Must be Administrator to use this function.", null);
-        }
-
-        if (!Framework.isDevModeSet()) {
-            return jsonHelper(error, "You must enable Dev mode to Hot reload your Studio Snapshot package.", null);
-        }
-
-        List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
-        DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
-
-        if (snapshotPkg == null) {
-            return jsonHelper(error, "No Snapshot Package was found.", null);
-        }
-
         try {
-            updateInProgress = true;
+            if (setInProgress(true)) {
+                return jsonHelper(inProgress, "Update in progress.", null);
+            }
+
+            if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+                return jsonHelper(error, "Must be Administrator to use this function.", null);
+            }
+
+            if (!Framework.isDevModeSet()) {
+                return jsonHelper(error, "You must enable Dev mode to Hot reload your Studio Snapshot package.", null);
+            }
+
+            List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
+            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+
+            if (snapshotPkg == null) {
+                return jsonHelper(error, "No Snapshot Package was found.", null);
+            }
+
             return hotReloadPackage(snapshotPkg);
         } catch (RuntimeException e) {
             throw new OperationException(e);
         } finally {
-            updateInProgress = false;
+            setInProgress(false);
         }
     }
 
