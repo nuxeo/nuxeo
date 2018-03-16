@@ -56,8 +56,8 @@ public interface LogAppender<M extends Externalizable> {
         // 1. String.hashCode is known to be constant even with different JVM (this is not the case for all objects)
         // 2. the modulo operator is not optimal when rebalancing on partitions resizing but this should not happen.
         // and yes hashCode can be negative.
-        int queue = (key.hashCode() & 0x7fffffff) % size();
-        return append(queue, message);
+        int partition = (key.hashCode() & 0x7fffffff) % size();
+        return append(partition, message);
     }
 
     /**

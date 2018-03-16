@@ -104,9 +104,20 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
     }
 
     @Override
+    public LogOffset append(String key, M message) {
+        Objects.requireNonNull(key);
+        int partition = (key.hashCode() & 0x7fffffff) % size;
+        return append(partition, key, message);
+    }
+
+    @Override
     public LogOffset append(int partition, Externalizable message) {
-        Bytes value = Bytes.wrap(messageAsByteArray(message));
         String key = String.valueOf(partition);
+        return append(partition, key, message);
+    }
+
+    public LogOffset append(int partition, String key, Externalizable message) {
+        Bytes value = Bytes.wrap(messageAsByteArray(message));
         ProducerRecord<String, Bytes> record = new ProducerRecord<>(topic, partition, key, value);
         Future<RecordMetadata> future = producer.send(record);
         RecordMetadata result;
