@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.forms;
 
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -45,6 +46,7 @@ public class RichEditorElement extends WidgetElement {
      */
     @Override
     public void setInputValue(String content) {
+        Locator.waitUntilElementPresent(By.className("mce-tinymce"));
         // Define the script which sets the content of the editor
         String scriptToExecute = String.format("tinyMCE.editors['%s'].insertContent('%s')", id, content);
         // Set the content of the editor
