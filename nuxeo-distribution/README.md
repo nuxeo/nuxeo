@@ -57,7 +57,6 @@ Ant usage: `ant package`
  * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo Server with the JSF UI package installed
  * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo Server with the JSF UI package installed
  * nuxeo-launcher: Control Panel and Launcher
- * nuxeo-marketplace-dm: Transitional package for DM
  * nuxeo-marketplace-jsf-ui: Package for the JSF UI
  * nuxeo-nxr-jsf-ui: JSF UI NXR
  * nuxeo-nxr-server: Server NXR
@@ -114,14 +113,6 @@ This is the default application packaged within Tomcat in `nuxeo-server-tomcat/t
 Complete user interface for the Nuxeo Server built with JSF.
 
 Built Nuxeo Package is in `nuxeo-marketplace-jsf-ui/target/`.
-
-It can be installed in a Nuxeo Server using `nuxeoctl` or from the Administration page within the Nuxeo server.
-
-### Nuxeo Document Management
-
-Advanced document management features. The package has been split and deprecated; it is kept for helping in transition.
-
-Built Nuxeo Package is in `nuxeo-marketplace-dm/target/`.
 
 It can be installed in a Nuxeo Server using `nuxeoctl` or from the Administration page within the Nuxeo server.
 

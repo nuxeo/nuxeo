@@ -26,7 +26,6 @@
     <module>nuxeo-test-dependencies</module>
     <module>nuxeo-nxr-server</module>
     <module>nuxeo-nxr-jsf-ui</module>
-    <module>nuxeo-marketplace-dm</module>
     <module>nuxeo-marketplace-jsf-ui</module>
     <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
@@ -96,12 +95,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-nxr-jsf-ui</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
