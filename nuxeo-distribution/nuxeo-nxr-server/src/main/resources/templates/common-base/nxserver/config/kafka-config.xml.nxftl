@@ -5,7 +5,7 @@
   <require>org.nuxeo.runtime.stream.kafka.service</require>
 
   <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
-    <kafkaConfig name="default" zkServers="${kafka.zkServers}" topicPrefix="${kafka.topicPrefix}">
+    <kafkaConfig name="default" topicPrefix="${kafka.topicPrefix}">
       <producer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
       </producer>
