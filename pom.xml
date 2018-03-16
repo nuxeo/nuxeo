@@ -153,6 +153,7 @@
     <chemistry.opencmis.version>0.13.0-NX1</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcomponents.version>4.3.3</apache.httpcomponents.version>
+    <apache.httpcomponents.client.version>4.3.4</apache.httpcomponents.client.version>
     <apache.poi.version>3.10-FINAL</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
@@ -1928,7 +1929,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>fluent-hc</artifactId>
-        <version>${apache.httpcomponents.version}</version>
+        <version>${apache.httpcomponents.client.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -1944,7 +1945,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>${apache.httpcomponents.version}</version>
+        <version>${apache.httpcomponents.client.version}</version>
       </dependency>
 
       <dependency>
