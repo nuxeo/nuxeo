@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
-import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 /**
  * @since 9.2
@@ -36,12 +35,11 @@ public class TestPatternQueuingKafka extends TestPatternQueuing {
     }
 
     @Override
-    public LogManager createManager() throws Exception {
+    public LogManager createManager() {
         if (prefix == null) {
             prefix = KafkaHelper.getPrefix();
         }
-        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, KafkaHelper.getProducerProps(),
-                KafkaHelper.getConsumerProps());
+        return new KafkaLogManager(prefix, KafkaHelper.getProducerProps(), KafkaHelper.getConsumerProps());
     }
 
     @After

@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
-import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
 
@@ -32,10 +31,9 @@ public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
     }
 
     @Override
-    public LogManager createManager() throws Exception {
+    public LogManager createManager() {
         prefix = KafkaHelper.getPrefix();
-        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, KafkaHelper.getProducerProps(),
-                KafkaHelper.getConsumerProps());
+        return new KafkaLogManager(prefix, KafkaHelper.getProducerProps(), KafkaHelper.getConsumerProps());
     }
 
     @After

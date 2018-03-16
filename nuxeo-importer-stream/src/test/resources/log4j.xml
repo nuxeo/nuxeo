@@ -24,10 +24,6 @@
     <priority value="WARN" />
   </category>
 
-  <category name="org.I0Itec.zkclient">
-    <priority value="WARN" />
-  </category>
-
   <category name="kafka">
     <priority value="WARN" />
   </category>
