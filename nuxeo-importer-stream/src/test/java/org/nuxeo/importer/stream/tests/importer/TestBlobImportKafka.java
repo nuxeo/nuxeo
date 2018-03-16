@@ -39,10 +39,10 @@ public class TestBlobImportKafka extends TestBlobImport {
     }
 
     @Override
-    public LogManager getManager() throws Exception {
+    public LogManager getManager() {
         KafkaConfigService service = Framework.getService(KafkaConfigService.class);
         String kafkaConfig = "default";
-        return new KafkaLogManager(service.getZkServers(kafkaConfig), service.getTopicPrefix(kafkaConfig),
-                service.getProducerProperties(kafkaConfig), service.getConsumerProperties(kafkaConfig));
+        return new KafkaLogManager(service.getTopicPrefix(kafkaConfig), service.getProducerProperties(kafkaConfig),
+                service.getConsumerProperties(kafkaConfig));
     }
 }
