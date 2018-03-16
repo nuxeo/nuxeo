@@ -40,8 +40,6 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
 
     private static final Log log = LogFactory.getLog(KafkaConfigServiceImpl.class);
 
-    protected static final String DEFAULT_ZK_SERVERS = "DEFAULT_TEST";
-
     protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
 
     protected final Map<String, KafkaConfigDescriptor> configs = new HashMap<>();
@@ -78,14 +76,11 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
         return configs.keySet();
     }
 
+    @Deprecated
     @Override
     public String getZkServers(String configName) {
         checkConfigName(configName);
-        String ret = configs.get(configName).zkServers;
-        if (DEFAULT_ZK_SERVERS.equals(ret)) {
-            return KafkaUtils.getZkServers();
-        }
-        return ret;
+        return configs.get(configName).zkServers;
     }
 
     protected void checkConfigName(String configName) {

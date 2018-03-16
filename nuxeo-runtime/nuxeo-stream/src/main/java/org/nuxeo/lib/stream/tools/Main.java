@@ -99,14 +99,13 @@ public class Main {
             String contribPath = cmdLine.getOptionValue("kafka", NUXEO_KAFKA_FILE_CONF);
             createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
         } else {
-            throw new IllegalArgumentException(
-                    "Missing required option: --chronicle or --kafka");
+            throw new IllegalArgumentException("Missing required option: --chronicle or --kafka");
         }
     }
 
     protected void createKafkaManager(String kafkaContribution, String kafkaConfig) {
         KafkaConfigParser config = new KafkaConfigParser(Paths.get(kafkaContribution), kafkaConfig);
-        manager = new KafkaLogManager(config.getZkServers(), config.getPrefix(), config.getProducerProperties(),
+        manager = new KafkaLogManager(config.getPrefix(), config.getProducerProperties(),
                 config.getConsumerProperties());
     }
 

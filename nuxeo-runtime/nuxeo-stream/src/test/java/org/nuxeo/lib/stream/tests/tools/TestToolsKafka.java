@@ -70,7 +70,7 @@ public class TestToolsKafka extends TestTools {
         return String.format("--kafka %s --kafka-config %s", getConfigFile(), KAFKA_CONF);
     }
 
-    private String getConfigFile() {
+    protected String getConfigFile() {
         if (configFile == null) {
             configFile = this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE).getFile();
         }

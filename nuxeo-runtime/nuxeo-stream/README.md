@@ -107,13 +107,13 @@ the second is dedicated for cluster deployment.
   - Appender uses the Kafka [Producer API](http://kafka.apache.org/documentation.html#producerapi) and tailer the Kafka [Consumer API](http://kafka.apache.org/documentation.html#consumerapi).
   - Offsets are managed manually (auto commit is disable) and persisted in an internal Kafka topic.
 
-  You need to install and configure a Kafka cluster, the recommended version is 1.0.x. To check for consumer status, LogManager need a Zookeeper access, the Kafka broker need to be tuned a bit:
+  You need to install and configure a Kafka cluster, the recommended version is 1.0.x. The Kafka broker needs to be tuned a bit:
 
   | Kafka broker options | default | recommended |  Description |
   | --- | ---: | ---: | --- |
   | `offsets.retention.minutes` | `1440` | `20160` |The default offset retention is only 1 day, without activity for this amount of time the current consumer offset position is lost and all messages will be reprocessed. To prevent this we recommend to use a value 2 times bigger as `log.retention.hours`, so by default 14 days or `20160`. See [KAFKA-3806](https://issues.apache.org/jira/browse/KAFKA-3806) for more information. |
   | `log.retention.hours` | `168` | |The default log retention is 7 days. If you change this make sure you update `offset.retention.minutes`.|
-  | `auto.create.topics.enable` |  `true` |  | This is not a requirement for Log, because topic are created from Zookeeper. |
+  | `auto.create.topics.enable` |  `true` |  | Not needed, the topics are explicitly created. |
 
 
   Other [consumer and producer options](https://kafka.apache.org/documentation#configuration)
@@ -188,7 +188,7 @@ To build and run the tests, simply start the Maven build:
 
 ### Run Unit Tests with Kafka
 
- The tests expect a Zookeeper and Kafka servers running on `localhost` with default ports (`2181` and `9092`).
+ The tests expect a Kafka broker running on `localhost:9092`.
 
  This can be setup using docker compose:
 

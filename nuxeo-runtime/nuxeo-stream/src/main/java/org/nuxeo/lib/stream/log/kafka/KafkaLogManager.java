@@ -64,12 +64,18 @@ public class KafkaLogManager extends AbstractLogManager {
 
     protected final KafkaNamespace ns;
 
-    public KafkaLogManager(String zkServers, Properties producerProperties, Properties consumerProperties) {
-        this(zkServers, null, producerProperties, consumerProperties);
+    /**
+     * @deprecated since 10.2, zookeeper is not needed anymore, you need to remove the zkServers parameter.
+     */
+    @Deprecated
+    public KafkaLogManager(String zkServers, String prefix, Properties producerProperties, Properties consumerProperties) {
+        this(prefix, producerProperties, consumerProperties);
     }
 
-    public KafkaLogManager(String zkServers, String prefix, Properties producerProperties,
-            Properties consumerProperties) {
+    /**
+     * @since 10.2
+     */
+    public KafkaLogManager(String prefix, Properties producerProperties, Properties consumerProperties) {
         this.prefix = (prefix != null) ? prefix : "";
         this.ns = new KafkaNamespace(this.prefix);
         disableSubscribe = Boolean.valueOf(consumerProperties.getProperty(DISABLE_SUBSCRIBE_PROP, "false"));
@@ -78,7 +84,7 @@ public class KafkaLogManager extends AbstractLogManager {
         this.producerProperties = normalizeProducerProperties(producerProperties);
         this.consumerProperties = normalizeConsumerProperties(consumerProperties);
         this.adminProperties = createAdminProperties(producerProperties, consumerProperties);
-        this.kUtils = new KafkaUtils(zkServers, adminProperties);
+        this.kUtils = new KafkaUtils(adminProperties);
     }
 
     @Override

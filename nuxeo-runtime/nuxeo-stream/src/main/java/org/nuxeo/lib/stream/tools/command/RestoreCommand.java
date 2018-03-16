@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
@@ -167,8 +166,7 @@ public class RestoreCommand extends Command {
         return null;
     }
 
-    @NotNull
-    private Map<LogPartitionGroup, Latency> readLatencies(LogManager manager) throws InterruptedException {
+    protected Map<LogPartitionGroup, Latency> readLatencies(LogManager manager) throws InterruptedException {
         Map<LogPartitionGroup, Latency> latencies = new HashMap<>();
         System.out.println("# Reading latencies log: " + input + ", searching for the higher timestamp <= " + date);
         try (LogTailer<Record> tailer = manager.createTailer(GROUP, input)) {
