@@ -93,11 +93,11 @@ public class TestLogKafka extends TestLog {
     }
 
     @Override
-    public LogManager createManager() throws Exception {
+    public LogManager createManager() {
         if (prefix == null) {
             prefix = getPrefix();
         }
-        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, getProducerProps(), getConsumerProps());
+        return new KafkaLogManager(prefix, getProducerProps(), getConsumerProps());
     }
 
     @After
@@ -117,22 +117,17 @@ public class TestLogKafka extends TestLog {
         LogPartition logPartition = LogPartition.of(logName, 0);
         try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logPartition)) {
             Assert.assertEquals("mess1", tailer.read(DEF_TIMEOUT).message().key());
-            assertEquals("There should be a lag of 4 uncommitted records",
-                    4, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be a lag of 4 uncommitted records", 4, manager.getLag(logName, GROUP).lag());
             tailer.commit();
-            assertEquals("There should be a lag of 3 uncommitted records",
-                    3, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be a lag of 3 uncommitted records", 3, manager.getLag(logName, GROUP).lag());
             tailer.toEnd();
             tailer.commit();
-            assertEquals("There should be a no uncommitted records",
-                    0, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be a no uncommitted records", 0, manager.getLag(logName, GROUP).lag());
             appender.append(0, KeyValueMessage.of("mess5"));
             Assert.assertEquals("mess5", tailer.read(DEF_TIMEOUT).message().key());
-            assertEquals("There should be a 1 uncommitted records",
-                    1, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be a 1 uncommitted records", 1, manager.getLag(logName, GROUP).lag());
             tailer.commit();
-            assertEquals("There should be a 0 uncommitted records",
-                    0, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be a 0 uncommitted records", 0, manager.getLag(logName, GROUP).lag());
         }
     }
 
@@ -148,7 +143,7 @@ public class TestLogKafka extends TestLog {
         appender.append(0, KeyValueMessage.of("id4"));
         appender.append(0, KeyValueMessage.of("id5"));
 
-        //Get the time and wait 3 seconds
+        // Get the time and wait 3 seconds
         Thread.sleep(3000L);
         Instant now = Instant.now();
 
@@ -162,15 +157,15 @@ public class TestLogKafka extends TestLog {
             tailer.seek(offset9);
             Assert.assertEquals("id9", tailer.read(DEF_TIMEOUT).message().key());
             tailer.commit();
-            assertEquals("There should be no lag, because we are at the last record",
-                    0, manager.getLag(logName, GROUP).lag());
+            assertEquals("There should be no lag, because we are at the last record", 0,
+                    manager.getLag(logName, GROUP).lag());
             LogOffset logOffset = tailer.offsetForTimestamp(logPartition, now.toEpochMilli());
             tailer.seek(logOffset);
             tailer.commit();
             Assert.assertEquals("id6", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id7", tailer.read(DEF_TIMEOUT).message().key());
             Assert.assertEquals("id8", tailer.read(DEF_TIMEOUT).message().key());
-            Assert.assertEquals("Must read 9 again","id9", tailer.read(DEF_TIMEOUT).message().key());
+            Assert.assertEquals("Must read 9 again", "id9", tailer.read(DEF_TIMEOUT).message().key());
         }
     }
 
@@ -194,7 +189,7 @@ public class TestLogKafka extends TestLog {
 
         // until we call read there is no assignments
         assertTrue(tailer1.assignments().isEmpty());
-        LogRecord<KeyValueMessage> record = null;
+        LogRecord<KeyValueMessage> record;
         try {
             tailer1.read(Duration.ofSeconds(2));
             fail("Should have raise a rebalance exception");
@@ -217,7 +212,7 @@ public class TestLogKafka extends TestLog {
         Callable<Integer> consumer = () -> {
             int count = 0;
             LogTailer<KeyValueMessage> consumerTailer = manager.subscribe(group, Collections.singleton(logName), null);
-            LogRecord<KeyValueMessage> consumerRecord = null;
+            LogRecord<KeyValueMessage> consumerRecord;
             while (true) {
                 try {
                     consumerRecord = consumerTailer.read(Duration.ofMillis(200));

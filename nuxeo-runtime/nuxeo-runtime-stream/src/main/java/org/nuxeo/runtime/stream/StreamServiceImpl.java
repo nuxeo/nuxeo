@@ -91,8 +91,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     protected LogManager createKafkaLogManager(LogConfigDescriptor config) {
         String kafkaConfig = config.getOption("kafkaConfig", "default");
         KafkaConfigService service = Framework.getService(KafkaConfigService.class);
-        return new KafkaLogManager(service.getZkServers(kafkaConfig), service.getTopicPrefix(kafkaConfig),
-                service.getProducerProperties(kafkaConfig), service.getConsumerProperties(kafkaConfig));
+        return new KafkaLogManager(service.getTopicPrefix(kafkaConfig), service.getProducerProperties(kafkaConfig),
+                service.getConsumerProperties(kafkaConfig));
     }
 
     protected LogManager createChronicleLogManager(LogConfigDescriptor config) {

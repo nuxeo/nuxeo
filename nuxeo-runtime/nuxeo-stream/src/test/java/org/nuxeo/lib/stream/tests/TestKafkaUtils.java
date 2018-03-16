@@ -19,10 +19,8 @@
 package org.nuxeo.lib.stream.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +43,7 @@ public class TestKafkaUtils {
     public static void assumeKafkaEnabled() {
         if ("true".equals(System.getProperty("kafka"))) {
             if (!KafkaUtils.kafkaDetected()) {
-                fail("Kafka profile is enable, but no Zookeeper found: " + KafkaUtils.getZkServers());
+                fail("Kafka profile is enable, no broker found: " + KafkaUtils.getBootstrapServers());
             }
         } else {
             Assume.assumeTrue("No kafka profile", false);
@@ -63,30 +61,6 @@ public class TestKafkaUtils {
         try (KafkaUtils kutils = new KafkaUtils()) {
             createDefaultTopicIfNeeded(kutils);
             assertEquals(DEFAULT_TOPIC_PARTITION, kutils.getNumberOfPartitions(DEFAULT_TOPIC));
-        }
-    }
-
-    @Test
-    public void testResetConsumerStates() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            createDefaultTopicIfNeeded(kutils);
-            kutils.resetConsumerStates(DEFAULT_TOPIC);
-        }
-    }
-
-    @Test
-    public void testBrokerList() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            assertNotNull(kutils.getBrokerEndPoints());
-            assertEquals(Collections.singleton("PLAINTEXT://" + KafkaUtils.getBootstrapServers()),
-                    kutils.getBrokerEndPoints());
-        }
-    }
-
-    @Test
-    public void testDefaultBootstrapServers() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            assertEquals("PLAINTEXT://" + KafkaUtils.getBootstrapServers(), kutils.getDefaultBootstrapServers());
         }
     }
 

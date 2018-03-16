@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,35 +31,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.ZkConnection;
-import org.I0Itec.zkclient.exception.ZkTimeoutException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.consumer.RoundRobinAssignor;
 import org.apache.kafka.clients.consumer.internals.PartitionAssignor;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.nuxeo.lib.stream.log.LogPartition;
 
 import kafka.admin.AdminClient;
-import kafka.admin.AdminUtils;
-import kafka.cluster.Broker;
-import kafka.cluster.EndPoint;
 import kafka.coordinator.group.GroupOverview;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
-import scala.collection.Iterable;
-import scala.collection.IterableLike;
 import scala.collection.Iterator;
 import scala.collection.JavaConversions;
-import scala.collection.Seq;
 
 /**
  * Misc Kafka Utils
@@ -70,21 +60,9 @@ import scala.collection.Seq;
 public class KafkaUtils implements AutoCloseable {
     private static final Log log = LogFactory.getLog(KafkaUtils.class);
 
-    public static final String ZK_SERVERS_PROP = "kafka.zkServers";
-
-    public static final String DEFAULT_ZK_SERVERS = "localhost:2181";
-
     public static final String BOOTSTRAP_SERVERS_PROP = "kafka.bootstrap.servers";
 
     public static final String DEFAULT_BOOTSTRAP_SERVERS = "localhost:9092";
-
-    public static final int ZK_TIMEOUT_MS = 6000;
-
-    public static final int ZK_CONNECTION_TIMEOUT_MS = 10000;
-
-    protected final ZkClient zkClient;
-
-    protected final ZkUtils zkUtils;
 
     protected final Properties adminProperties;
 
@@ -99,13 +77,10 @@ public class KafkaUtils implements AutoCloseable {
     protected static final long ALL_CONSUMERS_CACHE_TIMEOUT_MS = 2000;
 
     public KafkaUtils() {
-        this(getZkServers(), getDefaultAdminProperties());
+        this(getDefaultAdminProperties());
     }
 
-    public KafkaUtils(String zkServers, Properties adminProperties) {
-        log.debug("Init zkServers: " + zkServers);
-        this.zkClient = createZkClient(zkServers);
-        this.zkUtils = createZkUtils(zkServers, zkClient);
+    public KafkaUtils(Properties adminProperties) {
         this.adminProperties = adminProperties;
     }
 
@@ -115,34 +90,22 @@ public class KafkaUtils implements AutoCloseable {
         return ret;
     }
 
-    public static String getZkServers() {
-        return System.getProperty(ZK_SERVERS_PROP, DEFAULT_ZK_SERVERS);
-    }
-
     public static String getBootstrapServers() {
         return System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
     }
 
     public static boolean kafkaDetected() {
-        return kafkaDetected(getZkServers());
-    }
-
-    public static boolean kafkaDetected(String zkServers) {
+        AdminClient client = AdminClient.create(getDefaultAdminProperties());
         try {
-            ZkClient tmp = new ZkClient(zkServers, 1000, 1000, ZKStringSerializer$.MODULE$);
-            tmp.close();
-        } catch (ZkTimeoutException e) {
+            client.findAllBrokers();
+            return true;
+        } catch (RuntimeException e) {
             return false;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
-        return true;
-    }
-
-    protected static ZkUtils createZkUtils(String zkServers, ZkClient zkClient) {
-        return new ZkUtils(zkClient, new ZkConnection(zkServers), false);
-    }
-
-    protected static ZkClient createZkClient(String zkServers) {
-        return new ZkClient(zkServers, ZK_TIMEOUT_MS, ZK_CONNECTION_TIMEOUT_MS, ZKStringSerializer$.MODULE$);
     }
 
     public static List<List<LogPartition>> rangeAssignments(int threads, Map<String, Integer> streams) {
@@ -210,12 +173,35 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public boolean topicExists(String topic) {
-        return AdminUtils.topicExists(zkUtils, topic);
+        try {
+            TopicDescription desc = getNewAdminClient().describeTopics(Collections.singletonList(topic))
+                                                       .values()
+                                                       .get(topic)
+                                                       .get();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Topic %s exists: %s", topic, desc));
+            }
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                return false;
+            }
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<String> listTopics() {
-        Seq<String> topics = zkUtils.getAllTopics();
-        return JavaConversions.seqAsJavaList(topics);
+    public Set<String> listTopics() {
+        try {
+            return getNewAdminClient().listTopics().names().get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<String> listConsumers(String topic) {
@@ -271,7 +257,14 @@ public class KafkaUtils implements AutoCloseable {
      */
     public void markTopicForDeletion(String topic) {
         log.debug("mark topic for deletion: " + topic);
-        AdminUtils.deleteTopic(zkUtils, topic);
+        try {
+            getNewAdminClient().deleteTopics(Collections.singleton(topic)).all().get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int getNumberOfPartitions(String topic) {
@@ -286,48 +279,8 @@ public class KafkaUtils implements AutoCloseable {
         }
     }
 
-    public void resetConsumerStates(String topic) {
-        log.debug("Resetting consumer states");
-        AdminUtils.deleteAllConsumerGroupInfoForTopicInZK(zkUtils, topic);
-    }
-
-    public Set<String> getBrokerEndPoints() {
-        Set<String> ret = new HashSet<>();
-        // don't use "Seq<Broker> brokers" as it causes compilation issues with Eclipse
-        // when calling brokers.iterator()
-        // (The method iterator() is ambiguous for the type Seq<Broker>)
-        IterableLike<Broker, Iterable<Broker>> brokers = zkUtils.getAllBrokersInCluster();
-        Broker broker;
-        Iterator<Broker> iterator = brokers.iterator();
-        while (iterator.hasNext()) {
-            broker = iterator.next();
-            if (broker != null) {
-                // don't use "Seq<EndPoint> endPoints" as it causes compilation issues with Eclipse
-                // when calling endPoints.iterator()
-                // (The method iterator() is ambiguous for the type Seq<EndPoint>)
-                IterableLike<EndPoint, Iterable<EndPoint>> endPoints = broker.endPoints();
-                Iterator<EndPoint> iterator2 = endPoints.iterator();
-                while (iterator2.hasNext()) {
-                    EndPoint endPoint = iterator2.next();
-                    ret.add(endPoint.connectionString());
-                }
-            }
-        }
-        return ret;
-    }
-
-    public String getDefaultBootstrapServers() {
-        return getBrokerEndPoints().stream().collect(Collectors.joining(","));
-    }
-
     @Override
     public void close() {
-        if (zkUtils != null) {
-            zkUtils.close();
-        }
-        if (zkClient != null) {
-            zkClient.close();
-        }
         if (adminClient != null) {
             adminClient.close();
             adminClient = null;

@@ -4942,13 +4942,7 @@
       </dependency>
 
       <!-- Kafka -->
-      <dependency>
-        <groupId>com.101tec</groupId>
-        <artifactId>zkclient</artifactId>
-        <version>0.10</version>
-      </dependency>
-
-      <dependency>
+     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
         <version>${kafka.version}</version>
@@ -6780,7 +6774,6 @@
              <configuration>
                <systemPropertyVariables>
                  <kafka>true</kafka>
-                 <kafka.zkServers>${kafka.zkServers}</kafka.zkServers>
                  <kafka.bootstrap.servers>${kafka.bootstrap.servers}</kafka.bootstrap.servers>
                </systemPropertyVariables>
              </configuration>
