@@ -82,7 +82,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         // their tables are created (outside a transaction) if needed
         for (Directory dir : getDirectories()) {
             // open directory to init its resources (tables for SQLDirectory)
-            dir.getSession().close();
+            try {
+                dir.getSession().close();
+            } catch (Exception e) {
+                log.error(e);
+            }
         }
         // commit the transaction so that tables are committed
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
