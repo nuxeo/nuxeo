@@ -27,7 +27,6 @@ import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
-import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
 import org.nuxeo.lib.stream.tests.log.TestLogKafka;
 
@@ -47,21 +46,19 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
         TestKafkaUtils.assumeKafkaEnabled();
     }
 
-    public String getTopicPrefix(String mark) {
+    public String getTopicPrefix() {
         return "nuxeo-test-" + System.currentTimeMillis() + "-" + testName.getMethodName() + "-";
     }
 
     @Override
-    public LogManager getLogManager() throws Exception {
-        this.prefix = getTopicPrefix(testName.getMethodName());
-        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, TestLogKafka.getProducerProps(),
-                getConsumerProps());
+    public LogManager getLogManager() {
+        this.prefix = getTopicPrefix();
+        return new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps());
     }
 
     @Override
-    public LogManager getSameLogManager() throws Exception {
-        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, TestLogKafka.getProducerProps(),
-                getConsumerProps());
+    public LogManager getSameLogManager() {
+        return new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps());
     }
 
     protected Properties getConsumerProps() {

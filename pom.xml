@@ -4907,13 +4907,7 @@
       </dependency>
 
       <!-- Kafka -->
-      <dependency>
-        <groupId>com.101tec</groupId>
-        <artifactId>zkclient</artifactId>
-        <version>0.10</version>
-      </dependency>
-
-      <dependency>
+     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
         <version>${kafka.version}</version>
@@ -6694,7 +6688,6 @@
         <nuxeo.marklogic.port.default>8010</nuxeo.marklogic.port.default>
       </properties>
     </profile>
-
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->
     <profile>
       <id>addons</id>

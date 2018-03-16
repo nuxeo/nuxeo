@@ -142,7 +142,6 @@ elasticsearch.restClient.keystoreType=
 
 # Kafka
 kafka.enabled=false
-kafka.zkServers=localhost:2181
 kafka.bootstrap.servers=localhost:9092
 kafka.topicPrefix=nuxeo-
 kafka.request.timeout.ms=65000
@@ -150,6 +149,8 @@ kafka.max.poll.interval.ms=60000
 kafka.session.timeout.ms=50000
 kafka.heartbeat.interval.ms=2000
 kafka.max.poll.records=5
+# deprecated we don't use anymore zookeeper
+kafka.zkServers=localhost:2181
 
 # Stream default retention with Chronicle Queue
 nuxeo.stream.chronicle.retention.duration=4d
