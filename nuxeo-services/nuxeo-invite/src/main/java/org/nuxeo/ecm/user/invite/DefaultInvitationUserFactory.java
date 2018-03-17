@@ -55,8 +55,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
         if (user == null) {
             DocumentModel newUserDoc = userManager.getBareUserModel();
             newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN, login);
-            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN,
-                    registrationDoc.getContextData(PASSWORD_KEY));
+            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN, registrationDoc.getContextData(PASSWORD_KEY));
             newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
             newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN,
