@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserAdapterImpl;
 import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
+import org.nuxeo.ecm.user.invite.UserInvitationComponent;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -236,6 +237,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
             } else {
                 UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
                 Map<String, Serializable> additionalInfos = new HashMap<String, Serializable>();
+                additionalInfos.put(UserInvitationComponent.PARAM_ORIGINATING_USER , currentUser.getName());
                 // Wrap the form as an invitation to the user
                 UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
                 DocumentModel userRegistrationDoc = wrapToUserRegistration(newUserAdapter);

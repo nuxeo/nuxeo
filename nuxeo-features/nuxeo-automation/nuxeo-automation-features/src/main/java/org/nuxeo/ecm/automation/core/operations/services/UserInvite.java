@@ -27,9 +27,11 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationComponent;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
@@ -50,6 +52,9 @@ public class UserInvite {
 
     @Context
     protected UserInvitationService invitationService;
+
+    @Context
+    protected CoreSession session;
 
     @Param(name = "validationMethod", required = false)
     protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
@@ -76,6 +81,8 @@ public class UserInvite {
         invitation.setPropertyValue(config.getUserInfoTenantIdField(), user.getTenantId());
         invitation.setPropertyValue(config.getUserInfoCompanyField(), user.getCompany());
         invitation.setPropertyValue("registration:comment", comment);
+
+        info.put(UserInvitationComponent.PARAM_ORIGINATING_USER, session.getPrincipal().getName());
 
         return invitationService.submitRegistrationRequest(invitation, info, validationMethod, autoAccept);
     }
