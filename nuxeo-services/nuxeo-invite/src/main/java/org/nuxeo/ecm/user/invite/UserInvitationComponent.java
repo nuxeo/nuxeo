@@ -83,6 +83,8 @@ import freemarker.template.TemplateException;
 
 public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
+    public static final String PARAM_ORIGINATING_USER = "registration:originatingUser";
+
     protected static Log log = LogFactory.getLog(UserInvitationService.class);
 
     public static final String NUXEO_URL_KEY = "nuxeo.url";
@@ -599,6 +601,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     @Override
     public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) {
+
+        // First check that we have the originating user for that request
+        if (StringUtils.isBlank((String)additionnalInfo.get(PARAM_ORIGINATING_USER))) {
+            throw new IllegalArgumentException("Originating user should be provided in a registration request");
+        }
         RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
                 validationMethod);
         creator.runUnrestricted();
