@@ -380,8 +380,10 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
                 if (registrationDoc.getCurrentLifeCycleState().equals("approved")) {
                     try {
-                        UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
-                        UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registrationDoc);
+                        UserInvitationService userRegistrationService = Framework.getService(
+                                UserInvitationService.class);
+                        UserRegistrationConfiguration config = userRegistrationService.getConfiguration(
+                                registrationDoc);
                         RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                         if (rules.allowUserCreation()) {
                             principal = userRegistrationService.createUser(session, registrationDoc);
