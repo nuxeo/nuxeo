@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -27,13 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
+import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 
 /**
  * Simple operation to invite a User.
