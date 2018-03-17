@@ -82,14 +82,15 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         // Invite first user with defautl conf
         String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
-                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
+                buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
+        userInfo = session.createDocumentModel(configuration.getRequestDocType());
         userInfo.setPropertyValue("userinfo:login", "testUser2");
         userInfo.setPropertyValue("userinfo:email", "dummy2@test.com");
         requestId = userRegistrationService.submitRegistrationRequest("test", userInfo,
-                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
+                buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
@@ -114,14 +115,14 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         userInfo.setPropertyValue("userinfo:email", "dummy@test.com");
 
         String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
-                new HashMap<>(), UserInvitationService.ValidationMethod.NONE, false);
+                buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, false);
         DocumentModel request = session.getDocument(new IdRef(requestId));
         assertNull(request.getPropertyValue("registration:accepted"));
 
         try {
             Framework.getProperties().put(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY, "true");
             requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
-                    new HashMap<>(), UserInvitationService.ValidationMethod.NONE, false);
+                    buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, false);
             request = session.getDocument(new IdRef(requestId));
             assertTrue((Boolean) request.getPropertyValue("registration:accepted"));
         } finally {
