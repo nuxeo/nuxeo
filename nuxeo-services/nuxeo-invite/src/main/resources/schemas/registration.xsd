@@ -7,5 +7,6 @@
   <xs:element name="accepted" type="xs:boolean"/>
   <xs:element name="copyTo" type="xs:string" />
   <xs:element name="comment" type="xs:string" />
+  <xs:element name="originatingUser" type="xs:string" />
 
 </xs:schema>

@@ -18,6 +18,11 @@
 
 package org.nuxeo.ecm.user.invite;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,9 +58,17 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
         String login = (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField());
         NuxeoPrincipal user = userManager.getPrincipal(login);
         if (user == null) {
+
+            if (!isSameTenant(registrationDoc, configuration)) {
+                throw new UserRegistrationException("Can only invite in same tenant");
+            }
+
+            List<String> groups = filterGroups(registrationDoc, configuration);
+
             DocumentModel newUserDoc = userManager.getBareUserModel();
             newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN, login);
-            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN, registrationDoc.getContextData(PASSWORD_KEY));
+            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN,
+                    registrationDoc.getContextData(PASSWORD_KEY));
             newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
             newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN,
@@ -64,8 +77,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
                     registrationDoc.getPropertyValue(configuration.getUserInfoEmailField()));
             newUserDoc.setPropertyValue(UserConfig.COMPANY_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoCompanyField()));
-            newUserDoc.setPropertyValue(UserConfig.GROUPS_COLUMN,
-                    registrationDoc.getPropertyValue(configuration.getUserInfoGroupsField()));
+            newUserDoc.setPropertyValue(UserConfig.GROUPS_COLUMN, groups.toArray());
             newUserDoc.setPropertyValue(UserConfig.TENANT_ID_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoTenantIdField()));
             userManager.createUser(newUserDoc);
@@ -78,5 +90,76 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
             }
         }
         return user;
+    }
+
+    /**
+     * Check that the user that initiated the registration is in the same tenant than the user it creates.
+     *
+     * @param registrationDoc
+     * @param configuration
+     * @return
+     * @since 10.2
+     */
+    private boolean isSameTenant(DocumentModel registrationDoc, UserRegistrationConfiguration configuration) {
+        NuxeoPrincipal originatingPrincipal = getOriginatingPrincipal(registrationDoc);
+
+        if (originatingPrincipal == null) {
+            // Should never occur, but just in case.
+            return registrationDoc.getPropertyValue(configuration.getUserInfoTenantIdField()) == null;
+        }
+
+        if (originatingPrincipal.isAdministrator()) {
+            return true;
+        }
+        return Objects.equals(registrationDoc.getPropertyValue(configuration.getUserInfoTenantIdField()),
+                originatingPrincipal.getTenantId());
+    }
+
+    /**
+     * Filter group by computing the intersection of the group in the registration doc and the groups of the user that
+     * created the request. Administrators accept all groups.
+     *
+     * @param registrationDoc
+     * @param configuration
+     * @since 10.2
+     */
+    @SuppressWarnings("unchecked")
+    protected List<String> filterGroups(DocumentModel registrationDoc, UserRegistrationConfiguration configuration) {
+        List<String> wantedGroup = (List<String>) registrationDoc.getPropertyValue(
+                configuration.getUserInfoGroupsField());
+
+        NuxeoPrincipal originatingPrincipal = getOriginatingPrincipal(registrationDoc);
+
+        if (originatingPrincipal == null) {
+            // Should never occur, but just in case.
+            return Collections.emptyList();
+        }
+
+        return wantedGroup.stream().filter(g -> acceptGroup(originatingPrincipal, g)).collect(Collectors.toList());
+
+    }
+
+    /**
+     * Returns the principal that created that registration document
+     *
+     * @param registrationDoc
+     * @return
+     * @since 10.2
+     */
+    private NuxeoPrincipal getOriginatingPrincipal(DocumentModel registrationDoc) {
+        String originatingUser = (String) registrationDoc.getPropertyValue(
+                UserInvitationComponent.PARAM_ORIGINATING_USER);
+        UserManager userManager = Framework.getService(UserManager.class);
+        return userManager.getPrincipal(originatingUser);
+    }
+
+    /**
+     * @param originatingPrincipal
+     * @param groupName
+     * @return
+     * @since 10.2
+     */
+    protected boolean acceptGroup(NuxeoPrincipal originatingPrincipal, String groupName) {
+        return originatingPrincipal.isAdministrator() || originatingPrincipal.getAllGroups().contains(groupName);
     }
 }
