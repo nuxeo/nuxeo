@@ -17,6 +17,10 @@
  */
 package org.nuxeo.ecm.user.registration;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
@@ -28,6 +32,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationComponent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -66,6 +71,16 @@ public abstract class AbstractUserRegistration {
         session.save();
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
+
+    protected Map<String, Serializable> buildAdditionalInfo() {
+        return buildAdditionalInfo("Administrator");
+    }
+
+    protected Map<String, Serializable> buildAdditionalInfo(String originatingUser) {
+        Map<String, Serializable> result = new HashMap<>();
+        result.put(UserInvitationComponent.PARAM_ORIGINATING_USER, originatingUser);
+        return result;
     }
 
 }
