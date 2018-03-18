@@ -159,6 +159,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
 
     }
 
+    @Override
     public String submitRegistrationRequest(UserRegistrationInfo userInfo, Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept, String principalName) {
         return submitRegistrationRequest(CONFIGURATION_NAME, userInfo, new DocumentRegistrationInfo(), additionnalInfo,
@@ -170,6 +171,12 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
             DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept, String principalName)
             throws UserRegistrationException {
+
+        // First check that we have the originating user for that request
+        if (StringUtils.isEmpty((String) additionnalInfo.get(PARAM_ORIGINATING_USER))) {
+            throw new IllegalArgumentException("Originating user should be provided in a registration request");
+        }
+
         RegistrationCreator creator = new RegistrationCreator(configurationName, userInfo, docInfo, additionnalInfo,
                 validationMethod, principalName);
         creator.runUnrestricted();
@@ -204,6 +211,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         return registrationUuid;
     }
 
+    @Override
     public Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
             Map<String, Serializable> additionnalInfo) throws UserRegistrationException {
 
