@@ -69,14 +69,14 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         // Invite first user with defautl conf
         String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
-                docInfo, new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true,
+                docInfo, buildAdditionalInfo(), UserRegistrationService.ValidationMethod.NONE, true,
                 "adminTest");
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
         userInfo.setLogin("testUser2");
         requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo,
-                new HashMap<String, Serializable>(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
+                buildAdditionalInfo(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
@@ -104,14 +104,14 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         docInfo.setDocumentId(testWorkspace.getId());
         docInfo.setPermission(SecurityConstants.READ_WRITE);
 
-        String requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, new HashMap<>(),
+        String requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, buildAdditionalInfo(),
                 UserRegistrationService.ValidationMethod.NONE, false, "adminTest");
         DocumentModel request = session.getDocument(new IdRef(requestId));
         assertNull(request.getPropertyValue("registration:accepted"));
 
         try {
             Framework.getProperties().put(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY, "true");
-            requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, new HashMap<>(),
+            requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, buildAdditionalInfo(),
                     UserRegistrationService.ValidationMethod.NONE, false, "adminTest");
             request = session.getDocument(new IdRef(requestId));
             assertTrue((Boolean) request.getPropertyValue("registration:accepted"));
