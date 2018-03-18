@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationComponent;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -380,6 +381,7 @@ public class UserRegistrationActions implements Serializable {
     protected Map<String, Serializable> getAdditionalsParameters() {
         Map<String, Serializable> additionalsInfo = new HashMap<String, Serializable>();
         try {
+            additionalsInfo.put(UserInvitationComponent.PARAM_ORIGINATING_USER , documentManager.getPrincipal().getName());
             additionalsInfo.put("docinfo:documentTitle", navigationContext.getCurrentDocument().getTitle());
             if (copyOwner) {
                 additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
