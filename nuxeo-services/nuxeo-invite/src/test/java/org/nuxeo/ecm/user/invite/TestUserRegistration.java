@@ -125,9 +125,9 @@ public class TestUserRegistration extends AbstractUserRegistration {
     @Test(expected = UserAlreadyExistsException.class)
     public void testMultipleRegistrationWithSameLogin() {
         // User info
-        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        DocumentModel userInfo = buildSampleUserInfo();
 
-        userInfo.setPropertyValue("userinfo:login", "temp");
+        userInfo.setPropertyValue("userinfo:login", "jdoe");
         userInfo.setPropertyValue("userinfo:firstName", "John");
         userInfo.setPropertyValue("userinfo:lastName", "Doe");
         userInfo.setPropertyValue("userinfo:email", "johndoe@dummy.com");
@@ -137,6 +137,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         Map<String, Serializable> additionnalInfos = new HashMap<>();
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
+        userInfo = buildSampleUserInfo();
         userInfo.setPropertyValue("userinfo:login", "jdoe");
         userInfo.setPropertyValue("userinfo:firstName", "Jane");
         userInfo.setPropertyValue("userinfo:email", "janeolivier@dummy.com");
