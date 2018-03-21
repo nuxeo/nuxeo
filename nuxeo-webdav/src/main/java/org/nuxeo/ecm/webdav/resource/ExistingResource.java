@@ -206,6 +206,7 @@ public class ExistingResource extends AbstractResource {
     // Properties
 
     @PROPPATCH
+    @Produces({ "application/xml", "text/xml" })
     public Response proppatch(@Context UriInfo uriInfo) {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
