@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.avro.factories" version="1.0.0">
+  <documentation>
+    Core IO registered Avro factories.
+  </documentation>
+  <extension target="org.nuxeo.runtime.avro" point="factory">
+    <factory class="org.nuxeo.ecm.core.io.avro.DocumentModelSchemaFactory" type="org.nuxeo.ecm.core.api.DocumentModel" />
+    <factory class="org.nuxeo.ecm.core.io.avro.DocumentTypeSchemaFactory" type="org.nuxeo.ecm.core.schema.DocumentType" />
+    <factory class="org.nuxeo.ecm.core.io.avro.SchemaSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Schema" />
+    <factory class="org.nuxeo.ecm.core.io.avro.TypeSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Type" />
+  </extension>
+</component>
+

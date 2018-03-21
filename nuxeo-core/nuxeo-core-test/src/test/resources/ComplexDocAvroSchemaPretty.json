@@ -1,0 +1,185 @@
+{
+  "type" : "record",
+  "name" : "ComplexDoc",
+  "fields" : [ {
+    "name" : "common",
+    "type" : {
+      "type" : "record",
+      "name" : "common",
+      "fields" : [ {
+        "name" : "icon__dash__expanded",
+        "type" : "string"
+      }, {
+        "name" : "icon",
+        "type" : "string"
+      } ]
+    }
+  }, {
+    "name" : "complexschema",
+    "type" : {
+      "type" : "record",
+      "name" : "complexschema",
+      "namespace" : "cmpf",
+      "fields" : [ {
+        "name" : "attachedFile",
+        "type" : {
+          "type" : "record",
+          "name" : "fileext",
+          "namespace" : "",
+          "fields" : [ {
+            "name" : "name",
+            "type" : "string"
+          }, {
+            "name" : "vignettes",
+            "type" : {
+              "type" : "array",
+              "items" : {
+                "type" : "record",
+                "name" : "vignette",
+                "fields" : [ {
+                  "name" : "width",
+                  "type" : "long"
+                }, {
+                  "name" : "label",
+                  "type" : "string"
+                }, {
+                  "name" : "content",
+                  "type" : {
+                    "type" : "record",
+                    "name" : "content",
+                    "fields" : [ {
+                      "name" : "mime__dash__type",
+                      "type" : "string"
+                    }, {
+                      "name" : "data",
+                      "type" : "bytes"
+                    }, {
+                      "name" : "name",
+                      "type" : "string"
+                    }, {
+                      "name" : "length",
+                      "type" : "long"
+                    }, {
+                      "name" : "digest",
+                      "type" : "string"
+                    }, {
+                      "name" : "encoding",
+                      "type" : "string"
+                    } ]
+                  }
+                }, {
+                  "name" : "height",
+                  "type" : "long"
+                } ]
+              }
+            }
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "name" : "dublincore",
+    "type" : {
+      "type" : "record",
+      "name" : "dublincore",
+      "namespace" : "dc",
+      "fields" : [ {
+        "name" : "description",
+        "type" : {
+          "type" : "string",
+          "logicalType" : "clob"
+        }
+      }, {
+        "name" : "language",
+        "type" : "string"
+      }, {
+        "name" : "coverage",
+        "type" : {
+          "type" : "string",
+          "logicalType" : "coverage#anonymousType"
+        }
+      }, {
+        "name" : "valid",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "creator",
+        "type" : {
+          "type" : "string",
+          "logicalType" : "creator#anonymousType"
+        }
+      }, {
+        "name" : "modified",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "lastContributor",
+        "type" : {
+          "type" : "string",
+          "logicalType" : "lastContributor#anonymousType"
+        }
+      }, {
+        "name" : "rights",
+        "type" : "string"
+      }, {
+        "name" : "expired",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "format",
+        "type" : "string"
+      }, {
+        "name" : "created",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "title",
+        "type" : "string"
+      }, {
+        "name" : "issued",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "nature",
+        "type" : {
+          "type" : "string",
+          "logicalType" : "nature#anonymousType"
+        }
+      }, {
+        "name" : "subjects",
+        "type" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "logicalType" : "null#anonymousType"
+          }
+        }
+      }, {
+        "name" : "contributors",
+        "type" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "logicalType" : "null#anonymousType"
+          }
+        }
+      }, {
+        "name" : "source",
+        "type" : "string"
+      }, {
+        "name" : "publisher",
+        "type" : "string"
+      } ]
+    }
+  } ]
+}

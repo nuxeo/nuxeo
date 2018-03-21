@@ -182,6 +182,7 @@
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.7.4</jackson.version>
     <bouncycastle.version>1.59</bouncycastle.version>
+    <avro.version>1.8.2</avro.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -2284,6 +2285,11 @@
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-bootstrap-partition</artifactId>
         <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+      <groupId>org.apache.avro</groupId>
+        <artifactId>avro</artifactId>
+        <version>${avro.version}</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
