@@ -46,7 +46,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import junit.framework.Assert;
-
 /**
  * Test for parametrized chain.
  *

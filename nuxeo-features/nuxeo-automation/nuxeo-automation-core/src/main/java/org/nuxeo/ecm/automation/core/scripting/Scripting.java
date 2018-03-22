@@ -82,8 +82,8 @@ public class Scripting {
             } else if ("groovy".equals(ext)) {
                 cs = new GroovyScript(IOUtils.toString(in, UTF_8));
             } else {
-                throw new OperationException("Unsupported script file: " + script
-                        + ". Only MVEL and Groovy scripts are supported");
+                throw new OperationException(
+                        "Unsupported script file: " + script + ". Only MVEL and Groovy scripts are supported");
             }
             cache.put(key, cs);
             cs.eval(ctx);

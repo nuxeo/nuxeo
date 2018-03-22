@@ -173,7 +173,8 @@ public class ChainTypeImpl implements OperationType {
     /**
      * @since 5.7.2
      */
-    protected Class<?> getChainOutput(Class<?> chainInput, OperationChainContribution.Operation[] operations) throws OperationException {
+    protected Class<?> getChainOutput(Class<?> chainInput, OperationChainContribution.Operation[] operations)
+            throws OperationException {
         for (OperationChainContribution.Operation operation : operations) {
             OperationType operationType = service.getOperation(operation.getId());
             if (operationType instanceof ChainTypeImpl) {
@@ -314,7 +315,8 @@ public class ChainTypeImpl implements OperationType {
     }
 
     public static ChainTypeImpl typeof(OperationChain chain, boolean replace) {
-        return new ChainTypeImpl(Framework.getService(AutomationService.class), chain, OperationChainContribution.contribOf(chain, replace));
+        return new ChainTypeImpl(Framework.getService(AutomationService.class), chain,
+                OperationChainContribution.contribOf(chain, replace));
     }
 
 }
