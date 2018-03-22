@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -68,7 +67,6 @@ public class ChainTypeImpl implements OperationType {
      */
     protected String contributingComponent;
 
-
     /**
      * The operation chain XMAP contribution
      */
@@ -84,13 +82,12 @@ public class ChainTypeImpl implements OperationType {
         return chain;
     }
 
-    public Map<String, ?> getChainParameters() {
+    public Map<String, Object> getChainParameters() {
         return chain.getChainParameters();
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException,
-            InvalidChainException {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
         return service.compileChain(inputType, chain);
@@ -154,8 +151,8 @@ public class ChainTypeImpl implements OperationType {
      */
     protected ArrayList<String> getSignature(OperationChainContribution.Operation[] operations)
             throws OperationException {
-        ArrayList<String> result = new ArrayList<String>();
-        Collection<String> collectedSigs = new HashSet<String>();
+        ArrayList<String> result = new ArrayList<>();
+        Collection<String> collectedSigs = new HashSet<>();
         OperationType operationType = service.getOperation(operations[0].getId());
         for (InvokableMethod method : operationType.getMethods()) {
             String chainInput = getParamDocumentationType(method.getInputType(), method.isIterable());
@@ -190,12 +187,12 @@ public class ChainTypeImpl implements OperationType {
      * @since 5.7.2
      */
     public Class<?> getOperationOutput(Class<?> input, OperationType operationType) {
-        InvokableMethod[] methods = operationType.getMethodsMatchingInput(input);
-        if (methods == null || methods.length == 0) {
+        InvokableMethod[] methodsMatchingInput = operationType.getMethodsMatchingInput(input);
+        if (methodsMatchingInput.length == 0) {
             return input;
         }
         // Choose the top priority method
-        InvokableMethod topMethod = getTopMethod(methods);
+        InvokableMethod topMethod = getTopMethod(methodsMatchingInput);
         Class<?> nextInput = topMethod.getOutputType();
         // If output is void, skip this method
         if (nextInput == Void.TYPE) {
