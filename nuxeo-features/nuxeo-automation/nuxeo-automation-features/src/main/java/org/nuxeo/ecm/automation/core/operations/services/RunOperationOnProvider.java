@@ -36,7 +36,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @since 5.6
  */
-@Operation(id = RunOperationOnProvider.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each Page", description = "Run an operation for each page of the provider defined by the provider name, the operation input is the curent page ", aliases = { "Context.RunOperationOnProvider" })
+@Operation(id = RunOperationOnProvider.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each Page", description = "Run an operation for each page of the provider defined by the provider name, the operation input is the curent page ", aliases = {
+        "Context.RunOperationOnProvider" })
 public class RunOperationOnProvider {
     public static final String ID = "RunOperationOnProvider";
 

@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationContext extends AbstractMap<String,Object> implements  AutoCloseable {
+public class OperationContext extends AbstractMap<String, Object> implements AutoCloseable {
 
     /**
      * Whether to save the session at the end of the chain execution. The default is true.
@@ -290,12 +290,12 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
     @Override
     public Set<Map.Entry<String, Object>> entrySet() {
-        return new AbstractSet<Map.Entry<String,Object>>() {
+        return new AbstractSet<Map.Entry<String, Object>>() {
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
-                Iterator<Entry<String,Object>> iterator = vars.entrySet().iterator();
-                return new Iterator<Entry<String,Object>>() {
+                Iterator<Entry<String, Object>> iterator = vars.entrySet().iterator();
+                return new Iterator<Entry<String, Object>>() {
 
                     @Override
                     public boolean hasNext() {
@@ -304,8 +304,8 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
                     @Override
                     public Entry<String, Object> next() {
-                        Entry<String,Object> entry = iterator.next();
-                        return new Entry<String,Object>() {
+                        Entry<String, Object> entry = iterator.next();
+                        return new Entry<String, Object>() {
 
                             @Override
                             public String getKey() {
@@ -352,10 +352,8 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
     /**
      * @since 5.7.3
-     * @param isolate
-     *            define if keeps context variables for the subcontext
-     * @param input
-     *            an input object
+     * @param isolate define if keeps context variables for the subcontext
+     * @param input an input object
      * @return a subcontext
      */
     public OperationContext getSubContext(boolean isolate, Object input) {
@@ -368,8 +366,7 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
     /**
      * @since 9.1
-     * @param isolate
-     *            define if keeps context variables for the subcontext
+     * @param isolate define if keeps context variables for the subcontext
      * @return a subcontext
      */
     public OperationContext getSubContext(boolean isolate) {
@@ -378,9 +375,9 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
     /**
      * Evaluate the expression against this context if needed
+     *
      * @param obj
      * @return the resolved value
-     *
      * @since 9.1
      */
     public Object resolve(Object obj) {
