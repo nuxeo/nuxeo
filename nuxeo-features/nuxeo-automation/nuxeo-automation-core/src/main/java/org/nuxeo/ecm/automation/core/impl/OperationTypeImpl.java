@@ -236,7 +236,7 @@ public class OperationTypeImpl implements OperationType {
         if (obj != null) {
             return ctx.resolve(obj);
         }
-        return ctx.get(key);
+        return ctx.getChainParameter(key);
     }
 
     public void inject(OperationContext ctx, Map<String, ?> args, Object target) throws OperationException {
