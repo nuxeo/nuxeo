@@ -93,7 +93,7 @@ public class SeamOperationFilter {
         }
 
         if (conversationId == null) {
-            conversationId = (String) context.get("conversationId");
+            conversationId = (String) context.getChainParameter("conversationId");
         }
 
         if (conversationId != null) {
@@ -112,7 +112,7 @@ public class SeamOperationFilter {
         ServletContexts.instance().setRequest(request);
 
         if (conversationId == null) {
-            conversationId = (String) context.get("conversationId");
+            conversationId = (String) context.getChainParameter("conversationId");
         }
 
         if (conversationId != null) {
