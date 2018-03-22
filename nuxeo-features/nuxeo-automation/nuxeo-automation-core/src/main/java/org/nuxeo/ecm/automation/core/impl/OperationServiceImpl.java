@@ -116,9 +116,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         CompiledChain compiled = compileChain(inputType, chain);
         boolean completedAbruptly = true;
         try {
-            Object result  = compiled.invoke(ctx);
+            Object result = compiled.invoke(ctx);
             completedAbruptly = false;
-            return result ;
+            return result;
         } catch (OperationException cause) {
             completedAbruptly = false;
             if (hasChainException(chain.getId())) {
@@ -349,8 +349,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     /**
      * @since 5.7.2
-     * @param id
-     *            operation ID.
+     * @param id operation ID.
      * @return true if operation registry contains the given operation.
      */
     @Override

@@ -101,8 +101,7 @@ public class SeamOperationFilter {
         ServletLifecycle.endRequest(request);
     }
 
-    protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session)
-            {
+    protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session) {
 
         HttpServletRequest request = getRequest(context);
         if (request == null) {
@@ -140,8 +139,8 @@ public class SeamOperationFilter {
 
     protected static void setSeamActionContext(OperationContext context, CoreSession session) {
         ActionContext seamActionContext = new SeamActionContext();
-        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
-                "navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext()
+                                                                          .get("navigationContext");
         if (navigationContext != null) {
             seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
         }
