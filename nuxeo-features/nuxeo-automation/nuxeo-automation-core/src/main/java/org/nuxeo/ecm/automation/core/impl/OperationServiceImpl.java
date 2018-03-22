@@ -270,8 +270,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public List<OperationChain> getOperationChains() {
-        List<ChainTypeImpl> chainsType = new ArrayList<ChainTypeImpl>();
-        List<OperationChain> chains = new ArrayList<OperationChain>();
+        List<ChainTypeImpl> chainsType = new ArrayList<>();
+        List<OperationChain> chains = new ArrayList<>();
         for (OperationType operationType : operations.lookup().values()) {
             if (operationType instanceof ChainTypeImpl) {
                 chainsType.add((ChainTypeImpl) operationType);
@@ -355,10 +355,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     public boolean hasOperation(String id) {
         OperationType op = operations.lookup().get(id);
-        if (op == null) {
-            return false;
-        }
-        return true;
+        return op != null;
     }
 
     @Override
@@ -434,7 +431,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public List<OperationDocumentation> getDocumentation() throws OperationException {
-        List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
+        List<OperationDocumentation> result = new ArrayList<>();
         HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);

@@ -126,7 +126,7 @@ public class Scripting {
                 docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
             }
             map.put("Documents", docs);
-            if (docs.size() >= 1) {
+            if (!docs.isEmpty()) {
                 map.put("Document", docs.get(0));
             }
         }
@@ -134,7 +134,6 @@ public class Scripting {
     }
 
     public interface Script {
-        // protected long lastModified;
         Object eval(OperationContext ctx);
     }
 

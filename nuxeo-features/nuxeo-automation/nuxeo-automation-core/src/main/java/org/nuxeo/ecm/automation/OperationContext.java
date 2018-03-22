@@ -66,19 +66,19 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
      */
     protected boolean commit = true;
 
-    protected final transient List<CleanupHandler> cleanupHandlers;
+    protected final List<CleanupHandler> cleanupHandlers;
 
     protected final Map<String, Object> vars;
 
     /**
      * Each stack use a key the type of the objects in the stack: document, documents, blob or blobs
      */
-    protected final transient Map<String, Deque<Object>> stacks = new HashMap<>();
+    protected final Map<String, Deque<Object>> stacks = new HashMap<>();
 
     /**
      * A logins stack manage multiple logins and sessions in a single chain execution
      */
-    protected transient LoginStack loginStack;
+    protected LoginStack loginStack;
 
     /**
      * The execution input that will be updated after an operation run with the operation output
@@ -357,8 +357,8 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
      * @return a subcontext
      */
     public OperationContext getSubContext(boolean isolate, Object input) {
-        Map<String, Object> vars = isolate ? new HashMap<>(getVars()) : getVars();
-        OperationContext subctx = new OperationContext(getCoreSession(), vars);
+        Map<String, Object> subVars = isolate ? new HashMap<>(getVars()) : getVars();
+        OperationContext subctx = new OperationContext(getCoreSession(), subVars);
         subctx.setInput(input);
         subctx.setCallback(callback);
         return subctx;
