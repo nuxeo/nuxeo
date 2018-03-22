@@ -18,6 +18,9 @@ package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.ExitException;
@@ -30,6 +33,8 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 
 public class OperationChainCompiler {
+
+    private static final Log log = LogFactory.getLog(OperationChainCompiler.class);
 
     protected final AutomationService service;
 
@@ -58,10 +63,10 @@ public class OperationChainCompiler {
         protected Connector(ChainTypeImpl typeof, Class<?> typein) {
             this.typeof = typeof;
             this.typein = typein;
-            hashcode = hashcode(typeof, typein);
+            hashcode = computeHashcode(typeof, typein);
         }
 
-        protected int hashcode(OperationType typeof, Class<?> typein) {
+        protected int computeHashcode(OperationType typeof, Class<?> typein) {
             int prime = 31;
             int result = 1;
             result = prime * result + typeof.hashCode();
@@ -102,7 +107,9 @@ public class OperationChainCompiler {
                 }
                 prev = next;
             }
-            head.solve(typein);
+            if (head != null) {
+                head.solve(typein);
+            }
             return head;
         }
     }
@@ -147,7 +154,7 @@ public class OperationChainCompiler {
          */
         void solve(Class<?> in) throws InvalidChainException {
             InvokableMethod[] methods = typeof.getMethodsMatchingInput(in);
-            if (methods == null) {
+            if (methods.length == 0) {
                 throw new InvalidChainException(
                         "Cannot find any valid path in operation chain - no method found for operation '"
                                 + typeof.getId() + "' and for first input type '" + in.getName() + "'");
@@ -166,7 +173,7 @@ public class OperationChainCompiler {
                     method = m;
                     return;
                 } catch (InvalidChainException cause) {
-                    ;
+                    // continue solving
                 }
             }
             throw new InvalidChainException(

@@ -49,6 +49,10 @@ public class SeamOperationFilter {
 
     protected static final Log log = LogFactory.getLog(SeamOperationFilter.class);
 
+    private SeamOperationFilter() {
+        // Helper class
+    }
+
     /**
      * Initialize a workable Seam context as well as a conversion if needed
      *
@@ -93,10 +97,7 @@ public class SeamOperationFilter {
         }
 
         if (conversationId != null) {
-            // CoreSession seamDocumentManager = (CoreSession)
-            // Contexts.getConversationContext().get("seamDocumentManager");
             Contexts.getEventContext().remove("documentManager");
-            // Manager.instance().endConversation(true);
         }
         ServletLifecycle.endRequest(request);
     }
