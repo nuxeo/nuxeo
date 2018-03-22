@@ -96,12 +96,10 @@ public class RunOperationOnListInNewTransaction {
             try {
                 TransactionHelper.runInNewTransaction(() -> {
                     try (OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput())) {
-                        subctx.push(itemName, value);
-                        try {
+                        subctx.callWithContextVar(() -> {
                             service.run(subctx, chainId);
-                        } finally {
-                            subctx.pop(itemName);
-                        }
+                            return null;
+                        }, itemName, value);
                     } catch (OperationException e) {
                         throw new NuxeoException(e);
                     }

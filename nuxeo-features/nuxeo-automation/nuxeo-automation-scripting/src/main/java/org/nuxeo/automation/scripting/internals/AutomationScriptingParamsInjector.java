@@ -16,8 +16,9 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -31,9 +32,10 @@ public interface AutomationScriptingParamsInjector {
         if (inlinedContext) {
             return (params, ctx, desc) -> params.putAll(ctx);
         }
-        return (params, ctx, desc) -> //
-        Arrays.stream(desc.getParams()).map(Param::getName).filter(ctx::containsKey)
-                .forEach(name -> params.put(name, ctx.get(name)));
+        return (params, ctx, desc) -> Stream.of(desc.getParams()).map(Param::getName).forEach(
+                name -> Optional.ofNullable(ctx.getChainParameter(name))
+                                .ifPresent(chainParameter -> params.put(name, chainParameter)));
+
     }
 
 }
