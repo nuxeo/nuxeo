@@ -198,8 +198,7 @@ public class OperationChainCompiler {
 
         @Override
         public Object invoke(OperationContext ctx) throws OperationException {
-            ctx.push(typeof.getChainParameters());
-            try {
+            return ctx.callWithChainParameters(() -> {
                 ctx.getCallback().onChainEnter(typeof);
                 try {
                     return head.invoke(ctx);
@@ -213,9 +212,7 @@ public class OperationChainCompiler {
                 } finally {
                     ctx.getCallback().onChainExit();
                 }
-            } finally {
-                ctx.pop(typeof.getChainParameters());
-            }
+            }, typeof.getChainParameters());
         }
 
         @Override

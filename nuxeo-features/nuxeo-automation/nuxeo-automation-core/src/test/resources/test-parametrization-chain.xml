@@ -43,6 +43,34 @@
         <param type="string" name="message">Hello 2!</param>
       </operation>
     </chain>
+
+    <chain id="chainWithChainParameters">
+      <operation id="Context.SetVar">
+        <param type="string" name="name">resolvedChainParameters</param>
+        <param type="object" name="value">expr:@{ChainParameters['foo']},@{ChainParameters['contextKey2']},@{ChainParameters['expression']}
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="testRunOperationWithSameKeyInContextAndChainParameters">
+      <operation id="Context.SetVar">
+        <param type="string" name="name">contextKey1</param>
+        <param type="object" name="value">contextValue1</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">contextKey2</param>
+        <param type="object" name="value">contextValue2</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">chainWithChainParameters</param>
+        <param type="boolean" name="isolate">false</param>
+        <param type="properties" name="parameters">expr:foo=bar
+          contextKey2=chainParameterValue
+          expression=@{Context['contextKey1']}
+        </param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

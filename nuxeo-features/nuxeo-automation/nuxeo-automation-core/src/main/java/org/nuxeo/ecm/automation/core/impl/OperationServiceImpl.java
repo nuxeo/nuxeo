@@ -92,6 +92,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object run(OperationContext ctx, String operationId, Map<String, ?> args) throws OperationException {
         OperationType op = operations.lookup().get(operationId);
         if (op == null) {
@@ -101,12 +102,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             log.warn("null operation parameters given for " + operationId, new Throwable("stack trace"));
             args = Collections.emptyMap();
         }
-        ctx.push(args);
-        try {
-            return run(ctx, getOperationChain(operationId));
-        } finally {
-            ctx.pop(args);
-        }
+        return ctx.callWithChainParameters(() -> run(ctx, getOperationChain(operationId)), (Map<String, Object>) args);
     }
 
     @Override
