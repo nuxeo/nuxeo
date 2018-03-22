@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * Describes an operation chain execution.
  *
@@ -121,7 +120,8 @@ public class OperationChain implements Serializable {
      */
     public void addChainParameters(Map<String, ?> chainParameter) {
         if (chainParameter == null) {
-            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id, new Throwable("stack trace"));
+            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id,
+                    new Throwable("stack trace"));
             return;
         }
         chainParameters.putAll(chainParameter);
@@ -140,7 +140,7 @@ public class OperationChain implements Serializable {
         int result = 1;
         result = prime * result + id.hashCode();
         result = prime * result + chainParameters.hashCode();
-        result = prime * result +  operations.hashCode();
+        result = prime * result + operations.hashCode();
         return result;
     }
 
@@ -170,6 +170,6 @@ public class OperationChain implements Serializable {
 
     @Override
     public String toString() {
-        return "OperationChain [id="+id+"]";
+        return "OperationChain [id=" + id + "]";
     }
 }

@@ -50,7 +50,9 @@ public class OperationChainCompiler {
     protected class Connector {
 
         protected final ChainTypeImpl typeof;
+
         protected final Class<?> typein;
+
         protected final int hashcode;
 
         protected Connector(ChainTypeImpl typeof, Class<?> typein) {
@@ -201,8 +203,7 @@ public class OperationChainCompiler {
                     return ctx.getInput();
                 } catch (OperationException op) {
                     throw ctx.getCallback().onError(op);
-                }
-                finally {
+                } finally {
                     ctx.getCallback().onChainExit();
                 }
             } finally {
