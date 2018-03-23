@@ -20,7 +20,9 @@ declare function local:patch-document(
   let $node-name := fn:node-name($key)
   let $target := ($document/*[fn:node-name(.) = $node-name])[1] (: assume there can only be one instance of a key :)
   return
-    if (fn:string($key) eq "NULL") then
+    if (fn:empty($key/*) and fn:string($key) eq "NULL") then
+      (: delete the node if and only if we receive NULL as value and it s not a complex element :)
+      (: fn:string of <a><b>NULL</b></a> will return NULL :)
       xdmp:node-delete($target)
     else if (fn:empty($target)) then
       (: Object does not exist in document :)
