@@ -55,7 +55,8 @@ node('SLAVE') {
                                         TARGET_OPTION=""
                                     }
                                     sh """#!/bin/bash -ex
-                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH $TARGET_OPTION
+                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH $TARGET_OPTION \
+                                          -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
                                     """
                                 }
                             }

@@ -224,7 +224,7 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>nuxeo</sonar.organization>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.dump</it.jacoco.destFile>
+    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.exec</it.jacoco.destFile>
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
@@ -5419,7 +5419,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.0</version>
+          <version>0.8.1</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -5430,6 +5430,18 @@
               <id>prepare-agent</id>
               <goals>
                 <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>prepare-agent-integration</id>
+              <goals>
+                <goal>prepare-agent-integration</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <goals>
+                <goal>report</goal>
               </goals>
             </execution>
           </executions>
