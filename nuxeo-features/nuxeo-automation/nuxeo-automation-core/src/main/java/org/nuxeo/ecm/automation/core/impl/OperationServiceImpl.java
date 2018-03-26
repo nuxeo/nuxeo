@@ -281,7 +281,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public synchronized void flushCompiledChains() {
-        compiler.cache.clear();
+        compiler.cache.invalidateAll();
     }
 
     @Override
