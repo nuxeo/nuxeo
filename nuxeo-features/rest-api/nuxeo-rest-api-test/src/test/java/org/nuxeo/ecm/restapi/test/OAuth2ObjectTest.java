@@ -80,6 +80,8 @@ public class OAuth2ObjectTest extends BaseTest {
 
     protected static final String TOKEN_PATH = "oauth2/token";
 
+    protected static final String PROVIDER_TOKEN_PATH = "oauth2/token/provider";
+
     protected static final String AUTHORIZATION_SERVER_URL = "https://test.oauth2.provider/authorization";
 
     protected static String getScopeUrl(int id) {
@@ -270,6 +272,20 @@ public class OAuth2ObjectTest extends BaseTest {
         service = getServiceFor("user1", "user1");
         try (CloseableClientResponse response = getResponse(RequestType.GET, TOKEN_PATH)) {
             assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+    }
+
+    // test oauth2/token/provider
+    @Test
+    public void iCanGetUserProviderTokens() throws IOException {
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, PROVIDER_TOKEN_PATH)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").textValue());
+            assertNotNull(node.get("entries"));
+            assertEquals(1, node.get("entries").size());
+            verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
         }
     }
 

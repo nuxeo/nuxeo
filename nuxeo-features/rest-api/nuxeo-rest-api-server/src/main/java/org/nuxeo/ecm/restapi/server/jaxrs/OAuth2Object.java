@@ -283,6 +283,19 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return deleteProviderToken(providerId, nxuser, request);
     }
 
+    /**
+     * Retrieves all oauth2 provider tokens for the current user.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/provider")
+    public List<NuxeoOAuth2Token> getProviderUserTokens(@Context HttpServletRequest request) {
+        String nxuser = request.getUserPrincipal().getName();
+        return getTokens(nxuser).stream() // filter: make sure no client tokens are retrieved
+                .filter(token -> token.getClientId() == null).collect(Collectors.toList());
+    }
+
     protected List<NuxeoOAuth2ServiceProvider> getProviders() {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         return registry.getProviders()
