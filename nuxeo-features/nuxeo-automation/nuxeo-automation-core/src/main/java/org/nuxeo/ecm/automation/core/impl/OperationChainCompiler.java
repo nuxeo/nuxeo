@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,24 +31,46 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 public class OperationChainCompiler {
 
     private static final Log log = LogFactory.getLog(OperationChainCompiler.class);
 
     protected final AutomationService service;
 
-    protected final Map<Connector, OperationMethod> cache = new ConcurrentHashMap<>();
+    protected final LoadingCache<Connector, OperationMethod> cache;
+
+    protected static final int MAX_CACHE_SIZE = 1000;
 
     protected OperationChainCompiler(AutomationService service) {
         this.service = service;
+        cache = CacheBuilder.newBuilder() //
+                            .maximumSize(MAX_CACHE_SIZE)
+                            .build(new CacheLoader<Connector, OperationMethod>() {
+                                @Override
+                                public OperationMethod load(Connector connector) throws OperationException {
+                                    return connector.connect();
+                                }
+                            });
     }
 
     public CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
         Connector connector = new Connector(typeof, typein);
-        if (!cache.containsKey(connector)) {
-            cache.put(connector, connector.connect());
+        OperationMethod operationMethod;
+        try {
+            operationMethod = cache.get(connector);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof OperationException) {
+                throw (OperationException) cause;
+            } else {
+                throw new OperationException(cause);
+            }
         }
-        return new CompiledChainImpl(typeof, typein, cache.get(connector));
+        return new CompiledChainImpl(typeof, typein, operationMethod);
     }
 
     protected class Connector {
