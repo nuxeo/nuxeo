@@ -58,25 +58,18 @@ public class OperationChainCompiler {
 
         protected final Class<?> typein;
 
-        protected final int hashcode;
-
         protected Connector(ChainTypeImpl typeof, Class<?> typein) {
             this.typeof = typeof;
             this.typein = typein;
-            hashcode = computeHashcode(typeof, typein);
         }
 
-        protected int computeHashcode(OperationType typeof, Class<?> typein) {
+        @Override
+        public int hashCode() {
             int prime = 31;
             int result = 1;
             result = prime * result + typeof.hashCode();
             result = prime * result + typein.hashCode();
             return result;
-        }
-
-        @Override
-        public int hashCode() {
-            return hashcode;
         }
 
         @Override
@@ -91,7 +84,7 @@ public class OperationChainCompiler {
                 return false;
             }
             Connector other = (Connector) obj;
-            return hashcode == other.hashcode;
+            return typeof.equals(other.typeof) && typein.equals(other.typein);
         }
 
         protected OperationMethod connect() throws OperationException {

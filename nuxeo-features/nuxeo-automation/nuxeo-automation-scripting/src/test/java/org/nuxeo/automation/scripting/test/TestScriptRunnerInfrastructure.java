@@ -567,6 +567,14 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
+    public void testLoopWithDifferentParameters() throws OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            Object result = automationService.run(ctx, "Scripting.TestLoopWithDifferentParameters");
+            assertEquals("P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 ", String.valueOf(result));
+        }
+    }
+
+    @Test
     public void testDocumentPathInputAdaptedAsDocument() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput("/default-domain");

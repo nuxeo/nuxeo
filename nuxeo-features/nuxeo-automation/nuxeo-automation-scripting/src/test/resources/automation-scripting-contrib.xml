@@ -7,6 +7,7 @@
           class="org.nuxeo.automation.scripting.test.operations.ContextModificationTest" />
     <operation class="org.nuxeo.automation.scripting.test.operations.TestUsername"/>
     <operation class="org.nuxeo.automation.scripting.test.operations.TestWrappers"/>
+    <operation class="org.nuxeo.automation.scripting.test.operations.TestEchoParameter"/>
   </extension>
 
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
@@ -101,6 +102,27 @@
             });
 
             return newDoc;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestLoopWithDifferentParameters">
+      <inputType>void</inputType>
+      <outputType>string</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          var ret = "";
+          for (var i = 1; i <= 10; i++) {
+            var param = "P" + i;
+            var result = Test.EchoParameter(input,
+              { 'param': param,
+                'dummy': param // using twice the same value produces hashcode collisions
+              }
+            );
+            ret += result + " ";
+          }
+          return ret;
         }
       ]]></script>
     </scriptedOperation>
