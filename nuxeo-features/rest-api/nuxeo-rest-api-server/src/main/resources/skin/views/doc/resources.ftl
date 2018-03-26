@@ -104,7 +104,7 @@
         },
         {
             "path": "/oauth2.{format}",
-            "description": "Retrieve OAuth2 authentication data for the current user"
+            "description": "Retrieve OAuth2 authentication data"
         },
         {
             "path": "/emptyDocAdapter.{format}",
