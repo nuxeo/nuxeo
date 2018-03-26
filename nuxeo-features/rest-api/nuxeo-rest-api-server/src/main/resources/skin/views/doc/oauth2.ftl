@@ -40,8 +40,7 @@
         "method":"PUT",
         "nickname":"updateOAuth2Provider",
         "type":"oauth2ProviderData",
-        <@params names = ["oauth2ProviderId"]/>,
-        <@params names = ["oauth2ProviderBody"]/>,
+        <@params names = ["oauth2ProviderId","oauth2ProviderBody"]/>,
         "summary":"Updates an OAuth2 provider.",
         <#include "views/doc/errorresponses.ftl"/>
       }
@@ -78,15 +77,14 @@
   },
 
   {
-    "path": "/oauth2/token/{oauth2ProviderId}/{username}",
+    "path": "/oauth2/token/provider/{oauth2ProviderId}/user/{username}",
     "description": "Gets, updates and deletes OAuth2 tokens.",
     "operations" : [
       {
         "method":"GET",
         "nickname":"getOauth2Token",
         "type":"oauth2TokenData",
-        <@params names = ["oauth2ProviderId"]/>,
-        <@params names = ["username"]/>,
+        <@params names = ["oauth2ProviderId","username"]/>,
         "summary":"Gets an OAuth2 token.",
         <#include "views/doc/errorresponses.ftl"/>
       },
@@ -94,16 +92,14 @@
         "method":"PUT",
         "nickname":"updateOauth2Token",
         "type":"oauth2TokenData",
-        <@params names = ["oauth2ProviderId"]/>,
-        <@params names = ["username"]/>,
+        <@params names = ["oauth2ProviderId","username"]/>,
         "summary":"Updates an OAuth2 token.",
         <#include "views/doc/errorresponses.ftl"/>
       },
       {
         "method":"DELETE",
         "nickname":"deleteOauth2Token",
-        <@params names = ["oauth2ProviderId"]/>,
-        <@params names = ["username"]/>,
+        <@params names = ["oauth2ProviderId","username"]/>,
         "summary":"Delete an OAuth2 token.",
         <#include "views/doc/errorresponses.ftl"/>
       }

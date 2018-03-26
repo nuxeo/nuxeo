@@ -138,15 +138,15 @@ public class OAuth2ObjectTest extends BaseTest {
                 + "        \"https://test.oauth2.provider/scopes/scope1\"\n" + "    ],\n"
                 + "    \"serviceName\": \"myservice\",\n"
                 + "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + "}";
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+        service = getServiceFor("Administrator", "Administrator");
         try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             verifyProvider(node, serviceName, false);
-        }
-
-        service = getServiceFor("user1", "user1");
-        try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
-            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -167,6 +167,14 @@ public class OAuth2ObjectTest extends BaseTest {
                 + "        \"https://test.oauth2.provider/scopes/scope1\"\n" + "    ],\n"
                 + "    \"serviceName\": \"test-oauth2-provider-2\",\n"
                 + "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + "}";
+
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
+                data)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+
+        service = getServiceFor("Administrator", "Administrator");
         try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
                 data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -174,12 +182,6 @@ public class OAuth2ObjectTest extends BaseTest {
             assertEquals("myId", node.get("clientId").textValue());
             assertEquals("123secret321", node.get("clientSecret").textValue());
             assertTrue(node.get("isEnabled").booleanValue());
-        }
-
-        service = getServiceFor("user1", "user1");
-        try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
-                data)) {
-            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
@@ -221,7 +223,7 @@ public class OAuth2ObjectTest extends BaseTest {
     // test oauth2/provider/{provider}/token
 
     @Test
-    public void iCanGetProviderToken() throws IOException {
+    public void iCanGetValidProviderToken() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getTokenPath(TEST_OAUTH2_PROVIDER))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -254,13 +256,13 @@ public class OAuth2ObjectTest extends BaseTest {
 
     // test oauth2/token
     @Test
-    public void iCanGetTokens() throws IOException {
+    public void iCanGetAllTokens() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, TOKEN_PATH)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").textValue());
             assertNotNull(node.get("entries"));
-            assertEquals(2, node.get("entries").size());
+            assertEquals(3, node.get("entries").size());
             verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "Administrator", "2017-05-09 11:11:11");
             verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
         }
@@ -271,9 +273,18 @@ public class OAuth2ObjectTest extends BaseTest {
         }
     }
 
-    // test oauth2/token/{provider}/{user}
+    // test oauth2/token/provider/{provider}/user/{user}
     @Test
-    public void iCanGetToken() throws IOException {
+    public void iCanGetProviderToken() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        }
+
+        // test deprecated oauth2/token/{provider}/{user}
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                 TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -282,16 +293,39 @@ public class OAuth2ObjectTest extends BaseTest {
             verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
         }
 
+        // users must be able to fetch their own tokens
         service = getServiceFor("user1", "user1");
         try (CloseableClientResponse response = getResponse(RequestType.GET,
-                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        }
+
+        // but not other users'
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user2")) {
             assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void iCanUpdateToken() throws IOException {
+    public void iCanUpdateProviderToken() throws IOException {
         String data = "{  \n" + "   \"entity-type\":\"nuxeoOAuth2Token\",\n" + "   \"clientId\":null,\n"
+                + "   \"creationDate\":\"2017-05-10 11:11:11\",\n" + "   \"isShared\":false,\n"
+                + "   \"nuxeoLogin\":\"user1\",\n" + "   \"serviceLogin\":\"my1@mail\",\n"
+                + "   \"serviceName\":\"test-oauth2-provider\",\n" + "   \"sharedWith\":[  \n" + "   ]\n" + "}";
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1", data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-10 11:11:11");
+        }
+
+        // test deprecated oauth2/token/{provider}/{user}
+        data = "{  \n" + "   \"entity-type\":\"nuxeoOAuth2Token\",\n" + "   \"clientId\":null,\n"
                 + "   \"creationDate\":\"2017-05-10 11:11:11\",\n" + "   \"isShared\":false,\n"
                 + "   \"nuxeoLogin\":\"user1\",\n" + "   \"serviceLogin\":\"my1@mail\",\n"
                 + "   \"serviceName\":\"test-oauth2-provider\",\n" + "   \"sharedWith\":[  \n" + "   ]\n" + "}";
@@ -303,26 +337,56 @@ public class OAuth2ObjectTest extends BaseTest {
             verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-10 11:11:11");
         }
 
+        // users must be able to update their own tokens
+        data = "{  \n" + "   \"entity-type\":\"nuxeoOAuth2Token\",\n" + "   \"clientId\":null,\n"
+                + "   \"creationDate\":\"2017-05-11 11:11:11\",\n" + "   \"isShared\":false,\n"
+                + "   \"nuxeoLogin\":\"user1\",\n" + "   \"serviceLogin\":\"my1@mail\",\n"
+                + "   \"serviceName\":\"test-oauth2-provider\",\n" + "   \"sharedWith\":[  \n" + "   ]\n" + "}";
         service = getServiceFor("user1", "user1");
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
-                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data)) {
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1", data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-11 11:11:11");
+        }
+
+        // but not other users'
+        service = getServiceFor("user2", "user2");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1", data)) {
             assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
     }
 
     @Test
-    public void iCanDeleteToken() {
-        service = getServiceFor("user1", "user1");
+    public void iCanDeleteProviderToken() {
+        // a user cannot delete some else's token
+        service = getServiceFor("user2", "user2");
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
-                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1")) {
             assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
         }
 
-        service = getServiceFor("Administrator", "Administrator");
+        // but can delete his/her own
+        service = getServiceFor("user1", "user1");
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
-                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1")) {
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         }
+
+        // and admins can delete everybody's
+        service = getServiceFor("Administrator", "Administrator");
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user2")) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/provider/" + TEST_OAUTH2_PROVIDER + "/user/user1")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
+
+        // test deprecated oauth2/token/{provider}/{user}
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                 TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
