@@ -77,6 +77,20 @@
   },
 
   {
+    "path": "/oauth2/token/provider",
+    "description": "Retrieves OAuth2 provider tokens for the current user.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getProviderUserOauth2Tokens",
+        "type":"oauth2TokenDataList",
+        "summary":"Retrieves all OAuth2 provider tokens for the current user.",
+    <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
     "path": "/oauth2/token/provider/{oauth2ProviderId}/user/{username}",
     "description": "Gets, updates and deletes OAuth2 tokens.",
     "operations" : [
