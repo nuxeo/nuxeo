@@ -29,22 +29,54 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>bower-install</id>
+            <id>install node and npm</id>
             <phase>process-resources</phase>
-            <configuration>
-              <target>
-                <ant antfile="${basedir}/build.xml" dir="${basedir}" target="build"></ant>
-              </target>
-            </configuration>
             <goals>
-              <goal>run</goal>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>install npm build tools</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>            
+          </execution>
+          <execution>
+            <id>bower</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>bower</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>grunt</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>grunt</goal>
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>node_modules</directory>
+            </fileset>
+          </filesets>
+        </configuration>
       </plugin>
     </plugins>
   </build>
