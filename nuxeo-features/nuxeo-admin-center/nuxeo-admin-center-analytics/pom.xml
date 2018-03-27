@@ -9,26 +9,61 @@
   <artifactId>nuxeo-admin-center-analytics</artifactId>
   <name>Nuxeo Administration Center Analytics</name>
   <description>Analytics dashboards for Admin Center</description>
+
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>node_modules</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>grunt-build</id>
+            <id>install node and npm</id>
             <phase>process-resources</phase>
-            <configuration>
-              <target>
-                <ant antfile="${basedir}/build.xml" dir="${basedir}"></ant>
-              </target>
-            </configuration>
             <goals>
-              <goal>run</goal>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>install npm build tools</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>            
+          </execution>
+          <execution>
+            <id>bower</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>bower</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>grunt</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>grunt</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
+
   </build>
+
 </project>
