@@ -280,10 +280,10 @@ public abstract class ExpressionEvaluator {
             Boolean lifeCycleTrashed = walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
                     new StringLiteral(LifeCycleConstants.DELETED_STATE));
             Boolean propertyTrashed = walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue,
-                    new BooleanLiteral(true));
+                    new IntegerLiteral(1L));
             return or(lifeCycleTrashed, propertyTrashed);
         } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
-            return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new BooleanLiteral(true));
+            return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new IntegerLiteral(1L));
         } else {
             throw new UnsupportedOperationException("TrashService is in an unknown state");
         }
