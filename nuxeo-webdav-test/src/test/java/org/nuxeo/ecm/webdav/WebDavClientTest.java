@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webdav;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +36,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
@@ -66,9 +68,16 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.w3c.dom.Element;
 
@@ -88,22 +97,36 @@ public class WebDavClientTest extends AbstractServerTest {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected UserManager userManager;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
     @BeforeClass
     public static void setUpClass() {
+        context = getBasicAuthHttpContext(USERNAME, PASSWORD);
+        client = HttpClients.createDefault();
+    }
+
+    protected static HttpClientContext getBasicAuthHttpContext(String username, String password) {
         // credentials
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(USERNAME, PASSWORD));
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        return getHttpContext(credentialsProvider);
+    }
+
+    protected static HttpClientContext getHttpContext(CredentialsProvider credentialsProvider) {
         // AuthCache instance for preemptive authentication
         AuthCache authCache = new BasicAuthCache();
         authCache.put(new HttpHost("localhost", WebDavServerFeature.PORT), new BasicScheme());
 
         // create context
-        context = HttpClientContext.create();
+        HttpClientContext context = HttpClientContext.create();
         context.setCredentialsProvider(credentialsProvider);
         context.setAuthCache(authCache);
 
-        // create client
-        client = HttpClients.createDefault();
+        return context;
     }
 
     @Test
@@ -281,8 +304,9 @@ public class WebDavClientTest extends AbstractServerTest {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+        pathRef = new PathRef("/workspaces/workspace/" + newName);
         doc = session.getDocument(pathRef);
-        assertEquals(newName, doc.getTitle());
+        assertEquals(newName, doc.getName());
         blob = (Blob) doc.getPropertyValue("file:content");
         assertEquals(newName, blob.getFilename());
         assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", blob.getMimeType());
@@ -419,6 +443,85 @@ public class WebDavClientTest extends AbstractServerTest {
         testLockUnlock(null);
     }
 
+    @Test
+    public void testMSOfficeSaveFileFlow() throws Exception {
+        // create a fake bin tmp file which will finally be a docx file
+        String basePath = "/workspaces/workspace/";
+        String rootUri = TEST_URI + basePath;
+        String origName = "Document.docx";
+        String octetStreamMimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
+        byte[] bytes = "Fake BIN".getBytes(UTF_8);
+        String expectedNuxeoType = "File";
+        String wordMimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+        doTestPutFile(origName, bytes, wordMimeType, expectedNuxeoType);
+
+        PathRef origPathRef = new PathRef(basePath + origName);
+        assertTrue(session.exists(origPathRef));
+        DocumentModel doc = session.getDocument(origPathRef);
+        assertEquals(origName, doc.getTitle());
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(origName, blob.getFilename());
+        assertEquals(wordMimeType, blob.getMimeType());
+
+        DocumentModel bareUserModel = userManager.getBareUserModel();
+        bareUserModel.setPropertyValue("user:username", "foo");
+        bareUserModel.setPropertyValue("user:password", "123456");
+        bareUserModel = userManager.createUser(bareUserModel);
+        NuxeoPrincipal foo = userManager.getPrincipal("foo");
+        foo.setPassword("123456");
+        foo.setGroups(userManager.getAdministratorsGroups());
+        userManager.updateUser(foo.getModel());
+
+        DocumentModel workspace = session.getDocument(new PathRef("/workspaces/workspace/"));
+        ACP acp = workspace.getACP();
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("foo", SecurityConstants.EVERYTHING).build());
+        session.setACP(workspace.getRef(), acp, true);
+        session.save();
+
+        transactionalFeature.nextTransaction();
+        HttpClientContext fooClientContext = getBasicAuthHttpContext("foo", "123456");
+
+        String tempName = "foo.tmp";
+        byte[] newBytesContent = "123456".getBytes(UTF_8);
+        doTestPutFile(tempName, newBytesContent, wordMimeType, expectedNuxeoType);
+
+        // rename it to a temp file
+        String origTempName = "bar.tmp";
+
+        HttpMove request = new HttpMove(ROOT_URI + origName, ROOT_URI + origTempName, false);
+        int status;
+        try (CloseableHttpResponse response = client.execute(request, fooClientContext)) {
+            status = response.getStatusLine().getStatusCode();
+        }
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        request = new HttpMove(ROOT_URI + tempName, ROOT_URI + origName, false);
+        try (CloseableHttpResponse response = client.execute(request, fooClientContext)) {
+            status = response.getStatusLine().getStatusCode();
+        }
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        HttpDelete deleteRequest = new HttpDelete(ROOT_URI + origTempName);
+        try (CloseableHttpResponse response = client.execute(deleteRequest, fooClientContext)) {
+            status = response.getStatusLine().getStatusCode();
+        }
+        assertEquals(HttpStatus.SC_NO_CONTENT, status);
+
+        PathRef pathRef = new PathRef(basePath + origName);
+
+        transactionalFeature.nextTransaction();
+
+        doc = session.getDocument(pathRef);
+        assertEquals(origName, doc.getTitle());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(origName, blob.getFilename());
+        assertArrayEquals(newBytesContent, blob.getByteArray());
+        assertEquals(wordMimeType, blob.getMimeType());
+
+        assertEquals("0.1+", doc.getVersionLabel());
+    }
+
     protected void testLockUnlock(String accept) throws Exception {
         String fileUri = ROOT_URI + "quality.jpg";
 
@@ -444,6 +547,14 @@ public class WebDavClientTest extends AbstractServerTest {
             status = response.getStatusLine().getStatusCode();
         }
         assertEquals(HttpStatus.SC_NO_CONTENT, status);
+    }
+
+    protected DocumentModel createFolder(String parentRef, String name, String title) throws Exception {
+        DocumentModel doc = session.createDocumentModel(parentRef, name, "Folder");
+        doc.setPropertyValue("dc:title", title);
+        doc = session.createDocument(doc);
+        session.save();
+        return doc;
     }
 
 }
