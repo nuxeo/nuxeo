@@ -6,9 +6,9 @@ module.exports = function (grunt) {
   // load all grunt tasks
   require('load-grunt-tasks')(grunt);
 
+
   grunt.initConfig({
     config: {
-      source: 'src/main/resources/web/nuxeo.war',
       target: 'target/classes/web/nuxeo.war'
     },
     copy: {
@@ -18,6 +18,13 @@ module.exports = function (grunt) {
         dest: '<%= config.target %>/viewers/pdfjs',
         expand: true
       }
+    },
+    mkdir: {
+        viewers: {
+            options: {
+                 create: ['<%= config.target %>/viewers']
+            }
+        }
     },
     vulcanize: {
       pdfViewer: {
@@ -81,6 +88,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', [
+    'mkdir:viewers',
     'vulcanize:pdfViewer',
     'copy:pdfjs',
     'vulcanize:imageViewer',
