@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 import static org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token.SCHEMA;
 
 import java.io.IOException;
@@ -48,11 +49,14 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.providers.AbstractOAuth2UserEmailProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -296,6 +300,87 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                 .filter(token -> token.getClientId() == null).collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all oauth2 client tokens for the current user.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/client")
+    public List<NuxeoOAuth2Token> getClientUserTokens(@Context HttpServletRequest request) {
+        String nxuser = request.getUserPrincipal().getName();
+        return getTokens(nxuser).stream() // filter: make sure no provider tokens are retrieved
+                .filter(token -> token.getClientId() != null).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a oauth2 client token.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/client/{clientId}/user/{nxuser}")
+    public Response getClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                              @Context HttpServletRequest request) {
+        checkPermission(nxuser);
+        OAuth2Client client = getClient(clientId);
+        return Response.ok(getToken(client, nxuser)).build();
+    }
+
+    /**
+     * Updates an OAuth2 client token.
+     *
+     * @since 10.2
+     */
+    @PUT
+    @Path("token/client/{clientId}/user/{nxuser}")
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public Response updateClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                                @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+        checkPermission(nxuser);
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        return Response.ok(updateToken(client, nxuser, token)).build();
+    }
+
+    /**
+     * Deletes a oauth2 client token.
+     *
+     * @since 10.2
+     */
+    @DELETE
+    @Path("token/client/{clientId}/user/{nxuser}")
+    public Response deleteClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                                 @Context HttpServletRequest request) {
+        checkPermission(nxuser);
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        deleteToken(getTokenDoc(client, nxuser));
+        return Response.noContent().build();
+    }
+
+    /**
+     * Retrieves oauth2 clients.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("client")
+    public List<OAuth2Client> getClients(@Context HttpServletRequest request) {
+        return Framework.getService(OAuth2ClientService.class).getClients();
+    }
+
+    /**
+     * Retrieves a oauth2 client.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("client/{clientId}")
+    public Response getClient(@PathParam("clientId") String clientId,
+                              @Context HttpServletRequest request) {
+        OAuth2Client client = getClient(clientId);
+        return Response.ok(client).build();
+    }
+
     protected List<NuxeoOAuth2ServiceProvider> getProviders() {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         return registry.getProviders()
@@ -333,6 +418,14 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         });
     }
 
+    protected OAuth2Client getClient(String clientId) {
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        if (client == null) {
+            throw new WebResourceNotFoundException("Invalid client: " + clientId);
+        }
+        return client;
+    }
+
     protected DocumentModel getTokenDoc(NuxeoOAuth2ServiceProvider provider, String nxuser) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("serviceName", provider.getServiceName());
@@ -344,7 +437,23 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         if (tokens.size() > 1) {
             throw new NuxeoException("Found multiple " + provider.getId() + " accounts for " + nxuser);
         } else if (tokens.size() == 0) {
-            throw new WebResourceNotFoundException("No token found for provider: " + provider.getId());
+            throw new WebResourceNotFoundException("No token found for provider: " + provider.getServiceName());
+        } else {
+            return tokens.get(0);
+        }
+    }
+
+    protected DocumentModel getTokenDoc(OAuth2Client client, String nxuser) {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put("clientId", client.getId());
+        filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
+        OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
+        List<DocumentModel> tokens = tokenStore.query(filter).stream()
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (tokens.size() > 1) {
+            throw new NuxeoException("Found multiple " + client.getId() + " accounts for " + nxuser);
+        } else if (tokens.size() == 0) {
+            throw new WebResourceNotFoundException("No token found for client: " + client.getId());
         } else {
             return tokens.get(0);
         }
@@ -354,8 +463,21 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return new NuxeoOAuth2Token(getTokenDoc(provider, nxuser));
     }
 
+    protected NuxeoOAuth2Token getToken(OAuth2Client client, String nxuser) {
+        return new NuxeoOAuth2Token(getTokenDoc(client, nxuser));
+    }
+
     protected NuxeoOAuth2Token updateToken(NuxeoOAuth2ServiceProvider provider, String nxuser, NuxeoOAuth2Token token) {
-        DocumentModel entry = getTokenDoc(provider, nxuser);
+        updateTokenDoc(token, getTokenDoc(provider, nxuser));
+        return getToken(provider, nxuser);
+    }
+
+    protected NuxeoOAuth2Token updateToken(OAuth2Client client, String nxuser, NuxeoOAuth2Token token) {
+        updateTokenDoc(token, getTokenDoc(client, nxuser));
+        return getToken(client, nxuser);
+    }
+
+    protected void updateTokenDoc(NuxeoOAuth2Token token, DocumentModel entry) {
         entry.setProperty(SCHEMA, "serviceName", token.getServiceName());
         entry.setProperty(SCHEMA, "nuxeoLogin", token.getNuxeoLogin());
         entry.setProperty(SCHEMA, "clientId", token.getClientId());
@@ -369,7 +491,6 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                 session.updateEntry(entry);
             }
         });
-        return getToken(provider, nxuser);
     }
 
     protected void deleteToken(DocumentModel token) {

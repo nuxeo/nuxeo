@@ -64,7 +64,7 @@
   
   {
     "path": "/oauth2/token",
-    "description": "Retrieves OAuth2 tokens.",
+    "description": "Retrieves all OAuth2 tokens.",
     "operations" : [
       {
         "method":"GET",
@@ -82,39 +82,112 @@
     "operations" : [
       {
         "method":"GET",
-        "nickname":"getProviderUserOauth2Tokens",
+        "nickname":"getOauth2UserProviderTokens",
         "type":"oauth2TokenDataList",
         "summary":"Retrieves all OAuth2 provider tokens for the current user.",
-    <#include "views/doc/errorresponses.ftl"/>
+        <#include "views/doc/errorresponses.ftl"/>
       }
     ]
   },
 
   {
     "path": "/oauth2/token/provider/{oauth2ProviderId}/user/{username}",
-    "description": "Gets, updates and deletes OAuth2 tokens.",
+    "description": "Gets, updates and deletes OAuth2 provider tokens.",
     "operations" : [
       {
         "method":"GET",
-        "nickname":"getOauth2Token",
+        "nickname":"getOauth2ProviderToken",
         "type":"oauth2TokenData",
         <@params names = ["oauth2ProviderId","username"]/>,
-        "summary":"Gets an OAuth2 token.",
+        "summary":"Gets an OAuth2 provider token.",
         <#include "views/doc/errorresponses.ftl"/>
       },
       {
         "method":"PUT",
-        "nickname":"updateOauth2Token",
+        "nickname":"updateOauth2ProviderToken",
         "type":"oauth2TokenData",
         <@params names = ["oauth2ProviderId","username"]/>,
-        "summary":"Updates an OAuth2 token.",
+        "summary":"Updates an OAuth2 provider token.",
         <#include "views/doc/errorresponses.ftl"/>
       },
       {
         "method":"DELETE",
-        "nickname":"deleteOauth2Token",
+        "nickname":"deleteOauth2ProviderToken",
         <@params names = ["oauth2ProviderId","username"]/>,
-        "summary":"Delete an OAuth2 token.",
+        "summary":"Delete an OAuth2 provider token.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/token/client",
+    "description": "Retrieves OAuth2 client tokens for the current user.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getOauth2UserClientTokens",
+        "type":"oauth2TokenDataList",
+        "summary":"Retrieves all OAuth2 client tokens for the current user.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/token/client/{oauth2ClientId}/user/{username}",
+    "description": "Retrieves updates, and deletes OAuth2 client tokens.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getOauth2ClientToken",
+        "type":"oauth2TokenData",
+        <@params names = ["oauth2ClientId", "username"]/>,
+        "summary":"Retrieves a OAuth2 client token.",
+        <#include "views/doc/errorresponses.ftl"/>
+      },
+      {
+        "method":"PUT",
+        "nickname":"updateOauth2ClientToken",
+        "type":"oauth2TokenData",
+        <@params names = ["oauth2ClientId","username"]/>,
+        "summary":"Updates an OAuth2 client token.",
+        <#include "views/doc/errorresponses.ftl"/>
+      },
+      {
+        "method":"DELETE",
+        "nickname":"deleteOauth2ClientToken",
+        <@params names = ["oauth2ClientId", "username"]/>,
+        "summary":"Deletes a OAuth2 client token.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/client",
+    "description": "Retrieves all OAuth2 clients.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getOauth2Clients",
+        "type":"oauth2ClientDataList",
+        "summary":"Retrieves a OAuth2 client.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/client/{oauth2ClientId}",
+    "description": "Retrieves a OAuth2 client.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getOauth2Client",
+        "type":"oauth2ClientData",
+        <@params names = ["oauth2ClientId"]/>,
+        "summary":"Retrieves a OAuth2 client.",
         <#include "views/doc/errorresponses.ftl"/>
       }
     ]
@@ -125,6 +198,7 @@
 <@block name="models">
   <#include "views/doc/datatypes/oauth2ProviderData.ftl"/>,
   <#include "views/doc/datatypes/oauth2TokenData.ftl"/>,
-  <#include "views/doc/datatypes/oauth2ProviderTokenData.ftl"/>
+  <#include "views/doc/datatypes/oauth2ProviderTokenData.ftl"/>,
+  <#include "views/doc/datatypes/oauth2ClientData.ftl"/>
 </@block>
 </@extends>

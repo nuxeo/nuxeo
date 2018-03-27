@@ -20,11 +20,16 @@ package org.nuxeo.ecm.platform.oauth2.clients;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -36,6 +41,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 9.2
  */
 public class OAuth2ClientServiceImpl extends DefaultComponent implements OAuth2ClientService {
+
+    private static final Log log = LogFactory.getLog(OAuth2ClientServiceImpl.class);
 
     @Override
     public boolean hasClient(String clientId) {
@@ -58,6 +65,11 @@ public class OAuth2ClientServiceImpl extends DefaultComponent implements OAuth2C
         return OAuth2Client.fromDocumentModel(doc);
     }
 
+    @Override
+    public List<OAuth2Client> getClients() {
+        return queryClients().stream().map(OAuth2Client::fromDocumentModel).collect(Collectors.toList());
+    }
+
     protected DocumentModel getClientModel(String clientId) {
         DirectoryService service = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
@@ -72,6 +84,17 @@ public class OAuth2ClientServiceImpl extends DefaultComponent implements OAuth2C
                 }
             }
             return null;
+        });
+    }
+
+    protected List<DocumentModel> queryClients() {
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
+                return session.query(Collections.emptyMap());
+            } catch (DirectoryException e) {
+                throw new NuxeoException("Error while fetching client directory", e);
+            }
         });
     }
 }
