@@ -8,5 +8,13 @@
       <property name="bucket">${nuxeo.mongodb.gridfs.bucket}</property>
     </blobprovider>
   </extension>
+
+  <extension target="org.nuxeo.runtime.mongodb.MongoDBComponent" point="connection">
+    <connection id="BlobProvider/default">
+      <server>${nuxeo.mongodb.server}</server>
+      <dbname>${nuxeo.mongodb.dbname}</dbname>
+    </connection>
+  </extension>
+
 </component>
 </#escape>
