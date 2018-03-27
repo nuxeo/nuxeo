@@ -5978,8 +5978,8 @@
           <version>1.6</version>
           <configuration>
             <nodeVersion>v6.9.5</nodeVersion>
-            <npmVersion>4.0.5</npmVersion>
-            <installDirectory>${session.executionRootDirectory}/target</installDirectory>
+            <npmVersion>5.8.0</npmVersion>
+            <installDirectory>target/</installDirectory>
           </configuration>
         </plugin>
         <plugin>
