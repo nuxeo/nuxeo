@@ -5975,7 +5975,12 @@
         <plugin>
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
-          <version>1.3</version>
+          <version>1.6</version>
+          <configuration>
+            <nodeVersion>v6.9.5</nodeVersion>
+            <npmVersion>4.0.5</npmVersion>
+            <installDirectory>${session.executionRootDirectory}/target</installDirectory>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
