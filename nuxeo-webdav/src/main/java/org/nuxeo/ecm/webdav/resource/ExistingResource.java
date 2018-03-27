@@ -23,10 +23,13 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -64,6 +67,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -84,6 +88,12 @@ public class ExistingResource extends AbstractResource {
 
     public static final String READONLY_TOKEN = "readonly";
 
+    public static final String DC_SOURCE = "dc:source";
+
+    public static final String DC_CREATED = "dc:created";
+
+    public static final Duration RECENTLY_CREATED_DELTA = Duration.ofMinutes(1);
+
     private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
@@ -100,6 +110,37 @@ public class ExistingResource extends AbstractResource {
     public Response delete() {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
+        }
+
+        // MS Office does the following to do a save on file.docx:
+        // 1. save to tmp1.tmp
+        // 2. rename file.docx to tmp2.tmp (here we saved the original name file.docx as "move original name")
+        // 3. rename tmp1.tmp to file.docx
+        // 4. remove tmp2.tmp (we're here, and the following code will undo the above logic)
+        String origName;
+        if (isMoveTargetCandidate(name) && (origName = getMoveOriginalName()) != null && !origName.contains("/")) {
+            PathRef origRef = new PathRef(doc.getPath().removeLastSegments(1).append(origName).toString());
+            CoreSession session = backend.getSession();
+            if (session.exists(origRef)) {
+                DocumentModel origDoc = session.getDocument(origRef);
+                if (isRecentlyCreated(origDoc)) {
+                    // origDoc is file.docx and contains the blob that was saved
+                    // Move it to a temporary document that will be the one deleted at the end
+                    String tmpName = UUID.randomUUID().toString() + ".tmp";
+                    origDoc = backend.moveItem(origDoc, origDoc.getParentRef(), tmpName);
+                    // Restore tmp2.tmp back to its original name file.docx
+                    doc = backend.moveItem(doc, doc.getParentRef(), origName);
+                    clearMoveOriginalName();
+                    // Get the blob that was saved and update the restored doc file.docx with it
+                    BlobHolder bh = origDoc.getAdapter(BlobHolder.class);
+                    Blob blob = bh.getBlob();
+                    blob.setFilename(origName);
+                    doc.getAdapter(BlobHolder.class).setBlob(blob);
+                    session.saveDocument(doc);
+                    // Set the temporary document as current doc, which we can now delete
+                    doc = origDoc;
+                }
+            }
         }
 
         try {
@@ -176,6 +217,7 @@ public class ExistingResource extends AbstractResource {
                 return Response.status(412).build();
             }
             destinationBackend.removeItem(davDestPath);
+            backend.saveChanges();
             status = 204;
         }
 
@@ -187,15 +229,15 @@ public class ExistingResource extends AbstractResource {
         }
 
         if ("COPY".equals(method)) {
-            DocumentModel destDoc = backend.copyItem(doc, destParentRef);
-            backend.renameItem(destDoc, getNameFromPath(destPath));
+            backend.copyItem(doc, destParentRef);
         } else if ("MOVE".equals(method)) {
-            if (backend.isRename(doc.getPathAsString(), destPath)) {
-                backend.renameItem(doc, getNameFromPath(destPath));
-            } else {
-                backend.moveItem(doc, destParentRef);
+            if (isMoveTargetCandidate(destPath)) {
+                // MS Office tmp extension, the move may have to be undone later, so save the original name
+                saveMoveOriginalName();
             }
+            backend.moveItem(doc, destParentRef, getNameFromPath(destPath));
         }
+
         backend.saveChanges();
         return Response.status(status).build();
     }
@@ -342,6 +384,28 @@ public class ExistingResource extends AbstractResource {
         } else {
             return new Date();
         }
+    }
+
+    protected boolean isMoveTargetCandidate(String path) {
+        return path.endsWith(".tmp");
+    }
+
+    protected void saveMoveOriginalName() {
+        doc.setPropertyValue(DC_SOURCE, name);
+        doc = backend.getSession().saveDocument(doc);
+    }
+
+    protected String getMoveOriginalName() {
+        return (String) doc.getPropertyValue(DC_SOURCE);
+    }
+
+    protected void clearMoveOriginalName() {
+        doc.setPropertyValue(DC_SOURCE, null);
+    }
+
+    protected boolean isRecentlyCreated(DocumentModel doc) {
+        Calendar created = (Calendar) doc.getPropertyValue(DC_CREATED);
+        return created != null && created.toInstant().isAfter(Instant.now().minus(RECENTLY_CREATED_DELTA));
     }
 
 }

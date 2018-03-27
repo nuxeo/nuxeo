@@ -336,6 +336,11 @@ public class SimpleBackend extends AbstractCoreBackend {
     public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
             {
         cleanTrashPath(targetParentRef, name);
+        BlobHolder blobHolder = source.getAdapter(BlobHolder.class);
+        Blob blob = blobHolder.getBlob();
+        blob.setFilename(name);
+        blobHolder.setBlob(blob);
+        source = getSession().saveDocument(source);
         DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
         return model;
     }
