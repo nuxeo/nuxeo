@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.platform.oauth2.clients;
 
+import java.util.List;
+
 /**
  * @since 9.2
  */
@@ -34,4 +36,9 @@ public interface OAuth2ClientService {
     boolean isValidClient(String clientId, String clientSecret);
 
     OAuth2Client getClient(String clientId);
+
+    /**
+     * @since 10.2
+     */
+    List<OAuth2Client> getClients();
 }

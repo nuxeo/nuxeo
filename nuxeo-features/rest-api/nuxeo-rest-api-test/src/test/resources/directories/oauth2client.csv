@@ -1,0 +1,3 @@
+id,clientId,name,clientSecret,redirectURIs,autoGrant,enabled
+"id1","my-client","my-client-name","2113425ygfsd",null,true,true
+"id2","my-client-2","my-second-client-name","s234dsfsdss",null,true,true
