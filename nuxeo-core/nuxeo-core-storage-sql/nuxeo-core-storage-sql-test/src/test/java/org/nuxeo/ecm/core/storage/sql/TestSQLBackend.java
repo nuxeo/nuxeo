@@ -4349,9 +4349,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected static void checkOneDoc(Session session) {
         String query = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0";
-        QueryFilter qf = new QueryFilter(null, new String[] { "members", "bob" }, new String[] { "Read", "Everything" },
-                null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
-        PartialList<Serializable> res = session.query(query, qf, false);
+        PartialList<Serializable> res = session.query(query, QueryFilter.EMPTY, true);
         assertEquals(1, res.size());
     }
 

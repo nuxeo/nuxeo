@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,18 +124,24 @@ public abstract class SQLBackendTestCase {
 
     protected void clearAndClose(RepositoryImpl repo) {
         if (repo != null) {
-            Session session = repo.getConnection();
-            Node rootNode = session.getRootNode();
-            session.removeNode(rootNode);
-            PartialList<Serializable> results = session.query("SELECT * FROM TestDoc", QueryFilter.EMPTY, true);
-            for (Serializable result : results) {
-                Node node = session.getNodeById(result);
-                if (node != null) {
-                    session.removeNode(node);
-                }
-            }
+            SessionImpl session = repo.getConnection();
+            remove(session, "SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1");
+            remove(session, "SELECT ecm:uuid FROM Relation, Document");
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, 60);
+            session.cleanupDeletedDocuments(0, calendar);
             session.save();
             repo.close();
+        }
+    }
+
+    protected void remove(Session session, String query) {
+        PartialList<Serializable> results = session.query(query, QueryFilter.EMPTY, true);
+        for (Serializable result : results) {
+            Node node = session.getNodeById(result);
+            if (node != null) {
+                session.removeNode(node);
+            }
         }
     }
 
