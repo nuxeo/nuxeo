@@ -57,6 +57,7 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc", false);
         Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc", false);
         Node folder4 = session.addChildNode(folder1, "folder4", null, "TestDoc", false);
+        Node folder5 = session.addChildNode(folder4, "folder5", null, "TestDoc", false);
         // create node in folder1
         Node node = session.addChildNode(folder1, "node", null, "TestDoc", false);
         // create version
