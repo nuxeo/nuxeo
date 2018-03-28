@@ -40,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
 
+import redis.clients.jedis.exceptions.JedisDataException;
+
 /**
  * Redis implementation of a Key/Value Store Provider.
  * <p>
@@ -163,6 +165,20 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
         return map;
     }
 
+    @Override
+    public Map<String, Long> getLongs(Collection<String> keys) {
+        Map<String, Long> map = new HashMap<>(keys.size());
+        List<byte[]> values = getValuesForKeys(keys);
+        int i = 0;
+        for (String key : keys) {
+            byte[] value = values.get(i++);
+            if (value != null) {
+                map.put(key, bytesToLong(value));
+            }
+        }
+        return map;
+    }
+
     /**
      * @since 9.10
      */
@@ -217,6 +233,20 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
             }
             return set;
         }
+    }
+
+    @Override
+    public long addAndGet(String key, long delta) throws NumberFormatException { // NOSONAR
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        Long result = redisExecutor.execute(jedis -> {
+            byte[] keyb = getBytes(namespace + key);
+            try {
+                return jedis.incrBy(keyb, delta);
+            } catch (JedisDataException e) {
+                throw new NumberFormatException();
+            }
+        });
+        return result.longValue();
     }
 
     @Override

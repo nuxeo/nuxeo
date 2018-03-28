@@ -22,6 +22,7 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Updates.inc;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.unset;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -42,16 +43,20 @@ import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.ErrorCategory;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -138,15 +143,54 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         }
     }
 
+    protected byte[] toBytes(Object value) {
+        if (value instanceof String) {
+            return ((String) value).getBytes(UTF_8);
+        } else if (value instanceof Long) {
+            return ((Long) value).toString().getBytes(UTF_8);
+        } else if (value instanceof Binary) {
+            return ((Binary) value).getData();
+        }
+        return null;
+    }
+
+    protected String toString(Object value) {
+        if (value instanceof String) {
+            return (String) value;
+        } else if (value instanceof Long) {
+            return ((Long) value).toString();
+        } else if (value instanceof Binary) {
+            byte[] bytes = ((Binary) value).getData();
+            try {
+                return bytesToString(bytes);
+            } catch (CharacterCodingException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    protected Long toLong(Object value) throws NumberFormatException { // NOSONAR
+        if (value instanceof Long) {
+            return (Long) value;
+        } else if (value instanceof String) {
+            return Long.valueOf((String) value);
+        } else if (value instanceof Binary) {
+            byte[] bytes = ((Binary) value).getData();
+            return bytesToLong(bytes);
+        }
+        return null;
+    }
+
     @Override
     public byte[] get(String key) {
         Object value = getObject(key);
         if (value == null) {
             return null;
-        } else if (value instanceof String) {
-            return ((String) value).getBytes(UTF_8);
-        } else if (value instanceof Binary) {
-            return ((Binary) value).getData();
+        }
+        byte[] bytes = toBytes(value);
+        if (bytes != null) {
+            return bytes;
         }
         throw new UnsupportedOperationException(value.getClass().getName());
     }
@@ -156,17 +200,25 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         Object value = getObject(key);
         if (value == null) {
             return null;
-        } else if (value instanceof String) {
-            return (String) value;
-        } else if (value instanceof Binary) {
-            byte[] bytes = ((Binary) value).getData();
-            try {
-                return bytesToString(bytes);
-            } catch (CharacterCodingException e) {
-                // fall through to throw
-            }
+        }
+        String stringValue = toString(value);
+        if (stringValue != null) {
+            return stringValue;
         }
         throw new IllegalArgumentException("Value is not a String for key: " + key);
+    }
+
+    @Override
+    public Long getLong(String key) throws NumberFormatException { // NOSONAR
+        Object value = getObject(key);
+        if (value == null) {
+            return null;
+        }
+        Long longValue = toLong(value);
+        if (longValue != null) {
+            return longValue;
+        }
+        throw new NumberFormatException("Value is not a Long for key: " + key);
     }
 
     protected Object getObject(String key) {
@@ -192,16 +244,12 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             String key = doc.getString(ID_KEY);
             Object value = doc.get(VALUE_KEY);
             if (value != null) {
-                byte[] bytesValue = null;
-                if (value instanceof String) {
-                    bytesValue = ((String) value).getBytes(UTF_8);
-                } else if (value instanceof Binary) {
-                    bytesValue = ((Binary) value).getData();
-                } else {
+                byte[] bytes = toBytes(value);
+                if (bytes == null) {
                     throw new UnsupportedOperationException(String.format(
                             "Value of class %s is not supported for key: %s", value.getClass().getName(), key));
                 }
-                map.put(key, bytesValue);
+                map.put(key, bytes);
             }
         };
         findByKeys(keys, block);
@@ -215,21 +263,29 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             String key = doc.getString(ID_KEY);
             Object value = doc.get(VALUE_KEY);
             if (value != null) {
-                String strValue = null;
-                if (value instanceof String) {
-                    strValue = (String) value;
-                } else if (value instanceof Binary) {
-                    byte[] bytes = ((Binary) value).getData();
-                    try {
-                        strValue = bytesToString(bytes);
-                    } catch (CharacterCodingException e) {
-                        // fall through to throw
-                    }
-                }
+                String strValue = toString(value);
                 if (strValue == null) {
                     throw new IllegalArgumentException("Value is not a String for key: " + key);
                 }
                 map.put(key, strValue);
+            }
+        };
+        findByKeys(keys, block);
+        return map;
+    }
+
+    @Override
+    public Map<String, Long> getLongs(Collection<String> keys) throws NumberFormatException { // NOSONAR
+        Map<String, Long> map = new HashMap<>(keys.size());
+        Block<Document> block = doc -> {
+            String key = doc.getString(ID_KEY);
+            Object value = doc.get(VALUE_KEY);
+            if (value != null) {
+                Long longValue = toLong(value);
+                if (longValue == null) {
+                    throw new IllegalArgumentException("Value is not a Long for key: " + key);
+                }
+                map.put(key, longValue);
             }
         };
         findByKeys(keys, block);
@@ -260,6 +316,16 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public void put(String key, String string, long ttl) {
         put(key, (Object) string, ttl);
+    }
+
+    @Override
+    public void put(String key, Long value) {
+        put(key, (Object) value, 0);
+    }
+
+    @Override
+    public void put(String key, Long value, long ttl) {
+        put(key, (Object) value, ttl);
     }
 
     protected void put(String key, Object value, long ttl) {
@@ -375,6 +441,52 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
                 }
             }
             return set;
+        }
+    }
+
+    @Override
+    public long addAndGet(String key, long delta) throws NumberFormatException { // NOSONAR
+        Bson filter = eq(ID_KEY, key);
+        Bson update = inc(VALUE_KEY, Long.valueOf(delta));
+        Document result;
+        try {
+            result = coll.findOneAndUpdate(filter, update,
+                    new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER));
+        } catch (MongoCommandException e) {
+            // Cannot apply $inc to a value of non-numeric type; code: 16837
+            if (!e.getMessage().contains("Cannot apply $inc")) {
+                throw new NuxeoException(e);
+            }
+            // for compatibility with other backends that don't have datatypes,
+            // try to interpret the value as the string representation of an integer
+            // (this keeps the underlying format as a String though)
+            return addAndGetGeneric(key, delta);
+        }
+        if (result == null) {
+            throw new NuxeoException("Unexpected null result, upsert failed for key: " + key);
+        }
+        return ((Long) result.get(VALUE_KEY)).longValue();
+    }
+
+    // works on any representation that can be converted to a Long
+    protected long addAndGetGeneric(String key, long delta) throws NumberFormatException { // NOSONAR
+        for (;;) {
+            Object value = getObject(key);
+            long result;
+            if (value == null) {
+                result = delta;
+            } else {
+                Long base = toLong(value);
+                if (base == null) {
+                    throw new NumberFormatException("Value is not a Long for key: " + key);
+                }
+                result = base.longValue() + delta;
+            }
+            Object newValue = Long.valueOf(result);
+            if (compareAndSet(key, value, newValue, 0)) {
+                return result;
+            }
+            // else loop to try again
         }
     }
 
