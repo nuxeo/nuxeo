@@ -61,6 +61,8 @@ public abstract class AbstractKeyValueStoreTest {
 
     protected static final byte[] MOO_B = MOO.getBytes();
 
+    protected static final byte[] NOT_UTF_8 = new byte[] { (byte) 128, (byte) 0 };
+
     protected KeyValueStoreProvider store;
 
     @Before
@@ -88,6 +90,7 @@ public abstract class AbstractKeyValueStoreTest {
         assertEquals(Collections.emptySet(), storeKeys());
         assertNull(store.get(key));
         assertNull(store.getString(key));
+        assertNull(store.getLong(key));
         store.put(key, (byte[]) null);
         assertNull(store.get(key));
         assertEquals(Collections.emptySet(), storeKeys());
@@ -105,6 +108,13 @@ public abstract class AbstractKeyValueStoreTest {
         assertEquals(MOO, store.getString(key));
         assertEquals(Collections.singleton(key), storeKeys());
 
+        try {
+            store.getLong(key);
+            fail("shouldn't allow to get long");
+        } catch (NumberFormatException e) {
+            // ok
+        }
+
         // check value is copied on put and get
         byte[] bytes = ZAP.getBytes();
         store.put(key, bytes);
@@ -117,6 +127,147 @@ public abstract class AbstractKeyValueStoreTest {
         store.put(key, (String) null);
         assertNull(store.get(key));
         assertEquals(Collections.emptySet(), storeKeys());
+
+        store.put(key, Long.valueOf(-123));
+        assertEquals(Long.valueOf(-123), store.getLong(key));
+    }
+
+    @Test
+    public void testReadFromBytes() {
+        String key = "foo";
+
+        // null
+        store.put(key, (byte[]) null);
+        checkReadNull(key);
+
+        // long
+        store.put(key, "123456789".getBytes(UTF_8));
+        checkReadLong(key, 123456789);
+
+        // UTF-8 string
+        store.put(key, "ABC".getBytes(UTF_8));
+        checkReadString(key, "ABC");
+
+        // bytes not UTF-8
+        store.put(key, NOT_UTF_8);
+        checkReadBytes(key, NOT_UTF_8);
+    }
+
+    @Test
+    public void testReadFromString() {
+        String key = "foo";
+
+        // null
+        store.put(key, (String) null);
+        checkReadNull(key);
+
+        // long
+        store.put(key, "123456789");
+        checkReadLong(key, 123456789);
+
+        // UTF-8 string
+        store.put(key, "ABC");
+        checkReadString(key, "ABC");
+    }
+
+    @Test
+    public void testReadFromLong() {
+        String key = "foo";
+
+        // null
+        store.put(key, (Long) null);
+        checkReadNull(key);
+
+        // long
+        store.put(key, Long.valueOf(123456789));
+        checkReadLong(key, 123456789);
+    }
+
+    protected void checkReadNull(String key) {
+        assertNull(store.get(key));
+        assertNull(store.getString(key));
+        assertNull(store.getLong(key));
+
+        Set<String> keys = Collections.singleton(key);
+        assertTrue(store.get(keys).isEmpty());
+        assertTrue(store.getStrings(keys).isEmpty());
+        assertTrue(store.getLongs(keys).isEmpty());
+    }
+
+    protected void checkReadLong(String key, long value) {
+        Long longLong = Long.valueOf(value);
+        String longString = longLong.toString();
+
+        assertArrayEquals(longString.getBytes(UTF_8), store.get(key));
+        assertEquals(longString, store.getString(key));
+        assertEquals(longLong, store.getLong(key));
+
+        Set<String> keys = Collections.singleton(key);
+        Map<String, byte[]> bytesMap = store.get(keys);
+        assertEquals(1, bytesMap.size());
+        assertEquals(key, bytesMap.keySet().iterator().next());
+        assertArrayEquals(longString.getBytes(UTF_8), bytesMap.values().iterator().next());
+        assertEquals(Collections.singletonMap(key, longString), store.getStrings(keys));
+        assertEquals(Collections.singletonMap(key, longLong), store.getLongs(keys));
+    }
+
+    protected void checkReadString(String key, String string) {
+        assertArrayEquals(string.getBytes(UTF_8), store.get(key));
+        assertEquals(string, store.getString(key));
+        try {
+            store.getLong(key);
+            fail("should fail reading a non-numeric value");
+        } catch (NumberFormatException e) {
+            // ok
+        }
+
+        Set<String> keys = Collections.singleton(key);
+        Map<String, byte[]> bytesMap = store.get(keys);
+        assertEquals(1, bytesMap.size());
+        assertEquals(key, bytesMap.keySet().iterator().next());
+        assertArrayEquals(string.getBytes(UTF_8), bytesMap.values().iterator().next());
+        assertEquals(Collections.singletonMap(key, string), store.getStrings(keys));
+        try {
+            store.getLongs(keys);
+            fail("should fail reading a non-numeric value");
+        } catch (NumberFormatException e) {
+            // ok
+        }
+    }
+
+    // bytes that are not utf-8
+    protected void checkReadBytes(String key, byte[] bytes) {
+        assertArrayEquals(bytes, store.get(key));
+        try {
+            store.getString(key);
+            fail("should fail reading a non-UTF-8 value");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            store.getLong(key);
+            fail("should fail reading a non-numeric value");
+        } catch (NumberFormatException e) {
+            // ok
+        }
+
+        Set<String> keys = Collections.singleton(key);
+        Map<String, byte[]> bytesMap = store.get(keys);
+        assertEquals(1, bytesMap.size());
+        assertEquals(key, bytesMap.keySet().iterator().next());
+        assertArrayEquals(bytes, bytesMap.values().iterator().next());
+        try {
+            store.getStrings(keys);
+            fail("should fail reading a non-UTF-8 value");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            store.getLongs(keys);
+            fail("should fail reading a non-numeric value");
+        } catch (NumberFormatException e) {
+            // ok
+        }
     }
 
     @Test
@@ -148,6 +299,38 @@ public abstract class AbstractKeyValueStoreTest {
         assertArrayEquals(GEE_B, storeBMap.get(key2));
         assertArrayEquals(MOO_B, storeBMap.get(key3));
         assertEquals(3, storeBMap.entrySet().size());
+    }
+
+    @SuppressWarnings("boxing")
+    @Test
+    public void testGetManyLong() {
+        String key1 = "foo1";
+        String key2 = "foo2";
+        String key3 = "foo3";
+        String key4 = "foo4";
+        String key5 = "foo5";
+        Set<String> keys = new HashSet<>(Arrays.asList(key1, key2, key3, key4, key5));
+
+        assertTrue(store.get(keys).isEmpty());
+
+        Map<String, Long> map = new HashMap<>();
+        map.put(key1, 1L);
+        map.put(key2, 2L);
+        map.put(key3, 3L);
+        store.put(key1, 1L);
+        store.put(key2, 2L);
+        store.put(key3, 3L);
+        store.put(key4, (Long) null);
+        assertEquals(map, store.getLongs(keys));
+
+        // store a value that cannot be interpreted as a Long
+        store.put(key1, "notalong");
+        try {
+            store.getLongs(keys);
+            fail("shouldn't allow to get longs");
+        } catch (NumberFormatException e) {
+            // ok
+        }
     }
 
     @Test
@@ -267,7 +450,42 @@ public abstract class AbstractKeyValueStoreTest {
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
         sleepForTTLExpiration();
         assertNull(store.get(key));
+    }
 
+    @Test
+    public void testAddAndGet() throws Exception {
+        String key = "foo";
+
+        assertNull(store.get(key));
+        assertEquals(123, store.addAndGet(key, 123));
+        assertEquals(579, store.addAndGet(key, 456));
+        assertEquals(-421, store.addAndGet(key, -1000));
+        assertEquals(0, store.addAndGet(key, 421));
+
+        // numeric string works too
+        store.put(key, "123");
+        assertEquals(456, store.addAndGet(key, 333));
+        assertEquals("456", store.getString(key));
+        assertEquals(Long.valueOf(456), store.getLong(key));
+
+        // invalid empty string
+        store.put(key, "");
+        try {
+            store.addAndGet(key, 1);
+            // TODO uncomment when Redis is upgraded to a more recent version than 2.8, which allowed this
+            // fail("shouldn't allow incrementing an empty string");
+        } catch (NumberFormatException e) {
+            // ok
+        }
+
+        // invalid non-numeric string
+        store.put(key, "ABC");
+        try {
+            store.addAndGet(key, 1);
+            fail("shouldn't allow incrementing a non-numeric string");
+        } catch (NumberFormatException e) {
+            // ok
+        }
     }
 
 }
