@@ -1,6 +1,6 @@
 #!/bin/bash -e
 ##
-## (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+## (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -27,13 +27,15 @@ readonly TOMCAT_LATEST_URL="http://www.apache.org/dist/tomcat/tomcat-7"
 
 usage() {
   echo "Usage:"
-  echo -e "\t./$(basename "$0") NUXEO_HOME [TOMCAT_TARGET_VERSION]"
+  echo -e "\\t./$(basename "$0") NUXEO_HOME [TOMCAT_TARGET_VERSION]"
   echo
   echo "Note: If no target version is specified the latest one will be retrieved from the Tomcat site"
   echo
+  echo "Warning: this script cannot be run with sudo -c. The Nuxeo user has to be logged in."
+  echo
   echo "Examples:"
-  echo -e "\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat"
-  echo -e "\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat 7.0.76"
+  echo -e "\\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat"
+  echo -e "\\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat 7.0.76"
 }
 
 verifyHash() {
@@ -43,11 +45,11 @@ verifyHash() {
   local hash_tocheck
   local hash_value
 
-  echo -n -e "\tVerifying ${hash_filename}..."
+  echo -n -e "\\tVerifying ${hash_filename}..."
 
   # file containing the hash
-  filename_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
-  hash_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 1 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
+  filename_tocheck="$(cut -d ' ' -f 2 < "${hash_filename}" | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
+  hash_tocheck="$(cut -d ' ' -f 1 < "${hash_filename}" | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
 
   # file to be checked
   hash_value="$(openssl "${hash_algorithm}" "${filename_tocheck}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
@@ -72,7 +74,7 @@ if [ ! -f "$1/templates/nuxeo.defaults" ]; then
   echo
   exit 1
 fi
-NUXEO_HOME=$1
+NUXEO_HOME="$( cd "${1}" && pwd )"
 
 if [ -z "$2" ]; then
   # autodetects latest version
@@ -116,31 +118,26 @@ echo "Retrieving files..."
 rm -rf "${WORK_FOLDER}"
 mkdir -p "${WORK_FOLDER}"
 cd "${WORK_FOLDER}"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5"
-wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1"
+WGET_OPTS="$(wget --help | grep -q '\--show-progress' && echo '-q --show-progress')" || WGET_OPTS=""
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz"
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar"
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1"
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar"
+wget ${WGET_OPTS} "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1"
 
 echo
 echo "Checking archives..."
-verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
 verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
-verifyHash "tomcat-juli-adapters.jar.md5"
 verifyHash "tomcat-juli-adapters.jar.sha1"
-verifyHash "tomcat-juli.jar.md5"
 verifyHash "tomcat-juli.jar.sha1"
 
 echo
 echo "Patching Nuxeo..."
 # upgrading files from core distribution
-echo -e "\tUncompressing apache archive..."
+echo -e "\\tUncompressing apache archive..."
 tar zxf "apache-tomcat-${TOMCAT_TARGET}.tar.gz"
-echo -e "\tCopying apache files..."
+echo -e "\\tCopying apache files..."
 cp "apache-tomcat-${TOMCAT_TARGET}"/lib/* "${NUXEO_HOME}/lib"
 cp "apache-tomcat-${TOMCAT_TARGET}"/bin/*.jar "${NUXEO_HOME}/bin"
 cp "apache-tomcat-${TOMCAT_TARGET}/bin/catalina-tasks.xml" "${NUXEO_HOME}/bin"
@@ -152,19 +149,19 @@ rm "${NUXEO_HOME}/nxserver/lib/tomcat-juli-${TOMCAT_SOURCE}.jar"
 cp "apache-tomcat-${TOMCAT_TARGET}/bin/tomcat-juli.jar" "${NUXEO_HOME}/nxserver/lib/tomcat-juli-${TOMCAT_TARGET}.jar"
 
 # upgrading files from extras
-echo -e "\tCopying apache extras files..."
+echo -e "\\tCopying apache extras files..."
 cp tomcat-juli.jar "${NUXEO_HOME}/bin"
 cp tomcat-juli-adapters.jar "${NUXEO_HOME}/lib"
 
 # release files
-echo -e "\tCopying apache release files..."
+echo -e "\\tCopying apache release files..."
 cp "apache-tomcat-${TOMCAT_TARGET}/RELEASE-NOTES" "${NUXEO_HOME}/doc-tomcat"
 cp "apache-tomcat-${TOMCAT_TARGET}/LICENSE" "${NUXEO_HOME}/doc-tomcat"
 cp "apache-tomcat-${TOMCAT_TARGET}/NOTICE" "${NUXEO_HOME}/doc-tomcat"
 cp "apache-tomcat-${TOMCAT_TARGET}/RUNNING.txt" "${NUXEO_HOME}/doc-tomcat"
 
 # nuxeo version bump
-echo -e "\tUpdating Tomcat version in nuxeo.defaults..."
+echo -e "\\tUpdating Tomcat version in nuxeo.defaults..."
 sed 's/'"${TOMCAT_SOURCE//./\\.}"'/'"${TOMCAT_TARGET}"'/g' "${NUXEO_HOME}/templates/nuxeo.defaults" > "${WORK_FOLDER}/nuxeo.defaults"
 mv "${WORK_FOLDER}/nuxeo.defaults" "${NUXEO_HOME}/templates/nuxeo.defaults"
 
