@@ -45,7 +45,7 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar, localConfStri
     mode : "exact",
     theme : "modern",
     elements : eltId,
-    plugins : [ "link image code searchreplace paste visualchars charmap table preview " + plugins ],
+    plugins : [ "lists link image code searchreplace paste visualchars charmap table preview " + plugins ],
     language : lang,
 
     // Img insertion fixes
