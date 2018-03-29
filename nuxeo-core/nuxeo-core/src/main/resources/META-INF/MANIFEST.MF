@@ -41,6 +41,7 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/character-filtering-service-contrib.xml,
   OSGI-INF/documentblobmanager-service.xml,
   OSGI-INF/uidgenerator-service.xml,
+  OSGI-INF/uidgenerator-keyvalue-config.xml,
   OSGI-INF/CoreSessionService.xml,
   OSGI-INF/scheduler-contrib.xml
 Bundle-ManifestVersion: 2
