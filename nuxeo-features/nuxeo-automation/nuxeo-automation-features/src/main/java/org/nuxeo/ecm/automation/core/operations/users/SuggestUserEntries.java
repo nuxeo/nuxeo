@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -55,6 +56,8 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
 
 /**
  * SuggestUser Operation.
@@ -168,6 +171,7 @@ public class SuggestUserEntries {
                     }
                     String userId = user.getId();
                     obj.put(SuggestConstants.ID, userId);
+                    obj.put(MarshallingConstants.ENTITY_FIELD_NAME, NuxeoPrincipalJsonWriter.ENTITY_TYPE);
                     obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.USER_TYPE);
                     obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
                     SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
@@ -217,6 +221,7 @@ public class SuggestUserEntries {
                     }
                     String groupId = group.getId();
                     obj.put(SuggestConstants.ID, groupId);
+                    obj.put(MarshallingConstants.ENTITY_FIELD_NAME, NuxeoGroupJsonWriter.ENTITY_TYPE);
                     // If the group hasn't an label, let's put the groupid
                     SuggestConstants.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
                     obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.GROUP_TYPE);
