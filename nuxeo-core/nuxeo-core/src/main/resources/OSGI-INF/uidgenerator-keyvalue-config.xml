@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.uidseq.keyvaluestore" version="1.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property defining the name of the key/value store used for the KeyValueStoreUIDSequencer.
+    </documentation>
+    <property name="nuxeo.uidseq.keyvaluestore.name">sequence</property>
+  </extension>
+
+</component>

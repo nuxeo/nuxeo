@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.uidseq.keyvaluestore.tests">
+
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+    <sequencer name="uidgen" class="org.nuxeo.ecm.core.uidgen.KeyValueStoreUIDSequencer" default="true" />
+    <sequencer name="myseq" class="org.nuxeo.ecm.core.uidgen.KeyValueStoreUIDSequencer" />
+  </extension>
+
+</component>
