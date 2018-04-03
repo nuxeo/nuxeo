@@ -76,7 +76,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  *     // do not call the other marshaller
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2.
