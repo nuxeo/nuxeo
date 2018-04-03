@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,6 +31,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -293,6 +295,27 @@ public class TestService {
         assertNotNull(resultBlob);
         assertEquals("application/pdf", resultBlob.getMimeType());
         assertEquals("dummy.pdf", resultBlob.getFilename());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-multi-blob-contrib.xml")
+    public void testListBlobCaching() {
+        Map<String, Serializable> parameters = new HashMap<>();
+        Blob blob = Blobs.createBlob("dummy text", "text/plain");
+        BlobHolder result = cs.convert("dummyMulti", new SimpleBlobHolder(blob), parameters);
+        assertListBlobCachingResult(result);
+
+        result = cs.convert("dummyMulti", new SimpleBlobHolder(blob), parameters);
+        assertListBlobCachingResult(result);
+    }
+
+    protected void assertListBlobCachingResult(BlobHolder result) {
+        assertNotNull(result);
+
+        Set<String> resultFilenames = result.getBlobs().stream().map(Blob::getFilename).collect(toSet());
+        assertTrue("file1 was not found in result", resultFilenames.remove("file1"));
+        assertTrue("file2 was not found in result", resultFilenames.remove("file2"));
+        assertTrue("There's unexpected blobs in result", resultFilenames.isEmpty());
     }
 
 }
