@@ -42,6 +42,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -113,14 +114,11 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected AbstractWebContext(HttpServletRequest request, HttpServletResponse response) {
         engine = Framework.getService(WebEngine.class);
-        scriptExecutionStack = new LinkedList<File>();
+        scriptExecutionStack = new LinkedList<>();
         this.request = request;
         this.response = response;
-        vars = new HashMap<String, Object>();
+        vars = new HashMap<>();
     }
-
-    // public abstract HttpServletRequest getHttpServletRequest();
-    // public abstract HttpServletResponse getHttpServletResponse();
 
     public void setModule(Module module) {
         this.module = module;
@@ -235,7 +233,7 @@ public abstract class AbstractWebContext implements WebContext {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, getLocale().getLanguage());
-            if (args != null && args.size() > 0) {
+            if (CollectionUtils.isNotEmpty(args)) {
                 // format the string using given args
                 msg = MessageFormat.format(msg, args.toArray());
             }
@@ -295,9 +293,9 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
 
-        UserSession us = getUserSession();
-        if (us != null) {
-            Object locale = us.get(LOCALE_SESSION_KEY);
+        UserSession userSession = getUserSession();
+        if (userSession != null) {
+            Object locale = userSession.get(LOCALE_SESSION_KEY);
             if (locale instanceof Locale) {
                 return (Locale) locale;
             }
@@ -310,9 +308,9 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public void setLocale(Locale locale) {
-        UserSession us = getUserSession();
-        if (us != null) {
-            us.put(LOCALE_SESSION_KEY, locale);
+        UserSession userSession = getUserSession();
+        if (userSession != null) {
+            userSession.put(LOCALE_SESSION_KEY, locale);
         }
     }
 
@@ -687,7 +685,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Map<String, Object> createBindings(Map<String, Object> vars) {
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         if (vars != null) {
             bindings.putAll(vars);
         }
