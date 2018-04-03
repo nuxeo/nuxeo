@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,7 +62,7 @@ public class NuxeoDriveGetRootsOperation {
         boolean allRepositories = true;
         HttpServletRequest request = (HttpServletRequest) ctx.get("request");
         if (request != null) {
-            String respositoryName = request.getHeader("X-NXRepository");
+            String respositoryName = request.getHeader(RenderingContext.REPOSITORY_NAME_REQUEST_HEADER);
             if (!StringUtils.isEmpty(respositoryName)) {
                 allRepositories = false;
             }
