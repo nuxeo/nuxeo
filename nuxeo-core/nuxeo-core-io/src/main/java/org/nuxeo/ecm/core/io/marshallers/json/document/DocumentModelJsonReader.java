@@ -91,8 +91,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             throws IOException {
         Reader<DocumentModel> reader = ctx.getParameter(LEGACY_MODE_READER);
         if (reader != null) {
-            DocumentModel doc = reader.read(clazz, genericType, mediaType, in);
-            return doc;
+            return reader.read(clazz, genericType, mediaType, in);
         } else {
             return super.read(clazz, genericType, mediaType, in);
         }
