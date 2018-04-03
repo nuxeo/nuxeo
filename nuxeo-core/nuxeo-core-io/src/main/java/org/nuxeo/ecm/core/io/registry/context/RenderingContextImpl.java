@@ -103,9 +103,9 @@ public class RenderingContextImpl implements RenderingContext {
             }
         }
 
-        String repoNameFound = getParameter("X-NXRepository");
+        String repoNameFound = getParameter(REPOSITORY_NAME_REQUEST_HEADER);
         if (StringUtils.isBlank(repoNameFound)) {
-            repoNameFound = getParameter("nxrepository");
+            repoNameFound = getParameter(REPOSITORY_NAME_REQUEST_PARAMETER);
             if (StringUtils.isBlank(repoNameFound) && document != null) {
                 try {
                     repoNameFound = document.getRepositoryName();

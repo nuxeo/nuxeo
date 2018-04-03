@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -774,6 +775,8 @@ public abstract class AbstractWebContext implements WebContext {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         if (rm.getRepository(repoName) != null) {
             this.repoName = repoName;
+            // set the repository name as a request attribute for later retrieval
+            request.setAttribute(RenderingContext.REPOSITORY_NAME_REQUEST_HEADER, repoName);
         } else {
             throw new IllegalArgumentException("Repository " + repoName + " not found");
         }
