@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -105,7 +106,7 @@ public class RenderingContextImpl implements RenderingContext {
         String repoNameFound = getParameter("X-NXRepository");
         if (StringUtils.isBlank(repoNameFound)) {
             repoNameFound = getParameter("nxrepository");
-            if (StringUtils.isBlank(repoNameFound)) {
+            if (StringUtils.isBlank(repoNameFound) && document != null) {
                 try {
                     repoNameFound = document.getRepositoryName();
                 } catch (UnsupportedOperationException e) {
@@ -114,8 +115,8 @@ public class RenderingContextImpl implements RenderingContext {
             }
         }
         if (!StringUtils.isBlank(repoNameFound)) {
-            CoreSession session = CoreInstance.openCoreSession(repoNameFound);
-            return new SessionWrapper(session, true);
+            CoreSession repoSession = CoreInstance.openCoreSession(repoNameFound);
+            return new SessionWrapper(repoSession, true);
         }
         throw new MarshallingException("Unable to create a new session");
     }
@@ -158,19 +159,19 @@ public class RenderingContextImpl implements RenderingContext {
         if (category == null) {
             return Collections.emptySet();
         }
-        String paramKey = category;
+        StringBuilder sb = new StringBuilder(category);
         for (String subCategory : subCategories) {
-            paramKey += separator + subCategory;
+            sb.append(separator + subCategory);
         }
-        paramKey = paramKey.toLowerCase();
+        String paramKey = sb.toString().toLowerCase();
         List<Object> dirty = getParameters(paramKey);
         dirty.addAll(getParameters(HEADER_PREFIX + paramKey));
         // Deprecated on server since 5.8, but the code on client wasn't - keep this part of code as Nuxeo Automation
         // Client is deprecated since 8.10 and Nuxeo Java Client handle this properly
         // backward compatibility, supports X-NXDocumentProperties and X-NXContext-Category
-        if (EMBED_PROPERTIES.toLowerCase().equals(paramKey)) {
+        if (EMBED_PROPERTIES.equalsIgnoreCase(paramKey)) {
             dirty.addAll(getParameters("X-NXDocumentProperties"));
-        } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
+        } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).equalsIgnoreCase(paramKey)) {
             dirty.addAll(getParameters("X-NXContext-Category"));
         }
         Set<String> result = new TreeSet<>();
@@ -198,12 +199,12 @@ public class RenderingContextImpl implements RenderingContext {
         }
         String realName = name.toLowerCase().trim();
         List<Object> values = parameters.get(realName);
-        if (values != null && values.size() > 0) {
+        if (CollectionUtils.isNotEmpty(values)) {
             @SuppressWarnings("unchecked")
             T value = (T) values.get(0);
             return value;
         }
-        if (WRAPPED_CONTEXT.toLowerCase().equals(realName)) {
+        if (WRAPPED_CONTEXT.equalsIgnoreCase(realName)) {
             return null;
         } else {
             return getWrappedEntity(realName);
@@ -241,7 +242,7 @@ public class RenderingContextImpl implements RenderingContext {
         } else {
             result = new ArrayList<>();
         }
-        if (WRAPPED_CONTEXT.toLowerCase().equals(realName)) {
+        if (WRAPPED_CONTEXT.equalsIgnoreCase(realName)) {
             return result;
         } else {
             Object wrapped = getWrappedEntity(realName);

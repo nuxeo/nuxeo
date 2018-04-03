@@ -70,22 +70,22 @@ public class HttpClientTestRule implements TestRule {
 
             @Override
             public void evaluate() throws Throwable {
-                starting(description);
+                starting();
                 try {
                     base.evaluate();
                 } finally {
-                    finished(description);
+                    finished();
                 }
             }
         };
     }
 
-    protected void starting(Description description) {
+    protected void starting() {
         client = JerseyClientHelper.clientBuilder().setCredentials(username, password).build();
         service = client.resource(url);
     }
 
-    protected void finished(Description description) {
+    protected void finished() {
         client.destroy();
     }
 
