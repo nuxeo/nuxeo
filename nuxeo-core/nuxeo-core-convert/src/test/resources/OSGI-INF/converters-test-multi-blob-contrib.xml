@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.multi">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+    <converter name="dummyMulti" class="org.nuxeo.ecm.core.convert.tests.DummyMultiOutputConverter" />
+  </extension>
+
+</component>
