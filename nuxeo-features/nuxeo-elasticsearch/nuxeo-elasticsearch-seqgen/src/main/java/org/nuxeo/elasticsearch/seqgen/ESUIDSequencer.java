@@ -20,6 +20,8 @@ package org.nuxeo.elasticsearch.seqgen;
 
 import java.util.NoSuchElementException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -44,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESUIDSequencer extends AbstractUIDSequencer {
 
+    private static final Log log = LogFactory.getLog(ESUIDSequencer.class);
+
     protected ESClient esClient = null;
 
     protected String indexName;
@@ -54,6 +58,10 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
             return;
         }
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        if (!esa.isElasticsearchEnabled()) {
+            log.info("Elasticsearch service is disabled");
+            return;
+        }
         esClient = esa.getClient();
         indexName = esa.getIndexNameForType(ElasticSearchConstants.SEQ_ID_TYPE);
         try {

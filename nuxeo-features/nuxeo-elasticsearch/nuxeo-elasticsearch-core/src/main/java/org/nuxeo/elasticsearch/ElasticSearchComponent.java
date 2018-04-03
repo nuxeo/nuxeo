@@ -213,7 +213,8 @@ public class ElasticSearchComponent extends DefaultComponent
         }
     }
 
-    protected boolean isElasticsearchEnabled() {
+    @Override
+    public boolean isElasticsearchEnabled() {
         return Boolean.parseBoolean(Framework.getProperty(ES_ENABLED_PROPERTY, "true"));
     }
 
