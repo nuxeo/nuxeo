@@ -110,7 +110,7 @@ public class SAMLAuthenticationProvider
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
 
-    private static final String ERROR_PAGE = "saml/error.jsp";
+    private static final String ERROR_PAGE = "/saml/error.jsp";
 
     private static final String ERROR_AUTH = "error.saml.auth";
 
