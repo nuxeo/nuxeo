@@ -66,7 +66,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  * {
  *   "entity-type": "document",
  *   "uid": "EXISTING_DOCUMENT_UID", <- use it to update an existing document
- *   "repository": "REPOSITORY_NAME" , <- explicitely specify the repository name
  *   "name": "DOCUMENT_NAME", <- use it to create an new document
  *   "type": "DOCUMENT_TYPE", <- use it to create an new document
  *   "changeToken": "CHANGE_TOKEN", <- pass the previous change token for optimistic locking

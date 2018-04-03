@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 
@@ -38,10 +39,23 @@ public class SessionFactory {
         defaultRepository = repoName;
     }
 
+    /**
+     * Resolves the repository name in the following order:
+     *
+     * <pre>
+     * - "X-NXRepository" request attribute
+     * - "X-NXRepository" request header
+     * - "nxrepository" request parameter
+     * - default
+     * </pre>
+     */
     public static String getRepositoryName(HttpServletRequest request) {
-        String v = request.getHeader("X-NXRepository");
+        String v = (String) request.getAttribute(RenderingContext.REPOSITORY_NAME_REQUEST_HEADER);
         if (v == null) {
-            v = request.getParameter("nxrepository");
+            v = request.getHeader(RenderingContext.REPOSITORY_NAME_REQUEST_HEADER);
+        }
+        if (v == null) {
+            v = request.getParameter(RenderingContext.REPOSITORY_NAME_REQUEST_PARAMETER);
         }
         return v != null ? v : defaultRepository;
     }
