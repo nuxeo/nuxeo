@@ -764,7 +764,17 @@
       <!-- Easyshare -->
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-easyshare</artifactId>
+        <artifactId>nuxeo-easyshare-core</artifactId>
+        <version>${nuxeo.easyshare.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-easyshare-jsf</artifactId>
+        <version>${nuxeo.easyshare.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-easyshare-web-ui</artifactId>
         <version>${nuxeo.easyshare.version}</version>
       </dependency>
 
