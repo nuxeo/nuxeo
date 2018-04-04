@@ -295,6 +295,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token/provider")
     public List<NuxeoOAuth2Token> getProviderUserTokens(@Context HttpServletRequest request) {
+        checkNotAnonymousUser();
         String nxuser = request.getUserPrincipal().getName();
         return getTokens(nxuser).stream() // filter: make sure no client tokens are retrieved
                 .filter(token -> token.getClientId() == null).collect(Collectors.toList());
@@ -308,6 +309,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token/client")
     public List<NuxeoOAuth2Token> getClientUserTokens(@Context HttpServletRequest request) {
+        checkNotAnonymousUser();
         String nxuser = request.getUserPrincipal().getName();
         return getTokens(nxuser).stream() // filter: make sure no provider tokens are retrieved
                 .filter(token -> token.getClientId() != null).collect(Collectors.toList());
@@ -436,7 +438,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         });
         if (tokens.size() > 1) {
             throw new NuxeoException("Found multiple " + provider.getId() + " accounts for " + nxuser);
-        } else if (tokens.size() == 0) {
+        } else if (tokens.isEmpty()) {
             throw new WebResourceNotFoundException("No token found for provider: " + provider.getServiceName());
         } else {
             return tokens.get(0);
@@ -527,6 +529,13 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     protected boolean hasPermission(String nxuser) {
         NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
         return principal.isAdministrator() || (nxuser == null ? false : nxuser.equals(principal.getName()));
+    }
+
+    protected void checkNotAnonymousUser() {
+        NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
+        if (principal.isAnonymous()) {
+            throw new WebSecurityException("You do not have permissions to perform this operation.");
+        }
     }
 
 }
