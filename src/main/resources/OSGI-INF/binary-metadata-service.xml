@@ -59,12 +59,6 @@
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
-    <listener name="binaryMetadataWorkSyncListener"
-              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataWorkListener"
-              priority="100">
-      <event>documentCreated</event>
-      <event>documentModified</event>
-    </listener>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"

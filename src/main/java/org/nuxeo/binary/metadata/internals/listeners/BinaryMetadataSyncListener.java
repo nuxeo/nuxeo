@@ -22,13 +22,18 @@ package org.nuxeo.binary.metadata.internals.listeners;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
+import java.util.List;
+
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
+import org.nuxeo.binary.metadata.internals.BinaryMetadataWork;
+import org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,15 +53,32 @@ public class BinaryMetadataSyncListener implements EventListener {
             return;
         }
         BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
-        DocumentEventContext docCtx = (DocumentEventContext) ctx;
-        DocumentModel doc = docCtx.getSourceDocument();
-        Boolean disable = (Boolean) event.getContext().getProperty(
-                BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER);
-        if (ABOUT_TO_CREATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
-            binaryMetadataService.writeMetadata(doc);
-        } else if (BEFORE_DOC_UPDATE.equals(event.getName()) && !doc.isProxy() && disable == null) {
+        DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
+        Boolean disable = (Boolean) ctx.getProperty(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER);
+        if (doc.isProxy() || disable == null) {
+            return;
+        }
+        if (ABOUT_TO_CREATE.equals(event.getName())) {
+            //binaryMetadataService.writeMetadata(doc);
+            process(binaryMetadataService, doc, BinaryMetadataWork.Rule.blob2Doc);
+        } else if (BEFORE_DOC_UPDATE.equals(event.getName())) {
             doc.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
-            binaryMetadataService.handleSyncUpdate(doc);
+            BinaryMetadataWork.Rule rule = binaryMetadataService.getRule(doc);
+            process(binaryMetadataService, doc, rule);
+        }
+    }
+
+    protected void process(BinaryMetadataService binaryMetadataService, DocumentModel doc,
+            BinaryMetadataWork.Rule rule) {
+        binaryMetadataService.handleSyncUpdate(doc);
+        Boolean execute = (Boolean) doc.getContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE);
+        if (Boolean.TRUE.equals(execute) && !doc.isProxy()) {
+            List<MetadataMappingDescriptor> mappingDescriptors = (List<MetadataMappingDescriptor>) doc.getContextData(
+                    BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+            BinaryMetadataWork work = new BinaryMetadataWork(doc.getRepositoryName(), doc.getId(), mappingDescriptors,
+                    rule);
+            WorkManager workManager = Framework.getService(WorkManager.class);
+            workManager.schedule(work, true);
         }
     }
 

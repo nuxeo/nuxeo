@@ -251,20 +251,22 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             Blob blob = fileProp.getValue(Blob.class);
             if (blob != null) {
                 boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
-                if (isDirtyMapping) {
+                if (fileProp.isDirty()) {
+                    // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
+                    writeMetadata(doc);
+                } else if (isDirtyMapping) {
                     BlobManager blobManager = Framework.getService(BlobManager.class);
                     BlobProvider blobProvider = blobManager.getBlobProvider(blob);
                     // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
                     // providers that prevent user updates
-                    if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+                    if (blobProvider != null
+                            && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
                         return;
                     }
                     // if document metadata dirty, write metadata from doc to Blob
-                    Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                    Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class),
+                            mappingDescriptor.getId(), doc);
                     fileProp.setValue(newBlob);
-                } else if (fileProp.isDirty()) {
-                    // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
-                    writeMetadata(doc);
                 }
             }
         }

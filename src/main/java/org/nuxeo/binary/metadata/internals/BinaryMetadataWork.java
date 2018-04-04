@@ -20,6 +20,7 @@ package org.nuxeo.binary.metadata.internals;
 
 import java.util.List;
 
+import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -43,11 +44,19 @@ public class BinaryMetadataWork extends AbstractWork {
 
     protected final String docId;
 
-    public BinaryMetadataWork(String repositoryName, String docId, List<MetadataMappingDescriptor> mappingDescriptors) {
+    public enum Rule {
+        doc2Blob, blob2Doc
+    }
+
+    protected final Rule rule;
+
+    public BinaryMetadataWork(String repositoryName, String docId, List<MetadataMappingDescriptor> mappingDescriptors,
+            Rule rule) {
         super("BinaryMetadataUpdate|docId=" + docId);
         setDocument(repositoryName, docId);
         this.mappingDescriptors = mappingDescriptors;
         this.docId = docId;
+        this.rule = rule;
     }
 
     @Override
@@ -71,8 +80,14 @@ public class BinaryMetadataWork extends AbstractWork {
         }
         BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
         DocumentModel workingDocument = session.getDocument(new IdRef(docId));
-        binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument);
-        session.saveDocument(workingDocument);
+        workingDocument.putContextData(BinaryMetadataConstants.DISABLE_BINARY_METADATA_LISTENER, Boolean.TRUE);
+        if (Rule.blob2Doc.equals(rule)) {
+            binaryMetadataService.writeMetadata(workingDocument);
+            session.saveDocument(workingDocument);
+        } else {
+            binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument);
+            session.saveDocument(workingDocument);
+        }
         setStatus("Metadata Update Done");
     }
 

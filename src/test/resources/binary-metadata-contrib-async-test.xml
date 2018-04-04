@@ -4,16 +4,9 @@
 
   <extension target="org.nuxeo.binary.metadata"
              point="metadataRules">
-    <rule id="default" order="0" enabled="true" async="false">
-      <metadataMappings>
-        <metadataMapping-id>PDF</metadataMapping-id>
-      </metadataMappings>
-      <filters>
-        <filter-id>hasFileType</filter-id>
-      </filters>
-    </rule>
     <rule id="other" order="0" enabled="true" async="true">
       <metadataMappings>
+        <metadataMapping-id>PDF</metadataMapping-id>
         <metadataMapping-id>PDFBIS</metadataMapping-id>
         <metadataMapping-id>PDFTRIS</metadataMapping-id>
       </metadataMappings>
