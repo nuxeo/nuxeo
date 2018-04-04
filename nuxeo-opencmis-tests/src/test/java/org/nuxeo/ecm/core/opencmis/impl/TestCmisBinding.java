@@ -159,6 +159,7 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
@@ -1701,7 +1702,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
 
         // delete another file:
-        coreSession.followTransition(new PathRef("/testfolder1/testfile1"), "delete");
+        Framework.getService(TrashService.class)
+                 .trashDocument(coreSession.getDocument(new PathRef("/testfolder1/testfile1")));
         coreSession.save();
         nextTransaction();
         waitForIndexing();

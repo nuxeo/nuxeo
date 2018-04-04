@@ -45,15 +45,15 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Various static methods used in several test cases.
  */
 public class Helper {
-
-    public static final String DELETE_TRANSITION = "delete";
 
     public static final String FILE1_CONTENT = "Noodles with rice";
 
@@ -203,7 +203,7 @@ public class Helper {
         DocumentModel file5 = session.createDocumentModel("/testfolder1", "testfile5", "File");
         file5.setPropertyValue("dc:title", "title5");
         file5 = createDocument(session, file5);
-        file5.followTransition(DELETE_TRANSITION);
+        Framework.getService(TrashService.class).trashDocument(file5);
         file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());
 
