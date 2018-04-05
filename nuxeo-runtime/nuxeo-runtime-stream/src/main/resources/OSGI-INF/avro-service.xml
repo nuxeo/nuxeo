@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.avro" version="1.0">
+
+  <documentation>
+    The component allows to register and use avro schemas.
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.avro.AvroComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.avro.AvroSchemaStoreService" />
+    <provide interface="org.apache.avro.message.SchemaStore" />
+  </service>
+
+  <extension-point name="schema">
+    <object class="org.nuxeo.runtime.avro.AvroSchemaDescriptor" />
+  </extension-point>
+
+</component>
