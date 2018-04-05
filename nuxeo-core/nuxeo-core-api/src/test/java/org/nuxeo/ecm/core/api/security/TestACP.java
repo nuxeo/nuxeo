@@ -48,10 +48,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
@@ -388,10 +390,37 @@ public class TestACP {
 
     }
 
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-legacy-acp-behavior.xml")
+    public void testLegacyACLBehavior() {
+        doTestACLBehavior(true);
+    }
+
+    @Test
+    public void testStandardACLBehavior() {
+        doTestACLBehavior(false);
+    }
+
+    public void doTestACLBehavior(boolean legacy) {
+        String customName = "foo";
+        ACP acp = getInheritedReadWriteACP();
+        ACE customACE = ACE.builder("bar", READ_WRITE).creator("admin").build();
+        acp.addACE(customName, customACE);
+        ACL[] acls = acp.getACLs();
+        assertEquals(3, acls.length);
+        if (legacy) {
+            assertEquals(customName, acls[1].getName());
+            assertEquals(ACL.LOCAL_ACL, acls[0].getName());
+        } else {
+            assertEquals(customName, acls[0].getName());
+            assertEquals(ACL.LOCAL_ACL, acls[1].getName());
+        }
+    }
+
     private ACP getInheritedReadWriteACP() {
         ACP acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
+        acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACL acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ_WRITE, true));
         return acp;
     }
