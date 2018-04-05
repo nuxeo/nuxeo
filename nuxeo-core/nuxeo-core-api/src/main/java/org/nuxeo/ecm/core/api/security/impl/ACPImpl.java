@@ -34,17 +34,28 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * The ACP implementation uses a cache used when calling getAccess().
  */
 public class ACPImpl implements ACP {
 
+    /**
+     * ConfigurationService property to enable legacy behavior.
+     *
+     * @since 10.2
+     */
+    public static String LEGACY_BEHAVIOR_PROPERTY = "nuxeo.security.acl.legacyBehavior";
+
     private static final long serialVersionUID = 1L;
 
     private final List<ACL> acls;
 
     private transient Map<String, Access> cache;
+
+    private Boolean legacyBehavior;
 
     public ACPImpl() {
         acls = new ArrayList<ACL>();
@@ -86,6 +97,9 @@ public class ACPImpl implements ACP {
                     ACL local = getACL(ACL.LOCAL_ACL);
                     if (local != null) {
                         int i = acls.indexOf(local);
+                        if (useLegacyBehavior()) {
+                            i++;
+                        }
                         acls.add(i, acl);
                     } else {
                         inherited = getACL(ACL.INHERITED_ACL);
@@ -466,5 +480,16 @@ public class ACPImpl implements ACP {
             }
         }
         return changed;
+    }
+
+    @SuppressWarnings("AutoBoxing")
+    protected boolean useLegacyBehavior() {
+        if (legacyBehavior == null) {
+            // check runtime is present - as ACP is a simple object, it could be used outside of a runtime context
+            // otherwise don't use legacy behavior
+            legacyBehavior = Framework.getRuntime() != null
+                    && Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(LEGACY_BEHAVIOR_PROPERTY);
+        }
+        return legacyBehavior.booleanValue();
     }
 }
