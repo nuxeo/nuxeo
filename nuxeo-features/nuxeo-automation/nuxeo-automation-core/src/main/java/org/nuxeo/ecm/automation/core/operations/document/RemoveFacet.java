@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @since 8.3
  */
-@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. Saves the document if 'save' parameter is true (Notice: default value is true for compatibility reason).", aliases = { "Document.RemoveFacet" })
+@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. <p>Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>", aliases = { "Document.RemoveFacet" })
 public class RemoveFacet {
 
     public static final String ID = "Document.RemoveFacet";

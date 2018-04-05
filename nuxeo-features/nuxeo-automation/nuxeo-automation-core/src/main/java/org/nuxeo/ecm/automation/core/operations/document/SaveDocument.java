@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SaveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Save", description = "Save in the repository any modification that was done on the input document. Returns the saved document.")
+@Operation(id = SaveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Save", description = "Save in the repository any modification that was done on the input document. This operation should not be used in the context of the empty document created, about to create, before document modification, document modified events. Returns the saved document.")
 public class SaveDocument {
 
     public static final String ID = "Document.Save";
