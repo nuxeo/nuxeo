@@ -19,6 +19,7 @@
  */
 package org.nuxeo.launcher.config;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,7 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.Inet6Address;
@@ -37,6 +38,10 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -87,6 +92,9 @@ import org.nuxeo.log4j.Log4JHelper;
 import freemarker.core.ParseException;
 import freemarker.template.TemplateException;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 /**
  * Builder for server configuration and datasource files from templates and properties.
  *
@@ -1895,13 +1903,50 @@ public class ConfigurationGenerator {
     }
 
     /**
+     * @since 10.2
+     * @param propsFile Properties file
+     * @return String with the charset encoding for this file
+     */
+    public static Charset checkFileCharset(File propsFile) throws IOException {
+        List<Charset> charsetsToBeTested = Arrays.asList(US_ASCII, UTF_8, ISO_8859_1);
+        for (Charset charsetTest : charsetsToBeTested) {
+            CharsetDecoder decoder = charsetTest.newDecoder();
+            decoder.reset();
+
+            boolean identified = true; // assume the charset is this one, until it is not !
+            try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(propsFile))) {
+                byte[] buffer = new byte[512];
+                while ((input.read(buffer) != -1) && (identified)) {
+                    try {
+                        decoder.decode(ByteBuffer.wrap(buffer));
+                        identified = true;
+                    } catch (CharacterCodingException e) {
+                        identified = false;
+                    }
+                }
+            }
+            if (identified == true){
+                return charsetTest;
+            }
+        }
+        return null;
+    }
+
+
+
+    /**
      * @since 5.6
      * @param propsFile Properties file
      * @return new Properties containing trimmed keys and values read in {@code propsFile}
      */
     public static Properties loadTrimmedProperties(File propsFile) throws IOException {
         Properties props = new Properties();
-        try (FileInputStream propsIS = new FileInputStream(propsFile)) {
+        Charset charset = checkFileCharset(propsFile);
+        log.debug("Opening " + propsFile.getName() + " in " + charset.name());
+        if (charset == null) {
+            throw new IOException("Can't identify input file charset");
+        }
+        try (InputStreamReader propsIS = new InputStreamReader(new FileInputStream(propsFile), charset)) {
             loadTrimmedProperties(props, propsIS);
         }
         return props;
@@ -1912,7 +1957,7 @@ public class ConfigurationGenerator {
      * @param props Properties object to be filled
      * @param propsIS Properties InputStream
      */
-    public static void loadTrimmedProperties(Properties props, InputStream propsIS) throws IOException {
+    public static void loadTrimmedProperties(Properties props, InputStreamReader propsIS) throws IOException {
         if (props == null) {
             return;
         }
