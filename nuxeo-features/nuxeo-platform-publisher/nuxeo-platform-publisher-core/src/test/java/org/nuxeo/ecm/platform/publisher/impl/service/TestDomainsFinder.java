@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -47,6 +49,9 @@ public class TestDomainsFinder {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected TrashService trashService;
 
     DomainsFinder domainFinder;
 
@@ -70,7 +75,9 @@ public class TestDomainsFinder {
         result = domainFinder.getDomainsFiltered();
         assertEquals(2, result.size());
 
-        domain2.followTransition("delete");
+        trashService.trashDocument(domain2);
+        // Fetch the document again as it could have been moved by the trash service
+        domain2 = session.getDocument(domain2.getRef());
         assertEquals("deleted", domain2.getCurrentLifeCycleState());
         session.saveDocument(domain2);
         session.save();

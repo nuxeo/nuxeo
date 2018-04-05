@@ -27,6 +27,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -79,9 +81,9 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE)
-                && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)
-                && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
+        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE) && !eventId.equals(TRANSITION_EVENT)
+                && !eventId.equals(DOCUMENT_TRASHED) && !eventId.equals(DOCUMENT_UNTRASHED)
+                && !eventId.equals(DOCUMENT_PUBLISHED) && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
             return;
         }
 
@@ -137,8 +139,8 @@ public class DublinCoreListener implements EventListener {
         boolean resetCreatorProperty = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
                 RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
-        if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
-                || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
+        if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty)) || ((eventId.equals(TRANSITION_EVENT)
+                || eventId.equals(DOCUMENT_TRASHED) || eventId.equals(DOCUMENT_UNTRASHED)) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {
