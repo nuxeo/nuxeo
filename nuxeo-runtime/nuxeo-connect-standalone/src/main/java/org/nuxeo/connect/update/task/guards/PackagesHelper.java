@@ -46,8 +46,10 @@ public class PackagesHelper {
             } else {
                 // any version
                 for (Package pkg : service.getPackages()) {
-                    if (pkg.getName().equals(name)) {
-                        return isPackageInstalled(pkg);
+                    // multiple packages can have the same name (not id),
+                    // iterate until an installed one is found.
+                    if (pkg.getName().equals(name) && isPackageInstalled(pkg)) {
+                        return true;
                     }
                 }
                 return false;
