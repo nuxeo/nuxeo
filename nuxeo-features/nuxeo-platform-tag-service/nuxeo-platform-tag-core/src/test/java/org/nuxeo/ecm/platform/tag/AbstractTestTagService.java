@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -213,7 +214,7 @@ public abstract class AbstractTestTagService {
         assertEquals(Collections.singleton("mytag"), tags);
 
         // trash doc
-        file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        Framework.getService(TrashService.class).trashDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async tag removal

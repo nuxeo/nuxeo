@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -68,6 +69,9 @@ public class TestCompareCoreWithES {
 
     @Inject
     protected ElasticSearchIndexing esi;
+
+    @Inject
+    protected TrashService trashService;
 
     private String proxyPath;
 
@@ -110,8 +114,8 @@ public class TestCompareCoreWithES {
         DocumentModel proxy = session.publishDocument(file, folder);
         proxyPath = proxy.getPathAsString();
 
-        session.followTransition(new PathRef("/file1"), "delete");
-        session.followTransition(new PathRef("/note5"), "delete");
+        trashService.trashDocument(session.getDocument(new PathRef("/file1")));
+        trashService.trashDocument(session.getDocument(new PathRef("/note5")));
 
         session.checkIn(new PathRef("/file2"), VersioningOption.MINOR, "for testing");
 

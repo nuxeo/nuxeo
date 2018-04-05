@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 6.0
@@ -57,13 +59,13 @@ public class VisibleCollectionTest extends CollectionTestCase {
         assertEquals(testCollection2.getId(), collections.get(1).getId());
 
         // Send one collection to the trash
-        testCollection.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        trashService.trashDocument(testCollection);
         collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(1, collections.size());
         assertEquals(testCollection2.getId(), collections.get(0).getId());
 
         // Restore collection from the trash
-        testCollection.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
+        trashService.untrashDocument(testCollection);
         collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(2, collections.size());
         assertEquals(testCollection.getId(), collections.get(0).getId());
