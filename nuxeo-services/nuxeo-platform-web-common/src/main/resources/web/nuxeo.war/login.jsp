@@ -58,6 +58,8 @@ String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWid
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/login_logo.png");
+
+String loginBoxWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxWidth() , "20em");
 String currentYear = new DateTime().toString("Y");
 
 boolean hasVideos = screenConfig.hasVideos();
@@ -206,7 +208,7 @@ form {
   flex-direction: column;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  width: 20em;
+  width: <%=loginBoxWidth%>;
   margin: 0;
   padding: 1em;
   background: <%=loginBoxBackgroundStyle%>;
@@ -397,7 +399,7 @@ a.mobileAppLink:hover {
   form {
     background-color: #fff;
     padding: 2.5em;
-    width: 20em;
+    width: <%=loginBoxWidth%>;;
   }
 
 }
