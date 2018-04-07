@@ -23,11 +23,11 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.AWS_ID_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.BUCKET_PREFIX_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.BUCKET_REGION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.Serializable;

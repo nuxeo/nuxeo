@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.conn.ConnectionPoolTimeoutException;
@@ -41,17 +39,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.blob.binary.Binary;
-import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 /**
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
@@ -81,10 +76,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
             String idKey = "CHANGETHIS";
             String secretKey = "CHANGETHIS";
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
-            PROPERTIES.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, "testfolder/");
-            PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
-            PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
+            PROPERTIES.put(AmazonS3Client.BUCKET_NAME_PROPERTY, bucketName);
+            PROPERTIES.put(AmazonS3Client.BUCKET_PREFIX_PROPERTY, "testfolder/");
+            PROPERTIES.put(AmazonS3Client.AWS_ID_PROPERTY, idKey);
+            PROPERTIES.put(AmazonS3Client.AWS_SECRET_PROPERTY , secretKey);
             boolean useKeyStore = false;
             if (useKeyStore) {
                 // keytool -genkeypair -keystore /tmp/keystore.ks -alias unittest -storepass unittest -keypass unittest
@@ -93,10 +88,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
                 String keyStorePassword = "unittest";
                 String privKeyAlias = "unittest";
                 String privKeyPassword = "unittest";
-                PROPERTIES.put(S3BinaryManager.KEYSTORE_FILE_PROPERTY , keyStoreFile);
-                PROPERTIES.put(S3BinaryManager.KEYSTORE_PASS_PROPERTY , keyStorePassword);
-                PROPERTIES.put(S3BinaryManager.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
-                PROPERTIES.put(S3BinaryManager.PRIVKEY_PASS_PROPERTY , privKeyPassword);
+                PROPERTIES.put(AmazonS3Client.KEYSTORE_FILE_PROPERTY , keyStoreFile);
+                PROPERTIES.put(AmazonS3Client.KEYSTORE_PASS_PROPERTY , keyStorePassword);
+                PROPERTIES.put(AmazonS3Client.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
+                PROPERTIES.put(AmazonS3Client.PRIVKEY_PASS_PROPERTY , privKeyPassword);
             }
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
@@ -110,7 +105,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Override
     public boolean isStorageSizeSameAsOriginalSize() {
-        return !binaryManager.isEncrypted;
+        return !binaryManager.isEncrypted();
     }
 
     @Test
@@ -131,17 +126,17 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Test
     public void testS3MaxConnections() throws Exception {
-        PROPERTIES.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
-        PROPERTIES.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
-        PROPERTIES.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
+        PROPERTIES.put(AmazonS3Client.CONNECTION_MAX_PROPERTY, "1");
+        PROPERTIES.put(AmazonS3Client.CONNECTION_RETRY_PROPERTY, "0");
+        PROPERTIES.put(AmazonS3Client.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
         try {
             binaryManager = new S3BinaryManager();
             binaryManager.initialize("repo", PROPERTIES);
             doTestS3MaxConnections();
         } finally {
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_MAX_PROPERTY);
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_RETRY_PROPERTY);
-            PROPERTIES.remove(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY);
+            PROPERTIES.remove(AmazonS3Client.CONNECTION_MAX_PROPERTY);
+            PROPERTIES.remove(AmazonS3Client.CONNECTION_RETRY_PROPERTY);
+            PROPERTIES.remove(AmazonS3Client.CONNECTION_TIMEOUT_PROPERTY);
         }
     }
 
@@ -181,7 +176,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         }
         assertTrue("IOException should occured as content is corrupted", exceptionOccured);
     }
-    
+
     @Override
     @Test
     public void testBinaryManagerGC() throws Exception {
