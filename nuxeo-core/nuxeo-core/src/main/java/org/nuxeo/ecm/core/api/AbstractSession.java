@@ -2461,6 +2461,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             refresh.acp = getSession().getMergedACP(doc);
         }
 
+        if ((refreshFlags & DocumentModel.REFRESH_STATE) != 0) {
+            refresh.isTrashed = isTrashed(ref);
+        }
+
         return refresh;
     }
 
