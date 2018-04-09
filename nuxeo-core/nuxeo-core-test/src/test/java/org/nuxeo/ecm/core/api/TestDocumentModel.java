@@ -35,7 +35,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -215,6 +217,20 @@ public class TestDocumentModel {
         assertThat(doc.getCoreSession()).isNull();
         assertThat(doc.getName()).isEqualTo("doc");
         assertThat(doc.getProperty("dublincore:source").getValue(String.class)).isEqualTo("Source");
+    }
+
+    @Test
+    public void testTrashedDetachedDocumentSerialization() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        assertFalse(doc.isTrashed());
+
+        Framework.getService(TrashService.class).trashDocument(doc);
+        doc.detach(true);
+
+        doc = SerializationUtils.clone(doc);
+
+        assertTrue(doc.isTrashed());
     }
 
     @Test(expected = IllegalArgumentException.class)

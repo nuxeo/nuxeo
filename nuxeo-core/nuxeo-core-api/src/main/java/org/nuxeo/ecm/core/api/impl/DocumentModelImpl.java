@@ -191,6 +191,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // always refetched when a session is accessible, but also available without one
     protected String changeToken;
 
+    protected boolean isTrashed;
+
     protected DocumentModelImpl() {
     }
 
@@ -384,6 +386,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 getCurrentLifeCycleState();
                 getLockInfo();
                 getChangeToken();
+                isTrashed();
             }
         } finally {
             sid = null;
@@ -748,8 +751,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isTrashed() {
-        // TODO move TrashService to nuxeo-core-api in order to not rely on session here ?
-        return getSession().isTrashed(ref);
+        if (hasSession()) {
+            isTrashed = getSession().isTrashed(ref);
+        }
+        return isTrashed;
     }
 
     @Override
@@ -1367,6 +1372,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isVersionSeriesCheckedOut = refresh.isVersionSeriesCheckedOut;
             versionSeriesId = refresh.versionSeriesId;
             checkinComment = refresh.checkinComment;
+            isTrashed = refresh.isTrashed;
             isStateLoaded = true;
         }
         acp = null;
