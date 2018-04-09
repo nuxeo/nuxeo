@@ -80,7 +80,7 @@ class Spreadsheet {
       // get schemas prefixes from columns
       let schemasPrefixes = [];
       for (let c of columns) {
-        let schema = c.field.includes(':') ? c.field.split(':')[0] : undefined;
+        let schema = c.field.indexOf(':') > -1 ? c.field.split(':')[0] : undefined;
         if (schema && schemasPrefixes.indexOf(schema) === -1) {
           schemasPrefixes.push(schema);
         }
@@ -98,7 +98,7 @@ class Spreadsheet {
 
           // get field from schemas map
           let field = undefined; // <- explicitly set field as undefined in each iteration
-          if (c.field.includes(':')) {
+          if (c.field.indexOf(':') > -1) {
             let [s, f] = c.field.split(':');
             field = schemas[s].fields[f] || undefined;
           }
