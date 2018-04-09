@@ -4,7 +4,9 @@
   <require>org.nuxeo.ecm.platform.uidgen.contribs</require>
 
   <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
-    <sequencer name="uidgen" class="org.nuxeo.elasticsearch.seqgen.ESUIDSequencer" default="${elasticsearch.enabled:=true}" />
+    <sequencer name="uidgen" enabled="${elasticsearch.enabled:=true}"
+               class="org.nuxeo.elasticsearch.seqgen.ESUIDSequencer"
+               default="${elasticsearch.enabled:=true}" />
   </extension>
 
 </component>

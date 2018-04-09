@@ -134,12 +134,17 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
             String name = seqDescriptor.getName();
 
             try {
-                UIDSequencer seq = seqDescriptor.getSequencer();
-                if (seq != null) {
-                    seq.setName(name);
+                if (seqDescriptor.isEnabled()) {
+                    UIDSequencer seq = seqDescriptor.getSequencer();
+                    if (seq != null) {
+                        seq.setName(name);
+                    }
+                    sequencers.put(name, seq);
+                    sequencerContribs.put(name, seqDescriptor);
+
+                } else {
+                    log.info(String.format("Sequencer %s is disabled.", name));
                 }
-                sequencers.put(name, seq);
-                sequencerContribs.put(name, seqDescriptor);
             } catch (Exception e) {
                 log.error("Unable to create UIDSequencer with name " + name, e);
             }
