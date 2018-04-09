@@ -57,14 +57,6 @@ public interface TrashService {
     String DISABLE_TRASH_RENAMING = "skipTrashRenaming";
 
     /**
-     * {@link TrashService} was already called. This is useful to bring backward mechanism on
-     * followTransition("deleted").
-     *
-     * @since 10.1
-     */
-    String IS_ALREADY_CALLED = "trashServiceAlreadyCalled";
-
-    /**
      * Configuration property to enable backward compatibility to forward the call to the service on
      * followTransition("deleted").
      * 
