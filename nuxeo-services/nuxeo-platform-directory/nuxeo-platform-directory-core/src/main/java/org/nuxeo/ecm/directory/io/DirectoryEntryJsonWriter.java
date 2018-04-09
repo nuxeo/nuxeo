@@ -21,6 +21,7 @@ package org.nuxeo.ecm.directory.io;
 
 import static java.util.Locale.ENGLISH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARAM;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -43,7 +44,6 @@ import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.Writer;
-import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -131,10 +131,8 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
                     String valueString = (String) value;
                     if (fetched.contains(fieldName.getLocalName())) {
                         // try to fetch a referenced entry (parent for example)
-                        try (Closeable resource = ctx.wrap().controlDepth().open()) {
+                        try (Closeable resource = ctx.wrap().with(MAX_DEPTH_PARAM, "max").open()) {
                             managed = writeFetchedValue(jg, directoryName, fieldName.getLocalName(), valueString);
-                        } catch (MaxDepthReachedException e) {
-                            managed = false;
                         }
                     } else if (translated.contains(fieldName.getLocalName())) {
                         // try to fetch a translated property
