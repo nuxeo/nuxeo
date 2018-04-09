@@ -23,7 +23,6 @@ package org.nuxeo.ecm.webapp.clipboard;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.ScopeType.SESSION;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
