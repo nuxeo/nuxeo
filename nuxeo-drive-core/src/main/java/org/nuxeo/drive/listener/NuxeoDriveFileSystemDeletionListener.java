@@ -18,6 +18,9 @@
  */
 package org.nuxeo.drive.listener;
 
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -100,8 +103,11 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
                 return;
             }
         }
-        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName()) && !handleLifeCycleTransition(ctx)) {
-            return;
+        if (!DOCUMENT_TRASHED.equals(event.getName())) {
+            // Fallback on the transition event check
+            if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName()) && !handleLifeCycleTransition(ctx)) {
+                return;
+            }
         }
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
             return;

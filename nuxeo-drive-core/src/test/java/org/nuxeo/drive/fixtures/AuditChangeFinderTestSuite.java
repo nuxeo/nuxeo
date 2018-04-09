@@ -44,12 +44,12 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -65,6 +65,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     @Inject
     protected CollectionManager collectionManager;
+
+    @Inject
+    protected TrashService trashService;
 
     @Test
     public void testFindChanges() throws Exception {
@@ -142,20 +145,20 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentModified", "test"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
-            log.trace("Delete a document with a lifecycle transition (trash)");
-            session.followTransition(doc1.getRef(), "delete");
+            log.trace("Delete a document with the trash service");
+            trashService.trashDocument(doc1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
 
         try {
             changes = getChanges();
-            assertEquals(1, changes.size());
+            assertEquals(2, changes.size());
             assertEquals(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test", "test#" + doc1.getId()),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             log.trace("Restore a deleted document and move a document in a newly synchronized root");
-            session.followTransition(doc1.getRef(), "undelete");
+            trashService.untrashDocument(doc1);
             session.move(doc3.getRef(), folder2.getRef(), null);
             nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
@@ -270,8 +273,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             log.trace("Too many changes");
-            session.followTransition(doc1.getRef(), "delete");
-            session.followTransition(doc2.getRef(), "delete");
+            trashService.trashDocument(doc1);
+            trashService.trashDocument(doc2);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -580,8 +583,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
             // Test too many changes
-            session.followTransition(doc1.getRef(), "delete");
-            session.followTransition(doc2.getRef(), "delete");
+            trashService.trashDocument(doc1);
+            trashService.trashDocument(doc2);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -687,7 +690,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             // Test deletion of a root
-            session.followTransition(folder1.getRef(), "delete");
+            trashService.trashDocument(folder1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -703,10 +706,10 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertTrue(activeRootRefs.isEmpty());
 
             // The deletion of the root itself is mapped as filesystem
-            // deletion event
+            // deletion event + trash service event
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
-            assertEquals(1, changes.size());
+            assertEquals(2, changes.size());
             assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#" + folder1.getId()),
                     toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
@@ -946,7 +949,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             log.trace("Remove doc1 from the 'Locally Edited' collection, delete doc2 and add doc 3 to the collection");
             collectionManager.removeFromCollection(locallyEditedCollection, doc1, session);
-            doc2.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+            trashService.trashDocument(doc2);
             doc3 = session.createDocumentModel(folder1.getPathAsString(), "doc3", "File");
             doc3.setPropertyValue("file:content", new StringBlob("File content."));
             doc3 = session.createDocument(doc3);
@@ -960,10 +963,10 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - addedToCollection for doc3
             // - documentModified for 'Locally Edited' collection (2 occurrences)
             // - documentCreated for doc3
-            // - deleted for doc2
+            // - deleted for doc2 (twice because of trash service)
             // - deleted for doc1
             changes = getChanges(session.getPrincipal());
-            assertEquals(6, changes.size());
+            assertEquals(7, changes.size());
             List<SimpleFileSystemItemChange> expectedChanges = new ArrayList<>();
             expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(), "addedToCollection"));
             expectedChanges.add(new SimpleFileSystemItemChange(locallyEditedCollection.getId(), "documentModified"));
@@ -1000,15 +1003,15 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             log.trace("Delete the 'Locally Edited' collection");
-            locallyEditedCollection.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+            trashService.trashDocument(locallyEditedCollection);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
 
         try {
-            // Expecting 1 change: deleted for 'Locally Edited' collection
+            // Expecting 2 changes: deleted for 'Locally Edited' collection + trash service event
             changes = getChanges(session.getPrincipal());
-            assertEquals(1, changes.size());
+            assertEquals(2, changes.size());
             assertEquals(new SimpleFileSystemItemChange(locallyEditedCollection.getId(), "deleted"),
                     toSimpleFileSystemItemChange(changes.get(0)));
         } finally {

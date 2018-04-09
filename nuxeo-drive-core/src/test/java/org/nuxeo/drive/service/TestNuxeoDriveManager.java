@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -107,6 +108,9 @@ public class TestNuxeoDriveManager {
 
     @Inject
     TransactionalFeature txFeature;
+
+    @Inject
+    protected TrashService trashService;
 
     protected CoreSession user1Session;
 
@@ -388,15 +392,14 @@ public class TestNuxeoDriveManager {
 
         // Delete sync root => nuxeoDriveCacheInvalidationListener should
         // invalidate the cache
-        session.followTransition(workspace_2.getRef(), "delete");
-        session.save();
+        trashService.trashDocument(workspace_2);
+        workspace_2 = session.getDocument(workspace_2.getRef());
         expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 1, expectedSyncRootPaths);
 
         // Undelete sync root => nuxeoDriveCacheInvalidationListener should
         // invalidate the cache
-        session.followTransition(workspace_2.getRef(), "undelete");
-        session.save();
+        trashService.untrashDocument(workspace_2);
         expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 2, expectedSyncRootPaths);
 

@@ -58,7 +58,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -198,7 +200,7 @@ public class TestFileSystemItemManagerService {
         assertFalse(fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
         // Deleted
-        custom.followTransition("delete");
+        Framework.getService(TrashService.class).trashDocument(custom);
         assertFalse(
                 fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 

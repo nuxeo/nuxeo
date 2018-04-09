@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -114,6 +115,9 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Inject
     protected CollectionManager collectionManager;
+
+    @Inject
+    protected TrashService trashService;
 
     protected Principal principal;
 
@@ -248,7 +252,7 @@ public class DefaultFileSystemItemFactoryFixture {
         assertNull(fsItem);
 
         // Deleted file => not adaptable as a FileSystemItem
-        custom.followTransition("delete");
+        trashService.trashDocument(custom);
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(custom));
         assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
 
@@ -474,7 +478,7 @@ public class DefaultFileSystemItemFactoryFixture {
         assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
         // Deleted
-        file.followTransition("delete");
+        trashService.trashDocument(file);
         assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
     }
 
@@ -521,7 +525,7 @@ public class DefaultFileSystemItemFactoryFixture {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal);
         assertNull(fsItem);
         // Deleted
-        custom.followTransition("delete");
+        trashService.trashDocument(custom);
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
                 principal);
         assertNull(fsItem);

@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -101,6 +102,9 @@ public class TestFileSystemItemOperations {
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
+
+    @Inject
+    protected TrashService trashService;
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
@@ -265,7 +269,7 @@ public class TestFileSystemItemOperations {
         assertEquals("true", fileSystemItemExists);
 
         // Deleted file system item
-        file1.followTransition("delete");
+        trashService.trashDocument(file1);
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -346,7 +350,7 @@ public class TestFileSystemItemOperations {
                 fileItem.getDigest());
 
         // Get deleted file
-        file1.followTransition("delete");
+        trashService.trashDocument(file1);
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

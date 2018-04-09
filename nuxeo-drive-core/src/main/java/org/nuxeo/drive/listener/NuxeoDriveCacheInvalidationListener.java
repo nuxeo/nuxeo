@@ -18,6 +18,9 @@
  */
 package org.nuxeo.drive.listener;
 
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
+
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -42,8 +45,10 @@ public class NuxeoDriveCacheInvalidationListener implements EventListener {
             return;
         }
         String transition = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
-        if (transition != null
-                && !(LifeCycleConstants.DELETE_TRANSITION.equals(transition) || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition))) {
+        String eventName = event.getName();
+        if (!DOCUMENT_TRASHED.equals(eventName) && !DOCUMENT_UNTRASHED.equals(eventName) && transition != null
+                && !(LifeCycleConstants.DELETE_TRANSITION.equals(transition)
+                        || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition))) {
             // not interested in lifecycle transitions that are not related to
             // document deletion
             return;
