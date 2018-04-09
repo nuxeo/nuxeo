@@ -31,9 +31,18 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -576,6 +585,37 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("default,mongodb", configGenerator.getUserTemplates());
         assertEquals("default,mongodb", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
+    @Test
+    public void testCheckEncoding() throws Exception {
+        Path tempFile = Files.createTempFile("", "", PosixFilePermissions.asFileAttribute(new HashSet<>(
+                Arrays.asList(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE))
+        ));
+        // Test UTF8
+        Files.write(tempFile, "nuxéo".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        try {
+            Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
+            assertEquals(StandardCharsets.UTF_8, charset);
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+        //test ISO_8859_1
+        Files.write(tempFile, "nuxéo".getBytes(StandardCharsets.ISO_8859_1), StandardOpenOption.CREATE);
+        try {
+            Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
+            assertEquals(StandardCharsets.ISO_8859_1, charset);
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+        // test US_ASCII
+        Files.write(tempFile, "nuxeo".getBytes(StandardCharsets.US_ASCII), StandardOpenOption.CREATE);
+        try {
+            Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
+            assertEquals(StandardCharsets.US_ASCII, charset);
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+    }
+
 
     private static class LogCaptureAppender extends AppenderSkeleton {
 
