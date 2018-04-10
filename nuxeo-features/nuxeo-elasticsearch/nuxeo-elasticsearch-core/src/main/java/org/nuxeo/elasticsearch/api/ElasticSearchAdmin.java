@@ -234,4 +234,11 @@ public interface ElasticSearchAdmin {
      */
     boolean useExternalVersion();
 
+    /**
+     * Returns true if Elasticsearch is enabled.
+     * 
+     * @since 10.2
+     */
+    boolean isElasticsearchEnabled();
+
 }

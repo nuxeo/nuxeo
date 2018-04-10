@@ -21,6 +21,7 @@
 package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -525,6 +526,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         return ret;
     }
 
+    @Override
+    public boolean isElasticsearchEnabled() {
+        return Boolean.parseBoolean(Framework.getProperty(ES_ENABLED_PROPERTY, "true"));
+    }
+    
     public boolean isReady() {
         return indexInitDone;
     }
