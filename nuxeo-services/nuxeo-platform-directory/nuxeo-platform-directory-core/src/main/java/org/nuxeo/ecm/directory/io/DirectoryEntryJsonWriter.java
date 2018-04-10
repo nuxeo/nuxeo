@@ -128,7 +128,7 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
                 Property property = document.getProperty(fieldName.getPrefixedName());
                 boolean managed = false;
                 Object value = property.getValue();
-                if (value instanceof String && StringUtils.isNotEmpty((String)value)) {
+                if (value instanceof String && StringUtils.isNotEmpty((String) value)) {
                     String valueString = (String) value;
                     if (fetched.contains(fieldName.getLocalName())) {
                         // try to fetch a referenced entry (parent for example)
