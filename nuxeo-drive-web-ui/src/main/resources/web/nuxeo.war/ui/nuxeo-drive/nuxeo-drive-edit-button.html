@@ -63,7 +63,7 @@ Contributors:
           return false;
         }
         var isExcluded = false; //['Collection'].indexOf(this.document.type) !== -1;
-        var isMainBlob = true;
+        var isMainBlob = this.document.properties['file:content'] === blob;
         return !isExcluded && isMainBlob;
       },
 
