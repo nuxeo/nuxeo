@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.dublincore;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -53,6 +55,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -81,6 +84,9 @@ public class TestDublinCoreStorage {
 
     @Inject
     protected HotDeployer deployer;
+
+    @Inject
+    protected TrashService trashService;
 
     @Before
     public void before() {
@@ -407,6 +413,32 @@ public class TestDublinCoreStorage {
         assertNotNull(copy);
         assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
         assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+
+    @Test
+    public void testTrashDocument() throws Exception {
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        DocumentRef ref = file.getRef();
+        Calendar fileModificationDate = (Calendar) file.getPropertyValue("dc:modified");
+        storageConfiguration.maybeSleepToNextSecond();
+        trashService.trashDocument(file);
+        waitForAsyncCompletion();
+
+        DocumentModel trashedFile = session.getDocument(ref);
+
+        Calendar trashedFileModificationDate = (Calendar) trashedFile.getPropertyValue("dc:modified");
+        assertTrue(trashedFile.isTrashed());
+        assertNotEquals(fileModificationDate, trashedFileModificationDate);
+
+        storageConfiguration.maybeSleepToNextSecond();
+        trashService.untrashDocument(trashedFile);
+        waitForAsyncCompletion();
+
+        DocumentModel restoredFile = session.getDocument(ref);
+
+        Calendar restoredFileModificationDate = (Calendar) restoredFile.getPropertyValue("dc:modified");
+        assertFalse(restoredFile.isTrashed());
+        assertNotEquals(trashedFileModificationDate, restoredFileModificationDate);
     }
 
     protected void waitForAsyncCompletion() {

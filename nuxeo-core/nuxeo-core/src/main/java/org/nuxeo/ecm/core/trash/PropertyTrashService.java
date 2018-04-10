@@ -83,6 +83,7 @@ public class PropertyTrashService extends AbstractTrashService {
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
                 notifyEvent(session, DOCUMENT_TRASHED, docForEvent,
                         Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.TRUE));
+                session.saveDocument(docForEvent);
             }
         }
     }
@@ -115,6 +116,7 @@ public class PropertyTrashService extends AbstractTrashService {
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
         notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent,
                 Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.valueOf(processChildren)));
+        session.saveDocument(docForEvent);
 
         Set<DocumentRef> docRefs = new HashSet<>();
         docRefs.add(docRef);
