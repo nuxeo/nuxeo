@@ -21,7 +21,9 @@ package org.nuxeo.drive.elasticsearch;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +44,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
@@ -227,25 +230,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                                                                   .searchType(SearchType.DFS_QUERY_THEN_FETCH);
-        // TODO refactor this to use max clause
-        request.source(
-                new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).sort("id", SortOrder.DESC).size(1));
-        logSearchRequest(request);
-        SearchResponse searchResponse = getClient().search(request);
-        logSearchResponse(searchResponse);
-        List<LogEntry> entries = new ArrayList<>();
-        SearchHits hits = searchResponse.getHits();
-        ObjectMapper mapper = new ObjectMapper();
-        for (SearchHit hit : hits) {
-            try {
-                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
-            } catch (IOException e) {
-                log.error("Error while reading Audit Entry from ES", e);
-            }
-        }
-        return entries.size() > 0 ? entries.get(0).getId() : -1;
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        return getUpperBound(new HashSet<>(repositoryManager.getRepositoryNames()));
     }
 
     /**
@@ -267,7 +253,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         source.sort("id", SortOrder.DESC).size(1);
         // scroll on previous days with a times 2 step up to 32
         for (int i = 1; i <= 32; i = i * 2) {
-            ZonedDateTime lowerLogDateTime = ZonedDateTime.now().minusDays(i);
+            ZonedDateTime lowerLogDateTime = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(i);
             // set lower bound in query
             filterBuilder = filterBuilder.gt(lowerLogDateTime.toInstant().toEpochMilli());
             source.query(QueryBuilders.boolQuery().filter(filterBuilder));
