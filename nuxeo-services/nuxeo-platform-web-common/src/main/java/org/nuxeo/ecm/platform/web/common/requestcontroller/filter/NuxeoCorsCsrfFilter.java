@@ -25,6 +25,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.Filter;
@@ -34,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -67,6 +70,8 @@ public class NuxeoCorsCsrfFilter implements Filter {
     public static final String OPTIONS = HttpOptions.METHOD_NAME;
 
     public static final String TRACE = HttpTrace.METHOD_NAME;
+
+    public static final List<String> SCHEMES_ALLOWED = Arrays.asList("moz-extension", "chrome-extension");
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -128,6 +133,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             if (corsFilter == null) {
                 chain.doFilter(request, response);
             } else {
+                request = maybeIgnoreWhitelistedOrigin(request);
                 corsFilter.doFilter(request, response, chain);
             }
             return;
@@ -183,9 +189,54 @@ public class NuxeoCorsCsrfFilter implements Filter {
         if (sourceURI == null || targetURI == null) {
             return true;
         }
+        if (isWhitelistedScheme(sourceURI)) {
+            return true;
+        }
         return Objects.equals(sourceURI.getScheme(), targetURI.getScheme()) //
                 && Objects.equals(sourceURI.getHost(), targetURI.getHost()) //
                 && sourceURI.getPort() == targetURI.getPort();
+    }
+
+    protected HttpServletRequest maybeIgnoreWhitelistedOrigin(HttpServletRequest request) {
+        String origin = request.getHeader(ORIGIN);
+        if (origin == null) {
+            return request;
+        }
+        URI uri;
+        try {
+            uri = new URI(origin);
+        } catch (URISyntaxException e) {
+            return request;
+        }
+        if (!isWhitelistedScheme(uri)) {
+            return request;
+        }
+        // wrap request to pretend that the Origin is absent
+        return new IgnoredOriginRequestWrapper(request);
+    }
+
+    protected boolean isWhitelistedScheme(URI uri) {
+        return SCHEMES_ALLOWED.contains(uri.getScheme());
+    }
+
+    /**
+     * Wrapper for the request to hide the Origin header.
+     *
+     * @since 10.2
+     */
+    public static class IgnoredOriginRequestWrapper extends HttpServletRequestWrapper {
+
+        public IgnoredOriginRequestWrapper(HttpServletRequest request) {
+            super(request);
+        }
+
+        @Override
+        public String getHeader(String name) {
+            if (ORIGIN.equalsIgnoreCase(name)) {
+                return null;
+            }
+            return super.getHeader(name);
+        }
     }
 
 }
