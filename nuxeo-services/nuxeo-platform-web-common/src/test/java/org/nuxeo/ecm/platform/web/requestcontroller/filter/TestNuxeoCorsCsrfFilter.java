@@ -291,6 +291,23 @@ public class TestNuxeoCorsCsrfFilter {
     }
 
     /**
+     * Browser sending an Origin header with a whitelisted browser-specific scheme.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
+    public void testOriginFromBrowserExtension() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(eq(ORIGIN))).thenReturn("moz-extension://12345678-1234-1234-1234-1234567890ab");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+
+        filter.doFilter(request, response, chain);
+        assertTrue(chain.called);
+    }
+
+    /**
      * Browser sending the Origin header from another page which is allowed by CORS.
      */
     @Test
