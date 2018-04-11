@@ -25,6 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 
+/**
+ * @deprecated since 10.2, unused
+ */
+@Deprecated
 public class PathCache {
 
     private static final long FOLDER_LIFE_TIME = 30 * 60 * 1000;
