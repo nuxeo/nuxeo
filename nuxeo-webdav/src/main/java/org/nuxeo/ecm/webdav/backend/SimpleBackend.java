@@ -62,8 +62,6 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     public static final String ALWAYS_CREATE_FILE_PROP = "nuxeo.webdav.always-create-file";
 
-    private static final int PATH_CACHE_SIZE = 255;
-
     protected String backendDisplayName;
 
     protected String rootPath;
@@ -72,8 +70,6 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     protected TrashService trashService;
 
-    protected PathCache pathCache;
-
     protected LinkedList<String> orderedBackendNames;
 
     protected SimpleBackend(String backendDisplayName, String rootPath, String rootUrl, CoreSession session) {
@@ -81,13 +77,6 @@ public class SimpleBackend extends AbstractCoreBackend {
         this.backendDisplayName = backendDisplayName;
         this.rootPath = rootPath;
         this.rootUrl = rootUrl;
-    }
-
-    protected PathCache getPathCache() {
-        if (pathCache == null) {
-            pathCache = new PathCache(getSession(), PATH_CACHE_SIZE);
-        }
-        return pathCache;
     }
 
     @Override
@@ -180,11 +169,6 @@ public class SimpleBackend extends AbstractCoreBackend {
         Path resolvedLocation = parseLocation(location);
 
         DocumentModel doc = null;
-        doc = getPathCache().get(resolvedLocation.toString());
-        if (doc != null) {
-            return doc;
-        }
-
         DocumentRef docRef = new PathRef(resolvedLocation.toString());
         if (exists(docRef)) {
             doc = getSession().getDocument(docRef);
@@ -243,7 +227,6 @@ public class SimpleBackend extends AbstractCoreBackend {
                 }
             }
         }
-        getPathCache().put(resolvedLocation.toString(), doc);
         return doc;
     }
 
@@ -258,11 +241,6 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     protected DocumentModel resolveParent(String location) {
         DocumentModel doc = null;
-        doc = getPathCache().get(location.toString());
-        if (doc != null) {
-            return doc;
-        }
-
         DocumentRef docRef = new PathRef(location.toString());
         if (exists(docRef)) {
             doc = getSession().getDocument(docRef);
@@ -278,7 +256,6 @@ public class SimpleBackend extends AbstractCoreBackend {
                 doc = getSession().getDocument(folderRef);
             }
         }
-        getPathCache().put(location.toString(), doc);
         return doc;
     }
 
@@ -308,7 +285,6 @@ public class SimpleBackend extends AbstractCoreBackend {
         DocumentModel doc = getSession().getDocument(ref);
         if (doc != null) {
             getTrashService().trashDocuments(Arrays.asList(doc));
-            getPathCache().remove(doc.getPathAsString());
         } else {
             log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
         }
@@ -362,15 +338,12 @@ public class SimpleBackend extends AbstractCoreBackend {
             {
         cleanTrashPath(targetParentRef, name);
         DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
-        getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + name, model);
-        getPathCache().remove(source.getPathAsString());
         return model;
     }
 
     @Override
     public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) {
         DocumentModel model = getSession().copy(source.getRef(), targetParentRef, source.getName());
-        getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + source.getName(), model);
         return model;
     }
 
@@ -390,7 +363,6 @@ public class SimpleBackend extends AbstractCoreBackend {
         DocumentModel folder = getSession().createDocumentModel(parent.getPathAsString(), name, targetType);
         folder.setPropertyValue("dc:title", name);
         folder = getSession().createDocument(folder);
-        getPathCache().put(parseLocation(parentPath) + "/" + name, folder);
         return folder;
     }
 
@@ -419,7 +391,6 @@ public class SimpleBackend extends AbstractCoreBackend {
                 FileManager fileManager = Framework.getService(FileManager.class);
                 file = fileManager.createDocumentFromBlob(getSession(), content, parent.getPathAsString(), false, name);
             }
-            getPathCache().put(parseLocation(parentPath) + "/" + name, file);
             return file;
         } catch (IOException e) {
             throw new NuxeoException("Error child creating new folder", e);
