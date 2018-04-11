@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -83,6 +84,10 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
         public BlobProviderDescriptor getBlobProviderDescriptor(String id) {
             return getCurrentContribution(id);
+        }
+
+        public Set<String> getBlobProviderIds() {
+            return currentContribs.keySet();
         }
     }
 
@@ -230,7 +235,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public Map<String, BlobProvider> getBlobProviders() {
+    public synchronized Map<String, BlobProvider> getBlobProviders() {
+        Set<String> blobProviderIds = blobProviderDescriptorsRegistry.getBlobProviderIds();
+        if (blobProviders.size() != blobProviderIds.size()) {
+            // register all providers
+            for (String id : blobProviderIds) {
+                getBlobProvider(id); // instantiate and initialize
+            }
+        }
         return blobProviders;
     }
 
