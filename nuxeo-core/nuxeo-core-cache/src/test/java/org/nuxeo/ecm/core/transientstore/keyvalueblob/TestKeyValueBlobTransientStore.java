@@ -62,6 +62,8 @@ public class TestKeyValueBlobTransientStore {
 
     protected static final String NAME = "testkvb";
 
+    protected static final String NAME2 = "testkvb2";
+
     @Inject
     protected TransientStoreService tss;
 
@@ -71,7 +73,11 @@ public class TestKeyValueBlobTransientStore {
 
     @Before
     public void setUp() {
-        ts = tss.getStore(NAME);
+        setUp(NAME);
+    }
+
+    protected void setUp(String name) {
+        ts = tss.getStore(name);
         tsp = (TransientStoreProvider) ts;
     }
 
@@ -161,6 +167,12 @@ public class TestKeyValueBlobTransientStore {
 
         size = tsp.getStorageSize();
         assertEquals(0, size);
+    }
+
+    @Test
+    public void verifyStorageWithExplicitConfiguration() throws Exception {
+        setUp(NAME2);
+        verifyStorage();
     }
 
     @Test
