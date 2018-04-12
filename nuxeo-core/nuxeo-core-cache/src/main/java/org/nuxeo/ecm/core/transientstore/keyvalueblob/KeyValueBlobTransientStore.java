@@ -149,8 +149,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         mapper = new ObjectMapper();
         ttl = config.getFirstLevelTTL() * 60;
         releaseTTL = config.getSecondLevelTTL() * 60;
-        targetMaxSize = config.getTargetMaxSizeMB() * 1024 * 1024;
-        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024 * 1024;
+        targetMaxSize = config.getTargetMaxSizeMB() * 1024L * 1024;
+        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024L * 1024;
     }
 
     protected KeyValueStore getKeyValueStore() {
@@ -163,6 +163,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     @Override
     public void shutdown() {
+        // nothing to do
     }
 
     @Override
