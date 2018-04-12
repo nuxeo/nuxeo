@@ -38,6 +38,7 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 import net.openhft.chronicle.queue.ExcerptTailer;
+import net.openhft.chronicle.queue.TailerState;
 
 /**
  * @since 9.3
@@ -142,6 +143,9 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     public void toStart() {
         log.debug(String.format("toStart: %s", id));
         cqTailer.toStart();
+        if (!cqTailer.state().equals(TailerState.FOUND_CYCLE)) {
+            log.info("Unable to move to start because the tailer is not initialized, " + this);
+        }
     }
 
     @Override
@@ -149,7 +153,11 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         long offset = offsetTracker.getLastCommittedOffset();
         if (offset > 0) {
             log.debug(String.format("toLastCommitted: %s, found: %d", id, offset));
-            cqTailer.moveToIndex(offset);
+            if (!cqTailer.moveToIndex(offset) && cqTailer.index() != offset) {
+                // sometime moveToIndex returns false but offset is moved
+                throw new IllegalStateException(
+                        "Unable to move to the last committed offset, " + this + " offset: " + offset);
+            }
         } else {
             log.debug(String.format("toLastCommitted: %s, not found, move toStart", id));
             cqTailer.toStart();
@@ -163,7 +171,9 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
                     "Cannot seek, tailer " + this + " has no assignment for partition: " + offset);
         }
         log.debug("Seek to " + offset + " from tailer: " + this);
-        cqTailer.moveToIndex(offset.offset());
+        if (!cqTailer.moveToIndex(offset.offset()) && cqTailer.index() != offset.offset()) {
+            throw new IllegalStateException("Unable to seek to offset, " + this + " offset: " + offset);
+        }
     }
 
     @Override
