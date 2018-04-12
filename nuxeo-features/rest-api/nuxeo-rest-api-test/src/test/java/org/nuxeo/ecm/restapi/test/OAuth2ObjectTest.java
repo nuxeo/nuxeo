@@ -129,8 +129,8 @@ public class OAuth2ObjectTest extends BaseTest {
             assertEquals(OAUTH2_PROVIDERS_TYPE, node.get("entity-type").textValue());
             assertNotNull(node.get("entries"));
             assertEquals(2, node.get("entries").size());
-            verifyProvider(node.get("entries").get(0), TEST_OAUTH2_PROVIDER, true);
-            verifyProvider(node.get("entries").get(1), TEST_OAUTH2_PROVIDER_2, false);
+            verifyProvider(node.get("entries"), TEST_OAUTH2_PROVIDER, true);
+            verifyProvider(node.get("entries"), TEST_OAUTH2_PROVIDER_2, false);
         }
     }
 
@@ -266,16 +266,34 @@ public class OAuth2ObjectTest extends BaseTest {
     }
 
     protected void verifyProvider(JsonNode node, String serviceName, Boolean checkToken) {
-        assertEquals(OAUTH2_PROVIDER_TYPE, node.get("entity-type").textValue());
-        assertEquals(serviceName, node.get("serviceName").textValue());
-        assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").textValue());
-        assertEquals(
-                AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
-                        + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
-                        + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
-                node.get("authorizationURL").textValue());
-        if (checkToken) {
-            assertEquals(TEST_OAUTH2_SERVICE_USERID, node.get("userId").textValue());
+        if (node.isArray()) {
+            JsonNode child;
+            for (int i = 0; i < node.size(); i++) {
+                child = node.get(i);
+                if (child.get("entity-type").textValue().equals(OAUTH2_PROVIDER_TYPE) &&
+                    child.get("serviceName").textValue().equals(serviceName) &&
+                    child.get("clientId").textValue().equals(TEST_OAUTH2_CLIENTID) &&
+                    child.get("authorizationURL").textValue().equals(AUTHORIZATION_SERVER_URL + "?client_id="
+                            + TEST_OAUTH2_CLIENTID
+                            + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
+                            + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1)) &&
+                    (checkToken ? child.get("userId").textValue().equals(TEST_OAUTH2_SERVICE_USERID) : true)) {
+                    return;
+                }
+            }
+            fail("No provider found.");
+        } else {
+            assertEquals(OAUTH2_PROVIDER_TYPE, node.get("entity-type").textValue());
+            assertEquals(serviceName, node.get("serviceName").textValue());
+            assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").textValue());
+            assertEquals(
+                    AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
+                            + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
+                            + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
+                    node.get("authorizationURL").textValue());
+            if (checkToken) {
+                assertEquals(TEST_OAUTH2_SERVICE_USERID, node.get("userId").textValue());
+            }
         }
     }
 
@@ -548,8 +566,7 @@ public class OAuth2ObjectTest extends BaseTest {
 
     protected void verifyToken(JsonNode node, String serviceName, String clientId, String nxuser, String creationDate) {
         if (node.isArray()) {
-            JsonNode token = null;
-            JsonNode child = null;
+            JsonNode child;
             for (int i = 0; i < node.size(); i++) {
                 child = node.get(i);
                 if (child.get("entity-type").textValue().equals(OAUTH2_TOKEN_TYPE) &&
@@ -581,8 +598,8 @@ public class OAuth2ObjectTest extends BaseTest {
             assertEquals(OAUTH2_CLIENTS_TYPE, node.get("entity-type").textValue());
             assertNotNull(node.get("entries"));
             assertEquals(2, node.get("entries").size());
-            verifyClient(node.get("entries").get(0), TEST_CLIENT, TEST_CLIENT_NAME);
-            verifyClient(node.get("entries").get(1), TEST_CLIENT_2, TEST_CLIENT_NAME_2);
+            verifyClient(node.get("entries"), TEST_CLIENT, TEST_CLIENT_NAME);
+            verifyClient(node.get("entries"), TEST_CLIENT_2, TEST_CLIENT_NAME_2);
         }
     }
 
@@ -605,9 +622,22 @@ public class OAuth2ObjectTest extends BaseTest {
     }
 
     protected void verifyClient(JsonNode node, String clientId, String name) {
-        assertEquals(OAUTH2_CLIENT_TYPE, node.get("entity-type").textValue());
-        assertEquals(clientId, node.get("id").textValue());
-        assertEquals(name, node.get("name").textValue());
+        if (node.isArray()) {
+            JsonNode child;
+            for (int i = 0; i < node.size(); i++) {
+                child = node.get(i);
+                if (child.get("entity-type").textValue().equals(OAUTH2_CLIENT_TYPE) &&
+                    child.get("id").textValue().equals(clientId) &&
+                    child.get("name").textValue().equals(name)) {
+                    return;
+                }
+            }
+            fail("No client found.");
+        } else {
+            assertEquals(OAUTH2_CLIENT_TYPE, node.get("entity-type").textValue());
+            assertEquals(clientId, node.get("id").textValue());
+            assertEquals(name, node.get("name").textValue());
+        }
     }
 
 }
