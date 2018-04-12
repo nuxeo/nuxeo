@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -34,7 +35,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -78,7 +78,7 @@ public class TestDomainsFinder {
         trashService.trashDocument(domain2);
         // Fetch the document again as it could have been moved by the trash service
         domain2 = session.getDocument(domain2.getRef());
-        assertEquals("deleted", domain2.getCurrentLifeCycleState());
+        assertTrue(domain2.isTrashed());
         session.saveDocument(domain2);
         session.save();
         result = domainFinder.getDomainsFiltered();

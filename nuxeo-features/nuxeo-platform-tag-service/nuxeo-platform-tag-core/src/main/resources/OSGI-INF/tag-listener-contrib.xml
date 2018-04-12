@@ -7,6 +7,7 @@
       <event>documentRestored</event>
       <event>documentProxyPublished</event>
       <event>documentRemoved</event>
+      <event>documentTrashed</event>
       <event>lifecycle_transition_event</event>
     </listener>
 

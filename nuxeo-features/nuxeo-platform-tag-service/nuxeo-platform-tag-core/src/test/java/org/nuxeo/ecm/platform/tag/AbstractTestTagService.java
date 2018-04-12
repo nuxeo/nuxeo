@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -215,13 +214,11 @@ public abstract class AbstractTestTagService {
 
         // trash doc
         Framework.getService(TrashService.class).trashDocument(file);
-        TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async tag removal
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+        coreFeature.waitForAsyncCompletion();
 
         // check no more tag
-        TransactionHelper.startTransaction();
         tags = tagService.getTags(session, file1Id);
         assertEquals(Collections.emptySet(), tags);
     }
