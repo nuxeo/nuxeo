@@ -28,9 +28,14 @@ public class TextRenderer extends Renderer {
 
     @Override
     public void accept(LogRecord<Record> record) {
-        Record rec = record.message();
-        System.out.println(String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.key,
-                watermarkString(rec.watermark), rec.data.length, rec.flags, binaryString(rec.data)));
+        try {
+            Record rec = record.message();
+            System.out.println(String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.key,
+                    watermarkString(rec.watermark), rec.data.length, rec.flags, binaryString(rec.data)));
+        } catch (ClassCastException e) {
+            System.out.println(
+                    String.format("%s", record.message()));
+        }
     }
 
     @Override
