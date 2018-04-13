@@ -65,7 +65,7 @@ public class TestACP {
     private ACP acp;
 
     @Before
-    public void doBefore() throws Exception {
+    public void doBefore() {
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
     }
@@ -157,7 +157,7 @@ public class TestACP {
         acl.add(lisa);
         acp.addACL(acl);
 
-        Set<String> perms = new HashSet<String>(3);
+        Set<String> perms = new HashSet<>(3);
         perms.add(BROWSE);
         perms.add(READ);
         perms.add(WRITE);
@@ -195,7 +195,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanAddExistingPermission() throws Exception {
+    public void itCanAddExistingPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
@@ -210,7 +210,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanAddPermission() throws Exception {
+    public void itCanAddPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -229,7 +229,7 @@ public class TestACP {
     }
 
     @Test
-    public void itShouldNotAddPermissionTwice() throws Exception {
+    public void itShouldNotAddPermissionTwice() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
@@ -244,7 +244,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanBlockInheritance() throws Exception {
+    public void itCanBlockInheritance() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -268,7 +268,7 @@ public class TestACP {
     }
 
     @Test(expected = NullPointerException.class)
-    public void blockingInheritanceNeedsACurrentPrincipal() throws Exception {
+    public void blockingInheritanceNeedsACurrentPrincipal() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -279,7 +279,7 @@ public class TestACP {
     }
 
     @Test
-    public void itShouldAddInheritanceEvenIfItAlreadyHasPermission() throws Exception {
+    public void itShouldAddInheritanceEvenIfItAlreadyHasPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
@@ -295,7 +295,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanRemovePermissionsToAUser() throws Exception {
+    public void itCanRemovePermissionsToAUser() {
         // Given an ACP
         ACP acp = new ACPImpl();
         String jack = "jack";
@@ -319,7 +319,7 @@ public class TestACP {
     }
 
     @Test
-    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() throws Exception {
+    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() {
         // Given an ACP
         ACP acp = new ACPImpl();
 
@@ -335,7 +335,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanRemovePermissionGivenItsId() throws Exception {
+    public void itCanRemovePermissionGivenItsId() {
         // Given an ACP
         ACP acp = new ACPImpl();
         String jack = "jack";
