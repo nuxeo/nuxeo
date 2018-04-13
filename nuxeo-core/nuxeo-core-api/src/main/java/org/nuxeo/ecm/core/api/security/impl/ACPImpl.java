@@ -245,17 +245,11 @@ public class ACPImpl implements ACP {
 
     private static boolean principalsMatch(ACE ace, String principal) {
         String acePrincipal = ace.getUsername();
-        if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
-            return true;
-        }
-        return StringUtils.equals(acePrincipal, principal);
+        return principalsMatch(acePrincipal, principal);
     }
 
     private static boolean principalsMatch(String acePrincipal, String principal) {
-        if (SecurityConstants.EVERYONE.equals(acePrincipal)) {
-            return true;
-        }
-        return StringUtils.equals(acePrincipal, principal);
+        return SecurityConstants.EVERYONE.equals(acePrincipal) || StringUtils.equals(acePrincipal, principal);
     }
 
     public void addAccessRule(String aclName, ACE ace) {
