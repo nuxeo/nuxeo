@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -128,20 +127,20 @@ public class ExistingResource extends AbstractResource {
                 DocumentModel origDoc = session.getDocument(origRef);
                 if (isRecentlyCreated(origDoc)) {
                     // origDoc is file.docx and contains the blob that was saved
-                    // Move it to a temporary document that will be the one deleted at the end
-                    String tmpName = UUID.randomUUID().toString() + ".tmp";
-                    origDoc = backend.moveItem(origDoc, origDoc.getParentRef(), tmpName);
+                    // Get the blob that was saved
+                    BlobHolder bh = origDoc.getAdapter(BlobHolder.class);
+                    Blob blob = bh.getBlob();
+                    // Delete the document
+                    // (we have to do it now or the subsequent updateDocument will not find the right doc)
+                    backend.removeItem(origDoc.getRef());
                     // Restore tmp2.tmp back to its original name file.docx
                     doc = backend.moveItem(doc, doc.getParentRef(), origName);
                     clearMoveOriginalName();
-                    // Get the blob that was saved and update the restored doc file.docx with it
-                    BlobHolder bh = origDoc.getAdapter(BlobHolder.class);
-                    Blob blob = bh.getBlob();
-                    blob.setFilename(origName);
-                    doc.getAdapter(BlobHolder.class).setBlob(blob);
-                    session.saveDocument(doc);
-                    // Set the temporary document as current doc, which we can now delete
-                    doc = origDoc;
+                    // Update the restored doc file.docx with the blob
+                    backend.saveChanges(); // save before query done by updateDocument
+                    backend.updateDocument(doc, origName, blob);
+                    backend.saveChanges();
+                    return Response.status(204).build();
                 }
             }
         }
