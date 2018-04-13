@@ -42,8 +42,6 @@ import java.util.Set;
  */
 public interface ACP extends Serializable, Cloneable {
 
-    String LEGACY_BEHAVIOR_PROPERTY = "nuxeo.security.acl.legacyBehavior";
-
     /**
      * Check whether this ACP grant the given permission on the given user, denies it or doesn't specify a rule.
      * <p>

@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.security.acl.properties">
-    <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-        <property name="nuxeo.security.acl.legacyBehavior">true</property>
-    </extension>
-</component>

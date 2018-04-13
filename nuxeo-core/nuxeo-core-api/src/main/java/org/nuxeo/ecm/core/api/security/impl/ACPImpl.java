@@ -34,8 +34,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * The ACP implementation uses a cache used when calling getAccess().
@@ -48,13 +46,9 @@ public class ACPImpl implements ACP {
 
     private transient Map<String, Access> cache;
 
-    private boolean isLegacyBehavior;
-
     public ACPImpl() {
         acls = new ArrayList<>();
         cache = new HashMap<>();
-        isLegacyBehavior = Framework.getService(ConfigurationService.class)
-                                    .isBooleanPropertyTrue(LEGACY_BEHAVIOR_PROPERTY);
     }
 
     /**
@@ -92,9 +86,6 @@ public class ACPImpl implements ACP {
                     ACL local = getACL(ACL.LOCAL_ACL);
                     if (local != null) {
                         int i = acls.indexOf(local);
-                        if (isLegacyBehavior) {
-                            i++;
-                        }
                         acls.add(i, acl);
                     } else {
                         inherited = getACL(ACL.INHERITED_ACL);
