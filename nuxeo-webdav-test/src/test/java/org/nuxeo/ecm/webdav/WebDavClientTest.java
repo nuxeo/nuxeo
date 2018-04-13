@@ -437,7 +437,7 @@ public class WebDavClientTest extends AbstractServerTest {
         assertArrayEquals(newBytesContent, blob.getByteArray());
         assertEquals(wordMimeType, blob.getMimeType());
 
-        assertEquals("0.0", doc.getVersionLabel()); // NOT 0.1+, auto-versioning rules are only in 9.10 and later
+        assertEquals("0.1+", doc.getVersionLabel());
     }
 
     @Test
