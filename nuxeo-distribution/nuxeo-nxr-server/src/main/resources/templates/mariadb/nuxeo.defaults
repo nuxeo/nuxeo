@@ -15,5 +15,5 @@ nuxeo.db.driver=org.mariadb.jdbc.Driver
 nuxeo.db.xadatasource=org.mariadb.jdbc.MariaDbDataSource
 
 ## Startup checks configuration
-mariadb.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
+mariadb.check.classpath=nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
 mariadb.check.class=org.nuxeo.launcher.config.backingservices.DBCheck
