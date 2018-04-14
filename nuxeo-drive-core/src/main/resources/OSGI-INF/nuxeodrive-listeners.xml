@@ -13,6 +13,8 @@
     <listener name="nuxeoDriveCacheInvalidationListener" async="false" postCommit="false"
       class="org.nuxeo.drive.listener.NuxeoDriveCacheInvalidationListener" priority="300">
       <event>lifecycle_transition_event</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
       <event>documentRemoved</event>
       <event>documentSecurityUpdated</event>
       <event>addedToCollection</event>
@@ -33,6 +35,8 @@
       <event>beforeDocumentModification</event>
       <event>aboutToMove</event>
       <event>lifecycle_transition_event</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
       <event>aboutToRemove</event>
       <event>beforeDocumentSecurityModification</event>
       <event>aboutToUnregisterRoot</event>
