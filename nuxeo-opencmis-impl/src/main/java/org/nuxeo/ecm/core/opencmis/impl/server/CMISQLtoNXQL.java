@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import static org.apache.chemistry.opencmis.commons.enums.BaseTypeId.CMIS_DOCUMENT;
 import static org.apache.chemistry.opencmis.commons.enums.BaseTypeId.CMIS_RELATIONSHIP;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -74,6 +75,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -410,9 +412,13 @@ public class CMISQLtoNXQL {
         }
         col.setInfo(column);
 
-        if (clauseType == WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
-            // explicit lifecycle query: do not include the 'deleted' lifecycle
-            // filter
+        if (clauseType == WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())
+                && Framework.getService(TrashService.class).hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            // explicit lifecycle query: do not include the 'deleted' lifecycle filter
+            skipDeleted = false;
+        }
+        if (clauseType == WHERE && NuxeoTypeHelper.NX_ISTRASHED.equals(col.getPropertyId())) {
+            // explicit trashed query: do not include the `isTrashed = 0` filter
             skipDeleted = false;
         }
     }
@@ -478,6 +484,8 @@ public class CMISQLtoNXQL {
             return NXQL.ECM_ISVERSION;
         case NuxeoTypeHelper.NX_ISCHECKEDIN:
             return NXQL.ECM_ISCHECKEDIN;
+        case NuxeoTypeHelper.NX_ISTRASHED:
+            return NXQL.ECM_ISTRASHED;
         case NuxeoTypeHelper.NX_LIFECYCLE_STATE:
             return NXQL.ECM_LIFECYCLESTATE;
         case PropertyIds.NAME:

@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -37,6 +41,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -55,9 +60,9 @@ import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference.CmisQlFunction;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
-import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.JoinSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
+import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,6 +89,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -126,7 +132,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             Arrays.asList(Model.HIER_TABLE_NAME + " " + Model.MAIN_IS_VERSION_KEY,
                     Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
                     Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY,
-                    Model.HIER_TABLE_NAME + " " + Model.MAIN_CHECKED_IN_KEY));
+                    Model.HIER_TABLE_NAME + " " + Model.MAIN_CHECKED_IN_KEY,
+                    Model.HIER_TABLE_NAME + " " + Model.MAIN_IS_TRASHED_KEY));
 
     /**
      * These mixins never match an instance mixin when used in a clause nuxeo:secondaryObjectTypeIds = 'foo'
@@ -242,6 +249,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             searchLatestVersion = Boolean.FALSE.equals(searchAllVersions);
         }
         TypeManagerImpl typeManager = service.getTypeManager();
+        TrashService trashService = Framework.getService(TrashService.class);
 
         boolean addSystemColumns = true; // TODO
 
@@ -433,15 +441,37 @@ public class CMISQLQueryMaker implements QueryMaker {
                 whereParams.addAll(types);
             }
 
-            // lifecycle not deleted filter
+            // not trashed filter
 
             if (skipDeleted) {
-                ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
-                Column lscol = getTable(database.getTable(propertyInfo.fragmentName), qual).getColumn(
-                        propertyInfo.fragmentKey);
-                String lscolName = lscol.getFullQuotedName();
-                whereClauses.add(String.format("(%s <> ? OR %s IS NULL)", lscolName, lscolName));
-                whereParams.add(LifeCycleConstants.DELETED_STATE);
+                Supplier<String> lifecycleTrashedConstraint = () -> {
+                    ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
+                    Column lscol = getTable(database.getTable(propertyInfo.fragmentName), qual).getColumn(
+                            propertyInfo.fragmentKey);
+                    String lscolName = lscol.getFullQuotedName();
+                    return String.format("(%s <> ? OR %s IS NULL)", lscolName, lscolName);
+                };
+                Supplier<String> propertyTrashedConstraint = () -> {
+                    ModelProperty propertyInfo = model.getPropertyInfo(Model.MAIN_IS_TRASHED_PROP);
+                    Column lscol = qualHierTable.getColumn(propertyInfo.fragmentKey);
+                    String lscolName = lscol.getFullQuotedName();
+                    return String.format("(%s <> ? OR %s IS NULL)", lscolName, lscolName);
+                };
+
+                if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+                    whereClauses.add(lifecycleTrashedConstraint.get());
+                    whereParams.add(LifeCycleConstants.DELETED_STATE);
+
+                } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
+                    whereClauses.add(String.format("(%s OR %s)", lifecycleTrashedConstraint.get(),
+                            propertyTrashedConstraint.get()));
+                    whereParams.add(LifeCycleConstants.DELETED_STATE);
+                    whereParams.add(Boolean.TRUE);
+
+                } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+                    whereClauses.add(propertyTrashedConstraint.get());
+                    whereParams.add(Boolean.TRUE);
+                }
             }
 
             // searchAllVersions filter
@@ -660,6 +690,9 @@ public class CMISQLQueryMaker implements QueryMaker {
     // check no added columns would bias the DISTINCT
     // after this method, allTables also contain hier table for virtual columns
     protected void addSystemColumns(boolean addSystemColumns, boolean distinct) {
+        TrashService trashService = Framework.getService(TrashService.class);
+        boolean lifeCycleTrashState = trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)
+                || trashService.hasFeature(TRASHED_STATE_IN_MIGRATION);
 
         List<CmisSelector> addedSystemColumns = new ArrayList<CmisSelector>(2);
 
@@ -682,7 +715,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     addedSystemColumns.add(col);
                 }
             }
-            if (skipDeleted || lifecycleWhereClauseQualifiers.contains(qual)) {
+            if (skipDeleted && lifeCycleTrashState || lifecycleWhereClauseQualifiers.contains(qual)) {
                 // add lifecycle state column
                 ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
                 Table table = getTable(database.getTable(propertyInfo.fragmentName), qual);
@@ -826,11 +859,18 @@ public class CMISQLQueryMaker implements QueryMaker {
         col.setInfo(column);
         String qual = canonicalQualifier.get(col.getQualifier());
 
-        if (clauseType == ClauseType.WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
-            // explicit lifecycle query: do not include the 'deleted' lifecycle
-            // filter
+        TrashService trashService = Framework.getService(TrashService.class);
+        boolean trashInMigration = trashService.hasFeature(TRASHED_STATE_IN_MIGRATION);
+        if (clauseType == ClauseType.WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())
+                && (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE) || trashInMigration)) {
+            // explicit lifecycle query: do not include the 'deleted' lifecycle filter
             skipDeleted = false;
             lifecycleWhereClauseQualifiers.add(qual);
+        }
+        if (clauseType == ClauseType.WHERE && NuxeoTypeHelper.NX_ISTRASHED.equals(col.getPropertyId())
+                && (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY) || trashInMigration)) {
+            // explicit trashed query: do not include the `isTrashed = 0` filter
+            skipDeleted = false;
         }
         if (clauseType == ClauseType.WHERE && isFacetsColumn(col.getPropertyId())) {
             mixinTypeWhereClauseQualifiers.add(qual);
@@ -967,6 +1007,9 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
         if (id.equals(NuxeoTypeHelper.NX_ISCHECKEDIN)) {
             return database.getTable(Model.HIER_TABLE_NAME).getColumn(Model.MAIN_CHECKED_IN_KEY);
+        }
+        if (id.equals(NuxeoTypeHelper.NX_ISTRASHED)) {
+            return database.getTable(Model.HIER_TABLE_NAME).getColumn(Model.MAIN_IS_TRASHED_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
             ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);

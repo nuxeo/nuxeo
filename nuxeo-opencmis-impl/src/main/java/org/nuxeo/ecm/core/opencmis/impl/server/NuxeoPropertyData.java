@@ -180,6 +180,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             boolean co = doc.isCheckedOut();
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,
                     Boolean.valueOf(!co));
+        } else if (NuxeoTypeHelper.NX_ISTRASHED.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,
+                    Boolean.valueOf(doc.isTrashed()));
         } else if (PropertyIds.IS_PRIVATE_WORKING_COPY.equals(name)) {
             boolean co = doc.isCheckedOut();
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,

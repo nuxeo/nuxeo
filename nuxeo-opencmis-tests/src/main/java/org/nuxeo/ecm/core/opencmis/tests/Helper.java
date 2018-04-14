@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -203,6 +202,7 @@ public class Helper {
         DocumentModel file5 = session.createDocumentModel("/testfolder1", "testfile5", "File");
         file5.setPropertyValue("dc:title", "title5");
         file5 = createDocument(session, file5);
+        sleepForAuditGranularity();
         Framework.getService(TrashService.class).trashDocument(file5);
         file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());

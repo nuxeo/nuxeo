@@ -123,6 +123,11 @@ public class NuxeoTypeHelper {
 
     public static final String NX_ISCHECKEDIN = "nuxeo:isCheckedIn";
 
+    /**
+     * @since 10.2
+     */
+    public static final String NX_ISTRASHED = "nuxeo:isTrashed";
+
     public static final String NX_FACETS = "nuxeo:secondaryObjectTypeIds";
 
     public static final String NX_LIFECYCLE_STATE = "nuxeo:lifecycleState";
@@ -498,6 +503,8 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(NX_ISVERSION, "Is Version", PropertyType.BOOLEAN,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN, "Is Checked In PWC", PropertyType.BOOLEAN,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(NX_ISTRASHED, "Is Trashed", PropertyType.BOOLEAN,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         if (cmisVersion != CmisVersion.CMIS_1_0) {
             t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",

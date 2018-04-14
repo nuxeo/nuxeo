@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import static org.junit.Assume.assumeTrue;
 
 import org.junit.Before;
+import org.junit.Test;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Test the high-level session using a local connection.
@@ -44,4 +46,11 @@ public class TestCmisBindingJoins extends TestCmisBinding {
         return false;
     }
 
+    // no isTrashed querying support for former trash service - force PropertyTrashService
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
+    @Override
+    public void testQueryTrashed() throws Exception {
+        super.testQueryTrashed();
+    }
 }

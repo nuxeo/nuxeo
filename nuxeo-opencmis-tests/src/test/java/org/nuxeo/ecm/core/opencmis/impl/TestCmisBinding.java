@@ -642,6 +642,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
         assertEquals(Boolean.FALSE, // ...
                 getValue(data, NuxeoTypeHelper.NX_ISVERSION));
+        assertEquals(Boolean.FALSE, // ...
+                     getValue(data, NuxeoTypeHelper.NX_ISTRASHED));
         assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
         assertEquals(rootFolderId, getValue(data, NuxeoTypeHelper.NX_PARENT_ID));
         @SuppressWarnings("unchecked")
@@ -1686,18 +1688,19 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    public void testQueryLifecycle() throws Exception {
+    public void testQueryTrashed() throws Exception {
         String statement;
         ObjectList res;
 
         waitForIndexing();
 
+        // by default 'trashed' files are filtered out
         statement = "SELECT cmis:name FROM File";
         res = query(statement);
         int initiallyQueryableFilesCount = res.getNumItems().intValue();
 
-        // all files are in state 'project'
-        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'";
+        // check the default
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:isTrashed = false";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
 
@@ -1708,30 +1711,56 @@ public class TestCmisBinding extends TestCmisBindingBase {
         nextTransaction();
         waitForIndexing();
 
-        // by default 'deleted' files are filtered out
         statement = "SELECT cmis:name FROM File";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
 
-        // but it is nevertheless possible to perform explicit queries on the
-        // lifecycle state
-        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'";
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:isTrashed = false";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
 
-        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'deleted' ORDER BY cmis:name";
+        // the opposite
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:isTrashed = true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
         assertEquals("testfile1_Title",
-                res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+                     res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
         // file5 was deleted in the setup function of the test case
         assertEquals("title5",
-                res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+                     res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
 
-        statement = "SELECT cmis:name FROM File"
-                + " WHERE nuxeo:lifecycleState IN ('project', 'deleted', 'somethingelse')";
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:isTrashed = true OR nuxeo:isTrashed = false";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount + 1, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryLifecycle() throws Exception {
+        ObjectList res;
+
+        waitForIndexing();
+
+        // all files are in state 'project'
+        res = query("SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'");
+        int initiallyQueryableFilesCount = res.getNumItems().intValue();
+
+        // delete another file:
+        coreSession.followTransition(new PathRef("/testfolder1/testfile1"), "obsolete");
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        res = query("SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'");
+        assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
+
+        res = query("SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'obsolete'");
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile1_Title",
+                     res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+
+        res = query("SELECT cmis:name FROM File  "
+                + "WHERE nuxeo:lifecycleState IN ('project', 'obsolete', 'somethingelse')");
+        assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
     }
 
     @Test

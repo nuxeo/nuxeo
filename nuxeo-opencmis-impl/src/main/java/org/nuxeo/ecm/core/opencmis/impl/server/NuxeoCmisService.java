@@ -138,7 +138,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -146,7 +145,6 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -374,8 +372,8 @@ public class NuxeoCmisService extends AbstractCmisService
     /** Gets the filter that hides HiddenInNavigation and deleted objects. */
     protected Filter getDocumentFilter() {
         Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION, false);
-        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
-        return new CompoundFilter(facetFilter, lcFilter);
+        Filter trashedFilter = docModel -> !docModel.isTrashed();
+        return new CompoundFilter(facetFilter, trashedFilter);
     }
 
     protected String getIdFromDocumentRef(DocumentRef ref) {
