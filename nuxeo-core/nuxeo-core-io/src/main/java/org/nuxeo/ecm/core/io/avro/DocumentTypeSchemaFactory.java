@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.io.avro;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -39,6 +40,7 @@ public class DocumentTypeSchemaFactory extends AvroSchemaFactory<DocumentType> {
     @Override
     public Schema createSchema(DocumentType input) {
         Schema schema = Schema.createRecord(getName(input), null, input.getNamespace().prefix, false);
+        new LogicalType(DocumentModelMapper.DOCUMENT_TYPE).addToSchema(schema);
         List<Field> fields = new ArrayList<>(input.getSchemas().size());
         for (org.nuxeo.ecm.core.schema.types.Schema s : context.sort(input.getSchemas())) {
             fields.add(new Field(s.getName(), context.createSchema(s), null, (Object) null));
@@ -49,7 +51,7 @@ public class DocumentTypeSchemaFactory extends AvroSchemaFactory<DocumentType> {
 
     @Override
     public String getName(DocumentType input) {
-        return context.replaceForbidden(input.getName());
+        return context.getService().encodeName(input.getName());
     }
 
 }

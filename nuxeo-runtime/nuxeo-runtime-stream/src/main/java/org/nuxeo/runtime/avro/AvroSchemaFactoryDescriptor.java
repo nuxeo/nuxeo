@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * The Avro factory descriptor.
+ * The Avro schema factory descriptor.
  *
  * @since 10.2
  */

@@ -8,11 +8,12 @@
       "name" : "common",
       "fields" : [ {
         "name" : "icon__dash__expanded",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "icon",
-        "type" : "string"
-      } ]
+        "type" : [ "null", "string" ]
+      } ],
+      "logicalType" : "schema"
     }
   }, {
     "name" : "complexschema",
@@ -22,60 +23,62 @@
       "namespace" : "cmpf",
       "fields" : [ {
         "name" : "attachedFile",
-        "type" : {
+        "type" : [ "null", {
           "type" : "record",
           "name" : "fileext",
           "namespace" : "",
           "fields" : [ {
             "name" : "name",
-            "type" : "string"
+            "type" : [ "null", "string" ]
           }, {
             "name" : "vignettes",
-            "type" : {
+            "type" : [ "null", {
               "type" : "array",
               "items" : {
                 "type" : "record",
                 "name" : "vignette",
                 "fields" : [ {
                   "name" : "width",
-                  "type" : "long"
+                  "type" : [ "null", "long" ]
                 }, {
                   "name" : "label",
-                  "type" : "string"
+                  "type" : [ "null", "string" ]
                 }, {
                   "name" : "content",
-                  "type" : {
+                  "type" : [ "null", {
                     "type" : "record",
                     "name" : "content",
                     "fields" : [ {
                       "name" : "mime__dash__type",
-                      "type" : "string"
+                      "type" : [ "null", "string" ]
                     }, {
                       "name" : "data",
-                      "type" : "bytes"
+                      "type" : [ "null", "bytes" ]
                     }, {
                       "name" : "name",
-                      "type" : "string"
+                      "type" : [ "null", "string" ]
                     }, {
                       "name" : "length",
-                      "type" : "long"
+                      "type" : [ "null", "long" ]
                     }, {
                       "name" : "digest",
-                      "type" : "string"
+                      "type" : [ "null", "string" ]
                     }, {
                       "name" : "encoding",
-                      "type" : "string"
+                      "type" : [ "null", "string" ]
                     } ]
-                  }
+                  } ]
                 }, {
                   "name" : "height",
-                  "type" : "long"
+                  "type" : [ "null", "long" ]
                 } ]
-              }
-            }
+              },
+              "logicalType" : "list"
+            } ]
           } ]
-        }
-      } ]
+        } ]
+      } ],
+      "logicalType" : "schema"
     }
   }, {
     "name" : "dublincore",
@@ -85,101 +88,105 @@
       "namespace" : "dc",
       "fields" : [ {
         "name" : "description",
-        "type" : {
+        "type" : [ "null", {
           "type" : "string",
           "logicalType" : "clob"
-        }
+        } ]
       }, {
         "name" : "language",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "coverage",
-        "type" : {
+        "type" : [ "null", {
           "type" : "string",
           "logicalType" : "coverage#anonymousType"
-        }
+        } ]
       }, {
         "name" : "valid",
-        "type" : {
+        "type" : [ "null", {
           "type" : "long",
           "logicalType" : "timestamp-millis"
-        }
+        } ]
       }, {
         "name" : "creator",
-        "type" : {
+        "type" : [ "null", {
           "type" : "string",
           "logicalType" : "creator#anonymousType"
-        }
+        } ]
       }, {
         "name" : "modified",
-        "type" : {
+        "type" : [ "null", {
           "type" : "long",
           "logicalType" : "timestamp-millis"
-        }
+        } ]
       }, {
         "name" : "lastContributor",
-        "type" : {
+        "type" : [ "null", {
           "type" : "string",
           "logicalType" : "lastContributor#anonymousType"
-        }
+        } ]
       }, {
         "name" : "rights",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "expired",
-        "type" : {
+        "type" : [ "null", {
           "type" : "long",
           "logicalType" : "timestamp-millis"
-        }
+        } ]
       }, {
         "name" : "format",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "created",
-        "type" : {
+        "type" : [ "null", {
           "type" : "long",
           "logicalType" : "timestamp-millis"
-        }
+        } ]
       }, {
         "name" : "title",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "issued",
-        "type" : {
+        "type" : [ "null", {
           "type" : "long",
           "logicalType" : "timestamp-millis"
-        }
+        } ]
       }, {
         "name" : "nature",
-        "type" : {
+        "type" : [ "null", {
           "type" : "string",
           "logicalType" : "nature#anonymousType"
-        }
+        } ]
       }, {
         "name" : "subjects",
-        "type" : {
+        "type" : [ "null", {
           "type" : "array",
           "items" : {
             "type" : "string",
             "logicalType" : "null#anonymousType"
-          }
-        }
+          },
+          "logicalType" : "array"
+        } ]
       }, {
         "name" : "contributors",
-        "type" : {
+        "type" : [ "null", {
           "type" : "array",
           "items" : {
             "type" : "string",
             "logicalType" : "null#anonymousType"
-          }
-        }
+          },
+          "logicalType" : "array"
+        } ]
       }, {
         "name" : "source",
-        "type" : "string"
+        "type" : [ "null", "string" ]
       }, {
         "name" : "publisher",
-        "type" : "string"
-      } ]
+        "type" : [ "null", "string" ]
+      } ],
+      "logicalType" : "schema"
     }
-  } ]
+  } ],
+  "logicalType" : "documentType"
 }

@@ -16,15 +16,19 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.runtime.avro;
+package org.nuxeo.ecm.core.io.avro;
+
+import org.nuxeo.runtime.RuntimeServiceException;
 
 /**
- * This service allows to create a {@link AvroSchemaFactoryContext}.
- *
  * @since 10.2
  */
-public interface AvroSchemaFactoryService {
+public class NonNullValueException extends RuntimeServiceException {
 
-    AvroSchemaFactoryContext createContext();
+    private static final long serialVersionUID = -8114214954885316233L;
+
+    public NonNullValueException() {
+        super();
+    }
 
 }

@@ -68,7 +68,10 @@ public class TypeSchemaFactory extends AvroSchemaFactory<Type> {
                 return new LogicalType(getName(input)).addToSchema(createSchema(input.getSuperType()));
             }
         } else if (input.isListType()) {
-            return Schema.createArray(context.createSchema(((ListType) input).getFieldType()));
+            Schema array = Schema.createArray(context.createSchema(((ListType) input).getFieldType()));
+            String logicalType = ((ListType) input).isArray() ? "array" : "list";
+            new LogicalType(logicalType).addToSchema(array);
+            return array;
         } else if (input.isComplexType()) {
             return complexTypeFactory.createSchema((ComplexType) input);
         } else if (input.isCompositeType()) {
@@ -79,7 +82,7 @@ public class TypeSchemaFactory extends AvroSchemaFactory<Type> {
 
     @Override
     public String getName(Type input) {
-        return context.replaceForbidden(input.getName());
+        return context.getService().encodeName(input.getName());
     }
 
 }

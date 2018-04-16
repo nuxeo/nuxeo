@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.io.avro.factories" version="1.0.0">
   <documentation>
-    Core IO registered Avro factories.
+    Core IO contribution to Avro for Nuxeo core model.
   </documentation>
   <extension target="org.nuxeo.runtime.avro" point="factory">
+    <factory class="org.nuxeo.ecm.core.io.avro.TypeSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Type" />
+    <factory class="org.nuxeo.ecm.core.io.avro.SchemaSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Schema" />
     <factory class="org.nuxeo.ecm.core.io.avro.DocumentModelSchemaFactory" type="org.nuxeo.ecm.core.api.DocumentModel" />
     <factory class="org.nuxeo.ecm.core.io.avro.DocumentTypeSchemaFactory" type="org.nuxeo.ecm.core.schema.DocumentType" />
-    <factory class="org.nuxeo.ecm.core.io.avro.SchemaSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Schema" />
-    <factory class="org.nuxeo.ecm.core.io.avro.TypeSchemaFactory" type="org.nuxeo.ecm.core.schema.types.Type" />
+  </extension>
+  <extension target="org.nuxeo.runtime.avro" point="mapper">
+    <mapper class="org.nuxeo.ecm.core.io.avro.PropertyMapper" type="org.nuxeo.ecm.core.api.model.Property" />
+    <mapper class="org.nuxeo.ecm.core.io.avro.DocumentModelMapper" type="org.nuxeo.ecm.core.api.DocumentModel" />
+    <mapper class="org.nuxeo.ecm.core.io.avro.BlobPropertyMapper" type="org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty" />
   </extension>
 </component>
 

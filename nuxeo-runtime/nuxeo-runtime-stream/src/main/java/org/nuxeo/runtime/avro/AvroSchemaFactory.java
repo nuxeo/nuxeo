@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.avro;
 
+import java.util.Arrays;
+
 import org.apache.avro.Schema;
 
 /**
@@ -26,6 +28,8 @@ import org.apache.avro.Schema;
  * @since 10.2
  */
 public abstract class AvroSchemaFactory<T> {
+
+    protected static final Schema NULL_SCHEMA = Schema.create(Schema.Type.NULL);
 
     protected final AvroSchemaFactoryContext context;
 
@@ -39,6 +43,10 @@ public abstract class AvroSchemaFactory<T> {
 
     public String getQualifiedName(T input) {
         return getName(input);
-    };
+    }
+
+    protected Schema nullable(Schema schema) {
+        return Schema.createUnion(Arrays.asList(NULL_SCHEMA, schema));
+    }
 
 }

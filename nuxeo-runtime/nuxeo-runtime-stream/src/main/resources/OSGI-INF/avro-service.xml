@@ -6,15 +6,14 @@
     It provides services 
     - that allow to register and retreive schemas
     - that allow to create Avro schemas from custom types
-    - that allow to de/serialize Avro records from/to custom types 
+    - that allow to map Avro records from/to custom types
   </documentation>
 
   <implementation class="org.nuxeo.runtime.avro.AvroComponent" />
 
   <service>
     <provide interface="org.apache.avro.message.SchemaStore" />
-    <provide interface="org.nuxeo.runtime.avro.AvroSchemaStoreService" />
-    <provide interface="org.nuxeo.runtime.avro.AvroSchemaFactoryService" />
+    <provide interface="org.nuxeo.runtime.avro.AvroService" />
   </service>
 
   <extension-point name="schema">
@@ -36,6 +35,13 @@
       Allows to register a replacement scheme for any string not supported by Avro.
     </documentation>
     <object class="org.nuxeo.runtime.avro.AvroReplacementDescriptor" />
+  </extension-point>
+  
+  <extension-point name="mapper">
+    <documentation>
+      Allows to register an Avro Mapper implementation dedicated to a custom type.
+    </documentation>
+    <object class="org.nuxeo.runtime.avro.AvroMapperDescriptor" />
   </extension-point>
 
 </component>

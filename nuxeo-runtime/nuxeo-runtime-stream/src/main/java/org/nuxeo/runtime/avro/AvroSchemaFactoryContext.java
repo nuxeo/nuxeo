@@ -53,15 +53,15 @@ public class AvroSchemaFactoryContext {
         }
     };
 
-    protected Collection<AvroReplacementDescriptor> replacements;
-
     protected Map<Class<?>, AvroSchemaFactory<?>> factories = new HashMap<>();
 
     protected Map<String, Schema> createdSchemas = new HashMap<>();
 
-    protected AvroSchemaFactoryContext(Collection<AvroReplacementDescriptor> replacements) {
+    protected final AvroService service;
+
+    protected AvroSchemaFactoryContext(AvroService service) {
         super();
-        this.replacements = new ArrayList<>(replacements);
+        this.service = service;
     }
 
     public <T> Schema createSchema(T input) {
@@ -69,12 +69,8 @@ public class AvroSchemaFactoryContext {
         return createdSchemas.computeIfAbsent(qualifiedName, k -> getFactory(input).createSchema(input));
     }
 
-    public String replaceForbidden(String input) {
-        String output = input;
-        for (AvroReplacementDescriptor replacement : replacements) {
-            output = output.replaceAll(replacement.getForbidden(), replacement.getReplacement());
-        }
-        return output;
+    public AvroService getService() {
+        return service;
     }
 
     public <U> List<U> sort(Collection<U> children) {
