@@ -26,12 +26,19 @@ import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -47,7 +54,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -97,11 +103,9 @@ public class ConnectBroker {
 
     public static final String PACKAGES_XML = "packages.xml";
 
-    protected static final String LAUNCHER_CHANGED_PROPERTY = "launcher.changed";
-
-    protected static final int LAUNCHER_CHANGED_EXIT_CODE = 128;
-
     public static final String[] POSITIVE_ANSWERS = { "true", "yes", "y" };
+
+    protected static final String LAUNCHER_CHANGED_PROPERTY = "launcher.changed";
 
     private Environment env;
 
@@ -123,6 +127,8 @@ public class ConnectBroker {
 
     private boolean allowSNAPSHOT = CUDFHelper.defaultAllowSNAPSHOT;
 
+    private Path pendingFile;
+
     public static final String OPTION_ACCEPT_DEFAULT = "ask";
 
     public ConnectBroker(Environment env) throws IOException, PackageException {
@@ -134,6 +140,20 @@ public class ConnectBroker {
         targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME) + "-"
                 + env.getProperty(Environment.DISTRIBUTION_VERSION);
         distributionMPDir = env.getProperty(PARAM_MP_DIR, DISTRIBUTION_MP_DIR_DEFAULT);
+    }
+
+    /**
+     * @since 10.2
+     */
+    public Path getPendingFile() {
+        return pendingFile;
+    }
+
+    /**
+     * @since 10.2
+     */
+    public void setPendingFile(Path pendingFile) {
+        this.pendingFile = pendingFile;
     }
 
     public String getCLID() throws NoCLID {
@@ -581,13 +601,35 @@ public class ConnectBroker {
      */
     public boolean pkgUninstall(List<String> packageIdsToRemove) {
         log.debug("Uninstalling: " + packageIdsToRemove);
-        for (String pkgId : packageIdsToRemove) {
+        Queue<String> remaining = new LinkedList<>(packageIdsToRemove);
+        while (!remaining.isEmpty()) {
+            String pkgId = remaining.poll();
             if (pkgUninstall(pkgId) == null) {
                 log.error("Unable to uninstall " + pkgId);
                 return false;
             }
+            if (isRestartRequired()) {
+                persistCommand(serializeUninstallCmd(remaining));
+                throw new LauncherRestartException();
+            }
         }
         return true;
+    }
+
+    protected String serializeUninstallCmd(Collection<String> packages) {
+        if (packages.isEmpty()) {
+            return "";
+        } else {
+            return CommandInfo.CMD_UNINSTALL + " " + String.join(" ", packages);
+        }
+    }
+
+    protected String serializeInstallCmd(Collection<String> packages) {
+        if (packages.isEmpty()) {
+            return "";
+        } else {
+            return CommandInfo.CMD_INSTALL + " " + String.join(" ", packages);
+        }
     }
 
     /**
@@ -597,9 +639,6 @@ public class ConnectBroker {
      * @return The uninstalled LocalPackage or null if failed
      */
     public LocalPackage pkgUninstall(String pkgId) {
-        if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
-            System.exit(LAUNCHER_CHANGED_EXIT_CODE);
-        }
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_UNINSTALL);
         cmdInfo.param = pkgId;
         try {
@@ -855,12 +894,41 @@ public class ConnectBroker {
      */
     public boolean pkgInstall(List<String> packageIdsToInstall, boolean ignoreMissing) {
         log.debug("Installing: " + packageIdsToInstall);
-        for (String pkgId : packageIdsToInstall) {
+        Queue<String> remaining = new LinkedList<>(packageIdsToInstall);
+        while (!remaining.isEmpty()) {
+            String pkgId = remaining.poll();
             if (pkgInstall(pkgId, ignoreMissing) == null && !ignoreMissing) {
                 return false;
             }
+            if (isRestartRequired()) {
+                persistCommand(serializeInstallCmd(remaining));
+                throw new LauncherRestartException();
+            }
         }
         return true;
+    }
+
+    /**
+     * Persists the pending package operation into file system. It's useful when Nuxeo launcher is about to exit. Empty
+     * command line won't be persisted.
+     * <p>
+     * The given command will be appended as a new line into target file {@link #pendingFile}. NOTE: the command line
+     * options are not serialized. Therefore, they should be provided by nuxeoctl again after launcher's restart.
+     *
+     * @param command command to persist (appended as a new line)
+     * @throws IllegalStateException if any exception occurs
+     * @see #pendingFile
+     * @since 10.2
+     */
+    protected void persistCommand(String command) {
+        if (command.isEmpty()) {
+            return;
+        }
+        try {
+            Files.write(pendingFile, Arrays.asList(command), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot write to file " + pendingFile, e);
+        }
     }
 
     /**
@@ -878,6 +946,13 @@ public class ConnectBroker {
     }
 
     /**
+     * @since 10.2
+     */
+    protected boolean isRestartRequired() {
+        return "true".equals(env.getProperty(LAUNCHER_CHANGED_PROPERTY));
+    }
+
+    /**
      * Install a local package.
      *
      * @since 6.0
@@ -887,9 +962,6 @@ public class ConnectBroker {
      * @see #pkgInstall(List, boolean)
      */
     public LocalPackage pkgInstall(String pkgId, boolean ignoreMissing) {
-        if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
-            System.exit(LAUNCHER_CHANGED_EXIT_CODE);
-        }
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
         cmdInfo.param = pkgId;
         try {
@@ -960,11 +1032,18 @@ public class ConnectBroker {
         List<String> pkgsToInstall = new ArrayList<>();
         List<String> pkgsToUninstall = new ArrayList<>();
         List<String> pkgsToRemove = new ArrayList<>();
-        List<String> lines;
+
+        Path commandsPath = commandsFile.toPath();
+        pendingFile = commandsPath;
+        Path backup = commandsPath.resolveSibling(commandsFile.getName() + ".bak");
         try {
-            lines = FileUtils.readLines(commandsFile);
-            for (String line : lines) {
-                line = line.trim();
+            Queue<String> remainingCmds = new LinkedList<>(Files.readAllLines(commandsFile.toPath()));
+            if (doExecute) {
+                // backup the commandsFile before any real execution
+                Files.move(commandsPath, backup, StandardCopyOption.REPLACE_EXISTING);
+            }
+            while (!remainingCmds.isEmpty()) {
+                String line = remainingCmds.poll().trim();
                 String[] split = line.split("\\s+", 2);
                 if (split.length == 2) {
                     if (split[0].equals(CommandInfo.CMD_INSTALL)) {
@@ -1047,6 +1126,10 @@ public class ConnectBroker {
                 if (errorValue != 0) {
                     log.error("Error processing pending package/command: " + line);
                 }
+                if (doExecute && !useResolver && isRestartRequired()) {
+                    remainingCmds.forEach(this::persistCommand);
+                    throw new LauncherRestartException();
+                }
             }
             if (doExecute) {
                 if (useResolver) {
@@ -1066,18 +1149,13 @@ public class ConnectBroker {
                     }
                 }
                 if (errorValue != 0) {
-                    File bak = new File(commandsFile.getPath() + ".bak");
-                    bak.delete();
-                    commandsFile.renameTo(bak);
-                    log.error("Pending actions execution failed. The commands file has been moved to: " + bak);
-                } else {
-                    commandsFile.delete();
+                    log.error("Pending actions execution failed. The commands file has been moved to: " + backup);
                 }
             } else {
                 cset.log(true);
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e.getCause());
         }
         return errorValue == 0;
     }
@@ -1238,6 +1316,7 @@ public class ConnectBroker {
      * @param keepExisting If false, the request will remove existing packages that are not part of the resolution
      * @param ignoreMissing Do not error out on missing packages, just handle the rest
      * @param upgradeMode If true, all packages will be upgraded to their last compliant version
+     * @throws LauncherRestartException if launcher is required to restart
      * @since 8.4
      */
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
@@ -1374,10 +1453,10 @@ public class ConnectBroker {
                     return false;
                 }
 
-                List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
-                List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
-                List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
-                List<String> packagesIdsToReInstall = new ArrayList<>();
+                LinkedList<String> packageIdsToRemove = new LinkedList<>(resolution.getOrderedPackageIdsToRemove());
+                LinkedList<String> packageIdsToUpgrade = new LinkedList<>(resolution.getUpgradePackageIds());
+                LinkedList<String> packageIdsToInstall = new LinkedList<>(resolution.getOrderedPackageIdsToInstall());
+                LinkedList<String> packagesIdsToReInstall = new LinkedList<>();
 
                 // Replace snapshots to install but already in cache (requested by name)
                 if (CollectionUtils.containsAny(packageIdsToInstall, localSnapshotsToMaybeReplace)) {
@@ -1408,13 +1487,24 @@ public class ConnectBroker {
                     if (uninstallResolution.isFailed()) {
                         return false;
                     }
-                    List<String> newPackageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
-                    packagesIdsToReInstall = ListUtils.subtract(newPackageIdsToRemove, packageIdsToRemove);
+                    LinkedList<String> newPackageIdsToRemove = new LinkedList<>(uninstallResolution.getOrderedPackageIdsToRemove());
+                    packagesIdsToReInstall = new LinkedList<>(newPackageIdsToRemove);
+                    packagesIdsToReInstall.removeAll(packageIdsToRemove);
                     packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
                     packageIdsToRemove = newPackageIdsToRemove;
                 }
-                if (!pkgUninstall(packageIdsToRemove)) {
-                    return false;
+                log.debug("Uninstalling: " + packageIdsToRemove);
+                while (!packageIdsToRemove.isEmpty()) {
+                    String pkgId = packageIdsToRemove.poll();
+                    if (pkgUninstall(pkgId) == null) {
+                        log.error("Unable to uninstall " + pkgId);
+                        return false;
+                    }
+                    if (isRestartRequired()) {
+                        persistCommand(serializeUninstallCmd(packageIdsToRemove));
+                        persistCommand(serializeInstallCmd(packageIdsToInstall));
+                        throw new LauncherRestartException();
+                    }
                 }
 
                 // Install
@@ -1427,7 +1517,7 @@ public class ConnectBroker {
                     if (installResolution.isFailed()) {
                         return false;
                     }
-                    packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
+                    packageIdsToInstall = new LinkedList<>(installResolution.getOrderedPackageIdsToInstall());
                 }
                 if (!pkgInstall(packageIdsToInstall, ignoreMissing)) {
                     return false;

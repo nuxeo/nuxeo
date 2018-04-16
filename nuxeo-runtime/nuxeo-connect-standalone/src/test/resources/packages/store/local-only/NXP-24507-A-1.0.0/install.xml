@@ -1,0 +1,5 @@
+<install>
+  <update file="${package.root}/install/bundles" todir="${env.bundles}" />
+  <update file="${package.root}/install/lib" todir="${env.lib}" />
+  <copy overwrite="true" file="${package.root}/install/bin/nuxeo-launcher-NXP-24507-jar-with-dependencies.jar" tofile="${env.server.home}/nonexistent/nuxeo-launcher.jar" />
+</install>
