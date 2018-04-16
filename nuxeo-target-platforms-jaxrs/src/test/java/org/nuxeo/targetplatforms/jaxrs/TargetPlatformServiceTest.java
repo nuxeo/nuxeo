@@ -39,7 +39,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -47,7 +47,7 @@ import com.sun.jersey.api.client.WebResource;
 @RunWith(FeaturesRunner.class)
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.core.test")
 @Deploy("org.nuxeo.targetplatforms.jaxrs")
