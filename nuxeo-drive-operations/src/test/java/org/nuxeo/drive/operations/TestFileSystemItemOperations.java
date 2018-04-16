@@ -70,7 +70,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -84,7 +84,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
-@Jetty(port = 18080)
+@ServletContainer(port = 18080)
 public class TestFileSystemItemOperations {
 
     private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";

@@ -52,7 +52,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +64,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
-@Jetty(port = 18080)
+@ServletContainer(port = 18080)
 public class TestIntegrationTestOperations {
 
     @Inject
