@@ -45,6 +45,9 @@ public class DocumentRoutingWorkflowInstancesCleanup implements PostCommitEventL
 
     @Override
     public void handleEvent(EventBundle events) {
+        if (Framework.isBooleanPropertyTrue(CLEANUP_WORKFLOW_INSTANCES_PROPERTY)) {
+            return;
+        }
         int batchSize = Integer.parseInt(
                 Framework.getProperty(CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
         DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
