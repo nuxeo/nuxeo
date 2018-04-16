@@ -65,16 +65,16 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.fake.LocalConnectFakeConnector;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.JettyFeature;
+import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({ LogCaptureFeature.class, JettyFeature.class })
-@Jetty(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
+@Features({ LogCaptureFeature.class, ServletContainerFeature.class })
+@ServletContainer(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
 public class TestConnectBroker {
 
     final String TEST_STORE_PATH = "src/test/resources/packages/store";

@@ -46,7 +46,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-multi-repository-contrib.xml")
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 public class TestMultiRepository extends BaseTest {
 
     @Inject

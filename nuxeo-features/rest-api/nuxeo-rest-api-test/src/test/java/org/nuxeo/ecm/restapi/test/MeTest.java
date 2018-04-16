@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(init = RestServerInit.class)
 public class MeTest extends BaseUserTest {
 

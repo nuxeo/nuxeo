@@ -30,7 +30,7 @@ import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.JettyFeature;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml")
 @Deploy("org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml")
 @Deploy("org.nuxeo.connect.update")
-@Features({ JettyFeature.class })
+@Features({ ServletContainerFeature.class })
 public class DownloadFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override

@@ -12,32 +12,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * 
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     bstefanescu
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertNotNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.inject.Inject;
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ */
+@Inherited
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ServletContainer {
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
+    String host() default "localhost";
 
-@RunWith(FeaturesRunner.class)
-@Features(JettyFeature.class)
-@Jetty(port = 9090)
-public class JettyTest {
+    int port() default 8080;
 
-    @Inject
-    Server server;
+    String config() default "";
 
-    @Test
-    public void jettyComponentIsDeployed() {
-        assertNotNull(server);
-    }
+    // allow runtime fixture get access to the web-app naming context
+    boolean propagateNaming() default false;
 
 }

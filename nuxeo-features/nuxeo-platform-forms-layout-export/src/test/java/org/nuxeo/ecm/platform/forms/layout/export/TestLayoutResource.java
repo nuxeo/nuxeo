@@ -32,14 +32,14 @@ import org.nuxeo.jaxrs.test.HttpClientTestRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * @since 10.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ WebEngineFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")

@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface TokenAuthenticationJettyConfig {
+public @interface TokenAuthenticationServletContainerConfig {
 
     String webappDescriptorPath() default "web.xml";
 

@@ -41,14 +41,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, RestServerFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test")
 public class ExceptionRestTest extends BaseTest {

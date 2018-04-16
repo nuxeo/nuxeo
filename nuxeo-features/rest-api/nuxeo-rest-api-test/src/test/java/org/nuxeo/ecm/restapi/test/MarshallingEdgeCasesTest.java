@@ -32,7 +32,7 @@ import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.Client;
@@ -43,7 +43,7 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test")
 public class MarshallingEdgeCasesTest extends BaseTest {
 

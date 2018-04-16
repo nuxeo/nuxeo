@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * @since 7.3
@@ -55,7 +55,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.io")
 @Deploy("org.nuxeo.ecm.platform.restapi.server")
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestHttpHelpers {
 

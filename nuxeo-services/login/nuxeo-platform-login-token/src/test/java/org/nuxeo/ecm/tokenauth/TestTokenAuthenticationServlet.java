@@ -55,7 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features(TokenAuthenticationJettyFeature.class)
+@Features(TokenAuthenticationServletContainerFeature.class)
 public class TestTokenAuthenticationServlet {
 
     protected void nextTransaction() {

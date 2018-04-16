@@ -43,22 +43,22 @@ import sun.net.www.http.HttpClient;
  */
 @Deploy("org.nuxeo.runtime.jetty")
 @Features(RuntimeFeature.class)
-public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class ServletContainerFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         disableSunHttpClientRetryPostProp();
 
-        Jetty jetty = runner.getConfig(Jetty.class);
+        ServletContainer jetty = runner.getConfig(ServletContainer.class);
         if (jetty == null) {
-            jetty = Defaults.of(Jetty.class);
+            jetty = Defaults.of(ServletContainer.class);
         }
         configureJetty(jetty);
 
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
-    protected void configureJetty(Jetty jetty) {
+    protected void configureJetty(ServletContainer jetty) {
         int p = jetty.port();
         try {
             String s = System.getenv("JETTY_PORT");
@@ -110,7 +110,7 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
     private static URL getResource(String resource) {
         // return
         // Thread.currentThread().getContextClassLoader().getResource(resource);
-        return Jetty.class.getClassLoader().getResource(resource);
+        return ServletContainer.class.getClassLoader().getResource(resource);
     }
 
     /**

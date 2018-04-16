@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.nuxeo.ecm.core.test.JettyTransactionalFeature;
+import org.nuxeo.ecm.core.test.ServletContainerTransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 @Deploy("org.nuxeo.ecm.webengine.test:login-anonymous-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:login-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml")
-@Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class,
+@Features({ PlatformFeature.class, WebDriverFeature.class, ServletContainerTransactionalFeature.class,
         WebEngineFeatureCore.class })
 public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 

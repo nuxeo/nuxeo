@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -62,7 +62,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, PlatformFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")

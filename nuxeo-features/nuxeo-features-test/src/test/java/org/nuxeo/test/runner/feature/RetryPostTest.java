@@ -15,25 +15,34 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Florent Guillaume
  */
 package org.nuxeo.test.runner.feature;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.webengine.test.WebEngineFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.JettyFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -43,37 +52,128 @@ import com.sun.jersey.api.client.WebResource;
 import sun.net.www.http.HttpClient;
 
 /**
- * Tests that the {@link JettyFeature} disables the {@code retryPostProp} property of
- * {@link sun.net.www.http.HttpClient}.
+ * Tests that {@link ServletContainerFeature#disableSunHttpClientRetryPostProp} properly disables the
+ * {@code retryPostProp} property of {@link sun.net.www.http.HttpClient}.
  *
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ WebEngineFeature.class, JettyFeature.class })
-@Deploy("org.nuxeo.features.test.tests")
-@Jetty(port = 18090)
+@Features(RuntimeFeature.class)
 public class RetryPostTest {
 
-    private static final int CLIENT_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    protected static final int PORT = 18090;
+
+    protected static final int CLIENT_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
     protected WebResource webResource;
 
+    protected DummyHttpServer dummyServer;
+
+    protected Thread thread;
+
+    /**
+     * Dummy http server which, on first run, closes the connection abruptly, so that the client receives an
+     * IOException.
+     */
+    protected static class DummyHttpServer implements Runnable {
+
+        protected final int port;
+
+        protected ServerSocket serverSocket;
+
+        protected volatile boolean firstRun;
+
+        public DummyHttpServer(int port) {
+            this.port = port;
+        }
+
+        @Override
+        public void run() {
+            try (ServerSocket serverSocket = new ServerSocket(port)) {
+                this.serverSocket = serverSocket;
+                serverSocket.setSoTimeout(1000);
+                for (;;) {
+                    try (Socket clientSocket = serverSocket.accept();
+                            PrintWriter out = getWriter(clientSocket);
+                            BufferedReader in = getReader(clientSocket)) {
+                        for (;;) {
+                            String line = in.readLine();
+                            if (line == null) {
+                                return;
+                            }
+                            if (line.startsWith("POST ")) {
+                                if (firstRun) {
+                                    firstRun = false;
+                                    // break the connection now to make the client receive an error
+                                    out.close();
+                                    break;
+                                }
+                            }
+                            if (line.isEmpty()) {
+                                // end of headers, send a small body
+                                out.print("HTTP/1.1 200 OK\r\nContent-Length: 4\r\n\r\nbody");
+                                out.flush();
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                if (e.getMessage().equals("Socket closed")) {
+                    return;
+                }
+                throw new RuntimeException(e);
+            }
+        }
+
+        protected void end() {
+            try {
+                serverSocket.close(); // will make accept() throw SocketException "Socket closed"
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        protected BufferedReader getReader(Socket socket) throws IOException {
+            return new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF_8));
+        }
+
+        protected PrintWriter getWriter(Socket socket) throws IOException {
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8));
+            return new PrintWriter(bw, true);
+        }
+    }
+
     @Before
     public void initClient() {
+        dummyServer = new DummyHttpServer(PORT);
+        thread = new Thread(dummyServer);
+        thread.start();
+
         Client client = Client.create();
         client.setConnectTimeout(CLIENT_TIMEOUT);
         client.setReadTimeout(CLIENT_TIMEOUT);
         webResource = client.resource("http://localhost:18090").path("testRetryPost");
     }
 
+    @After
+    public void after() throws Exception {
+        dummyServer.end();
+        thread.join(1000);
+
+        // after the test, switch back to the default in Java 8
+        enableSunHttpClientRetryPostProp();
+    }
+
     @Test
     public void testRetryPostDisabled() throws Exception {
-        sendInitialGetRequest();
+        disableSunHttpClientRetryPostProp();
+        dummyServer.firstRun = true;
 
-        // POST retry is disabled by default by the JettyFeature, the call should fail
+        // POST retry is disabled by default by the ServletContainerFeature, the call should fail
         try {
             webResource.post(ClientResponse.class).close();
-            fail("A SocketException should have been thrown since retryPostProp is disabled by the JettyFeature");
+            fail("A SocketException should have been thrown since retryPostProp is disabled by the ServletContainerFeature");
         } catch (ClientHandlerException e) {
             Throwable cause = e.getCause();
             assertTrue(cause instanceof SocketException);
@@ -83,10 +183,8 @@ public class RetryPostTest {
 
     @Test
     public void testRetryPostEnabled() throws Exception {
-        // Enable POST retry
         enableSunHttpClientRetryPostProp();
-
-        sendInitialGetRequest();
+        dummyServer.firstRun = true;
 
         // POST retry is enabled, the call should succeed
         ClientResponse response = null;
@@ -101,17 +199,13 @@ public class RetryPostTest {
     }
 
     /**
-     * Calls a GET request sending an invalid HTTP response, which doesn't prevent from reading the response but enables
-     * the {@code failedOnce} flag in {@link HttpClient} for the next POST request.
+     * This is the method that we're actually testing.
      */
-    protected void sendInitialGetRequest() {
-        ClientResponse response = webResource.get(ClientResponse.class);
-        assertEquals(200, response.getStatus());
-        assertEquals(RetryPostTestObject.RETRY_POST_TEST_CONTENT, response.getEntity(String.class));
+    protected void disableSunHttpClientRetryPostProp() throws ReflectiveOperationException {
+        ServletContainerFeature.disableSunHttpClientRetryPostProp();
     }
 
-    protected void enableSunHttpClientRetryPostProp()
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    protected void enableSunHttpClientRetryPostProp() throws ReflectiveOperationException {
         Field field = HttpClient.class.getDeclaredField("retryPostProp");
         field.setAccessible(true);
         field.setBoolean(null, true);

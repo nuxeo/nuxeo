@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(TokenAuthenticationJettyFeature.class)
+@Features(TokenAuthenticationServletContainerFeature.class)
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-anonymous-contrib.xml")
 public class TestAnonymousTokenAuthenticationServlet {
 
