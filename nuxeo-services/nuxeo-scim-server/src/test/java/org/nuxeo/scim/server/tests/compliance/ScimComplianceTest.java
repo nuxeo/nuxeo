@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.scim.server.tests.ScimFeature;
 import org.nuxeo.scim.server.tests.ScimServerInit;
 
@@ -54,7 +54,7 @@ import com.google.inject.Inject;
 
 @RunWith(OrderedFeaturesRunner.class)
 @Features({ ScimFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.CLASS, init = ScimServerInit.class)
 public class ScimComplianceTest {
 

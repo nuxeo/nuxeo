@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.web.Browser;
 import org.nuxeo.runtime.test.runner.web.BrowserFamily;
 import org.nuxeo.runtime.test.runner.web.HomePage;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.web.HomePage;
 @Features(WebEngineFeature.class)
 @Browser(type = BrowserFamily.HTML_UNIT)
 @HomePage(type = WebEngineHomePage.class, url = "http://localhost:8082")
-@Jetty(port = 8082)
+@ServletContainer(port = 8082)
 public class ICanLoginInWebEngineWithoutJavascriptTest {
 
     @Inject

@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.google.inject.Inject;
 import com.unboundid.scim.data.Entry;
@@ -61,7 +61,7 @@ import com.unboundid.scim.sdk.SCIMService;
 
 @RunWith(FeaturesRunner.class)
 @Features({ ScimFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = ScimServerInit.class)
 @Ignore("Unable to make it run reliability because of internal parser issues ...")
 public class ScimServerTest {

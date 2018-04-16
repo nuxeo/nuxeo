@@ -83,7 +83,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
@@ -96,8 +96,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, OAuth2JettyFeature.class })
-@Jetty(port = 18090)
+@Features({ OAuthFeature.class, OAuth2ServletContainerFeature.class })
+@ServletContainer(port = 18090)
 public class OAuth2ChallengeFixture {
 
     protected static final String CLIENT_ID = "testClient";

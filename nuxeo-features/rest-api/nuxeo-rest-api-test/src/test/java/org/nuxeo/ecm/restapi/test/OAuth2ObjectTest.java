@@ -38,7 +38,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, CoreFeature.class, DirectoryFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.oauth")
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")

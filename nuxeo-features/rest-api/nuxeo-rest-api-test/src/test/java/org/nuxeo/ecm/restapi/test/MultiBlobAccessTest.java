@@ -47,7 +47,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.multipart.BodyPart;
@@ -59,7 +59,7 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
 public class MultiBlobAccessTest extends BaseTest {

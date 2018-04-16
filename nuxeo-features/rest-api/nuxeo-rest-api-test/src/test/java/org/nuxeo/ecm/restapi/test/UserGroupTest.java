@@ -47,7 +47,7 @@ import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +61,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
 public class UserGroupTest extends BaseUserTest {
 

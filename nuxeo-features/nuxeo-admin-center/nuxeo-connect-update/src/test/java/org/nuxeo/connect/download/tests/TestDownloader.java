@@ -38,11 +38,11 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 @RunWith(FeaturesRunner.class)
 @Features(DownloadFeature.class)
-@Jetty(port = 8082)
+@ServletContainer(port = 8082)
 public class TestDownloader {
 
     protected static final Log log = LogFactory.getLog(TestDownloader.class);
