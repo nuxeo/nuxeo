@@ -978,14 +978,40 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         }
     }
 
+    protected static final int NB_WF = 5;
+
+    protected static final String CANCELLED_WORKFLOWS = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'";
+
     /**
      * @since 9.1
      */
     @Test
-    public void testWorkflowCleanUp() throws JsonProcessingException, IOException, InterruptedException {
+    public void testWorkflowCleanUp() throws Exception {
+        createWorkflowsThenWaitForCleanup();
+        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
+        assertTrue(cancelled.isEmpty());
+    }
+
+    /**
+     * @since 10.2
+     */
+    @Test
+    public void testWorkflowCleanUpDisabling() throws Exception {
+        Framework.getProperties().put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY,
+                "true");
+        try {
+            createWorkflowsThenWaitForCleanup();
+            DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
+            assertEquals(NB_WF, cancelled.size());
+        } finally {
+            Framework.getProperties()
+                     .remove(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY);
+        }
+    }
+
+    protected void createWorkflowsThenWaitForCleanup() throws Exception {
         DocumentModel note = RestServerInit.getNote(0, session);
-        final int max = 5;
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < NB_WF; i++) {
             final String createdWorflowInstanceId;
             try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                     getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
@@ -1005,9 +1031,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        DocumentModelList cancelled = session.query(
-                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
-        assertEquals(max, cancelled.size());
+        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
+        assertEquals(NB_WF, cancelled.size());
 
         EventContext eventContext = new EventContextImpl();
         eventContext.setProperty("category", "workflowInstancesCleanup");
@@ -1015,9 +1040,6 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         eventService.fireEvent(event);
 
         awaitCleanupWorks();
-
-        cancelled = session.query("SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
-        assertTrue(cancelled.isEmpty());
     }
 
     /**
