@@ -19,20 +19,32 @@
 package org.nuxeo.runtime.avro;
 
 import org.apache.avro.Schema;
-import org.apache.avro.message.SchemaStore;
 
 /**
- * Holds Avro schemas and allows to register them.
+ * The base class for any AvroMapper.<br>
  *
  * @since 10.2
  */
-public interface AvroSchemaStoreService extends SchemaStore {
+public abstract class AvroMapper<D, M> {
 
-    /**
-     * Registers the schema into the SchemaStore.
-     *
-     * @param schema to be registered
-     */
-    public void addSchema(Schema schema);
+    protected static final String CANNOT_MAP_TO = "Cannot map value to ";
+
+    protected static final String CANNOT_MAP_FROM = "Cannot map from value ";
+
+    protected static final String LOGICAL_TYPE = "logicalType";
+
+    protected final AvroService service;
+
+    protected AvroMapper(AvroService service) {
+        this.service = service;
+    }
+
+    public abstract Object fromAvro(Schema schema, M input);
+
+    public abstract M toAvro(Schema schema, D input);
+
+    protected String getLogicalType(Schema schema) {
+        return schema.getProp(LOGICAL_TYPE);
+    }
 
 }

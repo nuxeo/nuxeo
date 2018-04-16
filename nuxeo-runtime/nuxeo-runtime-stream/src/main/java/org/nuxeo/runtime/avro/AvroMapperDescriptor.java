@@ -18,13 +18,21 @@
  */
 package org.nuxeo.runtime.avro;
 
-import org.apache.avro.message.SchemaStore;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * The Avro mapper descriptor.
+ *
  * @since 10.2
  */
-public class AvroSchemaStoreServiceImpl extends SchemaStore.Cache implements AvroSchemaStoreService {
+@XObject("mapper")
+public class AvroMapperDescriptor {
 
-    // do nothing yet
+    @XNode("@type")
+    public String type;
+
+    @XNode("@class")
+    public String clazz;
 
 }

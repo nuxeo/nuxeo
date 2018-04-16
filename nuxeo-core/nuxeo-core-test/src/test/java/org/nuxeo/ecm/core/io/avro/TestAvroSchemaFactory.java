@@ -20,7 +20,10 @@ package org.nuxeo.ecm.core.io.avro;
 
 import static org.apache.avro.Schema.Type.BYTES;
 import static org.apache.avro.Schema.Type.LONG;
+import static org.apache.avro.Schema.Type.NULL;
+import static org.apache.avro.Schema.Type.RECORD;
 import static org.apache.avro.Schema.Type.STRING;
+import static org.apache.avro.Schema.Type.UNION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -51,8 +54,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.runtime.avro.AvroSchemaFactoryContext;
-import org.nuxeo.runtime.avro.AvroSchemaFactoryService;
+import org.nuxeo.runtime.avro.AvroService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -67,7 +69,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.runtime.stream")
-public class TestAvroSchemaFactoryService {
+public class TestAvroSchemaFactory {
 
     protected static Collection<String> FORBIDDEN = Arrays.asList("-", "__tutu__", "-gru__du__buk-");
 
@@ -81,7 +83,7 @@ public class TestAvroSchemaFactoryService {
     }
 
     @Inject
-    public AvroSchemaFactoryService service;
+    public AvroService service;
 
     @Inject
     public SchemaManager schemaManager;
@@ -90,9 +92,8 @@ public class TestAvroSchemaFactoryService {
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
     public void testComplexDocAvroSchemaFields() {
         DocumentType type = schemaManager.getDocumentType("ComplexDoc");
-        AvroSchemaFactoryContext context = service.createContext();
         // schema creation
-        Schema avro = context.createSchema(type);
+        Schema avro = service.createSchema(type);
         assertNotNull(avro);
         // 3 root schemas
         Field common = avro.getField("common");
@@ -104,43 +105,43 @@ public class TestAvroSchemaFactoryService {
         // exploration of complexschema
         assertEquals("cmpf", complexschema.schema().getNamespace());
         Field attachedFile = complexschema.schema().getField("attachedFile");
-        Schema fileext = attachedFile.schema();
-        assertEquals("fileext", fileext.getName());
-        assertSame(STRING, fileext.getField("name").schema().getType());
+        Schema union = attachedFile.schema();
+        assertSame(UNION, union.getType());
+        assertSame(NULL, union.getTypes().get(0).getType());
+        assertEquals("fileext", union.getTypes().get(1).getName());
+        Schema fileext = union.getTypes().get(1);
+        assertSame(RECORD, fileext.getType());
         Schema vignettes = fileext.getField("vignettes").schema();
-        assertEquals("array", vignettes.getType().getName());
-        Schema vignette = vignettes.getElementType();
-        assertSame(STRING, vignette.getField("label").schema().getType());
-        assertSame(LONG, vignette.getField("width").schema().getType());
-        assertSame(LONG, vignette.getField("height").schema().getType());
-        Schema content = vignette.getField("content").schema();
+        assertEquals(UNION, vignettes.getType());
+        Schema vignette = vignettes.getTypes().get(1).getElementType();
+        assertSame(UNION, vignette.getField("label").schema().getType());
+        assertSame(LONG, getSchema(vignette.getField("width").schema()).getType());
+        assertSame(LONG, getSchema(vignette.getField("height").schema()).getType());
+        assertSame(STRING, getSchema(vignette.getField("label").schema()).getType());
+        assertSame(UNION, vignette.getField("content").schema().getType());
+        Schema content = getSchema(vignette.getField("content").schema());
         assertNull(content.getField("mime-type"));
-        assertSame(STRING, content.getField("name").schema().getType());
-        assertSame(STRING, content.getField("digest").schema().getType());
-        assertSame(STRING, content.getField("encoding").schema().getType());
-        assertSame(STRING, content.getField(context.replaceForbidden("mime-type")).schema().getType());
-        assertSame(LONG, content.getField("length").schema().getType());
-        assertSame(BYTES, content.getField("data").schema().getType());
+        assertSame(STRING, getSchema(content.getField("name").schema()).getType());
+        assertSame(STRING, getSchema(content.getField("digest").schema()).getType());
+        assertSame(STRING, getSchema(content.getField("encoding").schema()).getType());
+        assertSame(STRING, getSchema(content.getField(service.encodeName("mime-type")).schema()).getType());
+        assertSame(BYTES, getSchema(content.getField("data").schema()).getType());
+        assertSame(LONG, getSchema(content.getField("length").schema()).getType());
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
     public void testComplexDocJsonCompare() throws IOException {
         DocumentType type = schemaManager.getDocumentType("ComplexDoc");
-        AvroSchemaFactoryContext context = service.createContext();
-        // schema creation
-        Schema avro = context.createSchema(type);
-        String ugly = SchemaNormalization.toParsingForm(avro);
-        assertEquals(getContent("ComplexDocAvroSchema.json"), ugly);
-        String pretty = avro.toString(true);
-        assertEquals(getContent("ComplexDocAvroSchemaPretty.json"), pretty);
+        Schema avro = service.createSchema(type);
+        assertEquals(getContent("ComplexDocAvroSchema.json"), SchemaNormalization.toParsingForm(avro));
+        assertEquals(getContent("ComplexDocAvroSchemaPretty.json"), avro.toString(true));
     }
 
     @Test
     public void testDocumentTypeFactory() {
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
-            AvroSchemaFactoryContext context = service.createContext();
-            Schema avro = context.createSchema(documentType);
+            Schema avro = service.createSchema(documentType);
             assertNotNull(avro);
             assertEquals(documentType.getSchemas().size(), avro.getFields().size());
             // the toString(boolean pretty) call here is to assert no exception is thrown during the call
@@ -160,15 +161,14 @@ public class TestAvroSchemaFactoryService {
         // tricks the QName.valueOf() that takes the prefix before the first :
         nuxeo.addField("dc:dc:title", StringType.INSTANCE, null, 0, null);
         nuxeo.addField("icon-expanded", StringType.INSTANCE, null, 0, null);
-        AvroSchemaFactoryContext context = service.createContext();
-        Schema avro = context.createSchema(nuxeo);
+        Schema avro = service.createSchema(nuxeo);
         assertNotNull(avro);
         for (String forbidden : FORBIDDEN) {
-            String single = context.replaceForbidden(forbidden);
+            String single = service.encodeName(forbidden);
             assertEquals(single, avro.getField(single).name());
-            String black = context.replaceForbidden(FIELD + forbidden + FIELD);
+            String black = service.encodeName(FIELD + forbidden + FIELD);
             assertEquals(black, avro.getField(black).name());
-            String white = context.replaceForbidden(forbidden + FIELD + forbidden);
+            String white = service.encodeName(forbidden + FIELD + forbidden);
             assertEquals(white, avro.getField(white).name());
         }
         assertNull(avro.getField("title"));
@@ -193,8 +193,7 @@ public class TestAvroSchemaFactoryService {
     @Test
     public void testSchemaFactory() {
         for (org.nuxeo.ecm.core.schema.types.Schema nuxeo : schemaManager.getSchemas()) {
-            AvroSchemaFactoryContext context = service.createContext();
-            Schema avro = context.createSchema(nuxeo);
+            Schema avro = service.createSchema(nuxeo);
             assertNotNull(avro);
             assertEquals(nuxeo.getFields().size(), avro.getFields().size());
             // the toString(boolean pretty) call here is to assert no exception is thrown during the call
@@ -205,13 +204,12 @@ public class TestAvroSchemaFactoryService {
     }
 
     protected void deepAssert(org.nuxeo.ecm.core.schema.types.ComplexType nuxeo, Schema avro) {
-        AvroSchemaFactoryContext context = service.createContext();
         for (org.nuxeo.ecm.core.schema.types.Field nuxeoF : nuxeo.getFields()) {
-            String cleanedNuxeoName = context.replaceForbidden(nuxeoF.getName().getLocalName());
+            String cleanedNuxeoName = service.encodeName(nuxeoF.getName().getLocalName());
             Field avroF = avro.getField(cleanedNuxeoName);
             assertEquals(cleanedNuxeoName, avroF.name());
             if (nuxeoF.getType().isComplexType()) {
-                deepAssert((ComplexType) nuxeoF.getType(), avroF.schema());
+                deepAssert((ComplexType) nuxeoF.getType(), getSchema(avroF.schema()));
             } else {
                 String actualAvroTypeName = getActualAvroNameType(avroF);
                 String actualNuxeoTypeName = getActuelNuxeoNameType(nuxeoF.getType());
@@ -221,11 +219,12 @@ public class TestAvroSchemaFactoryService {
     }
 
     protected String getActualAvroNameType(Field avroF) {
-        String actualAvroTypeName = avroF.schema().getLogicalType() != null
-                ? avroF.schema().getLogicalType().getName()
-                : avroF.schema().getName();
-        if (actualAvroTypeName.equals("array")) {
-            actualAvroTypeName = avroF.schema().getElementType().getName();
+        Schema schema = getSchema(avroF.schema());
+        String actualAvroTypeName = schema.getLogicalType() != null
+                ? schema.getLogicalType().getName()
+                : schema.getName();
+        if (actualAvroTypeName.equals("array") || actualAvroTypeName.equals("list")) {
+            actualAvroTypeName = schema.getElementType().getName();
         }
         return actualAvroTypeName;
     }
@@ -254,8 +253,15 @@ public class TestAvroSchemaFactoryService {
     protected Field getReplacedField() {
         SchemaImpl nuxeo = new SchemaImpl("testSchema", new Namespace("hhtp://test.com/schema/test", "tst"));
         nuxeo.addField("test-test", StringType.INSTANCE, null, 0, null);
-        Schema avro = service.createContext().createSchema(nuxeo);
-        return avro.getField("test__dash__test");
+        return service.createSchema(nuxeo).getField("test__dash__test");
+    }
+
+    protected Schema getSchema(Schema schema) {
+        if (schema.getType() == org.apache.avro.Schema.Type.UNION
+                && schema.getTypes().get(0).getType() == org.apache.avro.Schema.Type.NULL) {
+            return schema.getTypes().get(1);
+        }
+        return schema;
     }
 
 }

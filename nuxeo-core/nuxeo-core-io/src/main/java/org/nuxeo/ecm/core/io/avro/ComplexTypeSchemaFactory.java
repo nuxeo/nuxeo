@@ -32,30 +32,34 @@ import org.nuxeo.runtime.avro.AvroSchemaFactoryContext;
  */
 public class ComplexTypeSchemaFactory extends AvroSchemaFactory<ComplexType> {
 
-    protected ComplexTypeSchemaFactory(AvroSchemaFactoryContext context) {
+    public ComplexTypeSchemaFactory(AvroSchemaFactoryContext context) {
         super(context);
     }
 
     @Override
     public Schema createSchema(ComplexType input) {
-        Schema typeSchema = Schema.createRecord(getName(input), null, input.getNamespace().prefix, false);
+        Schema schema = Schema.createRecord(getName(input), null, input.getNamespace().prefix, false);
         List<Field> fields = new ArrayList<>(input.getFields().size());
         for (org.nuxeo.ecm.core.schema.types.Field f : context.sort(input.getFields())) {
-            String fieldName = context.replaceForbidden(f.getName().getLocalName());
-            fields.add(new Field(fieldName, context.createSchema(f.getType()), null, (Object) null));
+            String fieldName = context.getService().encodeName(f.getName().getLocalName());
+            Schema fieldSchema = context.createSchema(f.getType());
+            if (f.isNillable()) {
+                fieldSchema = nullable(fieldSchema);
+            }
+            fields.add(new Field(fieldName, fieldSchema, null, (Object) null));
         }
-        typeSchema.setFields(fields);
-        return typeSchema;
+        schema.setFields(fields);
+        return schema;
     }
 
     @Override
     public String getName(ComplexType input) {
-        return context.replaceForbidden(input.getName());
+        return context.getService().encodeName(input.getName());
     }
 
     @Override
     public String getQualifiedName(ComplexType input) {
-        return context.replaceForbidden(input.getNamespace().prefix) + ":" + getName(input);
+        return context.getService().encodeName(input.getNamespace().prefix) + ":" + getName(input);
     }
 
 }

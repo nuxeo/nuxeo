@@ -32,7 +32,7 @@ import org.apache.avro.message.SchemaStore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.avro.AvroSchemaStoreService;
+import org.nuxeo.runtime.avro.AvroService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -45,15 +45,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.runtime.stream:test-avro-contrib.xml")
-public class TestAvroSchemaStoreService {
+public class TestAvroSchemaStore {
 
     @Inject
-    public AvroSchemaStoreService service;
-
-    @Test
-    public void testSchemaStoreRetrieval() {
-        assertNotNull(Framework.getService(SchemaStore.class));
-    }
+    public AvroService service;
 
     @Test
     public void testSchemaRetrieval() throws IOException {
@@ -63,6 +58,11 @@ public class TestAvroSchemaStoreService {
             Schema retrieved = service.findByFingerprint(fingerprint);
             assertEquals(schema, retrieved);
         }
+    }
+
+    @Test
+    public void testSchemaStoreRetrieval() {
+        assertNotNull(Framework.getService(SchemaStore.class));
     }
 
 }

@@ -40,7 +40,20 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class AvroComponent extends DefaultComponent {
 
-    protected static class AvroReplacementRegistry extends SimpleContributionRegistry<AvroReplacementDescriptor> {
+    protected static class AvroMapperDescriptorRegistry
+            extends SimpleContributionRegistry<AvroMapperDescriptor> {
+        @Override
+        public String getContributionId(AvroMapperDescriptor contrib) {
+            return contrib.type;
+        }
+
+        public Collection<AvroMapperDescriptor> getDescriptors() {
+            return currentContribs.values();
+        }
+    }
+
+    protected static class AvroReplacementDescriptorRegistry
+            extends SimpleContributionRegistry<AvroReplacementDescriptor> {
         @Override
         public String getContributionId(AvroReplacementDescriptor contrib) {
             return contrib.forbidden;
@@ -51,7 +64,8 @@ public class AvroComponent extends DefaultComponent {
         }
     }
 
-    protected static class SchemaDescriptorRegistry extends SimpleContributionRegistry<AvroSchemaDescriptor> {
+    protected static class AvroSchemaDescriptorRegistry
+            extends SimpleContributionRegistry<AvroSchemaDescriptor> {
         @Override
         public String getContributionId(AvroSchemaDescriptor contrib) {
             return contrib.name;
@@ -62,7 +76,8 @@ public class AvroComponent extends DefaultComponent {
         }
     }
 
-    protected static class SchemaFactoryRegistry extends SimpleContributionRegistry<AvroSchemaFactoryDescriptor> {
+    protected static class AvroSchemaFactoryDescriptorRegistry
+            extends SimpleContributionRegistry<AvroSchemaFactoryDescriptor> {
         @Override
         public String getContributionId(AvroSchemaFactoryDescriptor contrib) {
             return contrib.type;
@@ -75,27 +90,27 @@ public class AvroComponent extends DefaultComponent {
 
     public static final String SCHEMA_XP = "schema";
 
+    public static final String MAPPER_XP = "mapper";
+
     public static final String FACTORY_XP = "factory";
 
     public static final String REPLACEMENT_XP = "replacement";
 
-    protected final SchemaDescriptorRegistry schemaDescriptors = new SchemaDescriptorRegistry();
+    protected final AvroMapperDescriptorRegistry avroMapperDescriptors = new AvroMapperDescriptorRegistry();
 
-    protected final SchemaFactoryRegistry schemaFactoryDescriptors = new SchemaFactoryRegistry();
+    protected final AvroSchemaDescriptorRegistry schemaDescriptors = new AvroSchemaDescriptorRegistry();
 
-    protected final AvroReplacementRegistry replacementDescriptors = new AvroReplacementRegistry();
+    protected final AvroSchemaFactoryDescriptorRegistry avroSchemaFactoryDescriptors = new AvroSchemaFactoryDescriptorRegistry();
 
-    protected AvroSchemaFactoryService schemaFactoryService;
+    protected final AvroReplacementDescriptorRegistry replacementDescriptors = new AvroReplacementDescriptorRegistry();
 
-    protected AvroSchemaStoreService schemaStoreService;
+    protected AvroService avroService;
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(schemaStoreService.getClass())) {
-            return (T) schemaStoreService;
-        } else if (adapter.isAssignableFrom(schemaFactoryService.getClass())) {
-            return (T) schemaFactoryService;
+        if (adapter.isAssignableFrom(avroService.getClass())) {
+            return (T) avroService;
         }
         return null;
     }
@@ -104,8 +119,10 @@ public class AvroComponent extends DefaultComponent {
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (SCHEMA_XP.equals(extensionPoint)) {
             schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
+        } else if (MAPPER_XP.equals(extensionPoint)) {
+            avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
         } else if (FACTORY_XP.equals(extensionPoint)) {
-            schemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
+            avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
         } else if (REPLACEMENT_XP.equals(extensionPoint)) {
             replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
         } else {
@@ -114,66 +131,68 @@ public class AvroComponent extends DefaultComponent {
     }
 
     @Override
-    public void start(ComponentContext context) {
-        buildSchemaFactoryService();
-        buildSchemaStoreService(context);
-    }
-
-    @Override
-    public void stop(ComponentContext context) throws InterruptedException {
-        schemaFactoryService = null;
-        schemaStoreService = null;
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (SCHEMA_XP.equals(extensionPoint)) {
-            schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
-        } else if (FACTORY_XP.equals(extensionPoint)) {
-            schemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
-        } else if (REPLACEMENT_XP.equals(extensionPoint)) {
-            replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
-        } else {
-            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    protected void buildSchemaFactoryService() {
-        Collection<AvroReplacementDescriptor> replacements = replacementDescriptors.getDescriptors();
-        Collection<AvroSchemaFactoryDescriptor> descriptors = schemaFactoryDescriptors.getDescriptors();
-        AvroSchemaFactoryServiceImpl schemaFactoryService = new AvroSchemaFactoryServiceImpl(replacements);
-        AvroSchemaFactoryContext avroContext = schemaFactoryService.createContext();
-        Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(descriptors.size());
-        for (AvroSchemaFactoryDescriptor d : descriptors) {
+    public void start(ComponentContext context) {
+        // schema factories can be give to the constrcutor since they don't need a service instance
+        Collection<AvroSchemaFactoryDescriptor> factoryDescriptors = avroSchemaFactoryDescriptors.getDescriptors();
+        Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(factoryDescriptors.size());
+        for (AvroSchemaFactoryDescriptor descriptor : factoryDescriptors) {
             try {
-                Class<Object> type = (Class<Object>) Class.forName(d.type);
-                Class<AvroSchemaFactory<?>> factory = (Class<AvroSchemaFactory<?>>) Class.forName(d.clazz);
-                // assert the class is instanciable
-                Constructor<AvroSchemaFactory<?>> constructor = factory.getConstructor(AvroSchemaFactoryContext.class);
-                constructor.newInstance(avroContext);
-                // add it to factories
-                factories.put(type, factory);
+                Class<Object> type = (Class<Object>) Class.forName(descriptor.type);
+                factories.put(type, (Class<AvroSchemaFactory<?>>) Class.forName(descriptor.clazz));
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeServiceException(e);
             }
         }
-        schemaFactoryService.setFactories(factories);
-        this.schemaFactoryService = schemaFactoryService;
-    }
-
-    protected void buildSchemaStoreService(ComponentContext context) {
-        schemaStoreService = new AvroSchemaStoreServiceImpl();
+        // as well as replacements
+        AvroServiceImpl impl = new AvroServiceImpl(replacementDescriptors.getDescriptors(), factories);
+        // mappers are instanciated with an instance of the service
+        Collection<AvroMapperDescriptor> mapperDecriptors = avroMapperDescriptors.getDescriptors();
+        Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDecriptors.size());
+        for (AvroMapperDescriptor descriptor : mapperDecriptors) {
+            try {
+                Class<Object> type = (Class<Object>) Class.forName(descriptor.type);
+                Class<AvroMapper<?, ?>> clazz = (Class<AvroMapper<?, ?>>) Class.forName(descriptor.clazz);
+                Constructor<AvroMapper<?, ?>> constructor = clazz.getConstructor(AvroService.class);
+                mappers.put(type, constructor.newInstance(impl));
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeServiceException(e);
+            }
+        }
+        // and are added to the service implementation
+        impl.setMappers(mappers);
+        // schemas are registered through the SchemaService interface
         for (AvroSchemaDescriptor descriptor : schemaDescriptors.getDescriptors()) {
             URL url = context.getRuntimeContext().getResource(descriptor.file);
             try (InputStream stream = url == null ? null : url.openStream()) {
                 if (stream == null) {
                     throw new RuntimeServiceException("Could not load stream for file " + descriptor.file);
                 }
-                schemaStoreService.addSchema(new Schema.Parser().parse(stream));
+                impl.addSchema(new Schema.Parser().parse(stream));
             } catch (IOException e) {
                 throw new RuntimeServiceException(e);
             }
+        }
+        avroService = impl;
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        avroService = null;
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (SCHEMA_XP.equals(extensionPoint)) {
+            schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
+        } else if (MAPPER_XP.equals(extensionPoint)) {
+            avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
+        } else if (FACTORY_XP.equals(extensionPoint)) {
+            avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
+        } else if (REPLACEMENT_XP.equals(extensionPoint)) {
+            replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
+        } else {
+            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
         }
     }
 

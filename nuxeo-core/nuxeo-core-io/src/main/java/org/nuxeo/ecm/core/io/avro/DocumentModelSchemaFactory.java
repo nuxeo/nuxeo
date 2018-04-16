@@ -18,10 +18,13 @@
  */
 package org.nuxeo.ecm.core.io.avro;
 
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
+import org.apache.avro.Schema.Type;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.avro.AvroSchemaFactory;
 import org.nuxeo.runtime.avro.AvroSchemaFactoryContext;
@@ -37,16 +40,21 @@ public class DocumentModelSchemaFactory extends AvroSchemaFactory<DocumentModel>
 
     @Override
     public Schema createSchema(DocumentModel input) {
-        Schema schema = Schema.createRecord(getName(input), null, null, false);
-        Field field = new Field("type", context.createSchema(input.getDocumentType()), null, (Object) null);
+        Schema schema = Schema.createRecord(getName(input), null, "ecm", false);
+        new LogicalType(DocumentModelMapper.DOCUMENT_MODEL).addToSchema(schema);
+        Schema typeSchema = context.createSchema(input.getDocumentType());
+        List<Field> fields = new LinkedList<>();
+        fields.add(new Field(DocumentModelMapper.UUID, Schema.create(Type.STRING), null, (Object) null));
+        fields.add(new Field(DocumentModelMapper.PATH, Schema.create(Type.STRING), null, (Object) null));
+        fields.add(new Field(DocumentModelMapper.PRIMARY_TYPE, typeSchema, null, (Object) null));
+        schema.setFields(fields);
         // TODO we could handle facets here
-        schema.setFields(Collections.singletonList(field));
         return schema;
     }
 
     @Override
     public String getName(DocumentModel input) {
-        return context.replaceForbidden(input.getName());
+        return context.getService().encodeName(input.getName());
     }
 
 }
