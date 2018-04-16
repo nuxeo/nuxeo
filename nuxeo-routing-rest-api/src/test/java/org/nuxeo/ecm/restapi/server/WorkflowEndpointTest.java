@@ -78,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -92,7 +92,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Jetty(port = 18090)
+@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.platform.restapi.io")
