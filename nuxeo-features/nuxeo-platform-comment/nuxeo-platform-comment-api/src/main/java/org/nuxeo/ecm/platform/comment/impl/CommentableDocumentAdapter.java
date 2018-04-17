@@ -34,32 +34,34 @@ public class CommentableDocumentAdapter implements CommentableDocument {
 
     final DocumentModel docModel;
 
+    final CommentManager commentManager;
+
     public CommentableDocumentAdapter(DocumentModel docModel) {
+        this.commentManager = Framework.getService(CommentManager.class);
         this.docModel = docModel;
     }
 
     public DocumentModel addComment(DocumentModel comment) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, comment);
     }
 
+    public DocumentModel addComment(DocumentModel comment, String path) {
+        return commentManager.createLocatedComment(docModel, comment, path);
+    }
+
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, parent, comment);
     }
 
     public void removeComment(DocumentModel comment) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
         commentManager.deleteComment(docModel, comment);
     }
 
     public List<DocumentModel> getComments() {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel);
     }
 
     public List<DocumentModel> getComments(DocumentModel parent) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel, parent);
     }
 

@@ -375,7 +375,9 @@ public class CommentManagerImpl implements CommentManager {
             {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
-            DocumentModel newComment = internalCreateComment(session, parentDocModel, child, null);
+            String containerPath = parent.getPath().removeLastSegments(1).toString();
+            DocumentModel newComment = internalCreateComment(session, parentDocModel, child,
+                    containerPath);
 
             session.save();
             return newComment;
