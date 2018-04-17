@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
@@ -62,8 +63,12 @@ public class DefaultBinaryManager extends LocalBinaryManager {
      */
     protected String storeAndDigest(FileBlob blob) throws IOException {
         String digest;
-        try (InputStream in = blob.getStream()) {
-            digest = storeAndDigest(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        if (StringUtils.isEmpty(blob.getDigest())) {
+            try (InputStream in = blob.getStream()) {
+                digest = storeAndDigest(in, NullOutputStream.NULL_OUTPUT_STREAM);
+            }
+        } else {
+            digest = blob.getDigest();
         }
         File digestFile = getFileForDigest(digest, true);
         if (digestFile.exists()) {

@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -207,6 +210,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String fileName = request.getHeader("X-File-Name");
         String fileSizeHeader = request.getHeader("X-File-Size");
         String mimeType = request.getHeader("X-File-Type");
+        String requestBodyFile = request.getHeader(NginxConstants.X_REQUEST_BODY_FILE_HEADER);
+        String contentMd5 = request.getHeader(NginxConstants.X_CONTENT_MD5_HEADER);
 
         int chunkCount = -1;
         int uploadChunkIndex = -1;
@@ -242,6 +247,21 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 mimeType = blob.getMimeType();
             }
             uploadedSize = blob.getLength();
+            addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
+                    fileSize);
+        } else if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
+                && StringUtils.isNotEmpty(requestBodyFile)) {
+            if (StringUtils.isNotEmpty(fileName)) {
+                fileName = URLDecoder.decode(fileName, "UTF-8");
+            }
+            File file = new File(requestBodyFile);
+            Blob blob = new FileBlob(file, true);
+
+            if (StringUtils.isNotEmpty(contentMd5)) {
+                blob.setDigest(contentMd5);
+            }
+
+            uploadedSize = file.length();
             addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
                     fileSize);
         } else {

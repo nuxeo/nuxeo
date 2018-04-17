@@ -68,12 +68,16 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
@@ -543,6 +547,27 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             // log the download but not if it's a random byte range
             if (byteRange == null || byteRange.getStart() == 0) {
                 logDownload(doc, xpath, filename, reason, extendedInfos);
+            }
+
+            String xAccelLocation = request.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER);
+            if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
+                    && StringUtils.isNotEmpty(xAccelLocation)) {
+                BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
+                // can work only on a local and unencrypted binary manager
+                if (blobProvider != null && blobProvider.getBinaryManager() instanceof DefaultBinaryManager) {
+                    DefaultBinaryManager binaryManager = (DefaultBinaryManager) blobProvider.getBinaryManager();
+                    String relative = binaryManager.getStorageDir()
+                                                   .toURI()
+                                                   .relativize(blob.getFile().toURI())
+                                                   .getPath();
+                    if (xAccelLocation.endsWith("/")) {
+                        xAccelLocation = xAccelLocation + relative;
+                    } else {
+                        xAccelLocation = xAccelLocation + "/" + relative;
+                    }
+                    response.setHeader(NginxConstants.X_ACCEL_REDIRECT_HEADER, xAccelLocation);
+                    return;
+                }
             }
 
             // execute the final download

@@ -153,6 +153,16 @@ public class FileBlob extends AbstractBlob implements Serializable {
         filename = file.getName();
     }
 
+    /**
+     * Creates a temporary {@link FileBlob} backed by a {@link File}.
+     *
+     * @since 10.3
+     */
+    public FileBlob(File file, boolean isTemporary) {
+       this(file);
+       this.isTemporary = isTemporary;
+    }
+
     @Override
     public File getFile() {
         return file;
