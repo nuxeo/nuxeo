@@ -151,8 +151,10 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
         return input;
     }
 
-    public void push(String type, Object obj) {
+    public Object push(String type, Object obj) {
+        Object current = peek(type);
         stacks.computeIfAbsent(type, key -> new LinkedList<>()).push(obj);
+        return current;
     }
 
     public Object peek(String type) {
