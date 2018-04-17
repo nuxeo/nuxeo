@@ -61,6 +61,15 @@ public interface CommentableDocument extends Serializable {
     DocumentModel addComment(DocumentModel comment);
 
     /**
+     * Creates a new comment in a specific location.
+     *
+     * @since 10.2
+     * @param comment the comment to be added
+     * @param path the given location
+     */
+    DocumentModel addComment(DocumentModel comment, String path);
+
+    /**
      * Creates a new comment as a reply to an existing comment.
      *
      * @param parent the parent comment, which must exist
