@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -64,6 +63,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     private NuxeoPrincipal currentUser;
 
+    @Override
     public WebConfiguration getWebConfiguration(String url) {
         WebAnnotationConfigurationService config = Framework.getService(WebAnnotationConfigurationService.class);
         WebConfiguration conf = new WebConfiguration();

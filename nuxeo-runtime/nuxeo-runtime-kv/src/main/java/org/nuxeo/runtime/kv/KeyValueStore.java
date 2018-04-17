@@ -50,6 +50,15 @@ public interface KeyValueStore {
     void put(String key, String value);
 
     /**
+     * Sets the value associated to the key.
+     *
+     * @param key the key
+     * @param value the value, which may be {@code null}
+     * @since 10.2
+     */
+    void put(String key, Long value);
+
+    /**
      * Sets the value associated to the key, and a TTL.
      *
      * @param key the key
@@ -68,6 +77,16 @@ public interface KeyValueStore {
      * @since 9.3
      */
     void put(String key, String value, long ttl);
+
+    /**
+     * Sets the value associated to the key.
+     *
+     * @param key the key
+     * @param value the value, which may be {@code null}
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @since 10.2
+     */
+    void put(String key, Long value, long ttl);
 
     /**
      * Sets the TTL for an existing key.
@@ -98,6 +117,16 @@ public interface KeyValueStore {
     String getString(String key);
 
     /**
+     * Retrieves the value associated to the key.
+     *
+     * @param key the key
+     * @return the value, or {@code null} if there is no value
+     * @throws NumberFormatException if the value cannot be returned as a {@link Long}
+     * @since 10.2
+     */
+    Long getLong(String key) throws NumberFormatException; // NOSONAR
+
+    /**
      * Retrieves the key/value map associated with the keys.
      *
      * @param keys the keys
@@ -115,6 +144,16 @@ public interface KeyValueStore {
      * @since 9.10
      */
     Map<String, String> getStrings(Collection<String> keys);
+
+    /**
+     * Retrieves the key/value map associated with the  keys.
+     *
+     * @param keys the keys
+     * @return the key/value map
+     * @throws NumberFormatException if one of the values cannot be returned as a {@link Long}
+     * @since 10.2
+     */
+    Map<String, Long> getLongs(Collection<String> keys) throws NumberFormatException; // NOSONAR
 
     /**
      * Atomically sets the value associated to the key to the given value if the current value is the expected value.
@@ -170,5 +209,18 @@ public interface KeyValueStore {
      * @since 9.3
      */
     boolean compareAndSet(String key, String expected, String value, long ttl);
+
+    /**
+     * Atomically adds the delta to the value associated to the key, interpreted as a long represented as a string.
+     * <p>
+     * If the value does not exist (if {@link #get} would return {@code null}), it is interpreted as {@code 0}.
+     *
+     * @param key the key
+     * @param delta the delta to add
+     * @return the new value
+     * @throws NumberFormatException if the existing value cannot be interpreted as a {@code long}
+     * @since 10.2
+     */
+    long addAndGet(String key, long delta);
 
 }

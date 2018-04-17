@@ -49,6 +49,10 @@ public class SeamOperationFilter {
 
     protected static final Log log = LogFactory.getLog(SeamOperationFilter.class);
 
+    private SeamOperationFilter() {
+        // Helper class
+    }
+
     /**
      * Initialize a workable Seam context as well as a conversion if needed
      *
@@ -89,20 +93,16 @@ public class SeamOperationFilter {
         }
 
         if (conversationId == null) {
-            conversationId = (String) context.get("conversationId");
+            conversationId = (String) context.getChainParameter("conversationId");
         }
 
         if (conversationId != null) {
-            // CoreSession seamDocumentManager = (CoreSession)
-            // Contexts.getConversationContext().get("seamDocumentManager");
             Contexts.getEventContext().remove("documentManager");
-            // Manager.instance().endConversation(true);
         }
         ServletLifecycle.endRequest(request);
     }
 
-    protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session)
-            {
+    protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session) {
 
         HttpServletRequest request = getRequest(context);
         if (request == null) {
@@ -112,7 +112,7 @@ public class SeamOperationFilter {
         ServletContexts.instance().setRequest(request);
 
         if (conversationId == null) {
-            conversationId = (String) context.get("conversationId");
+            conversationId = (String) context.getChainParameter("conversationId");
         }
 
         if (conversationId != null) {
@@ -140,8 +140,8 @@ public class SeamOperationFilter {
 
     protected static void setSeamActionContext(OperationContext context, CoreSession session) {
         ActionContext seamActionContext = new SeamActionContext();
-        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
-                "navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext()
+                                                                          .get("navigationContext");
         if (navigationContext != null) {
             seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
         }

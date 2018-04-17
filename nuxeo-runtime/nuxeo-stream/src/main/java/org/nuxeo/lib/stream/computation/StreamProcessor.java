@@ -20,6 +20,8 @@ package org.nuxeo.lib.stream.computation;
 
 import java.time.Duration;
 
+import org.nuxeo.lib.stream.log.Latency;
+
 /**
  * Run a topology of computations according to some settings.
  *
@@ -57,16 +59,24 @@ public interface StreamProcessor {
     void shutdown();
 
     /**
-     * Return the low watermark for the computation. Any message with an offset below the low watermark has been
-     * processed by this computation and its ancestors..
+     * Returns the low watermark for the computation. Any message with an offset below the low watermark has been
+     * processed by this computation and its ancestors. The returned watermark is local to this processing node, if the
+     * computation is distributed the global low watermark is the minimum of all nodes low watermark.
      */
     long getLowWatermark(String computationName);
 
     /**
-     * Return the low watermark for all the computations of the topology. Any message with an offset below the low
-     * watermark has been processed.
+     * Returns the low watermark for all the computations of the topology. Any message with an offset below the low
+     * watermark has been processed. The returned watermark is local to this processing node.
      */
     long getLowWatermark();
+
+    /**
+     * Returns the latency for a computation. This works also for distributed computations.
+     *
+     * @since 10.1
+     */
+    Latency getLatency(String computationName);
 
     /**
      * Returns true if all messages with a lower timestamp has been processed by the topology.
@@ -81,4 +91,10 @@ public interface StreamProcessor {
      */
     boolean waitForAssignments(Duration timeout) throws InterruptedException;
 
+    /**
+     * True if there is no active processing threads.
+     *
+     * @since 10.1
+     */
+    boolean isTerminated();
 }

@@ -55,6 +55,28 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
         return string == null ? null : string.getBytes(UTF_8);
     }
 
+    /**
+     * Converts UTF-8 bytes to a Long, or throws if malformed.
+     *
+     * @throws NumberFormatException
+     */
+    protected static Long bytesToLong(byte[] bytes) throws NumberFormatException { // NOSONAR
+        if (bytes == null) {
+            return null;
+        }
+        if (bytes.length > 20) { // Long.MIN_VALUE has 20 characters including the sign
+            throw new NumberFormatException("For input string of length " + bytes.length);
+        }
+        return Long.valueOf(new String(bytes, UTF_8));
+    }
+
+    /**
+     * Converts a long to UTF-8 bytes.
+     */
+    protected static byte[] longToBytes(Long value) {
+        return value == null ? null : value.toString().getBytes(UTF_8);
+    }
+
     @Override
     public void put(String key, byte[] value) {
         put(key, value, 0);
@@ -71,6 +93,16 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
     }
 
     @Override
+    public void put(String key, Long value) {
+        put(key, longToBytes(value), 0);
+    }
+
+    @Override
+    public void put(String key, Long value, long ttl) {
+        put(key, longToBytes(value), ttl);
+    }
+
+    @Override
     public String getString(String key) {
         byte[] bytes = get(key);
         try {
@@ -78,6 +110,12 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
         } catch (CharacterCodingException e) {
             throw new IllegalArgumentException("Value is not a String for key: " + key);
         }
+    }
+
+    @Override
+    public Long getLong(String key) throws NumberFormatException { // NOSONAR
+        byte[] bytes = get(key);
+        return bytesToLong(bytes);
     }
 
     /*
@@ -112,6 +150,22 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
         return map;
     }
 
+    /*
+     * This default implementation is uninteresting. It is expected that underlying storage implementations
+     * will leverage bulk fetching to deliver significant optimizations over this simple loop.
+     */
+    @Override
+    public Map<String, Long> getLongs(Collection<String> keys) throws NumberFormatException { // NOSONAR
+        Map<String, Long> map = new HashMap<>(keys.size());
+        for (String key : keys) {
+            Long value = getLong(key);
+            if (value != null) {
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
+
     @Override
     public boolean compareAndSet(String key, byte[] expected, byte[] value) {
         return compareAndSet(key, expected, value, 0);
@@ -125,6 +179,19 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
     @Override
     public boolean compareAndSet(String key, String expected, String value, long ttl) {
         return compareAndSet(key, stringToBytes(expected), stringToBytes(value), ttl);
+    }
+
+    @Override
+    public long addAndGet(String key, long delta) throws NumberFormatException { // NOSONAR
+        for (;;) {
+            String value = getString(key);
+            long base = value == null ? 0 : Long.parseLong(value);
+            long result = base + delta;
+            String newValue = Long.toString(result);
+            if (compareAndSet(key, value, newValue)) {
+                return result;
+            }
+        }
     }
 
 }

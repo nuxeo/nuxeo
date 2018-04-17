@@ -31,30 +31,21 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_DOC_TYPE = "Annotation";
 
-    public static final String ANNOTATION_COLOR_PROPERTY = "annotation:color";
-
-    public static final String ANNOTATION_DATE_PROPERTY = "annotation:date";
-
-    public static final String ANNOTATION_FLAGS_PROPERTY = "annotation:flags";
-
-    public static final String ANNOTATION_NAME_PROPERTY = "annotation:name";
+    public static final String ANNOTATION_ID_PROPERTY = "annotation:annotationId";
 
     public static final String ANNOTATION_DOCUMENT_ID_PROPERTY = "annotation:documentId";
 
     public static final String ANNOTATION_XPATH_PROPERTY = "annotation:xpath";
 
-    public static final String ANNOTATION_LAST_MODIFIER_PROPERTY = "annotation:lastModifier";
+    public static final String ANNOTATION_ENTITY_PROPERTY = "annotation:entity";
 
-    public static final String ANNOTATION_PAGE_PROPERTY = "annotation:page";
+    public static final String ANNOTATION_ID = "id";
 
-    public static final String ANNOTATION_POSITION_PROPERTY = "annotation:position";
+    public static final String ANNOTATION_DOCUMENT_ID = "documentId";
 
-    public static final String ANNOTATION_CREATION_DATE_PROPERTY = "annotation:creationDate";
+    public static final String ANNOTATION_XPATH = "xpath";
 
-    public static final String ANNOTATION_OPACITY_PROPERTY = "annotation:opacity";
+    public static final String ANNOTATION_ENTITY = "entity";
 
-    public static final String ANNOTATION_SUBJECT_PROPERTY = "annotation:subject";
-
-    public static final String ANNOTATION_SECURITY_PROPERTY = "annotation:security";
 
 }

@@ -142,10 +142,13 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
             jg.writeStringField("ecm:parentId", parentRef.toString());
         }
         jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
-        jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
-        jg.writeStringField("ecm:versionVersionableId", doc.getVersionSeriesId());
+        if (doc.isVersion()) {
+            jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
+            jg.writeStringField("ecm:versionVersionableId", doc.getVersionSeriesId());
+        }
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
+        jg.writeBooleanField("ecm:isTrashed", doc.isTrashed());
         jg.writeBooleanField("ecm:isVersion", doc.isVersion());
         jg.writeBooleanField("ecm:isLatestVersion", doc.isLatestVersion());
         jg.writeBooleanField("ecm:isLatestMajorVersion", doc.isLatestMajorVersion());

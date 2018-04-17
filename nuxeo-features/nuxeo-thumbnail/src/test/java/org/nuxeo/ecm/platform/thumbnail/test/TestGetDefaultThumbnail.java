@@ -33,21 +33,22 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
 /**
  * Test class to verify the fetch of the default thumbnail for a document type.
- * 
+ *
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.url.core" })
-@LocalDeploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-document-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.thumbnail")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-document-contrib.xml")
 public class TestGetDefaultThumbnail {
 
     @Inject

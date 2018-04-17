@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +55,19 @@ public class RuntimeDeployment {
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
-    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, HashSet::new);
+    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, LinkedHashSet::new);
 
+    /**
+     * @deprecated since 10.1
+     */
+    @Deprecated
     Map<String, Collection<String>> localContribs = new HashMap<>();
 
-    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, HashSet::new);
+    /**
+     * @deprecated since 10.1
+     */
+    @Deprecated
+    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, LinkedHashSet::new);
 
     /**
      * @deprecated since 9.2 we cannot undeploy components while they are started. So we don't need anymore to store the
@@ -77,6 +86,8 @@ public class RuntimeDeployment {
         for (Annotation anno : annos) {
             if (anno.annotationType() == Deploy.class) {
                 index((Deploy) anno);
+            } else if (anno.annotationType() == Deploys.class) {
+                index((Deploys) anno);
             } else if (anno.annotationType() == LocalDeploy.class) {
                 index((LocalDeploy) anno);
             } else if (anno.annotationType() == PartialDeploy.class) {
@@ -91,6 +102,7 @@ public class RuntimeDeployment {
 
     protected void index(Method method) {
         index(method.getAnnotation(Deploy.class));
+        index(method.getAnnotation(Deploys.class));
         index(method.getAnnotation(LocalDeploy.class));
     }
 
@@ -103,6 +115,19 @@ public class RuntimeDeployment {
         }
     }
 
+    private void index(Deploys deploys) {
+        if (deploys == null) {
+            return;
+        }
+        for (Deploy value : deploys.value()) {
+            index(value);
+        }
+    }
+
+    /**
+     * @deprecated since 10.1, use {@link #index(Deploy)}
+     */
+    @Deprecated
     protected void index(LocalDeploy config) {
         if (config == null) {
             return;
@@ -175,6 +200,7 @@ public class RuntimeDeployment {
                     }
                 }
                 // deploy local contribs
+                // this block is dreprecated since 10.1 with @LocalDeploy
                 for (String resource : localIndex.removeAll(name)) {
                     URL url = runner.getTargetTestResource(resource);
                     if (url == null) {
@@ -200,6 +226,7 @@ public class RuntimeDeployment {
                 errors.addSuppressed(error);
             }
         }
+        // this block is dreprecated since 10.1 with @LocalDeploy
         for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
                 contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));
@@ -265,7 +292,7 @@ public class RuntimeDeployment {
 
         protected final Statement base;
 
-        public DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
+        protected DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
                 Statement base) {
             this.runner = runner;
             this.harness = harness;

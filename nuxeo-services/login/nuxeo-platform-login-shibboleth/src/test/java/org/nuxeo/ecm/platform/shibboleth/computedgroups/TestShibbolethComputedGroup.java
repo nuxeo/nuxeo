@@ -51,15 +51,18 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.el", "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.login.shibboleth", "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.el")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.login.shibboleth")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethComputedGroup {
 
     @Before

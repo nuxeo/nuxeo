@@ -61,7 +61,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -74,35 +73,34 @@ import com.google.inject.Binder;
  * <p>
  * In addition, by injecting the feature itself, some helper methods are available to open new sessions.
  */
-@Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.runtime.metrics", //
-        "org.nuxeo.runtime.reload", // required by #CoreDeployer
-        "org.nuxeo.runtime.kv", //
-        "org.nuxeo.runtime.pubsub", //
-        "org.nuxeo.runtime.mongodb", //
-        "org.nuxeo.runtime.migration", //
-        "org.nuxeo.ecm.core.schema", //
-        "org.nuxeo.ecm.core.query", //
-        "org.nuxeo.ecm.core.api", //
-        "org.nuxeo.ecm.core.event", //
-        "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.core.cache", //
-        "org.nuxeo.ecm.core.test", //
-        "org.nuxeo.ecm.core.mimetype", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-        "org.nuxeo.ecm.core.storage", //
-        "org.nuxeo.ecm.core.storage.sql", //
-        "org.nuxeo.ecm.core.storage.sql.test", //
-        "org.nuxeo.ecm.core.storage.dbs", //
-        "org.nuxeo.ecm.core.storage.mem", //
-        "org.nuxeo.ecm.core.storage.mongodb", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.platform.el", //
-        "org.nuxeo.ecm.core.io", //
-})
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.runtime.reload")
+@Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.runtime.pubsub")
+@Deploy("org.nuxeo.runtime.mongodb")
+@Deploy("org.nuxeo.runtime.migration")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.query")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.test")
+@Deploy("org.nuxeo.ecm.core.mimetype")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.ecm.core.storage")
+@Deploy("org.nuxeo.ecm.core.storage.sql")
+@Deploy("org.nuxeo.ecm.core.storage.sql.test")
+@Deploy("org.nuxeo.ecm.core.storage.dbs")
+@Deploy("org.nuxeo.ecm.core.storage.mem")
+@Deploy("org.nuxeo.ecm.core.storage.mongodb")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.el")
+@Deploy("org.nuxeo.ecm.core.io")
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
+@Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 public class CoreFeature extends SimpleFeature {
 
     protected ACP rootAcp;

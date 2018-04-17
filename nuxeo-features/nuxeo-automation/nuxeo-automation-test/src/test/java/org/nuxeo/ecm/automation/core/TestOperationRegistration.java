@@ -37,7 +37,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationServerFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.webengine.core" })
+@Deploy("org.nuxeo.ecm.automation.test")
+@Deploy("org.nuxeo.ecm.webengine.core")
 public class TestOperationRegistration {
 
     @Inject

@@ -82,6 +82,8 @@ import freemarker.template.TemplateException;
 
 public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
+    public static final String PARAM_ORIGINATING_USER = "registration:originatingUser";
+
     protected static Log log = LogFactory.getLog(UserInvitationService.class);
 
     public static final String NUXEO_URL_KEY = "nuxeo.url";
@@ -376,9 +378,23 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 }
             }
 
+            NuxeoPrincipal principal = null;
             if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
                 if (registrationDoc.getCurrentLifeCycleState().equals("approved")) {
-                    registrationDoc.followTransition("accept");
+                    try {
+                        UserInvitationService userRegistrationService = Framework.getService(
+                                UserInvitationService.class);
+                        UserRegistrationConfiguration config = userRegistrationService.getConfiguration(
+                                registrationDoc);
+                        RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
+                        if (rules.allowUserCreation()) {
+                            principal = userRegistrationService.createUser(session, registrationDoc);
+                        }
+                        registrationDoc.followTransition("accept");
+                    } catch (NuxeoException e) {
+                        e.addInfo("Unable to complete registration");
+                        throw e;
+                    }
                 } else {
                     if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                         throw new AlreadyProcessedRegistrationException(
@@ -391,11 +407,10 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
             session.saveDocument(registrationDoc);
             session.save();
-            EventContext evContext = sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
-
+            sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
             registrationDoc.detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
-            registrationData.put(REGISTRATION_DATA_USER, evContext.getProperty("registeredUser"));
+            registrationData.put(REGISTRATION_DATA_USER, principal);
         }
 
     }
@@ -561,7 +576,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                         + " ecm:mixinType = '" + getConfiguration(configurationName).getRequestDocType()
                         + "' AND docinfo:documentId = '%s' AND"
                         + getConfiguration(configurationName).getUserInfoUsernameField()
-                        + " = '%s' AND ecm:isCheckedInVersion = 0";
+                        + " = '%s' AND ecm:isVersion = 0";
                 query = String.format(query, docId, username);
                 registrationDocs.addAll(session.query(query));
             }
@@ -585,6 +600,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     @Override
     public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) {
+
+        // First check that we have the originating user for that request
+        if (StringUtils.isBlank((String)additionnalInfo.get(PARAM_ORIGINATING_USER))) {
+            throw new IllegalArgumentException("Originating user should be provided in a registration request");
+        }
         RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
                 validationMethod);
         creator.runUnrestricted();

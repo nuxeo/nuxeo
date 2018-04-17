@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +57,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -71,12 +71,23 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache" })
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.core.cache")
 public class TestDownloadService {
+
+    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
 
     @Inject
     protected DownloadService downloadService;
@@ -96,7 +107,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -151,13 +162,12 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -188,13 +198,12 @@ public class TestDownloadService {
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -207,7 +216,7 @@ public class TestDownloadService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-permission.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-permission.xml")
     public void testDownloadPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
@@ -222,13 +231,12 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -265,7 +273,7 @@ public class TestDownloadService {
      * @since 9.3
      */
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-default-download.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-default-download.xml")
     public void testDocumentDefaultDownloadAndPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
@@ -280,7 +288,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -324,7 +332,7 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
@@ -408,7 +416,7 @@ public class TestDownloadService {
     @Test
     public void testTransientCleanup() throws IOException {
         // transfert temporary file into a blob
-        Path path = Files.createTempFile("pfouh","pfouh");
+        Path path = Files.createTempFile("pfouh", "pfouh");
         FileBlob blob = new FileBlob("pfouh");
         Files.move(path, blob.getFile().toPath(), REPLACE_EXISTING);
 
@@ -422,13 +430,12 @@ public class TestDownloadService {
 
         // mock response
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);
             }
         };
-        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -516,7 +523,7 @@ public class TestDownloadService {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);

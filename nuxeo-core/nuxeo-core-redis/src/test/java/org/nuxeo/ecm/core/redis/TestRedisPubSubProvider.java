@@ -30,35 +30,48 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisPubSubProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.pubsub.PubSubService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-public class TestRedisPubSubProvider extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestRedisPubSubProvider {
 
-    protected PubSubService pubSubService;
+    @Inject
+    public RuntimeHarness harness;
+
+    @Inject
+    public HotDeployer deployer;
+
+    public PubSubService pubSubService;
 
     protected List<String> messages = new CopyOnWriteArrayList<>();
 
     protected volatile CountDownLatch messageReceivedLatch;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        RedisFeature redisFeature = RedisFeature.setUpFeature(this);
+        RedisFeature redisFeature = RedisFeature.setUpFeature(harness);
         assumeTrue("Requires a true Redis server with pubsub support", redisFeature.getMode() == Mode.server);
         // we must check for a real Redis server and not the embedded one BEFORE initializing
         // the Redis pubsub contribution, because the embedded server doesn't support pubsub
-        deployBundle("org.nuxeo.runtime.pubsub");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployContrib("org.nuxeo.ecm.core.redis.tests", "test-redis-pubsub-contrib.xml");
+        deployer.deploy(
+                "org.nuxeo.runtime.pubsub",
+                "org.nuxeo.ecm.core.event",
+                "org.nuxeo.ecm.core.redis.tests:test-redis-pubsub-contrib.xml");
         pubSubService = Framework.getService(PubSubService.class);
-        fireFrameworkStarted();
     }
 
     @Test
@@ -80,7 +93,7 @@ public class TestRedisPubSubProvider extends NXRuntimeTestCase {
         assertEquals(Collections.emptyList(), messages);
     }
 
-    public void subscriber(String topic, byte[] message) {
+    protected void subscriber(String topic, byte[] message) {
         String msg = new String(message);
 
         // check that we're called from the Redis implementation

@@ -39,7 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.ValueExporter;
@@ -53,15 +55,20 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Bogdan Stefanescu
  */
-// We're declaring variables as HashMaps / ArrayLists so they can be
-// Serializable
-@SuppressWarnings({ "CollectionDeclaredAsConcreteClass" })
-public class TestPropertyModel extends NXRuntimeTestCase {
+// We're declaring variables as HashMaps / ArrayLists so they can be Serializable
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-propmodel-types-contrib.xml")
+public class TestPropertyModel {
 
     protected RuntimeService runtime;
 
@@ -70,7 +77,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     protected DocumentPartImpl dp;
 
     static <T> ArrayList<T> arrayList(T... args) {
-        ArrayList<T> list = new ArrayList<T>(args.length);
+        ArrayList<T> list = new ArrayList<>(args.length);
         list.addAll(Arrays.asList(args));
         return list;
     }
@@ -167,7 +174,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
             if (authors == null) {
                 map.put("book:authors", new ArrayList<HashMap<String, Serializable>>());
             } else {
-                ArrayList<HashMap<String, Serializable>> list = new ArrayList<HashMap<String, Serializable>>();
+                ArrayList<HashMap<String, Serializable>> list = new ArrayList<>();
                 for (Author author : authors) {
                     list.add(author.getMap());
                 }
@@ -177,14 +184,8 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         }
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-propmodel-types-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         SchemaManager mgr = Framework.getService(SchemaManager.class);
         // XSDLoader loader = new XSDLoader((SchemaManagerImpl) mgr);
         // schema = loader.loadSchema("test", "book",
@@ -214,7 +215,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     protected static Map<String, Serializable> unPrefixedMap(Map<String, Serializable> map) {
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        Map<String, Serializable> res = new HashMap<>();
         for (Entry<String, Serializable> e : map.entrySet()) {
             String key = e.getKey();
             int pos = key.indexOf(':');
@@ -268,7 +269,6 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         return true;
     }
 
-    // Duplicated from NXRuntimeTestCase
     public static URL getResource(String resource) {
         return Thread.currentThread().getContextClassLoader().getResource(resource);
     }

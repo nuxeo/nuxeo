@@ -13,7 +13,7 @@
         ecm:mixinType !=
         'HiddenInNavigation' AND dc:title IN ('Note 1','Note 2')
         AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort ascending="false" column="dc:title" />
       <pageSize>50</pageSize>
@@ -24,7 +24,7 @@
         SELECT * FROM Note WHERE
         ecm:mixinType != 'HiddenInNavigation'
         AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort ascending="true" column="dc:title" />
       <pageSize>50</pageSize>
@@ -35,7 +35,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = :parentIdVar AND
         ecm:mixinType != 'HiddenInNavigation' AND dc:title IN (:note1, :note2)
-        AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        AND ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <sort ascending="true" column="dc:title" />
       <pageSize>50</pageSize>
@@ -52,10 +52,10 @@
           <sort column="dc:title" ascending="true" />
         </quickFilter>
         <quickFilter name="testQF2">
-          <clause>ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0</clause>
+          <clause>ecm:isVersion = 0 AND ecm:isTrashed = 0</clause>
         </quickFilter>
         <quickFilter name="testQF3">
-          <clause>ecm:isCheckedInVersion = 1</clause>
+          <clause>ecm:isVersion = 1</clause>
         </quickFilter>
       </quickFilters>
       <pageSize>50</pageSize>
@@ -64,7 +64,7 @@
     <coreQueryPageProvider name="TEST_PP_QUICK_FILTER2">
       <whereClause>
         <fixedPart>
-		  ecm:isCheckedInVersion = 0
+		  ecm:isVersion = 0
           AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
@@ -74,10 +74,10 @@
           <sort column="dc:title" ascending="true" />
         </quickFilter>
         <quickFilter name="testQF2">
-          <clause>ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0</clause>
+          <clause>ecm:isVersion = 0 AND ecm:isTrashed = 0</clause>
         </quickFilter>
         <quickFilter name="testQF3">
-          <clause>ecm:isCheckedInVersion = 1</clause>
+          <clause>ecm:isVersion = 1</clause>
         </quickFilter>
         <quickFilter name="testQF4">
           <sort column="dc:modified" ascending="true" />
@@ -137,7 +137,7 @@
         <predicate parameter="dc:title" operator="=">
           <field name="parameter1" />
         </predicate>
-        <predicate parameter="ecm:isCheckedInVersion" operator="=">
+        <predicate parameter="ecm:isVersion" operator="=">
           <field xpath="np:isCheckedIn" />
         </predicate>
         <predicate parameter="dc:issued" operator="BETWEEN">

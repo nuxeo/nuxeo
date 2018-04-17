@@ -73,13 +73,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.relations")
-@LocalDeploy("org.nuxeo.ecm.relations.tests:relation-core-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.relations.tests:relation-core-test-contrib.xml")
 public class TestCoreGraph {
 
     public static final String DC_TERMS_NS = "http://purl.org/dc/terms/";

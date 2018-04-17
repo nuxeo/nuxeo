@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -32,10 +35,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -44,7 +43,7 @@ import static org.junit.Assert.assertNotNull;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
-@LocalDeploy("org.nuxeo.ecm.platform.content.template:OSGI-INF/multiple-domains-content-template-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template:OSGI-INF/multiple-domains-content-template-contrib.xml")
 public class MultipleDomainsCreationTest {
 
     @Inject

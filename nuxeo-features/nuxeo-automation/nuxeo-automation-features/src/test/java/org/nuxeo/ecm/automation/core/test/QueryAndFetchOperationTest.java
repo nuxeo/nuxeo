@@ -46,12 +46,13 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-qf-providers.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.core:test-qf-providers.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class QueryAndFetchOperationTest {
 

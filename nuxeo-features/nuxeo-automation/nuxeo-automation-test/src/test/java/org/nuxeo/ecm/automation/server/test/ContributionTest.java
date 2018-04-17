@@ -34,15 +34,16 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeatureCore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, WebEngineFeatureCore.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server" })
-@LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.automation.server")
+@Deploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class ContributionTest {
 

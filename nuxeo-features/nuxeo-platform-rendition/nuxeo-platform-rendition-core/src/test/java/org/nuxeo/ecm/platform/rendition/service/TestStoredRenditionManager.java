@@ -36,14 +36,14 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml",
-        "org.nuxeo.ecm.platform.rendition.core:test-stored-rendition-manager-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-stored-rendition-manager-contrib.xml")
 public class TestStoredRenditionManager {
 
     @Inject

@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -44,12 +49,6 @@ import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Anahide Tchertchian
@@ -57,10 +56,9 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.contentview.jsf", //
-})
-@LocalDeploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-contrib.xml")
 public class TestContentViewCache {
 
     @Inject

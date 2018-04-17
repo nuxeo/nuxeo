@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-audit-parent</artifactId>
-    <version>10.1-SNAPSHOT</version>
+    <version>10.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-audit-mongodb</artifactId>
@@ -78,6 +78,12 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-mongodb</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-core</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

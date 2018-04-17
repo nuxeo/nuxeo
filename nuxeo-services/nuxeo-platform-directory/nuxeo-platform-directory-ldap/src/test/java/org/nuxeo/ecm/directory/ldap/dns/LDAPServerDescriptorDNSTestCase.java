@@ -18,18 +18,23 @@
  */
 package org.nuxeo.ecm.directory.ldap.dns;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor;
 import org.nuxeo.ecm.directory.ldap.LDAPUrlDescriptor;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.sun.jndi.ldap.LdapURL;
 
@@ -38,7 +43,9 @@ import com.sun.jndi.ldap.LdapURL;
  *
  * @author Bob Browning
  */
-public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class LDAPServerDescriptorDNSTestCase {
 
     private static final Log log = LogFactory.getLog(LDAPServerDescriptorDNSTestCase.class);
 
@@ -46,7 +53,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
         @Override
         public List<DNSServiceEntry> resolveLDAPDomainServers(String domain, String prefix) {
-            List<DNSServiceEntry> entries = new ArrayList<DNSServiceEntry>();
+            List<DNSServiceEntry> entries = new ArrayList<>();
             if (prefix.equals("_gc._tcp")) {
                 entries.add(new DNSServiceEntry("localhost", 3268, 0, 100));
             } else if (prefix.equals("_ldap._tcp")) {
@@ -57,7 +64,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
         @Override
         public List<DNSServiceEntry> resolveLDAPDomainServers(String domain) {
-            List<DNSServiceEntry> entries = new ArrayList<DNSServiceEntry>();
+            List<DNSServiceEntry> entries = new ArrayList<>();
             entries.add(new DNSServiceEntry("localhost", 389, 0, 100));
             return entries;
         }
@@ -79,10 +86,8 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
     private MockDNSService dns;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         dns = new MockDNSService();
     }
 

@@ -19,11 +19,10 @@
 package org.nuxeo.ecm.platform.rendition.publisher;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory.RENDITION_NAME_PARAMETER_KEY;
@@ -54,7 +53,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -62,15 +60,26 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
-        "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
-        "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
-        TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.ecm.platform.rendition.publisher", "org.nuxeo.ecm.actions" })
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.convert.api")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
+@Deploy("org.nuxeo.ecm.platform.publisher.task")
+@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
+@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
+@Deploy("org.nuxeo.ecm.platform.rendition.publisher")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 
     @Inject

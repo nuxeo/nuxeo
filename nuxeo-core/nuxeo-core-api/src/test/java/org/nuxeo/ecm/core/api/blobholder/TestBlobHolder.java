@@ -19,33 +19,32 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class TestBlobHolder extends NXRuntimeTestCase {
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployTestContrib("org.nuxeo.ecm.core.api", "OSGI-INF/test-blobholder-contrib.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.api:OSGI-INF/test-blobholder-contrib.xml")
+public class TestBlobHolder {
 
     @Test
     public void testBlobHolderFactoryContribution() {

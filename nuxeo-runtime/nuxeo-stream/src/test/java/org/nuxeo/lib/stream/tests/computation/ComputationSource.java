@@ -49,7 +49,11 @@ public class ComputationSource extends AbstractComputation {
     }
 
     public ComputationSource(String name, int outputs, int records, int batchSize, long targetTimestamp) {
-        super(name, 0, outputs);
+        this(name, outputs, records, batchSize, targetTimestamp, false);
+    }
+
+    public ComputationSource(String name, int outputs, int records, int batchSize, long targetTimestamp, boolean uniq) {
+        super(name, uniq ? 1: 0, outputs);
         if (outputs <= 0) {
             throw new IllegalArgumentException("Cannot produce records without output streams");
         }

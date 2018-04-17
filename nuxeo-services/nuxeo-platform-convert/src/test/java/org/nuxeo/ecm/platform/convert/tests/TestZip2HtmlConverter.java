@@ -19,14 +19,15 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Ignore("NXP-24309")
 public class TestZip2HtmlConverter extends BaseConverterTest {
 
     @Test
@@ -60,14 +60,22 @@ public class TestZip2HtmlConverter extends BaseConverterTest {
         assertNotNull(blobs);
         assertEquals(3, blobs.size());
 
+        Map<String, String> zipContent = new HashMap<>();
+        zipContent.put("hello.xml", "Hello from a xml <b>document</b>");
+        zipContent.put("hello.txt", "Hello from a text document");
+
         String content = blobs.get(0).getString();
         assertTrue(content, content.contains("<li><a href=\"hello.xml\">hello.xml</a></li>"));
         assertTrue(content, content.contains("<li><a href=\"hello.txt\">hello.txt</a></li>"));
 
-        content = DocumentUTUtils.readContent(blobs.get(1).getFile());
-        assertTrue(content, content.contains("Hello from a xml <b>document</b>"));
-
-        content = DocumentUTUtils.readContent(blobs.get(2).getFile());
-        assertTrue(content, content.contains("Hello from a text document"));
+        for (int i = 1; i < blobs.size(); i++) {
+            File file = blobs.get(i).getFile();
+            String filename = file.getName();
+            content = DocumentUTUtils.readContent(file);
+            assertTrue("File " + i + " does not contain " + filename + ": " + content,
+                    content.contains(zipContent.get(file.getName())));
+            zipContent.remove(file.getName());
+        }
+        assertTrue("Unexpected remaining files: " + zipContent.keySet(), zipContent.isEmpty());
     }
 }

@@ -299,7 +299,11 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Login failed for %s on request %s",
+                        cachableUserIdent.getUserInfo().getUserName(), httpRequest.getRequestURI()));
+            }
+            log.debug(e, e);
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             Throwable cause = e.getCause();
             if (cause instanceof DirectoryException) {
@@ -307,6 +311,13 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (rootCause instanceof NamingException
                         && rootCause.getMessage().contains("LDAP response read timed out")
                         || rootCause instanceof SocketException) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Exception root cause is either a NamingException with \"LDAP response read timed out\""
+                                        + " or a SocketException, setting the status code to %d,"
+                                        + " more relevant than an illegitimate 401.",
+                                HttpServletResponse.SC_GATEWAY_TIMEOUT));
+                    }
                     httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 }
                 return DIRECTORY_ERROR_PRINCIPAL;
@@ -673,7 +684,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (service != null) {
                     return;
                 }
-                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
+                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                               .getComponent(
+                                                                                                       PluggableAuthenticationService.NAME);
                 svc.initPreFilters();
                 new ComponentManager.Listener() {
                     // nullify service field if components are restarting
@@ -972,11 +985,15 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected static String getRequestedPage(HttpServletRequest httpRequest) {
-        String requestURI = httpRequest.getRequestURI();
-        String context = httpRequest.getContextPath() + '/';
-        String requestedPage = requestURI.substring(context.length());
-        int i = requestedPage.indexOf(';');
-        return i == -1 ? requestedPage : requestedPage.substring(0, i);
+        String path = httpRequest.getServletPath(); // use decoded and normalized servlet path
+        String info = httpRequest.getPathInfo();
+        if (info != null) {
+            path = path + info;
+        }
+        if (!path.isEmpty()) {
+            path = path.substring(1); // strip initial /
+        }
+        return path;
     }
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {

@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -46,34 +45,42 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
 
     private static final Log log = LogFactory.getLog(AnnotatedDocumentEventListenerImpl.class);
 
+    @Override
     public void beforeAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
+    @Override
     public void beforeAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
+    @Override
     public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
         // NOP
     }
 
+    @Override
     public void beforeAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
+    @Override
     public void afterAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_CREATED, annotation, documentLoc, principal);
     }
 
+    @Override
     public void afterAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_DELETED, annotation, documentLoc, principal);
     }
 
+    @Override
     public void afterAnnotationRead(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         // NOP for now
     }
 
+    @Override
     public void afterAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
         notifyEvent(ANNOTATION_UPDATED, annotation, documentLoc, principal);
     }

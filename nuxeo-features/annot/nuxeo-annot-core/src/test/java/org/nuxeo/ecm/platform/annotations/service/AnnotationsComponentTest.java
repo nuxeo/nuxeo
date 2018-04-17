@@ -21,43 +21,42 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Alexandre Russel
  */
-public class AnnotationsComponentTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.annotations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
+public class AnnotationsComponentTest {
 
-    private AnnotationsService service;
+    @Inject
+    public AnnotationsService service;
 
-    private AnnotationConfigurationService configuration;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.annotations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
-    }
+    @Inject
+    public AnnotationConfigurationService configuration;
 
     @Test
     public void testServices() throws Exception {
-        service = Framework.getService(AnnotationsService.class);
-        assertNotNull(service);
-
-        configuration = Framework.getService(AnnotationConfigurationService.class);
-        assertNotNull(configuration);
-
         AnnotationConfigurationServiceImpl configurationImpl = (AnnotationConfigurationServiceImpl) configuration;
         UriResolver resolver = configurationImpl.getUriResolver();
         assertNotNull(resolver);

@@ -19,16 +19,12 @@
 package org.nuxeo.lib.stream.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,7 +43,7 @@ public class TestKafkaUtils {
     public static void assumeKafkaEnabled() {
         if ("true".equals(System.getProperty("kafka"))) {
             if (!KafkaUtils.kafkaDetected()) {
-                fail("Kafka profile is enable, but no Zookeeper found: " + KafkaUtils.getZkServers());
+                fail("Kafka profile is enable, no broker found: " + KafkaUtils.getBootstrapServers());
             }
         } else {
             Assume.assumeTrue("No kafka profile", false);
@@ -56,9 +52,7 @@ public class TestKafkaUtils {
 
     protected void createDefaultTopicIfNeeded(KafkaUtils kutils) {
         if (!kutils.topicExists(DEFAULT_TOPIC)) {
-            Properties props = new Properties();
-            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kutils.getDefaultBootstrapServers());
-            kutils.createTopicWithoutReplication(props, DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
+            kutils.createTopicWithoutReplication(DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
         }
     }
 
@@ -66,33 +60,7 @@ public class TestKafkaUtils {
     public void testCreateTopic() {
         try (KafkaUtils kutils = new KafkaUtils()) {
             createDefaultTopicIfNeeded(kutils);
-            Properties props = new Properties();
-            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kutils.getDefaultBootstrapServers());
-            assertEquals(DEFAULT_TOPIC_PARTITION, kutils.getNumberOfPartitions(props, DEFAULT_TOPIC));
-        }
-    }
-
-    @Test
-    public void testResetConsumerStates() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            createDefaultTopicIfNeeded(kutils);
-            kutils.resetConsumerStates(DEFAULT_TOPIC);
-        }
-    }
-
-    @Test
-    public void testBrokerList() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            assertNotNull(kutils.getBrokerEndPoints());
-            assertEquals(Collections.singleton("PLAINTEXT://" + KafkaUtils.getBootstrapServers()),
-                    kutils.getBrokerEndPoints());
-        }
-    }
-
-    @Test
-    public void testDefaultBootstrapServers() {
-        try (KafkaUtils kutils = new KafkaUtils()) {
-            assertEquals("PLAINTEXT://" + KafkaUtils.getBootstrapServers(), kutils.getDefaultBootstrapServers());
+            assertEquals(DEFAULT_TOPIC_PARTITION, kutils.getNumberOfPartitions(DEFAULT_TOPIC));
         }
     }
 

@@ -18,7 +18,10 @@
  */
 package org.nuxeo.lib.stream.computation.log;
 
+import static java.lang.Math.min;
+
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +32,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
+import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
@@ -81,6 +86,11 @@ public class LogStreamProcessor implements StreamProcessor {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return pools.stream().allMatch(ComputationPool::isTerminated);
     }
 
     @Override
@@ -139,6 +149,20 @@ public class LogStreamProcessor implements StreamProcessor {
     }
 
     @Override
+    public Latency getLatency(String computationName) {
+        Set<String> ancestorsComputations = topology.getAncestorComputationNames(computationName);
+        ancestorsComputations.add(computationName);
+        long now = System.currentTimeMillis();
+        List<Latency> latencies = new ArrayList<>();
+        ancestorsComputations.forEach(comp -> topology.getMetadata(comp).inputStreams().forEach(stream -> {
+            latencies.add(manager.<Record> getLatency(stream, comp,
+                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()),
+                    (rec -> rec.key)));
+        }));
+        return Latency.of(latencies);
+    }
+
+    @Override
     public long getLowWatermark(String computationName) {
         Objects.requireNonNull(computationName);
         // the low wm for a computation is the minimum watermark for all its ancestors
@@ -149,7 +173,7 @@ public class LogStreamProcessor implements StreamProcessor {
                            .mapToLong(watermarks::get)
                            .min()
                            .orElse(0);
-        ret = Math.min(ret, watermarks.get(computationName));
+        ret = min(ret, watermarks.get(computationName));
         return ret;
     }
 

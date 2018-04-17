@@ -34,9 +34,6 @@ public class LogsHandler implements Observer {
 
     private ColoredTextPane textArea;
 
-    /**
-     * @param textArea
-     */
     public LogsHandler(ColoredTextPane textArea) {
         this.textArea = textArea;
     }

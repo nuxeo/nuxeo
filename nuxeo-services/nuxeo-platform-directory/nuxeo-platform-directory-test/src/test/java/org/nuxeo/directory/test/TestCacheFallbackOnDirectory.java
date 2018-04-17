@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,13 +41,10 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
-
-import javax.inject.Inject;
 
 /**
  * @since 9.2
@@ -53,9 +52,9 @@ import javax.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
-@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:directory-default-user-contrib.xml",
-        "org.nuxeo.ecm.directory.tests:directory-cache-config.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:directory-default-user-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:directory-cache-config.xml")
 public class TestCacheFallbackOnDirectory {
 
     @Inject

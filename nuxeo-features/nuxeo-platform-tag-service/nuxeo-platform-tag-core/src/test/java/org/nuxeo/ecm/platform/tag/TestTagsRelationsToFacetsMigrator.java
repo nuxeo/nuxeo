@@ -24,8 +24,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_ID;
-import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
+import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
 
 import java.util.ArrayList;
@@ -54,13 +54,13 @@ import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class TestTagsRelationsToFacetsMigrator {
 
     protected static final int NDOCS = 100;
@@ -128,7 +128,7 @@ public class TestTagsRelationsToFacetsMigrator {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
+    @Deploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
     public void testMigrationThroughService() throws Exception {
         TagService tagService;
 

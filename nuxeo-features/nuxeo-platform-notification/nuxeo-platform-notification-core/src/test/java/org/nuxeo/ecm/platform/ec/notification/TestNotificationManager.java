@@ -46,7 +46,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.notification.core" })
+@Deploy("org.nuxeo.ecm.platform.notification.core")
 public class TestNotificationManager {
 
     @Inject

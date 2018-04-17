@@ -34,12 +34,11 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-enc.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.core:test-enc.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class OperationsEncodingTest {
 

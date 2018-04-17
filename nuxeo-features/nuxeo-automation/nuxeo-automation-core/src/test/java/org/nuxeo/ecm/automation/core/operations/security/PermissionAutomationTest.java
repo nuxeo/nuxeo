@@ -60,7 +60,6 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -70,7 +69,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, MockitoFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class PermissionAutomationTest {
 
     @Mock
@@ -128,7 +127,7 @@ public class PermissionAutomationTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
+    @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
     public void canAddPermissionForNonExistentUser() throws OperationException {
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
         assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
@@ -136,7 +135,7 @@ public class PermissionAutomationTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
+    @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
     public void canAddPermissionForNonExistentGroup() throws OperationException {
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
         assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));

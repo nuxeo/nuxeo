@@ -32,12 +32,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class) // to init properties for SQL datasources
 @Deploy("org.nuxeo.ecm.core.persistence")
-@LocalDeploy("org.nuxeo.ecm.core.persistence.test:OSGI-INF/test-persistence-config.xml")
+@Deploy("org.nuxeo.ecm.core.persistence.test:OSGI-INF/test-persistence-config.xml")
 public class TestPersistenceProvider {
 
     protected PersistenceProvider persistenceProvider;
@@ -54,7 +53,7 @@ public class TestPersistenceProvider {
         // clean all entities
         Query q = em.createQuery("select id from DummyEntity");
         @SuppressWarnings("unchecked")
-        List<String> list = (List<String>) q.getResultList();
+        List<String> list = q.getResultList();
         for (String id : list) {
             DummyEntity entity = em.find(DummyEntity.class, id);
             em.remove(entity);

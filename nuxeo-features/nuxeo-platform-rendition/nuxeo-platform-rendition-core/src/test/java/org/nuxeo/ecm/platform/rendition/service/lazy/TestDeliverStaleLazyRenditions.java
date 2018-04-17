@@ -46,9 +46,9 @@ import org.nuxeo.ecm.platform.rendition.service.DummyDocToTxt;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Check that intermediate stale lazy renditions are delivered.
@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 public class TestDeliverStaleLazyRenditions {
 
     private static Log log = LogFactory.getLog(TestDeliverStaleLazyRenditions.class);

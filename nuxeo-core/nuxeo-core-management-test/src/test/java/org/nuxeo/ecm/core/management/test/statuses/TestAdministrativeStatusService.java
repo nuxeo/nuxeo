@@ -50,9 +50,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.ecm.core.management", //
-        "org.nuxeo.ecm.core.management.test" })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.core.management")
+@Deploy("org.nuxeo.ecm.core.management.test")
 public class TestAdministrativeStatusService {
 
     @Inject

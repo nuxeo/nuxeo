@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Webengine GWT
-Bundle-SymbolicName: org.nuxeo.ecm.webengine.gwt;singleton:=true
-Nuxeo-Component: OSGI-INF/InstallGwtAppComponent.xml
-

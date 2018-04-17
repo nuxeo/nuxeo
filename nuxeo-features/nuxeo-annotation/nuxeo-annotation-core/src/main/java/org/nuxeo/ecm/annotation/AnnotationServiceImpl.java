@@ -20,26 +20,16 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_COLOR_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_CREATION_DATE_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOC_TYPE;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_FLAGS_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_LAST_MODIFIER_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_NAME_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_OPACITY_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_PAGE_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_POSITION_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SECURITY_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_SUBJECT_PROPERTY;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
@@ -61,24 +51,26 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     protected static final String ANNOTATION_NAME = "annotation";
 
-    protected static final String ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
+    protected static final String GET_ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATION";
+
+    protected static final String GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
 
     @Override
-    public Annotation createAnnotation(CoreSession session, String documentId, String xpath,
-            Annotation annotation) {
+    public Annotation createAnnotation(CoreSession session, Annotation annotation) {
 
         // Create annotation as a placeless document
         DocumentModel annotationModel = session.createDocumentModel(null, ANNOTATION_NAME, ANNOTATION_DOC_TYPE);
-        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, documentId);
-        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpath);
         setAnnotationProperties(annotationModel, annotation);
         annotationModel = session.createDocument(annotationModel);
         return new AnnotationImpl(annotationModel);
     }
 
     @Override
-    public Annotation getAnnotation(CoreSession session, String documentId, String xpath, String annotationId) {
-        DocumentModel annotationModel = session.getDocument(new IdRef(annotationId));
+    public Annotation getAnnotation(CoreSession session, String annotationId) {
+        DocumentModel annotationModel = getAnnotationModel(session, annotationId);
+        if (annotationModel == null) {
+            return null;
+        }
         return new AnnotationImpl(annotationModel);
     }
 
@@ -89,49 +81,52 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         Map<String, Serializable> props = Collections.singletonMap(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         List<DocumentModel> annotationList = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                ANNOTATION_PAGEPROVIDER_NAME, null, null, null, props, documentId, xpath)).getCurrentPage();
+                GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, null, null, null, props, documentId,
+                xpath)).getCurrentPage();
         return annotationList.stream().map(AnnotationImpl::new).collect(Collectors.toList());
     }
 
     @Override
-    public void updateAnnotation(CoreSession session, String documentId, String xpath, Annotation annotation) {
-        String annotationId = annotation.getId();
-        IdRef annotationRef = new IdRef(annotationId);
-        if (!session.exists(annotationRef)) {
+    public void updateAnnotation(CoreSession session, Annotation annotation) {
+        DocumentModel annotationModel = getAnnotationModel(session, annotation.getId());
+        if (annotationModel == null) {
             if (log.isWarnEnabled()) {
-                log.warn("The annotation " + annotationId + " on document " + xpath
+                log.warn("The annotation " + annotation.getId() + " on document blob " + annotation.getXpath()
                         + " does not exist. Update operation is ignored.");
             }
             return;
         }
-        DocumentModel annotationModel = session.getDocument(annotationRef);
         setAnnotationProperties(annotationModel, annotation);
         session.saveDocument(annotationModel);
     }
 
     @Override
-    public void deleteAnnotation(CoreSession session, String documentId, String xpath, String annotationId)
-            throws IllegalArgumentException {
-        IdRef annotationRef = new IdRef(annotationId);
-        if (!session.exists(annotationRef)) {
-            throw new IllegalArgumentException(
-                    "The annotation " + annotationId + " on the document " + xpath + " does not exist.");
+    public void deleteAnnotation(CoreSession session, String annotationId) throws IllegalArgumentException {
+        DocumentModel annotationModel = getAnnotationModel(session, annotationId);
+        if (annotationModel == null) {
+            throw new IllegalArgumentException("The annotation " + annotationId + " does not exist.");
         }
-        session.removeDocument(annotationRef);
+        session.removeDocument(annotationModel.getRef());
     }
 
     protected void setAnnotationProperties(DocumentModel annotationModel, Annotation annotation) {
-        annotationModel.setPropertyValue(ANNOTATION_COLOR_PROPERTY, annotation.getColor());
-        annotationModel.setPropertyValue(ANNOTATION_DATE_PROPERTY, annotation.getDate());
-        annotationModel.setPropertyValue(ANNOTATION_FLAGS_PROPERTY, annotation.getFlags());
-        annotationModel.setPropertyValue(ANNOTATION_NAME_PROPERTY, annotation.getName());
-        annotationModel.setPropertyValue(ANNOTATION_LAST_MODIFIER_PROPERTY, annotation.getLastModifier());
-        annotationModel.setPropertyValue(ANNOTATION_PAGE_PROPERTY, annotation.getPage());
-        annotationModel.setPropertyValue(ANNOTATION_POSITION_PROPERTY, annotation.getPosition());
-        annotationModel.setPropertyValue(ANNOTATION_CREATION_DATE_PROPERTY, annotation.getCreationDate());
-        annotationModel.setPropertyValue(ANNOTATION_OPACITY_PROPERTY, annotation.getOpacity());
-        annotationModel.setPropertyValue(ANNOTATION_SUBJECT_PROPERTY, annotation.getSubject());
-        annotationModel.setPropertyValue(ANNOTATION_SECURITY_PROPERTY, annotation.getSecurity());
+        annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotation.getId());
+        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, annotation.getDocumentId());
+        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
+        annotationModel.setPropertyValue(ANNOTATION_ENTITY_PROPERTY, annotation.getEntity());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected DocumentModel getAnnotationModel(CoreSession session, String annotationId) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = Collections.singletonMap(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_ANNOTATION_PAGEPROVIDER_NAME, null, null, null, props, annotationId)).getCurrentPage();
+        if (results.isEmpty()) {
+            return null;
+        }
+        return results.get(0);
     }
 
 }

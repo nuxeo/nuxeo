@@ -62,7 +62,7 @@ public class LogsSource extends Observable implements Runnable {
                 Thread.sleep(WAIT_FOR_FILE_EXISTS);
             }
             in = new BufferedReader(new FileReader(logFile));
-            // Avoid reading and formating chars which won't be displayed
+            // Avoid reading and formatting chars which won't be displayed
             if (charsToSkip > 0) {
                 in.skip(charsToSkip);
             }
@@ -93,7 +93,6 @@ public class LogsSource extends Observable implements Runnable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return;
         } catch (IOException e) {
             log.error(e);
         } finally {
@@ -118,9 +117,6 @@ public class LogsSource extends Observable implements Runnable {
         }
     }
 
-    /**
-     * @param length
-     */
     public void skip(long length) {
         charsToSkip = length;
     }

@@ -19,7 +19,7 @@
             ecm:mixinType = 'Collection' AND ecm:mixinType !=
             'HiddenInNavigation'
             AND ecm:primaryType != 'Favorites'
-            AND ecm:isCheckedInVersion = 0 AND
+            AND ecm:isVersion = 0 AND
             ecm:isTrashed = 0
           </fixedPart>
         </whereClause>

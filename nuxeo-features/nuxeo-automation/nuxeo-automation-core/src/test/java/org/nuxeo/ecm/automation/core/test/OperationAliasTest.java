@@ -43,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test for parameter key alias.
@@ -53,7 +52,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-operations-alias.xml")
+@Deploy("org.nuxeo.ecm.automation.core:test-operations-alias.xml")
 public class OperationAliasTest {
 
     private final static String HELLO_WORLD = "Hello World!";

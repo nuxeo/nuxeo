@@ -36,14 +36,15 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-mapping-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-mapping-contrib.xml")
 public class TestMapping {
 
     @Inject

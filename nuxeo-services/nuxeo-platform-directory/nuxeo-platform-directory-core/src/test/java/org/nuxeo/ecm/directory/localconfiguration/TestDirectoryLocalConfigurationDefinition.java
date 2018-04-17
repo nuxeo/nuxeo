@@ -43,7 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
@@ -52,8 +51,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DirectoryLocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.api" })
-@LocalDeploy("org.nuxeo.ecm.directory:types-for-test-directory-local-configuration.xml")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.directory:types-for-test-directory-local-configuration.xml")
 public class TestDirectoryLocalConfigurationDefinition {
 
     public static final DocumentRef PARENT_DOMAIN_REF = new PathRef("/default-domain");

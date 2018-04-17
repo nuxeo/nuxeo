@@ -49,7 +49,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -68,9 +67,6 @@ public class TestCoreDirectory {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     protected final static String SCHEMA_NAME = "schema1";
 

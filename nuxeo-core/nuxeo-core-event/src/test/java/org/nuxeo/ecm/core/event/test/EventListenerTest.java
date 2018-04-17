@@ -29,27 +29,35 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.rmi.dgc.VMID;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * TODO add tests on post commit.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class EventListenerTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.event")
+public class EventListenerTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.event");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testFlags() {
@@ -143,31 +151,31 @@ public class EventListenerTest extends NXRuntimeTestCase {
      */
     public static int SCRIPT_CNT = 0;
 
+    protected EventService getService() {
+        return Framework.getService(EventService.class);
+    }
+
     @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-listeners.xml")
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
-        EventService service;
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-listeners.xml");
 
-        service = Framework.getService(EventService.class);
         assertEquals(0, SCRIPT_CNT);
-        service.fireEvent("test", new EventContextImpl(null, null));
+        getService().fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
 
-        removeInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.core.event:test-listeners.xml");
 
-        service = Framework.getService(EventService.class);
         assertEquals(1, SCRIPT_CNT);
-        service.fireEvent("test", new EventContextImpl(null, null));
+        getService().fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
 
-        pushInlineDeployments("org.nuxeo.ecm.core.event:test-listeners.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.event:test-listeners.xml");
 
-        service = Framework.getService(EventService.class);
-        service.fireEvent("test1", new EventContextImpl(null, null));
+        getService().fireEvent("test1", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);
         // test not accepted event
-        service.fireEvent("some-event", new EventContextImpl(null, null));
+        getService().fireEvent("some-event", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);
     }
 

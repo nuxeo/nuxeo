@@ -33,7 +33,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -44,7 +43,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -53,9 +51,6 @@ public class TestLockSecurityPolicy {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
         try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
@@ -74,9 +69,7 @@ public class TestLockSecurityPolicy {
         }
     }
 
-    @SuppressWarnings("boxing")
-    public static void checkLockPermissions(CoreSession session, DocumentRef docRef, boolean canWrite)
-            {
+    public static void checkLockPermissions(CoreSession session, DocumentRef docRef, boolean canWrite) {
         assertEquals(canWrite, session.hasPermission(docRef, WRITE));
         // test WRITE_PROPERTIES as it used to be granted when locked
         assertEquals(canWrite, session.hasPermission(docRef, WRITE_PROPERTIES));

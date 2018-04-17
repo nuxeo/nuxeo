@@ -28,7 +28,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests the various way where the password validity is checked. In that setup, the password is valid if : - it has only
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  *
  * @since 8.4
  */
-@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserManagerPasswordValidity extends UserManagerTestCase {
 
     private static final String BAD_PASSWORD = "a";

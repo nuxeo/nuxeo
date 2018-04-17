@@ -28,8 +28,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -41,35 +44,30 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class TestLayoutExport extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client:OSGI-INF/layouts-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export.tests:OSGI-INF/layouts-test-contrib.xml")
+public class TestLayoutExport {
 
-    private LayoutStore service;
+    @Inject
+    public LayoutStore service;
 
-    private MarshallerRegistry marshallerRegistry;
-
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.io");
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.export");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.export.tests", "OSGI-INF/layouts-test-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(LayoutStore.class);
-        assertNotNull(service);
-        marshallerRegistry = Framework.getService(MarshallerRegistry.class);
-        assertNotNull(marshallerRegistry);
-    }
+    @Inject
+    public MarshallerRegistry marshallerRegistry;
 
     protected void checkEquals(InputStream expected, InputStream actual) throws Exception {
         String expectedString = IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", "");
@@ -85,8 +83,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         File file = Framework.createTempFile("layouttype-export", ".json");
         writeJsonToFile(lTypeDef, file);
 
-        try (InputStream written = new FileInputStream(file); InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layouttype-export.json"))) {
+        try (InputStream written = new FileInputStream(file);
+                InputStream expected = new FileInputStream(
+                        FileUtils.getResourcePathFromContext("layouttype-export.json"))) {
             checkEquals(expected, written);
         }
     }
@@ -99,8 +98,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         File file = Framework.createTempFile("widgettype-export", ".json");
         writeJsonToFile(wTypeDef, file);
 
-        try (InputStream written = new FileInputStream(file); InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("widgettype-export.json"))) {
+        try (InputStream written = new FileInputStream(file);
+                InputStream expected = new FileInputStream(
+                        FileUtils.getResourcePathFromContext("widgettype-export.json"))) {
             checkEquals(expected, written);
         }
     }
@@ -115,8 +115,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         wTypeDefs.add(wTypeDef);
         writeJsonToFile(wTypeDefs, file);
 
-        try (InputStream written = new FileInputStream(file); InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("widgettypes-export.json"))) {
+        try (InputStream written = new FileInputStream(file);
+                InputStream expected = new FileInputStream(
+                        FileUtils.getResourcePathFromContext("widgettypes-export.json"))) {
             checkEquals(expected, written);
         }
     }

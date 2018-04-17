@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.user.client.Window;
-import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConfiguration;
 import org.nuxeo.ecm.platform.annotations.gwt.client.util.XPointer;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -176,7 +174,7 @@ public class Annotation {
     }
 
     public void setStartContainer(Container container) {
-        this.startContainer = container;
+        startContainer = container;
     }
 
     public boolean hasStartContainer() {
@@ -188,7 +186,7 @@ public class Annotation {
     }
 
     public void setEndContainer(Container container) {
-        this.endContainer = container;
+        endContainer = container;
     }
 
     public boolean hasEndContainer() {

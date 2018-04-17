@@ -21,22 +21,24 @@
 
 package org.nuxeo.ecm.platform.mail.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
 import javax.mail.Address;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
-import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Alexandre Russel
@@ -52,7 +54,7 @@ public class TestServer {
     private final Properties props = new Properties();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         Server.start();
         props.put("mail.store.protocol", "pop3");
         props.put("mail.transport.protocol", "smtp");
@@ -72,7 +74,7 @@ public class TestServer {
     }
 
     @After
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         Server.shutdown();
     }
 

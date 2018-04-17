@@ -21,10 +21,14 @@
 
 package org.nuxeo.ecm.webengine.forms;
 
-import java.io.ByteArrayInputStream;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
@@ -221,16 +226,25 @@ public class FormData implements FormInstance {
 
     protected Blob getBlob(FileItem item) {
         try {
-            InputStream in;
+            Blob blob;
             if (item.isInMemory()) {
-                in = new ByteArrayInputStream(item.get());
+                blob = Blobs.createBlob(item.get());
             } else {
-                in = item.getInputStream();
+                File file;
+                if (item instanceof DiskFileItem //
+                        && (file = ((DiskFileItem) item).getStoreLocation()) != null) {
+                    // move the file to a temporary blob we own
+                    blob = Blobs.createBlobWithExtension(null);
+                    Files.move(file.toPath(), blob.getFile().toPath(), REPLACE_EXISTING);
+                } else {
+                    // if we couldn't get to the file, use the InputStream
+                    try (InputStream in = item.getInputStream()) {
+                        blob = Blobs.createBlob(in);
+                    }
+                }
             }
-            String ctype = item.getContentType();
-            Blob blob = Blobs.createBlob(in, ctype == null ? "application/octet-stream" : ctype);
+            blob.setMimeType(defaultIfEmpty(item.getContentType(), "application/octet-stream"));
             blob.setFilename(item.getName());
-            in.close();
             return blob;
         } catch (IOException e) {
             throw new NuxeoException("Failed to get blob data", e);

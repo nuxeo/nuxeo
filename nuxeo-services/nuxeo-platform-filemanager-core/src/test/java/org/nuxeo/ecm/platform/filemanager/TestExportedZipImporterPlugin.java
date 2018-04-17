@@ -66,8 +66,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core" })
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
 public class TestExportedZipImporterPlugin {
 
     protected DocumentModel sourceWS;

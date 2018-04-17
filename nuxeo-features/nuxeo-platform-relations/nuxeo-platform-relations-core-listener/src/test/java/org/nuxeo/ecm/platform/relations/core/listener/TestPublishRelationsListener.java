@@ -51,14 +51,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.relations.api", //
-        "org.nuxeo.ecm.relations", //
-        "org.nuxeo.ecm.relations.jena", //
-        "org.nuxeo.ecm.relations.core.listener", //
-        "org.nuxeo.ecm.platform.comment.api", //
-        "org.nuxeo.ecm.platform.comment", //
-        "org.nuxeo.ecm.platform.relations.core.listener.tests", //
-})
+@Deploy("org.nuxeo.ecm.relations.api")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.relations.core.listener")
+@Deploy("org.nuxeo.ecm.platform.comment.api")
+@Deploy("org.nuxeo.ecm.platform.comment")
+@Deploy("org.nuxeo.ecm.platform.relations.core.listener.tests")
 public class TestPublishRelationsListener {
 
     protected static final Resource conformsTo = new ResourceImpl("http://purl.org/dc/terms/ConformsTo");

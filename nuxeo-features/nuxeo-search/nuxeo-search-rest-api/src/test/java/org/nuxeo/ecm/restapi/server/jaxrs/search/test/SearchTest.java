@@ -49,7 +49,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -64,10 +63,14 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, PlatformFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.ecm.platform.contentview.jsf", "org.nuxeo.search.ui",
-        "org.nuxeo.ecm.platform.search.core", "org.nuxeo.ecm.platform.restapi.server.search" })
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.webapp.types")
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
+@Deploy("org.nuxeo.search.ui")
+@Deploy("org.nuxeo.ecm.platform.search.core")
+@Deploy("org.nuxeo.ecm.platform.restapi.server.search")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class SearchTest extends BaseTest {
 
@@ -132,7 +135,7 @@ public class SearchTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
+                        + "        AND ecm:isVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());

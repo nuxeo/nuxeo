@@ -46,7 +46,8 @@ import org.nuxeo.theme.localconfiguration.LocalThemeConfigConstants;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = LocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.theme.styling.tests:local-configuration-config.xml" })
+@Deploy("org.nuxeo.theme.styling")
+@Deploy("org.nuxeo.theme.styling.tests:local-configuration-config.xml")
 public class TestLocalConfiguration {
 
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");

@@ -30,6 +30,7 @@ import javax.el.PropertyNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -107,6 +108,8 @@ public class DocumentModelResolver extends BeanELResolver {
                 }
             }
             context.setPropertyResolved(true);
+        } else if (base instanceof Blob) {
+            type = super.getType(context, base, getBlobMapping(property));
         }
         return type;
     }
@@ -148,7 +151,9 @@ public class DocumentModelResolver extends BeanELResolver {
                 }
             }
             context.setPropertyResolved(true);
-        }
+        } else if (base instanceof Blob) {
+            value = super.getValue(context, base, getBlobMapping(property));
+         }
 
         return value;
     }
@@ -195,6 +200,20 @@ public class DocumentModelResolver extends BeanELResolver {
             value = FieldAdapterManager.getValueForDisplay(value);
         }
         return value;
+    }
+
+    /**
+     * Handle property mappings for blobs. The Blob use case is handled here too instead of a dedicated EL resolver to
+     * avoid multiplying resolvers in the chain.
+     */
+    private static Object getBlobMapping(Object property) throws PropertyException {
+        Object prop = property;
+        if ("name".equals(property)) {
+            prop = "filename";
+        } else if ("mime-type".equals(property)) {
+            prop = "mimeType";
+        }
+        return prop;
     }
 
     @Override
@@ -249,6 +268,8 @@ public class DocumentModelResolver extends BeanELResolver {
                 }
             }
             context.setPropertyResolved(true);
+        } else if (base instanceof Blob) {
+            super.setValue(context, base, getBlobMapping(property), value);
         }
     }
 

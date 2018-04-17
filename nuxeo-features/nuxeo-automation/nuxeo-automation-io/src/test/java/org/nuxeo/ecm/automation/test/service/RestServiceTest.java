@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -48,8 +47,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.actions" })
-@LocalDeploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
 public class RestServiceTest extends BaseRestTest {
 
     @Before

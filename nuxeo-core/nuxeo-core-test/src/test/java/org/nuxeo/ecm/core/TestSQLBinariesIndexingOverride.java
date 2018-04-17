@@ -43,18 +43,17 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-        "org.nuxeo.runtime.reload", //
-})
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.runtime.reload")
 public class TestSQLBinariesIndexingOverride {
 
     @Inject
@@ -72,7 +71,7 @@ public class TestSQLBinariesIndexingOverride {
         // SQL Server fulltext indexes can't easily be updated by Nuxeo
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSSQLServer());
 
-        // cannot be done through @LocalDeploy, because the framework variables
+        // cannot be done through @Deploy, because the framework variables
         // about repository configuration aren't ready yet
         deployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-override-indexing-contrib.xml");
     }

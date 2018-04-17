@@ -28,9 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -38,8 +38,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml" })
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml")
 public class TestDynamicMapping extends TestMapping {
 
     @Inject
@@ -75,15 +75,15 @@ public class TestDynamicMapping extends TestMapping {
         Assert.assertEquals(0, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isCheckedInVersion = 0"));
+                "SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
     }
 }

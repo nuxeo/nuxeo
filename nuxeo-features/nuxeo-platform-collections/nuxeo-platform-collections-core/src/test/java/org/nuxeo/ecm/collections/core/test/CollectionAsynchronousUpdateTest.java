@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -67,9 +66,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
             assertTrue(collectionMemberAdapter.getCollectionIds().contains(newCollectionId));
         }
 
-        List<DocumentRef> toBePurged = new ArrayList<DocumentRef>();
-        toBePurged.add(newCollectionRef);
-        trashService.purgeDocuments(session, toBePurged);
+        session.removeDocument(newCollectionRef);
 
         awaitCollectionWorks();
 
@@ -100,9 +97,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
         assertEquals(nbCollection, collectionMember.getCollectionIds().size());
 
-        List<DocumentRef> toBePurged = new ArrayList<DocumentRef>();
-        toBePurged.add(new PathRef(testFile.getPath().toString()));
-        trashService.purgeDocuments(session, toBePurged);
+        session.removeDocument(testFile.getRef());
 
         awaitCollectionWorks();
 

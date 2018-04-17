@@ -21,38 +21,37 @@
 
 package org.nuxeo.ecm.platform.annotations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.annotations.service.DefaultUriResolver;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Alexandre Russel
  */
-public class AnnotationManagerTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+public class AnnotationManagerTest {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-    }
-
     @Test
     public void testGetPostNewAnnotation() throws Exception {
-        assertNotNull(manager);
-
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
 
@@ -66,8 +65,6 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testReadAnnoteaSpecPost() throws Exception {
-        assertNotNull(manager);
-
         InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml");
         assertNotNull(is);
 

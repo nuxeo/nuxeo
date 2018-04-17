@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -85,7 +86,7 @@ public class NuxeoLauncherGUI {
     /**
      * @since 5.6
      */
-    public final HashMap<String, LogsSourceThread> getLogsMap() {
+    public final Map<String, LogsSourceThread> getLogsMap() {
         return logsMap;
     }
 
@@ -149,50 +150,42 @@ public class NuxeoLauncherGUI {
 
     protected void initFrame() {
         final NuxeoLauncherGUI controller = this;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (nuxeoFrame != null) {
-                        executor.shutdownNow();
-                        nuxeoFrame.close();
-                        executor = newExecutor();
-                    }
-                    nuxeoFrame = createNuxeoFrame(controller);
-                    nuxeoFrame.pack();
-                    // Center frame
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    nuxeoFrame.setLocation(screenSize.width / 2 - (nuxeoFrame.getWidth() / 2), screenSize.height / 2
-                            - (nuxeoFrame.getHeight() / 2));
-                    nuxeoFrame.setVisible(true);
-                } catch (HeadlessException e) {
-                    log.error(e);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                if (nuxeoFrame != null) {
+                    executor.shutdownNow();
+                    nuxeoFrame.close();
+                    executor = newExecutor();
                 }
+                nuxeoFrame = createNuxeoFrame(controller);
+                nuxeoFrame.pack();
+                // Center frame
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                nuxeoFrame.setLocation(screenSize.width / 2 - (nuxeoFrame.getWidth() / 2), screenSize.height / 2
+                        - (nuxeoFrame.getHeight() / 2));
+                nuxeoFrame.setVisible(true);
+            } catch (HeadlessException e) {
+                log.error(e);
             }
         });
         if (nuxeoFrameUpdater == null) {
-            nuxeoFrameUpdater = new Thread() {
-                @Override
-                public void run() {
-                    while (true) {
-                        updateServerStatus();
-                        try {
-                            Thread.sleep(UPDATE_FREQUENCY);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            return;
-                        }
+            nuxeoFrameUpdater = new Thread(() -> {
+                while (true) {
+                    updateServerStatus();
+                    try {
+                        Thread.sleep(UPDATE_FREQUENCY);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
                     }
                 }
-            };
+            });
             nuxeoFrameUpdater.start();
         }
     }
 
     /**
      * Instantiate a new {@link NuxeoFrame}. Can be overridden if needed.
-     *
-     * @param controller
      */
     protected NuxeoFrame createNuxeoFrame(NuxeoLauncherGUI controller) {
         return new NuxeoFrame(controller);
@@ -218,14 +211,10 @@ public class NuxeoLauncherGUI {
         nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
         nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
         nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
-        executor.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                launcher.stop();
-                nuxeoFrame.stopping = false;
-                updateServerStatus();
-            }
+        executor.execute(() -> {
+            launcher.stop();
+            nuxeoFrame.stopping = false;
+            updateServerStatus();
         });
     }
 
@@ -266,19 +255,15 @@ public class NuxeoLauncherGUI {
         nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
         nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
         nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
-        executor.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    launcher.doStartAndWait();
-                } catch (PackageException e) {
-                    log.error("Could not initialize the packaging subsystem", e);
-                    System.exit(launcher == null || launcher.getErrorValue() == NuxeoLauncher.EXIT_CODE_OK ? NuxeoLauncher.EXIT_CODE_INVALID
-                            : launcher.getErrorValue());
-                }
-                updateServerStatus();
+        executor.execute(() -> {
+            try {
+                launcher.doStartAndWait();
+            } catch (PackageException e) {
+                log.error("Could not initialize the packaging subsystem", e);
+                System.exit(launcher == null || launcher.getErrorValue() == NuxeoLauncher.EXIT_CODE_OK ? NuxeoLauncher.EXIT_CODE_INVALID
+                        : launcher.getErrorValue());
             }
+            updateServerStatus();
         });
     }
 
@@ -323,7 +308,6 @@ public class NuxeoLauncherGUI {
      * Get internationalized message with parameters
      *
      * @param key Message key
-     * @param params
      * @return Localized message value
      * @since 5.9.2
      */

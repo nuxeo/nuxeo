@@ -48,7 +48,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Anahide Tchertchian
@@ -57,8 +56,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api" })
-@LocalDeploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml")
 public class TestPageProviderService {
 
     private static final String CURRENT_DOCUMENT_CHILDREN = "CURRENT_DOCUMENT_CHILDREN";
@@ -83,7 +82,7 @@ public class TestPageProviderService {
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
         assertNull(def.getWhereClause());
         assertEquals("SELECT * FROM Document WHERE ecm:parentId = ? AND "
-                + "ecm:isCheckedInVersion = 0 AND ecm:mixinType != "
+                + "ecm:isVersion = 0 AND ecm:mixinType != "
                 + "'HiddenInNavigation' AND ecm:isTrashed = 0", def.getPattern());
         assertEquals(1, def.getSortInfos().size());
         assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
@@ -104,7 +103,7 @@ public class TestPageProviderService {
         assertNotNull(def);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", def.getName());
         assertEquals(
-                "ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0",
+                "ecm:parentId = ? AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0",
                 def.getWhereClause().getFixedPart());
         assertEquals("SELECT * FROM Note", def.getWhereClause().getSelectStatement());
         assertEquals(1, def.getSortInfos().size());

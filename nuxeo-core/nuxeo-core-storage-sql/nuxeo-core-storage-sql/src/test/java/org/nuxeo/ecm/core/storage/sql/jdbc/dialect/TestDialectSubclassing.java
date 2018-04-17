@@ -25,12 +25,20 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestDialectSubclassing extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestDialectSubclassing {
 
     protected DatabaseMetaData metadata;
 
@@ -38,16 +46,13 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     protected RepositoryDescriptor repositoryDescriptor;
 
-    @Override
-	public void setUp() throws Exception {
+    protected Mockery jmcontext = new JUnit4Mockery();
+
+    @Before
+    public void setUp() throws Exception {
         metadata = getDatabaseMetaData();
         connection = getConnection();
         repositoryDescriptor = new RepositoryDescriptor();
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-	repositoryDescriptor = new RepositoryDescriptor();
     }
 
     protected DatabaseMetaData getDatabaseMetaData() throws SQLException {

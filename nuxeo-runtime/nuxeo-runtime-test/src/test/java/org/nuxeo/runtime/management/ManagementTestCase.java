@@ -20,44 +20,36 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 
+import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RestartFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author matic
  */
-public abstract class ManagementTestCase extends NXRuntimeTestCase {
-
-    protected static final String OSGI_BUNDLE_NAME = "org.nuxeo.runtime.management";
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class, RestartFeature.class })
+@Deploy("org.nuxeo.runtime.management:OSGI-INF/management-server-locator-service.xml")
+@Deploy("org.nuxeo.runtime.management:OSGI-INF/management-resource-publisher-service.xml")
+@Deploy("org.nuxeo.runtime.test:isolated-server.xml")
+public abstract class ManagementTestCase {
 
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-server-locator-service.xml");
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-resource-publisher-service.xml");
-        deployTestContrib(OSGI_BUNDLE_NAME, "isolated-server.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         locatorService = (ServerLocatorService) Framework.getService(ServerLocator.class);
         publisherService = (ResourcePublisherService) Framework.getService(ResourcePublisher.class);
-    }
-
-    protected void doBindResources() throws InstanceNotFoundException, ReflectionException, MBeanException {
-        String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        MBeanServer server = locatorService.lookupServer(objectName.getDomain());
-        server.invoke(objectName, "bindResources", null, null);
     }
 
     protected Set<ObjectName> doQuery(String name) {

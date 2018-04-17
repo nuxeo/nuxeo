@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test thumbnail factories contributions
@@ -50,9 +48,12 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.thumbnail")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml")
 public class TestThumbnailFactories {
 
     protected static Blob folderishThumbnail = Blobs.createBlob("folderish");
@@ -83,6 +84,7 @@ public class TestThumbnailFactories {
 
     public static class DocumentTypeThumbnailFolderishFactory implements ThumbnailFactory {
 
+        @Override
         public Blob getThumbnail(DocumentModel doc, CoreSession session) {
             if (!doc.isFolder()) {
                 throw new NuxeoException("Document is not folderish");
@@ -98,6 +100,7 @@ public class TestThumbnailFactories {
     }
 
     public static class DocumentTypeThumbnailDocumentFactory implements ThumbnailFactory {
+        @Override
         public Blob getThumbnail(DocumentModel doc, CoreSession session) {
             return defaultThumbnail;
         }

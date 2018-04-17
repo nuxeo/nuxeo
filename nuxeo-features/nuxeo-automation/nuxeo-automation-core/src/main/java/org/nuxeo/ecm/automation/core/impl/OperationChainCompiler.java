@@ -16,8 +16,10 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.ExitException;
@@ -29,47 +31,66 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 public class OperationChainCompiler {
+
+    private static final Log log = LogFactory.getLog(OperationChainCompiler.class);
 
     protected final AutomationService service;
 
-    protected final Map<Connector, OperationMethod> cache = new ConcurrentHashMap<>();
+    protected final LoadingCache<Connector, OperationMethod> cache;
+
+    protected static final int MAX_CACHE_SIZE = 1000;
 
     protected OperationChainCompiler(AutomationService service) {
         this.service = service;
+        cache = CacheBuilder.newBuilder() //
+                            .maximumSize(MAX_CACHE_SIZE)
+                            .build(new CacheLoader<Connector, OperationMethod>() {
+                                @Override
+                                public OperationMethod load(Connector connector) throws OperationException {
+                                    return connector.connect();
+                                }
+                            });
     }
 
     public CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
         Connector connector = new Connector(typeof, typein);
-        if (!cache.containsKey(connector)) {
-            cache.put(connector, connector.connect());
+        OperationMethod operationMethod;
+        try {
+            operationMethod = cache.get(connector);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof OperationException) {
+                throw (OperationException) cause;
+            } else {
+                throw new OperationException(cause);
+            }
         }
-        return new CompiledChainImpl(typeof, typein, cache.get(connector));
+        return new CompiledChainImpl(typeof, typein, operationMethod);
     }
 
     protected class Connector {
 
         protected final ChainTypeImpl typeof;
+
         protected final Class<?> typein;
-        protected final int hashcode;
 
         protected Connector(ChainTypeImpl typeof, Class<?> typein) {
             this.typeof = typeof;
             this.typein = typein;
-            hashcode = hashcode(typeof, typein);
         }
 
-        protected int hashcode(OperationType typeof, Class<?> typein) {
+        @Override
+        public int hashCode() {
             int prime = 31;
             int result = 1;
             result = prime * result + typeof.hashCode();
             result = prime * result + typein.hashCode();
             return result;
-        }
-
-        @Override
-        public int hashCode() {
-            return hashcode;
         }
 
         @Override
@@ -84,7 +105,7 @@ public class OperationChainCompiler {
                 return false;
             }
             Connector other = (Connector) obj;
-            return hashcode == other.hashcode;
+            return typeof.equals(other.typeof) && typein.equals(other.typein);
         }
 
         protected OperationMethod connect() throws OperationException {
@@ -100,7 +121,9 @@ public class OperationChainCompiler {
                 }
                 prev = next;
             }
-            head.solve(typein);
+            if (head != null) {
+                head.solve(typein);
+            }
             return head;
         }
     }
@@ -145,7 +168,7 @@ public class OperationChainCompiler {
          */
         void solve(Class<?> in) throws InvalidChainException {
             InvokableMethod[] methods = typeof.getMethodsMatchingInput(in);
-            if (methods == null) {
+            if (methods.length == 0) {
                 throw new InvalidChainException(
                         "Cannot find any valid path in operation chain - no method found for operation '"
                                 + typeof.getId() + "' and for first input type '" + in.getName() + "'");
@@ -164,7 +187,7 @@ public class OperationChainCompiler {
                     method = m;
                     return;
                 } catch (InvalidChainException cause) {
-                    ;
+                    // continue solving
                 }
             }
             throw new InvalidChainException(
@@ -189,8 +212,7 @@ public class OperationChainCompiler {
 
         @Override
         public Object invoke(OperationContext ctx) throws OperationException {
-            ctx.push(typeof.getChainParameters());
-            try {
+            return ctx.callWithChainParameters(() -> {
                 ctx.getCallback().onChainEnter(typeof);
                 try {
                     return head.invoke(ctx);
@@ -201,13 +223,10 @@ public class OperationChainCompiler {
                     return ctx.getInput();
                 } catch (OperationException op) {
                     throw ctx.getCallback().onError(op);
-                }
-                finally {
+                } finally {
                     ctx.getCallback().onChainExit();
                 }
-            } finally {
-                ctx.pop(typeof.getChainParameters());
-            }
+            }, typeof.getChainParameters());
         }
 
         @Override

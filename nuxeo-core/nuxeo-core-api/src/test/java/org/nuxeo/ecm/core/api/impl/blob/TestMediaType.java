@@ -21,29 +21,30 @@ package org.nuxeo.ecm.core.api.impl.blob;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestMediaType extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-media-types-contrib.xml")
+public class TestMediaType {
 
     public static final String SCHEMA_NAME = "media";
 
     public static final String SCHEMA_PREFIX = "media";
 
-    protected SchemaManager typeMgr;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-media-types-contrib.xml");
-        typeMgr = Framework.getService(SchemaManager.class);
-    }
+    @Inject
+    public SchemaManager typeMgr;
 
     // shema name != prefix name
     @Test

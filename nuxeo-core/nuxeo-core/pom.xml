@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>10.1-SNAPSHOT</version>
+    <version>10.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core</artifactId>
@@ -27,6 +27,10 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-datasource</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-migration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

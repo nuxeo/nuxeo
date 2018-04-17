@@ -21,11 +21,11 @@ package org.nuxeo.ecm.platform.oauth.tests;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.oauth" })
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.oauth")
 public class OAuthFeature extends SimpleFeature {
 
 }

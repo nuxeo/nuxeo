@@ -33,6 +33,8 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -87,6 +89,8 @@ public abstract class TestStreamProcessor {
             // shutdown brutally so there is no more processing in background
             processor.shutdown();
 
+            Latency latency = processor.getLatency("COUNTER");
+            assertEquals(latency.toString(), 0, latency.latency());
             // read the results
             int result = readCounterFrom(manager, "output");
             int expected = nbRecords * settings.getConcurrency("GENERATOR");
@@ -340,6 +344,30 @@ public abstract class TestStreamProcessor {
         }
     }
 
+    @Test
+    public void testSingleSource() throws Exception {
+        final int nbRecords = 10;
+        final long targetTimestamp = System.currentTimeMillis();
+        // This is a pattern to have a single producer running with fail over.
+        // The computation has an unused input stream with a single partition,
+        // only the computation instance affected to the partition is generating new records.
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationSource("GENERATOR", 1, nbRecords, 1,
+                                            targetTimestamp, true), Collections.singletonList("o1:s1"))
+                                    .build();
+        Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
+        try (LogManager manager = getLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            processor.init(topology, settings).start();
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
+            LogLag lag = manager.getLag("s1", "test");
+            assertEquals(nbRecords, lag.lag());
+        }
+    }
+
+    // ---------------------------------
+    // helpers
     protected int readCounterFrom(LogManager manager, String stream) throws InterruptedException {
         int partitions = manager.getAppender(stream).size();
         int ret = 0;

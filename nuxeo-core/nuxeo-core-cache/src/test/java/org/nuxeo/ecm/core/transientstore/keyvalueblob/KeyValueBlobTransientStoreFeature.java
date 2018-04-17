@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.transientstore.keyvalueblob;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -28,8 +27,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 9.3
  */
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.kv", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.api" })
-@LocalDeploy("org.nuxeo.ecm.core.cache.test:OSGI-INF/test-kvbts-config.xml")
+@Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.cache.test:OSGI-INF/test-kvbts-config.xml")
 public class KeyValueBlobTransientStoreFeature extends SimpleFeature {
 
 }

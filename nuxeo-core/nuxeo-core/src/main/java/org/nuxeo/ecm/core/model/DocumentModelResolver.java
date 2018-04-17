@@ -29,9 +29,8 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
@@ -97,8 +96,8 @@ public class DocumentModelResolver implements ObjectResolver {
 
     private Map<String, Serializable> parameters;
 
-    public static enum MODE {
-        PATH_REF, ID_REF;
+    public enum MODE {
+        PATH_REF, ID_REF
     }
 
     private MODE mode = MODE.ID_REF;
@@ -112,7 +111,7 @@ public class DocumentModelResolver implements ObjectResolver {
     @Override
     public List<Class<?>> getManagedClasses() {
         if (managedClasses == null) {
-            managedClasses = new ArrayList<Class<?>>();
+            managedClasses = new ArrayList<>();
             managedClasses.add(DocumentModel.class);
         }
         return managedClasses;
@@ -131,7 +130,7 @@ public class DocumentModelResolver implements ObjectResolver {
                 mode = MODE.PATH_REF;
             }
         }
-        this.parameters = new HashMap<String, Serializable>();
+        this.parameters = new HashMap<>();
         this.parameters.put(PARAM_STORE, mode == MODE.ID_REF ? STORE_ID_REF : STORE_PATH_REF);
     }
 
@@ -175,24 +174,29 @@ public class DocumentModelResolver implements ObjectResolver {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
-                    try {
-                        DocumentModel doc;
-                        switch (mode) {
-                        case ID_REF:
-                            doc = session.getDocument(new IdRef(ref.ref));
-                            break;
-                        case PATH_REF:
-                            doc = session.getDocument(new PathRef(ref.ref));
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                        }
-                        // detach because we're about to close the session
-                        doc.detach(true);
-                        return doc;
-                    } catch (DocumentNotFoundException e) {
+                    DocumentModel doc;
+                    DocumentRef docRef;
+
+                    switch (mode) {
+                    case ID_REF:
+                        docRef = new IdRef(ref.ref);
+                        break;
+                    case PATH_REF:
+                        docRef = new PathRef(ref.ref);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                    }
+
+                    if (!session.exists(docRef)) {
+                        // the document doesn't exist or is not accessible by the current user
                         return null;
                     }
+
+                    doc = session.getDocument(docRef);
+                    // detach because we're about to close the session
+                    doc.detach(true);
+                    return doc;
                 } catch (LocalException le) { // no such repo
                     return null;
                 }
@@ -248,7 +252,7 @@ public class DocumentModelResolver implements ObjectResolver {
     private void checkConfig() throws IllegalStateException {
         if (parameters == null) {
             throw new IllegalStateException(
-                    "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
+                    "you should call #configure(Map<String, String>) before. Please get this resolver through ExternalReferenceService which is in charge of resolver configuration.");
         }
     }
 

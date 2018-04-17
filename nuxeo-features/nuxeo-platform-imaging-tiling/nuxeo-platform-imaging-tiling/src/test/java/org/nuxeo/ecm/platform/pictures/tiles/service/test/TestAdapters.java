@@ -47,21 +47,19 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 // NXP-13240: temporarily disabled
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.platform.picture.api", //
-        "org.nuxeo.ecm.platform.picture.core", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-framework.xml",
-        "org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml",
-        "org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-adapter-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-adapter-contrib.xml")
 public class TestAdapters {
 
     @Inject

@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.3
@@ -54,8 +53,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@LocalDeploy({ "org.nuxeo.ecm.platform.query.api.test:test-schemas-contrib.xml",
-        "org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api.test:test-schemas-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-contrib.xml")
 public class TestPageProviderCurrentPage {
 
     protected static final String DUMMY_FETCH_DOCUMENTS = "DUMMY_FETCH_DOCUMENTS";
@@ -131,5 +130,5 @@ public class TestPageProviderCurrentPage {
         page = pp.getCurrentPage();
         assertEquals(prevId, ((DocumentModel)page.get(0)).getId());
     }
-    
+
 }

@@ -113,7 +113,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -123,11 +122,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml", "org.nuxeo.ecm.automation.test" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml", "org.nuxeo.ecm.automation.test:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.url.api")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml")
+@Deploy("org.nuxeo.ecm.automation.test")
+@Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.test:test-mvalues.xml")
+@Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
 @Features({ EmbeddedAutomationServerFeature.class, AuditFeature.class })
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -370,7 +373,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             doc = (Document) session.newRequest("exitError").setInput(root).execute();
             fail("expected error");
         } catch (RemoteException t) {
-            assertTrue(t.getRemoteStackTrace().contains("termination error"));
+            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getStatus());
+            assertEquals("Failed to invoke operation: exitError", t.getMessage());
         }
         // test the note was not created
         try {
@@ -965,12 +969,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             fail();
         } catch (RemoteException e) {
             assertNotNull(e);
-            RemoteThrowable cause = (RemoteThrowable) e.getRemoteCause();
-            while (cause.getCause() != null && cause.getCause() != cause) {
-                cause = (RemoteThrowable) cause.getCause();
-            }
-            assertEquals("Exception Message", cause.getMessage());
-            assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").textValue());
+            assertEquals("Failed to invoke operation: Test.HttpStatus", e.getMessage());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
@@ -1015,7 +1014,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
+    @Deploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
     public void canSendCalendarParametersIfUserNotFound() throws IOException {
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
         assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));

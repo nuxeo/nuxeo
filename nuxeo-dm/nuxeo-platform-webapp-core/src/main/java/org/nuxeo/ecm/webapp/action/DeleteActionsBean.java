@@ -20,10 +20,14 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,11 +58,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
 
 @Name("deleteActions")
 @Scope(ScopeType.EVENT)
@@ -136,14 +135,14 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     @Override
     public boolean getCanPurge() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
-        return getTrashService().canPurgeOrUndelete(docs, currentUser);
+        return getTrashService().canPurgeOrUntrash(docs, currentUser);
     }
 
     public boolean getCanEmptyTrash() {
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         if (selectedDocuments.size() == 0) {
             DocumentModelList currentTrashDocuments = getTrashService().getDocuments(navigationContext.getCurrentDocument());
-            return getTrashService().canPurgeOrUndelete(currentTrashDocuments, currentUser);
+            return getTrashService().canPurgeOrUntrash(currentTrashDocuments, currentUser);
         }
         return false;
     }
@@ -222,6 +221,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
 
     }
 
+    @SuppressWarnings("deprecation")
     protected String actOnSelection(int op, List<DocumentModel> docs) {
         if (docs == null) {
             return null;
@@ -325,7 +325,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
             log.warn("Null currentDocument in navigationContext");
             return false;
         }
-        return getTrashService().canPurgeOrUndelete(Collections.singletonList(doc), currentUser);
+        return getTrashService().canPurgeOrUntrash(doc, currentUser);
     }
 
     public boolean restoreActionDisplay() {

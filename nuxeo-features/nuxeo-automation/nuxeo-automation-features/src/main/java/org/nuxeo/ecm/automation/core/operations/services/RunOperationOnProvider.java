@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.operations.services;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -36,7 +35,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @since 5.6
  */
-@Operation(id = RunOperationOnProvider.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each Page", description = "Run an operation for each page of the provider defined by the provider name, the operation input is the curent page ", aliases = { "Context.RunOperationOnProvider" })
+@Operation(id = RunOperationOnProvider.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each Page", description = "Run an operation for each page of the provider defined by the provider name, the operation input is the curent page ", aliases = {
+        "Context.RunOperationOnProvider" })
 public class RunOperationOnProvider {
     public static final String ID = "RunOperationOnProvider";
 
@@ -53,7 +53,7 @@ public class RunOperationOnProvider {
     protected boolean isolate = true;
 
     @OperationMethod
-    public void run(PaginableDocumentModelListImpl paginableList) throws InvalidChainException, OperationException, Exception {
+    public void run(PaginableDocumentModelListImpl paginableList) throws OperationException {
         PageProvider<DocumentModel> pageProvider = paginableList.getProvider();
         try (OperationContext subctx = ctx.getSubContext(isolate)) {
             long initialRC = pageProvider.getResultsCount();

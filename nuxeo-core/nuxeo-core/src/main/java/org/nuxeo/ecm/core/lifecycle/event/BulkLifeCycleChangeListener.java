@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -136,8 +137,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             documentManager.reinitLifeCycleState(docMod.getRef());
             if (docMod.isFolder()) {
                 DocumentModelList children = documentManager.query(String.format(
-                        "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:parentId = '%s'",
-                        docMod.getRef()));
+                        "SELECT * FROM Document WHERE ecm:isTrashed = 0 AND ecm:parentId = '%s'", docMod.getRef()));
                 reinitDocumentsLifeCyle(documentManager, children);
             }
         }
@@ -201,6 +201,12 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                     session.removeDocument(doc.getRef());
                 }
             } else if (doc.getAllowedStateTransitions().contains(transition) && !doc.isProxy()) {
+                if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)
+                        || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)) {
+                    // just skip renaming for trash mechanism
+                    // here we leverage backward compatibility mechanism in AbstractSession#followTransition
+                    doc.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+                }
                 doc.followTransition(transition);
             } else {
                 if (targetState.equals(doc.getCurrentLifeCycleState())) {
@@ -213,15 +219,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 }
             }
         }
-    }
-
-    /**
-     * @deprecated since 9.2 use {@link #changeDocumentsState(CoreSession, String, String, DocumentModelList)} instead.
-     */
-    @Deprecated
-    protected void changeDocumentsState(CoreSession session, DocumentModelList docs, String transition,
-            String targetState) {
-        changeDocumentsState(session, transition, targetState, docs);
     }
 
 }

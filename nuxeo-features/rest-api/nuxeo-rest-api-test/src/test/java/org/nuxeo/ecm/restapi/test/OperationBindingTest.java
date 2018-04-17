@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
@@ -41,10 +43,10 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobAdapter;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -55,7 +57,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:operation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.restapi.test:operation-contrib.xml")
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
@@ -76,25 +78,30 @@ public class OperationBindingTest extends BaseTest {
     }
 
     @Test
-    public void itCanRunAnOperationOnaDocument() throws Exception {
-
+    public void itCanRunAnOperationOnADocument() throws Exception {
         // Given a document and an operation
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        // When i call the REST binding on the document resource
+        // When I call the REST binding on the document resource
         try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "id/" + note.getId() + "/@" + OperationAdapter.NAME + "/testOp", PARAMS)) {
 
-            // Then the operation is called on the document
+            // Then the operation call succeeds
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            // Then the operation is called on all children documents
+
+            // Then the Automation trace contains one call
             Trace trace = factory.getTrace("testOp");
             assertEquals(1, trace.getCalls().size());
 
-            Map<?, ?> parameters = trace.getCalls().get(0).getVariables();
+            // Then the call variables contains the chain parameters
+            Map<String, Object> variables = trace.getCalls().get(0).getVariables();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> chainParameters = (Map<String, Object>) variables.get(Constants.VAR_RUNTIME_CHAIN);
+            assertNotNull(chainParameters);
+            assertEquals("1", chainParameters.get("one"));
+            assertEquals(2, chainParameters.get("two"));
 
-            assertEquals("1", parameters.get("one"));
-            assertEquals(2, parameters.get("two"));
+            // Then the Automation trace output is the document
             assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
         }
     }
@@ -104,26 +111,29 @@ public class OperationBindingTest extends BaseTest {
         // Given a document and an operation
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        // When i call the REST binding on the document resource
+        // When I call the REST binding on the document resource
         try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "id/" + note.getId() + "/@" + OperationAdapter.NAME + "/testChain", "{}")) {
 
-            // Then the operation is called twice on the document
+            // Then the operation call succeeds
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Then the Automation trace contains two calls
+            Trace trace = factory.getTrace("testChain");
+            assertEquals(2, trace.getCalls().size());
+
+            // Then the call parameters contains the operation parameters
+            Map<String, Object> parameters = trace.getCalls().get(0).getParameters();
+            assertEquals("One", parameters.get("one"));
+            assertEquals(2L, parameters.get("two"));
+
+            parameters = trace.getCalls().get(1).getParameters();
+            assertEquals(4L, parameters.get("two"));
+            assertEquals("Two", parameters.get("one"));
+
+            // Then the Automation trace output is the document
+            assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
         }
-        // Then the operation is called on all children documents
-        Trace trace = factory.getTrace("testChain");
-        assertEquals(2, trace.getCalls().size());
-
-        Map<?, ?> parameters = trace.getCalls().get(0).getParameters();
-
-        assertEquals("One", parameters.get("one"));
-        assertEquals(2L, parameters.get("two"));
-        assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
-
-        parameters = trace.getCalls().get(1).getParameters();
-        assertEquals(4L, parameters.get("two"));
-        assertEquals("Two", parameters.get("one"));
     }
 
     @Test
@@ -131,14 +141,18 @@ public class OperationBindingTest extends BaseTest {
         // Given a folder
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
-        // When i call the REST binding on the children resource
-
+        // When I call the REST binding on the children resource
         try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "id/" + folder.getId() + "/@children/@" + OperationAdapter.NAME + "/testOp", PARAMS)) {
 
-            // Then the operation is called on all children documents
+            // Then the operation call succeeds
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Then the Automation trace contains one call
             Trace trace = factory.getTrace("testOp");
             assertEquals(1, trace.getCalls().size());
+
+            // Then the Automation trace output is the list of children documents
             assertEquals(session.getChildren(folder.getRef()).size(),
                     ((PaginableDocumentModelList) trace.getOutput()).size());
         }
@@ -154,8 +168,13 @@ public class OperationBindingTest extends BaseTest {
                 "id/" + file.getId() + "/@" + BlobAdapter.NAME + "/file:content/@" + OperationAdapter.NAME + "/testOp",
                 PARAMS)) {
 
-            // Then the operation is called on a document blob
+            // Then the operation call succeeds
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Then the Automation trace contains one call
             Trace trace = factory.getTrace("testOp");
+
+            // Then the Automation trace output is a blob
             assertTrue(trace.getOutput() instanceof Blob);
         }
     }

@@ -19,8 +19,6 @@ package org.nuxeo.ecm.automation.core.scripting;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -36,12 +34,13 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class TestDocumentWrapperGetRef {
 

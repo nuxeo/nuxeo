@@ -10,7 +10,7 @@
         SELECT * FROM Document WHERE dc:title ILIKE '?%' AND ecm:mixinType = 'Collection' AND
         (ecm:primaryType != 'Favorites' OR (ecm:primaryType = 'Favorites' AND dc:creator = '?')) AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <parameter>#{currentUser.name}</parameter>
       <sort column="dc:title" ascending="true" />
@@ -22,7 +22,7 @@
         SELECT * FROM Document WHERE dc:title ILIKE :searchTerm AND ecm:mixinType = 'Collection' AND
         ecm:primaryType != 'Favorites' AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <parameter>#{currentUser.name}</parameter>
       <sort column="dc:modified" ascending="false" />
@@ -54,7 +54,7 @@
     <coreQueryPageProvider name="ordered_content_collection">
       <pattern>
         SELECT collection:documentIds/* FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
         AND ecm:uuid = ?
       </pattern>
       <pageSize>50</pageSize>
@@ -65,7 +65,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'Collection' AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
+        ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <pageSize>1000</pageSize>
     </coreQueryPageProvider>

@@ -28,15 +28,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Tests commands parsing.
@@ -44,16 +50,16 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author tiry
  * @author Vincent Dutat
  */
-public class TestCommands extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+public class TestCommands {
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-    }
+    @Inject
+    public CommandLineExecutorService cles;
 
     @Test
     public void testReplaceParams() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
 
         // test default param
@@ -85,12 +91,8 @@ public class TestCommands extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
     public void testCmdEnvironment() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
-        pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
-
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertTrue(cmds.contains("echo"));
@@ -105,10 +107,8 @@ public class TestCommands extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml")
     public void testCmdPipe() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-
-        pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
 
         ExecResult result = cles.execCommand("pipe", cles.getDefaultCmdParameters());
         assertTrue(result.isSuccessful());

@@ -49,12 +49,10 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml" })
 @Features(CoreFeature.class)
 public class TestReaderRegistry {
 
@@ -70,17 +68,17 @@ public class TestReaderRegistry {
     }
 
     @Test(expected = MarshallingException.class)
-    public void registerInvalidReader() throws Exception {
+    public void registerInvalidReader() {
         registry.register(InvalidReader.class);
     }
 
     @Test(expected = MarshallingException.class)
-    public void registerClassNotSupported() throws Exception {
+    public void registerClassNotSupported() {
         registry.register(NotSupportedClass.class);
     }
 
     @Test
-    public void simpleRegistering() throws Exception {
+    public void simpleRegistering() {
         registry.register(DefaultNumberReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
         assertNotNull(Reader);
@@ -88,7 +86,7 @@ public class TestReaderRegistry {
     }
 
     @Test
-    public void registerTwice() throws Exception {
+    public void registerTwice() {
         registry.register(DefaultNumberReader.class);
         registry.register(DefaultNumberReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
@@ -96,7 +94,7 @@ public class TestReaderRegistry {
     }
 
     @Test
-    public void priorities() throws Exception {
+    public void priorities() {
         registry.register(DefaultNumberReader.class);
         registry.register(LowerPriorityReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
@@ -107,7 +105,7 @@ public class TestReaderRegistry {
     }
 
     @Test
-    public void prioriseSingletonToPerThreadToEachTime() throws Exception {
+    public void prioriseSingletonToPerThreadToEachTime() {
         registry.register(EachTimeReader.class);
         registry.register(PerThreadReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
@@ -127,7 +125,7 @@ public class TestReaderRegistry {
 
     // to force sub classes managing their priorities
     @Test
-    public void prioriseParentClasses() throws Exception {
+    public void prioriseParentClasses() {
         registry.register(DefaultNumberReader.class);
         registry.register(SubClassReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
@@ -140,7 +138,7 @@ public class TestReaderRegistry {
     }
 
     @Test
-    public void byMediaType() throws Exception {
+    public void byMediaType() {
         registry.register(AnyTypeReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);
         assertEquals(AnyTypeReader.class, Reader.getClass());
@@ -159,7 +157,7 @@ public class TestReaderRegistry {
     }
 
     @Test
-    public void ensureAcceptMethodIsCalled() throws Exception {
+    public void ensureAcceptMethodIsCalled() {
         registry.register(SingletonStateReader.class);
         registry.register(DefaultNumberReader.class);
         Reader<?> Reader = registry.getReader(ctx, Integer.class, null, APPLICATION_JSON_TYPE);

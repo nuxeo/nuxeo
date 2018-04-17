@@ -37,7 +37,6 @@ import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroPageModelFactory;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ro.isdc.wro.config.Context;
@@ -54,8 +53,10 @@ import ro.isdc.wro.util.WroTestUtils;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.web.resources.core", "org.nuxeo.theme.styling" })
-@LocalDeploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml" })
+@Deploy("org.nuxeo.web.resources.core")
+@Deploy("org.nuxeo.theme.styling")
+@Deploy("org.nuxeo.web.resources.wro")
+@Deploy("org.nuxeo.web.resources.wro:webresources-test-config.xml")
 public class TestNuxeoWroPageModelFactory {
 
     static final String BUNDLE = "org.nuxeo.web.resources.rest";

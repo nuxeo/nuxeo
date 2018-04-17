@@ -39,8 +39,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.ecm.core.management" })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.core.management")
 public class CanStandbyAndResumeTest {
 
     @Test

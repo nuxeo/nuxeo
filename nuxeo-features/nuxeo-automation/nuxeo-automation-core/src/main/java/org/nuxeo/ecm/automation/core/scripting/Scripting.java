@@ -82,8 +82,8 @@ public class Scripting {
             } else if ("groovy".equals(ext)) {
                 cs = new GroovyScript(IOUtils.toString(in, UTF_8));
             } else {
-                throw new OperationException("Unsupported script file: " + script
-                        + ". Only MVEL and Groovy scripts are supported");
+                throw new OperationException(
+                        "Unsupported script file: " + script + ". Only MVEL and Groovy scripts are supported");
             }
             cache.put(key, cs);
             cs.eval(ctx);
@@ -95,7 +95,6 @@ public class Scripting {
         Map<String, Object> map = new HashMap<>(ctx.getVars());
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
-        map.put(Constants.VAR_RUNTIME_CHAIN, ctx);
         if (ctx.get(Constants.VAR_WORKFLOW) != null) {
             map.put(Constants.VAR_WORKFLOW, ctx.get(Constants.VAR_WORKFLOW));
         }
@@ -126,7 +125,7 @@ public class Scripting {
                 docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
             }
             map.put("Documents", docs);
-            if (docs.size() >= 1) {
+            if (!docs.isEmpty()) {
                 map.put("Document", docs.get(0));
             }
         }
@@ -134,7 +133,6 @@ public class Scripting {
     }
 
     public interface Script {
-        // protected long lastModified;
         Object eval(OperationContext ctx);
     }
 

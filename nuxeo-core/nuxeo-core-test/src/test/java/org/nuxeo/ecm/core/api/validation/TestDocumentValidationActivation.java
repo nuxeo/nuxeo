@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.core.api.validation;
 
+import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.COMPLEX_MANDATORY;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.SIMPLE_FIELD;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_ARRAY_FIELD;
 import static org.nuxeo.ecm.core.api.validation.TestDocumentValidationService.STRING_LIST_PROPS_FIELD;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -43,12 +47,11 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 // Look at the @Test(expected=...) to understand the tests
 // for those tests, both saveDocument, createDocument and importDocument validation context are enable by default
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentValidationActivation {
@@ -70,6 +73,9 @@ public class TestDocumentValidationActivation {
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
     }
 
@@ -117,13 +123,16 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnCreateDocumentActivationAfterListeners() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
     }
 
@@ -191,13 +200,16 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnSaveDocumentActivationAfterListeners() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
     }
@@ -247,7 +259,7 @@ public class TestDocumentValidationActivation {
 
     // NXP-23256
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnImportDocumentActivationAfterListeners() {
         DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
                 null, null, null, null, null);

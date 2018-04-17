@@ -34,13 +34,12 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * @since 9.1
  */
-@Deploy({ "org.nuxeo.ecm.core.event", //
-        "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.platform.audit.api", //
-        "org.nuxeo.ecm.platform.audit", //
-        "org.nuxeo.mongodb.audit", //
-        "org.nuxeo.mongodb.audit.test", //
-})
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.platform.audit.api")
+@Deploy("org.nuxeo.ecm.platform.audit")
+@Deploy("org.nuxeo.mongodb.audit")
+@Deploy("org.nuxeo.mongodb.audit.test")
 @Features({ MongoDBFeature.class, CoreFeature.class })
 public class MongoDBAuditFeature extends SimpleFeature {
 

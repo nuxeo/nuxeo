@@ -22,16 +22,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-/**
- * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
- */
-public class TestTextSearchCleaner extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestTextSearchCleaner {
 
     @Test
     public void testCleaner() throws Exception {
@@ -71,8 +73,8 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.query.api.test:configuration-test-contrib.xml")
     public void testCustomCleaner() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.query.api.test:configuration-test-contrib.xml");
 
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
         String s = cs.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);

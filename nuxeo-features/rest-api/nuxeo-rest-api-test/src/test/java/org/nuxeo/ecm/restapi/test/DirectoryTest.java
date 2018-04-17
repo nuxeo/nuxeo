@@ -27,9 +27,7 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -56,10 +54,10 @@ import org.nuxeo.ecm.directory.io.DirectoryListJsonWriter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -72,7 +70,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Features({ RestServerFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:test-directory-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:test-directory-contrib.xml")
 public class DirectoryTest extends BaseTest {
 
     @Inject

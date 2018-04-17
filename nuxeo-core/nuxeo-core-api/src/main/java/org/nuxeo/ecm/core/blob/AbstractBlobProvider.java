@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.IOException;
 import java.util.Map;
@@ -51,6 +52,11 @@ public abstract class AbstractBlobProvider implements BlobProvider {
     @Override
     public boolean supportsUserUpdate() {
         return supportsUserUpdateDefaultTrue();
+    }
+
+    @Override
+    public boolean isTransient() {
+        return Boolean.parseBoolean(properties.get(TRANSIENT));
     }
 
 }

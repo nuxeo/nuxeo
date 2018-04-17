@@ -19,28 +19,36 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.seam.mock.MockFilterConfig;
 import org.jboss.seam.mock.MockHttpSession;
 import org.jboss.seam.mock.MockServletContext;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Benjamin JALON
  */
-public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+// Mock the usermanager service (we don't want to pull all nuxeo framework) Needed by Anonymous
+@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/mock-usermanager-framework.xml")
+// Mock the event producer (we don't want to pull all nuxeo framework) NuxeoAuthenticationFilter sends events
+@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/mock-event-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+public abstract class AbstractAuthenticator {
 
     protected PluggableAuthenticationService authService;
 
@@ -48,16 +56,9 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
 
     protected MockHttpRequest request;
 
-    protected List<Cookie> cookieList;
-
     protected NuxeoAuthenticationFilter naf;
 
     protected FilterChain chain;
-
-    @Override
-    public void setUp() throws Exception {
-        initStandardPlugins();
-    }
 
     protected PluggableAuthenticationService getAuthService() {
         if (authService == null) {
@@ -84,25 +85,9 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
         response = new MockHttpResponse();
     }
 
-    protected void initCookieList() {
-        cookieList = Collections.emptyList();
-    }
-
     protected void setLoginPasswordInHeader(String login, String password, MockHttpRequest request) {
         String b64userpassword = Base64.encodeBase64String((login + ":" + password).getBytes());
         request.setHeaderParam("authorization", new String[] { "basic " + b64userpassword, });
-    }
-
-    protected void initStandardPlugins() throws Exception {
-        // Mock the usermanager service (we don't want to pull all nuxeo framework)
-        // Needed by Anonymous
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/mock-usermanager-framework.xml");
-        // Mock the event producer (we don't want to pull all nuxeo framework)
-        // NuxeoAuthenticationFilter sends events
-        deployContrib("org.nuxeo.ecm.platform.login.cas2.test", "OSGI-INF/mock-event-framework.xml");
-
-        deployBundle("org.nuxeo.ecm.platform.login");
-        deployBundle("org.nuxeo.ecm.platform.web.common");
     }
 
 }

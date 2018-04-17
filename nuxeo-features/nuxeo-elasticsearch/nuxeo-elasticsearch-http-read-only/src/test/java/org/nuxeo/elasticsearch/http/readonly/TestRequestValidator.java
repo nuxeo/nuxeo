@@ -27,13 +27,13 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestRequestValidator {
 
     @Rule
@@ -43,7 +43,7 @@ public class TestRequestValidator {
 
     @Before
     public void initValidator() {
-        this.validator = new RequestValidator();
+        validator = new RequestValidator();
     }
 
     @Test

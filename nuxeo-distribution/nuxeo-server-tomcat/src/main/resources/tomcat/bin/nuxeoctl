@@ -105,8 +105,7 @@ fi
 JAVA_TOOLS=$JAVA_HOME/lib/tools.jar
 PATH="$JAVA_HOME/bin:$PATH"
 
-
-# Check Java
+# Check Java Version
 : ${REQUIRED_JAVA_VERSION:=1.8}
 # Check 'java' bin
 command -v $JAVA >/dev/null 2>&1 || die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+. No $JAVA command detected in the PATH (including JAVA_HOME)."
@@ -114,6 +113,10 @@ command -v $JAVA >/dev/null 2>&1 || die "Nuxeo requires Java $REQUIRED_JAVA_VERS
 JAVA_VERSION=`$JAVA -version 2>&1 | awk -F '"' '/version/{print $2}'`
 if [ "$JAVA_VERSION" \< "$REQUIRED_JAVA_VERSION" ]; then
   die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+ (detected $JAVA_VERSION)"
+fi
+# Check for JDK
+if [[ -z "$JAVA_HOME/bin/javac" ]]; then
+  die "Nuxeo requires a Java JDK. Please ensure a Java JDK is properly installed."
 fi
 
 ## Setup JAVA_OPTS

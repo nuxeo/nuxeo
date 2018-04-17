@@ -498,7 +498,8 @@ public class DialectPostgreSQL extends Dialect {
         } else if (collectionUniqueConstraintEnabled && model.isCollectionFragment(key)) {
             // CREATE UNIQUE INDEX dc_contributors_unique_pos ON dc_contributors (id, pos)
             String name = table.getPhysicalName();
-            sqls.add(String.format("CREATE UNIQUE INDEX \"%s_unique_pos\" ON \"%s\" (\"%s\", \"%s\")", name, name,
+            String indexName = makeName(name, "", "_unique_pos", getMaxIndexNameSize());
+            sqls.add(String.format("CREATE UNIQUE INDEX \"%s\" ON \"%s\" (\"%s\", \"%s\")", indexName, name,
                     Model.MAIN_KEY, Model.COLL_TABLE_POS_KEY));
         }
         return sqls;

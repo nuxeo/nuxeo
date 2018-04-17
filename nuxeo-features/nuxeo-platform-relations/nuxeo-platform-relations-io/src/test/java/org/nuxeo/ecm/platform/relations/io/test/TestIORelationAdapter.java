@@ -65,9 +65,9 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.io.IORelationResources;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test layout component extension points.
@@ -77,10 +77,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.relations.io.tests:io-test-framework.xml", //
-        "org.nuxeo.ecm.relations.io.tests:io-relations-test-contrib.xml", //
-        "org.nuxeo.ecm.relations.io.tests:jena-test-bundle.xml", //
-})
+@Deploy("org.nuxeo.ecm.relations.io.tests:io-test-framework.xml")
+@Deploy("org.nuxeo.ecm.relations.io.tests:io-relations-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.relations.io.tests:jena-test-bundle.xml")
 public class TestIORelationAdapter {
 
     private static final String graphName = "myrelations";

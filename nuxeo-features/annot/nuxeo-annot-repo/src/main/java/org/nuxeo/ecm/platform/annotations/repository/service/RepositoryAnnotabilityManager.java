@@ -25,7 +25,6 @@ import java.net.URI;
 
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
 import org.nuxeo.ecm.platform.annotations.service.AnnotabilityManager;
@@ -42,6 +41,7 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
+    @Override
     public boolean isAnnotable(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null) { // not a nuxeo uri

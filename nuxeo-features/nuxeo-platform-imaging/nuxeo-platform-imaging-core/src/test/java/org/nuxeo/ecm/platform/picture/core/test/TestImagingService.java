@@ -31,18 +31,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author btatar
  */
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml",
-        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml",
-        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/picture-schemas-contrib.xml"})
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/picture-schemas-contrib.xml")
 public class TestImagingService {
 
     @Inject

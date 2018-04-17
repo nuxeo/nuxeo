@@ -18,13 +18,11 @@
  */
 package org.nuxeo.lib.stream.log;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.io.Externalizable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -108,19 +106,28 @@ public interface LogManager extends AutoCloseable {
      * Returns the lag between consumer {@code group} and producers for a Log.
      */
     default LogLag getLag(String name, String group) {
-        final long[] end = { 0 };
-        final long[] pos = { Long.MAX_VALUE };
-        final long[] lag = { 0 };
-        final long[] endMessages = { 0 };
-        getLagPerPartition(name, group).forEach(item -> {
-            if (item.lowerOffset() > 0) {
-                pos[0] = min(pos[0], item.lowerOffset());
-            }
-            end[0] = max(end[0], item.upperOffset());
-            endMessages[0] += item.upper();
-            lag[0] += item.lag();
-        });
-        return new LogLag(pos[0], end[0], lag[0], endMessages[0]);
+        return LogLag.of(getLagPerPartition(name, group));
+    }
+
+    /**
+     * Returns the lag with latency. Timestamps used to compute the latencies are extracted from the records. This
+     * requires to read one record per partition so it costs more than {@link #getLagPerPartition(String, String)}.
+     * <br/>
+     * Two functions need to be provided to extract the timestamp and a key from a record.
+     *
+     * @since 10.1
+     */
+    <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group,
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor);
+
+    /**
+     * Returns the latency between consumer {@code group} and producers for a Log.
+     *
+     * @since 10.1
+     */
+    default <M extends Externalizable> Latency getLatency(String name, String group,
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor) {
+        return Latency.of(getLatencyPerPartition(name, group, timestampExtractor, keyExtractor));
     }
 
     /**
@@ -129,7 +136,8 @@ public interface LogManager extends AutoCloseable {
     List<String> listAll();
 
     /**
-     * List the consumer groups for a Log.
+     * List the consumer groups for a Log.<br/>
+     * Note that for Kafka it returns only consumers that use the subscribe API.
      */
     List<String> listConsumerGroups(String name);
 

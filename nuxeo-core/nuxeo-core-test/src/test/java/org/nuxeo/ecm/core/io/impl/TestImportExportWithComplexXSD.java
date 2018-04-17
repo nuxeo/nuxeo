@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.io.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -30,7 +34,6 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -51,11 +54,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -65,7 +63,7 @@ import static org.junit.Assert.assertNull;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = ComplexDocRepositoryInit.class)
 @Deploy("org.nuxeo.ecm.core.io")
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class TestImportExportWithComplexXSD {
 
     @Inject

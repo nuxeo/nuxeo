@@ -36,15 +36,13 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.publisher.core", //
-})
-@LocalDeploy("org.nuxeo.ecm.platform.publisher.test:OSGI-INF/core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
+@Deploy("org.nuxeo.ecm.platform.publisher.test:OSGI-INF/core-types-contrib.xml")
 public class TestDomainsFinder {
 
     @Inject

@@ -33,13 +33,13 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@LocalDeploy({ "org.nuxeo.admin.center:OSGI-INF/operation-contrib.xml" })
+@Deploy("org.nuxeo.admin.center:OSGI-INF/operation-contrib.xml")
 public class TestPermissionsPurgeOperation extends AbstractPermissionsPurge {
 
     @Inject

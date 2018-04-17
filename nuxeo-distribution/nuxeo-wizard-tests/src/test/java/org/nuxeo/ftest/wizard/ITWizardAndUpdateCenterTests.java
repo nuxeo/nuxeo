@@ -69,7 +69,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
-    protected static final String CONNECT_FORM_TITLE = "Nuxeo Online Services";
+    protected static final String CONNECT_FORM_TITLE = "Online Services";
 
     protected static final String REGISTRATION_OK = "Nuxeo Online Services registration is OK.";
 
@@ -82,6 +82,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://fast.wistia.com"));
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://js.intercomcdn.com"));
         addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://www.nuxeo.com/standalone-login-page"));
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://www.nuxeo.com/login-page-embedded"));
 
         // **********************
         // welcome

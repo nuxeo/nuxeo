@@ -5,6 +5,15 @@
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
       <property name="path">binaries2</property>
     </blobprovider>
+    <blobprovider name="test3">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">binaries3</property>
+    </blobprovider>
+    <blobprovider name="transient">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="transient">true</property>
+      <property name="path">binariestransient</property>
+    </blobprovider>
     <blobprovider name="dummy">
       <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
     </blobprovider>
@@ -13,6 +22,8 @@
     <blobdispatcher>
       <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="dc:format=video">test2</property>
+      <property name="nosuchschema:nosuchprop=foo">test2</property>
+      <property name="blob:mime-type=video/mp4,nosuchschema:nosuchprop=foo">test3</property>
       <property name="blob:mime-type=video/mp4">test2</property>
       <property name="blob:xpath~files/*/?ile">test2</property>
       <property name="ecm:repositoryName=nosuchrepo,ecm:lifeCycleState=approved">test2</property>

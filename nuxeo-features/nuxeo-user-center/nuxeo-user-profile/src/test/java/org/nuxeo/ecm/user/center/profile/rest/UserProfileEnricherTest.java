@@ -52,15 +52,16 @@ import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.1
  */
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.user.center.profile")
 public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
 
     private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -132,7 +133,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-profile-enricher-compat-contrib.xml")
+    @Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-profile-enricher-compat-contrib.xml")
     public void testCompatibility() throws IOException {
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
         JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);

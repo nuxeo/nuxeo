@@ -31,29 +31,31 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Florent Guillaume
  */
-public class TestUserService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-config.xml")
+public class TestUserService {
 
-    UserManager userManager;
+    @Inject
+    protected UserManager userManager;
 
-    @Override
-    public void setUp() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/UserService.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-config.xml");
-        userManager = Framework.getService(UserManager.class);
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        userManager = Framework.getService(UserManager.class);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testGetUserManagerFromFramework() {
@@ -126,8 +128,8 @@ public class TestUserService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml")
     public void testOverride() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml");
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertEquals(Arrays.asList("tehroot", "bob", "bobette"), fum.defaultAdministratorIds);
         assertEquals(Arrays.asList("myAdministrators"), fum.administratorsGroups);
@@ -163,7 +165,7 @@ public class TestUserService extends NXRuntimeTestCase {
     public void testValidatePassword() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertTrue(fum.validatePassword(""));
-        pushInlineDeployments("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml");
         fum = (FakeUserManagerImpl) userManager;
         assertFalse(fum.validatePassword(""));
         assertFalse(fum.validatePassword("azerty"));

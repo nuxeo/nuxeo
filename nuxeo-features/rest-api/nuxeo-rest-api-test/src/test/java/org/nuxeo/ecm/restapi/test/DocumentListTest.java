@@ -42,10 +42,10 @@ import org.nuxeo.ecm.restapi.server.jaxrs.adapters.PageProviderAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +61,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
 @Jetty(port = 18090)
-@LocalDeploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentListTest extends BaseTest {
 
@@ -160,7 +160,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
+                        + "        AND ecm:isVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
@@ -182,7 +182,7 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("query",
                 "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                         + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:title,:title2)\n"
-                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:isTrashed = 0");
+                        + "        AND ecm:isVersion = 0 AND " + "ecm:isTrashed = 0");
         queryParams.add("title", "Note 1");
         queryParams.add("title2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());

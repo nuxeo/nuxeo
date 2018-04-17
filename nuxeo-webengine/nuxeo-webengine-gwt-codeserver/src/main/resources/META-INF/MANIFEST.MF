@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.webengine.gwt.codeserver;singleton:=true
-Bundle-ManifestVersion: 1
-Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/gwt-codeserver.xml
-

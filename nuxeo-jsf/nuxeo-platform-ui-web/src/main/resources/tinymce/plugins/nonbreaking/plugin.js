@@ -1,53 +1,84 @@
-/**
- * plugin.js
- *
- * Copyright, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
+(function () {
+var nonbreaking = (function () {
+  'use strict';
 
-/*global tinymce:true */
+  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-tinymce.PluginManager.add('nonbreaking', function(editor) {
-	var setting = editor.getParam('nonbreaking_force_tab');
+  var stringRepeat = function (string, repeats) {
+    var str = '';
+    for (var index = 0; index < repeats; index++) {
+      str += string;
+    }
+    return str;
+  };
+  var isVisualCharsEnabled = function (editor) {
+    return editor.plugins.visualchars ? editor.plugins.visualchars.isEnabled() : false;
+  };
+  var insertNbsp = function (editor, times) {
+    var nbsp = isVisualCharsEnabled(editor) ? '<span class="mce-nbsp">&nbsp;</span>' : '&nbsp;';
+    editor.insertContent(stringRepeat(nbsp, times));
+    editor.dom.setAttrib(editor.dom.select('span.mce-nbsp'), 'data-mce-bogus', '1');
+  };
+  var $_6t0pp9glje4cbx6k = { insertNbsp: insertNbsp };
 
-	editor.addCommand('mceNonBreaking', function() {
-		editor.insertContent(
-			(editor.plugins.visualchars && editor.plugins.visualchars.state) ?
-			'<span class="mce-nbsp">&nbsp;</span>' : '&nbsp;'
-		);
+  var register = function (editor) {
+    editor.addCommand('mceNonBreaking', function () {
+      $_6t0pp9glje4cbx6k.insertNbsp(editor, 1);
+    });
+  };
+  var $_2dw497gkje4cbx6j = { register: register };
 
-		editor.dom.setAttrib(editor.dom.select('span.mce-nbsp'), 'data-mce-bogus', '1');
-	});
+  var VK = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-	editor.addButton('nonbreaking', {
-		title: 'Insert nonbreaking space',
-		cmd: 'mceNonBreaking'
-	});
+  var getKeyboardSpaces = function (editor) {
+    var spaces = editor.getParam('nonbreaking_force_tab', 0);
+    if (typeof spaces === 'boolean') {
+      return spaces === true ? 3 : 0;
+    } else {
+      return spaces;
+    }
+  };
+  var $_971zmdgoje4cbx6n = { getKeyboardSpaces: getKeyboardSpaces };
 
-	editor.addMenuItem('nonbreaking', {
-		text: 'Nonbreaking space',
-		cmd: 'mceNonBreaking',
-		context: 'insert'
-	});
+  var setup = function (editor) {
+    var spaces = $_971zmdgoje4cbx6n.getKeyboardSpaces(editor);
+    if (spaces > 0) {
+      editor.on('keydown', function (e) {
+        if (e.keyCode === VK.TAB && !e.isDefaultPrevented()) {
+          if (e.shiftKey) {
+            return;
+          }
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          $_6t0pp9glje4cbx6k.insertNbsp(editor, spaces);
+        }
+      });
+    }
+  };
+  var $_1yt8i1gmje4cbx6m = { setup: setup };
 
-	if (setting) {
-		var spaces = +setting > 1 ? +setting : 3;  // defaults to 3 spaces if setting is true (or 1)
+  var register$1 = function (editor) {
+    editor.addButton('nonbreaking', {
+      title: 'Nonbreaking space',
+      cmd: 'mceNonBreaking'
+    });
+    editor.addMenuItem('nonbreaking', {
+      text: 'Nonbreaking space',
+      cmd: 'mceNonBreaking',
+      context: 'insert'
+    });
+  };
+  var $_ewicytgpje4cbx6o = { register: register$1 };
 
-		editor.on('keydown', function(e) {
-			if (e.keyCode == 9) {
+  PluginManager.add('nonbreaking', function (editor) {
+    $_2dw497gkje4cbx6j.register(editor);
+    $_ewicytgpje4cbx6o.register(editor);
+    $_1yt8i1gmje4cbx6m.setup(editor);
+  });
+  function Plugin () {
+  }
 
-				if (e.shiftKey) {
-					return;
-				}
+  return Plugin;
 
-				e.preventDefault();
-				for (var i = 0; i < spaces; i++) {
-					editor.execCommand('mceNonBreaking');
-				}
-			}
-		});
-	}
-});
+}());
+})();

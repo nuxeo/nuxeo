@@ -30,7 +30,6 @@ import org.nuxeo.runtime.kafka.KafkaConfigService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -39,7 +38,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.stream")
-@LocalDeploy("org.nuxeo.runtime.stream:test-kafka-config-contrib.xml")
+@Deploy("org.nuxeo.runtime.stream:test-kafka-config-contrib.xml")
 public class TestKafkaConfigService {
 
     @Test
@@ -50,14 +49,12 @@ public class TestKafkaConfigService {
         assertEquals(3, service.listConfigNames().size());
 
         String config1 = "default";
-        assertEquals("localhost:2181", service.getZkServers(config1));
         assertNotNull(service.getConsumerProperties(config1));
         assertNotNull(service.getProducerProperties(config1));
         assertEquals("localhost:9092", service.getProducerProperties(config1).getProperty("bootstrap.servers"));
         assertNotEquals("RANDOM()", service.getTopicPrefix(config1));
 
         String config2 = "config2";
-        assertEquals("remote:2181", service.getZkServers(config2));
         assertNotNull(service.getConsumerProperties(config2));
         assertNotNull(service.getProducerProperties(config2));
         assertEquals("foo", service.getTopicPrefix(config2));

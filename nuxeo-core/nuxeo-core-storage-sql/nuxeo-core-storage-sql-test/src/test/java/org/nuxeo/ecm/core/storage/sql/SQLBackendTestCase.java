@@ -18,64 +18,59 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Florent Guillaume
  */
-public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(SQLBackendFeature.class)
+public abstract class SQLBackendTestCase {
 
     private static final String REPOSITORY_NAME = "test";
 
-    private Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
+    private final Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
 
-    public Repository repository;
+    protected RepositoryImpl repository;
 
-    public Repository repository2;
-
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.runtime.datasource");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.storage");
-        deployBundle("org.nuxeo.ecm.core.storage.sql");
-        deployBundle("org.nuxeo.ecm.platform.el");
-        DatabaseHelper.DATABASE.setUp();
-        deployTestContrib("org.nuxeo.ecm.core.storage", "OSGI-INF/test-repo-ds.xml");
+        repository = newRepository(-1);
     }
 
-    @Override
-    protected void postSetUp() throws Exception {
-	repository = newRepository(-1);
-    }
-
-    protected Repository newRepository(long clusteringDelay) throws Exception {
+    protected RepositoryImpl newRepository(long clusteringDelay) {
         return newRepository(null, clusteringDelay);
     }
 
-    protected Repository newRepository(String name, long clusteringDelay) throws Exception {
+    protected RepositoryImpl newRepository(String name, long clusteringDelay) {
         RepositoryDescriptor descriptor = newDescriptor(name, clusteringDelay);
-        RepositoryImpl repo = new RepositoryImpl(descriptor);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        sqlRepositoryService.registerTestRepository(repo);
+        sqlRepositoryService.registerContribution(descriptor, "repository", null);
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        repositoryService.start(null);
         newBlobProvider(descriptor.name);
-        return repo;
+        return sqlRepositoryService.getRepositoryImpl(descriptor.name);
     }
 
     protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
@@ -113,33 +108,49 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         return descr;
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         closeRepository();
     }
 
-    protected void closeRepository() throws Exception {
+    protected void closeRepository() {
         Framework.getService(EventService.class).waitForAsyncCompletion();
         BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
         for (BlobProviderDescriptor blobProviderDescriptor : blobProviderDescriptors.values()) {
             blobManager.unregisterBlobProvider(blobProviderDescriptor);
         }
-        if (repository != null) {
-            repository.close();
-            repository = null;
+        clearAndClose(repository);
+    }
+
+    protected void clearAndClose(RepositoryImpl repo) {
+        if (repo != null) {
+            SessionImpl session = repo.getConnection();
+            remove(session, "SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1");
+            remove(session, "SELECT ecm:uuid FROM Relation, Document");
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, 60);
+            session.cleanupDeletedDocuments(0, calendar);
+            session.save();
+            repo.close();
         }
-        if (repository2 != null) {
-            repository2.close();
-            repository2 = null;
+    }
+
+    protected void remove(Session session, String query) {
+        PartialList<Serializable> results = session.query(query, QueryFilter.EMPTY, true);
+        for (Serializable result : results) {
+            Node node = session.getNodeById(result);
+            if (node != null) {
+                session.removeNode(node);
+            }
         }
     }
 
     public boolean isSoftDeleteEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().getSoftDeleteEnabled();
+        return repository.getRepositoryDescriptor().getSoftDeleteEnabled();
     }
 
     public boolean isProxiesEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().getProxiesEnabled();
+        return repository.getRepositoryDescriptor().getProxiesEnabled();
     }
 
 }

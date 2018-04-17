@@ -31,15 +31,17 @@ import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 
 
 @Features({ManagementFeature.class, PlatformFeature.class})
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
-@LocalDeploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.audit")
+@Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {
 
     @Override

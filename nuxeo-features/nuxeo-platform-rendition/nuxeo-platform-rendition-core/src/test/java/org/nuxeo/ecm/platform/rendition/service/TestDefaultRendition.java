@@ -46,7 +46,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class TestDefaultRendition {
 
     @Inject

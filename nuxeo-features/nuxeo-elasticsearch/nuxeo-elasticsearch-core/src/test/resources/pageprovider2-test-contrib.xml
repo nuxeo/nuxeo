@@ -11,7 +11,7 @@
           ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
           AND ecm:mixinType != 'HiddenInNavigation'
           AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
-          AND ecm:isCheckedInVersion = 0
+          AND ecm:isVersion = 0
           AND ecm:isTrashed = 0
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>

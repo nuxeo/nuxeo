@@ -32,20 +32,18 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.platform.filemanager.api", //
-        "org.nuxeo.ecm.platform.filemanager.core", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-mock-type-contrib.xml",
-        "org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-workspace-contentTemplate-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.filemanager.api")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-mock-type-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-import-data-workspace-contentTemplate-contrib.xml")
 public class ImportContentTemplateFactoryTestCase {
 
     @Inject

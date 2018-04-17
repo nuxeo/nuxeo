@@ -25,13 +25,18 @@ import static org.junit.Assert.assertNotNull;
 import java.security.Principal;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.login.LoginComponent;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestLoginComponentSystemID extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestLoginComponentSystemID {
 
     @Test
     public void testSystemIDEquals() {

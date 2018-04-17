@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,24 @@ package org.nuxeo.runtime.tomcat;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.core.StandardHost;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 
 /**
@@ -50,57 +60,69 @@ public class NuxeoDeployer implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
-        Lifecycle lf = event.getLifecycle();
-        if (lf instanceof ContainerBase) {
-            ContainerBase container = (ContainerBase) lf;
-            handleEvent(container, event);
+        Lifecycle lifecycle = event.getLifecycle();
+        String type = event.getType();
+
+        if (lifecycle instanceof Container && Lifecycle.BEFORE_START_EVENT.equals(type)) {
+            Container container = (Container) lifecycle;
+            preprocess(container);
+        } else if (lifecycle instanceof StandardHost && Lifecycle.AFTER_START_EVENT.equals(type)) {
+            StandardHost container = (StandardHost) lifecycle;
+            checkFailures(container);
         }
     }
 
-    protected void handleEvent(ContainerBase container, LifecycleEvent event) {
+    protected void checkFailures(StandardHost host) {
+        boolean ok = Stream.of(host.findChildren()).map(Lifecycle::getState).allMatch(s -> s == LifecycleState.STARTED);
+        boolean strict = Boolean.getBoolean("nuxeo.start.strict");
+
+        if (!ok && strict) {
+            // Throws an exception and let Tomcat to handle it via Catalina's shutdown hook. Otherwise, we could call
+            // `#stop()` and `#destroy()` by ourselves, but that means we're making a shutdown in AFTER_STARTED
+            // lifecycle event. It would be misleading.
+            throw new IllegalStateException("Some contexts failed to start.");
+        }
+    }
+    protected void preprocess(Container container) {
         try {
             ClassLoader parentCl = container.getParentClassLoader();
-            String type = event.getType();
-            if (type == Lifecycle.BEFORE_START_EVENT) {
-                File homeDir = resolveHomeDirectory();
-                File bundles = new File(homeDir, "bundles");
-                File lib = new File(homeDir, "lib");
-                File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
-                File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
-                if (deployerJar == null || commonJar == null) {
-                    System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
-                            + bundles);
-                    return;
-                }
-                ArrayList<URL> urls = new ArrayList<URL>();
-                File[] files = lib.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.getPath().endsWith(".jar")) {
-                            urls.add(f.toURI().toURL());
-                        }
-                    }
-                }
-                files = bundles.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.getPath().endsWith(".jar")) {
-                            urls.add(f.toURI().toURL());
-                        }
-                    }
-                }
-                urls.add(homeDir.toURI().toURL());
-                urls.add(new File(homeDir, "config").toURI().toURL());
-                try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl)) {
-                    System.out.println("# Running Nuxeo Preprocessor ...");
-                    Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
-                    Method main = klass.getMethod("main", String[].class);
-                    main.invoke(null, new Object[] { new String[] { homeDir.getAbsolutePath() } });
-                    System.out.println("# Preprocessing done.");
-                }
+            File homeDir = resolveHomeDirectory();
+            File bundles = new File(homeDir, "bundles");
+            File lib = new File(homeDir, "lib");
+            File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
+            File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
+            if (deployerJar == null || commonJar == null) {
+                System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
+                        + bundles);
+                return;
             }
-        } catch (IOException | ReflectiveOperationException e) {
+            List<URL> urls = new ArrayList<>();
+            PathMatcher jar = FileSystems.getDefault().getPathMatcher("glob:**.jar");
+            try (Stream<Path> stream = Files.list(lib.toPath())) {
+                stream.filter(jar::matches).map(this::toURL).forEach(urls::add);
+            }
+            try (Stream<Path> stream = Files.list(bundles.toPath())) {
+                stream.filter(jar::matches).map(this::toURL).forEach(urls::add);
+            }
+            urls.add(homeDir.toURI().toURL());
+            urls.add(new File(homeDir, "config").toURI().toURL());
+            try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), parentCl)) {
+                System.out.println("# Running Nuxeo Preprocessor ...");
+                Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
+                Method main = klass.getMethod("main", String[].class);
+                main.invoke(null, new Object[] { new String[] { homeDir.getAbsolutePath() } });
+                System.out.println("# Preprocessing done.");
+            }
+        } catch (IOException | ReflectiveOperationException | IllegalStateException e) {
             throw new RuntimeException("Failed to handle event", e);
+        }
+    }
+
+    protected URL toURL(Path p) {
+        try {
+            return p.toUri().toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -109,7 +131,7 @@ public class NuxeoDeployer implements LifecycleListener {
         if (home.startsWith("/")) {
             path = home;
         } else {
-            path = getTomcatHome() + "/" + home;
+            path = getTomcatHome() + '/' + home;
         }
         return new File(path);
     }
@@ -120,6 +142,16 @@ public class NuxeoDeployer implements LifecycleListener {
             tomcatHome = System.getProperty("catalina.home");
         }
         return tomcatHome;
+    }
+
+    /**
+     * @deprecated Since 10.1, use {@link #preprocess(Container)} instead.
+     */
+    @Deprecated
+    protected void handleEvent(ContainerBase container, LifecycleEvent event) {
+        if (Lifecycle.BEFORE_START_EVENT.equals(event.getType())) {
+            preprocess(container);
+        }
     }
 
 }

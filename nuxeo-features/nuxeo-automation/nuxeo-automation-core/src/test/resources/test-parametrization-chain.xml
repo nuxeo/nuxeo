@@ -1,15 +1,14 @@
 <component name="org.nuxeo.ecm.core.rules.test-parametrization-chain" version="1.0">
 
-  <extension point="operations"
-             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+  <extension point="operations" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <operation class="org.nuxeo.ecm.automation.core.test.Operation1" />
     <operation class="org.nuxeo.ecm.automation.core.test.Operation2" />
     <operation class="org.nuxeo.ecm.automation.core.test.OperationCheckChainContext" />
     <operation class="org.nuxeo.ecm.automation.core.test.OperationCheckExecutionFlowChainContext" />
   </extension>
 
-  <extension point="chains"
-             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+  <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
     <chain id="contributedchain">
       <operation id="contributedchainLeaf" />
       <param type="string" name="messageChain" />
@@ -23,6 +22,7 @@
         <param type="string" name="message">expr:@{ChainParameters['messageChain']}</param>
       </operation>
     </chain>
+
     <chain id="contributedchain2">
       <param type="string" name="messageChain" />
       <operation id="o1">
@@ -34,6 +34,7 @@
       <operation id="oChainFlowCtx">
       </operation>
     </chain>
+
     <chain id="contributedchainLeaf">
       <operation id="o1">
         <param type="string" name="message">Hello 1!</param>
@@ -42,6 +43,34 @@
         <param type="string" name="message">Hello 2!</param>
       </operation>
     </chain>
+
+    <chain id="chainWithChainParameters">
+      <operation id="Context.SetVar">
+        <param type="string" name="name">resolvedChainParameters</param>
+        <param type="object" name="value">expr:@{ChainParameters['foo']},@{ChainParameters['contextKey2']},@{ChainParameters['expression']}
+        </param>
+      </operation>
+    </chain>
+
+    <chain id="testRunOperationWithSameKeyInContextAndChainParameters">
+      <operation id="Context.SetVar">
+        <param type="string" name="name">contextKey1</param>
+        <param type="object" name="value">contextValue1</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">contextKey2</param>
+        <param type="object" name="value">contextValue2</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">chainWithChainParameters</param>
+        <param type="boolean" name="isolate">false</param>
+        <param type="properties" name="parameters">expr:foo=bar
+          contextKey2=chainParameterValue
+          expression=@{Context['contextKey1']}
+        </param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

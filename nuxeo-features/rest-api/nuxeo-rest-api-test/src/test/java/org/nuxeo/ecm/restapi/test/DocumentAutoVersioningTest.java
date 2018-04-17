@@ -48,10 +48,10 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -65,7 +65,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class DocumentAutoVersioningTest extends BaseTest {
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.restapi.test:source-based-versioning-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:source-based-versioning-contrib.xml")
     public void iCanUpdateDocumentWithSourceCondition() throws Exception {
 
         JSONDocumentNode jsonDoc;
@@ -144,7 +144,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.restapi.test:time-based-versioning-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:time-based-versioning-contrib.xml")
     public void iCanDoTimeBasedVersioning() throws IOException, InterruptedException {
 
         String id;
@@ -179,7 +179,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.restapi.test:lifecycle-based-versioning-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:lifecycle-based-versioning-contrib.xml")
     public void iCanDoLifeCycleBasedVersioning() throws IOException {
 
         DocumentModel folder = RestServerInit.getFolder(0, session);

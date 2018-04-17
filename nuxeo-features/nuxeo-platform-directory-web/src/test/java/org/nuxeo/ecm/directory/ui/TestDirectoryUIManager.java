@@ -34,26 +34,24 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Anahide Tchertchian
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({
-        // deploy directory ui service
-        "org.nuxeo.ecm.actions", "org.nuxeo.ecm.directory.web" })
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.directory.web")
 // deploy test dirs + ui config
-@LocalDeploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-sql-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.web.tests:OSGI-INF/test-directory-ui-sql-contrib.xml")
 public class TestDirectoryUIManager {
 
     @Inject

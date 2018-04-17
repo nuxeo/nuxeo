@@ -46,9 +46,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.localconf", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.platform.userpreferences" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.localconf")
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.platform.userpreferences")
 public class TestUserPreferencesService {
 
     @Inject

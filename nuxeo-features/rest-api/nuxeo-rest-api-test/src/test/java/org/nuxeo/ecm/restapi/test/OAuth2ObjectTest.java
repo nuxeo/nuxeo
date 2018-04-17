@@ -38,7 +38,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -48,10 +47,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, CoreFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.types.contrib" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:test-oauth2provider-config.xml",
-        "org.nuxeo.ecm.platform.restapi.test:test-oauth2-directory-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.oauth")
+@Deploy("org.nuxeo.ecm.directory.api")
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.types.contrib")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:test-oauth2provider-config.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:test-oauth2-directory-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OAuth2ObjectTest extends BaseTest {
 

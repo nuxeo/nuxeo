@@ -66,7 +66,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -81,10 +80,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types" })
+@Deploy("org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
@@ -160,7 +161,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.restapi.test:test-listener-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-listener-contrib.xml")
     public void iCanUpdateADocumentWithAComment() throws Exception {
         JSONDocumentNode jsonDoc;
         DocumentModel note = RestServerInit.getNote(0, session);

@@ -46,21 +46,23 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.actions",
-        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
-@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestBlobHolderSet {
 
     protected DocumentModel root;

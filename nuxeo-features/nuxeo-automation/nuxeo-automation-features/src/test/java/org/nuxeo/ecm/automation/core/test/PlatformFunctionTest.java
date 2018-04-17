@@ -48,8 +48,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml",
-        "org.nuxeo.ecm.automation.features:test-platform-functions.xml" })
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.features:test-platform-functions.xml")
 public class PlatformFunctionTest {
 
     List<String> listOfString = Arrays.asList(new String[] { "value list 1", "value list 2" });

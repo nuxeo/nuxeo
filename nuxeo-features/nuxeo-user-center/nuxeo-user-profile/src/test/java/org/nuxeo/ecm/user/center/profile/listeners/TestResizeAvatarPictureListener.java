@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.user.center.profile.listeners;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -52,16 +51,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.userworkspace.api", //
-        "org.nuxeo.ecm.platform.userworkspace.core", //
-        "org.nuxeo.ecm.platform.picture.api", //
-        "org.nuxeo.ecm.platform.picture.core", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.rendition.core", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.user.center.profile", //
-        "org.nuxeo.ecm.platform.web.common" })
+@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.api")
+@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.user.center.profile")
+@Deploy("org.nuxeo.ecm.platform.web.common")
 public class TestResizeAvatarPictureListener {
 
     @Inject

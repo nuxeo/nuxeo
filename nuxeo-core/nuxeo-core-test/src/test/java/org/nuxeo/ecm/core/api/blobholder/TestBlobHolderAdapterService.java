@@ -25,20 +25,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+public class TestBlobHolderAdapterService {
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testService() throws Exception {
@@ -50,7 +58,7 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
     public void testContrib() throws Exception {
         assertEquals(0, BlobHolderAdapterComponent.getFactoryNames().size());
 
-        pushInlineDeployments(Constants.CORE_TEST_TESTS_BUNDLE + ":test-blob-holder-adapters-contrib.xml");
+        hotDeployer.deploy(Constants.CORE_TEST_TESTS_BUNDLE + ":test-blob-holder-adapters-contrib.xml");
 
         assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
 

@@ -19,6 +19,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +40,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 8.3
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/add-facet-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/add-facet-test-contrib.xml")
 public class FacetOperationsTest {
 
     @Inject
@@ -91,7 +90,7 @@ public class FacetOperationsTest {
         session.save();
 
     }
-    
+
     @After
     public void clearRepo() {
         session.removeChildren(session.getRootDocument().getRef());
@@ -111,7 +110,7 @@ public class FacetOperationsTest {
         DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
 
         assertNotNull(resultDoc);
-        assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));        
+        assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));
 
     }
 
@@ -173,7 +172,7 @@ public class FacetOperationsTest {
 
         assertNotNull(resultDoc);
         assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));
-        
+
         resultDoc.refresh();
         assertFalse("Doc should not have the facet after refresh", resultDoc.hasFacet(THE_FACET));
 
@@ -194,7 +193,7 @@ public class FacetOperationsTest {
 
         assertNotNull(resultDoc);
         assertFalse("The doc should not have the facet.", resultDoc.hasFacet(THE_FACET));
-        
+
         resultDoc.refresh();
         assertTrue("Doc should have the facet after refresh", resultDoc.hasFacet(THE_FACET));
     }

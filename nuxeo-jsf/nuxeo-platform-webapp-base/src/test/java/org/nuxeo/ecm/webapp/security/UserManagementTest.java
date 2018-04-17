@@ -30,16 +30,16 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author dmetzler
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core:test-schema-contrib.xml")
+@Deploy("org.nuxeo.ecm.core:test-schema-contrib.xml")
 public class UserManagementTest extends BaseUserGroupMock {
     UserManagementActions actions = new UserManagementActions();
 

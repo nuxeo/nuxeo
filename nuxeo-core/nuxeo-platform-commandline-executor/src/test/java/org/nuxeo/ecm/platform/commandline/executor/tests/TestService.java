@@ -26,44 +26,44 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test service and EPs.
  *
  * @author tiry
  */
-public class TestService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+public class TestService {
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-    }
+    @Inject
+    protected CommandLineExecutorService cles;
 
-    @Test
-    public void testServiceExist() {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-aspell-test-contribs.xml")
     public void testCmdRegistration() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-aspell-test-contribs.xml");
 
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
         assertTrue(cmds.contains("aspell"));
 
-        pushInlineDeployments(
+        hotDeployer.deploy(
                 "org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-imagemagic-test-contrib.xml");
 
         cmds = cles.getRegistredCommands();
@@ -71,7 +71,7 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals(2, cmds.size());
         assertTrue(cmds.contains("identify"));
 
-        pushInlineDeployments(
+        hotDeployer.deploy(
                 "org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-imagemagic-test-contrib2.xml");
 
         cmds = cles.getRegistredCommands();
@@ -82,9 +82,6 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCmdAvailable() {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
         /**
          * deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-aspell-test-contribs.xml");
          * List<String> cmds = cles.getAvailableCommands(); assertNotNull(cmds); assertEquals(1, cmds.size());
@@ -96,16 +93,13 @@ public class TestService extends NXRuntimeTestCase {
          * assertFalse(cmds.contains("cmdThatDoNotExist")); CommandAvailability ca =
          * cles.getCommandAvailability("cmdThatDoNotExist"); assertFalse(ca.isAvailable());
          * assertNotNull(ca.getErrorMessage()); System.out.println(ca.getErrorMessage());
-         * assertNotNull(ca.getInstallMessage()); assertTrue(ca.getInstallMessage().contains(
-         * "need to install this command that does not")); System.out.println(ca.getInstallMessage());
+         * assertNotNull(ca.getInstallMessage()); assertTrue(ca.getInstallMessage().contains( "need to install this
+         * command that does not")); System.out.println(ca.getInstallMessage());
          **/
     }
 
     @Test
     public void testCmdExecption() {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
         try {
             cles.execCommand("IDon'tExist", null);
             fail("No Exception has been raised");

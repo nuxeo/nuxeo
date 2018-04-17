@@ -24,20 +24,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 public class TestResourcePublisherService extends ManagementTestCase {
 
-    @Test
-    public void testRegisteredService() throws Exception {
-        assertNotNull(Framework.getService(ResourcePublisher.class));
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testRegisterResource() {
@@ -73,20 +72,18 @@ public class TestResourcePublisherService extends ManagementTestCase {
     @Test
     public void testXMLConfiguration() throws Exception {
         Set<String> shortcutsName = publisherService.getShortcutsName();
-        int size = shortcutsName.size();
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:management-tests-service.xml",
+        int initialSize = shortcutsName.size();
+
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:management-tests-service.xml",
                 "org.nuxeo.runtime.test.tests:management-tests-contrib.xml");
+        setUp();
 
         publisherService.bindResources();
-        String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
-        Set<ObjectName> registeredNames = doQuery(qualifiedName);
-        assertNotNull(registeredNames);
-        assertEquals(4, registeredNames.size());
+        assertEquals(4, doQuery(ObjectNameFactory.formatTypeQuery("service")).size());
 
         shortcutsName = publisherService.getShortcutsName();
-        assertNotNull(shortcutsName);
-        assertEquals(size + 4, shortcutsName.size());
+        assertEquals(initialSize + 4, shortcutsName.size());
         assertTrue(shortcutsName.contains("dummy"));
     }
 

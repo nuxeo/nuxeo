@@ -31,19 +31,28 @@ import java.io.Writer;
 
 import org.dom4j.io.XMLWriter;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Tests ExportedDocument using fake DocumentModel class.
  */
-public class TestExportedDocument extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestExportedDocument {
+
+    protected Mockery jmcontext = new JUnit4Mockery();
 
     @Test
     public void testExportedDocument() throws Exception {

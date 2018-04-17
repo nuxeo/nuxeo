@@ -42,7 +42,6 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests a Relation {@link DocumentModel}.
@@ -51,8 +50,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations", "org.nuxeo.ecm.platform.dublincore" })
-@LocalDeploy("org.nuxeo.ecm.relations:relation-core-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.relations:relation-core-test-contrib.xml")
 public class TestRelationDocument {
 
     @Inject

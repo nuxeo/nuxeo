@@ -32,31 +32,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestSpecificChainSetting extends NXRuntimeTestCase {
-
-    private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
-
-    private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
-        deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-specific-chain.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-specific-chain.xml")
+public class TestSpecificChainSetting {
 
     private PluggableAuthenticationService getAuthService() {
-        PluggableAuthenticationService authService;
-        authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                .getComponent(PluggableAuthenticationService.NAME);
-
-        return authService;
+        Object object = Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
+        return (PluggableAuthenticationService) object;
     }
 
     @Test
@@ -114,7 +107,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // test-headers
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("test-header", "only-anonymous");
         request = new DummyHttpServletRequest("/toto", headers);
         chainName = authService.getSpecificAuthChainName(request);
@@ -128,7 +121,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // test-headers2
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("test-header", "only-ba");
         request = new DummyHttpServletRequest("/toto", headers);
         chainName = authService.getSpecificAuthChainName(request);
@@ -142,7 +135,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // WSS url
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         request = new DummyHttpServletRequest("/_vti_bin/owssvr.dll", null);
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
@@ -155,7 +148,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // WSS header
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("User-Agent", "MSFrontPage/12.0");
         request = new DummyHttpServletRequest("/", headers);
         chainName = authService.getSpecificAuthChainName(request);
@@ -185,7 +178,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertTrue(getAuthService().doHandlePrompt(request));
 
         // With a configured specific auth chain to not handle prompt
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("test-header", "only-anonymous");
         request = new DummyHttpServletRequest("/bla", headers);
         assertFalse(getAuthService().doHandlePrompt(request));

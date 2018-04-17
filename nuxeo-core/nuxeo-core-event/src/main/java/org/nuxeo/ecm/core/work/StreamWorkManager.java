@@ -129,8 +129,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         String key = work.getPartitionKey();
-        appender.append(key, new Record(key, WorkComputation.serialize(work),
-                Watermark.ofTimestamp(System.currentTimeMillis()).getValue(), null));
+        appender.append(key, Record.of(key, WorkComputation.serialize(work)));
     }
 
     protected String getStreamForCategory(String category) {

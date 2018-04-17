@@ -11,8 +11,7 @@
       <property name="dummy">dummy</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
-        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />

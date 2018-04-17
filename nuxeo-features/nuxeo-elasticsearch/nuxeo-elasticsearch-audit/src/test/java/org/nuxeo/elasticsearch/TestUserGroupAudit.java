@@ -49,22 +49,25 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test User and Group auditing.
  *
  * @since 8.2
  */
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit", "org.nuxeo.admin.center" })
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.ecm.platform.audit.api")
+@Deploy("org.nuxeo.ecm.platform.audit")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
+@Deploy("org.nuxeo.elasticsearch.seqgen")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit")
+@Deploy("org.nuxeo.admin.center")
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class, PlatformFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
+@Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
 public class TestUserGroupAudit {
 
     @Inject

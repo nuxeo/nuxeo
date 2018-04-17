@@ -34,20 +34,13 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.schema", //
-        "org.nuxeo.ecm.core.api", //
-        "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.core.event", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml", //
-        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
-})
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestLabelledComputedGroupService {
 
     @Inject
@@ -57,7 +50,7 @@ public class TestLabelledComputedGroupService {
     protected UserManager um;
 
     @Test
-    public void testContrib() throws Exception {
+    public void testContrib() {
 
         NuxeoGroup group = cgs.getComputedGroup("Grp1", um.getGroupConfig());
         assertNotNull(group);

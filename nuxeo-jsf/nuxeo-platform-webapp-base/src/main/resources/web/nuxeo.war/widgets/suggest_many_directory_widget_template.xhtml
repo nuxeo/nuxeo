@@ -14,7 +14,7 @@
 
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <h:outputText value=", "
@@ -25,7 +25,7 @@
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <br />
@@ -33,8 +33,20 @@
     </nxp:html>
   </c:if>
 
-  <c:if
-    test="#{nxl:isLikeViewMode(widget.mode) or widget.mode == 'edit'}">
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+    <h:panelGroup layout="block" styleClass="select2-container select2-container-disabled"
+      id="#{widget.id}_select2">
+      <ui:repeat var="item"
+        value="#{select2Actions.resolveMultipleDirectoryEntryFullLabels(field, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+        rendered="#{not empty field}">
+        <a href="javascript:void(0)" onclick="return false;" class="select2-choice">
+          <h:outputText styleClass="select2-chosen" value="#{item}" />
+        </a>
+      </ui:repeat>
+    </h:panelGroup>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
     <nxu:set var="helpLabel"
       value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widgetProperty_localize, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
       cache="true">
@@ -42,7 +54,7 @@
       <ui:include src="/incl/select2_js.xhtml" />
 
       <a4j:region>
-        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
           required="#{widgetProperty_required}" var="currentValue">
           <f:converter converterId="select2Converter" />
           <nxu:validateDocumentConstraint />

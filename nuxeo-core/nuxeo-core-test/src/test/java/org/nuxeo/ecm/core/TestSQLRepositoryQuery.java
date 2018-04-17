@@ -63,7 +63,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -97,22 +96,21 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.core.convert.plugins", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+@Deploy("org.nuxeo.ecm.core.convert")
+@Deploy("org.nuxeo.ecm.core.convert.plugins")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
 public class TestSQLRepositoryQuery {
 
     @Inject
@@ -120,6 +118,9 @@ public class TestSQLRepositoryQuery {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected TrashService trashService;
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
@@ -1424,14 +1425,14 @@ public class TestSQLRepositoryQuery {
 
     @Test
     // NoFileSecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
     public void testSecurityManagerBasic() throws Exception {
         doTestSecurityManager();
     }
 
     @Test
     // NoFile2SecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
     public void testSecurityManagerWithTransformer() throws Exception {
         doTestSecurityManager();
     }
@@ -1748,13 +1749,13 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy <> 1");
         assertEquals(9, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 1");
         assertIdSet(dml, versionId, noteVersionId);
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 0");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
         assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0");
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isVersion = 0");
         assertEquals(7, dml.size()); // 7 folder/docs
 
         // filter out proxies explicitely, keeps live and version
@@ -1766,7 +1767,7 @@ public class TestSQLRepositoryQuery {
         assertIdSet(dml, proxyId);
 
         // only keep versions
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isVersion = 1");
         assertIdSet(dml, versionId);
 
         // "deep" isProxy
@@ -1866,7 +1867,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQuerySpecialFields() throws Exception {
-        // ecm:isProxy and ecm:isCheckedInVersion are already tested in
+        // ecm:isProxy and ecm:isVersion are already tested in
         // testQueryWithProxies
 
         // ecm:path already tested in testStartsWith
@@ -2126,14 +2127,24 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testIsTrashed() throws Exception {
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
+    public void testIsTrashedWithProperty() throws Exception {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
     }
 
     @Test
-    public void testLifeCycleStateDeleted() throws Exception {
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
+    public void testIsTrashedWithLifeCycle() throws Exception {
+        String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
+        String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
+        doTestTrashed(sqlNotTrashed, sqlTrashed);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
+    public void testLifeCycleStateDeletedForTrash() throws Exception {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
@@ -2149,8 +2160,8 @@ public class TestSQLRepositoryQuery {
         assertEquals(0, dml.size());
 
         // put a doc in the trash
-        assertTrue(session.followTransition(new PathRef("/testfolder1/testfile1"), "delete"));
-        session.save();
+        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
+        trashService.trashDocument(file1);
 
         dml = session.query(sqlNotTrashed);
         assertEquals(7, dml.size());
@@ -2243,7 +2254,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     // NoFile2SecurityPolicy
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
     public void testQueryIterableWithTransformer() throws Exception {
         createDocs();
         IterableQueryResult res;

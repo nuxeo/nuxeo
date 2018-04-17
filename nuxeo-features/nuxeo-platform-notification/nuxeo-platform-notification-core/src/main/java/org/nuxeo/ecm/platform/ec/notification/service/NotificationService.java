@@ -488,7 +488,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     @Override
     public List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName, String repositoryName) {
         String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + SubscriptionAdapter.NOTIFIABLE_FACET + "' "
-                + "AND ecm:isCheckedInVersion = 0 " + "AND notif:notifications/*/subscribers/* = "
+                + "AND ecm:isVersion = 0 " + "AND notif:notifications/*/subscribers/* = "
                 + NXQL.escapeString(prefixedPrincipalName);
 
         return CoreInstance.doPrivileged(repositoryName,

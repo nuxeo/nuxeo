@@ -42,13 +42,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.admin.center" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.admin.center")
 @RunWith(FeaturesRunner.class)
 @Features(MongoDBAuditFeature.class)
-@LocalDeploy({ "org.nuxeo.mongodb.audit.test:OSGI-INF/mongodb-audit-pageprovider-test-contrib.xml",
-        "org.nuxeo.mongodb.audit.test:OSGI-INF/mongodb-pageprovider-track-test-contrib.xml" })
+@Deploy("org.nuxeo.mongodb.audit.test:OSGI-INF/mongodb-audit-pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.mongodb.audit.test:OSGI-INF/mongodb-pageprovider-track-test-contrib.xml")
 public class TestPageProviderTrackingWithMongoDB {
 
     @Inject

@@ -24,15 +24,21 @@ package org.nuxeo.runtime;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.EventService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestService {
 
     @Test
     public void testServiceLookup() {
-        EventService eventComponent = (EventService) runtime.getComponent(EventService.NAME);
-        EventService eventService = runtime.getService(EventService.class);
+        EventService eventComponent = (EventService) Framework.getRuntime().getComponent(EventService.NAME);
+        EventService eventService = Framework.getRuntime().getService(EventService.class);
         assertSame(eventComponent, eventService);
     }
 

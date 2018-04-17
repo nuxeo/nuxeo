@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;

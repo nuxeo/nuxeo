@@ -38,7 +38,6 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -110,7 +109,7 @@ public class PostCommitEventListenerTest {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-ShallowFilteringPostCommitListeners.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-ShallowFilteringPostCommitListeners.xml")
     public void testShallowFiltering() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "empty", "Document");
         doc = session.createDocument(doc);

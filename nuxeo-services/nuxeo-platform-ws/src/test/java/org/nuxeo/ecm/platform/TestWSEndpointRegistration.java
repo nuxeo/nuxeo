@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.ws.WSEndpointManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -46,7 +45,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.ws")
-@LocalDeploy("org.nuxeo.ecm.platform.ws:ws-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.ws:ws-contrib.xml")
 public class TestWSEndpointRegistration {
 
     @Inject

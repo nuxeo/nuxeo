@@ -94,8 +94,7 @@ public class JsonWebengineWriter {
         jg.writeStringField("entity-type", "exception");
         jg.writeNumberField("status", statusCode);
         jg.writeStringField("message", t.getMessage());
-        if (jsonFactoryManager.isStackDisplay()
-                || MediaType.valueOf(MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
+        if (jsonFactoryManager.isStackDisplay()) {
             jg.writeStringField("stacktrace", getStackTraceString(t));
             jg.writeObjectField("exception", t);
         }

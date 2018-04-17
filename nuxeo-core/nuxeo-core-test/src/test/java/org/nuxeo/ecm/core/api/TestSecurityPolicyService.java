@@ -31,7 +31,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -49,23 +48,19 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
-        "org.nuxeo.ecm.core.test.tests:test-security-policy-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:test-security-policy-contrib.xml")
 public class TestSecurityPolicyService {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
         try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
@@ -105,13 +100,14 @@ public class TestSecurityPolicyService {
             assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
             setTestPermissions(fooUser.getName(), READ);
             assertTrue(session.hasPermission(fooUser, folderRef, READ));
-            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)), Arrays.asList(READ));
+            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)),
+                    Arrays.asList(READ));
         }
 
         // open session as anonymous and set access on user info
         try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
             data.put("accessLevel", Long.valueOf(3));
             documentModelImpl.addDataModel(new DataModelImpl("user", data));
             ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);

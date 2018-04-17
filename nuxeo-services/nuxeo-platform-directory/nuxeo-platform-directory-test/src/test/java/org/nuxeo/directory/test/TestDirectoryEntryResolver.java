@@ -57,14 +57,14 @@ import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.directory.tests:test-directory-resolver-contrib.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directory-resolver-contrib.xml")
 public class TestDirectoryEntryResolver {
 
     private static final String REFERENCED_DIRECTORY2 = "referencedDirectory2";

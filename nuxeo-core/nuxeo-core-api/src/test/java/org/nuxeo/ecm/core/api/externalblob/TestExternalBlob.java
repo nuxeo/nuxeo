@@ -30,7 +30,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,25 +40,26 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestExternalBlob extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-externalblob-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-externalblob-adapters-contrib.xml")
+public class TestExternalBlob {
 
     public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-adapters-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
+    @Before
+    public void postSetUp() throws Exception {
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
@@ -105,7 +108,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         Blob blob = service.getExternalBlobForUri(uri);
         assertNotNull(blob);
         assertEquals("Hello External Blob", blob.getString());
-        assertEquals(file.getName(), (blob).getFilename());
+        assertEquals(file.getName(), blob.getFilename());
     }
 
     @Test

@@ -41,13 +41,13 @@ import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ MultiDirectoryFeature.class })
-@LocalDeploy("org.nuxeo.ecm.directory.multi.tests:directories-security-config.xml")
+@Deploy("org.nuxeo.ecm.directory.multi.tests:directories-security-config.xml")
 public class TestMultiDirectorySecurity2 {
 
     DirectoryService directoryService;

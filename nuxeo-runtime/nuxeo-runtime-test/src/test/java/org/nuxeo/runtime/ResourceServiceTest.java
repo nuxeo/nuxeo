@@ -26,19 +26,21 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.resource.ResourceService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ResourceServiceTest extends NXRuntimeTestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "ResourcesContrib.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.test.tests:ResourcesContrib.xml")
+public class ResourceServiceTest {
 
     @Test
     public void testContributions() throws Exception {

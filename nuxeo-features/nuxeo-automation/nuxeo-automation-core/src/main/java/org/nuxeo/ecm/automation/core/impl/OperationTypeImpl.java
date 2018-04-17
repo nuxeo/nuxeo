@@ -130,9 +130,9 @@ public class OperationTypeImpl implements OperationType {
         this.contributingComponent = contributingComponent;
         id = anno.id().length() == 0 ? type.getName() : anno.id();
         aliases = anno.aliases();
-        params = new HashMap<String, Field>();
-        methods = new ArrayList<InvokableMethod>();
-        injectableFields = new ArrayList<Field>();
+        params = new HashMap<>();
+        methods = new ArrayList<>();
+        injectableFields = new ArrayList<>();
         initMethods();
         initFields();
     }
@@ -236,7 +236,7 @@ public class OperationTypeImpl implements OperationType {
         if (obj != null) {
             return ctx.resolve(obj);
         }
-        return ctx.get(key);
+        return ctx.getChainParameter(key);
     }
 
     public void inject(OperationContext ctx, Map<String, ?> args, Object target) throws OperationException {
@@ -245,8 +245,8 @@ public class OperationTypeImpl implements OperationType {
             if (obj == null) {
                 // We did not resolve object according to its param name, let's
                 // check with potential alias
-                String[] aliases = entry.getValue().getAnnotation(Param.class).alias();
-                if (aliases != null) {
+                String[] entryAliases = entry.getValue().getAnnotation(Param.class).alias();
+                if (entryAliases != null) {
                     for (String alias : entry.getValue().getAnnotation(Param.class).alias()) {
                         obj = resolveObject(ctx, alias, args);
                         if (obj != null) {
@@ -286,7 +286,7 @@ public class OperationTypeImpl implements OperationType {
 
     @Override
     public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
-        List<Match> result = new ArrayList<Match>();
+        List<Match> result = new ArrayList<>();
         for (InvokableMethod m : methods) {
             int priority = m.inputMatch(in);
             if (priority > 0) {
@@ -295,7 +295,7 @@ public class OperationTypeImpl implements OperationType {
         }
         int size = result.size();
         if (size == 0) {
-            return null;
+            return new InvokableMethod[] {};
         }
         if (size == 1) {
             return new InvokableMethod[] { result.get(0).method };
@@ -328,7 +328,7 @@ public class OperationTypeImpl implements OperationType {
         }
         doc.description = op.description();
         // load parameters information
-        List<OperationDocumentation.Param> paramsAccumulator = new LinkedList<OperationDocumentation.Param>();
+        List<OperationDocumentation.Param> paramsAccumulator = new LinkedList<>();
         for (Field field : params.values()) {
             Param p = field.getAnnotation(Param.class);
             OperationDocumentation.Param param = new OperationDocumentation.Param();
@@ -347,8 +347,8 @@ public class OperationTypeImpl implements OperationType {
         Collections.sort(paramsAccumulator);
         doc.params = paramsAccumulator.toArray(new OperationDocumentation.Param[paramsAccumulator.size()]);
         // load signature
-        ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
-        Collection<String> collectedSigs = new HashSet<String>();
+        ArrayList<String> result = new ArrayList<>(methods.size() * 2);
+        Collection<String> collectedSigs = new HashSet<>();
         for (InvokableMethod m : methods) {
             String in = getParamDocumentationType(m.getInputType(), m.isIterable());
             String out = getParamDocumentationType(m.getOutputType());

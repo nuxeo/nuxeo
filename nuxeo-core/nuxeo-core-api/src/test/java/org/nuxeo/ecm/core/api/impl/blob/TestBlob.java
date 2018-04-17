@@ -33,18 +33,22 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  */
-public class TestBlob extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestBlob {
 
     private URL url;
 
@@ -54,7 +58,6 @@ public class TestBlob extends NXRuntimeTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
         File file = new File(url.toURI());
         length = (int) file.length();
@@ -63,12 +66,6 @@ public class TestBlob extends NXRuntimeTestCase {
             int bytesRead = is.read(blobContent);
             assertTrue(bytesRead > 0);
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        blobContent = null;
-        super.tearDown();
     }
 
     private void checkFileBlob(Blob blob) throws Exception {

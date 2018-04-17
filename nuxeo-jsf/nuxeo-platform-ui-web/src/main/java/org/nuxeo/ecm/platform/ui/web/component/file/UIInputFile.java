@@ -298,19 +298,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
 
         // validate choice in respect to other submitted values
-        if (InputFileChoice.KEEP_TEMP.equals(choice)) {
-            // re-submit stored values
-            if (isLocalValueSet()) {
-                submitted.setBlob(previous.getConvertedBlob());
-                submitted.setFilename(previous.getConvertedFilename());
+        if (InputFileChoice.KEEP_TEMP.equals(choice) || InputFileChoice.KEEP.equals(choice)) {
+            if (isLocalValueSet() || InputFileChoice.KEEP.equals(choice)) {
+                // re-submit stored values
+                submitted.setInfo(previous);
             }
-            if (getEditFilename()) {
-                validateFilename(context, submitted);
-            }
-        } else if (InputFileChoice.KEEP.equals(choice)) {
-            // re-submit stored values
-            submitted.setBlob(previous.getConvertedBlob());
-            submitted.setFilename(previous.getConvertedFilename());
             if (getEditFilename()) {
                 validateFilename(context, submitted);
             }
@@ -319,16 +311,16 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 uploaderService.getJSFBlobUploader(choice).validateUpload(this, context, submitted);
                 if (isValid()) {
                     submitted.setChoice(InputFileChoice.KEEP_TEMP);
+                } else {
+                    // re-submit stored values
+                    submitted.setInfo(previous);
                 }
             } catch (ValidatorException e) {
-                // set file to null: blob is null but file is not required
-                submitted.setBlob(null);
-                submitted.setFilename(null);
-                submitted.setChoice(InputFileChoice.NONE);
+                // re-submit stored values
+                submitted.setInfo(previous);
             }
         } else if (InputFileChoice.DELETE.equals(choice) || InputFileChoice.NONE.equals(choice)) {
-            submitted.setBlob(null);
-            submitted.setFilename(null);
+            submitted.setInfo(null);
         }
 
         // will need this to call declared validators

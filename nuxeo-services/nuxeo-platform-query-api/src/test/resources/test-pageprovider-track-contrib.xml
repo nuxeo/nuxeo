@@ -19,8 +19,7 @@
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
-        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -36,8 +35,7 @@
       <trackUsage>true</trackUsage>
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
-        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -52,8 +50,7 @@
       <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN2">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
-        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -70,7 +67,7 @@
       <trackUsage>true</trackUsage>
       <pattern>
         SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />

@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * Describes an operation chain execution.
  *
@@ -41,9 +40,9 @@ public class OperationChain implements Serializable {
     protected final String id;
 
     // (via REST for example)
-    protected final List<OperationParameters> operations = new ArrayList<>();
+    protected final transient List<OperationParameters> operations = new ArrayList<>();
 
-    protected final Map<String, Object> chainParameters = new HashMap<>();
+    protected final transient Map<String, Object> chainParameters = new HashMap<>();
 
     protected String description;
 
@@ -119,9 +118,10 @@ public class OperationChain implements Serializable {
     /**
      * @since 5.7.2 Adding chain parameters
      */
-    public void addChainParameters(Map<String, ?> chainParameter) {
+    public void addChainParameters(Map<String, Object> chainParameter) {
         if (chainParameter == null) {
-            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id, new Throwable("stack trace"));
+            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id,
+                    new Throwable("stack trace"));
             return;
         }
         chainParameters.putAll(chainParameter);
@@ -130,7 +130,7 @@ public class OperationChain implements Serializable {
     /**
      * @since 5.7.2 Getting chain parameters
      */
-    public Map<String, ?> getChainParameters() {
+    public Map<String, Object> getChainParameters() {
         return chainParameters;
     }
 
@@ -140,7 +140,7 @@ public class OperationChain implements Serializable {
         int result = 1;
         result = prime * result + id.hashCode();
         result = prime * result + chainParameters.hashCode();
-        result = prime * result +  operations.hashCode();
+        result = prime * result + operations.hashCode();
         return result;
     }
 
@@ -162,14 +162,11 @@ public class OperationChain implements Serializable {
         if (!chainParameters.equals(other.chainParameters)) {
             return false;
         }
-        if (!operations.equals(other.operations)) {
-            return false;
-        }
-        return true;
+        return operations.equals(other.operations);
     }
 
     @Override
     public String toString() {
-        return "OperationChain [id="+id+"]";
+        return "OperationChain [id=" + id + "]";
     }
 }

@@ -21,6 +21,11 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
+import java.net.URI;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,11 +45,6 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
-
-import java.net.URI;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>

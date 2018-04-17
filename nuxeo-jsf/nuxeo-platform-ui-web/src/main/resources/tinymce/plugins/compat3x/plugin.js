@@ -1,8 +1,8 @@
 /**
  * plugin.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -19,276 +19,301 @@
  *  - No editor.onEvent
  *  - Can't cancel execCommands with beforeExecCommand
  */
-(function(tinymce) {
-	var reported;
+(function (tinymce) {
+  var reported;
 
-	function noop() {}
+  function noop() {
+  }
 
-	function log(apiCall) {
-		if (!reported && window && window.console) {
-			reported = true;
-			console.log("Deprecated TinyMCE API call: " + apiCall);
-		}
-	}
+  function log(apiCall) {
+    if (!reported && window && window.console) {
+      reported = true;
+      console.log("Deprecated TinyMCE API call: " + apiCall);
+    }
+  }
 
-	function Dispatcher(target, newEventName, argsMap, defaultScope) {
-		target = target || this;
+  function Dispatcher(target, newEventName, argsMap, defaultScope) {
+    target = target || this;
+    var cbs = [];
 
-		if (!newEventName) {
-			this.add = this.addToTop = this.remove = this.dispatch = noop;
-			return;
-		}
+    if (!newEventName) {
+      this.add = this.addToTop = this.remove = this.dispatch = noop;
+      return;
+    }
 
-		this.add = function(callback, scope, prepend) {
-			log('<target>.on' + newEventName + ".add(..)");
+    this.add = function (callback, scope, prepend) {
+      log('<target>.on' + newEventName + ".add(..)");
 
-			// Convert callback({arg1:x, arg2:x}) -> callback(arg1, arg2)
-			function patchedEventCallback(e) {
-				var callbackArgs = [];
+      // Convert callback({arg1:x, arg2:x}) -> callback(arg1, arg2)
+      function patchedEventCallback(e) {
+        var callbackArgs = [];
 
-				if (typeof argsMap == "string") {
-					argsMap = argsMap.split(" ");
-				}
+        if (typeof argsMap == "string") {
+          argsMap = argsMap.split(" ");
+        }
 
-				if (argsMap && typeof argsMap != "function") {
-					for (var i = 0; i < argsMap.length; i++) {
-						callbackArgs.push(e[argsMap[i]]);
-					}
-				}
+        if (argsMap && typeof argsMap !== "function") {
+          for (var i = 0; i < argsMap.length; i++) {
+            callbackArgs.push(e[argsMap[i]]);
+          }
+        }
 
-				if (typeof argsMap == "function") {
-					callbackArgs = argsMap(newEventName, e, target);
-					if (!callbackArgs) {
-						return;
-					}
-				}
+        if (typeof argsMap == "function") {
+          callbackArgs = argsMap(newEventName, e, target);
+          if (!callbackArgs) {
+            return;
+          }
+        }
 
-				if (!argsMap) {
-					callbackArgs = [e];
-				}
+        if (!argsMap) {
+          callbackArgs = [e];
+        }
 
-				callbackArgs.unshift(defaultScope || target);
+        callbackArgs.unshift(defaultScope || target);
 
-				if (callback.apply(scope || defaultScope || target, callbackArgs) === false) {
-					e.stopImmediatePropagation();
-				}
-			}
+        if (callback.apply(scope || defaultScope || target, callbackArgs) === false) {
+          e.stopImmediatePropagation();
+        }
+      }
 
-			target.on(newEventName, patchedEventCallback, prepend);
+      target.on(newEventName, patchedEventCallback, prepend);
 
-			return patchedEventCallback;
-		};
+      var handlers = {
+        original: callback,
+        patched: patchedEventCallback
+      };
 
-		this.addToTop = function(callback, scope) {
-			this.add(callback, scope, true);
-		};
+      cbs.push(handlers);
+      return patchedEventCallback;
+    };
 
-		this.remove = function(callback) {
-			return target.off(newEventName, callback);
-		};
+    this.addToTop = function (callback, scope) {
+      this.add(callback, scope, true);
+    };
 
-		this.dispatch = function() {
-			target.fire(newEventName);
+    this.remove = function (callback) {
+      cbs.forEach(function (item, i) {
+        if (item.original === callback) {
+          cbs.splice(i, 1);
+          return target.off(newEventName, item.patched);
+        }
+      });
 
-			return true;
-		};
-	}
+      return target.off(newEventName, callback);
+    };
 
-	tinymce.util.Dispatcher = Dispatcher;
-	tinymce.onBeforeUnload = new Dispatcher(tinymce, "BeforeUnload");
-	tinymce.onAddEditor = new Dispatcher(tinymce, "AddEditor", "editor");
-	tinymce.onRemoveEditor = new Dispatcher(tinymce, "RemoveEditor", "editor");
+    this.dispatch = function () {
+      target.fire(newEventName);
+      return true;
+    };
+  }
 
-	tinymce.util.Cookie = {
-		get: noop, getHash: noop, remove: noop, set: noop, setHash: noop
-	};
+  tinymce.util.Dispatcher = Dispatcher;
+  tinymce.onBeforeUnload = new Dispatcher(tinymce, "BeforeUnload");
+  tinymce.onAddEditor = new Dispatcher(tinymce, "AddEditor", "editor");
+  tinymce.onRemoveEditor = new Dispatcher(tinymce, "RemoveEditor", "editor");
 
-	function patchEditor(editor) {
-		function patchEditorEvents(oldEventNames, argsMap) {
-			tinymce.each(oldEventNames.split(" "), function(oldName) {
-				editor["on" + oldName] = new Dispatcher(editor, oldName, argsMap);
-			});
-		}
+  tinymce.util.Cookie = {
+    get: noop, getHash: noop, remove: noop, set: noop, setHash: noop
+  };
 
-		function convertUndoEventArgs(type, event, target) {
-			return [
-				event.level,
-				target
-			];
-		}
+  function patchEditor(editor) {
 
-		function filterSelectionEvents(needsSelection) {
-			return function(type, e) {
-				if ((!e.selection && !needsSelection) || e.selection == needsSelection) {
-					return [e];
-				}
-			};
-		}
+    function translate(str) {
+      var prefix = editor.settings.language || "en";
+      var prefixedStr = [prefix, str].join('.');
+      var translatedStr = tinymce.i18n.translate(prefixedStr);
 
-		if (editor.controlManager) {
-			return;
-		}
+      return prefixedStr !== translatedStr ? translatedStr : tinymce.i18n.translate(str);
+    }
 
-		function cmNoop() {
-			var obj = {}, methods = 'add addMenu addSeparator collapse createMenu destroy displayColor expand focus ' +
-				'getLength hasMenus hideMenu isActive isCollapsed isDisabled isRendered isSelected mark ' +
-				'postRender remove removeAll renderHTML renderMenu renderNode renderTo select selectByIndex ' +
-				'setActive setAriaProperty setColor setDisabled setSelected setState showMenu update';
+    function patchEditorEvents(oldEventNames, argsMap) {
+      tinymce.each(oldEventNames.split(" "), function (oldName) {
+        editor["on" + oldName] = new Dispatcher(editor, oldName, argsMap);
+      });
+    }
 
-			log('editor.controlManager.*');
+    function convertUndoEventArgs(type, event, target) {
+      return [
+        event.level,
+        target
+      ];
+    }
 
-			function _noop() {
-				return cmNoop();
-			}
+    function filterSelectionEvents(needsSelection) {
+      return function (type, e) {
+        if ((!e.selection && !needsSelection) || e.selection == needsSelection) {
+          return [e];
+        }
+      };
+    }
 
-			tinymce.each(methods.split(' '), function(method) {
-				obj[method] = _noop;
-			});
+    if (editor.controlManager) {
+      return;
+    }
 
-			return obj;
-		}
+    function cmNoop() {
+      var obj = {}, methods = 'add addMenu addSeparator collapse createMenu destroy displayColor expand focus ' +
+        'getLength hasMenus hideMenu isActive isCollapsed isDisabled isRendered isSelected mark ' +
+        'postRender remove removeAll renderHTML renderMenu renderNode renderTo select selectByIndex ' +
+        'setActive setAriaProperty setColor setDisabled setSelected setState showMenu update';
 
-		editor.controlManager = {
-			buttons: {},
+      log('editor.controlManager.*');
 
-			setDisabled: function(name, state) {
-				log("controlManager.setDisabled(..)");
+      function _noop() {
+        return cmNoop();
+      }
 
-				if (this.buttons[name]) {
-					this.buttons[name].disabled(state);
-				}
-			},
+      tinymce.each(methods.split(' '), function (method) {
+        obj[method] = _noop;
+      });
 
-			setActive: function(name, state) {
-				log("controlManager.setActive(..)");
+      return obj;
+    }
 
-				if (this.buttons[name]) {
-					this.buttons[name].active(state);
-				}
-			},
+    editor.controlManager = {
+      buttons: {},
 
-			onAdd: new Dispatcher(),
-			onPostRender: new Dispatcher(),
+      setDisabled: function (name, state) {
+        log("controlManager.setDisabled(..)");
 
-			add: function(obj) { return obj; },
-			createButton: cmNoop,
-			createColorSplitButton: cmNoop,
-			createControl: cmNoop,
-			createDropMenu: cmNoop,
-			createListBox: cmNoop,
-			createMenuButton: cmNoop,
-			createSeparator: cmNoop,
-			createSplitButton: cmNoop,
-			createToolbar: cmNoop,
-			createToolbarGroup: cmNoop,
-			destroy: noop,
-			get: noop,
-			setControlType: cmNoop
-		};
+        if (this.buttons[name]) {
+          this.buttons[name].disabled(state);
+        }
+      },
 
-		patchEditorEvents("PreInit BeforeRenderUI PostRender Load Init Remove Activate Deactivate", "editor");
-		patchEditorEvents("Click MouseUp MouseDown DblClick KeyDown KeyUp KeyPress ContextMenu Paste Submit Reset");
-		patchEditorEvents("BeforeExecCommand ExecCommand", "command ui value args"); // args.terminate not supported
-		patchEditorEvents("PreProcess PostProcess LoadContent SaveContent Change");
-		patchEditorEvents("BeforeSetContent BeforeGetContent SetContent GetContent", filterSelectionEvents(false));
-		patchEditorEvents("SetProgressState", "state time");
-		patchEditorEvents("VisualAid", "element hasVisual");
-		patchEditorEvents("Undo Redo", convertUndoEventArgs);
+      setActive: function (name, state) {
+        log("controlManager.setActive(..)");
 
-		patchEditorEvents("NodeChange", function(type, e) {
-			return [
-				editor.controlManager,
-				e.element,
-				editor.selection.isCollapsed(),
-				e
-			];
-		});
+        if (this.buttons[name]) {
+          this.buttons[name].active(state);
+        }
+      },
 
-		var originalAddButton = editor.addButton;
-		editor.addButton = function(name, settings) {
-			var originalOnPostRender;
+      onAdd: new Dispatcher(),
+      onPostRender: new Dispatcher(),
 
-			function patchedPostRender() {
-				editor.controlManager.buttons[name] = this;
+      add: function (obj) {
+        return obj;
+      },
+      createButton: cmNoop,
+      createColorSplitButton: cmNoop,
+      createControl: cmNoop,
+      createDropMenu: cmNoop,
+      createListBox: cmNoop,
+      createMenuButton: cmNoop,
+      createSeparator: cmNoop,
+      createSplitButton: cmNoop,
+      createToolbar: cmNoop,
+      createToolbarGroup: cmNoop,
+      destroy: noop,
+      get: noop,
+      setControlType: cmNoop
+    };
 
-				if (originalOnPostRender) {
-					return originalOnPostRender.call(this);
-				}
-			}
+    patchEditorEvents("PreInit BeforeRenderUI PostRender Load Init Remove Activate Deactivate", "editor");
+    patchEditorEvents("Click MouseUp MouseDown DblClick KeyDown KeyUp KeyPress ContextMenu Paste Submit Reset");
+    patchEditorEvents("BeforeExecCommand ExecCommand", "command ui value args"); // args.terminate not supported
+    patchEditorEvents("PreProcess PostProcess LoadContent SaveContent Change");
+    patchEditorEvents("BeforeSetContent BeforeGetContent SetContent GetContent", filterSelectionEvents(false));
+    patchEditorEvents("SetProgressState", "state time");
+    patchEditorEvents("VisualAid", "element hasVisual");
+    patchEditorEvents("Undo Redo", convertUndoEventArgs);
 
-			for (var key in settings) {
-				if (key.toLowerCase() === "onpostrender") {
-					originalOnPostRender = settings[key];
-					settings.onPostRender = patchedPostRender;
-				}
-			}
+    patchEditorEvents("NodeChange", function (type, e) {
+      return [
+        editor.controlManager,
+        e.element,
+        editor.selection.isCollapsed(),
+        e
+      ];
+    });
 
-			if (!originalOnPostRender) {
-				settings.onPostRender = patchedPostRender;
-			}
+    var originalAddButton = editor.addButton;
+    editor.addButton = function (name, settings) {
+      var originalOnPostRender;
 
-			if (settings.title) {
-				settings.title = tinymce.i18n.translate((editor.settings.language || "en") + "." + settings.title);
-			}
+      function patchedPostRender() {
+        editor.controlManager.buttons[name] = this;
 
-			return originalAddButton.call(this, name, settings);
-		};
+        if (originalOnPostRender) {
+          return originalOnPostRender.apply(this, arguments);
+        }
+      }
 
-		editor.on('init', function() {
-			var undoManager = editor.undoManager, selection = editor.selection;
+      for (var key in settings) {
+        if (key.toLowerCase() === "onpostrender") {
+          originalOnPostRender = settings[key];
+          settings.onPostRender = patchedPostRender;
+        }
+      }
 
-			undoManager.onUndo = new Dispatcher(editor, "Undo", convertUndoEventArgs, null, undoManager);
-			undoManager.onRedo = new Dispatcher(editor, "Redo", convertUndoEventArgs, null, undoManager);
-			undoManager.onBeforeAdd = new Dispatcher(editor, "BeforeAddUndo", null, undoManager);
-			undoManager.onAdd = new Dispatcher(editor, "AddUndo", null, undoManager);
+      if (!originalOnPostRender) {
+        settings.onPostRender = patchedPostRender;
+      }
 
-			selection.onBeforeGetContent = new Dispatcher(editor, "BeforeGetContent", filterSelectionEvents(true), selection);
-			selection.onGetContent = new Dispatcher(editor, "GetContent", filterSelectionEvents(true), selection);
-			selection.onBeforeSetContent = new Dispatcher(editor, "BeforeSetContent", filterSelectionEvents(true), selection);
-			selection.onSetContent = new Dispatcher(editor, "SetContent", filterSelectionEvents(true), selection);
-		});
+      if (settings.title) {
+        settings.title = translate(settings.title);
+      }
 
-		editor.on('BeforeRenderUI', function() {
-			var windowManager = editor.windowManager;
+      return originalAddButton.call(this, name, settings);
+    };
 
-			windowManager.onOpen = new Dispatcher();
-			windowManager.onClose = new Dispatcher();
-			windowManager.createInstance = function(className, a, b, c, d, e) {
-				log("windowManager.createInstance(..)");
+    editor.on('init', function () {
+      var undoManager = editor.undoManager, selection = editor.selection;
 
-				var constr = tinymce.resolve(className);
-				return new constr(a, b, c, d, e);
-			};
-		});
-	}
+      undoManager.onUndo = new Dispatcher(editor, "Undo", convertUndoEventArgs, null, undoManager);
+      undoManager.onRedo = new Dispatcher(editor, "Redo", convertUndoEventArgs, null, undoManager);
+      undoManager.onBeforeAdd = new Dispatcher(editor, "BeforeAddUndo", null, undoManager);
+      undoManager.onAdd = new Dispatcher(editor, "AddUndo", null, undoManager);
 
-	tinymce.on('SetupEditor', patchEditor);
-	tinymce.PluginManager.add("compat3x", patchEditor);
+      selection.onBeforeGetContent = new Dispatcher(editor, "BeforeGetContent", filterSelectionEvents(true), selection);
+      selection.onGetContent = new Dispatcher(editor, "GetContent", filterSelectionEvents(true), selection);
+      selection.onBeforeSetContent = new Dispatcher(editor, "BeforeSetContent", filterSelectionEvents(true), selection);
+      selection.onSetContent = new Dispatcher(editor, "SetContent", filterSelectionEvents(true), selection);
+    });
 
-	tinymce.addI18n = function(prefix, o) {
-		var I18n = tinymce.util.I18n, each = tinymce.each;
+    editor.on('BeforeRenderUI', function () {
+      var windowManager = editor.windowManager;
 
-		if (typeof(prefix) == "string" && prefix.indexOf('.') === -1) {
-			I18n.add(prefix, o);
-			return;
-		}
+      windowManager.onOpen = new Dispatcher();
+      windowManager.onClose = new Dispatcher();
+      windowManager.createInstance = function (className, a, b, c, d, e) {
+        log("windowManager.createInstance(..)");
 
-		if (!tinymce.is(prefix, 'string')) {
-			each(prefix, function(o, lc) {
-				each(o, function(o, g) {
-					each(o, function(o, k) {
-						if (g === 'common') {
-							I18n.data[lc + '.' + k] = o;
-						} else {
-							I18n.data[lc + '.' + g + '.' + k] = o;
-						}
-					});
-				});
-			});
-		} else {
-			each(o, function(o, k) {
-				I18n.data[prefix + '.' + k] = o;
-			});
-		}
-	};
+        var constr = tinymce.resolve(className);
+        return new constr(a, b, c, d, e);
+      };
+    });
+  }
+
+  tinymce.on('SetupEditor', patchEditor);
+  tinymce.PluginManager.add("compat3x", patchEditor);
+
+  tinymce.addI18n = function (prefix, o) {
+    var I18n = tinymce.util.I18n, each = tinymce.each;
+
+    if (typeof prefix == "string" && prefix.indexOf('.') === -1) {
+      I18n.add(prefix, o);
+      return;
+    }
+
+    if (!tinymce.is(prefix, 'string')) {
+      each(prefix, function (o, lc) {
+        each(o, function (o, g) {
+          each(o, function (o, k) {
+            if (g === 'common') {
+              I18n.data[lc + '.' + k] = o;
+            } else {
+              I18n.data[lc + '.' + g + '.' + k] = o;
+            }
+          });
+        });
+      });
+    } else {
+      each(o, function (o, k) {
+        I18n.data[prefix + '.' + k] = o;
+      });
+    }
+  };
 })(tinymce);

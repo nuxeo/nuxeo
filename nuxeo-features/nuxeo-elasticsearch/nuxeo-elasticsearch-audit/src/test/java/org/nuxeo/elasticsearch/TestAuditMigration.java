@@ -53,22 +53,26 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.runtime.metrics",
-        "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
-        "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
-        "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
-@SuppressWarnings("unchecked")
+@Features(RepositoryElasticSearchFeature.class)
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.runtime.metrics")
+@Deploy("org.nuxeo.ecm.platform.audit.api")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.audit")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.seqgen")
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit")
+@Deploy("org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:nxaudit-ds.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
 public class TestAuditMigration {
 
     public static final String DEFAULT_AUDIT_STORAGE = "defaultAuditStorage";
@@ -80,13 +84,10 @@ public class TestAuditMigration {
     protected ElasticSearchAdmin esa;
 
     @Inject
-    protected RuntimeHarness harness;
+    protected TransactionalFeature txFeature;
 
     @Inject
-    TransactionalFeature txFeature;
-
-    @Inject
-    AutomationService automationService;
+    protected AutomationService automationService;
 
     protected DefaultAuditBackend jpaBackend;
 
@@ -161,7 +162,7 @@ public class TestAuditMigration {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-override-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-override-contrib.xml")
     public void shouldMigrateWithPreviousMapping() throws Exception {
         shouldMigrate();
     }

@@ -24,7 +24,6 @@ package org.nuxeo.ecm.platform.login;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -225,6 +225,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
+    @Override
     public boolean login() throws LoginException {
         if (manager == null) {
             // throw new LoginException("UserManager implementation not found");
@@ -277,8 +278,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
-        } catch (LoginException e) {
-            log.error("createIdentity failed", e);
+        } catch (NuxeoException | LoginException e) {
             LoginException le = new LoginException("createIdentity failed for user " + username);
             le.initCause(e);
             throw le;

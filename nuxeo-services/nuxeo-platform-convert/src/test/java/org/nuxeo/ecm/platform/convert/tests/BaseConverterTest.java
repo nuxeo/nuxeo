@@ -19,8 +19,14 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.File;
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,18 +47,13 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-
 /**
  * @since 5.2
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.convert" })
+@Deploy("org.nuxeo.ecm.core.convert.api")
+@Deploy("org.nuxeo.ecm.platform.convert")
 public abstract class BaseConverterTest {
 
     @Inject

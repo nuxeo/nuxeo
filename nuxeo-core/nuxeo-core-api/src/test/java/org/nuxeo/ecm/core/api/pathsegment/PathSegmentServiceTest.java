@@ -27,12 +27,23 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class PathSegmentServiceTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+public class PathSegmentServiceTest {
 
     public static class DocumentModelProxy implements InvocationHandler {
 
@@ -57,11 +68,8 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         }
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testDefault() throws Exception {
@@ -72,9 +80,8 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml")
     public void testContrib() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml");
-
         PathSegmentService service = Framework.getService(PathSegmentService.class);
         assertNotNull(service);
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
@@ -82,14 +89,13 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml")
     public void testContribOverride() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib.xml");
-
         PathSegmentService service = Framework.getService(PathSegmentService.class);
         DocumentModel doc = DocumentModelProxy.newDocumentModel("My Document");
         assertEquals("my-document", service.generatePathSegment(doc));
 
-        pushInlineDeployments("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib2.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-pathsegment-contrib2.xml");
 
         service = Framework.getService(PathSegmentService.class);
         assertEquals("My Document", service.generatePathSegment(doc));

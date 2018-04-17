@@ -18,6 +18,9 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -31,6 +34,8 @@ public class LagCommand extends Command {
 
     protected static final String NAME = "lag";
 
+    protected boolean verbose = false;
+
     @Override
     public String name() {
         return NAME;
@@ -40,11 +45,13 @@ public class LagCommand extends Command {
     public void updateOptions(Options options) {
         options.addOption(
                 Option.builder("l").longOpt("log-name").desc("Log name").hasArg().argName("LOG_NAME").build());
+        options.addOption(Option.builder().longOpt("verbose").desc("Display lag for each partition").build());
     }
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         String name = cmd.getOptionValue("log-name");
+        verbose = cmd.hasOption("verbose");
         if (name != null) {
             lag(manager, name);
         } else {
@@ -61,14 +68,27 @@ public class LagCommand extends Command {
     }
 
     protected void lag(LogManager manager, String name) {
-        System.out.println("## Log: " + name);
-        manager.listConsumerGroups(name).forEach(group -> renderLag(group, manager.getLag(name, group)));
+        System.out.println("## Log: " + name + " partitions: " + manager.getAppender(name).size());
+        List<String> consumers = manager.listConsumerGroups(name);
+        if (verbose && consumers.isEmpty()) {
+            // add a fake group to get info on end positions
+            consumers.add("tools");
+        }
+        consumers.forEach(group -> renderLag(group, manager.getLagPerPartition(name, group)));
     }
 
-    protected void renderLag(String group, LogLag lag) {
+    protected void renderLag(String group, List<LogLag> lags) {
         System.out.println("### Group: " + group);
-        System.out.println("| lag | pos | end | posOffset | endOffset |\n" + "| --- | ---: | ---: | ---: | ---: |");
-        System.out.println(String.format("|%d|%d|%d|%d|%d|", lag.lag(), lag.lower(), lag.upper(), lag.lowerOffset(),
-                lag.upperOffset()));
+        System.out.println("| partition | lag | pos | end | posOffset | endOffset |\n"
+                + "| --- | ---: | ---: | ---: | ---: | ---: |");
+        LogLag all = LogLag.of(lags);
+        System.out.println(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
+                all.upperOffset()));
+        if (verbose && lags.size() > 1) {
+            AtomicInteger i = new AtomicInteger();
+            lags.forEach(lag -> System.out.println(String.format("|%s|%d|%d|%d|%d|%d|", i.getAndIncrement(), lag.lag(),
+                    lag.lower(), lag.upper(), lag.lowerOffset(), lag.upperOffset())));
+        }
     }
+
 }

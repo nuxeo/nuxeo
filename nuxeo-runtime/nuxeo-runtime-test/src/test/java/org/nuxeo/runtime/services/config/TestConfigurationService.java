@@ -24,22 +24,29 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @since 7.4
  */
-public class TestConfigurationService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class TestConfigurationService {
 
-    ConfigurationService cs;
+    @Inject
+    public ConfigurationService cs;
 
-    @Override
-    public void postSetUp() throws Exception {
-        cs = Framework.getService(ConfigurationService.class);
-        assertNotNull(cs);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testExtensionPoint() throws Exception {
@@ -48,8 +55,7 @@ public class TestConfigurationService extends NXRuntimeTestCase {
         assertNull(cs.getProperty("nuxeo.test.anotherDummyBooleanProperty"));
         assertNull(cs.getProperty("nuxeo.test.dummyStringProperty"));
         // Deploy contribution with properties
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
-        postSetUp();
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
         assertNotNull(cs.getProperty("nuxeo.test.dummyBooleanProperty"));
         assertNotNull(cs.getProperty("nuxeo.test.anotherDummyBooleanProperty"));
         assertNotNull(cs.getProperty("nuxeo.test.dummyStringProperty"));
@@ -57,26 +63,22 @@ public class TestConfigurationService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
     public void testProperties() throws Exception {
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
-        postSetUp();
         assertTrue(cs.isBooleanPropertyTrue("nuxeo.test.dummyBooleanProperty"));
         assertFalse(cs.isBooleanPropertyTrue("nuxeo.test.anotherDummyBooleanProperty"));
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
     public void testOverride() throws Exception {
-        // Deploy contribution with properties
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
-        postSetUp();
         // Assert property has overridden value
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
         // Assert property don't exist
         assertNull(cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
         // Deploy another contrib with a new property and override existing properties
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-override-contrib.xml");
-        postSetUp();
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-override-contrib.xml");
         // Assert new property was added
         assertEquals("overrideContrib", cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
         // Assert framework property does not takes precedence
@@ -89,8 +91,7 @@ public class TestConfigurationService extends NXRuntimeTestCase {
         assertTrue(cs.isBooleanPropertyFalse("nuxeo.test.dummyBooleanProperty"));
 
         // Undeploy contrib
-        popInlineDeployments();
-        postSetUp();
+        hotDeployer.undeploy("org.nuxeo.runtime.test.tests:configuration-override-contrib.xml");
         // Assert property was removed
         assertNull(cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
         // Assert overridden values were restored
@@ -103,8 +104,7 @@ public class TestConfigurationService extends NXRuntimeTestCase {
         Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
         assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
         // Deploy contribution with properties
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
-        postSetUp();
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
         assertEquals(1, Framework.getRuntime().getMessageHandler().getWarnings().size());
         assertEquals(
                 "Property 'nuxeo.test.dummyStringProperty' should now be contributed to "

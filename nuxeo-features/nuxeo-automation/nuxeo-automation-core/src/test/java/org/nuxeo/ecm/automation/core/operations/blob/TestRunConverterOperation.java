@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.1
@@ -43,8 +42,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core" })
-@LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/test-converter-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/test-converter-contrib.xml")
 public class TestRunConverterOperation {
 
     @Inject

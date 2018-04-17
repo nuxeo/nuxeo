@@ -32,10 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -52,7 +50,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -66,16 +63,16 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-updatedoc-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-updatedoc-contrib.xml")
 public class TestSQLRepositoryVersioning {
 
     @Inject
@@ -123,7 +120,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testRemoveSingleDocVersion() throws Exception {
+    public void testRemoveSingleDocVersion() {
         DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
@@ -211,7 +208,7 @@ public class TestSQLRepositoryVersioning {
         checkVersions(file, "0.1", "0.2");
     }
 
-    private void createTrioVersions(DocumentModel file) throws Exception {
+    private void createTrioVersions(DocumentModel file) {
         // create a first version
         file.setProperty("file", "content", new StringBlob("A"));
         file = session.saveDocument(file);
@@ -260,7 +257,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testCheckInCheckOut() throws Exception {
+    public void testCheckInCheckOut() {
         DocumentModel doc = session.createDocumentModel("/", "file#789", "File");
         assertTrue(doc.isCheckedOut());
         doc = session.createDocument(doc);
@@ -290,7 +287,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testAutoCheckOut() throws Exception {
+    public void testAutoCheckOut() {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "t0");
         doc = session.createDocument(doc);
@@ -322,7 +319,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testRestoreToVersion() throws Exception {
+    public void testRestoreToVersion() {
         String name2 = "file#456";
         DocumentModel doc = session.createDocumentModel("/", name2, "File");
         doc = session.createDocument(doc);
@@ -454,7 +451,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testGetDocumentWithVersion() throws Exception {
+    public void testGetDocumentWithVersion() {
         String name2 = "file#248";
         DocumentModel childFile = session.createDocumentModel("/", name2, "File");
         childFile = session.createDocument(childFile);
@@ -492,7 +489,7 @@ public class TestSQLRepositoryVersioning {
 
     // security on versions, see TestLocalAPIWithCustomVersioning
     @Test
-    public void testVersionSecurity() throws Exception {
+    public void testVersionSecurity() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         ACP acp = new ACPImpl();
@@ -540,7 +537,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testVersionRemoval() throws Exception {
+    public void testVersionRemoval() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel file = session.createDocumentModel("/folder", "file", "File");
@@ -568,7 +565,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testVersionLifecycle() throws Exception {
+    public void testVersionLifecycle() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
 
@@ -593,7 +590,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testTransitionProxy() throws Exception {
+    public void testTransitionProxy() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
 
@@ -607,9 +604,8 @@ public class TestSQLRepositoryVersioning {
         Collection<String> transitions = proxy.getAllowedStateTransitions();
         assertEquals(3, transitions.size());
 
-        if (proxy.getAllowedStateTransitions().contains("delete")) {
-            proxy.followTransition("delete");
-        }
+        assertTrue(proxy.getAllowedStateTransitions().contains("delete"));
+        assertTrue(proxy.followTransition("delete"));
         assertEquals("deleted", proxy.getCurrentLifeCycleState());
     }
 
@@ -1086,7 +1082,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testDirtyStateBehaviours() throws Exception {
+    public void testDirtyStateBehaviours() {
         // given a created doc with a given version
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);

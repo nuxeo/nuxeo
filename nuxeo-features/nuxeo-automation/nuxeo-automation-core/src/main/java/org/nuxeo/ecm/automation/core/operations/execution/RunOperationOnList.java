@@ -111,31 +111,29 @@ public class RunOperationOnList {
                     throw new UnsupportedOperationException(listObject.getClass() + " is not a Collection");
                 }
                 for (Object value : list) {
-                    subctx.push(itemName, value);
-                    // Running chain/operation
-                    try {
+                    subctx.callWithContextVar(() -> {
                         if (newTx) {
                             service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
                         } else {
                             service.run(subctx, chainId, chainParameters);
                         }
-                    } finally {
-                        subctx.pop(itemName);
-                    }
+                        return null;
+                    }, itemName, value);
                 }
             }
 
             // reconnect documents in the context
             if (!isolate) {
-                for (String varName : vars.keySet()) {
-                    if (!ctx.getVars().containsKey(varName)) {
-                        ctx.put(varName, vars.get(varName));
+                for (Map.Entry<String, Object> var : vars.entrySet()) {
+                    String key = var.getKey();
+                    Object value = var.getValue();
+                    if (!ctx.getVars().containsKey(key)) {
+                        ctx.put(key, value);
                     } else {
-                        Object value = vars.get(varName);
                         if (session != null && value != null && value instanceof DocumentModel) {
-                            ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
+                            ctx.getVars().put(key, session.getDocument(((DocumentModel) value).getRef()));
                         } else {
-                            ctx.getVars().put(varName, value);
+                            ctx.getVars().put(key, value);
                         }
                     }
                 }

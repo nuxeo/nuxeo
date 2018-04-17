@@ -38,7 +38,8 @@ import com.mongodb.MongoClient;
  * @since 9.1
  */
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.mongodb", "org.nuxeo.runtime.mongodb.test" })
+@Deploy("org.nuxeo.runtime.mongodb")
+@Deploy("org.nuxeo.runtime.mongodb.test")
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "Needs a MongoDB server!")
 public class MongoDBFeature extends SimpleFeature {
 

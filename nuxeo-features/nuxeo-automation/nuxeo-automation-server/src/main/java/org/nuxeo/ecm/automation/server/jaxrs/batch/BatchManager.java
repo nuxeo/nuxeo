@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,8 +48,18 @@ public interface BatchManager {
      * Adds an inputStream as a blob to a batch. Will create a new {@link Batch} if needed.
      * <p>
      * Streams are persisted as temporary files.
+     *
+     * @deprecated since 10.1, use {@link #addBlob(String, String, Blob, String, String)} instead
      */
+    @Deprecated
     void addStream(String batchId, String index, InputStream is, String name, String mime) throws IOException;
+
+    /**
+     * Adds a blob to a batch. Will create a new {@link Batch} if needed.
+     *
+     * @since 10.1
+     */
+    void addBlob(String batchId, String index, Blob blob, String name, String mime) throws IOException;
 
     /**
      * Adds an inputStream as a chunk to a batch. Will create a new {@link Batch} if needed.
@@ -56,9 +67,19 @@ public interface BatchManager {
      * Streams are persisted as temporary files.
      *
      * @since 7.4
+     * @deprecated since 10.1, use {@link #addBlob(String, String, Blob, int, int, String, String, long)} instead
      */
+    @Deprecated
     void addStream(String batchId, String index, InputStream is, int chunkCount, int chunkIndex, String name,
             String mime, long fileSize) throws IOException;
+
+    /**
+     * Adds a blob as a chunk to a batch. Will create a new {@link Batch} if needed.
+     *
+     * @since 10.1
+     */
+    void addBlob(String batchId, String index, Blob blob, int chunkCount, int chunkIndex, String name, String mime,
+            long fileSize) throws IOException;
 
     /**
      * Returns true if there is a batch for the given {@code batchId}, false otherwise.
@@ -118,6 +139,16 @@ public interface BatchManager {
     String initBatch(String batchId, String contextName);
 
     /**
+     * Initiates a new batch with the given handler.
+     *
+     * @param handlerName the batch handler name
+     * @return the newly created batch
+     * @throws IllegalArgumentException it the batch handler does not exist
+     * @since 10.1
+     */
+    Batch initBatch(String handlerName);
+
+    /**
      * Executes the chain or operation on the {@code Blobs} from the given {@code batchId}.
      * <p>
      * This method does not clean the temporary storage associated to the {@code batchId}.
@@ -153,5 +184,31 @@ public interface BatchManager {
      * @since 8.4
      */
     boolean removeFileEntry(String batchId, String filedIdx);
+
+    /**
+     * Fetches information about a batch.
+     *
+     * @param batchId the batch id
+     * @return the batch, or {@code null} if it doesn't exist
+     * @since 10.1
+     */
+    Batch getBatch(String batchId);
+
+    /**
+     * Returns the supported batch handler names.
+     *
+     * @return the supported batch handler names
+     * @since 10.1
+     */
+    Set<String> getSupportedHandlers();
+
+    /**
+     * Gets a batch handler.
+     *
+     * @param handlerName the batch handler name
+     * @return the batch handler, or {@code null} if it doesn't exist
+     * @since 10.1
+     */
+    BatchHandler getHandler(String handlerName);
 
 }

@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import static org.nuxeo.ecm.directory.sql.SQLDirectory.TENANT_ID_FIELD;
-
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,10 +43,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -81,8 +77,6 @@ public class SQLSession extends BaseSession {
 
     final Table table;
 
-    private final boolean computeMultiTenantId;
-
     protected SQLStaticFilter[] staticFilters;
 
     String sid;
@@ -99,7 +93,6 @@ public class SQLSession extends BaseSession {
         dialect = directory.getDialect();
         sid = String.valueOf(SIDGenerator.next());
         staticFilters = config.getStaticFilters();
-        computeMultiTenantId = config.isComputeMultiTenantId();
         acquireConnection();
     }
 
@@ -349,25 +342,6 @@ public class SQLSession extends BaseSession {
         super.deleteEntry(id);
     }
 
-    protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
-        if (isMultiTenant()) {
-            // can only delete entry from the current tenant
-            String tenantId = getCurrentTenantId();
-            if (!StringUtils.isBlank(tenantId)) {
-                DocumentModel entry = getEntry(entryId);
-                String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
-                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
-                                tenantId));
-                    }
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     @Override
     public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
         checkPermission(SecurityConstants.WRITE);
@@ -422,12 +396,6 @@ public class SQLSession extends BaseSession {
             throw new DirectoryException("deleteEntry failed", e);
         }
         getDirectory().invalidateCaches();
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) {
-        return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
     }
 
     @Override
@@ -1049,21 +1017,6 @@ public class SQLSession extends BaseSession {
         } catch (SQLException e) {
             throw new DirectoryException("hasEntry failed", e);
         }
-    }
-
-    /**
-     * Returns {@code true} if this directory supports multi tenancy, {@code false} otherwise.
-     */
-    protected boolean isMultiTenant() {
-        return directory.isMultiTenant();
-    }
-
-    /**
-     * Returns the tenant id of the logged user if any, {@code null} otherwise.
-     */
-    protected String getCurrentTenantId() {
-        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
-        return principal != null ? principal.getTenantId() : null;
     }
 
     @Override

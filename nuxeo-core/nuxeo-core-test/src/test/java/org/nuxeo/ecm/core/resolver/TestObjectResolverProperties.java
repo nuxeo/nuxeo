@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-resolver-service-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-resolver-service-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestObjectResolverProperties {

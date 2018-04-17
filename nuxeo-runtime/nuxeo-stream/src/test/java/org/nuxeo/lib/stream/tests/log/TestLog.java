@@ -19,9 +19,11 @@ package org.nuxeo.lib.stream.tests.log;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +40,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -51,9 +56,9 @@ import org.nuxeo.lib.stream.tests.KeyValueMessage;
 public abstract class TestLog {
     protected static final Log log = LogFactory.getLog(TestLog.class);
 
-    protected static final Duration DEF_TIMEOUT = Duration.ofSeconds(1);
+    public static final Duration DEF_TIMEOUT = Duration.ofSeconds(1);
 
-    protected static final Duration SMALL_TIMEOUT = Duration.ofMillis(10);
+    public static final Duration SMALL_TIMEOUT = Duration.ofMillis(10);
 
     @Rule
     public TestName name = new TestName();
@@ -724,6 +729,66 @@ public abstract class TestLog {
         executor.shutdown();
         assertTrue(executor.awaitTermination(60, TimeUnit.SECONDS));
         assertEquals(LogLag.of(NB_APPENDERS * NB_MSG), manager.getLag(logName, "counter"));
+    }
+
+    @Test
+    public void testLatencies() throws Exception {
+        final int LOG_SIZE = 5;
+        final String GROUP1 = "latGroup";
+        manager.createIfNotExists(logName, LOG_SIZE);
+        LogAppender<Record> appender = manager.getAppender(logName);
+        // try to check all possible positions in a partition
+        appender.append(0, createRecord("first"));
+        appender.append(0, createRecord("here"));
+        appender.append(0, createRecord("end"));
+
+        appender.append(1, createRecord("first"));
+        appender.append(1, createRecord("here"));
+
+        appender.append(2, createRecord("here"));
+        appender.append(2, createRecord("end"));
+
+        appender.append(3, createRecord("first"));
+        // partition 4 is empty
+
+        try (LogTailer<Record> tailer0 = manager.createTailer(GROUP1, new LogPartition(logName, 0));
+                LogTailer<Record> tailer1 = manager.createTailer(GROUP1, new LogPartition(logName, 1));
+                LogTailer<Record> tailer2 = manager.createTailer(GROUP1, new LogPartition(logName, 2))) {
+            // position in the middle
+            assertRecordKeyEquals("first", tailer0.read(DEF_TIMEOUT));
+            assertRecordKeyEquals("here", tailer0.read(DEF_TIMEOUT));
+            // position on last record
+            assertRecordKeyEquals("first", tailer1.read(DEF_TIMEOUT));
+            assertRecordKeyEquals("here", tailer1.read(DEF_TIMEOUT));
+            // position on first record
+            assertRecordKeyEquals("here", tailer2.read(DEF_TIMEOUT));
+            // position nothing processed in partition 3
+            // position nothing processed on empty partition 4
+            tailer0.commit();
+            tailer1.commit();
+            tailer2.commit();
+        }
+        List<Latency> latencies = manager.<Record> getLatencyPerPartition(logName, GROUP1,
+                (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
+        // check that the latency point to the last committed keys
+        assertEquals(latencies.get(0).toString(), "here", latencies.get(0).key());
+        assertEquals(latencies.get(1).toString(), "here", latencies.get(1).key());
+        assertEquals(latencies.get(2).toString(), "here", latencies.get(2).key());
+        assertNull(latencies.get(3).toString(), latencies.get(3).key());
+        assertNull(latencies.get(4).toString(), latencies.get(4).key());
+        Latency latency = Latency.of(latencies);
+        // there are 3 un read records
+        assertEquals(3, latency.lag().lag());
+        System.out.println(latency);
+    }
+
+    protected void assertRecordKeyEquals(String expectedKey, LogRecord<Record> record) {
+        assertNotNull(record);
+        assertEquals(expectedKey, record.message().key);
+    }
+
+    protected Record createRecord(String key) throws UnsupportedEncodingException {
+        return Record.of(key, ("value" + key).getBytes("UTF-8"));
     }
 
     protected String readKey(LogTailer<KeyValueMessage> tailer) throws InterruptedException {

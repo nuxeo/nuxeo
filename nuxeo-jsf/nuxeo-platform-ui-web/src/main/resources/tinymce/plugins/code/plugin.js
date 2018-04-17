@@ -1,57 +1,94 @@
-/**
- * plugin.js
- *
- * Copyright, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
+(function () {
+var code = (function () {
+  'use strict';
 
-/*global tinymce:true */
+  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-tinymce.PluginManager.add('code', function(editor) {
-	function showDialog() {
-		editor.windowManager.open({
-			title: "Source code",
-			body: {
-				type: 'textbox',
-				name: 'code',
-				multiline: true,
-				minWidth: editor.getParam("code_dialog_width", 600),
-				minHeight: editor.getParam("code_dialog_height", Math.min(tinymce.DOM.getViewPort().h - 200, 500)),
-				value: editor.getContent({source_view: true}),
-				spellcheck: false,
-				style: 'direction: ltr; text-align: left'
-			},
-			onSubmit: function(e) {
-				// We get a lovely "Wrong document" error in IE 11 if we
-				// don't move the focus to the editor before creating an undo
-				// transation since it tries to make a bookmark for the current selection
-				editor.focus();
+  var DOMUtils = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-				editor.undoManager.transact(function() {
-					editor.setContent(e.data.code);
-				});
+  var getMinWidth = function (editor) {
+    return editor.getParam('code_dialog_width', 600);
+  };
+  var getMinHeight = function (editor) {
+    return editor.getParam('code_dialog_height', Math.min(DOMUtils.DOM.getViewPort().h - 200, 500));
+  };
+  var $_d51mfj9aje4cbw2z = {
+    getMinWidth: getMinWidth,
+    getMinHeight: getMinHeight
+  };
 
-				editor.selection.setCursorLocation();
-				editor.nodeChanged();
-			}
-		});
-	}
+  var setContent = function (editor, html) {
+    editor.focus();
+    editor.undoManager.transact(function () {
+      editor.setContent(html);
+    });
+    editor.selection.setCursorLocation();
+    editor.nodeChanged();
+  };
+  var getContent = function (editor) {
+    return editor.getContent({ source_view: true });
+  };
+  var $_c0tu4r9cje4cbw30 = {
+    setContent: setContent,
+    getContent: getContent
+  };
 
-	editor.addCommand("mceCodeEditor", showDialog);
+  var open = function (editor) {
+    var minWidth = $_d51mfj9aje4cbw2z.getMinWidth(editor);
+    var minHeight = $_d51mfj9aje4cbw2z.getMinHeight(editor);
+    var win = editor.windowManager.open({
+      title: 'Source code',
+      body: {
+        type: 'textbox',
+        name: 'code',
+        multiline: true,
+        minWidth: minWidth,
+        minHeight: minHeight,
+        spellcheck: false,
+        style: 'direction: ltr; text-align: left'
+      },
+      onSubmit: function (e) {
+        $_c0tu4r9cje4cbw30.setContent(editor, e.data.code);
+      }
+    });
+    win.find('#code').value($_c0tu4r9cje4cbw30.getContent(editor));
+  };
+  var $_bkf1e399je4cbw2y = { open: open };
 
-	editor.addButton('code', {
-		icon: 'code',
-		tooltip: 'Source code',
-		onclick: showDialog
-	});
+  var register = function (editor) {
+    editor.addCommand('mceCodeEditor', function () {
+      $_bkf1e399je4cbw2y.open(editor);
+    });
+  };
+  var $_74j37p98je4cbw2x = { register: register };
 
-	editor.addMenuItem('code', {
-		icon: 'code',
-		text: 'Source code',
-		context: 'tools',
-		onclick: showDialog
-	});
-});
+  var register$1 = function (editor) {
+    editor.addButton('code', {
+      icon: 'code',
+      tooltip: 'Source code',
+      onclick: function () {
+        $_bkf1e399je4cbw2y.open(editor);
+      }
+    });
+    editor.addMenuItem('code', {
+      icon: 'code',
+      text: 'Source code',
+      onclick: function () {
+        $_bkf1e399je4cbw2y.open(editor);
+      }
+    });
+  };
+  var $_54zsp59dje4cbw31 = { register: register$1 };
+
+  PluginManager.add('code', function (editor) {
+    $_74j37p98je4cbw2x.register(editor);
+    $_54zsp59dje4cbw31.register(editor);
+    return {};
+  });
+  function Plugin () {
+  }
+
+  return Plugin;
+
+}());
+})();

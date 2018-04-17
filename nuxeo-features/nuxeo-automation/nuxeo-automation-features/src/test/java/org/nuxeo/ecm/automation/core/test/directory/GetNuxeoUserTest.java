@@ -15,12 +15,14 @@
  */
 package org.nuxeo.ecm.automation.core.test.directory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,22 +32,31 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal;
+import org.nuxeo.ecm.automation.core.operations.users.SuggestUserEntries;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.actions",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
 public class GetNuxeoUserTest {
 
     @Inject
@@ -66,10 +77,10 @@ public class GetNuxeoUserTest {
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
-        Assert.assertEquals("Jacky", doc.getPropertyValue("user:firstName"));
-        Assert.assertEquals("Chan", doc.getPropertyValue("user:lastName"));
-        Assert.assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
-        Assert.assertEquals("devnull@nuxeo.com", doc.getPropertyValue("user:email"));
+        assertEquals("Jacky", doc.getPropertyValue("user:firstName"));
+        assertEquals("Chan", doc.getPropertyValue("user:lastName"));
+        assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
+        assertEquals("devnull@nuxeo.com", doc.getPropertyValue("user:email"));
 
     }
 
@@ -89,10 +100,37 @@ public class GetNuxeoUserTest {
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
-        Assert.assertEquals("John", doc.getPropertyValue("user:firstName"));
-        Assert.assertEquals("Doe", doc.getPropertyValue("user:lastName"));
-        Assert.assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
-        Assert.assertEquals("jdoe@nuxeo.com", doc.getPropertyValue("user:email"));
+        assertEquals("John", doc.getPropertyValue("user:firstName"));
+        assertEquals("Doe", doc.getPropertyValue("user:lastName"));
+        assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
+        assertEquals("jdoe@nuxeo.com", doc.getPropertyValue("user:email"));
 
     }
+
+    /**
+     * @since 10.2
+     */
+    @Test
+    public void shouldSuggestProperEntries() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("searchTerm", "jdoe");
+        OperationParameters oparams = new OperationParameters(SuggestUserEntries.ID, params);
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("fakeChain");
+        chain.add(oparams);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+        assertEquals(1, entries.size());
+
+        Map<String, Object> entry = entries.get(0);
+        assertEquals("jdoe", entry.get("id"));
+        assertEquals(NuxeoPrincipalJsonWriter.ENTITY_TYPE, entry.get(MarshallingConstants.ENTITY_FIELD_NAME));
+    }
+
 }

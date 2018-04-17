@@ -33,6 +33,9 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_UID_MINOR_VERSION;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_META;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_TEXT_SCORE;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +90,7 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.QueryOperators;
@@ -412,18 +416,34 @@ public class MongoDBQueryBuilder {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
         }
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+        } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
+            Document lifeCycleTrashed = walkIsTrashed(new Reference(NXQL.ECM_LIFECYCLESTATE), op, rvalue,
+                    new StringLiteral(LifeCycleConstants.DELETED_STATE));
+            Document propertyTrashed = walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue,
+                    new BooleanLiteral(true));
+            return new Document(QueryOperators.OR, new ArrayList<>(Arrays.asList(lifeCycleTrashed, propertyTrashed)));
+        } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            return walkIsTrashed(new Reference(NXQL.ECM_ISTRASHED), op, rvalue, new BooleanLiteral(true));
+        } else {
+            throw new UnsupportedOperationException("TrashService is in an unknown state");
+        }
+    }
+
+    protected Document walkIsTrashed(Reference ref, Operator op, Operand initialRvalue, Literal deletedRvalue) {
         long v;
-        if (!(rvalue instanceof IntegerLiteral)
-                || ((v = ((IntegerLiteral) rvalue).value) != 0 && v != 1)) {
+        if (!(initialRvalue instanceof IntegerLiteral)
+                || ((v = ((IntegerLiteral) initialRvalue).value) != 0 && v != 1)) {
             throw new QueryParseException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
         }
-        Reference ref = new Reference(NXQL.ECM_LIFECYCLESTATE);
-        StringLiteral val = new StringLiteral(LifeCycleConstants.DELETED_STATE);
         boolean equalsDeleted = op == Operator.EQ ^ v == 0;
         if (equalsDeleted) {
-            return walkEq(ref, val);
+            return walkEq(ref, deletedRvalue);
         } else {
-            return walkNotEq(ref, val);
+            return walkNotEq(ref, deletedRvalue);
         }
     }
 

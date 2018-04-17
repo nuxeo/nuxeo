@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  *     Thierry Martins
+ *     Florent Munch
  */
 package org.nuxeo.ecm.core.scheduler;
 
@@ -38,16 +39,12 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.jdbcjobstore.LockException;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -204,22 +201,9 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     protected void schedule(Schedule schedule, Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
 
-        JobDataMap map = new JobDataMap();
-        if (parameters != null) {
-            map.putAll(parameters);
-        }
-        JobDetail job = JobBuilder.newJob(EventJob.class)
-                .withIdentity(schedule.getId(), "nuxeo")
-                .usingJobData(map)
-                .usingJobData("eventId", schedule.getEventId())
-                .usingJobData("eventCategory", schedule.getEventCategory())
-                .usingJobData("username", schedule.getUsername())
-                .build();
-
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(schedule.getId(), "nuxeo")
-                .withSchedule(CronScheduleBuilder.cronSchedule(schedule.getCronExpression()))
-                .build();
+        EventJobFactory jobFactory = schedule.getJobFactory();
+        JobDetail job = jobFactory.buildJob(schedule, parameters).build();
+        Trigger trigger = jobFactory.buildTrigger(schedule).build();
 
         // This is useful when testing to avoid multiple threads:
         // trigger = new SimpleTrigger(schedule.getId(), "nuxeo");

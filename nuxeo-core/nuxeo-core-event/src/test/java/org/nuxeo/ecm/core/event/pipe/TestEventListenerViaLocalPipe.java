@@ -18,45 +18,28 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.junit.Before;
-import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
-import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
-import org.nuxeo.ecm.core.event.test.EventListenerTest;
+import org.junit.Assert;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
+import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipe;
 import org.nuxeo.ecm.core.event.test.TestEventServiceComponent;
-import org.nuxeo.runtime.api.Framework;
-
-import java.net.URL;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Run the existing EventListeners tests using the LocalPipe implementation.
  *
  * @since 8.4
  */
+@Deploy("org.nuxeo.ecm.core.event.test:test-LocalPipes.xml")
 public class TestEventListenerViaLocalPipe extends TestEventServiceComponent {
 
     @Override
-    @Before
-    public void setUp() throws Exception {
-        System.setProperty("org.nuxeo.runtime.testing", "true");
-//        super.setUp();
-        wipeRuntime();
-        initUrls();
-        if (urls == null) {
-            throw new UnsupportedOperationException("no bundles available");
-        }
-        initOsgiRuntime();
-
-        Framework.getProperties().setProperty(PostCommitEventExecutor.TIMEOUT_MS_PROP, "300"); // 0.3s
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.ecm.core.event");
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-LocalPipes.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event.test", url);
-
-        fireFrameworkStarted();
-        // 2 quartz threads launched by the event contribs above
-        Thread.sleep(100);
-        initialThreadCount = Thread.activeCount();
-        DummyPostCommitEventListener.handledCountReset();
-        DummyPostCommitEventListener.eventCountReset();
+    protected EventServiceImpl getService() {
+        EventServiceImpl service = super.getService();
+        Assert.assertEquals(service.getEventBundleDispatcher().getClass(),
+                TestableSimpleEventBundlePipeDispatcher.class);
+        TestableSimpleEventBundlePipeDispatcher dispatcher = (TestableSimpleEventBundlePipeDispatcher) service.getEventBundleDispatcher();
+        Assert.assertEquals(dispatcher.getPipes().get(0).getClass(), LocalEventBundlePipe.class);
+        return service;
     }
+
 }

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>10.1-SNAPSHOT</version>
+  <version>10.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -111,18 +111,18 @@
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
     <!-- <license.missingFile>src/main/license/THIRD-PARTY.properties</license.missingFile> -->
 
-    <nuxeo.common.version>10.1-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>10.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>10.1-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>10.1-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>10.1-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.jsf.version>10.1-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>10.1-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.webengine.version>10.1-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.features.version>10.1-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.addons.core.version>10.1-SNAPSHOT</nuxeo.addons.core.version>
+    <nuxeo.common.version>10.2-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>10.2-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>10.2-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.services.version>10.2-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.theme.version>10.2-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.jsf.version>10.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>10.2-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.webengine.version>10.2-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.features.version>10.2-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.addons.core.version>10.2-SNAPSHOT</nuxeo.addons.core.version>
 
-    <nuxeo.connect.client.version>1.7.0-SNAPSHOT</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.7.0</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
@@ -134,8 +134,10 @@
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
     <richfaces.version>4.5.12.Final</richfaces.version>
     <seam.version>2.3.1.Final</seam.version>
-    <nxseam.version>2.3.1.Final.NX02</nxseam.version>
+    <nxseam.version>2.3.1.Final.NX03</nxseam.version>
+    <nxseam.remoting.version>2.3.1.Final.NX02</nxseam.remoting.version>
 
+    <servlet-api.version>3.1.0</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
     <jaxb.version>2.2.11</jaxb.version>
     <jaxws-api.version>2.2.9</jaxws-api.version>
@@ -194,7 +196,7 @@
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
-    <nuxeo.platform.version>10.1-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>10.2-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.21</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
@@ -222,7 +224,7 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>nuxeo</sonar.organization>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.dump</it.jacoco.destFile>
+    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.exec</it.jacoco.destFile>
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
@@ -1124,16 +1126,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-gwt</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-gwt-codeserver</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-jaxrs</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
@@ -1286,6 +1278,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.annotation</groupId>
         <artifactId>nuxeo-annotation-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.annotation</groupId>
+        <artifactId>nuxeo-annotation-rest-api</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -1943,15 +1940,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.0.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <!-- Deprecated GAV (redirected for backward compat since 5.7.2) -->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>3.0.1</version>
-        <scope>provided</scope>
+        <version>${servlet-api.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -2500,7 +2489,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>${nxseam.version}</version>
+        <version>${nxseam.remoting.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.testng</groupId>
@@ -2664,6 +2653,7 @@
         <artifactId>jetty</artifactId>
         <version>${jetty.mortbay.version}</version>
         <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>servlet-api</artifactId>
@@ -2701,6 +2691,13 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-api-2.1</artifactId>
         <version>6.1.6</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -3049,6 +3046,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
@@ -4035,6 +4037,23 @@
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-coyote</artifactId>
+        <version>${tomcat.version}</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-util</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-dbcp</artifactId>
         <version>${tomcat.version}</version>
       </dependency>
@@ -4094,6 +4113,13 @@
         <artifactId>scim-sdk</artifactId>
         <groupId>com.unboundid.product.scim</groupId>
         <version>1.7.1</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <artifactId>org.mortbay.jetty</artifactId>
+            <groupId>servlet-api</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- SCIM - Tests -->
       <dependency>
@@ -4157,12 +4183,6 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>1.9.5</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.grizzly</groupId>
-        <artifactId>grizzly-servlet-webserver</artifactId>
-        <version>1.9.18-f</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4507,6 +4527,11 @@
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-cloudfront</artifactId>
+        <version>${aws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-sts</artifactId>
         <version>${aws.version}</version>
       </dependency>
       <dependency>
@@ -4917,13 +4942,7 @@
       </dependency>
 
       <!-- Kafka -->
-      <dependency>
-        <groupId>com.101tec</groupId>
-        <artifactId>zkclient</artifactId>
-        <version>0.10</version>
-      </dependency>
-
-      <dependency>
+     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
         <version>${kafka.version}</version>
@@ -5400,7 +5419,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.0</version>
+          <version>0.8.1</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -5411,6 +5430,18 @@
               <id>prepare-agent</id>
               <goals>
                 <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>prepare-agent-integration</id>
+              <goals>
+                <goal>prepare-agent-integration</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <goals>
+                <goal>report</goal>
               </goals>
             </execution>
           </executions>
@@ -5600,6 +5631,18 @@
                   <exclude>org.bouncycastle:bcmail-jdk15</exclude> <!-- use more recent org.bouncycastle:bcmail-jdk15on instead -->
                 </excludes>
                 <message>org.bouncycastle:bcmail-jdk15 must not be used, use org.bouncycastle:bcmail-jdk15on instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.apache.tomcat:tomcat-servlet-api</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>org.apache.tomcat:tomcat-servlet-api must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.mortbay.jetty:servlet-api-2.5</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>org.mortbay.jetty:servlet-api-2.5 must not be used, use javax.servlet:javax.servlet-api instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
@@ -6178,7 +6221,6 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <exclude>org.nuxeo:nuxeo-ftest:1.8.4-SNAPSHOT:zip</exclude>
-                      <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
                   </requireReleaseDeps>
@@ -6744,7 +6786,6 @@
              <configuration>
                <systemPropertyVariables>
                  <kafka>true</kafka>
-                 <kafka.zkServers>${kafka.zkServers}</kafka.zkServers>
                  <kafka.bootstrap.servers>${kafka.bootstrap.servers}</kafka.bootstrap.servers>
                </systemPropertyVariables>
              </configuration>

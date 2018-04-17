@@ -48,10 +48,15 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.server",
-        "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.server")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.tag")
 public class CreatePictureTest {
 
     @Inject
@@ -71,7 +76,7 @@ public class CreatePictureTest {
         String mimeType = "image/jpeg";
 
         String batchId = batchManager.initBatch();
-        batchManager.addStream(batchId, "1", source.getStream(), fileName, mimeType);
+        batchManager.addBlob(batchId, "1", source, fileName, mimeType);
 
         StringBuilder fakeJSON = new StringBuilder("{ ");
         fakeJSON.append(" \"type\" : \"blob\"");

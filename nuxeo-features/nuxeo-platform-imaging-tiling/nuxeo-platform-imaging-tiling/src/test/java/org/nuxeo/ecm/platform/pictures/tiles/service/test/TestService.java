@@ -25,8 +25,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -43,25 +46,26 @@ import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingCacheGCManager
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml")
+public class TestService {
 
-    @Override
-    public void setUp() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-framework.xml");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
+    @Before
+    public void postSetUp() throws Exception {
         PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
     }
 
-    @Override
+    @After
     public void tearDown() {
         PictureTilingComponent.endGC();
     }
@@ -87,8 +91,9 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-adapter-contrib.xml")
     public void testAdapter() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-adapter-contrib.xml");
+        // do nothing
     }
 
     @Test
@@ -339,12 +344,10 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml")
     public void testParametersContrib() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml");
-
         String cacheSize = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 "ERROR");
-
         assertEquals("50000", cacheSize);
     }
 

@@ -49,12 +49,10 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml" })
 @Features(CoreFeature.class)
 public class TestWriterRegistry {
 

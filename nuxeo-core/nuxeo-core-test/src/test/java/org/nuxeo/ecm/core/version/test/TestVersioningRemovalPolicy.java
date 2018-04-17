@@ -34,12 +34,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
 
     protected DocumentModelList getVersion() {
-        return session.query("select * from Document where ecm:isCheckedInVersion=1");
+        return session.query("select * from Document where ecm:isVersion = 1");
     }
 
     @Test
@@ -228,7 +228,7 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-nullcontrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-nullcontrib.xml")
     public void shouldNotRemoveOrphanVersions() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
@@ -262,7 +262,7 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-filtercontrib.xml")
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-versioning-removal-filtercontrib.xml")
     public void shouldRemoveOrphanFileVersionsOnly() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);

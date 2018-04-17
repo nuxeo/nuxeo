@@ -24,33 +24,31 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.facelets.library.LayoutTagLibrary;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestLayoutFunctions extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client:OSGI-INF/layouts-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-listing-test-contrib.xml")
+public class TestLayoutFunctions {
 
-    private WebLayoutManager service;
-
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-listing-test-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(WebLayoutManager.class);
-        assertNotNull(service);
-    }
+    @Inject
+    public WebLayoutManager service;
 
     @Test
     public void testRowSelectionFunctions() {

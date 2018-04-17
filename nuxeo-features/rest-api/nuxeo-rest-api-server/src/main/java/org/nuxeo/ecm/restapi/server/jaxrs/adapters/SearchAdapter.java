@@ -61,7 +61,7 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
                 path = doc.getPath().removeLastSegments(1).toString();
             }
             query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText
-                    + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
+                    + "\") AND (ecm:isVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
         }
         return query;
     }

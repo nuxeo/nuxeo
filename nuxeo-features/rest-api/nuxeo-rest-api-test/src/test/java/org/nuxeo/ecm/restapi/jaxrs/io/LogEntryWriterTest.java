@@ -59,7 +59,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.audit")
 public class LogEntryWriterTest {
 
     @Inject

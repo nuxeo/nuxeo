@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import java.util.Collections;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,15 +38,13 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-import java.util.Collections;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.user.invite" })
-@LocalDeploy({ "org.nuxeo.ecm.user.invite:test-invite-contrib.xml" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.user.invite")
+@Deploy("org.nuxeo.ecm.user.invite:test-invite-contrib.xml")
 public class UserInviteTest {
 
     @Inject

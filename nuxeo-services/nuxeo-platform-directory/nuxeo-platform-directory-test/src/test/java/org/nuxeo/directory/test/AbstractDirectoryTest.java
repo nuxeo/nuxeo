@@ -56,14 +56,14 @@ import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 9.2
  */
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml" })
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
 public abstract class AbstractDirectoryTest {
 
     protected static final String USER_DIR = "userDirectory";
@@ -654,7 +654,7 @@ public abstract class AbstractDirectoryTest {
 
     @Ignore
     @Test
-    @LocalDeploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-alteration-config.xml")
+    @Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-alteration-config.xml")
     public void testColumnCreation() throws Exception {
         AbstractDirectory dirtmp1 = null;
         AbstractDirectory dirtmp2 = null;

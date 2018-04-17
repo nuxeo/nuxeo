@@ -1994,6 +1994,7 @@ public class DBSSession implements Session {
         case KEY_IS_LATEST_MAJOR_VERSION:
         case KEY_IS_PROXY:
         case KEY_ACE_GRANT:
+        case KEY_IS_TRASHED:
             return BooleanType.INSTANCE;
         case KEY_VERSION_CREATED:
         case KEY_LOCK_CREATED:

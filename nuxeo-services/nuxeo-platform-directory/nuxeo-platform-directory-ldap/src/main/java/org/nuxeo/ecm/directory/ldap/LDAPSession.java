@@ -435,7 +435,7 @@ public class LDAPSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) throws DirectoryException {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -519,7 +519,7 @@ public class LDAPSession extends BaseSession {
                 if (orderBy != null && !orderBy.isEmpty()) {
                     getDirectory().orderEntries(entries, orderBy);
                 }
-                return entries;
+                return applyQueryLimits(entries, limit, offset);
             } catch (NameNotFoundException nnfe) {
                 // sometimes ActiveDirectory have some query fail with: LDAP:
                 // error code 32 - 0000208D: NameErr: DSID-031522C9, problem

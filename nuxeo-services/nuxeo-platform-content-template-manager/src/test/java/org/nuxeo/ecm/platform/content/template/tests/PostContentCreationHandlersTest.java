@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -48,8 +47,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
-@LocalDeploy({ "org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml",
-        "org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.content.template.tests:test-content-template-handlers-contrib.xml")
 public class PostContentCreationHandlersTest {
 
     @Inject

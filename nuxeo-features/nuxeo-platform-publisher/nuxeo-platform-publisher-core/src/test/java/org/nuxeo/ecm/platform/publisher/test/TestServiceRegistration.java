@@ -36,20 +36,18 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.versioning.api", //
-        "org.nuxeo.ecm.platform.versioning", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.publisher.core.contrib", //
-        "org.nuxeo.ecm.platform.publisher.core", //
-})
+@Deploy("org.nuxeo.ecm.platform.content.template")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.versioning.api")
+@Deploy("org.nuxeo.ecm.platform.versioning")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
+@Deploy("org.nuxeo.ecm.platform.publisher.core")
 public class TestServiceRegistration {
 
     @Inject
@@ -64,7 +62,7 @@ public class TestServiceRegistration {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-contrib.xml")
     public void testContrib() throws Exception {
         List<String> treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());

@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -48,13 +47,12 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
-        "org.nuxeo.ecm.directory.ldap", //
-        "org.nuxeo.ecm.directory.ldap.tests", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml", })
+@Deploy("org.nuxeo.ecm.directory")
+@Deploy("org.nuxeo.ecm.directory.sql")
+@Deploy("org.nuxeo.ecm.directory.ldap")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml")
 public class LDAPDirectoryFeature extends SimpleFeature {
 
     /**

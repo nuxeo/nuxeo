@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>10.1-SNAPSHOT</version>
+    <version>10.2-SNAPSHOT</version>
     <relativePath>../addons/pom.xml</relativePath>
   </parent>
 
@@ -15,8 +15,8 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.distribution.version>10.1-SNAPSHOT</nuxeo.distribution.version>
-    <nuxeo.webui.mp.version>2.3.1-SNAPSHOT</nuxeo.webui.mp.version>
+    <nuxeo.distribution.version>10.2-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.webui.mp.version>2.3.2-SNAPSHOT</nuxeo.webui.mp.version>
   </properties>
 
   <modules>
@@ -26,7 +26,6 @@
     <module>nuxeo-test-dependencies</module>
     <module>nuxeo-nxr-server</module>
     <module>nuxeo-nxr-jsf-ui</module>
-    <module>nuxeo-marketplace-dm</module>
     <module>nuxeo-marketplace-jsf-ui</module>
     <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
@@ -101,12 +100,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -144,6 +137,12 @@
       </dependency>
 
       <!-- Provided scope -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+        <scope>provided</scope> <!-- redefine scope from toplevel POM -->
+      </dependency>
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>

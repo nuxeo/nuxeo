@@ -21,47 +21,31 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestFileManagerComponent extends NXRuntimeTestCase {
-
-    private FileManagerService filemanagerService;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle(FileManagerUTConstants.MIMETYPE_BUNDLE);
-        deployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, "OSGI-INF/nxfilemanager-service.xml");
-
-        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE, "nxfilemanager-test-contribs.xml");
-
-        filemanagerService = (FileManagerService) Framework.getRuntime().getComponent(FileManagerService.NAME);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        filemanagerService = null;
-
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE, "nxfilemanager-test-contribs.xml");
-
-        undeployContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, "OSGI-INF/nxfilemanager-service.xml");
-
-        super.tearDown();
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy(FileManagerUTConstants.MIMETYPE_BUNDLE)
+@Deploy(FileManagerUTConstants.FILEMANAGER_BUNDLE + ":OSGI-INF/nxfilemanager-service.xml")
+@Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":nxfilemanager-test-contribs.xml")
+public class TestFileManagerComponent {
 
     @Test
     public void testPlugins() {
+        FileManagerService filemanagerService = (FileManagerService) Framework.getRuntime()
+                                                                              .getComponent(FileManagerService.NAME);
         FileImporter testPlu = filemanagerService.getPluginByName("plug");
         List<String> filters = testPlu.getFilters();
         assertEquals(2, filters.size());

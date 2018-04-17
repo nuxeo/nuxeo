@@ -122,8 +122,8 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     public void registerBlobProvider(BlobProviderDescriptor descr) {
         closeOldBlobProvider(descr.name);
         blobProviderDescriptorsRegistry.addContribution(descr);
-        // lookup now to have immediate feedback on eror
-        getBlobProvider(descr.name);
+        // We can't look up the blob provider right now to initialize it, the platform has not started yet
+        // and the blob provider initialization may require a connection that has not been registered yet.
     }
 
     // public for tests

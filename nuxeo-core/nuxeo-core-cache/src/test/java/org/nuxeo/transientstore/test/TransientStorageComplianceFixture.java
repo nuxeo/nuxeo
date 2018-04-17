@@ -58,10 +58,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(TransientStoreFeature.class)
-@Deploy({ //
-        "org.nuxeo.ecm.core.event", //
-        "org.nuxeo.ecm.core.cache.test:test-in-memory-transientstore-contrib.xml", //
-})
+@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.cache.test:test-in-memory-transientstore-contrib.xml")
 public class TransientStorageComplianceFixture {
 
     @Inject

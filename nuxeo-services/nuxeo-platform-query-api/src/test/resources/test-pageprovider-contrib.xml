@@ -9,7 +9,7 @@
       <property name="dummy">dummy</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
+        ecm:isVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
@@ -25,7 +25,7 @@
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
       <whereClause docType="File">
         <fixedPart statement="SELECT * FROM Note">
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
         </fixedPart>
@@ -41,7 +41,7 @@
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <pattern>
         SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
       </pattern>
       <sort column="dc:title" ascending="true" />

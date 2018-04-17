@@ -26,7 +26,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -35,29 +38,24 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test layout component extension points.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestLayoutStoreComponent extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core.tests:layouts-core-test-contrib.xml")
+public class TestLayoutStoreComponent {
 
-    private LayoutStore service;
-
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(LayoutStore.class);
-        assertNotNull(service);
-    }
+    @Inject
+    protected LayoutStore service;
 
     @Test
     public void testLayoutRegistration() {

@@ -40,16 +40,18 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.relations.api",
-        "org.nuxeo.ecm.relations", "org.nuxeo.ecm.relations.jena" })
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-relation-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.relations.api")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.automation.core:test-relation-jena-contrib.xml")
 public class RelationOperationsTest {
 
     protected static final String conformsTo = "http://purl.org/dc/terms/ConformsTo";

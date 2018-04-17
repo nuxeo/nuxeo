@@ -27,7 +27,9 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -47,24 +49,26 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.ResourceHelper;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestSchemaLoaderRestriction extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+public class TestSchemaLoaderRestriction {
 
     public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 
     private Schema schema;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         SchemaManager typeMgr = Framework.getService(SchemaManager.class);
         XSDLoader reader = new XSDLoader((SchemaManagerImpl) typeMgr);
-        URL url = getResource("schema/testrestriction.xsd");
+        URL url = ResourceHelper.getResource("schema/testrestriction.xsd");
         schema = reader.loadSchema("testrestriction", "", url);
     }
 

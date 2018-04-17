@@ -45,7 +45,7 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar, localConfStri
     mode : "exact",
     theme : "modern",
     elements : eltId,
-    plugins : [ "link image code searchreplace paste visualchars charmap table preview " + plugins ],
+    plugins : [ "lists link image code searchreplace paste visualchars charmap table preview " + plugins ],
     language : lang,
 
     // Img insertion fixes
@@ -81,6 +81,8 @@ function toggleTinyMCE(id) {
 
 function removeTinyMCE(id) {
   tinyMCE.execCommand('mceRemoveEditor', false, id);
+  var escId = id.replace(/:/g, "\\:");
+  jQuery('#' + escId).show();
 }
 
 function addTinyMCE(id) {

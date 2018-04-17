@@ -25,7 +25,6 @@ import java.net.URI;
 
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryService;
@@ -46,6 +45,7 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
+    @Override
     public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {

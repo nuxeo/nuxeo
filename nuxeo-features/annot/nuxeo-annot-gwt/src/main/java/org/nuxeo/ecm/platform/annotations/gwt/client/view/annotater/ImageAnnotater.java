@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.view.annotater;
 
-import com.google.gwt.user.client.Window;
 import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.AnnotationChangeListener;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.AnnotationModel;
@@ -38,6 +37,7 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 
 /**
  * @author Alexandre Russel
@@ -235,6 +235,7 @@ public class ImageAnnotater extends AbstractAnnotater implements AnnotationChang
         decorator.updateAnnotatedArea(ax, ay, bx2, by2, image2, divElement);
     }
 
+    @Override
     public void onChange(AnnotationModel model, ChangeEvent ce) {
         if (model.getNewAnnotation() == null && ce == ChangeEvent.annotation) {
             processing = false;

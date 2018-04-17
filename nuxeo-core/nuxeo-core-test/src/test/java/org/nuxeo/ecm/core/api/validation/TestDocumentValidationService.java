@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-service-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-service-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentValidationService {
@@ -76,6 +76,8 @@ public class TestDocumentValidationService {
     public static final String STRING_LIST_PROPS_FIELD = "vs:simpleStringList";
 
     public static final String STRING_LIST_ARRAY_FIELD = "vs:anotherSimpleList";
+
+    public static final String COMPLEX_MANDATORY = "vs:required_complexType";
 
     private static final String SCHEMA = "validationSample";
 
@@ -96,7 +98,9 @@ public class TestDocumentValidationService {
         doc = session.createDocument(doc);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
-
+        Map<String, String> complex = new HashMap();
+        complex.put("a_string", "not_null");
+        doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.saveDocument(doc);
     }
 
@@ -176,7 +180,7 @@ public class TestDocumentValidationService {
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"validValue"});
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, (Serializable) new String[] {});
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {});
         checkNotNullOnField(STRING_LIST_ARRAY_FIELD, validator.validate(doc));
 
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"nowValid"});
@@ -188,10 +192,21 @@ public class TestDocumentValidationService {
         // so I am going to use the field directly.
         Field field = metamodel.getField(STRING_LIST_PROPS_FIELD);
         checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, null));
-        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) Collections.emptyList()));
-        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, (Serializable) new String[] {}));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, Collections.emptyList()));
+        checkNotNullOnField(STRING_LIST_PROPS_FIELD, validator.validate(field, new String[] {}));
     }
 
+    @Test
+    public void testMandatoryComplexType() {
+        Property complexMand = doc.getProperty(COMPLEX_MANDATORY);
+        complexMand.setValue(Collections.emptyMap());
+        checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
+        Map complex = new HashMap();
+        complex.put("a_string", null);
+        complexMand.setValue(complex);
+        checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
+    }
+    
     @Test
     public void testFieldComplexWithViolation1() {
         Field field = metamodel.getField(COMPLEX_FIELD);

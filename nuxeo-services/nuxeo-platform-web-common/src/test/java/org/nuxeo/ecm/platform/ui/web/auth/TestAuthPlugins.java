@@ -26,38 +26,37 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestAuthPlugins extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml")
+public class TestAuthPlugins {
 
-    private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
-
-    private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
-
-    private PluggableAuthenticationService authService;
-
-    @Override
-    public void setUp() throws Exception {
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
-        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     private PluggableAuthenticationService getAuthService() {
-        if (authService == null) {
-            authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                    .getComponent(PluggableAuthenticationService.NAME);
-        }
-        return authService;
+        Object object = Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
+        return (PluggableAuthenticationService) object;
     }
 
     @Test
     public void testRegister() {
-        getAuthService();
+        PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);
         // Rux NXP-1972: webservices plugin also
         assertEquals(5, authService.getAuthChain().size());
@@ -66,7 +65,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
 
     @Test
     public void testServiceParameters() {
-        getAuthService();
+        PluggableAuthenticationService authService = getAuthService();
         AuthenticationPluginDescriptor plugin = authService.getDescriptor("FORM_AUTH");
         assertTrue(!plugin.getParameters().isEmpty());
         assertTrue(plugin.getParameters().containsKey("LoginPage"));
@@ -74,9 +73,9 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test")
     public void testDescriptorMerge() throws Exception {
-        deployBundle(WEB_BUNDLE_TEST);
-        applyInlineDeployments();
+
         PluggableAuthenticationService service = getAuthService();
         AuthenticationPluginDescriptor plugin = service.getDescriptor("ANONYMOUS_AUTH");
 
@@ -87,14 +86,13 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-prefilter.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-prefilter-disable.xml")
     public void preFilterCanBeDisabled() throws Exception {
-        pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-prefilter.xml",
-                WEB_BUNDLE_TEST + ":OSGI-INF/test-prefilter-disable.xml");
-        getAuthService().initPreFilters();
-        List<NuxeoAuthPreFilter> filters = getAuthService().getPreFilters();
-
+        PluggableAuthenticationService authService = getAuthService();
+        authService.initPreFilters();
+        List<NuxeoAuthPreFilter> filters = authService.getPreFilters();
         assertEquals(2, filters.size());
-
     }
 
 }

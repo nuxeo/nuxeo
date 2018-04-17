@@ -155,6 +155,9 @@ public class BaseDirectoryDescriptor implements Cloneable {
     @XNode("substringMatchType")
     public String substringMatchType;
 
+    @XNode("computeMultiTenantId")
+    protected boolean computeMultiTenantId = true;
+
     /**
      * @since 8.4
      */
@@ -350,6 +353,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (other.inverseReferences != null && other.inverseReferences.length != 0) {
             inverseReferences = other.inverseReferences;
         }
+        computeMultiTenantId = other.computeMultiTenantId;
     }
 
     /**
@@ -384,6 +388,16 @@ public class BaseDirectoryDescriptor implements Cloneable {
      */
     public InverseReferenceDescriptor[] getInverseReferences() {
         return inverseReferences;
+    }
+
+    /**
+     * Returns {@code true} if a multi tenant id should be computed for this directory, if the directory has support for
+     * multi tenancy, {@code false} otherwise.
+     *
+     * @since 10.1
+     */
+    public boolean isComputeMultiTenantId() {
+        return computeMultiTenantId;
     }
 
 }

@@ -80,7 +80,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -89,8 +88,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
-@LocalDeploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.ws")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 public class TestAutomaticIndexing {
 
     private static final String IDX_NAME = "nxutest";
@@ -510,25 +511,46 @@ public class TestAutomaticIndexing {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
 
-        trashService.trashDocuments(Collections.singletonList(doc));
+        shouldUnIndexUsingTrashService(doc);
+    }
 
+    @Test
+    public void shouldUnIndexUsingTrashServiceWithoutRenaming() throws Exception {
+        startTransaction();
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+
+        doc.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+        shouldUnIndexUsingTrashService(doc);
+    }
+
+    protected void shouldUnIndexUsingTrashService(DocumentModel doc) throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(2); // 2 creations
 
         startTransaction();
+        trashService.trashDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // 1 update
+
+        startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(1, ret.totalSize());
-        trashService.undeleteDocuments(Collections.singletonList(doc));
+        doc = session.getDocument(doc.getRef());
+        trashService.untrashDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(2, ret.totalSize());
 
         SearchResponse searchResponse = searchAll();
@@ -794,9 +816,9 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(1, ret.totalSize());
         Assert.assertEquals("v3", ret.get(0).getTitle());
         String versionSeriesId = ret.get(0).getVersionSeriesId();
-        
+
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
-        Assert.assertEquals(4, ret.totalSize());
+        Assert.assertEquals(3, ret.totalSize());
     }
 
     @Test

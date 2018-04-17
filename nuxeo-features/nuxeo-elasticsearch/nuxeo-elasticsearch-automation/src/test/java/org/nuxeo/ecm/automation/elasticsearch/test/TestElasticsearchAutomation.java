@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ecm.automation.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,23 +42,16 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.automation",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml"})
-@LocalDeploy("org.nuxeo.ecm.automation.elasticsearch.test:chain-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.elasticsearch.core")
+@Deploy("org.nuxeo.elasticsearch.automation")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.elasticsearch.test:chain-test-contrib.xml")
 public class TestElasticsearchAutomation {
 
     private static final String INDEX_CHAIN = "indexAndRefresh";

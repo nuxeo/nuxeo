@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,9 +50,9 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests the {@link AuditPageProvider}
@@ -62,8 +61,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.audit:test-audit-contrib.xml",
-        "org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.audit:test-pageprovider-contrib.xml")
 public class TestPageProvider {
 
     protected static final List<String> entriesIdx = Arrays.asList(new String[] { "3", "7", "7", "8", "1", "8", "7",

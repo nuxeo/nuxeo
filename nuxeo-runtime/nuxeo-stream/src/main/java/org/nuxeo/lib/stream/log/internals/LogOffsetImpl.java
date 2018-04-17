@@ -50,6 +50,11 @@ public class LogOffsetImpl implements LogOffset {
     }
 
     @Override
+    public LogOffset nextOffset() {
+        return new LogOffsetImpl(partition, offset + 1);
+    }
+
+    @Override
     public String toString() {
         return String.format("%s:+%d", partition, offset);
     }

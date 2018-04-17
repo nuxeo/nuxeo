@@ -19,16 +19,24 @@
 package org.nuxeo.lib.stream.log.internals;
 
 import java.io.Externalizable;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
+import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 
@@ -107,6 +115,46 @@ public abstract class AbstractLogManager implements LogManager {
             }
             throw new IllegalArgumentException("unknown Log name: " + n);
         });
+    }
+
+    @Override
+    public <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group,
+            Function<M, Long> timestampExtractor, Function<M, String> keyExtractor) {
+        long now = System.currentTimeMillis();
+        List<LogLag> lags = getLagPerPartition(name, group);
+        List<Latency> ret = new ArrayList<>(lags.size());
+        int partition = 0;
+        for (LogLag lag : lags) {
+            if (lag.upper() == 0 || lag.lower() == 0) {
+                // empty partition or the group has not consumed any message
+                ret.add(new Latency(0, now, lag, null));
+                partition++;
+                continue;
+            }
+            // the committed offset point to the next record to process, here we want the last committed offset
+            // which is the previous one
+            LogOffset offset = new LogOffsetImpl(name, partition, lag.lowerOffset() - 1);
+            try (LogTailer<M> tailer = createTailer("tools", offset.partition())) {
+                tailer.seek(offset);
+                LogRecord<M> record = tailer.read(Duration.ofSeconds(1));
+                if (record == null) {
+                    throw new IllegalStateException("Unable to read " + offset + " lag: " + lag);
+                } else {
+                    try {
+                        long timestamp = timestampExtractor.apply(record.message());
+                        String key = keyExtractor.apply(record.message());
+                        ret.add(new Latency(timestamp, now, lag, key));
+                    } catch (ClassCastException e) {
+                        throw new IllegalStateException("Unexpected record type" + e.getMessage());
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+            partition++;
+        }
+        return ret;
     }
 
     @Override

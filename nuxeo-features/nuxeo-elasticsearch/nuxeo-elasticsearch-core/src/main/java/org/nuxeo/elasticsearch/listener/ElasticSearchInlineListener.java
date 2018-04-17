@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
     private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
 
     protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(
-            () -> new HashMap<>());
+            HashMap::new);
 
     public static final ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
         @Override

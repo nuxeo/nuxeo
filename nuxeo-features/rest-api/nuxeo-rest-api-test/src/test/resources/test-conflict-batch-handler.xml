@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.tests.batch.handler" version="1.0">
+
+    <extension target="org.nuxeo.ecm.automation.server.BatchManager"
+               point="handlers">
+        <batchHandler>
+            <name>dummy</name>
+            <class>org.nuxeo.ecm.restapi.batch.handler.DummyConflictingBatchHandler</class>
+            <property name="transientStore">default</property>
+        </batchHandler>
+    </extension>
+
+</component>

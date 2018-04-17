@@ -17,7 +17,7 @@
         <whereClause docType="Document">
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND
+            ecm:isVersion = 0 AND ecm:isTrashed = 0 AND
             collectionMember:collectionIds/* = ?
           </fixedPart>
         </whereClause>

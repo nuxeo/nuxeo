@@ -29,9 +29,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests features available in platform runner
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core:local-resource-test.xml")
+@Deploy("org.nuxeo.ecm.core:local-resource-test.xml")
 public class RunnerTest {
 
     @Inject

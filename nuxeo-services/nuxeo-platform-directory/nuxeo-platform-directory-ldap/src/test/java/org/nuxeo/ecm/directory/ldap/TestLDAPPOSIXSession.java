@@ -34,10 +34,10 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 // override default contrib
-@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-POSIX.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-POSIX.xml")
 public class TestLDAPPOSIXSession extends TestLDAPSession {
 
     @Override

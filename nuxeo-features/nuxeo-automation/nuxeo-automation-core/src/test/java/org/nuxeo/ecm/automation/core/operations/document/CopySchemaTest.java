@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -50,7 +49,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})
 @Deploy("org.nuxeo.ecm.automation.core")
-@LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/copy-schema-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.core:OSGI-INF/copy-schema-test-contrib.xml")
 public class CopySchemaTest {
 
     @Inject
@@ -243,22 +242,22 @@ public class CopySchemaTest {
             assertEquals(source.getProperty(schema, pair.getKey()), target2.getProperty(schema, pair.getKey()));
         }
     }
-    
+
     @Test
     public void shouldNotSaveTheDocument() throws Exception {
 
         source.setPropertyValue("common:icon-expanded", "icon-expanded-source");
         source = session.saveDocument(source);
-        
+
         target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
         target1 = session.saveDocument(target1);
-        
+
         OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSaveParameters_1");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", "common").set("saveDocument", false);
         service.run(context, chain);
-        
+
         String value = (String) target1.getPropertyValue("common:icon-expanded");
         assertEquals("icon-expanded-source", value);
 

@@ -41,7 +41,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
@@ -50,8 +49,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.web.resources.core" })
-@LocalDeploy({ TestWebResourceService.BUNDLE + ":webresources-test-config.xml" })
+@Deploy("org.nuxeo.web.resources.core")
+@Deploy("org.nuxeo.web.resources.core:webresources-test-config.xml")
 @LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl", logLevel = "ERROR")
 public class TestWebResourceService {
 

@@ -26,10 +26,12 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Basic data object that contains: key, watermark, flag and data.
@@ -54,15 +56,32 @@ public class Record implements Externalizable {
 
     }
 
+    /**
+     * Creates a record using current watermark corresponding to the current time, with a default flag
+     */
+    public Record(String key, byte[] data) {
+        this(key, data, Watermark.ofNow().getValue(), DEFAULT_FLAG);
+    }
+
+    /**
+     * Creates a record using a default flag
+     */
+    public Record(String key, byte[] data, long watermark) {
+        this(key, data, watermark, DEFAULT_FLAG);
+    }
+
     public Record(String key, byte[] data, long watermark, EnumSet<Flag> flags) {
         this.key = key;
         this.data = data;
         this.watermark = watermark;
-        this.flags = flags;
+        this.flags = (flags == null) ? DEFAULT_FLAG : flags;
     }
 
+    /**
+     * Creates a record using current timestamp and default flag
+     */
     public static Record of(String key, byte[] data) {
-        return new Record(key, data, 0, DEFAULT_FLAG);
+        return new Record(key, data);
     }
 
     @Override
@@ -155,4 +174,23 @@ public class Record implements Externalizable {
         public static final EnumSet<Flag> ALL_OPTS = EnumSet.allOf(Flag.class);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Record record = (Record) o;
+        return watermark == record.watermark && Objects.equals(flags, record.flags) && Objects.equals(key, record.key)
+                && Arrays.equals(data, record.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(watermark, flags, key);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
+    }
 }

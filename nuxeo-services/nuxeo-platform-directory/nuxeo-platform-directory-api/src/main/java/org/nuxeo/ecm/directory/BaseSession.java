@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -62,6 +63,8 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
+    protected static final String TENANT_ID_FIELD = "tenantId";
+
     private final static Log log = LogFactory.getLog(BaseSession.class);
 
     protected final Directory directory;
@@ -83,6 +86,8 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected boolean autoincrementId;
 
+    protected boolean computeMultiTenantId;
+
     protected BaseSession(Directory directory, Class<? extends Reference> referenceClass) {
         this.directory = directory;
         schemaName = directory.getSchema();
@@ -94,6 +99,7 @@ public abstract class BaseSession implements Session, EntrySource {
         permissions = desc.permissions;
         passwordHashAlgorithm = desc.passwordHashAlgorithm;
         this.referenceClass = referenceClass;
+        computeMultiTenantId = desc.isComputeMultiTenantId();
     }
 
     /** To be implemented with a more specific return type. */
@@ -429,6 +435,12 @@ public abstract class BaseSession implements Session, EntrySource {
 
     @Override
     public void deleteEntry(String id) throws DirectoryException {
+
+        if (!canDeleteMultiTenantEntry(id)) {
+            throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                    "label.directory.error.multi.tenant.operationNotAllowed", null);
+        }
+
         checkPermission(SecurityConstants.WRITE);
         checkDeleteConstraints(id);
 
@@ -441,6 +453,41 @@ public abstract class BaseSession implements Session, EntrySource {
         }
         deleteEntryWithoutReferences(id);
         getDirectory().invalidateCaches();
+    }
+
+    protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
+        if (isMultiTenant()) {
+            // can only delete entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                DocumentModel entry = getEntry(entryId);
+                String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
+                                tenantId));
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Applies offset and limit to a DocumentModelList
+     *
+     * @param results the query results without limit and offet
+     * @param limit maximum number of results ignored if less than 1
+     * @param offset number of rows skipped before starting, will be 0 if less than 0.
+     * @return the result with applied limit and offset
+     * @since 10.1
+     * @see Session#query(Map, Set, Map, boolean, int, int)
+     */
+    protected DocumentModelList applyQueryLimits(DocumentModelList results, int limit, int offset) {
+        offset = Math.max(0, offset);
+        int toIndex = limit >= 1 ? Math.min(results.size(), offset + limit) : results.size();
+        return new DocumentModelListImpl(results.subList(offset, toIndex));
     }
 
     @Override
@@ -462,20 +509,7 @@ public abstract class BaseSession implements Session, EntrySource {
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
-        return query(filter, fulltext, orderBy, fetchReferences, 0, 0);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
-        log.info("Call an unoverrided query with offset and limit.");
-        DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
-        int toIndex = offset + limit;
-        if (toIndex > entries.size()) {
-            toIndex = entries.size();
-        }
-
-        return new DocumentModelListImpl(entries.subList(offset, toIndex));
+        return query(filter, fulltext, orderBy, fetchReferences, -1, 0);
     }
 
     @Override
@@ -494,6 +528,21 @@ public abstract class BaseSession implements Session, EntrySource {
             result.add(propValue);
         }
         return result;
+    }
+
+    /**
+     * Returns {@code true} if this directory supports multi tenancy, {@code false} otherwise.
+     */
+    protected boolean isMultiTenant() {
+        return directory.isMultiTenant();
+    }
+
+    /**
+     * Returns the tenant id of the logged user if any, {@code null} otherwise.
+     */
+    protected String getCurrentTenantId() {
+        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        return principal != null ? principal.getTenantId() : null;
     }
 
     /** To be implemented for specific creation. */

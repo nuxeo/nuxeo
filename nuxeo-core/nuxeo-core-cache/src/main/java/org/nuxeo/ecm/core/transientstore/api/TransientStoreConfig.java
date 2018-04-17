@@ -18,8 +18,12 @@
  */
 package org.nuxeo.ecm.core.transientstore.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
@@ -60,6 +64,9 @@ public class TransientStoreConfig {
     protected Class<? extends TransientStoreProvider> implClass = SimpleTransientStore.class;
 
     protected TransientStoreProvider store;
+
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
+    protected Map<String, String> properties;
 
     public TransientStoreConfig() {
     }
@@ -132,6 +139,15 @@ public class TransientStoreConfig {
      */
     public String getDataDir() {
         return path;
+    }
+
+    /**
+     * Returns properties.
+     *
+     * @since 10.1
+     */
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
 }

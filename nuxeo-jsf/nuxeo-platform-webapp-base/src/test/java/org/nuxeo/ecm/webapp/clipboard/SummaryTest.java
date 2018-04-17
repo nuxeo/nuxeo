@@ -21,16 +21,25 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class SummaryTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class SummaryTest {
 
     private Summary summary;
 
@@ -40,9 +49,7 @@ public class SummaryTest extends NXRuntimeTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         summary = new SummaryImpl();
-
         SummaryEntry rootEntry = new SummaryEntry("0", "root", getDate(), "", "");
         rootEntry.setDocumentRef(new IdRef("0"));
         summary.put(new IdRef("0").toString(), rootEntry);

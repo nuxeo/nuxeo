@@ -42,7 +42,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.common.collect.Sets;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.9.3

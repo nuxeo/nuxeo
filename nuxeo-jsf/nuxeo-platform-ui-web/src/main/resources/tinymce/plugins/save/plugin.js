@@ -1,94 +1,120 @@
-/**
- * plugin.js
- *
- * Copyright, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
+(function () {
+var save = (function () {
+  'use strict';
 
-/*global tinymce:true */
+  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-tinymce.PluginManager.add('save', function(editor) {
-	function save() {
-		var formObj;
+  var DOMUtils = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-		formObj = tinymce.DOM.getParent(editor.id, 'form');
+  var Tools = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-		if (editor.getParam("save_enablewhendirty", true) && !editor.isDirty()) {
-			return;
-		}
+  var enableWhenDirty = function (editor) {
+    return editor.getParam('save_enablewhendirty', true);
+  };
+  var hasOnSaveCallback = function (editor) {
+    return !!editor.getParam('save_onsavecallback');
+  };
+  var hasOnCancelCallback = function (editor) {
+    return !!editor.getParam('save_oncancelcallback');
+  };
+  var $_82jntiikje4cbxep = {
+    enableWhenDirty: enableWhenDirty,
+    hasOnSaveCallback: hasOnSaveCallback,
+    hasOnCancelCallback: hasOnCancelCallback
+  };
 
-		tinymce.triggerSave();
+  var displayErrorMessage = function (editor, message) {
+    editor.notificationManager.open({
+      text: editor.translate(message),
+      type: 'error'
+    });
+  };
+  var save = function (editor) {
+    var formObj;
+    formObj = DOMUtils.DOM.getParent(editor.id, 'form');
+    if ($_82jntiikje4cbxep.enableWhenDirty(editor) && !editor.isDirty()) {
+      return;
+    }
+    editor.save();
+    if ($_82jntiikje4cbxep.hasOnSaveCallback(editor)) {
+      editor.execCallback('save_onsavecallback', editor);
+      editor.nodeChanged();
+      return;
+    }
+    if (formObj) {
+      editor.setDirty(false);
+      if (!formObj.onsubmit || formObj.onsubmit()) {
+        if (typeof formObj.submit === 'function') {
+          formObj.submit();
+        } else {
+          displayErrorMessage(editor, 'Error: Form submit field collision.');
+        }
+      }
+      editor.nodeChanged();
+    } else {
+      displayErrorMessage(editor, 'Error: No form element found.');
+    }
+  };
+  var cancel = function (editor) {
+    var h = Tools.trim(editor.startContent);
+    if ($_82jntiikje4cbxep.hasOnCancelCallback(editor)) {
+      editor.execCallback('save_oncancelcallback', editor);
+      return;
+    }
+    editor.setContent(h);
+    editor.undoManager.clear();
+    editor.nodeChanged();
+  };
+  var $_bbazcsihje4cbxem = {
+    save: save,
+    cancel: cancel
+  };
 
-		// Use callback instead
-		if (editor.getParam("save_onsavecallback")) {
-			if (editor.execCallback('save_onsavecallback', editor)) {
-				editor.startContent = tinymce.trim(editor.getContent({format: 'raw'}));
-				editor.nodeChanged();
-			}
+  var register = function (editor) {
+    editor.addCommand('mceSave', function () {
+      $_bbazcsihje4cbxem.save(editor);
+    });
+    editor.addCommand('mceCancel', function () {
+      $_bbazcsihje4cbxem.cancel(editor);
+    });
+  };
+  var $_fjupseigje4cbxel = { register: register };
 
-			return;
-		}
+  var stateToggle = function (editor) {
+    return function (e) {
+      var ctrl = e.control;
+      editor.on('nodeChange dirty', function () {
+        ctrl.disabled($_82jntiikje4cbxep.enableWhenDirty(editor) && !editor.isDirty());
+      });
+    };
+  };
+  var register$1 = function (editor) {
+    editor.addButton('save', {
+      icon: 'save',
+      text: 'Save',
+      cmd: 'mceSave',
+      disabled: true,
+      onPostRender: stateToggle(editor)
+    });
+    editor.addButton('cancel', {
+      text: 'Cancel',
+      icon: false,
+      cmd: 'mceCancel',
+      disabled: true,
+      onPostRender: stateToggle(editor)
+    });
+    editor.addShortcut('Meta+S', '', 'mceSave');
+  };
+  var $_7q94s5ilje4cbxeq = { register: register$1 };
 
-		if (formObj) {
-			editor.isNotDirty = true;
+  PluginManager.add('save', function (editor) {
+    $_7q94s5ilje4cbxeq.register(editor);
+    $_fjupseigje4cbxel.register(editor);
+  });
+  function Plugin () {
+  }
 
-			if (!formObj.onsubmit || formObj.onsubmit()) {
-				if (typeof(formObj.submit) == "function") {
-					formObj.submit();
-				} else {
-					editor.windowManager.alert("Error: Form submit field collision.");
-				}
-			}
+  return Plugin;
 
-			editor.nodeChanged();
-		} else {
-			editor.windowManager.alert("Error: No form element found.");
-		}
-	}
-
-	function cancel() {
-		var h = tinymce.trim(editor.startContent);
-
-		// Use callback instead
-		if (editor.getParam("save_oncancelcallback")) {
-			editor.execCallback('save_oncancelcallback', editor);
-			return;
-		}
-
-		editor.setContent(h);
-		editor.undoManager.clear();
-		editor.nodeChanged();
-	}
-
-	function stateToggle() {
-		var self = this;
-
-		editor.on('nodeChange', function() {
-			self.disabled(editor.getParam("save_enablewhendirty", true) && !editor.isDirty());
-		});
-	}
-
-	editor.addCommand('mceSave', save);
-	editor.addCommand('mceCancel', cancel);
-
-	editor.addButton('save', {
-		icon: 'save',
-		text: 'Save',
-		cmd: 'mceSave',
-		disabled: true,
-		onPostRender: stateToggle
-	});
-
-	editor.addButton('cancel', {
-		text: 'Cancel',
-		icon: false,
-		cmd: 'mceCancel',
-		disabled: true,
-		onPostRender: stateToggle
-	});
-
-	editor.addShortcut('ctrl+s', '', 'mceSave');
-});
+}());
+})();

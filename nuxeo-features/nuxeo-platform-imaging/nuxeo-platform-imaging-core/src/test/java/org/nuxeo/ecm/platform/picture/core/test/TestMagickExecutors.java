@@ -30,7 +30,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -43,12 +42,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-convert-contrib.xml")
 public class TestMagickExecutors {
 
     private static final String TMP_FILE_PREFIX = TestMagickExecutors.class.getName() + "_";

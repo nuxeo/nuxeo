@@ -35,6 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import com.thetransactioncompany.cors.CORSFilter;
+
 /**
  * Runtime component that implements the {@link RequestControllerManager} interface. Contains both the Extension point
  * logic and the service implementation.
@@ -54,21 +56,16 @@ public class RequestControllerService extends DefaultComponent implements Reques
 
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
-    protected static final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+    protected final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
 
-    protected static final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+    protected final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
 
     // @GuardedBy("itself")
-    protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(
-            250);
+    protected final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
 
-    protected static final Map<String, FilterConfig> filterConfigCache = new LRUCachingMap<>(250);
+    protected final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
 
-    protected static final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
-
-    protected static final NuxeoHeaderDescriptorRegistry headersRegistry = new NuxeoHeaderDescriptorRegistry();
-
-    protected Map<String, String> headersCache;
+    protected final NuxeoHeaderDescriptorRegistry headersRegistry = new NuxeoHeaderDescriptorRegistry();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -111,28 +108,21 @@ public class RequestControllerService extends DefaultComponent implements Reques
     /* Service interface */
 
     @Override
-    public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
+    public CORSFilter getCorsFilterForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        FilterConfig filterConfig = null;
-        synchronized (filterConfigCache) {
-            filterConfig = filterConfigCache.get(uri);
-        }
-
-        if (filterConfig == null) {
-            filterConfig = computeCorsFilterConfigForUri(uri);
-            synchronized (filterConfigCache) {
-                filterConfigCache.put(uri, filterConfig);
-            }
-        }
-
-        return filterConfig;
+        NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
+        return descriptor == null ? null : descriptor.getFilter();
     }
 
-    public FilterConfig computeCorsFilterConfigForUri(String uri) {
+    @Override
+    @Deprecated
+    public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
+        String uri = request.getRequestURI();
         NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
         return descriptor != null ? descriptor.buildFilterConfig() : null;
     }
 
+    @Override
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
         RequestFilterConfig config = null;
@@ -173,14 +163,8 @@ public class RequestControllerService extends DefaultComponent implements Reques
         return new RequestFilterConfigImpl(false, false, false, false, false, "");
     }
 
+    @Override
     public Map<String, String> getResponseHeaders() {
-        if (headersCache == null) {
-            headersCache = buildHeadersCache();
-        }
-        return headersCache;
-    }
-
-    protected static Map<String, String> buildHeadersCache() {
         Map<String, String> headersCache = new HashMap<String, String>();
         for (NuxeoHeaderDescriptor header : headersRegistry.descs.values()) {
             headersCache.put(header.name, header.getValue());

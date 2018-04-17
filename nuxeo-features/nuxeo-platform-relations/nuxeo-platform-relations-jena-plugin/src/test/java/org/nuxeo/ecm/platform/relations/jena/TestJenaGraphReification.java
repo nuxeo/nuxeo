@@ -31,7 +31,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -44,10 +46,21 @@ import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RestartFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
-public class TestJenaGraphReification extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class, RestartFeature.class })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.core.api")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.relations.jena.tests:jena-test-bundle.xml")
+public class TestJenaGraphReification {
 
     private JenaGraph graph;
 
@@ -69,18 +82,8 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     private Statement st2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.relations.jena.tests", "jena-test-bundle.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
         RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);

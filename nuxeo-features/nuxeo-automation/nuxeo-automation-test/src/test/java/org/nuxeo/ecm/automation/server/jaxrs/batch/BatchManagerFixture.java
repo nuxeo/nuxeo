@@ -20,17 +20,14 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -45,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -61,8 +59,11 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core",
-        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server" })
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.webengine.core")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.automation.server")
 public class BatchManagerFixture {
 
     @Test
@@ -83,7 +84,7 @@ public class BatchManagerFixture {
         String batchId = bm.initBatch();
         assertNotNull(batchId);
         assertTrue(bm.hasBatch(batchId));
-        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        Batch batch = bm.getBatch(batchId);
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
 
@@ -105,7 +106,7 @@ public class BatchManagerFixture {
         String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
         assertEquals("testBatchId", batchId);
         assertTrue(bm.hasBatch("testBatchId"));
-        Batch batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
+        Batch batch = bm.getBatch("testBatchId");
         assertNotNull(batch);
         assertEquals("testBatchId", batch.getKey());
     }
@@ -115,10 +116,10 @@ public class BatchManagerFixture {
         // Add 2 file streams
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
-        InputStream is = new ByteArrayInputStream("Contenu accentué".getBytes("UTF-8"));
-        bm.addStream(batchId, "0", is, "Mon doc 1.txt", "text/plain");
-        is = new ByteArrayInputStream("Autre contenu accentué".getBytes("UTF-8"));
-        bm.addStream(batchId, "1", is, "Mon doc 2.txt", "text/plain");
+        Blob blob = Blobs.createBlob("Contenu accentué");
+        bm.addBlob(batchId, "0", blob, "Mon doc 1.txt", "text/plain");
+        blob = Blobs.createBlob("Autre contenu accentué");
+        bm.addBlob(batchId, "1", blob, "Mon doc 2.txt", "text/plain");
 
         // Check batch blobs
         Blob blob1 = bm.getBlob(batchId, "0");
@@ -180,12 +181,9 @@ public class BatchManagerFixture {
         String chunk2 = "é composé de ";
         String chunk3 = "3 chunks";
         long fileSize = fileContent.getBytes().length;
-        bm.addStream(batchId, "0", new ByteArrayInputStream(chunk1.getBytes("UTF-8")), 3, 0, "Mon doc.txt",
-                "text/plain", fileSize);
-        bm.addStream(batchId, "0", new ByteArrayInputStream(chunk3.getBytes("UTF-8")), 3, 2, "Mon doc.txt",
-                "text/plain", fileSize);
-        bm.addStream(batchId, "0", new ByteArrayInputStream(chunk2.getBytes("UTF-8")), 3, 1, "Mon doc.txt",
-                "text/plain", fileSize);
+        bm.addBlob(batchId, "0", Blobs.createBlob(chunk1), 3, 0, "Mon doc.txt", "text/plain", fileSize);
+        bm.addBlob(batchId, "0", Blobs.createBlob(chunk3), 3, 2, "Mon doc.txt", "text/plain", fileSize);
+        bm.addBlob(batchId, "0", Blobs.createBlob(chunk2), 3, 1, "Mon doc.txt", "text/plain", fileSize);
 
         // Check batch blobs
         Blob blob = bm.getBlob(batchId, "0");
@@ -262,14 +260,11 @@ public class BatchManagerFixture {
 
         // Add non chunked files
         for (int i = 0; i < 10; i++) {
-            bm.addStream(batchId, "" + i, new ByteArrayInputStream(("SomeContent" + i).getBytes()), i + ".txt",
-                    "text/plain");
+            bm.addBlob(batchId, "" + i, Blobs.createBlob("SomeContent" + i), i + ".txt", "text/plain");
         }
         // Add chunked file
-        bm.addStream(batchId, "10", new ByteArrayInputStream(("Chunk 1 ").getBytes()), 2, 0, "chunkedFile.txt",
-                "text/plain", 16);
-        bm.addStream(batchId, "10", new ByteArrayInputStream(("Chunk 2 ").getBytes()), 2, 1, "chunkedFile.txt",
-                "text/plain", 16);
+        bm.addBlob(batchId, "10", Blobs.createBlob("Chunk 1 "), 2, 0, "chunkedFile.txt", "text/plain", 16);
+        bm.addBlob(batchId, "10", Blobs.createBlob("Chunk 2 "), 2, 1, "chunkedFile.txt", "text/plain", 16);
 
         List<Blob> blobs = bm.getBlobs(batchId);
         assertNotNull(blobs);
@@ -328,9 +323,8 @@ public class BatchManagerFixture {
             tpe.submit(() -> {
                 try {
                     String batchId = bm.initBatch();
-                    bm.addStream(batchId, "0",
-                            new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(UTF_8)),
-                            "MyBatchFile.txt", "text/plain");
+                    bm.addBlob(batchId, "0", Blobs.createBlob("SomeContent_" + batchId), "MyBatchFile.txt",
+                            "text/plain");
                     batchIds[batchIndex] = batchId;
                 } catch (IOException e) {
                     fail(e.getMessage());
@@ -387,9 +381,8 @@ public class BatchManagerFixture {
             final String fileIndex = String.valueOf(i);
             tpe.submit(() -> {
                 try {
-                    bm.addStream(batchId, fileIndex,
-                            new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(UTF_8)),
-                            fileIndex + ".txt", "text/plain");
+                    bm.addBlob(batchId, fileIndex, Blobs.createBlob("SomeContent_" + fileIndex), fileIndex + ".txt",
+                            "text/plain");
                 } catch (IOException e) {
                     fail(e.getMessage());
                 }
@@ -439,10 +432,8 @@ public class BatchManagerFixture {
             final int chunkIndex = i;
             tpe.submit(() -> {
                 try {
-                    bm.addStream(batchId, "0",
-                            new ByteArrayInputStream(
-                                    ("SomeChunkContent_" + chunkIndex + " ").getBytes(UTF_8)),
-                            nbChunks, chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
+                    bm.addBlob(batchId, "0", Blobs.createBlob("SomeChunkContent_" + chunkIndex + " "), nbChunks,
+                            chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
                 } catch (IOException e) {
                     fail(e.getMessage());
                 }

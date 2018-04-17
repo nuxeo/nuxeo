@@ -23,46 +23,49 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
-import javax.servlet.FilterConfig;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestService extends NXRuntimeTestCase {
+import com.thetransactioncompany.cors.CORSConfiguration;
+import com.thetransactioncompany.cors.CORSFilter;
+import com.thetransactioncompany.cors.Origin;
+
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml")
+public class TestService {
 
     @Inject
-    protected RequestControllerService requestControllerService;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib.xml");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        undeployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib.xml");
-        undeployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-framework.xml");
-        super.tearDown();
-    }
+    protected RequestControllerManager requestControllerManager;
 
     @Test
     public void testServiceRegistration() {
-        assertNotNull(requestControllerService);
+        assertNotNull(requestControllerManager);
     }
 
     @Test
     public void testServiceContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
-
+        RequestControllerService requestControllerService = (RequestControllerService) requestControllerManager;
         String uri;
         RequestFilterConfig config;
 
@@ -121,32 +124,38 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCorsContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
-
+        HttpServletRequest request = mock(HttpServletRequest.class);
         String uri;
-        FilterConfig fc;
+        CORSFilter filter;
+        CORSConfiguration config;
 
-        assertNull(requestControllerService.computeCorsFilterConfigForUri("/dummy/uri"));
+        uri = "/dummy/uri";
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = requestControllerManager.getCorsFilterForRequest(request);
+        assertNull(filter);
 
         uri = "/nuxeo/site/minimal/something/long/dummy.html";
-        fc = requestControllerService.computeCorsFilterConfigForUri(uri);
-        assertEquals("-1", fc.getInitParameter("cors.maxAge"));
-        assertEquals(null, fc.getInitParameter("cors.allowOrigin"));
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = requestControllerManager.getCorsFilterForRequest(request);
+        config = filter.getConfiguration();
+        assertEquals(-1, config.maxAge);
+        assertEquals(Collections.emptySet(), config.allowedOrigins);
 
         uri = "/nuxeo/site/dummy/";
-        fc = requestControllerService.computeCorsFilterConfigForUri(uri);
-        assertEquals("3600", fc.getInitParameter("cors.maxAge"));
-        assertEquals("http://example.com http://example.com:8080", fc.getInitParameter("cors.allowOrigin"));
-        assertEquals("false", fc.getInitParameter("cors.supportsCredentials"));
+        when(request.getRequestURI()).thenReturn(uri);
+        filter = requestControllerManager.getCorsFilterForRequest(request);
+        config = filter.getConfiguration();
+        assertEquals(3600, config.maxAge);
+        Set<Origin> expectedOrigins = new HashSet<>();
+        expectedOrigins.add(new Origin("http://example.com"));
+        expectedOrigins.add(new Origin("http://example.com:8080"));
+        assertEquals(expectedOrigins, config.allowedOrigins);
+        assertFalse(config.supportsCredentials);
     }
 
     @Test
     public void testHeadersContrib() throws Exception {
-        pushInlineDeployments(
-                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
-
-        Map<String, String> rh = requestControllerService.getResponseHeaders();
+        Map<String, String> rh = requestControllerManager.getResponseHeaders();
         assertEquals(7, rh.size());
         assertTrue(rh.containsKey("WWW-Authenticate"));
         assertEquals("basic", rh.get("WWW-Authenticate"));
@@ -157,6 +166,8 @@ public class TestService extends NXRuntimeTestCase {
      */
     @Test
     public void testNXFilePatterns() {
+        RequestControllerService requestControllerService = (RequestControllerService) requestControllerManager;
+
         // file:content
         RequestFilterConfig config = requestControllerService.computeConfigForRequest(
                 "/nuxeo/nxfile/default/45ad4c71-f1f3-4e9d-97a1-61aa317ce105/file:content/IMG_20170910_110134.jpg");

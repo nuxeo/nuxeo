@@ -119,6 +119,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         workingDocument.putContextData("disableAuditLogger", Boolean.TRUE);
         workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
         workingDocument.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        workingDocument.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
         session.saveDocument(workingDocument);
 
         firePictureViewsGenerationDoneEvent(workingDocument);

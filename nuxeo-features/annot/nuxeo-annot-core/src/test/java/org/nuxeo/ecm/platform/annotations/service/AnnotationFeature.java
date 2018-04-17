@@ -23,19 +23,17 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations.api", //
-        "org.nuxeo.ecm.relations", //
-        "org.nuxeo.ecm.relations.jena", //
-        "org.nuxeo.ecm.annotations", //
-        "org.nuxeo.ecm.annotations.contrib", //
-        "org.nuxeo.runtime.datasource", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.annotations:test-ann-contrib.xml", //
-        "org.nuxeo.ecm.annotations:datasource-config.xml" })
+@Deploy("org.nuxeo.ecm.relations.api")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.annotations")
+@Deploy("org.nuxeo.ecm.annotations.contrib")
+@Deploy("org.nuxeo.runtime.datasource")
+@Deploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
+@Deploy("org.nuxeo.ecm.annotations:datasource-config.xml")
 public class AnnotationFeature extends SimpleFeature {
 
     @Override

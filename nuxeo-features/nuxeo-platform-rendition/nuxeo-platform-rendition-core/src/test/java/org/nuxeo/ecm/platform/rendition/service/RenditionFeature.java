@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -34,23 +33,21 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
  * @since 7.3
  */
 @Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.convert", //
-        "org.nuxeo.ecm.platform.login", //
-        "org.nuxeo.ecm.platform.web.common", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
-        "org.nuxeo.ecm.actions", //
-        "org.nuxeo.ecm.platform.rendition.api", //
-        "org.nuxeo.ecm.platform.rendition.core", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.platform.io.core", //
-        "org.nuxeo.ecm.platform.dublincore" //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
-        "org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml", //
-        "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml" //
-})
+@Deploy("org.nuxeo.ecm.platform.convert")
+@Deploy("org.nuxeo.ecm.platform.login")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager.api")
+@Deploy("org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.rendition.api")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.io.core")
+@Deploy("org.nuxeo.ecm.platform.dublincore")
+@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class RenditionFeature extends SimpleFeature {
 }

@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
@@ -45,7 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
-@LocalDeploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-deprecated-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-deprecated-types-contrib.xml")
 @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = TestDocumentModelWithDeprecatedProperty.LOGGER_NAME)
 public class TestDocumentModelWithDeprecatedProperty {
 
@@ -278,7 +277,6 @@ public class TestDocumentModelWithDeprecatedProperty {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSetDeprecatedScalarPropertiesWithFallbackOnComplex() throws Exception {
         testProperties("scalar2scalar", "scalarfallback", "test scalar");
     }

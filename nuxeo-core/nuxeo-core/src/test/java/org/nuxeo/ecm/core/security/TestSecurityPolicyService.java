@@ -19,10 +19,7 @@
  */
 package org.nuxeo.ecm.core.security;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.nuxeo.ecm.core.CoreUTConstants.CORE_BUNDLE;
-import static org.nuxeo.ecm.core.CoreUTConstants.CORE_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.Access.DENY;
 import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
@@ -33,17 +30,28 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
+import javax.inject.Inject;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestSecurityPolicyService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/SecurityService.xml")
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/permissions-contrib.xml")
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/security-policy-contrib.xml")
+public class TestSecurityPolicyService {
 
     static final String creator = "Bodie";
 
@@ -53,27 +61,13 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     static final Principal userPrincipal = new UserPrincipal("Bubbles", new ArrayList<>(), false, false);
 
-    private SecurityPolicyService service;
+    @Inject
+    public SecurityPolicyService service;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected Mockery mockery = new JUnit4Mockery();
-
-    @Override
-    public void setUp() throws Exception {
-        deployContrib(CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
-        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
-        deployContrib(CORE_BUNDLE, "OSGI-INF/security-policy-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(SecurityPolicyService.class);
-        assertNotNull(service);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        service = null;
-    }
 
     @Test
     public void testPolicies() throws Exception {
@@ -108,7 +102,8 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         assertSame(UNKNOWN, service.checkPermission(doc2, null, userPrincipal, permission, permissions, null));
 
         // test creator policy with lower order takes over lock
-        pushInlineDeployments(CORE_TESTS_BUNDLE + ":test-security-policy-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.tests:test-security-policy-contrib.xml");
+
         assertSame(GRANT, service.checkPermission(doc2, null, creatorPrincipal, permission, permissions, null));
         assertSame(UNKNOWN, service.checkPermission(doc2, null, userPrincipal, permission, permissions, null));
     }
@@ -154,7 +149,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
         assertSame(UNKNOWN, service.checkPermission(doc2, null, creatorPrincipal, permission, permissions, null));
 
-        pushInlineDeployments(CORE_TESTS_BUNDLE + ":test-security-policy2-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.tests:test-security-policy2-contrib.xml");
 
         assertSame(DENY, service.checkPermission(doc2, null, creatorPrincipal, permission, permissions, null));
     }

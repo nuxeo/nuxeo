@@ -52,7 +52,7 @@
         SELECT * FROM Domain
         WHERE ecm:mixinType != 'HiddenInNavigation'
         AND ecm:isTrashed = 0
-        AND ecm:isCheckedInVersion = 0
+        AND ecm:isVersion = 0
         AND ecm:isProxy = 0
       </pattern>
       <sort column="dc:title" ascending="true" />

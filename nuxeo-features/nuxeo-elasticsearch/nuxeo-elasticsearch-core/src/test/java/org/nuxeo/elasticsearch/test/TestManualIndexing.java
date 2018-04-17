@@ -42,9 +42,9 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -54,8 +54,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@Deploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestManualIndexing {
 
     private static final String IDX_NAME = "nxutest";

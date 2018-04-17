@@ -35,17 +35,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, CoreFeature.class, SQLDirectoryFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql" })
-@LocalDeploy({ "org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.sql:test-sql-directories-bundle.xml" })
+@Deploy("org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml")
+@Deploy("org.nuxeo.ecm.directory.sql:test-sql-directories-bundle.xml")
 @LogCaptureFeature.FilterWith(TestSessionsAreClosedAutomatically.CloseSessionFilter.class)
 public class TestSessionsAreClosedAutomatically {
 

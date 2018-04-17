@@ -28,7 +28,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -36,29 +39,28 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test layout service API
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestLayoutStoreService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.core.tests:layouts-core-test-contrib.xml")
+public class TestLayoutStoreService {
 
-    private LayoutStore service;
+    @Inject
+    protected LayoutStore service;
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.core.tests", "layouts-core-test-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        service = Framework.getService(LayoutStore.class);
-        assertNotNull(service);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     /**
      * Non-regression test for NXP-13695.
@@ -69,14 +71,14 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         assertNotNull(l);
         assertEquals(4, l.getRows().length);
 
-        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.core.tests:layouts-core-test-override-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.forms.layout.core.tests:layouts-core-test-override-contrib.xml");
 
         // check override
         l = service.getLayoutDefinition("testCategory", "testLayout");
         assertNotNull(l);
         assertEquals(0, l.getRows().length);
 
-        removeInlineDeployments();
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.forms.layout.core.tests:layouts-core-test-override-contrib.xml");
 
         // check back to original def
         l = service.getLayoutDefinition("testCategory", "testLayout");

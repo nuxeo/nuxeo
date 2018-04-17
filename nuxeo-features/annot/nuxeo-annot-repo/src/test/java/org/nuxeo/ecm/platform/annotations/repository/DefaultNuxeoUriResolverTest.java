@@ -39,12 +39,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @author Alexandre Russel
  */
-@LocalDeploy({ "org.nuxeo.ecm.platform.repository.test:OSGI-INF/other-repo.xml" })
+@Deploy("org.nuxeo.ecm.annotations.repository.test:OSGI-INF/other-repo.xml")
 public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
     private DefaultNuxeoUriResolver resolver;
@@ -53,6 +53,7 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
     private URI uriSecondRepo;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

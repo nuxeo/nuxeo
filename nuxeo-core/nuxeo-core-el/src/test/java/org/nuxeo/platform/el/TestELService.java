@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.platform.el")
-@LocalDeploy("org.nuxeo.ecm.platform.el.tests:OSGI-INF/test-elcontextfactory-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.el.tests:OSGI-INF/test-elcontextfactory-contrib.xml")
 public class TestELService {
 
     @Test

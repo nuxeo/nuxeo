@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,10 @@ public interface RuntimeHarness {
      */
     void undeployContrib(String bundle, String contrib) throws Exception;
 
+    /**
+     * @deprecated since 10.1, use {@link #deployContrib(String, String)}
+     */
+    @Deprecated
     RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
 
     /**
@@ -82,7 +86,9 @@ public interface RuntimeHarness {
      *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
+     * @deprecated since 10.1, use {@link #deployContrib(String, String)}
      */
+    @Deprecated
     RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
 
     /**
@@ -114,6 +120,10 @@ public interface RuntimeHarness {
      */
     RuntimeContext deployPartial(String bundle, Set<TargetExtensions> targetExtensions) throws Exception;
 
+    /**
+     * @deprecated since 10.2, unused and badly implemented
+     */
+    @Deprecated
     void deployFolder(File folder, ClassLoader loader) throws Exception;
 
     void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
@@ -122,7 +132,9 @@ public interface RuntimeHarness {
      * Framework properties for variable injections
      *
      * @since 5.4.2
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     Properties getProperties();
 
     /**
@@ -141,19 +153,25 @@ public interface RuntimeHarness {
 
     /**
      * @since 5.5
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     boolean isRestart();
 
     /**
      * @since 5.5
      * @throws Exception
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     void restart() throws Exception;
 
     /**
      * @throws URISyntaxException
      * @since 5.7
+     * @deprecated since 10.2, unused and useless
      */
+    @Deprecated
     List<String> getClassLoaderFiles() throws URISyntaxException;
 
 }

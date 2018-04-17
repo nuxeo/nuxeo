@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -97,6 +98,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -133,6 +135,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
+    /**
+     * @deprecated since 10.1, new trash behavior is: always keep checkedIn state
+     */
+    @Deprecated
     public static final String TRASH_KEEP_CHECKED_IN_PROPERTY = "org.nuxeo.trash.keepCheckedIn";
 
     // @since 9.1 disable ecm:isLatestVersion and ecm:isLatestMajorVersion updates for performance purpose
@@ -2053,7 +2059,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public boolean isTrashed(DocumentRef docRef) {
-        return LifeCycleConstants.DELETED_STATE.equals(getCurrentLifeCycleState(docRef));
+        return Framework.getService(TrashService.class).isTrashed(this, docRef);
     }
 
     @Override
@@ -2083,11 +2089,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
+        boolean deleteTransitions = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
+                || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
+
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
-            boolean deleteOrUndelete = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
-                    || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
-            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class)
-                                              .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
+            if (!deleteTransitions || Framework.getService(ConfigurationService.class)
+                                               .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
                 checkOut(docRef);
                 doc = resolveReference(docRef);
             }
@@ -2106,6 +2113,18 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
         if (!docModel.isImmutable()) {
             writeModel(doc, docModel);
+        }
+        // backward compat - used to forward deprecated call followTransition("deleted") to trash service
+        // we need to exclude proxy because trash service will remove them
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            docModel = readModel(doc);
+            docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                trashService.trashDocument(docModel);
+            } else {
+                trashService.untrashDocument(docModel);
+            }
         }
         return true; // throws if error
     }

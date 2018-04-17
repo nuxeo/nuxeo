@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -52,11 +51,13 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
     }
 
+    @Override
     public URI getSearchURI(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         return getGraphURIFromDocumentView(view);
     }
 
+    @Override
     public URI translateFromGraphURI(URI uri, String baseUrl) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null || baseUrl == null) { // not a nuxeo document or
@@ -73,6 +74,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         return u;
     }
 
+    @Override
     public URI translateToGraphURI(URI uri) {
         if (uri.toString().startsWith("urn")) {
             return uri;
@@ -96,6 +98,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         }
     }
 
+    @Override
     public String getBaseUrl(URI uri) {
         String url;
         try {

@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.restapi.server.search.config">
     <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
-        <coreQueryPageProvider name="REST_API_SEARCH_ADAPTER">
-            <pageSize>0</pageSize>
-            <maxPageSize>0</maxPageSize>
-        </coreQueryPageProvider>
+        <coreQueryPageProvider name="REST_API_SEARCH_ADAPTER" />
     </extension>
 </component>

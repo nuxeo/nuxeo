@@ -20,33 +20,27 @@
 package org.nuxeo.ecm.platform.uidgen;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.persistence", //
-        "org.nuxeo.ecm.platform.uidgen.core", //
-})
-@LocalDeploy("org.nuxeo.ecm.platform.uidgen.core.tests:OSGI-INF/uidgenerator-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.persistence")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core")
+@Deploy("org.nuxeo.ecm.platform.uidgen.core.tests:OSGI-INF/uidgenerator-test-contrib.xml")
 public class TestJPAUIDSequencer {
 
     @Inject

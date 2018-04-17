@@ -32,31 +32,34 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class TestSchemaManager extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.schema")
+public class TestSchemaManager {
 
-    SchemaManagerImpl schemaManager;
+    @Inject
+    public SchemaManager schemaManager;
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-	schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
-    }
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testTrivialTypeManager() {
-        Collection<Type> types = schemaManager.getTypes();
+        Collection<Type> types = ((SchemaManagerImpl) schemaManager).getTypes();
         assertNotNull(types);
         assertTrue(types.size() > 0);
 
@@ -74,14 +77,15 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     @Test
     public void testFacetsCache() {
         // avoid WARN, register facets
-        schemaManager.registerFacet(new FacetDescriptor("parent1", null));
-        schemaManager.registerFacet(new FacetDescriptor("parent2", null));
-        schemaManager.registerFacet(new FacetDescriptor("child", null));
+        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
+        schemaManagerImpl.registerFacet(new FacetDescriptor("parent1", null));
+        schemaManagerImpl.registerFacet(new FacetDescriptor("parent2", null));
+        schemaManagerImpl.registerFacet(new FacetDescriptor("child", null));
 
         String[] facets = { "parent1", "parent2" };
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd = new DocumentTypeDescriptor("Document", "Parent", schemas, facets);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         assertNotNull(schemaManager.getDocumentType("Parent"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
@@ -96,7 +100,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         facets = new String[1];
         facets[0] = "child";
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
         assertEquals(3, schemaManager.getDocumentTypes().length);
 
         tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
@@ -113,7 +117,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Child"));
 
         // Unregister child
-        schemaManager.unregisterDocumentType(dtd);
+        schemaManagerImpl.unregisterDocumentType(dtd);
         assertNull(schemaManager.getDocumentType("Child"));
         assertNull(schemaManager.getDocumentTypeNamesForFacet("child"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
@@ -126,14 +130,15 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testInheritanceCache() {
+        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
         checkInheritanceCache();
     }
 
@@ -170,22 +175,23 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     @Test
     public void testFacetsCacheReversedRegistration() {
         // avoid WARN, register facets
-        schemaManager.registerFacet(new FacetDescriptor("parent1", null));
-        schemaManager.registerFacet(new FacetDescriptor("parent2", null));
-        schemaManager.registerFacet(new FacetDescriptor("child", null));
+        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
+        schemaManagerImpl.registerFacet(new FacetDescriptor("parent1", null));
+        schemaManagerImpl.registerFacet(new FacetDescriptor("parent2", null));
+        schemaManagerImpl.registerFacet(new FacetDescriptor("child", null));
 
         DocumentTypeDescriptor dtd;
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         String[] facets = new String[1];
         facets[0] = "child";
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         facets = new String[2];
         facets[0] = "parent1";
         facets[1] = "parent2";
         dtd = new DocumentTypeDescriptor("Document", "Parent", schemas, facets);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
@@ -203,24 +209,25 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testInheritanceCacheReversedRegistration() {
+        SchemaManagerImpl schemaManagerImpl = (SchemaManagerImpl) schemaManager;
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
 
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel", schemas, new String[0]);
-        schemaManager.registerDocumentType(dtd);
+        schemaManagerImpl.registerDocumentType(dtd);
 
         checkInheritanceCache();
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
     public void testDynamicChanges() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
 
         DocumentType t = schemaManager.getDocumentType("myDoc3");
         Set<String> ts = new HashSet<>(Arrays.asList(t.getSchemaNames()));
@@ -228,7 +235,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertEquals(Collections.singleton("myfacet"), t.getFacets());
 
         // add a new schema the myDoc2 and remove a facet
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-change-doctype.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-change-doctype.xml");
 
         // myDoc3, a child type, sees the change
         t = schemaManager.getDocumentType("myDoc3");
@@ -238,9 +245,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-supertype-loop.xml")
     public void testSupertypeLoop() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-supertype-loop.xml");
-
         DocumentType t = schemaManager.getDocumentType("someDocInLoop");
         DocumentType t2 = schemaManager.getDocumentType("someDocInLoop2");
         assertEquals("someDocInLoop2", t.getSuperType().getName());
@@ -248,9 +254,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-missing-supertype.xml")
     public void testMissingSupertype() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-missing-supertype.xml");
-
         DocumentType t = schemaManager.getDocumentType("someDoc");
         DocumentType t2 = schemaManager.getDocumentType("someDoc2");
         assertNull(t.getSuperType());
@@ -258,9 +263,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-missing-schema.xml")
     public void testFacetMissingSchema() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-missing-schema.xml");
-
         CompositeType f = schemaManager.getFacet("someFacet");
         assertEquals(Collections.singletonList("common"), Arrays.asList(f.getSchemaNames()));
     }
@@ -269,11 +273,11 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     public void testFacetNoPerDocumentQuery() throws Exception {
         assertFalse(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
 
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document.xml");
 
         assertTrue(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
 
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document-override.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document-override.xml");
 
         assertFalse(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
     }
@@ -283,8 +287,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
     public void testMergeDocumentType() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
 
         DocumentType t = schemaManager.getDocumentType("myDoc");
         assertEquals(Collections.singletonList("schema2"), Arrays.asList(t.getSchemaNames()));
@@ -297,7 +301,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
         assertEquals(Arrays.asList("schema3"), schemaNames(schemaManager.getProxySchemas(null)));
 
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
 
         t = schemaManager.getDocumentType("myDoc");
         assertEquals(Collections.singletonList("schema2"), Arrays.asList(t.getSchemaNames()));
@@ -312,8 +316,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaWithImportInclude.xml")
     public void testDeployWithIncludeAndImport() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaWithImportInclude.xml");
 
         Schema schema = schemaManager.getSchema("schemaWithIncludeAndImport");
         assertNotNull(schema);
@@ -329,8 +333,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaRebase.xml")
     public void testDeploySchemaWithRebase() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaRebase.xml");
 
         Schema schema = schemaManager.getSchema("employeeSchema");
         assertNotNull(schema);
@@ -352,8 +356,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
     public void testHasSuperType() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
 
         assertTrue(schemaManager.hasSuperType("Document", "Document"));
         assertTrue(schemaManager.hasSuperType("myDoc", "Document"));
@@ -365,8 +369,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
     public void testGetAllowedSubTypes() throws Exception {
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
 
         Collection<String> subtypes = schemaManager.getAllowedSubTypes("myFolder");
         assertNotNull(subtypes);
@@ -390,7 +394,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertTrue(subtypes.contains("myFolder"));
 
         // let's append types to myFolder and override mySpecialFoder
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
 
         subtypes = schemaManager.getAllowedSubTypes("myFolder");
         assertNotNull(subtypes);
@@ -415,9 +419,9 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-extends-append-doctypes.xml")
     public void testExtendsAppendTypes() throws Exception {
         // test appending types which extend another document
-        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-extends-append-doctypes.xml");
         DocumentType t = schemaManager.getDocumentType("MyMergeableFolder");
         assertEquals(t.getFacets(), new HashSet<>(Arrays.asList("specdoc", "specdoc2", "specdoc3", "specdoc4")));
         assertEquals(t.getAllowedSubtypes(), new HashSet<>(Arrays.asList("myDoc2", "myDoc3", "myDoc4")));

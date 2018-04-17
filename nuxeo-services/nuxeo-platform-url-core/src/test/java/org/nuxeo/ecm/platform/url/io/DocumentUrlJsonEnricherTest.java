@@ -31,7 +31,9 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy({ "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
+@Deploy("org.nuxeo.ecm.platform.url.core")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
 public class DocumentUrlJsonEnricherTest
         extends AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
 

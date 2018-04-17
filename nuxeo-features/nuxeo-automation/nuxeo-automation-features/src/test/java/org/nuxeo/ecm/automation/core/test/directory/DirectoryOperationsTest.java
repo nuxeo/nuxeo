@@ -43,6 +43,7 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries;
+import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -57,7 +58,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,8 +69,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
+@Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.automation.features")
+@Deploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryOperationsTest {
 
     @Inject
@@ -317,6 +319,34 @@ public class DirectoryOperationsTest {
         assertEquals("oceania", entry.get("id"));
         assertEquals("label.directories.continent.oceania", entry.get("label"));
         assertEquals(0, entry.get("obsolete"));
+    }
+
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void shouldSuggestProperEntries() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "continent");
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("fakeChain");
+        chain.add(oparams);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+        assertEquals(7, entries.size());
+
+        Map<String, Object> entry = entries.get(0);
+        assertEquals("africa", entry.get("id"));
+        assertEquals(0, entry.get("obsolete"));
+        assertEquals("continent", entry.get("directoryName"));
+        assertNotNull(entry.get("properties"));
     }
 
 }

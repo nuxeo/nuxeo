@@ -33,11 +33,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.ZkConnection;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -52,14 +55,10 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
-
-import kafka.admin.AdminUtils;
-import kafka.admin.RackAwareMode;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
 
 /**
  * Unit test to learn Kafka lib.
@@ -68,43 +67,11 @@ import kafka.utils.ZkUtils;
  */
 public class TestLibKafka {
 
-    final static int TIMEOUT_MS = 6000;
-
-    final static int CONNECTION_TIMEOUT_MS = 10000;
-
-    final static int DEFAULT_REPLICATION = 1;
+    final static short DEFAULT_REPLICATION = 1;
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
         TestKafkaUtils.assumeKafkaEnabled();
-    }
-
-    @Test
-    public void testCreateZkClient() {
-        ZkClient zkClient = createZkClient(KafkaUtils.getZkServers());
-        assertNotNull(zkClient);
-        zkClient.close();
-    }
-
-    @Test
-    public void testCreateZkUtils() {
-        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
-        assertNotNull(zkUtils);
-        zkUtils.close();
-    }
-
-    @Test
-    public void testCreateDeleteTopic() {
-        String topic = "test-create-delete-topic";
-        int partitions = 5;
-
-        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
-        if (!topicExists(zkUtils, topic)) {
-            createTopic(zkUtils, topic, partitions);
-        }
-        // no effect by default
-        deleteTopic(zkUtils, topic);
-        zkUtils.close();
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
@@ -177,7 +144,7 @@ public class TestLibKafka {
     }
 
     @Test
-    public void testAssignator() throws Exception {
+    public void testAssignator() {
         final List<PartitionInfo> parts = new ArrayList<>();
         parts.addAll(getPartsFor("t0", 4));
         parts.addAll(getPartsFor("t1", 5));
@@ -207,6 +174,12 @@ public class TestLibKafka {
         return ret;
     }
 
+    protected Properties getAdminProperties() {
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
+        return props;
+    }
+
     protected Properties getProducerProperties() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
@@ -231,36 +204,37 @@ public class TestLibKafka {
         return props;
     }
 
-    protected void createTopic(String topic, int partitions) {
-        ZkUtils zkUtils = createZkUtils(KafkaUtils.getZkServers());
-        if (!topicExists(zkUtils, topic)) {
-            createTopic(zkUtils, topic, partitions);
+    protected boolean topicExists(String topic) {
+        try (AdminClient adminClient = AdminClient.create(getAdminProperties())) {
+            adminClient.describeTopics(Collections.singletonList(topic)).values().get(topic).get();
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                return false;
+            }
+            throw new RuntimeException(e);
         }
-        zkUtils.close();
     }
 
-    protected ZkUtils createZkUtils(String zkServers) {
-        ZkClient zkClient = createZkClient(zkServers);
-        return new ZkUtils(zkClient, new ZkConnection(zkServers), false);
-    }
-
-    protected ZkClient createZkClient(String zkServers) {
-        return new ZkClient(zkServers, TIMEOUT_MS, CONNECTION_TIMEOUT_MS, ZKStringSerializer$.MODULE$);
-    }
-
-    protected void createTopic(ZkUtils zkUtils, String topic, int partitions) {
-        Properties topicConfig = new Properties();
-        AdminUtils.createTopic(zkUtils, topic, partitions, DEFAULT_REPLICATION, topicConfig,
-                RackAwareMode.Disabled$.MODULE$);
-    }
-
-    protected void deleteTopic(ZkUtils zkUtils, String topic) {
-        // work only if delete.topic.enable is true which is not the default
-        AdminUtils.deleteTopic(zkUtils, topic);
-    }
-
-    protected boolean topicExists(ZkUtils zkUtils, String topic) {
-        return AdminUtils.topicExists(zkUtils, topic);
+    protected void createTopic(String topic, int partitions) {
+        if (topicExists(topic)) {
+            return;
+        }
+        try (AdminClient adminClient = AdminClient.create(getAdminProperties())) {
+            CreateTopicsResult ret = adminClient.createTopics(
+                    Collections.singletonList(new NewTopic(topic, partitions, DEFAULT_REPLICATION)));
+            ret.all().get(2, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Unable to create topics " + topic + " within the timeout", e);
+        }
     }
 
     protected static class TestCallback implements Callback {

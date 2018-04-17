@@ -14,13 +14,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.core.io.test:OSGI-INF/export-docTypes.xml" })
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/export-docTypes.xml")
 public class ExportAndTransformTest extends BaseExport {
 
     @Test
@@ -28,7 +28,7 @@ public class ExportAndTransformTest extends BaseExport {
 
         DocumentModel root = createSomethingToExport(session);
 
-        DocumentModelList versions = session.query("select * from Document where ecm:isCheckedInVersion = 1");
+        DocumentModelList versions = session.query("select * from Document where ecm:isVersion = 1");
 
         assertEquals(2, versions.size());
 
@@ -44,10 +44,12 @@ public class ExportAndTransformTest extends BaseExport {
             String listing = sb.toString();
 
             // check file exported
-            assertTrue(listing.contains("ws1" + File.separator + "folder" + File.separator + "file" + File.separator + "document.xml"));
+            assertTrue(listing.contains(
+                    "ws1" + File.separator + "folder" + File.separator + "file" + File.separator + "document.xml"));
 
             // check version exported
-            assertTrue(listing.contains("ws1" + File.separator + "folder" + File.separator + "file" + File.separator + "__versions__" + File.separator + "1.0" + File.separator + "document.xml"));
+            assertTrue(listing.contains("ws1" + File.separator + "folder" + File.separator + "file" + File.separator
+                    + "__versions__" + File.separator + "1.0" + File.separator + "document.xml"));
 
             // check invoice exported
             assertTrue(listing.contains("ws1" + File.separator + "invoice" + File.separator + "document.xml"));

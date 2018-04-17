@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests for NXP-7000: Manage LDAP directories changing id to upper case Should not be used for external LDAP servers
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author Anahide Tchertchian
  */
 // override the default server setup
-@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override-upper-id.xml")
+@Deploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override-upper-id.xml")
 public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
 
     protected static final String USER_SCHEMANAME = "user";

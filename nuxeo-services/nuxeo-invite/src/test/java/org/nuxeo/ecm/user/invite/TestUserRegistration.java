@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.user.invite;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
@@ -30,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
@@ -37,9 +39,17 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
  */
 public class TestUserRegistration extends AbstractUserRegistration {
 
+    private UserRegistrationConfiguration configuration;
+
     @Before
     public void init() {
         initializeRegistrations();
+        configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+                DEFAULT_CONFIGURATION_NAME);
+        DocumentModel group = userManager.getBareGroupModel();
+        group.setPropertyValue(userManager.getGroupIdField(), "samplegroup");
+        group.setPropertyValue(userManager.getGroupLabelField(), "Sample Group");
+        userManager.createGroup(group);
     }
 
     @Test
@@ -54,46 +64,34 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
     @Test
     public void testBasicUserRegistration() {
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
-        // User info
-        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
-        userInfo.setPropertyValue("userinfo:login", "jolivier");
-        userInfo.setPropertyValue("userinfo:firstName", "jolivier");
-        userInfo.setPropertyValue("userinfo:lastName", "jolivier");
-        userInfo.setPropertyValue("userinfo:email", "oolivier@dummy.com");
-        userInfo.setPropertyValue("userinfo:tenantId", "tenant-a");
-
         DocumentModelList users = userManager.searchUsers("jolivier");
         assertEquals(0, users.size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
-                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
+        String requestId = userRegistrationService.submitRegistrationRequest(buildSampleUserInfo(),
+                buildAdditionalInfo(), UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         users = userManager.searchUsers("jolivier");
+        assertEquals(1, users.size());
         DocumentModel jolivier = users.get(0);
-        assertEquals(1, userManager.searchUsers("jolivier").size());
         assertEquals("tenant-a", jolivier.getPropertyValue("tenantId"));
     }
 
     @Test
     public void testBasicUserRegistrationWithLoginChanged() {
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
-        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        DocumentModel userInfo = buildSampleUserInfo();
         String templogin = "templogin";
         String newUser = "newUser";
 
         userInfo.setPropertyValue("userinfo:login", templogin);
-        userInfo.setPropertyValue("userinfo:firstName", "John");
-        userInfo.setPropertyValue("userinfo:lastName", "Olivier");
         userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
 
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(0, userManager.searchUsers(newUser).size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
-                new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
+                UserInvitationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
@@ -104,51 +102,113 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
     @Test(expected = UserAlreadyExistsException.class)
     public void testMultipleRegistrationWithSameEmail() {
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
-        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        DocumentModel userInfo = buildSampleUserInfo();
         String templogin = "templogin";
         String newUser = "newUser";
 
         userInfo.setPropertyValue("userinfo:login", templogin);
-        userInfo.setPropertyValue("userinfo:firstName", "John");
-        userInfo.setPropertyValue("userinfo:lastName", "Olivier");
         userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
 
-        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
-                new HashMap<String, Serializable>(0), UserInvitationService.ValidationMethod.NONE, true);
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
+                UserInvitationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
         userInfo.setPropertyValue("userinfo:login", templogin + '1');
         // Must throw a UserAlreadyExistsException
-        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
+        userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
                 UserInvitationService.ValidationMethod.NONE, true);
     }
 
     @Test(expected = UserAlreadyExistsException.class)
     public void testMultipleRegistrationWithSameLogin() {
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
-                DEFAULT_CONFIGURATION_NAME);
         // User info
-        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        DocumentModel userInfo = buildSampleUserInfo();
 
-        userInfo.setPropertyValue("userinfo:login", "jdoe");
-        userInfo.setPropertyValue("userinfo:firstName", "John");
-        userInfo.setPropertyValue("userinfo:lastName", "Doe");
-        userInfo.setPropertyValue("userinfo:email", "johndoe@dummy.com");
-
-        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<>(),
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
                 UserInvitationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<>();
-        additionnalInfos.put("userinfo:login", "jdoe");
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
         userInfo.setPropertyValue("userinfo:firstName", "Jane");
-        userInfo.setPropertyValue("userinfo:email", "janedoe@dummy.com");
+        userInfo.setPropertyValue("userinfo:email", "janeolivier@dummy.com");
         // Must throw a UserAlreadyExistsException
-        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<>(),
+        userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
                 UserInvitationService.ValidationMethod.NONE, true);
     }
+
+    @Test
+    public void testSingleUserCantInviteIntoOtherGroups() throws Exception {
+
+        // Given a user in a sample group
+        DocumentModel userInfo = buildSampleUserInfo();
+
+        userInfo.setPropertyValue(configuration.getUserInfoGroupsField(), new String[] { "samplegroup" });
+
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
+                UserInvitationService.ValidationMethod.NONE, true);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+
+        assertFalse(userManager.getPrincipal("jolivier").isAdministrator());
+        assertTrue(userManager.getPrincipal("jolivier").getAllGroups().contains("samplegroup"));
+
+        // When that user invite another user and add the administrators group
+        userInfo = buildSampleUserInfo();
+
+        // Force the tenantId to null as the MultiTenant plugin is not deployed
+        userInfo.setPropertyValue("userinfo:tenantId", null);
+        userInfo.setPropertyValue("userinfo:login", "jolivier2");
+        userInfo.setPropertyValue("userinfo:email", "oolivier2@dummy.com");
+        userInfo.setPropertyValue(configuration.getUserInfoGroupsField(),
+                new String[] { "administrators", "samplegroup" });
+
+        requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo("jolivier"),
+                UserInvitationService.ValidationMethod.NONE, true);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+
+        // Then only the intersection of the group is added to the new user
+        NuxeoPrincipal jolivier2 = userManager.getPrincipal("jolivier2");
+        assertFalse(jolivier2.isAdministrator());
+        assertTrue(jolivier2.getAllGroups().contains("samplegroup"));
+
+    }
+
+    @Test(expected = UserRegistrationException.class)
+    public void testSingleUserCantInviteIntoOtherTenant() throws Exception {
+
+        // Given a user in a tenant-a
+        DocumentModel userInfo = buildSampleUserInfo();
+        userInfo.setPropertyValue(configuration.getUserInfoGroupsField(), new String[] { "samplegroup" });
+
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
+                UserInvitationService.ValidationMethod.NONE, true);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+
+        assertFalse(userManager.getPrincipal("jolivier").isAdministrator());
+        assertTrue(userManager.getPrincipal("jolivier").getAllGroups().contains("samplegroup"));
+
+        // When that user invite another user in tenant-b
+        userInfo = buildSampleUserInfo();
+        userInfo.setPropertyValue("userinfo:login", "jolivier2");
+        userInfo.setPropertyValue("userinfo:email", "oolivier2@dummy.com");
+        userInfo.setPropertyValue("userinfo:tenantId", "tenant-b");
+
+        requestId = userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo("jolivier"),
+                UserInvitationService.ValidationMethod.NONE, true);
+        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+
+    }
+
+    private DocumentModel buildSampleUserInfo() {
+        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        userInfo.setPropertyValue("userinfo:login", "jolivier");
+        userInfo.setPropertyValue("userinfo:firstName", "John");
+        userInfo.setPropertyValue("userinfo:lastName", "Olivier");
+        userInfo.setPropertyValue("userinfo:email", "oolivier@dummy.com");
+        userInfo.setPropertyValue("userinfo:tenantId", "tenant-a");
+        return userInfo;
+    }
+
 }

@@ -36,9 +36,9 @@ import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import junit.framework.AssertionFailedError;
@@ -67,13 +67,13 @@ public class CanRollbackDatabaseTest {
     }
 
     @Test(expected = SQLException.class)
-    @LocalDeploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib-with-fatal.xml")
+    @Deploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib-with-fatal.xml")
     public void testFatalRollback() throws Exception {
         insertWrongReference();
     }
 
     @Test(expected = SQLException.class)
-    @LocalDeploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib.xml")
     public void testNoFatalRollback() throws Exception {
         insertWrongReference();
     }

@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
@@ -173,6 +175,8 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             return values.toArray((T[]) Array.newInstance(Integer.class, values.size()));
         } else if (type instanceof BinaryType) {
             return values.toArray((T[]) Array.newInstance(Byte.class, values.size()));
+        } else if (type instanceof DateType) {
+            return values.toArray((T[]) Array.newInstance(Calendar.class, values.size()));
         }
         throw new MarshallingException("Primitive type not found: " + type.getName());
     }

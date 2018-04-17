@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.io.download;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,7 +41,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
@@ -49,9 +49,21 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({"org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache"})
-@LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-with-resolver.xml")
+@Deploy("org.nuxeo.ecm.core.io")
+@Deploy("org.nuxeo.ecm.core.cache")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-with-resolver.xml")
 public class TestCustomRedirectResolver {
+
+    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
 
     @Inject
     protected DownloadService downloadService;
@@ -65,7 +77,7 @@ public class TestCustomRedirectResolver {
         when(request.getMethod()).thenReturn("GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new ServletOutputStream() {
+        ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 out.write(b);

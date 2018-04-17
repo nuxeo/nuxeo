@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,8 +49,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.io" })
-@LocalDeploy("org.nuxeo.ecm.automation.io:testdoc-core-contrib.xml")
+@Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.automation.io:testdoc-core-contrib.xml")
 public class DocumentModelIOTest {
 
     private static final String JSON = "{" + //

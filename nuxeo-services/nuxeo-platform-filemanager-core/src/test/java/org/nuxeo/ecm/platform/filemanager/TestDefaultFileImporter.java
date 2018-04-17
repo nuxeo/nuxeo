@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
@@ -47,9 +46,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core" })
-@LocalDeploy("org.nuxeo.ecm.platform.filemanager.core:test-ui-types-local-configuration.xml")
+@Deploy("org.nuxeo.ecm.platform.types.api")
+@Deploy("org.nuxeo.ecm.platform.types.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core")
+@Deploy("org.nuxeo.ecm.platform.filemanager.core:test-ui-types-local-configuration.xml")
 public class TestDefaultFileImporter {
 
     @Inject

@@ -35,15 +35,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.htmlsanitizer",
-        "org.nuxeo.ecm.platform.htmlsanitizer.test:OSGI-INF/core-types-contrib.xml" })
+@Deploy("org.nuxeo.ecm.platform.htmlsanitizer")
+@Deploy("org.nuxeo.ecm.platform.htmlsanitizer.test:OSGI-INF/core-types-contrib.xml")
 public class TestHtmlSanitizerServiceImpl {
 
     public static final String BAD_HTML = "<b>foo<script>bar</script></b>";
 
     public static final String SANITIZED_HTML = "<b>foo</b>";
 
-    public static final String BAD_XML = "<b>caf\u00e9</b>";
+    public static final String XML = "<b>caf\u00e9</b>";
 
     public static final String SANITIZED_XML = "<b>caf&eacute;</b>";
 
@@ -78,20 +78,21 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(SANITIZED_HTML, note);
     }
 
+    // but text/xml notes must not be sanitized
     @Test
     public void sanitizeNoteXml() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
-        doc.setPropertyValue("note", BAD_XML);
+        doc.setPropertyValue("note", XML);
         doc.setPropertyValue("mime_type", "text/xml");
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
-        assertEquals(SANITIZED_XML, note);
+        assertEquals(XML, note);
 
         session.save();
-        doc.setPropertyValue("note", BAD_XML);
+        doc.setPropertyValue("note", XML);
         doc = session.saveDocument(doc);
         note = (String) doc.getPropertyValue("note");
-        assertEquals(SANITIZED_XML, note);
+        assertEquals(XML, note);
     }
 
     // but text/plain notes must not be sanitized
@@ -128,10 +129,11 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(MARKDOWN_TEXT, note);
     }
 
+    // sanitize XML note if no mime_type defined
     @Test
     public void sanitizeNullFilterField() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
-        doc.setPropertyValue("note", BAD_XML);
+        doc.setPropertyValue("note", XML);
         doc.setPropertyValue("mime_type", null); // null filter field
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
@@ -210,7 +212,7 @@ public class TestHtmlSanitizerServiceImpl {
     public void sanitizeNoteHtml5() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "n2", "Note");
         doc.setPropertyValue("note", BAD_HTML5);
-        doc.setPropertyValue("mime_type", "text/xml");
+        doc.setPropertyValue("mime_type", "text/html");
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
         assertEquals(SANITIZED_HTML5, note);

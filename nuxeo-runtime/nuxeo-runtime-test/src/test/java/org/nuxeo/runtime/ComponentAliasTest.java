@@ -23,37 +23,41 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-public class ComponentAliasTest extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+public class ComponentAliasTest {
 
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp3.xml")
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp4.xml")
     public void testContributions() throws Exception {
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp3.xml", "org.nuxeo.runtime.test.tests:MyComp4.xml");
-
         check(3);
     }
 
     @Test
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp4.xml")
+    // register the required one last
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp3.xml")
     public void testContributionsPending() throws Exception {
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp4.xml",
-                // register the required one last
-                "org.nuxeo.runtime.test.tests:MyComp3.xml");
-
         check(3);
     }
 
     @Test
+    // contrib to an alias of the component, not using a require
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp4b.xml")
+    // the component itself
+    @Deploy("org.nuxeo.runtime.test.tests:MyComp3.xml")
     public void testContributionsPendingOnAliasWithoutRequire() throws Exception {
-        // contrib to an alias of the component, not using a require
-        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp4b.xml",
-                // the component itself
-                "org.nuxeo.runtime.test.tests:MyComp3.xml");
-
         check(1);
     }
 

@@ -18,20 +18,20 @@
  */
 package org.nuxeo.lib.stream.tests.tools;
 
-import java.nio.file.Paths;
-import java.time.Duration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.lib.stream.tests.log.TestLog.DEF_TIMEOUT;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
-import org.nuxeo.lib.stream.tools.KafkaConfigParser;
 
 /**
  * @since 9.10
@@ -47,48 +47,33 @@ public class TestToolsKafka extends TestTools {
     @BeforeClass
     public static void assumeKafkaEnabled() {
         TestKafkaUtils.assumeKafkaEnabled();
-    }
-
-    @Override
-    public void createContent() throws Exception {
-        if (configFile != null) {
-            return;
-        }
-        configFile = this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE).getFile();
-        KafkaConfigParser config = new KafkaConfigParser(Paths.get(configFile), KAFKA_CONF);
-        try (LogManager manager = new KafkaLogManager(config.getZkServers(), config.getPrefix(),
-                config.getProducerProperties(), config.getConsumerProperties())) {
-            if (!manager.createIfNotExists(LOG_NAME, 1)) {
-                // log already exists and should have some content
-                return;
-            }
-            LogAppender<Record> appender = manager.getAppender(LOG_NAME);
-            for (int i = 0; i < NB_RECORD; i++) {
-                String key = "key" + i;
-                String value = "Some value for " + i;
-                appender.append(key, Record.of(key, value.getBytes("UTF-8")));
-            }
-            LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-            tailer = manager.createTailer("anotherGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-        }
 
     }
 
     @Test
-    @Override
-    public void testPosition() {
-        super.testPosition();
-        run(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
+    public void testPositionAfterDate() throws InterruptedException {
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --after-date %s",
+                getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
+        // move to target timestamp
+        run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(),
+                LOG_NAME, Instant.ofEpochMilli(Watermark.ofValue(targetRecord.watermark).getTimestamp())));
+        // open a tailer with the moved group we should be on the same record
+        try (LogTailer<Record> tailer = getManager().createTailer("anotherGroup", LOG_NAME)) {
+            LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
+            assertNotNull(rec);
+            assertEquals(targetRecord, rec.message());
+        }
     }
 
     @Override
     public String getManagerOptions() {
-        return String.format("--kafka %s --kafka-config %s", configFile, KAFKA_CONF);
+        return String.format("--kafka %s --kafka-config %s", getConfigFile(), KAFKA_CONF);
+    }
+
+    protected String getConfigFile() {
+        if (configFile == null) {
+            configFile = this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE).getFile();
+        }
+        return configFile;
     }
 }

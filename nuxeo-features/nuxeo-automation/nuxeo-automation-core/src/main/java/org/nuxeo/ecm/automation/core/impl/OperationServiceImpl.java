@@ -92,6 +92,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object run(OperationContext ctx, String operationId, Map<String, ?> args) throws OperationException {
         OperationType op = operations.lookup().get(operationId);
         if (op == null) {
@@ -101,12 +102,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             log.warn("null operation parameters given for " + operationId, new Throwable("stack trace"));
             args = Collections.emptyMap();
         }
-        ctx.push(args);
-        try {
-            return run(ctx, getOperationChain(operationId));
-        } finally {
-            ctx.pop(args);
-        }
+        return ctx.callWithChainParameters(() -> run(ctx, getOperationChain(operationId)), (Map<String, Object>) args);
     }
 
     @Override
@@ -116,9 +112,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         CompiledChain compiled = compileChain(inputType, chain);
         boolean completedAbruptly = true;
         try {
-            Object result  = compiled.invoke(ctx);
+            Object result = compiled.invoke(ctx);
             completedAbruptly = false;
-            return result ;
+            return result;
         } catch (OperationException cause) {
             completedAbruptly = false;
             if (hasChainException(chain.getId())) {
@@ -270,8 +266,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public List<OperationChain> getOperationChains() {
-        List<ChainTypeImpl> chainsType = new ArrayList<ChainTypeImpl>();
-        List<OperationChain> chains = new ArrayList<OperationChain>();
+        List<ChainTypeImpl> chainsType = new ArrayList<>();
+        List<OperationChain> chains = new ArrayList<>();
         for (OperationType operationType : operations.lookup().values()) {
             if (operationType instanceof ChainTypeImpl) {
                 chainsType.add((ChainTypeImpl) operationType);
@@ -285,7 +281,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public synchronized void flushCompiledChains() {
-        compiler.cache.clear();
+        compiler.cache.invalidateAll();
     }
 
     @Override
@@ -349,17 +345,13 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     /**
      * @since 5.7.2
-     * @param id
-     *            operation ID.
+     * @param id operation ID.
      * @return true if operation registry contains the given operation.
      */
     @Override
     public boolean hasOperation(String id) {
         OperationType op = operations.lookup().get(id);
-        if (op == null) {
-            return false;
-        }
-        return true;
+        return op != null;
     }
 
     @Override
@@ -435,7 +427,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public List<OperationDocumentation> getDocumentation() throws OperationException {
-        List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
+        List<OperationDocumentation> result = new ArrayList<>();
         HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
