@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Normalizer;
+import java.text.Normalizer.Form;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.IdUtils;
@@ -72,7 +73,8 @@ public final class FileManagerUtils {
     // with a \, or a DOS file with a /
     public static String fetchFileName(String fullName) {
         // Fetching filename
-        String ret = fullName;
+        // first normalize input, as unicode can be decomposed (macOS behavior on WebDAV)
+        String ret = Normalizer.normalize(fullName, Form.NFC);
         int lastWinSeparator = fullName.lastIndexOf('\\');
         int lastUnixSeparator = fullName.lastIndexOf('/');
         int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
