@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -357,10 +358,25 @@ public class TestFileManagerService {
     }
 
     @Test
-    public void testCreateExistingBlobWithNonNFCNormalizedFilename() throws Exception {
+    public void testCreateBlobWithNonNFCNormalizedFilename() throws Exception {
+        // Create doc from non NFC (NFD) normalized filename
+        String fileName = "ÜÜÜ ÓÓÓ.rtf";
+        String nfdNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFD);
+        Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfdNormalizedFileName);
+        service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfdNormalizedFileName);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
+                                                                nfdNormalizedFileName));
+        // Check existing doc with NFC normalized filename
+        String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
+                                                                nfcNormalizedFileName));
+    }
+
+    @Test
+    public void testGetExistingBlobWithNonNFCNormalizedFilename() throws Exception {
         // Create doc from NFC normalized filename
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
-        String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
+        String nfcNormalizedFileName = Normalizer.normalize(fileName, Form.NFC);
         Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfcNormalizedFileName);
         service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
