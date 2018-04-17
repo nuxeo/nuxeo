@@ -26,7 +26,7 @@
 
     <listener name="dclistener" async="false" postCommit="false"
         class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
-      <event>documentCreated</event>
+      <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
       <event>documentPublished</event>
       <event>lifecycle_transition_event</event>

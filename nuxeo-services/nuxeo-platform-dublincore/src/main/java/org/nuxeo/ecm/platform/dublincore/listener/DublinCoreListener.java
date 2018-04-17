@@ -22,8 +22,8 @@
 package org.nuxeo.ecm.platform.dublincore.listener;
 
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
@@ -79,7 +79,7 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE) && !eventId.equals(TRANSITION_EVENT)
+        if (!eventId.equals(ABOUT_TO_CREATE) && !eventId.equals(BEFORE_DOC_UPDATE) && !eventId.equals(TRANSITION_EVENT)
                 && !eventId.equals(DOCUMENT_PUBLISHED) && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
             return;
         }
@@ -127,7 +127,7 @@ public class DublinCoreListener implements EventListener {
                 return;
             }
             // live proxies may be updated normally, except at creation time (don't update the live doc)
-            if (eventId.equals(DOCUMENT_CREATED)) {
+            if (eventId.equals(ABOUT_TO_CREATE)) {
                 return;
             }
         }
@@ -140,7 +140,7 @@ public class DublinCoreListener implements EventListener {
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
-        } else if (eventId.equals(DOCUMENT_CREATED)) {
+        } else if (eventId.equals(ABOUT_TO_CREATE)) {
             service.setCreationDate(doc, cEventDate, event);
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);

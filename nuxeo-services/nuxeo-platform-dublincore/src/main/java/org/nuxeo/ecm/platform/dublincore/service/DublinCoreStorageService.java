@@ -21,7 +21,7 @@
 
 package org.nuxeo.ecm.platform.dublincore.service;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 
 import java.security.Principal;
@@ -69,7 +69,7 @@ public class DublinCoreStorageService extends DefaultComponent {
             SystemPrincipal nxp = (SystemPrincipal) principal;
             String originatingUser = nxp.getOriginatingUser();
             if ((originatingUser == null || SYSTEM_USERNAME.equals(originatingUser))
-                    && !DOCUMENT_CREATED.equals(event.getName())) {
+                    && !ABOUT_TO_CREATE.equals(event.getName())) {
                 return;
             } else {
                 principalName = originatingUser;
