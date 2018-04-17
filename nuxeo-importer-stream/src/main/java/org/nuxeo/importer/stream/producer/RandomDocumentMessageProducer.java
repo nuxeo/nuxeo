@@ -48,9 +48,9 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
 
     protected boolean countFolderAsDocument = true;
 
-    protected int maxFoldersPerFolder = 50;
+    protected int maxFoldersPerFolder = 100;
 
-    protected int maxDocumentsPerFolder = 500;
+    protected int maxDocumentsPerFolder = 10000;
 
     protected int blobSizeKB = 0;
 
