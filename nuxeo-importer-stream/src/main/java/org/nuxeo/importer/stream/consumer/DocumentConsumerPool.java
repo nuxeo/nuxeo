@@ -51,6 +51,12 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
 
     protected static final String UID_LISTENER = "uidlistener";
 
+    protected static final String VIDEO_LISTENER = "videoChangedListener";
+
+    protected static final String PICTURE_LISTENER = "pictureViewsGenerationListener";
+
+    protected static final String BLOB_LISTENER = "checkBlobUpdate";
+
     protected boolean blockAsync;
 
     protected final DocumentConsumerPolicy policy;
@@ -72,6 +78,12 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
     protected boolean listenerBinaryEnabled;
 
     protected boolean listenerUidEnabled;
+
+    protected boolean listenerVideoEnabled;
+
+    protected boolean listenerPictureEnabled;
+
+    protected boolean listenerBlobEnabled;
 
     public DocumentConsumerPool(String logName, LogManager manager, ConsumerFactory<M> factory,
             ConsumerPolicy consumerPolicy) {
@@ -108,6 +120,9 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
             listenerTplEnabled = disableSyncListener(eventAdmin, TPL_LISTENER);
             listenerBinaryEnabled = disableSyncListener(eventAdmin, BINARY_LISTENER);
             listenerUidEnabled = disableSyncListener(eventAdmin, UID_LISTENER);
+            listenerVideoEnabled = disableSyncListener(eventAdmin, VIDEO_LISTENER);
+            listenerPictureEnabled = disableSyncListener(eventAdmin, PICTURE_LISTENER);
+            listenerBlobEnabled = disableSyncListener(eventAdmin, BLOB_LISTENER);
             log.debug("Block some default synchronous listener");
         }
     }
@@ -163,6 +178,15 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
             }
             if (listenerUidEnabled) {
                 eventAdmin.setListenerEnabledFlag(UID_LISTENER, true);
+            }
+            if (listenerVideoEnabled) {
+                eventAdmin.setListenerEnabledFlag(VIDEO_LISTENER, true);
+            }
+            if (listenerPictureEnabled) {
+                eventAdmin.setListenerEnabledFlag(PICTURE_LISTENER, true);
+            }
+            if (listenerBlobEnabled) {
+                eventAdmin.setListenerEnabledFlag(BLOB_LISTENER, true);
             }
             log.debug("Unblock some default synchronous listener");
         }
