@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SetDocumentProperty.ID, category = Constants.CAT_DOCUMENT, label = "Update Property", description = "Set a single property value on the input document. The property is specified using its xpath. The document is automatically saved if 'save' parameter is true. If you unset the 'save' you need to save it later using Save Document operation. Return the modified document.")
+@Operation(id = SetDocumentProperty.ID, category = Constants.CAT_DOCUMENT, label = "Update Property", description = "Set a single property value on the input document. The property is specified using its xpath. Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events. Returns the modified document.")
 public class SetDocumentProperty {
 
     public static final String ID = "Document.SetProperty";

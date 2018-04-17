@@ -48,8 +48,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -65,7 +67,7 @@ public class TestACP {
     private ACP acp;
 
     @Before
-    public void doBefore() throws Exception {
+    public void doBefore() {
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
     }
@@ -157,7 +159,7 @@ public class TestACP {
         acl.add(lisa);
         acp.addACL(acl);
 
-        Set<String> perms = new HashSet<String>(3);
+        Set<String> perms = new HashSet<>(3);
         perms.add(BROWSE);
         perms.add(READ);
         perms.add(WRITE);
@@ -195,7 +197,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanAddExistingPermission() throws Exception {
+    public void itCanAddExistingPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
@@ -210,7 +212,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanAddPermission() throws Exception {
+    public void itCanAddPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -229,7 +231,7 @@ public class TestACP {
     }
 
     @Test
-    public void itShouldNotAddPermissionTwice() throws Exception {
+    public void itShouldNotAddPermissionTwice() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
@@ -244,7 +246,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanBlockInheritance() throws Exception {
+    public void itCanBlockInheritance() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -268,7 +270,7 @@ public class TestACP {
     }
 
     @Test(expected = NullPointerException.class)
-    public void blockingInheritanceNeedsACurrentPrincipal() throws Exception {
+    public void blockingInheritanceNeedsACurrentPrincipal() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
 
@@ -279,7 +281,7 @@ public class TestACP {
     }
 
     @Test
-    public void itShouldAddInheritanceEvenIfItAlreadyHasPermission() throws Exception {
+    public void itShouldAddInheritanceEvenIfItAlreadyHasPermission() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
@@ -295,7 +297,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanRemovePermissionsToAUser() throws Exception {
+    public void itCanRemovePermissionsToAUser() {
         // Given an ACP
         ACP acp = new ACPImpl();
         String jack = "jack";
@@ -319,7 +321,7 @@ public class TestACP {
     }
 
     @Test
-    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() throws Exception {
+    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() {
         // Given an ACP
         ACP acp = new ACPImpl();
 
@@ -335,7 +337,7 @@ public class TestACP {
     }
 
     @Test
-    public void itCanRemovePermissionGivenItsId() throws Exception {
+    public void itCanRemovePermissionGivenItsId() {
         // Given an ACP
         ACP acp = new ACPImpl();
         String jack = "jack";
@@ -388,10 +390,37 @@ public class TestACP {
 
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-legacy-acp-behavior.xml")
+    public void testLegacyACLBehavior() {
+        doTestACLBehavior(true);
+    }
+
+    @Test
+    public void testStandardACLBehavior() {
+        doTestACLBehavior(false);
+    }
+
+    public void doTestACLBehavior(boolean legacy) {
+        String customName = "foo";
+        ACP acp = getInheritedReadWriteACP();
+        ACE customACE = ACE.builder("bar", READ_WRITE).creator("admin").build();
+        acp.addACE(customName, customACE);
+        ACL[] acls = acp.getACLs();
+        assertEquals(3, acls.length);
+        if (legacy) {
+            assertEquals(customName, acls[1].getName());
+            assertEquals(ACL.LOCAL_ACL, acls[0].getName());
+        } else {
+            assertEquals(customName, acls[0].getName());
+            assertEquals(ACL.LOCAL_ACL, acls[1].getName());
+        }
+    }
+
     private ACP getInheritedReadWriteACP() {
         ACP acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
+        acp.getOrCreateACL(ACL.LOCAL_ACL);
+        ACL acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ_WRITE, true));
         return acp;
     }

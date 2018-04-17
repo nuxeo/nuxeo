@@ -77,7 +77,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  *     // do not call the other marshaller
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2.
@@ -89,6 +88,16 @@ public interface RenderingContext {
     public static final String DEFAULT_URL = "http://fake-url.nuxeo.com/";
 
     public static final String RESPONSE_HEADER_ENTITY_TYPE_KEY = "ENTITY_TYPE";
+
+    /**
+     * @since 10.2
+     */
+    public static final String REPOSITORY_NAME_REQUEST_HEADER = "X-NXRepository";
+
+    /**
+     * @since 10.2
+     */
+    public static final String REPOSITORY_NAME_REQUEST_PARAMETER = "nxrepository";
 
     /**
      * Gets the requested {@link Locale}.

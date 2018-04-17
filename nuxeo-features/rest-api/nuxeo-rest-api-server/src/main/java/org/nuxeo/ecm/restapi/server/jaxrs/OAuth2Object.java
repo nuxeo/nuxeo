@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 import static org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token.SCHEMA;
 
 import java.io.IOException;
@@ -48,11 +49,14 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.providers.AbstractOAuth2UserEmailProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -104,7 +108,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("provider")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public Response addProvider(@Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider) {
-        checkPermission();
+        checkPermission(null);
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
             registry.addProvider(provider.getServiceName(), provider.getDescription(), provider.getTokenServerURL(),
@@ -124,7 +128,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public Response updateProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request,
             NuxeoOAuth2ServiceProvider provider) {
-        checkPermission();
+        checkPermission(null);
         getProvider(providerId);
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
@@ -141,7 +145,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("provider/{providerId}")
     public Response deleteProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request) {
-        checkPermission();
+        checkPermission(null);
         getProvider(providerId);
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
@@ -188,52 +192,195 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token")
     public List<NuxeoOAuth2Token> getTokens(@Context HttpServletRequest request) {
-        checkPermission();
+        checkPermission(null);
         return getTokens();
+    }
+
+    /**
+     * Retrieves an OAuth2 provider token.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/provider/{providerId}/user/{nxuser}")
+    public Response getProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+                                     @Context HttpServletRequest request) {
+        checkPermission(nxuser);
+        NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
+        return Response.ok(getToken(provider, nxuser)).build();
     }
 
     /**
      * Retrieves an OAuth2 Token.
      *
      * @since 9.2
+     *
+     * @deprecated since 10.2 Use {@link #getProviderToken(String, String, HttpServletRequest)} instead.
      */
+    @Deprecated
     @GET
     @Path("token/{providerId}/{nxuser}")
     public Response getToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-            @Context HttpServletRequest request) {
-        checkPermission();
+                             @Context HttpServletRequest request) {
+        return getProviderToken(providerId, nxuser, request);
+    }
+
+    /**
+     * Updates an OAuth2 provider token.
+     *
+     * @since 10.2
+     */
+    @PUT
+    @Path("token/provider/{providerId}/user/{nxuser}")
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public Response updateProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+                                        @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+        checkPermission(nxuser);
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
-        return Response.ok(getToken(provider, nxuser)).build();
+        return Response.ok(updateToken(provider, nxuser, token)).build();
     }
 
     /**
      * Updates an OAuth2 Token.
      *
      * @since 9.2
+     *
+     * @deprecated since 10.2 Use {@link #updateProviderToken(String, String, HttpServletRequest, NuxeoOAuth2Token)}
+     * instead.
      */
+    @Deprecated
     @PUT
     @Path("token/{providerId}/{nxuser}")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public Response updateToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-            @Context HttpServletRequest request, NuxeoOAuth2Token token) {
-        checkPermission();
+                                @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+        return updateProviderToken(providerId, nxuser, request, token);
+    }
+
+    /**
+     * Deletes an OAuth2 provider token.
+     *
+     * @since 10.2
+     */
+    @DELETE
+    @Path("token/provider/{providerId}/user/{nxuser}")
+    public Response deleteProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+                                        @Context HttpServletRequest request) {
+        checkPermission(nxuser);
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
-        return Response.ok(updateToken(provider, nxuser, token)).build();
+        deleteToken(getTokenDoc(provider, nxuser));
+        return Response.noContent().build();
     }
 
     /**
      * Deletes an OAuth2 Token.
      *
      * @since 9.2
+     *
+     * @deprecated since 10.2 Use {@link #deleteProviderToken(String, String, HttpServletRequest)} instead.
      */
+    @Deprecated
     @DELETE
     @Path("token/{providerId}/{nxuser}")
     public Response deleteToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-            @Context HttpServletRequest request) {
-        checkPermission();
-        NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
-        deleteToken(getTokenDoc(provider, nxuser));
+                                @Context HttpServletRequest request) {
+        return deleteProviderToken(providerId, nxuser, request);
+    }
+
+    /**
+     * Retrieves all oauth2 provider tokens for the current user.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/provider")
+    public List<NuxeoOAuth2Token> getProviderUserTokens(@Context HttpServletRequest request) {
+        checkNotAnonymousUser();
+        String nxuser = request.getUserPrincipal().getName();
+        return getTokens(nxuser).stream() // filter: make sure no client tokens are retrieved
+                .filter(token -> token.getClientId() == null).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves all oauth2 client tokens for the current user.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/client")
+    public List<NuxeoOAuth2Token> getClientUserTokens(@Context HttpServletRequest request) {
+        checkNotAnonymousUser();
+        String nxuser = request.getUserPrincipal().getName();
+        return getTokens(nxuser).stream() // filter: make sure no provider tokens are retrieved
+                .filter(token -> token.getClientId() != null).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a oauth2 client token.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("token/client/{clientId}/user/{nxuser}")
+    public Response getClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                              @Context HttpServletRequest request) {
+        checkPermission(nxuser);
+        OAuth2Client client = getClient(clientId);
+        return Response.ok(getToken(client, nxuser)).build();
+    }
+
+    /**
+     * Updates an OAuth2 client token.
+     *
+     * @since 10.2
+     */
+    @PUT
+    @Path("token/client/{clientId}/user/{nxuser}")
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public Response updateClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                                @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+        checkPermission(nxuser);
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        return Response.ok(updateToken(client, nxuser, token)).build();
+    }
+
+    /**
+     * Deletes a oauth2 client token.
+     *
+     * @since 10.2
+     */
+    @DELETE
+    @Path("token/client/{clientId}/user/{nxuser}")
+    public Response deleteClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
+                                 @Context HttpServletRequest request) {
+        checkPermission(nxuser);
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        deleteToken(getTokenDoc(client, nxuser));
         return Response.noContent().build();
+    }
+
+    /**
+     * Retrieves oauth2 clients.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("client")
+    public List<OAuth2Client> getClients(@Context HttpServletRequest request) {
+        return Framework.getService(OAuth2ClientService.class).getClients();
+    }
+
+    /**
+     * Retrieves a oauth2 client.
+     *
+     * @since 10.2
+     */
+    @GET
+    @Path("client/{clientId}")
+    public Response getClient(@PathParam("clientId") String clientId,
+                              @Context HttpServletRequest request) {
+        OAuth2Client client = getClient(clientId);
+        return Response.ok(client).build();
     }
 
     protected List<NuxeoOAuth2ServiceProvider> getProviders() {
@@ -273,6 +420,14 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         });
     }
 
+    protected OAuth2Client getClient(String clientId) {
+        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        if (client == null) {
+            throw new WebResourceNotFoundException("Invalid client: " + clientId);
+        }
+        return client;
+    }
+
     protected DocumentModel getTokenDoc(NuxeoOAuth2ServiceProvider provider, String nxuser) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("serviceName", provider.getServiceName());
@@ -283,8 +438,24 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         });
         if (tokens.size() > 1) {
             throw new NuxeoException("Found multiple " + provider.getId() + " accounts for " + nxuser);
+        } else if (tokens.isEmpty()) {
+            throw new WebResourceNotFoundException("No token found for provider: " + provider.getServiceName());
+        } else {
+            return tokens.get(0);
+        }
+    }
+
+    protected DocumentModel getTokenDoc(OAuth2Client client, String nxuser) {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put("clientId", client.getId());
+        filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
+        OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
+        List<DocumentModel> tokens = tokenStore.query(filter).stream()
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (tokens.size() > 1) {
+            throw new NuxeoException("Found multiple " + client.getId() + " accounts for " + nxuser);
         } else if (tokens.size() == 0) {
-            throw new WebResourceNotFoundException("No token found for provider: " + provider.getId());
+            throw new WebResourceNotFoundException("No token found for client: " + client.getId());
         } else {
             return tokens.get(0);
         }
@@ -294,8 +465,21 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return new NuxeoOAuth2Token(getTokenDoc(provider, nxuser));
     }
 
+    protected NuxeoOAuth2Token getToken(OAuth2Client client, String nxuser) {
+        return new NuxeoOAuth2Token(getTokenDoc(client, nxuser));
+    }
+
     protected NuxeoOAuth2Token updateToken(NuxeoOAuth2ServiceProvider provider, String nxuser, NuxeoOAuth2Token token) {
-        DocumentModel entry = getTokenDoc(provider, nxuser);
+        updateTokenDoc(token, getTokenDoc(provider, nxuser));
+        return getToken(provider, nxuser);
+    }
+
+    protected NuxeoOAuth2Token updateToken(OAuth2Client client, String nxuser, NuxeoOAuth2Token token) {
+        updateTokenDoc(token, getTokenDoc(client, nxuser));
+        return getToken(client, nxuser);
+    }
+
+    protected void updateTokenDoc(NuxeoOAuth2Token token, DocumentModel entry) {
         entry.setProperty(SCHEMA, "serviceName", token.getServiceName());
         entry.setProperty(SCHEMA, "nuxeoLogin", token.getNuxeoLogin());
         entry.setProperty(SCHEMA, "clientId", token.getClientId());
@@ -309,7 +493,6 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                 session.updateEntry(entry);
             }
         });
-        return getToken(provider, nxuser);
     }
 
     protected void deleteToken(DocumentModel token) {
@@ -337,14 +520,22 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                        .build();
     }
 
-    protected void checkPermission() {
-        if (!hasPermission()) {
+    protected void checkPermission(String nxuser) {
+        if (!hasPermission(nxuser)) {
             throw new WebSecurityException("You do not have permissions to perform this operation.");
         }
     }
 
-    protected boolean hasPermission() {
-        return ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal()).isAdministrator();
+    protected boolean hasPermission(String nxuser) {
+        NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
+        return principal.isAdministrator() || (nxuser == null ? false : nxuser.equals(principal.getName()));
+    }
+
+    protected void checkNotAnonymousUser() {
+        NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
+        if (principal.isAnonymous()) {
+            throw new WebSecurityException("You do not have permissions to perform this operation.");
+        }
     }
 
 }

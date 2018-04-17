@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -62,6 +61,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -213,14 +213,12 @@ public abstract class AbstractTestTagService {
         assertEquals(Collections.singleton("mytag"), tags);
 
         // trash doc
-        file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getService(TrashService.class).trashDocument(file);
 
         // wait for async tag removal
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+        coreFeature.waitForAsyncCompletion();
 
         // check no more tag
-        TransactionHelper.startTransaction();
         tags = tagService.getTags(session, file1Id);
         assertEquals(Collections.emptySet(), tags);
     }

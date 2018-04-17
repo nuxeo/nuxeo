@@ -42,6 +42,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -113,14 +115,11 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected AbstractWebContext(HttpServletRequest request, HttpServletResponse response) {
         engine = Framework.getService(WebEngine.class);
-        scriptExecutionStack = new LinkedList<File>();
+        scriptExecutionStack = new LinkedList<>();
         this.request = request;
         this.response = response;
-        vars = new HashMap<String, Object>();
+        vars = new HashMap<>();
     }
-
-    // public abstract HttpServletRequest getHttpServletRequest();
-    // public abstract HttpServletResponse getHttpServletResponse();
 
     public void setModule(Module module) {
         this.module = module;
@@ -235,7 +234,7 @@ public abstract class AbstractWebContext implements WebContext {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, getLocale().getLanguage());
-            if (args != null && args.size() > 0) {
+            if (CollectionUtils.isNotEmpty(args)) {
                 // format the string using given args
                 msg = MessageFormat.format(msg, args.toArray());
             }
@@ -295,9 +294,9 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
 
-        UserSession us = getUserSession();
-        if (us != null) {
-            Object locale = us.get(LOCALE_SESSION_KEY);
+        UserSession userSession = getUserSession();
+        if (userSession != null) {
+            Object locale = userSession.get(LOCALE_SESSION_KEY);
             if (locale instanceof Locale) {
                 return (Locale) locale;
             }
@@ -310,9 +309,9 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public void setLocale(Locale locale) {
-        UserSession us = getUserSession();
-        if (us != null) {
-            us.put(LOCALE_SESSION_KEY, locale);
+        UserSession userSession = getUserSession();
+        if (userSession != null) {
+            userSession.put(LOCALE_SESSION_KEY, locale);
         }
     }
 
@@ -687,7 +686,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Map<String, Object> createBindings(Map<String, Object> vars) {
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         if (vars != null) {
             bindings.putAll(vars);
         }
@@ -776,6 +775,8 @@ public abstract class AbstractWebContext implements WebContext {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         if (rm.getRepository(repoName) != null) {
             this.repoName = repoName;
+            // set the repository name as a request attribute for later retrieval
+            request.setAttribute(RenderingContext.REPOSITORY_NAME_REQUEST_HEADER, repoName);
         } else {
             throw new IllegalArgumentException("Repository " + repoName + " not found");
         }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.avro.contrib" version="1.0.0">
+  <documentation>
+    Avro basic replacements.
+  </documentation>
+  <extension target="org.nuxeo.runtime.avro" point="replacement">
+    <replacement forbidden="__" replacement="____" priority="-100" />
+    <replacement forbidden="-" replacement="__dash__" />
+    <replacement forbidden=":" replacement="__colon__" />
+  </extension>
+</component>
+

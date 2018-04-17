@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.transientstore.keyvalueblob;
 
 import static java.util.function.Function.identity;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -127,7 +128,13 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     public static final String DIGEST = "digest";
 
-    protected String name;
+    public static final String CONFIG_KEY_VALUE_STORE = "keyValueStore";
+
+    public static final String CONFIG_BLOB_PROVIDER = "blobProvider";
+
+    protected String keyValueStoreName;
+
+    protected String blobProviderId;
 
     /** Basic TTL for all entries. */
     protected int ttl;
@@ -145,24 +152,35 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     @Override
     public void init(TransientStoreConfig config) {
-        name = config.getName();
+        String name = config.getName();
+        Map<String, String> properties = config.getProperties();
+        if (properties == null) {
+            properties = Collections.emptyMap();
+        }
+        keyValueStoreName = defaultIfBlank(properties.get(CONFIG_KEY_VALUE_STORE), name);
+        blobProviderId = defaultIfBlank(properties.get(CONFIG_BLOB_PROVIDER), name);
         mapper = new ObjectMapper();
         ttl = config.getFirstLevelTTL() * 60;
         releaseTTL = config.getSecondLevelTTL() * 60;
-        targetMaxSize = config.getTargetMaxSizeMB() * 1024 * 1024;
-        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024 * 1024;
+        targetMaxSize = config.getTargetMaxSizeMB() * 1024L * 1024;
+        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024L * 1024;
     }
 
     protected KeyValueStore getKeyValueStore() {
-        return Framework.getService(KeyValueService.class).getKeyValueStore(name);
+        return Framework.getService(KeyValueService.class).getKeyValueStore(keyValueStoreName);
     }
 
     protected BlobProvider getBlobProvider() {
-        return Framework.getService(BlobManager.class).getBlobProvider(name);
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        if (blobProvider == null) {
+            throw new NuxeoException("No blob provider with id: " + blobProviderId);
+        }
+        return blobProvider;
     }
 
     @Override
     public void shutdown() {
+        // nothing to do
     }
 
     @Override

@@ -20,5 +20,21 @@
       </permissions>
     </directory>
 
+    <directory name="oauth2Clients" remove="true">
+    </directory>
+
+    <directory name="oauth2Clients" extends="template-directory">
+      <schema>oauth2Client</schema>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>directories/oauth2client.csv</dataFile>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
   </extension>
 </component>

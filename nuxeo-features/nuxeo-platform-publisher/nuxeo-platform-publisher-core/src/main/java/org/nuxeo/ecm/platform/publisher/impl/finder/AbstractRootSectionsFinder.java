@@ -33,13 +33,11 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -167,8 +165,8 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         DocumentModelList filteredDocuments = new DocumentModelListImpl();
         FacetFilter facetFilter = new FacetFilter(Arrays.asList(FacetNames.FOLDERISH),
                 Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
-        Filter filter = new CompoundFilter(facetFilter, lfFilter);
+        Filter trashedFilter = docModel -> !docModel.isTrashed();
+        Filter filter = new CompoundFilter(facetFilter, trashedFilter);
         for (DocumentModel doc : docs) {
             if (filter.accept(doc)) {
                 filteredDocuments.add(doc);

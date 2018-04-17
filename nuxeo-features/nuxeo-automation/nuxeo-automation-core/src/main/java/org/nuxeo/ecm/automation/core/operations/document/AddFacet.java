@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 8.3
  */
-@Operation(id = AddFacet.ID, category = Constants.CAT_DOCUMENT, label = "Add Facet", description = "Adds the facet to the document. Saves the document if 'save' parameter is true (Notice: default value is true for compatibility reason).", aliases = { "Document.AddFacet" })
+@Operation(id = AddFacet.ID, category = Constants.CAT_DOCUMENT, label = "Add Facet", description = "Adds the facet to the document. <p>Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>", aliases = { "Document.AddFacet" })
 public class AddFacet {
 
     public static final String ID = "Document.AddFacet";

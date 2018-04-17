@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.trash;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,8 +51,6 @@ public class LifeCycleTrashService extends AbstractTrashService {
         }
         CoreSession session = docs.get(0).getCoreSession();
         for (DocumentModel doc : docs) {
-            // add context data for backward compatibility mechanism
-            doc.putContextData(IS_ALREADY_CALLED, Boolean.TRUE);
             DocumentRef docRef = doc.getRef();
             if (session.getAllowedStateTransitions(docRef).contains(LifeCycleConstants.DELETE_TRANSITION)
                     && !doc.isProxy()) {
@@ -110,7 +109,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
         // launch async action on folderish to undelete all children recursively
         for (DocumentModel doc : docs) {
             if (doc.isFolder()) {
-                notifyEvent(session, LifeCycleConstants.DOCUMENT_UNDELETED, doc);
+                notifyEvent(session, LifeCycleConstants.DOCUMENT_UNDELETED, doc, Collections.emptyMap(), true);
             }
         }
         return parentRefs;
@@ -166,8 +165,6 @@ public class LifeCycleTrashService extends AbstractTrashService {
                 session.move(doc.getRef(), doc.getParentRef(), newName);
             }
         }
-        // add context data for backward compatibility mechanism
-        doc.putContextData(IS_ALREADY_CALLED, Boolean.TRUE);
         session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
 

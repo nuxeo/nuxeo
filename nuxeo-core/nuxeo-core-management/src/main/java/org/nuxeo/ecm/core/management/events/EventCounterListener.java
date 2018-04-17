@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
@@ -45,20 +46,18 @@ public class EventCounterListener implements PostCommitEventListener {
     public static final String EVENT_REMOVE_COUNTER = "org.nuxeo.event.remove";
 
     // Event tracked
-    protected static final List<String> createEvents = Arrays.asList(new String[] {
-            DocumentEventTypes.DOCUMENT_CREATED, DocumentEventTypes.DOCUMENT_CREATED_BY_COPY,
-            DocumentEventTypes.DOCUMENT_IMPORTED, DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-            DocumentEventTypes.DOCUMENT_PROXY_UPDATED });
+    protected static final List<String> createEvents = Arrays.asList(DocumentEventTypes.DOCUMENT_CREATED,
+            DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, DocumentEventTypes.DOCUMENT_IMPORTED, DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+            DocumentEventTypes.DOCUMENT_PROXY_UPDATED);
 
-    protected static final List<String> updateEvents = Arrays.asList(new String[] {
-            DocumentEventTypes.DOCUMENT_CHECKEDIN, DocumentEventTypes.DOCUMENT_CHECKEDOUT,
-            DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED, DocumentEventTypes.DOCUMENT_LOCKED,
-            DocumentEventTypes.DOCUMENT_MOVED, DocumentEventTypes.DOCUMENT_PUBLISHED,
-            DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, DocumentEventTypes.DOCUMENT_UNLOCKED,
-            DocumentEventTypes.DOCUMENT_UPDATED, LifeCycleConstants.TRANSITION_EVENT });
+    protected static final List<String> updateEvents = Arrays.asList(DocumentEventTypes.DOCUMENT_CHECKEDIN,
+            DocumentEventTypes.DOCUMENT_CHECKEDOUT, DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,
+            DocumentEventTypes.DOCUMENT_LOCKED, DocumentEventTypes.DOCUMENT_MOVED, DocumentEventTypes.DOCUMENT_PUBLISHED,
+            DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, DocumentEventTypes.DOCUMENT_UNLOCKED, DocumentEventTypes.DOCUMENT_UPDATED,
+            LifeCycleConstants.TRANSITION_EVENT, TrashService.DOCUMENT_TRASHED, TrashService.DOCUMENT_UNTRASHED);
 
-    protected static final List<String> removeEvents = Arrays.asList(new String[] {
-            DocumentEventTypes.DOCUMENT_REMOVED, DocumentEventTypes.VERSION_REMOVED });
+    protected static final List<String> removeEvents = Arrays.asList(DocumentEventTypes.DOCUMENT_REMOVED,
+            DocumentEventTypes.VERSION_REMOVED);
 
     @Override
     public void handleEvent(EventBundle events) {

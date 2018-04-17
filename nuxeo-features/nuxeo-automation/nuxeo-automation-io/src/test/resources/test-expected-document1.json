@@ -8,6 +8,7 @@
    "isCheckedOut" : false,
    "isVersion": false,
    "isProxy": false,
+   "isTrashed": false,
    "versionLabel" : "0.1",
    "parentRef" : "the-parent-id",
    "state" : "project",

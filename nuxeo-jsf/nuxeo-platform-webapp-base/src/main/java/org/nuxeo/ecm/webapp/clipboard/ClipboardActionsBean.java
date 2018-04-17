@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -508,9 +509,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     protected void setDeleteState(DocumentModel doc) {
-        if (doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
-            doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        }
+        Framework.getService(TrashService.class).trashDocument(doc);
     }
 
     protected void addWarnMessage(StringBuilder sb, DocumentModel doc) {

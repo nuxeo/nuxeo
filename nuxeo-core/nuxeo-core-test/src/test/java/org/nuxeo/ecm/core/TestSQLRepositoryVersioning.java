@@ -604,9 +604,9 @@ public class TestSQLRepositoryVersioning {
         Collection<String> transitions = proxy.getAllowedStateTransitions();
         assertEquals(3, transitions.size());
 
-        assertTrue(proxy.getAllowedStateTransitions().contains("delete"));
-        assertTrue(proxy.followTransition("delete"));
-        assertEquals("deleted", proxy.getCurrentLifeCycleState());
+        assertTrue(proxy.getAllowedStateTransitions().contains("obsolete"));
+        assertTrue(proxy.followTransition("obsolete"));
+        assertEquals("obsolete", proxy.getCurrentLifeCycleState());
     }
 
     @Test

@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CreateVersion.ID, category = Constants.CAT_DOCUMENT, label = "Snapshot Version", description = "Create a new version for the input document. Any modification made on the document by the chain will be automatically saved. Increment version if this was specified through the 'snapshot' parameter. Returns the live document (not the version).")
+@Operation(id = CreateVersion.ID, category = Constants.CAT_DOCUMENT, label = "Snapshot Version", description = "Create a new version for the input document. Any modification made on the document by the chain will be automatically saved. Increment version if this was specified through the 'snapshot' parameter. This operation should not be used in the context of the empty document created, about to create, before document modification, document modified events. Returns the live document (not the version).")
 public class CreateVersion {
 
     public static final String ID = "Document.CreateVersion";

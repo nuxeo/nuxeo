@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.uidgen;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 
 /**
  * @since 7.3
@@ -36,6 +35,13 @@ public class UIDSequencerProviderDescriptor {
 
     @XNode("@class")
     protected Class<? extends UIDSequencer> sequencerClass;
+
+    @XNode("@enabled")
+    protected boolean enabled = true;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
 
     public UIDSequencer getSequencer() throws Exception {
 

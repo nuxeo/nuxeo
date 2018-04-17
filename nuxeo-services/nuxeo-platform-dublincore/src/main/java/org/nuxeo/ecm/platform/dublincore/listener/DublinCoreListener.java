@@ -79,9 +79,8 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE)
-                && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)
-                && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
+        if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE) && !eventId.equals(TRANSITION_EVENT)
+                && !eventId.equals(DOCUMENT_PUBLISHED) && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
             return;
         }
 

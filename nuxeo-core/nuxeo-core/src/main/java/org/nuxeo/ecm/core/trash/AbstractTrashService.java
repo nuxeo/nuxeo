@@ -167,9 +167,8 @@ public abstract class AbstractTrashService implements TrashService {
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
-            return doc1.getPathAsString()
-                       .replace("/", "\u0000")
-                       .compareTo(doc2.getPathAsString().replace("/", "\u0000"));
+            return doc1.getPathAsString().replace("/", "\u0000").compareTo(
+                    doc2.getPathAsString().replace("/", "\u0000"));
         }
 
     }
@@ -269,12 +268,13 @@ public abstract class AbstractTrashService implements TrashService {
         session.save();
     }
 
-    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc) {
-        notifyEvent(session, eventId, doc, Collections.emptyMap());
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc,
+            Map<String, Serializable> options) {
+        notifyEvent(session, eventId, doc, options, false);
     }
 
     protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc,
-            Map<String, Serializable> options) {
+            Map<String, Serializable> options, boolean immediate) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperties(new HashMap<>(options));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
@@ -282,7 +282,7 @@ public abstract class AbstractTrashService implements TrashService {
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         Event event = ctx.newEvent(eventId);
         event.setInline(false);
-        event.setImmediate(true);
+        event.setImmediate(immediate);
         EventService eventService = Framework.getService(EventService.class);
         eventService.fireEvent(event);
     }

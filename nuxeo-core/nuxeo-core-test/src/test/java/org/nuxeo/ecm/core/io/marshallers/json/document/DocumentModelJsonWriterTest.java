@@ -67,7 +67,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     public void testDefault() throws Exception {
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(13);
+        json.properties(14);
         json.has("entity-type").isEquals("document");
         json.has("repository").isEquals("test");
         json.has("uid").isEquals(document.getId());
@@ -78,6 +78,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         json.has("isCheckedOut").isTrue();
         json.has("isVersion").isFalse();
         json.has("isProxy").isFalse();
+        json.has("isTrashed").isFalse();
         json.has("changeToken").isNull();
         json.has("title").isEquals("myDoc");
         json.has("facets").contains("Folderish");
@@ -96,7 +97,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     public void testWithVersion() throws Exception {
         JsonAssert json = jsonAssert(document, CtxBuilder.fetchInDoc("versionLabel").get());
         json.isObject();
-        json.properties(14);
+        json.properties(15);
         json.has("versionLabel").isEquals("");
     }
 
@@ -105,7 +106,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         document.setPropertyValue("dc:modified", new Date());
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(14);
+        json.properties(15);
         json.has("lastModified").isText();
     }
 

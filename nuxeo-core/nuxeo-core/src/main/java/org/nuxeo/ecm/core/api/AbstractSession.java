@@ -41,6 +41,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
+import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -2115,15 +2116,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             writeModel(doc, docModel);
         }
         // backward compat - used to forward deprecated call followTransition("deleted") to trash service
-        // we need to exclude proxy because trash service will remove them
-        TrashService trashService = Framework.getService(TrashService.class);
-        if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
-            docModel = readModel(doc);
-            docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
-            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
-                trashService.trashDocument(docModel);
-            } else {
-                trashService.untrashDocument(docModel);
+        // we need to exclude proxy because trash service will remove them.
+        // This is triggered if the configuration property is set to true
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        if (cs.isBooleanPropertyTrue(IS_TRASHED_FROM_DELETE_TRANSITION)) {
+            TrashService trashService = Framework.getService(TrashService.class);
+            if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Following the transition " + transition + " is deprecated.", new Throwable("stack trace"));
+                }
+                docModel = readModel(doc);
+                docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
+                if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                    trashService.trashDocument(docModel);
+                } else {
+                    trashService.untrashDocument(docModel);
+                }
             }
         }
         return true; // throws if error
@@ -2459,6 +2467,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // ACPs need the session, so aren't done in the factory method
         if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
             refresh.acp = getSession().getMergedACP(doc);
+        }
+
+        if ((refreshFlags & DocumentModel.REFRESH_STATE) != 0) {
+            refresh.isTrashed = isTrashed(ref);
         }
 
         return refresh;

@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -81,6 +82,9 @@ public class TestDublinCoreStorage {
 
     @Inject
     protected HotDeployer deployer;
+
+    @Inject
+    protected TrashService trashService;
 
     @Before
     public void before() {

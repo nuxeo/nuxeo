@@ -29,10 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeSorter;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -118,8 +116,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
     protected Filter computeGetChildrenFilter() {
         FacetFilter facetFilter = new FacetFilter(Arrays.asList(FacetNames.FOLDERISH),
                 Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
-        return new CompoundFilter(facetFilter, lfFilter);
+        Filter trashedFilter = docModel -> !docModel.isTrashed();
+        return new CompoundFilter(facetFilter, trashedFilter);
     }
 
     protected DocumentModelList getSortedChildren(boolean queryDocuments) {

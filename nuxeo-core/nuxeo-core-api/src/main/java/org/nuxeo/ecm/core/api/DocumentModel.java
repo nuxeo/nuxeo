@@ -874,6 +874,8 @@ public interface DocumentModel extends Serializable {
         public Set<String> instanceFacets;
 
         public DocumentPart[] documentParts;
+
+        public boolean isTrashed;
     }
 
     /**

@@ -1,3 +1,6 @@
 serviceName,accessToken,refreshToken,nuxeoLogin,serviceLogin,clientId,isShared,sharedWith,expirationTimeMilliseconds,creationDate
-"test-oauth2-provider","y38Hs3_sdas98l","kjds897.sda","Administrator","Administrator@email.com","clientId",false,null,33029035368000,"2017-05-09 11:11:11"
-"test-oauth2-provider","dasdsS23_dsadd","adsad.23dsa","user1","my1@mail ","clientId",false,null,33029035368000,"2017-05-09 11:11:11"
+"test-oauth2-provider","y38Hs3_sdas98l","kjds897.sda","Administrator","Administrator@email.com",__NULL__,false,null,33029035368000,"2017-05-09 11:11:11"
+"test-oauth2-provider","dasdsS23_dsadd","adsad.23dsa","user1","my1@mail ",__NULL__,false,null,33029035368000,"2017-05-09 11:11:11"
+"test-oauth2-provider","344ssa_dsasd","hghfg.34dss","user2","my2@mail ",__NULL__,false,null,33029035368000,"2017-05-08 11:11:11"
+"org.nuxeo.server.token.store","23dda878_4ddd","jki8.df44d","user1","my1@mail ","my-client",false,null,33029035368000,"2017-05-20 11:11:11"
+"org.nuxeo.server.token.store","647djt_gkt467","fdh94.7gfd","user2","my2@mail ","my-client",false,null,33029035368000,"2017-05-21 11:11:11"

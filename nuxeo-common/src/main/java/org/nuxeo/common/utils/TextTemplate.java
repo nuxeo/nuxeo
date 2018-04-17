@@ -33,6 +33,7 @@ import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -299,10 +300,10 @@ public class TextTemplate {
         return processText(text);
     }
 
-    public void processText(InputStream is, OutputStream os) throws IOException {
+    public void processText(InputStream is, OutputStreamWriter os) throws IOException {
         String text = IOUtils.toString(is, UTF_8);
         text = processText(text);
-        os.write(text.getBytes(UTF_8));
+        os.write(text);
     }
 
     /**
@@ -404,7 +405,7 @@ public class TextTemplate {
      * @param in Directory to read files from
      * @param out Directory to write files to
      * @return copied files list
-     * @see TextTemplate#processText(InputStream, OutputStream)
+     * @see TextTemplate#processText(InputStream, OutputStreamWriter)
      * @see TextTemplate#processFreemarker(File, File)
      */
     public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException,
@@ -458,7 +459,8 @@ public class TextTemplate {
                     processFreemarker(in, out);
                 } else if (processAsText) {
                     log.debug("Process as Text " + in.getPath());
-                    try (InputStream is = new FileInputStream(in); OutputStream os = new FileOutputStream(out)) {
+                    try (InputStream is = new FileInputStream(in);
+                         OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(out), "UTF-8")) {
                         processText(is, os);
                     }
                 } else {

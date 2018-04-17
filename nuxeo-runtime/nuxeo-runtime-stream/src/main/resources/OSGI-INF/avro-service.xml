@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.avro" version="1.0">
+
+  <documentation>
+    The Avro component.
+    It provides services 
+    - that allow to register and retreive schemas
+    - that allow to create Avro schemas from custom types
+    - that allow to de/serialize Avro records from/to custom types 
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.avro.AvroComponent" />
+
+  <service>
+    <provide interface="org.apache.avro.message.SchemaStore" />
+    <provide interface="org.nuxeo.runtime.avro.AvroSchemaStoreService" />
+    <provide interface="org.nuxeo.runtime.avro.AvroSchemaFactoryService" />
+  </service>
+
+  <extension-point name="schema">
+    <documentation>
+      Allows to register an Avro schema file with a name.
+    </documentation>
+    <object class="org.nuxeo.runtime.avro.AvroSchemaDescriptor" />
+  </extension-point>
+  
+  <extension-point name="factory">
+    <documentation>
+      Allows to register an Avro Factory implementation dedicated to a custom type.
+    </documentation>
+    <object class="org.nuxeo.runtime.avro.AvroSchemaFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="replacement">
+    <documentation>
+      Allows to register a replacement scheme for any string not supported by Avro.
+    </documentation>
+    <object class="org.nuxeo.runtime.avro.AvroReplacementDescriptor" />
+  </extension-point>
+
+</component>
+

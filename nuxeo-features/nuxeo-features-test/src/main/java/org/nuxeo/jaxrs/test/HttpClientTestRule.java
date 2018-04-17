@@ -38,8 +38,6 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class HttpClientTestRule implements TestRule {
 
-    public static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
-
     public static final String ADMINISTRATOR = "Administrator";
 
     private final String url;
@@ -70,22 +68,22 @@ public class HttpClientTestRule implements TestRule {
 
             @Override
             public void evaluate() throws Throwable {
-                starting(description);
+                starting();
                 try {
                     base.evaluate();
                 } finally {
-                    finished(description);
+                    finished();
                 }
             }
         };
     }
 
-    protected void starting(Description description) {
+    protected void starting() {
         client = JerseyClientHelper.clientBuilder().setCredentials(username, password).build();
         service = client.resource(url);
     }
 
-    protected void finished(Description description) {
+    protected void finished() {
         client.destroy();
     }
 
@@ -141,7 +139,7 @@ public class HttpClientTestRule implements TestRule {
             this.url = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll("/$", "");
             this.username = null;
             this.password = null;
-            this.accept = APPLICATION_JSON_NXENTITY;
+            this.accept = null;
             this.headers = new HashMap<>();
         }
 

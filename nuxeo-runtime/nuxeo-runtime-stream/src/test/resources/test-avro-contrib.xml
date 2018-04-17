@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.avro.tests.service.contrib">
+  <extension target="org.nuxeo.runtime.avro" point="schema">
+    <schema name="tutu" file="data/avro-schema-example.json" />
+  </extension>
+</component>
+

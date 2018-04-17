@@ -170,7 +170,7 @@ public class TestAutomationJson {
         res.append("  \"label\" : \"Update Property\",\n");
         res.append("  \"category\" : \"Document\",\n");
         res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : \"Set a single property value on the input document. The property is specified using its xpath. The document is automatically saved if 'save' parameter is true. If you unset the 'save' you need to save it later using Save Document operation. Return the modified document.\",\n");
+        res.append("  \"description\" : \"Set a single property value on the input document. The property is specified using its xpath. Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events. Returns the modified document.\",\n");
         res.append("  \"url\" : \"Document.SetProperty\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
         res.append("  \"params\" : [ {\n");

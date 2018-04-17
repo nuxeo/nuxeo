@@ -18,7 +18,10 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -44,4 +47,9 @@ public class TestBlobManager {
         assertNotNull(dummyBlobProvider);
     }
 
+    @Test
+    public void testGetBlobProviders() throws Exception {
+        Map<String, BlobProvider> providers = blobManager.getBlobProviders();
+        assertEquals(1, providers.size());
+    }
 }

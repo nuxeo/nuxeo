@@ -103,6 +103,33 @@ public class DirectoryEntryJsonWriterTest extends
         }
     }
 
+    /**
+     * @since 10.1
+     */
+    @Test
+    public void testFetchDepth() throws Exception {
+        String directoryName = "hierarchicalDirectory";
+        Directory directory = directoryService.getDirectory(directoryName);
+        try (Session session = directory.getSession()) {
+            DocumentModel entryModel = session.getEntry("level2");
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            JsonAssert json = jsonAssert(entry,
+                    CtxBuilder.locale(Locale.FRENCH)
+                              .fetch(ENTITY_TYPE, "parent")
+                              .translate(ENTITY_TYPE, "label")
+                              .get());
+            json.isObject();
+            json = json.has("properties").isObject();
+            json = json.has("parent").isObject();
+            json.has("id").isEquals("level1");
+            json = json.has("properties").isObject();
+            json = json.get("parent").isObject();
+            json.has("id").isEquals("level0");
+            json = json.has("properties").isObject();
+            json.has("parent").isEmptyStringOrNull();
+        }
+    }
+
     @Test
     public void testFetched() throws Exception {
         String directoryName = "referencedDirectory1";
