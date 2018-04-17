@@ -133,6 +133,7 @@ public class ExistingResource extends AbstractResource {
                     // Move it to a temporary document that will be the one deleted at the end
                     String tmpName = UUID.randomUUID().toString() + ".tmp";
                     origDoc = backend.moveItem(origDoc, origDoc.getParentRef(), tmpName);
+                    backend.saveChanges(); // save after first rename for DBS (for second rename duplicate name check)
                     // Restore tmp2.tmp back to its original name file.docx
                     doc = backend.moveItem(doc, doc.getParentRef(), origName);
                     clearMoveOriginalName();
