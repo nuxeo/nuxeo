@@ -224,11 +224,12 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
         List<Blob> blobs = new ArrayList<>();
         for (Map<String, String> info : blobInfos) {
             File blobFile = new File(cacheDir, info.get("file"));
-            Blob blob = new FileBlob(blobFile);
+            FileBlob blob = new FileBlob(blobFile);
             blob.setEncoding(info.get("encoding"));
             blob.setMimeType(info.get("mimetype"));
             blob.setFilename(info.get("filename"));
             blob.setDigest(info.get("digest"));
+            blob.setTemporary(true);
             blobs.add(blob);
         }
         return blobs;

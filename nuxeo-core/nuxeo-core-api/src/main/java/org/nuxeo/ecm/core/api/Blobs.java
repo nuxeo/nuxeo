@@ -43,7 +43,19 @@ public class Blobs {
      * @param file file
      */
     public static Blob createBlob(File file) throws IOException {
-        return new FileBlob(file, null, null);
+        return createBlob(file, false);
+    }
+
+    /**
+     * Creates a {@link Blob} backed by the given {@link File}.
+     *
+     * @param file file
+     */
+    public static Blob createBlob(File file, boolean isTemporary) throws IOException {
+        FileBlob result = new FileBlob(file, null, null);
+        result.setTemporary(isTemporary);
+
+        return result;
     }
 
     /**

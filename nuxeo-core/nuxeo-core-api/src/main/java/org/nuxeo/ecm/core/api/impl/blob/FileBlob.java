@@ -211,4 +211,7 @@ public class FileBlob extends AbstractBlob implements Serializable {
         isTemporary = false;
     }
 
+    public void setTemporary(boolean newValue) {
+        isTemporary = newValue;
+    }
 }

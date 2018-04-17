@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,11 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.LocalBinaryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -582,6 +587,31 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
 
             logDownload(doc, xpath, filename, reason, extendedInfos);
+
+            String xAccelLocation = request.getHeader("X-Accel-Location");
+            if (StringUtils.isNotEmpty(xAccelLocation)) {
+                BlobProvider blobProvider =
+                        Framework.getService(BlobManager.class).getBlobProvider(blob);
+                if (blobProvider != null) {
+                    BinaryManager binaryManager = blobProvider.getBinaryManager();
+                    if (binaryManager instanceof LocalBinaryManager) {
+                        String relative = ((LocalBinaryManager) binaryManager).getStorageDir()
+                                                                              .toURI()
+                                                                              .relativize(blob.getFile().toURI())
+                                                                              .getPath();
+
+                        if (xAccelLocation.endsWith("/")) {
+                            xAccelLocation = xAccelLocation + relative;
+                        } else {
+                            xAccelLocation = xAccelLocation + "/" + relative;
+                        }
+
+                        response.setHeader("X-Accel-Redirect", xAccelLocation);
+                    }
+
+                    return;
+                }
+            }
 
             // execute the final download
             blobTransferer.accept(byteRange);

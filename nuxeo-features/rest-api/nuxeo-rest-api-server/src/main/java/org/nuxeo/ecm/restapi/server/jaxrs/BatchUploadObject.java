@@ -22,6 +22,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -210,6 +211,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String fileName = request.getHeader("X-File-Name");
         String fileSizeHeader = request.getHeader("X-File-Size");
         String mimeType = request.getHeader("X-File-Type");
+        String requestBodyFile = request.getHeader("X-Request-Body-File");
+        String contentMd5 = request.getHeader("X-Content-MD5");
 
         int chunkCount = -1;
         int uploadChunkIndex = -1;
@@ -244,9 +247,23 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             if (StringUtils.isBlank(mimeType)) {
                 mimeType = blob.getMimeType();
             }
-            uploadedSize = blob.getLength();
+
             addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
                     fileSize);
+        } else if (StringUtils.isNotEmpty(requestBodyFile)) {
+            if (StringUtils.isNotEmpty(fileName)) {
+                fileName = URLDecoder.decode(fileName, "UTF-8");
+            }
+            File file = new File(requestBodyFile);
+            Blob blob = Blobs.createBlob(file, true);
+
+            if (StringUtils.isNotEmpty(contentMd5)) {
+                blob.setDigest(contentMd5);
+            }
+
+            uploadedSize = file.length();
+
+            addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex, fileSize);
         } else {
             if (fileName != null) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
