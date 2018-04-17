@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.dublincore;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -411,6 +412,30 @@ public class TestDublinCoreStorage {
         assertNotNull(copy);
         assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
         assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+
+    @Test
+    public void testListenerRunsAtCreationBeforeVersioning() throws Exception {
+        // (Note is configured by default with auto-versioning)
+        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        note = session.createDocument(note);
+        session.save();
+        // note is checked in after auto-versioning
+        assertFalse(note.isCheckedOut());
+        // note's dublincore info was correctly filled in
+        Calendar created = (Calendar) note.getPropertyValue("dc:created");
+        assertNotNull(created);
+        assertEquals("Administrator", note.getPropertyValue("lastContributor"));
+        // one version exists
+        List<DocumentModel> versions = session.getVersions(note.getRef());
+        assertEquals(1, versions.size());
+        DocumentModel version = versions.get(0);
+        assertEquals("0.1", version.getVersionLabel());
+        // version's dublincore info was correctly filled in
+        Calendar versionCreated = (Calendar) version.getPropertyValue("dc:created");
+        assertNotNull(versionCreated);
+        assertEquals(created.toInstant(), versionCreated.toInstant());
+        assertEquals("Administrator", version.getPropertyValue("dc:lastContributor"));
     }
 
     protected void waitForAsyncCompletion() {
