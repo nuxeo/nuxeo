@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -174,7 +175,11 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder2.getId()));
             expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(), "documentMoved", "test"));
-            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "lifecycle_transition_event", "test"));
+            if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+                expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "lifecycle_transition_event", "test"));
+            } else {
+                expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test"));
+            }
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             log.trace("Physical deletion without triggering the delete transition first");
