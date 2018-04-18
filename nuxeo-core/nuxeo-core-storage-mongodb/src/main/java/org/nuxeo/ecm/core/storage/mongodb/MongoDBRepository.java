@@ -232,7 +232,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
-        if (!isFulltextDisabled()) {
+        if (false && !isFulltextDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
                     Indexes.text(KEY_FULLTEXT_BINARY) //
