@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -50,6 +51,9 @@ public class TestBlobDispatcher2 {
     protected HotDeployer hotDeployer;
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected CoreSession session;
 
     /**
@@ -73,6 +77,8 @@ public class TestBlobDispatcher2 {
         assertEquals(foo_key, key);
 
         // now install dispatch
+        assumeFalse("Cannot test hot-deploy with in-memory repository",
+                coreFeature.getStorageConfiguration().isDBSMem());
         hotDeployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-blob-dispatcher.xml");
         // check that blob still readable
         doc = session.getDocument(doc.getRef());
