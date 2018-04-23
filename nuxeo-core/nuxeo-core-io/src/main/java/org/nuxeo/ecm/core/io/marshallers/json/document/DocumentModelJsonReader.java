@@ -164,8 +164,12 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         if (propToClean instanceof BlobProperty) {
             // if the blob used to exist
             if (propToClean.getValue() == null) {
-                Serializable value = docRef.getPropertyValue(propToClean.getXPath());
-                propToClean.setValue(value);
+                try {
+                    Serializable value = docRef.getPropertyValue(propToClean.getXPath());
+                    propToClean.setValue(value);
+                } catch (PropertyNotFoundException e) {
+                    // As the blob property doesn't exist in the document in the first place, ignore the operation
+                }
             }
         } else if (propToClean instanceof ComplexProperty) {
             ComplexProperty complexPropToClean = (ComplexProperty) propToClean;
