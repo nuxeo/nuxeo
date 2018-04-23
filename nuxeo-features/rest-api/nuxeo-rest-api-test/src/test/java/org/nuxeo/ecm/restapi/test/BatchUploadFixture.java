@@ -23,6 +23,7 @@ package org.nuxeo.ecm.restapi.test;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -1032,5 +1033,62 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals("normal", node.get("uploadType").getValueAsText());
         }
     }
+
+    @Test
+    public void testBatchUploadWithMultivaluedBlobProperty() throws Exception {
+
+        // Get batch id, used as a session id
+        String batchId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            batchId = node.get("batchId").getValueAsText();
+            assertNotNull(batchId);
+        }
+
+        // Upload a file not in multipart
+        String fileName1 = URLEncoder.encode("File.txt", "UTF-8");
+        String mimeType = "text/plain";
+        String data1 = "Content";
+        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/plain");
+        headers.put("X-Upload-Type", "normal");
+        headers.put("X-File-Name", fileName1);
+        headers.put("X-File-Size", fileSize1);
+        headers.put("X-File-Type", mimeType);
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", data1,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").getValueAsText());
+            assertEquals(batchId, node.get("batchId").getValueAsText());
+            assertEquals("0", node.get("fileIdx").getValueAsText());
+        }
+
+        String json = "{";
+        json += "\"entity-type\":\"document\" ,";
+        json += "\"name\":\"testBatchUploadDoc\" ,";
+        json += "\"type\":\"File\" ,";
+        json += "\"properties\" : {";
+        json += "\"files:files\" : [ ";
+        json += "{ \"file\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"0\" }},";
+        json += "{ \"file\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"1\" }}";
+        json += "]}}";
+
+        // Assert second batch won't make the upload fail because the file does not exist
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", json)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        }
+
+        DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
+        Blob blob1 = (Blob) doc.getPropertyValue("files:files/0/file");
+        assertNotNull(blob1);
+        assertEquals("File.txt", blob1.getFilename());
+
+
+    }
+
 
 }
