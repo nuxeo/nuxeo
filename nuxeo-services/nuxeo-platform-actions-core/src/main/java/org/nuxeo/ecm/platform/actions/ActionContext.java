@@ -100,6 +100,14 @@ public interface ActionContext extends Serializable {
     boolean checkCondition(String expression) throws ELException;
 
     /**
+     * Evaluates the given {@code expression} and returns the result cast to the given {@code expectedType}.
+     *
+     * @return the result of the expression evaluation
+     * @since 10.2
+     */
+    <T> T evalExpression(String expression, Class<T> expectedType) throws ELException;
+
+    /**
      * Returns true if expressions evaluation should not be cached globally
      */
     boolean disableGlobalCaching();

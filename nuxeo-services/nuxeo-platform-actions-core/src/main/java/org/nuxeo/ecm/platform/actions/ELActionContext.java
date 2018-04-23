@@ -55,10 +55,11 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
         this.expressionFactory = expressionFactory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean checkCondition(String expression) throws ELException {
+    public <T> T evalExpression(String expression, Class<T> expectedType) throws ELException {
         if (StringUtils.isBlank(expression)) {
-            return false;
+            return null;
         }
         String expr = expression.trim();
         // compatibility code, as JEXL could resolve that kind of expression:
@@ -87,8 +88,13 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
         }
 
         // evaluate expression
-        ValueExpression ve = expressionFactory.createValueExpression(originalContext, expr, Boolean.class);
-        return Boolean.TRUE.equals(ve.getValue(originalContext));
+        ValueExpression ve = expressionFactory.createValueExpression(originalContext, expr, expectedType);
+        return (T) ve.getValue(originalContext);
+    }
+
+    @Override
+    public boolean checkCondition(String expression) throws ELException {
+        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
     }
 
 }
