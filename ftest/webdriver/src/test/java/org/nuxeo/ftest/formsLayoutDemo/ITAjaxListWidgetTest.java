@@ -162,7 +162,7 @@ public class ITAjaxListWidgetTest extends AbstractTest {
         listWidget = page.submitComplexListWidget();
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
-        assertEquals("'lala' is not a number. Example: 9346.",
+        assertEquals("'lala' is not a number. Example: 98765432.",
                 listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
 
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("3");
