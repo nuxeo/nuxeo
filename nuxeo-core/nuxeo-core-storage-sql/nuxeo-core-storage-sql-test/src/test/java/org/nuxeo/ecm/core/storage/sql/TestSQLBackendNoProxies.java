@@ -93,7 +93,6 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
     }
 
     @Test
-    @Ignore("NXP-24842 test fails after 3h49, seems to be a deadlock there")
     public void testQueryOnlyProxiesDenied() {
         Session session = repository.getConnection();
         String sql = "SELECT * FROM Document WHERE ecm:isProxy = 1";
