@@ -55,11 +55,13 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
         this.expressionFactory = expressionFactory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean checkCondition(String expression) throws ELException {
-        if (StringUtils.isBlank(expression) || (expression != null && StringUtils.isBlank(expression.trim()))) {
-            return false;
+    public <T> T evalExpression(String expression, Class<T> expectedType) throws ELException {
+        if (StringUtils.isBlank(expression)) {
+            return null;
         }
+
         String expr = expression.trim();
         // compatibility code, as JEXL could resolve that kind of expression:
         // detect if expression is in brackets #{}, otherwise add it
@@ -91,7 +93,12 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
 
         // evaluate expression
         ValueExpression ve = expressionFactory.createValueExpression(finalContext, expr, Boolean.class);
-        return Boolean.TRUE.equals(ve.getValue(finalContext));
+        return (T) ve.getValue(finalContext);
+    }
+
+    @Override
+    public boolean checkCondition(String expression) throws ELException {
+        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
     }
 
 }
