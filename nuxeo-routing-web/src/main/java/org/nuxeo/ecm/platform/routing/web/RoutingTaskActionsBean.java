@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,13 +59,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -136,6 +143,8 @@ public class RoutingTaskActionsBean implements Serializable {
     protected Map<String, TaskInfo> tasksInfoCache = new HashMap<String, TaskInfo>();
 
     protected Task currentTask;
+
+    protected List<String> formVariablesToRemove;
 
     public void validateTaskDueDate(FacesContext context, UIComponent component, Object value) {
         final String DATE_FORMAT = "dd/MM/yyyy";
@@ -439,6 +448,35 @@ public class RoutingTaskActionsBean implements Serializable {
         if (addLayout && !actions.isEmpty()) {
             String id = getTaskActionId(task, "process_task");
             Action processAction = new Action(id, Action.EMPTY_CATEGORIES);
+
+            formVariablesToRemove = new ArrayList<>();
+            WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
+            LayoutDefinition taskLayout = layoutService.getLayoutDefinition(taskInfo.layout);
+            if (taskLayout != null) {
+                for (LayoutRowDefinition row : taskLayout.getRows()) {
+                    for (WidgetReference widgetRef : row.getWidgetReferences()) {
+                        WidgetDefinition widgetDefinition = taskLayout.getWidgetDefinition(widgetRef.getName());
+                        if (widgetDefinition == null) {
+                            continue;
+                        }
+
+                        String mode = widgetDefinition.getMode(BuiltinModes.EDIT);
+                        ActionContext el = new ELActionContext();
+                        el.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
+                        el.setCurrentDocument(navigationContext.getCurrentDocument());
+                        mode = el.evalExpression(mode, String.class);
+                        if (mode != null && !mode.equals(BuiltinModes.EDIT)) {
+                            Arrays.stream(widgetDefinition.getFieldDefinitions()).forEach((field) -> {
+                                // workflow form fields are always like "['$variable']"
+                                // remove both [' and '] to keep only the variable name
+                                String fieldName = field.getFieldName().replaceAll("^\\['|']$", "");
+                                formVariablesToRemove.add(fieldName);
+                            });
+                        }
+                    }
+                }
+            }
+
             processAction.setProperties(props);
             processAction.setType("process_task");
             actions.put(id, processAction);
@@ -518,6 +556,13 @@ public class RoutingTaskActionsBean implements Serializable {
         String buttonId = (String) taskAction.getProperties().get("buttonId");
         Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties().get(
                 "formVariables");
+
+        // Remove form variables that should not be updated
+        if (formVariablesToRemove != null && formVariables != null) {
+            formVariablesToRemove.forEach(formVariables::remove);
+        }
+        formVariablesToRemove = null;
+
         if (formVariables != null && !formVariables.isEmpty()) {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
