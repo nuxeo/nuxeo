@@ -62,7 +62,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
 
         submitDemo();
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
-        assertEquals("'lalala' is not a number. Example: 9346.",
+        assertEquals("'lalala' is not a number. Example: 98765432.",
                 driver.findElement(By.id(editId + ":nxw_intComplexItem_message")).getText());
         edit = new LayoutElement(driver, editId);
         edit.getWidget("nxw_intComplexItem").setInputValue("5");
