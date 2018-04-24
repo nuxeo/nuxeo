@@ -26,7 +26,7 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
-import javax.faces.convert.IntegerConverter;
+import javax.faces.convert.LongConverter;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.ConverterConfig;
@@ -74,7 +74,7 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
-                    new TagAttributesImpl(new TagAttribute[0]), leaf, IntegerConverter.CONVERTER_ID);
+                    new TagAttributesImpl(new TagAttribute[0]), leaf, LongConverter.CONVERTER_ID);
             ConverterHandler convert = new ConverterHandler(convertConfig);
             FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] { convert, leaf });
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, nextHandler,
@@ -93,7 +93,7 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             // default on text with int converter for other modes
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
-                    new TagAttributesImpl(new TagAttribute[0]), leaf, IntegerConverter.CONVERTER_ID);
+                    new TagAttributesImpl(new TagAttribute[0]), leaf, LongConverter.CONVERTER_ID);
             ConverterHandler convert = new ConverterHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, convert,
                     HtmlOutputText.COMPONENT_TYPE, null);
