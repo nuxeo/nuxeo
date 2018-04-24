@@ -4,7 +4,10 @@
 <%@ page language="java"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="org.apache.commons.lang3.StringUtils"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="org.joda.time.DateTime"%>
+<%@ page import="org.nuxeo.ecm.core.api.repository.RepositoryManager"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.MobileBannerHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
@@ -512,9 +515,21 @@ a.mobileAppLink:hover {
   </footer>
 </div>
 <% if (displayMobileBanner) {
-     String androidApplicationURL = MobileBannerHelper.getURLForAndroidApplication(request);
-     String iOSApplicationURL = MobileBannerHelper.getURLForIOSApplication(request);
-     String appStoreURL = MobileBannerHelper.getAppStoreURL();
+    String androidApplicationURL = MobileBannerHelper.getURLForAndroidApplication(request);
+    String iOSApplicationURL = MobileBannerHelper.getURLForIOSApplication(request);
+    String appStoreURL = MobileBannerHelper.getAppStoreURL();
+    RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+    String defaultRepositoryName = repositoryManager.getDefaultRepositoryName();
+
+    String requestedUrlFragment = null;
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (NXAuthConstants.START_PAGE_FRAGMENT_KEY.equals(cookie.getName())) {
+                requestedUrlFragment = StringEscapeUtils.escapeEcmaScript(cookie.getValue());
+            }
+        }
+    }
 %>
 <div id="mobileBanner">
   <a id="androidAppLink" class="mobileAppLink" href="<%=androidApplicationURL%>">
@@ -526,35 +541,40 @@ a.mobileAppLink:hover {
     <fmt:message bundle="${messages}" key="label.mobile.openInApp" />
   </a>
 </div>
-<% } %>
 
 <script type="text/javascript">
-  <% if (displayMobileBanner) { %>
   // Build mobile app links if the mobile banner is displayed
-  var indexOfHash = window.location.href.indexOf('#!');
-  if (indexOfHash > -1) {
-    // lastPart = #!/doc/default/f6fa9686-3618-47a8-9419-ff1cc76fc857
-    // or lastPart = #!/doc/f6fa9686-3618-47a8-9419-ff1cc76fc857
-    var lastPart = window.location.href.substring(indexOfHash);
+  <% if (StringUtils.isNotBlank(requestedUrlFragment)) { %>
 
-    var docPart;
-    var parts = lastPart.split('/');
+  var urlFragment = decodeURIComponent('<%=requestedUrlFragment%>');
+  var docPart;
+  if (urlFragment.startsWith('!/browse')) {
+    // no repository name for 'browse' URL
+    docPart = urlFragment.replace('!/browse/', '<%=defaultRepositoryName%>/path/');
+  } else {
+    // !/doc/ URL
+    var parts = urlFragment.split('/');
     if (parts.length === 3) {
       // no server in URL
-      docPart = "default/id/" + parts[2];
+      docPart = "<%=defaultRepositoryName%>/id/" + parts[2];
     } else if (parts.length === 4) {
       docPart = parts[2] + "/id/" + parts[3];
     }
-    if(docPart) {
-      var androidAppLink = document.getElementById('androidAppLink');
-      var iOSAppLink = document.getElementById('iOSAppLink');
-      androidAppLink.href += docPart;
-      iOSAppLink.setAttribute('data-action', iOSAppLink.getAttribute('data-action') + docPart);
-    }
   }
+
+  if (docPart) {
+    var androidAppLink = document.getElementById('androidAppLink');
+    var iOSAppLink = document.getElementById('iOSAppLink');
+    androidAppLink.href += docPart;
+    iOSAppLink.setAttribute('data-action', iOSAppLink.getAttribute('data-action') + docPart);
+  }
+
   nuxeo.mobile.displayMobileBanner('mobileBanner', 'flex', 'androidAppLink', 'iOSAppLink');
   <% } %>
+</script>
+<% } %>
 
+<script type="text/javascript">
   document.getElementById('username').focus();
 
   <% if (showNews && !isTesting) { %>
