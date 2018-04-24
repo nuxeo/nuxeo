@@ -46,7 +46,7 @@ public class ITIntWidgetTest extends AbstractWidgetPageTest {
         arm.end();
         submitDemo();
         checkValueRequired(false);
-        assertEquals("'test' is not a number. Example: 9346.", getEditWidgetMessage());
+        assertEquals("'test' is not a number. Example: 98765432.", getEditWidgetMessage());
         arm.begin();
         getEditWidget().setInputValue("3");
         arm.end();
