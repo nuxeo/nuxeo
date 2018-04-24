@@ -63,7 +63,7 @@ public abstract class TargetExtensions {
             addTargetExtension("org.nuxeo.ecm.core.schema.TypeService", "doctype");
             addTargetExtension("org.nuxeo.ecm.core.lifecycle.LifeCycleService", "types");
             addTargetExtension("org.nuxeo.ecm.core.lifecycle.LifeCycleService", "lifecycle");
-            addTargetExtension("org.nuxeo.ecm.directory.sql.SQLDirectoryFactory", "directories");
+            addTargetExtension("org.nuxeo.ecm.directory.GenericDirectory", "directories");
             addTargetExtension("org.nuxeo.ecm.core.versioning.VersioningService", "versioningRules");
         }
     }
