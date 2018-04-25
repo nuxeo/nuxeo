@@ -393,6 +393,11 @@ public interface Session extends Connection {
     List<Node> getProxies(Node document, Node parent);
 
     /**
+     * Finds the proxies for a document. (The document may be a version or a live document)
+     */
+    List<Node> getProxies(Node document);
+
+    /**
      * Makes a NXQL query to the database.
      *
      * @param query the query

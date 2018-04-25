@@ -1232,6 +1232,18 @@ public class SessionImpl implements Session, XAResource {
             ids = context.getSeriesProxyIds(versionSeriesId);
         }
 
+        List<Node> nodes = getNodes(ids);
+
+        if (parent != null) {
+            // filter by parent
+            Serializable parentId = parent.getId();
+            nodes.removeIf(node -> !parentId.equals(node.getParentId()));
+        }
+
+        return nodes;
+    }
+
+    private List<Node> getNodes(List<Serializable> ids) {
         List<Node> nodes = new LinkedList<>();
         for (Serializable id : ids) {
             Node node = getNodeById(id);
@@ -1241,14 +1253,17 @@ public class SessionImpl implements Session, XAResource {
                 nodes.add(node);
             }
         }
-
-        if (parent != null) {
-            // filter by parent
-            Serializable parentId = parent.getId();
-            nodes.removeIf(node -> !parentId.equals(node.getParentId()));
-        }
-
         return nodes;
+    }
+
+    @Override
+    public List<Node> getProxies(Node document) {
+        checkLive();
+        if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
+            return Collections.emptyList();
+        }
+        List<Serializable> ids = context.getSeriesProxyIds(document.getId());
+        return getNodes(ids);
     }
 
     /**
