@@ -56,6 +56,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")

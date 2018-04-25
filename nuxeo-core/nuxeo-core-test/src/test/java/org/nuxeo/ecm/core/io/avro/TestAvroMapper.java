@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core")
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")

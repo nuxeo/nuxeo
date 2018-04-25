@@ -62,7 +62,6 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.client")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.io.plugins")

@@ -33,7 +33,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
 @Features({ CoreFeature.class, ClientLoginFeature.class, DirectoryFeature.class })
