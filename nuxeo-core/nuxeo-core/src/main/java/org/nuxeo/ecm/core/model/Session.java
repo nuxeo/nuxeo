@@ -179,6 +179,15 @@ public interface Session {
     List<Document> getProxies(Document doc, Document folder);
 
     /**
+     * Finds the proxies for a document. (The document may be a version or a live document)
+     *
+     * @param doc the document or version
+     * @return the list of proxies if any is found otherwise an empty list
+     * @since 10.2
+     */
+    List<Document> getProxies(Document doc);
+
+    /**
      * Sets a proxies' target.
      * <p>
      * The target must have the same version series as the proxy.
