@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.resource.ResourceException;
 
@@ -284,6 +285,12 @@ public class SQLSession implements Session {
             proxies.add(newDocument(proxyNode));
         }
         return proxies;
+    }
+
+    @Override
+    public List<Document> getProxies(Document doc) {
+        List<Node> proxyNodes = session.getProxies(((SQLDocument) doc).getNode());
+        return proxyNodes.stream().map(this::newDocument).collect(Collectors.toList());
     }
 
     @Override
