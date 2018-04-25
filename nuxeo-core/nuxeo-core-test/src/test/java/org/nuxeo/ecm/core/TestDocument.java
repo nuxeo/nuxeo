@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,13 +56,13 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -85,6 +86,9 @@ public class TestDocument {
 
     @Inject
     protected CoreSession coreSession;
+
+    @Inject
+    protected VersioningService versioningService;
 
     @Inject
     protected SchemaManager schemaManager;
@@ -375,32 +379,47 @@ public class TestDocument {
     @Test
     public void testGetProxies() throws Exception {
         Document root = session.getRootDocument();
-        Document doc = root.addChild("docTarget", "File");
+        Document doc = root.addChild("docSubject", "File");
         Document proxy = session.createProxy(doc, root);
+
+        versioningService.doCheckIn(doc, MAJOR, "Major version 1");
+        versioningService.doCheckOut(doc);
+        Document version2 = versioningService.doCheckIn(doc, MAJOR, "Major version 2");
+        Document version2Proxy = session.createProxy(version2, root);
         session.save();
+
+        List<Document> versions = doc.getVersions();
+        assertEquals(2, versions.size());
+        assertEquals(doc.getUUID(), versions.get(0).getVersionSeriesId());
+        assertEquals(doc.getUUID(), versions.get(1).getVersionSeriesId());
 
         List<Document> proxiesWithSearch = session.getProxies(doc, null);
         List<Document> proxies = session.getProxies(doc);
-        assertEquals(1, proxies.size());
-        assertEquals(1, proxiesWithSearch.size());
-        assertEquals(proxy.getUUID(), proxiesWithSearch.get(0).getUUID());
-        assertEquals(proxy.getUUID(), proxies.get(0).getUUID());
+
+        assertEquals("Must return all proxies, including version proxies", 2, proxiesWithSearch.size());
+        assertEquals("Must return a document's proxies", 1, proxies.size());
+        assertEquals(doc, proxies.get(0).getTargetDocument());
+        assertEquals(1, proxiesWithSearch.stream()
+                .filter(p -> doc.getUUID().equals(p.getTargetDocument().getUUID())).count());
+        assertEquals(1, proxiesWithSearch.stream()
+                .filter(p -> version2.getUUID().equals(p.getTargetDocument().getUUID())).count());
 
         Document proxy2 = session.createProxy(doc, root);
         proxiesWithSearch = session.getProxies(doc, null);
         proxies = session.getProxies(doc);
         assertEquals(2, proxies.size());
-        assertEquals(2, proxiesWithSearch.size());
+        assertEquals(3, proxiesWithSearch.size());
         assertEquals(1, proxies.stream().filter(p -> proxy.getUUID().equals(p.getUUID())).count());
         assertEquals(1, proxies.stream().filter(p -> proxy2.getUUID().equals(p.getUUID())).count());
 
         proxies = session.getProxies(proxy);
-        assertEquals("The proxy has no proxies",0, proxies.size());
+        assertEquals("The proxy has no proxies", 0, proxies.size());
 
-        //This call returns the 2 proxies (for the target doc) even though we passed in a proxy.
+        // This call returns the 3 proxies (for the target doc) even though we passed in a proxy.
         proxiesWithSearch = session.getProxies(proxy, null);
         assertEquals(1, proxiesWithSearch.stream().filter(p -> proxy.getUUID().equals(p.getUUID())).count());
         assertEquals(1, proxiesWithSearch.stream().filter(p -> proxy2.getUUID().equals(p.getUUID())).count());
+        assertEquals(1, proxiesWithSearch.stream().filter(p -> version2Proxy.getUUID().equals(p.getUUID())).count());
     }
 
     @Test

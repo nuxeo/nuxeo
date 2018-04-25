@@ -1641,6 +1641,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
         updateDocumentCount.inc();
+
+        // Notify that proxies have been updated
+        List<Document> proxies = getSession().getProxies(doc);
+        if (proxies != null && !proxies.isEmpty()) {
+            proxies.forEach(proxy -> {
+                DocumentModel docProxy = readModel(proxy);
+                if (!docProxy.isImmutable()) {
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, options, null, null, true, false);
+                }
+            });
+        }
         return docModel;
     }
 
