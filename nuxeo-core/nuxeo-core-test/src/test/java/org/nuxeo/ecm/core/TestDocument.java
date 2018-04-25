@@ -373,6 +373,37 @@ public class TestDocument {
     }
 
     @Test
+    public void testGetProxies() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("docTarget", "File");
+        Document proxy = session.createProxy(doc, root);
+        session.save();
+
+        List<Document> proxiesWithSearch = session.getProxies(doc, null);
+        List<Document> proxies = session.getProxies(doc);
+        assertEquals(1, proxies.size());
+        assertEquals(1, proxiesWithSearch.size());
+        assertEquals(proxy.getUUID(), proxiesWithSearch.get(0).getUUID());
+        assertEquals(proxy.getUUID(), proxies.get(0).getUUID());
+
+        Document proxy2 = session.createProxy(doc, root);
+        proxiesWithSearch = session.getProxies(doc, null);
+        proxies = session.getProxies(doc);
+        assertEquals(2, proxies.size());
+        assertEquals(2, proxiesWithSearch.size());
+        assertEquals(1, proxies.stream().filter(p -> proxy.getUUID().equals(p.getUUID())).count());
+        assertEquals(1, proxies.stream().filter(p -> proxy2.getUUID().equals(p.getUUID())).count());
+
+        proxies = session.getProxies(proxy);
+        assertEquals("The proxy has no proxies",0, proxies.size());
+
+        //This call returns the 2 proxies (for the target doc) even though we passed in a proxy.
+        proxiesWithSearch = session.getProxies(proxy, null);
+        assertEquals(1, proxiesWithSearch.stream().filter(p -> proxy.getUUID().equals(p.getUUID())).count());
+        assertEquals(1, proxiesWithSearch.stream().filter(p -> proxy2.getUUID().equals(p.getUUID())).count());
+    }
+
+    @Test
     public void testBlobsVisitor() throws Exception {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "ComplexDoc");

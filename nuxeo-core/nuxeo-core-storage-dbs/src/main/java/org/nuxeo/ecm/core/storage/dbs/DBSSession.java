@@ -68,6 +68,7 @@ import java.text.DateFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +85,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1003,6 +1005,17 @@ public class DBSSession implements Session {
             documents.add(getDocument(docState));
         }
         return documents;
+    }
+
+    @Override
+    public List<Document> getProxies(Document doc) {
+        State state = transaction.getStateForRead(doc.getUUID());
+        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+        if (proxyIds != null) {
+            List<String> ids = Arrays.stream(proxyIds).map(Object::toString).collect(Collectors.toList());
+            return getDocuments(ids);
+        }
+        return Collections.emptyList();
     }
 
     @Override

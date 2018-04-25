@@ -316,6 +316,11 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public List<Node> getProxies(Node document) {
+        return getSession().getProxies(document);
+    }
+
+    @Override
     public void setProxyTarget(Node proxy, Serializable targetId) {
         getSession().setProxyTarget(proxy, targetId);
     }
