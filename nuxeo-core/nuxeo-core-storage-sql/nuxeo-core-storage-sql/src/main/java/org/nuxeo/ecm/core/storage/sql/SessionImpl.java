@@ -1207,15 +1207,7 @@ public class SessionImpl implements Session, XAResource {
             ids = context.getSeriesProxyIds(versionSeriesId);
         }
 
-        List<Node> nodes = new LinkedList<Node>();
-        for (Serializable id : ids) {
-            Node node = getNodeById(id);
-            if (node != null || Boolean.TRUE.booleanValue()) { // XXX
-                // null if deleted, which means selection wasn't correctly
-                // updated
-                nodes.add(node);
-            }
-        }
+        List<Node> nodes = getNodes(ids);
 
         if (parent != null) {
             // filter by parent
@@ -1229,6 +1221,30 @@ public class SessionImpl implements Session, XAResource {
         }
 
         return nodes;
+    }
+
+    private List<Node> getNodes(List<Serializable> ids) {
+        List<Node> nodes = new LinkedList<>();
+        for (Serializable id : ids) {
+            Node node = getNodeById(id);
+            if (node != null || Boolean.TRUE.booleanValue()) { // XXX
+                // null if deleted, which means selection wasn't correctly
+                // updated
+                nodes.add(node);
+            }
+        }
+
+        return nodes;
+    }
+
+    @Override
+    public List<Node> getProxies(Node document) {
+        checkLive();
+        if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
+            return Collections.emptyList();
+        }
+        List<Serializable> ids = context.getSeriesProxyIds(document.getId());
+        return getNodes(ids);
     }
 
     /**
