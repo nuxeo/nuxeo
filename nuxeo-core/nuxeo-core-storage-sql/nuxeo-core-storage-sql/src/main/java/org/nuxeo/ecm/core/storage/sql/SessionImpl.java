@@ -1250,7 +1250,7 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
-    private List<Node> getNodes(List<Serializable> ids) {
+    protected List<Node> getNodes(List<Serializable> ids) {
         List<Node> nodes = new LinkedList<>();
         for (Serializable id : ids) {
             Node node = getNodeById(id);
@@ -1270,7 +1270,7 @@ public class SessionImpl implements Session, XAResource {
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             return Collections.emptyList();
         }
-        List<Serializable> ids = context.getSeriesProxyIds(document.getId());
+        List<Serializable> ids = context.getTargetProxyIds(document.getId());
         return getNodes(ids);
     }
 
