@@ -79,14 +79,20 @@ public class TestDocumentModelResolver {
 
     protected String idRef;
 
+    protected String idOnlyRef;
+
     protected String pathRef;
+
+    protected String pathOnlyRef;
 
     @Before
     public void setup() throws Exception {
         doc = session.createDocumentModel("/", "doc1", "TestResolver");
         doc = session.createDocument(doc);
         idRef = doc.getRepositoryName() + ":" + doc.getId();
+        idOnlyRef = doc.getId();
         pathRef = doc.getRepositoryName() + ":" + doc.getPathAsString();
+        pathOnlyRef = doc.getPathAsString();
         session.save();
     }
 
@@ -105,6 +111,7 @@ public class TestDocumentModelResolver {
     @Test(expected = IllegalStateException.class)
     public void testLifecycleNoConfigurationFetchCast() {
         new DocumentModelResolver().fetch(DocumentModel.class, idRef);
+        new DocumentModelResolver().fetch(DocumentModel.class, idOnlyRef);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -173,6 +180,7 @@ public class TestDocumentModelResolver {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
         assertTrue(dmrr.validate(idRef));
+        assertTrue(dmrr.validate(idOnlyRef));
     }
 
     @Test
@@ -182,6 +190,7 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
         assertTrue(dmrr.validate(idRef));
+        assertTrue(dmrr.validate(idOnlyRef));
     }
 
     @Test
@@ -198,6 +207,7 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_PATH_REF);
         dmrr.configure(parameters);
         assertFalse(dmrr.validate(idRef));
+        assertFalse(dmrr.validate(idOnlyRef));
     }
 
     @Test
@@ -205,6 +215,7 @@ public class TestDocumentModelResolver {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
         assertFalse(dmrr.validate(pathRef));
+        assertFalse(dmrr.validate(pathOnlyRef));
     }
 
     @Test
@@ -214,6 +225,7 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_PATH_REF);
         dmrr.configure(parameters);
         assertTrue(dmrr.validate(pathRef));
+        assertTrue(dmrr.validate(pathOnlyRef));
     }
 
     @Test
@@ -237,13 +249,19 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
         assertFalse(dmrr.validate(pathRef));
+        assertFalse(dmrr.validate(pathOnlyRef));
     }
 
     @Test
     public void testFetchGoodIdRefWithDefaultConf() {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
+
         Object entity = dmrr.fetch(idRef);
+        assertTrue(entity instanceof DocumentModel);
+        assertEquals("doc1", ((DocumentModel) entity).getName());
+
+        entity = dmrr.fetch(idOnlyRef);
         assertTrue(entity instanceof DocumentModel);
         assertEquals("doc1", ((DocumentModel) entity).getName());
     }
@@ -254,7 +272,12 @@ public class TestDocumentModelResolver {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
+
         Object entity = dmrr.fetch(idRef);
+        assertTrue(entity instanceof DocumentModel);
+        assertEquals("doc1", ((DocumentModel) entity).getName());
+
+        entity = dmrr.fetch(idOnlyRef);
         assertTrue(entity instanceof DocumentModel);
         assertEquals("doc1", ((DocumentModel) entity).getName());
     }
@@ -280,6 +303,7 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_PATH_REF);
         dmrr.configure(parameters);
         assertNull(dmrr.fetch(idRef));
+        assertNull(dmrr.fetch(idOnlyRef));
     }
 
     @Test
@@ -287,6 +311,7 @@ public class TestDocumentModelResolver {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
         assertNull(dmrr.fetch(pathRef));
+        assertNull(dmrr.fetch(pathOnlyRef));
     }
 
     @Test
@@ -295,7 +320,12 @@ public class TestDocumentModelResolver {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_STORE, STORE_PATH_REF);
         dmrr.configure(parameters);
+
         Object entity = dmrr.fetch(pathRef);
+        assertTrue(entity instanceof DocumentModel);
+        assertEquals("doc1", ((DocumentModel) entity).getName());
+
+        entity = dmrr.fetch(pathOnlyRef);
         assertTrue(entity instanceof DocumentModel);
         assertEquals("doc1", ((DocumentModel) entity).getName());
     }
@@ -325,6 +355,7 @@ public class TestDocumentModelResolver {
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
         assertNull(dmrr.fetch(pathRef));
+        assertNull(dmrr.fetch(pathOnlyRef));
     }
 
     @Test
@@ -333,10 +364,15 @@ public class TestDocumentModelResolver {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
+
         DocumentModel document = dmrr.fetch(DocumentModel.class, idRef);
         assertNotNull(document);
         assertEquals("doc1", document.getName());
+        document = dmrr.fetch(DocumentModel.class, idOnlyRef);
+        assertNotNull(document);
+        assertEquals("doc1", document.getName());
         assertNull(dmrr.fetch(DocumentModel.class, pathRef));
+        assertNull(dmrr.fetch(DocumentModel.class, pathOnlyRef));
         assertNull(dmrr.fetch(DocumentModel.class, "test:uuid1234567890"));
         assertNull(dmrr.fetch(DocumentModel.class, "badrepo:" + doc.getId()));
     }
@@ -347,7 +383,12 @@ public class TestDocumentModelResolver {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_STORE, STORE_ID_REF);
         dmrr.configure(parameters);
+
         VersioningDocument document = dmrr.fetch(VersioningDocument.class, idRef);
+        assertNotNull(document);
+        assertNotNull(document.getVersionLabel());
+
+        document = dmrr.fetch(VersioningDocument.class, idOnlyRef);
         assertNotNull(document);
         assertNotNull(document.getVersionLabel());
     }
@@ -361,7 +402,11 @@ public class TestDocumentModelResolver {
         DocumentModel document = dmrr.fetch(DocumentModel.class, pathRef);
         assertNotNull(document);
         assertEquals("doc1", document.getName());
+        document = dmrr.fetch(DocumentModel.class, pathOnlyRef);
+        assertNotNull(document);
+        assertEquals("doc1", document.getName());
         assertNull(dmrr.fetch(DocumentModel.class, idRef));
+        assertNull(dmrr.fetch(DocumentModel.class, idOnlyRef));
         assertNull(dmrr.fetch(DocumentModel.class, "test:/doc/toto"));
         assertNull(dmrr.fetch(DocumentModel.class, "badrepo:" + doc.getPathAsString()));
     }
@@ -372,7 +417,12 @@ public class TestDocumentModelResolver {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(PARAM_STORE, STORE_PATH_REF);
         dmrr.configure(parameters);
+
         VersioningDocument document = dmrr.fetch(VersioningDocument.class, pathRef);
+        assertNotNull(document);
+        assertNotNull(document.getVersionLabel());
+
+        document = dmrr.fetch(VersioningDocument.class, pathOnlyRef);
         assertNotNull(document);
         assertNotNull(document.getVersionLabel());
     }
@@ -382,6 +432,7 @@ public class TestDocumentModelResolver {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
         assertNull(dmrr.fetch(Document.class, idRef));
+        assertNull(dmrr.fetch(Document.class, idOnlyRef));
     }
 
     @Test
@@ -389,6 +440,7 @@ public class TestDocumentModelResolver {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         dmrr.configure(new HashMap<String, String>());
         assertNull(dmrr.fetch(List.class, idRef));
+        assertNull(dmrr.fetch(List.class, idOnlyRef));
     }
 
     @Test
@@ -449,7 +501,12 @@ public class TestDocumentModelResolver {
 
     @Test
     public void testIdRefCorrectValues() {
-        doc.setPropertyValue(ID_XPATH, idRef);
+        doTestIdRefCorrectValues(idRef);
+        doTestIdRefCorrectValues(idOnlyRef);
+    }
+
+    protected void doTestIdRefCorrectValues(String ref) {
+        doc.setPropertyValue(ID_XPATH, ref);
         DocumentModel document = (DocumentModel) doc.getProperty(ID_XPATH).getObjectResolver().fetch();
         assertNotNull(document);
         assertEquals("doc1", document.getName());
@@ -466,13 +523,23 @@ public class TestDocumentModelResolver {
 
     @Test
     public void testIdRefDoesntSupportPath() {
-        doc.setPropertyValue(ID_XPATH, pathRef);
+        doTestIdRefDoesntSupportPath(pathRef);
+        doTestIdRefDoesntSupportPath(pathOnlyRef);
+    }
+
+    protected void doTestIdRefDoesntSupportPath(String ref) {
+        doc.setPropertyValue(ID_XPATH, ref);
         assertNull(doc.getProperty(ID_XPATH).getObjectResolver().fetch());
     }
 
     @Test
     public void testPathRefCorrectValues() {
-        doc.setPropertyValue(PATH_XPATH, pathRef);
+        doTestPathRefCorrectValues(pathRef);
+        doTestPathRefCorrectValues(pathOnlyRef);
+    }
+
+    protected void doTestPathRefCorrectValues(String ref) {
+        doc.setPropertyValue(PATH_XPATH, ref);
         DocumentModel document = (DocumentModel) doc.getProperty(PATH_XPATH).getObjectResolver().fetch();
         assertNotNull(document);
         assertEquals("doc1", document.getName());
@@ -489,7 +556,12 @@ public class TestDocumentModelResolver {
 
     @Test
     public void testPathRefFieldDoesntSupportId() {
-        doc.setPropertyValue(PATH_XPATH, idRef);
+        doTestPathRefFieldDoesntSupportId(idRef);
+        doTestPathRefFieldDoesntSupportId(idOnlyRef);
+    }
+
+    protected void doTestPathRefFieldDoesntSupportId(String ref) {
+        doc.setPropertyValue(PATH_XPATH, ref);
         assertNull(doc.getProperty(PATH_XPATH).getObjectResolver().fetch());
     }
 
@@ -529,8 +601,12 @@ public class TestDocumentModelResolver {
         assertEquals(STORE_ID_REF, outputParameters.get(PARAM_STORE));
         // test it works: validate
         assertTrue(readResolver.validate(idRef));
+        assertTrue(readResolver.validate(idOnlyRef));
         // test it works: fetch
         Object entity = readResolver.fetch(idRef);
+        assertTrue(entity instanceof DocumentModel);
+        assertEquals(doc.getPathAsString(), ((DocumentModel) entity).getPathAsString());
+        entity = readResolver.fetch(idOnlyRef);
         assertTrue(entity instanceof DocumentModel);
         assertEquals(doc.getPathAsString(), ((DocumentModel) entity).getPathAsString());
         // test it works: getReference
@@ -545,12 +621,16 @@ public class TestDocumentModelResolver {
         resolver.configure(params);
 
         DocumentModel adminDoc = resolver.fetch(DocumentModel.class, idRef);
-
         assertNotNull(adminDoc);
+        adminDoc = resolver.fetch(DocumentModel.class, idOnlyRef);
+        assertNotNull(adminDoc);
+
         try {
             ClientLoginModule.getThreadLocalLogin().push(new UserPrincipal(username, Collections.emptyList(), false, false),
                                                          null, null);
             DocumentModel doc = resolver.fetch(DocumentModel.class, idRef);
+            assertNull(doc);
+            doc = resolver.fetch(DocumentModel.class, idOnlyRef);
             assertNull(doc);
         } finally {
             ClientLoginModule.getThreadLocalLogin().pop();

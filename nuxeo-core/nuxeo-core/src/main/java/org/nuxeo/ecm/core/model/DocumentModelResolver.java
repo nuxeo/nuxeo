@@ -34,7 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel} references (id or
@@ -83,8 +85,6 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 public class DocumentModelResolver implements ObjectResolver {
 
     private static final long serialVersionUID = 1L;
-
-    private static final String DEFAULT_REPO_NAME = "default";
 
     public static final String NAME = "documentResolver";
 
@@ -269,7 +269,7 @@ public class DocumentModelResolver implements ObjectResolver {
             String[] split = value.split(":");
             if (split.length == 1) {
                 REF ref = new REF();
-                ref.repo = DEFAULT_REPO_NAME;
+                ref.repo = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
                 ref.ref = split[0];
                 return ref;
             }
