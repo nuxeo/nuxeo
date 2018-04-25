@@ -80,6 +80,7 @@ public abstract class AbstractJsonWriterTest<WriterClass extends Writer<Marshall
 
     }
 
+    @Deploy("org.nuxeo.runtime.stream")
     @Deploy("org.nuxeo.ecm.core.io")
     public static abstract class External<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
             AbstractJsonWriterTest<WriterClass, MarshalledType> {

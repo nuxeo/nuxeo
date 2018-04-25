@@ -62,7 +62,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = ComplexDocRepositoryInit.class)
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class TestImportExportWithComplexXSD {
 

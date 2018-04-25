@@ -45,7 +45,6 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 @Deploy("org.nuxeo.ecm.webengine.test:login-anonymous-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:login-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml")
-@Deploy("org.nuxeo.ecm.core.io")
 @Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class,
         WebEngineFeatureCore.class })
 public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {

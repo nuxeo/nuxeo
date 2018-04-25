@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingContextBuilder;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -45,7 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @since 6.0
  */
-@Deploy("org.nuxeo.ecm.core.io")
 public class BaseRestTest {
 
     @Inject

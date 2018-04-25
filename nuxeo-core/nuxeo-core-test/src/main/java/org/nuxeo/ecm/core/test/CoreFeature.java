@@ -80,11 +80,13 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.runtime.pubsub")
 @Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.runtime.migration")
+@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.query")
 @Deploy("org.nuxeo.ecm.core.api")
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core")
+@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.test")
 @Deploy("org.nuxeo.ecm.core.mimetype")
@@ -98,9 +100,8 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.storage.mongodb")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
-@Deploy("org.nuxeo.ecm.core.io")
-@Features({ RuntimeFeature.class, TransactionalFeature.class })
 @Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
+@Features({ RuntimeFeature.class, TransactionalFeature.class })
 public class CoreFeature extends SimpleFeature {
 
     protected ACP rootAcp;

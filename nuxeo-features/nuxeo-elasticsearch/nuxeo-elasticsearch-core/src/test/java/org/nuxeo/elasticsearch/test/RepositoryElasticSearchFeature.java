@@ -35,7 +35,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 // TODO: "org.nuxeo.ecm.core.management" is missing but creates test failures
 @Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.webengine.core")

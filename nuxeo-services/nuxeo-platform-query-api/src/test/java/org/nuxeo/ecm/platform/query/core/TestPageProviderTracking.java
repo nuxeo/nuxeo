@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.query.api.test:test-pageprovider-track-contrib.xml")
 public class TestPageProviderTracking {
 
@@ -86,7 +85,7 @@ public class TestPageProviderTracking {
         PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
         assertFalse(def.isUsageTrackingEnabled());
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
 
         PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN2", null, 10L, 0L, props,
@@ -102,7 +101,7 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingListener() throws Exception {
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
 
         PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,
@@ -139,7 +138,7 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingData() throws Exception {
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
 
         PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,

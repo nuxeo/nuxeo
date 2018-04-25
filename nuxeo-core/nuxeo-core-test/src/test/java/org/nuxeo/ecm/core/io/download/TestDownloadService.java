@@ -74,7 +74,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.cache")
 public class TestDownloadService {
 

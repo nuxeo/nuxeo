@@ -59,7 +59,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.persistence")
 @Deploy("org.nuxeo.ecm.platform.audit")
 public class LogEntryWriterTest {
@@ -96,7 +95,7 @@ public class LogEntryWriterTest {
         entry.setComment("comment");
         entry.setDocLifeCycle("deleted");
         entry.setLogDate(new Date());
-        Map<String, ExtendedInfo> extendedInfo = new HashMap<String, ExtendedInfo>();
+        Map<String, ExtendedInfo> extendedInfo = new HashMap<>();
 
         DateTime testDate = new DateTime();
         extendedInfo.put("extInfo1", ExtendedInfoImpl.createExtendedInfo("testString"));

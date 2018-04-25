@@ -45,10 +45,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author loopingz
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-with-resolver.xml")
