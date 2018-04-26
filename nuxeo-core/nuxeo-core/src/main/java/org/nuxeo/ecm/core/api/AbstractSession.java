@@ -40,8 +40,8 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -1625,6 +1625,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
         updateDocumentCount.inc();
+
+        // Notify that proxies have been updated
+        List<Document> proxies = getSession().getProxies(doc, null);
+        if (proxies != null && !proxies.isEmpty()) {
+            proxies.forEach(proxy -> {
+                DocumentModel docProxy = readModel(proxy);
+                if (!docProxy.isImmutable()) {
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, docProxy, options, null, null, true, false);
+                }
+            });
+        }
         return docModel;
     }
 

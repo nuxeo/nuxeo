@@ -3842,7 +3842,8 @@ public class TestSQLRepositoryAPI {
                 "beforeDocumentModification", //
                 "aboutToCheckout", //
                 "documentCheckedOut", //
-                "documentModified");
+                "documentModified", //
+                "documentProxyUpdated/p");
 
         // save with versioning
         DummyTestListener.clear();
@@ -3854,7 +3855,8 @@ public class TestSQLRepositoryAPI {
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
                 "documentCreated/v", //
-                "documentModified");
+                "documentModified", //
+                "documentProxyUpdated/p");
 
         doc.checkOut();
 
