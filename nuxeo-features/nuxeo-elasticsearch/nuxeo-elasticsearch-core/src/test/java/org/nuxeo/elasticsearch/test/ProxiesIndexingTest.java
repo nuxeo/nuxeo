@@ -45,16 +45,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class ProxiesIndexingTest {
     @Inject
-    private CoreSession coreSession;
+    protected CoreSession coreSession;
 
     @Inject
-    private ElasticSearchService ess;
+    protected ElasticSearchService ess;
 
     @Inject
-    private ElasticSearchAdmin esa;
+    protected ElasticSearchAdmin esa;
 
     @Inject
-    private WorkManager workManager;
+    protected WorkManager workManager;
 
     @Test
     public void testES() throws InterruptedException {

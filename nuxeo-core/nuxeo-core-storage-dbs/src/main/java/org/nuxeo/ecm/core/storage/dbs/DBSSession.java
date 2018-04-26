@@ -1031,13 +1031,13 @@ public class DBSSession implements Session {
         }
         return documents;
     }
-    
+
     @Override
     public List<Document> getProxies(Document doc) {
         State state = transaction.getStateForRead(doc.getUUID());
         Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
         if (proxyIds != null) {
-            List<String> ids = Arrays.stream(proxyIds).map(Object::toString).collect(Collectors.toList());
+            List<String> ids = Arrays.stream(proxyIds).map(String::valueOf).collect(Collectors.toList());
             return getDocuments(ids);
         }
         return Collections.emptyList();

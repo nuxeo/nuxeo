@@ -394,6 +394,9 @@ public interface Session extends Connection {
 
     /**
      * Finds the proxies for a document. (The document may be a version or a live document)
+     * @param document the document
+     * @return the list of proxies,  or an empty list
+     * @since 10.2
      */
     List<Node> getProxies(Node document);
 
