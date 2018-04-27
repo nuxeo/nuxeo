@@ -49,9 +49,8 @@ import org.nuxeo.runtime.avro.AvroService;
  */
 public class PropertyMapper extends AvroMapper<Property, Object> {
 
-    protected static final String TIMESTAMP_MILLIS = "timestamp-millis";
-
-    protected static final Map<String, Class<?>> MAPPING = Collections.singletonMap("content", BlobProperty.class);
+    protected static final Map<String, Class<?>> MAPPING = Collections.singletonMap(
+            AvroConstants.CONTENT, BlobProperty.class);
 
     public PropertyMapper(AvroService service) {
         super(service);
@@ -93,7 +92,7 @@ public class PropertyMapper extends AvroMapper<Property, Object> {
             }
             return list;
         case LONG:
-            if (TIMESTAMP_MILLIS.equals(getLogicalType(schema))) {
+            if (AvroConstants.AVRO_LOGICTYPE_TIMESTAMP_MILLIS.equals(getLogicalType(schema))) {
                 return new Date(((Long) input).longValue());
             }
             return input;
@@ -162,7 +161,7 @@ public class PropertyMapper extends AvroMapper<Property, Object> {
             throw new RuntimeServiceException(CANNOT_MAP_TO + schema.getType());
         case LONG:
             if (input.isScalar()) {
-                if (TIMESTAMP_MILLIS.equals(getLogicalType(schema))) {
+                if (AvroConstants.AVRO_LOGICTYPE_TIMESTAMP_MILLIS.equals(getLogicalType(schema))) {
                     GregorianCalendar cal = (GregorianCalendar) input.getValue();
                     return cal.toInstant().toEpochMilli();
                 }

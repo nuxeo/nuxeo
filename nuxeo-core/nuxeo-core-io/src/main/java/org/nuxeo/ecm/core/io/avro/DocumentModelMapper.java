@@ -21,13 +21,16 @@ package org.nuxeo.ecm.core.io.avro;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
-import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -39,28 +42,17 @@ import org.nuxeo.runtime.avro.AvroService;
  */
 public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord> {
 
-    public static final String UUID = "uuid";
-
-    public static final String PATH = "path";
-
-    public static final String PRIMARY_TYPE = "primaryType";
-
-    public static final String DOCUMENT_TYPE = "documentType";
-
-    public static final String DOCUMENT_MODEL = "documentModel";
-
     public DocumentModelMapper(AvroService service) {
         super(service);
     }
 
     @Override
     public DocumentModel fromAvro(Schema schema, GenericRecord input) {
-        if (!DOCUMENT_MODEL.equals(getLogicalType(schema))) {
+        if (!AvroConstants.DOCUMENT_MODEL.equals(getLogicalType(schema))) {
             throw new RuntimeServiceException("Schema does not match DocumentModel");
         }
-        String path = (String) input.get(PATH);
-        GenericRecord documentTypeRecord = (GenericRecord) input.get(PRIMARY_TYPE);
-        DocumentModel doc = new DocumentModelImpl((String) null, path, documentTypeRecord.getSchema().getName());
+        DocumentModel doc = documentModelFromAvro(input);
+        GenericRecord documentTypeRecord = (GenericRecord) input.get(AvroConstants.DOCUMENT_TYPE);
         for (Field schemaField : documentTypeRecord.getSchema().getFields()) {
             GenericRecord schemaRecord = (GenericRecord) documentTypeRecord.get(schemaField.name());
             List<Field> fields = schemaField.schema().getFields();
@@ -76,25 +68,70 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
 
     @Override
     public GenericRecord toAvro(Schema schema, DocumentModel input) {
-        String logicalType = getLogicalType(schema);
         GenericRecord record = new GenericData.Record(schema);
-        if (DOCUMENT_MODEL.equals(logicalType)) {
-            record.put(PATH, input.getPathAsString());
-            record.put(UUID, input.getId());
-        }
-        for (Field field : schema.getFields()) {
-            if (field.name().equals(UUID) || field.name().equals(PATH)) {
-                continue;
-            }
-            if (field.schema().getType() == Type.RECORD
-                    && (DOCUMENT_MODEL.equals(logicalType) || DOCUMENT_TYPE.equals(logicalType))) {
+        if (AvroConstants.DOCUMENT_MODEL.equals(getLogicalType(schema))) {
+            documentModelToAvro(schema, input, record);
+        } else if (AvroConstants.DOCUMENT_TYPE.equals(getLogicalType(schema))) {
+            for (Field field : schema.getFields()) {
                 record.put(field.name(), service.toAvro(field.schema(), input));
-            } else {
+            }
+        } else {
+            for (Field field : schema.getFields()) {
                 Property p = input.getProperty(service.decodeName(field.name()));
                 record.put(field.name(), service.toAvro(field.schema(), p));
             }
         }
         return record;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected DocumentModel documentModelFromAvro(GenericRecord input) {
+        String path = (String) input.get(AvroConstants.PATH);
+        String type = (String) input.get(AvroConstants.PRIMARY_TYPE);
+        String uuid = (String) input.get(AvroConstants.UUID);
+        String parentId = (String) input.get(AvroConstants.PARENT_ID);
+        String repositoryName = (String) input.get(AvroConstants.REPOSITORY_NAME);
+        Boolean isProxy = (Boolean) input.get(AvroConstants.IS_PROXY);
+        DocumentRef parentRef = parentId == null ? null : new IdRef(parentId);
+        Set<String> facets = (Set<String>) input.get(AvroConstants.MIXIN_TYPES);
+        DocumentModelImpl doc = new DocumentModelImpl(null, type, uuid, new Path(path), null, parentRef,
+                null, facets, null, repositoryName, isProxy);
+        doc.setIsVersion((Boolean) input.get(AvroConstants.IS_VERSION));
+        doc.prefetchCurrentLifecycleState((String) input.get(AvroConstants.CURRENT_LIFE_CYCLE_STATE));
+        return doc;
+    }
+
+    protected void documentModelToAvro(Schema schema, DocumentModel doc, GenericRecord record) {
+        record.put(AvroConstants.UUID, doc.getId());
+        record.put(AvroConstants.NAME, doc.getName());
+        record.put(AvroConstants.TITLE, doc.getTitle());
+        record.put(AvroConstants.PATH, doc.getPathAsString());
+        record.put(AvroConstants.REPOSITORY_NAME, doc.getRepositoryName());
+        record.put(AvroConstants.PRIMARY_TYPE, doc.getType());
+        DocumentRef parentRef = doc.getParentRef();
+        if (parentRef != null) {
+            record.put(AvroConstants.PARENT_ID, parentRef.toString());
+        }
+        record.put(AvroConstants.CURRENT_LIFE_CYCLE_STATE, doc.getCurrentLifeCycleState());
+        if (doc.isVersion()) {
+            record.put(AvroConstants.VERSION_LABEL, doc.getVersionLabel());
+            record.put(AvroConstants.VERSION_VERSIONABLE_ID, doc.getVersionSeriesId());
+        }
+        record.put(AvroConstants.IS_PROXY, doc.isProxy());
+        record.put(AvroConstants.IS_TRASHED, doc.isTrashed());
+        record.put(AvroConstants.IS_VERSION, doc.isVersion());
+        record.put(AvroConstants.IS_CHECKEDIN, !doc.isCheckedOut());
+        record.put(AvroConstants.IS_LATEST_VERSION, doc.isLatestVersion());
+        record.put(AvroConstants.IS_LATEST_MAJOR_VERSION, doc.isLatestMajorVersion());
+        record.put(AvroConstants.CHANGE_TOKEN, doc.getChangeToken());
+        if (doc.getPos() != null) {
+            record.put(AvroConstants.POS, doc.getPos());
+        }
+        // facets
+        record.put(AvroConstants.MIXIN_TYPES, doc.getFacets());
+        // document type with schemas
+        record.put(AvroConstants.DOCUMENT_TYPE, service.toAvro(schema.getField(AvroConstants.DOCUMENT_TYPE).schema(), doc));
+        // INFO \\ tags and acls are ignored for now
     }
 
 }

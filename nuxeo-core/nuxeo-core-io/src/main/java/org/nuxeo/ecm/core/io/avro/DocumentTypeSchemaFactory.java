@@ -40,7 +40,7 @@ public class DocumentTypeSchemaFactory extends AvroSchemaFactory<DocumentType> {
     @Override
     public Schema createSchema(DocumentType input) {
         Schema schema = Schema.createRecord(getName(input), null, input.getNamespace().prefix, false);
-        new LogicalType(DocumentModelMapper.DOCUMENT_TYPE).addToSchema(schema);
+        new LogicalType(AvroConstants.DOCUMENT_TYPE).addToSchema(schema);
         List<Field> fields = new ArrayList<>(input.getSchemas().size());
         for (org.nuxeo.ecm.core.schema.types.Schema s : context.sort(input.getSchemas())) {
             fields.add(new Field(s.getName(), context.createSchema(s), null, (Object) null));

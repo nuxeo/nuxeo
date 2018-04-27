@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.io.avro;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -160,12 +161,37 @@ public class TestAvroMapper {
         file.delete();
         // map from avro data model
         DocumentModel mapped = service.fromAvro(record.getSchema(), DocumentModel.class, record);
+        assertTrues(reference, mapped);
         // assert reference doc and mapped document are equal
         for (String schema : reference.getSchemas()) {
             for (Property p : reference.getPropertyObjects(schema)) {
                 assertTrue(equals(p, mapped.getProperty(p.getXPath())));
             }
         }
+    }
+
+    protected void assertTrues(DocumentModel reference, DocumentModel mapped) {
+        String parentId1 = reference.getParentRef() != null ? reference.getParentRef().toString() : null;
+        String parentId2 = mapped.getParentRef() != null ? mapped.getParentRef().toString() : null;
+        assertEquals(parentId1, parentId2);
+        assertEquals(reference.getId(), mapped.getId());
+        assertEquals(reference.getType(), mapped.getType());
+        assertEquals(reference.getName(), mapped.getName());
+        assertEquals(reference.getTitle(), mapped.getTitle());
+        assertEquals(reference.getPathAsString(), mapped.getPathAsString());
+        assertEquals(reference.getRepositoryName(), mapped.getRepositoryName());
+        assertEquals(reference.getCurrentLifeCycleState(), mapped.getCurrentLifeCycleState());
+        assertTrue(reference.isCheckedOut() == mapped.isCheckedOut());
+        assertTrue(reference.isTrashed() == mapped.isTrashed());
+        assertTrue(reference.isVersion() == mapped.isVersion());
+        assertTrue(reference.isProxy() == mapped.isProxy());
+        assertEquals(reference.getFacets(), mapped.getFacets());
+        // properties not tested yet
+        // document has to be associated to an open session
+        // assertTrue(reference.isLatestMajorVersion() == mapped.isLatestMajorVersion());
+        // assertTrue(reference.isLatestVersion() == mapped.isLatestVersion());
+        // not settable
+        // assertEquals(reference.getChangeToken(), mapped.getChangeToken());
     }
 
 }
