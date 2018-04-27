@@ -34,15 +34,15 @@ node('slacoin') {
     stage('compile') {
         withBuildStatus('compile', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                sh 'mvn -B test-compile -Pqa,addons,distrib -DskipTests'
+                sh 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
             }
         }
     }
 
     stage('test') {
         withBuildStatus('test', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-            withMaven() {
-                sh 'mvn -B test -Pqa,addons,distrib -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+            withMaven() { 
+               sh 'mvn -nsu -B test -Pqa,addons,distrib -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
     }
@@ -50,10 +50,10 @@ node('slacoin') {
     def zipfile=stage('verify') {
         withBuildStatus('verify', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                sh 'mvn -B verify -Pqa,addons,distrib,tomcat -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+                sh 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipITs -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
-        return sh(returnStdout: true, script: 'ls $WORKSPACE/nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
+        return sh(returnStdout: true, script: 'cd $WORKSPACE; echo -n nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
     }
 
     stage('postgresql') {
@@ -91,8 +91,8 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
             stage(name) {
                 ws("${WORKSPACE}-${name}") {
                     unstash 'ws'
-                    mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
-                    mvncmd="mvn ${mvnopts} -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
+                    zipopt = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
+                    mvncmd="mvn ${zipopt} -nsu -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
                     echo mvncmd
                     timeout(time: 2, unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
