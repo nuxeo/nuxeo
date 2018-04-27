@@ -104,8 +104,8 @@ public class EmailHelper {
         }
     }
 
-    protected void sendmail0(Map<String, Object> mail) throws MessagingException, IOException, TemplateException,
-            LoginException, RenderingException {
+    protected void sendmail0(Map<String, Object> mail)
+            throws MessagingException, IOException, TemplateException, LoginException, RenderingException {
 
         Session session = getSession();
         if (javaMailNotAvailable || session == null) {
@@ -191,8 +191,8 @@ public class EmailHelper {
         }
         // First, try to get the session from JNDI, as would be done under J2EE.
         try {
-            NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
-                    NotificationService.NAME);
+            NotificationService service = (NotificationService) Framework.getRuntime()
+                                                                         .getComponent(NotificationService.NAME);
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
         } catch (NamingException ex) {
@@ -204,7 +204,7 @@ public class EmailHelper {
     }
 
     /**
-     * Instantiate a new session that authenticate given the protocol's properties. Initialize also the default
+     * Instantiates a new session that authenticates given the protocol's properties. Initializes also the default
      * transport protocol handler according to the properties.
      *
      * @since 5.6
