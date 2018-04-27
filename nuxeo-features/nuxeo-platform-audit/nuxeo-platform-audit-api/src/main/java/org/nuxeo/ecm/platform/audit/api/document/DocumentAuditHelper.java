@@ -123,8 +123,8 @@ public class DocumentAuditHelper {
 
         StringBuilder queryString = new StringBuilder();
         // Check if the audit uses elasticsearch as backend
-        boolean isESBackEnd = reader.getClass().getSimpleName().equals("ESAuditBackend");
-        if (isESBackEnd) {
+        String readerName = reader.getClass().getSimpleName();
+        if (readerName.equals("ESAuditBackend")) {
             queryString.append("{\"query\":{\"bool\":{\"must\": { \"match_all\": {} },"
                     + "\"filter\": {\"and\" : [{\"terms\": {\"docUUID\": [");
 
@@ -143,6 +143,29 @@ public class DocumentAuditHelper {
 
             // Add the range date
             queryString.append("]}},{\"range\": {\"eventDate\": {\"gte\" : \"${minDate}\"}}}]}}},\"sort\":[{\"eventId\": \"asc\"}]}");
+        } else if (readerName.equals("MongoDBAuditBackend")) {
+            queryString.append("{");
+            // doc uuid
+            queryString.append("\"docUUID\": {\"$in\": [");
+            queryString.append("\"" + targetUUID + "\"");
+            if (doc.isVersion()) {
+                DocumentModelList proxies = session.getProxies(doc.getRef(), null);
+                for (DocumentModel proxy : proxies) {
+                    queryString.append(", \"" + proxy.getId() + "\"");
+                }
+            }
+            queryString.append("]}");
+            // events
+            queryString.append(", \"eventId\": {\"$in\": [");
+            queryString.append("\"" + DocumentEventTypes.DOCUMENT_CREATED + "\"");
+            queryString.append(", \"" + DocumentEventTypes.DOCUMENT_CHECKEDIN + "\"");
+            queryString.append("]}");
+            // date range
+            queryString.append(", \"eventDate\": {\"$gte\": ISODate(\"${minDate}\")}");
+            // end
+            queryString.append("}");
+            // hack for sort, we don't want to change the nativeQuery API just for that
+            params.put("__SORT__", "{\"eventId\": 1}");
         } else {
             queryString.append("from LogEntry log where log.docUUID in (");
             queryString.append("'" + targetUUID + "'");
