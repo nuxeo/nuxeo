@@ -41,13 +41,8 @@ public class EmailResourceFactory implements ObjectFactory {
         final Reference ref = (Reference) obj;
         if (!ref.getClassName().equals("javax.mail.Session"))
             return (null);
-        ref.getAll();
         final Properties properties = toProperties(ref.getAll());
-        return AccessController.doPrivileged(new PrivilegedAction<Session>() {
-            public Session run() {
-                return EmailHelper.newSession(properties);
-            }
-        });
+        return AccessController.doPrivileged((PrivilegedAction<Session>) () -> EmailHelper.newSession(properties));
 
     }
 
