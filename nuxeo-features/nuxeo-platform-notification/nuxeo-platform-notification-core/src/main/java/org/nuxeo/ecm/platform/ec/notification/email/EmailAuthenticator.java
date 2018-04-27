@@ -32,17 +32,21 @@ public class EmailAuthenticator extends javax.mail.Authenticator {
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
-        String user = value("user");
+        String user = protocolValue("user");
         if (user == null) {
             return null;
         }
-        String password = value("password");
+        String password = protocolValue("password");
         if (password == null) {
             return null;
         }
         return new PasswordAuthentication(user, password);
     }
 
+    /**
+     * @deprecated since 10.2, use {@link #protocolValue(String)} instead
+     */
+    @Deprecated
     protected String value(String name) {
         String value = protocolValue(name);
         if (value != null) {
@@ -56,6 +60,10 @@ public class EmailAuthenticator extends javax.mail.Authenticator {
         return properties.getProperty(key);
     }
 
+    /**
+     * @deprecated since 10.2, use {@link #protocolValue(String)} instead
+     */
+    @Deprecated
     protected String defaultValue(String name) {
         String key = "mail." + getRequestingProtocol() + "." + name;
         return properties.getProperty(key);
