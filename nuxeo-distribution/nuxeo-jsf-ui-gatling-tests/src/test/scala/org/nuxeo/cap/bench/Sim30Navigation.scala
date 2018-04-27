@@ -56,9 +56,7 @@ object ScnNavigationDownload {
       during(duration, "counterName") {
         feed(Feeders.users).repeat(5) {
           feed(documents)
-            .randomSwitch(
-              70.0 -> exec(NuxeoRest.getDocument("Download: view document")),
-              30.0 -> exec(NuxeoRest.directS3DownloadBlob()))
+            .exec(NuxeoRest.downloadBlob())
             .pause(pause)
         }
       }
@@ -77,7 +75,7 @@ class Sim30Navigation extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnNavigation.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
+  val scn = ScnNavigationDownload.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }

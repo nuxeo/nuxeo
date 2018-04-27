@@ -29,7 +29,7 @@ object ScnCreateDocuments {
       asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
         feed(documents)
           .feed(Feeders.users)
-          .exec(NuxeoRest.createDocumentDirectUploadS3())
+          .exec(NuxeoRest.createDocument())
           .doIf(session => Redis.markDocumentCreated(session)) {
           exec()
         }.pause(pause)
