@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.core.io.avro;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
@@ -40,15 +39,36 @@ public class DocumentModelSchemaFactory extends AvroSchemaFactory<DocumentModel>
 
     @Override
     public Schema createSchema(DocumentModel input) {
-        Schema schema = Schema.createRecord(getName(input), null, "ecm", false);
-        new LogicalType(DocumentModelMapper.DOCUMENT_MODEL).addToSchema(schema);
         Schema typeSchema = context.createSchema(input.getDocumentType());
-        List<Field> fields = new LinkedList<>();
-        fields.add(new Field(DocumentModelMapper.UUID, Schema.create(Type.STRING), null, (Object) null));
-        fields.add(new Field(DocumentModelMapper.PATH, Schema.create(Type.STRING), null, (Object) null));
-        fields.add(new Field(DocumentModelMapper.PRIMARY_TYPE, typeSchema, null, (Object) null));
-        schema.setFields(fields);
-        // TODO we could handle facets here
+        Schema schema = Schema.createRecord(getName(input), null, AvroConstants.ECM, false);
+        new LogicalType(AvroConstants.DOCUMENT_MODEL).addToSchema(schema);
+        schema.setFields(Arrays.asList(
+                // mandatory
+                new Field(AvroConstants.UUID, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.PATH, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.NAME, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.TITLE, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.REPOSITORY_NAME, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.PRIMARY_TYPE, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.CHANGE_TOKEN, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.CURRENT_LIFE_CYCLE_STATE, Schema.create(Type.STRING), null, (Object) null),
+                new Field(AvroConstants.IS_PROXY, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_TRASHED, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_VERSION, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_CHECKEDIN, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_LATEST_VERSION, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_LATEST_MAJOR_VERSION, Schema.create(Type.BOOLEAN), null, (Object) null),
+                // nullable
+                new Field(AvroConstants.PARENT_ID, nullable(Schema.create(Type.STRING)), null, (Object) null),
+                new Field(AvroConstants.VERSION_LABEL, nullable(Schema.create(Type.STRING)), null, (Object) null),
+                new Field(AvroConstants.VERSION_VERSIONABLE_ID, nullable(Schema.create(Type.STRING)), null,
+                        (Object) null),
+                new Field(AvroConstants.POS, nullable(Schema.create(Type.LONG)), null, (Object) null),
+                new Field(AvroConstants.MIXIN_TYPES, nullable(Schema.createArray(Schema.create(Type.STRING))), null,
+                        (Object) null),
+                new Field(AvroConstants.TAGS, nullable(Schema.createArray(Schema.create(Type.STRING))), null,
+                        (Object) null),
+                new Field(AvroConstants.DOCUMENT_TYPE, typeSchema, null, (Object) null)));
         return schema;
     }
 

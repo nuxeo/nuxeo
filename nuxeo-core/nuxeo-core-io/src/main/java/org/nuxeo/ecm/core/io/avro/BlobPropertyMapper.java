@@ -62,12 +62,12 @@ public class BlobPropertyMapper extends AvroMapper<BlobProperty, Object> {
         case RECORD:
             try {
                 GenericRecord record = (GenericRecord) input;
-                String mimeType = (String) record.get(service.encodeName("mime-type"));
-                String encoding = (String) record.get("encoding");
-                byte[] bytes = ((ByteBuffer) record.get("data")).array();
+                String mimeType = (String) record.get(service.encodeName(AvroConstants.MIME_TYPE));
+                String encoding = (String) record.get(AvroConstants.ENCODING);
+                byte[] bytes = ((ByteBuffer) record.get(AvroConstants.DATA)).array();
                 Blob b = Blobs.createBlob(bytes, mimeType, encoding);
-                b.setFilename((String) record.get("name"));
-                b.setDigest((String) record.get("digest"));
+                b.setFilename((String) record.get(AvroConstants.CONTENT_NAME));
+                b.setDigest((String) record.get(AvroConstants.DIGEST));
                 return b;
             } catch (IOException e) {
                 throw new RuntimeServiceException(CANNOT_MAP_FROM + schema.getType(), e);
@@ -97,7 +97,7 @@ public class BlobPropertyMapper extends AvroMapper<BlobProperty, Object> {
         case RECORD:
             GenericRecord record = new GenericData.Record(schema);
             for (Field f : schema.getFields()) {
-                if ("data".equals(f.name())) {
+                if (AvroConstants.DATA.equals(f.name())) {
                     Blob blob = (Blob) input.getValue();
                     try {
                         record.put(f.name(), ByteBuffer.wrap(blob.getByteArray()));

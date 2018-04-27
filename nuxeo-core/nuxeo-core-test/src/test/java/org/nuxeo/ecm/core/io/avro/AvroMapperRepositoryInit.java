@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
 /**
@@ -81,6 +82,12 @@ public class AvroMapperRepositoryInit implements RepositoryInit {
         ListProperty vignettes = (ListProperty) doc.getProperty("complexschema:attachedFile/vignettes");
         for (String label : new String[] { "toto", "titi", "tutu", "tata" }) {
             vignettes.addValue(createVignette(label, full));
+        }
+        // facets
+        if (full) {
+            doc.addFacet(FacetNames.FOLDERISH);
+            doc.addFacet(FacetNames.COMMENTABLE);
+            doc.addFacet(FacetNames.DOWNLOADABLE);
         }
         session.createDocument(doc);
     }

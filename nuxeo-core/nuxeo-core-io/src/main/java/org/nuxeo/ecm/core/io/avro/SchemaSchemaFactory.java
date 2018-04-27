@@ -38,7 +38,7 @@ public class SchemaSchemaFactory extends AvroSchemaFactory<org.nuxeo.ecm.core.sc
     @Override
     public Schema createSchema(org.nuxeo.ecm.core.schema.types.Schema input) {
         Schema schema = complexTypeFactory.createSchema(input);
-        new LogicalType("schema").addToSchema(schema);
+        new LogicalType(AvroConstants.AVRO_LOGICALTYPE_SCHEMA).addToSchema(schema);
         return schema;
     }
 
