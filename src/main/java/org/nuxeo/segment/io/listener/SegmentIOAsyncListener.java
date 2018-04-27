@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -39,14 +41,12 @@ import org.nuxeo.segment.io.SegmentIOMapper;
 
 public class SegmentIOAsyncListener implements PostCommitEventListener {
 
-    private static Log log = LogFactory.getLog(SegmentIOAsyncListener.class);
-
     @Override
     public void handleEvent(EventBundle bundle) {
 
         SegmentIO service = Framework.getService(SegmentIO.class);
 
-        List<String> eventToProcess = new ArrayList<String>();
+        List<String> eventToProcess = new ArrayList<>();
 
         for (String event : service.getMappedEvents()) {
             if (bundle.containsEventName(event)) {
@@ -56,9 +56,21 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
 
         if (eventToProcess.size() > 0) {
             Map<String, List<SegmentIOMapper>> event2Mappers = service.getMappers(eventToProcess);
-            processEvents(event2Mappers, bundle);
-        }
 
+            try {
+                // Force system login in order to have access to user directory
+                LoginContext login = Framework.login();
+                try {
+                    processEvents(event2Mappers, bundle);
+                } finally {
+                    if (login != null) {
+                        login.logout();
+                    }
+                }
+            } catch (LoginException e) {
+                throw new NuxeoException(e);
+            }
+        }
     }
 
     protected void processEvents(Map<String, List<SegmentIOMapper>> event2Mappers, EventBundle bundle) {
@@ -71,10 +83,10 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
 
             for (SegmentIOMapper mapper : mappers) {
 
-                Map<String, Object> ctx = new HashMap<String, Object>();
+                Map<String, Object> ctx = new HashMap<>();
 
                 Principal princ = event.getContext().getPrincipal();
-                NuxeoPrincipal principal = null;
+                NuxeoPrincipal principal;
                 if (princ instanceof NuxeoPrincipal) {
                     principal = (NuxeoPrincipal) princ;
                 } else {
