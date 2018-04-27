@@ -56,13 +56,13 @@ import com.google.inject.Inject;
 public class TestSegmentIOService {
 
     @Inject
-    EventProducer eventProducer;
+    protected EventProducer eventProducer;
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    EventService eventService;
+    protected EventService eventService;
 
     protected void waitForAsyncCompletion() {
         TransactionHelper.commitOrRollbackTransaction();
@@ -70,8 +70,8 @@ public class TestSegmentIOService {
         TransactionHelper.startTransaction();
     }
 
-    protected void sendAuthenticationEvent(Principal principal) throws Exception {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+    protected void sendAuthenticationEvent(Principal principal) {
+        Map<String, Serializable> props = new HashMap<>();
         props.put("AuthenticationPlugin", "FakeAuth");
         props.put("LoginPlugin", "FakeLogin");
         EventContext ctx = new UnboundEventContext(principal, props);
@@ -137,8 +137,7 @@ public class TestSegmentIOService {
     }
 
     @Test
-    public void shouldRunTrackOnDocEvent() throws Exception {
-
+    public void shouldRunTrackOnDocEvent() {
         SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
         Assert.assertNotNull(component);
 
@@ -146,7 +145,7 @@ public class TestSegmentIOService {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "Test Doc");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
         session.save();
         waitForAsyncCompletion();
 
@@ -168,8 +167,7 @@ public class TestSegmentIOService {
     }
 
     @Test
-    public void shouldHaveDefaultIntegrationsConfig() throws Exception {
-
+    public void shouldHaveDefaultIntegrationsConfig() {
         SegmentIO sio = Framework.getService(SegmentIO.class);
         Assert.assertNotNull(sio);
 
@@ -179,7 +177,7 @@ public class TestSegmentIOService {
     }
 
     @Test
-    public void shouldHaveUserFilter() throws Exception {
+    public void shouldHaveUserFilter() {
 
         SegmentIO sio = Framework.getService(SegmentIO.class);
         Assert.assertNotNull(sio);
