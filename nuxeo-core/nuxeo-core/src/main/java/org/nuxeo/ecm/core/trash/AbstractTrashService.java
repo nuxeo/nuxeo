@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -268,15 +267,13 @@ public abstract class AbstractTrashService implements TrashService {
         session.save();
     }
 
-    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc,
-            Map<String, Serializable> options) {
-        notifyEvent(session, eventId, doc, options, false);
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc) {
+        notifyEvent(session, eventId, doc, false);
     }
 
-    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc,
-            Map<String, Serializable> options, boolean immediate) {
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc, boolean immediate) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
-        ctx.setProperties(new HashMap<>(options));
+        ctx.setProperties(new HashMap<>(doc.getContextData()));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
