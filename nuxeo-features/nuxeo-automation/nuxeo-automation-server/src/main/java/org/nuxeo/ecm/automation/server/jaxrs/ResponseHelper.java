@@ -69,27 +69,8 @@ public class ResponseHelper {
         return Response.status(401).build();
     }
 
-    public static Response blob(Blob blob) {
-        return blob(blob, HttpServletResponse.SC_OK);
-    }
-
     public static Response blobs(List<Blob> blobs) throws MessagingException, IOException {
         return blobs(blobs, HttpServletResponse.SC_OK);
-    }
-
-    public static Response blob(Blob blob, int httpStatus) {
-        String type = blob.getMimeType();
-        if (type == null || "???".equals(type)) {
-            type = MediaType.APPLICATION_OCTET_STREAM;
-        }
-        if (blob.getEncoding() != null) {
-            type += "; charset=" + blob.getEncoding();
-        }
-        return Response.status(httpStatus)
-                       .entity(blob)
-                       .type(type)
-                       .header("Content-Disposition", "attachment; filename=" + blob.getFilename())
-                       .build();
     }
 
     public static Response blobs(List<Blob> blobs, int httpStatus) throws MessagingException, IOException {
@@ -121,7 +102,7 @@ public class ResponseHelper {
             return emptyContent();
         }
         if (result instanceof Blob) {
-            return blob((Blob) result);
+            return result; // BlobWriter will do all the processing and call the DownloadService
         } else if (result instanceof BlobList) {
             return blobs((BlobList) result);
         } else if (result instanceof DocumentRef) {
