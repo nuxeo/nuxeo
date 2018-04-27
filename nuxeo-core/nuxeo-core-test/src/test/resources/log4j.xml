@@ -33,6 +33,14 @@
     <appender-ref ref="FILE"/>
   </category>
 
+  <!-- Needed by TestTrashBackwardMechanism -->
+  <logger name="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener">
+    <level value="DEBUG" />
+  </logger>
+  <logger name="org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener">
+    <level value="DEBUG" />
+  </logger>
+
   <logger name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository">
     <level value="WARN" />
   </logger>

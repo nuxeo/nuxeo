@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BulkTrashedStateChangeListener implements PostCommitFilteringEventListener {
 
-    public static final String PROCESS_CHILDREN_KEY = "processChildrenForTrashedStageChange";
+    public static final String SKIP_CHILDREN_PROCESSING_KEY = "skipChildrenForTrashedStageChange";
 
     private static final Log log = LogFactory.getLog(BulkTrashedStateChangeListener.class);
 
@@ -53,7 +53,7 @@ public class BulkTrashedStateChangeListener implements PostCommitFilteringEventL
     public boolean acceptEvent(Event event) {
         EventContext ctx = event.getContext();
         return ctx instanceof DocumentEventContext && ((DocumentEventContext) ctx).getSourceDocument().isFolder()
-                && Boolean.parseBoolean(String.valueOf(ctx.getProperty(PROCESS_CHILDREN_KEY)));
+                && !Boolean.parseBoolean(String.valueOf(ctx.getProperty(SKIP_CHILDREN_PROCESSING_KEY)));
     }
 
     @Override

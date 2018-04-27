@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.trash;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,7 +108,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
         // launch async action on folderish to undelete all children recursively
         for (DocumentModel doc : docs) {
             if (doc.isFolder()) {
-                notifyEvent(session, LifeCycleConstants.DOCUMENT_UNDELETED, doc, Collections.emptyMap(), true);
+                notifyEvent(session, LifeCycleConstants.DOCUMENT_UNDELETED, doc, true);
             }
         }
         return parentRefs;

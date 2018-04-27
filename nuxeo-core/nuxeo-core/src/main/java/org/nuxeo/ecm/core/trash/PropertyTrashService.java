@@ -18,9 +18,8 @@
  */
 package org.nuxeo.ecm.core.trash;
 
-import static org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener.PROCESS_CHILDREN_KEY;
+import static org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener.SKIP_CHILDREN_PROCESSING_KEY;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,10 +78,10 @@ public class PropertyTrashService extends AbstractTrashService {
                     String newName = mangleName(doc);
                     session.move(docRef, doc.getParentRef(), newName);
                     docForEvent = session.getDocument(docRef);
+                    docForEvent.copyContextData(doc);
                 }
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
-                notifyEvent(session, DOCUMENT_TRASHED, docForEvent,
-                        Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.TRUE));
+                notifyEvent(session, DOCUMENT_TRASHED, docForEvent);
             }
         }
     }
@@ -91,13 +90,13 @@ public class PropertyTrashService extends AbstractTrashService {
     public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) {
         Set<DocumentRef> docRefs = new HashSet<>();
         for (DocumentModel doc : docs) {
-            docRefs.addAll(doUntrashDocument(doc, true));
+            docRefs.addAll(doUntrashDocument(doc));
         }
         docs.stream().map(DocumentModel::getCoreSession).findFirst().ifPresent(CoreSession::save);
         return docRefs;
     }
 
-    protected Set<DocumentRef> doUntrashDocument(DocumentModel doc, boolean processChildren) {
+    protected Set<DocumentRef> doUntrashDocument(DocumentModel doc) {
         CoreSession session = doc.getCoreSession();
         DocumentRef docRef = doc.getRef();
 
@@ -110,18 +109,20 @@ public class PropertyTrashService extends AbstractTrashService {
             if (!newName.equals(doc.getName())) {
                 session.move(docRef, parentRef, newName);
                 docForEvent = session.getDocument(docRef);
+                docForEvent.copyContextData(doc);
             }
         }
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
-        notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent,
-                Collections.singletonMap(PROCESS_CHILDREN_KEY, Boolean.valueOf(processChildren)));
+        notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent);
 
         Set<DocumentRef> docRefs = new HashSet<>();
         docRefs.add(docRef);
 
         // now untrash the parent if needed
         if (parentRef != null && session.isTrashed(parentRef)) {
-            Set<DocumentRef> ancestorDocRefs = doUntrashDocument(session.getDocument(parentRef), false);
+            DocumentModel parent = session.getDocument(parentRef);
+            parent.putContextData(SKIP_CHILDREN_PROCESSING_KEY, Boolean.TRUE);
+            Set<DocumentRef> ancestorDocRefs = doUntrashDocument(parent);
             docRefs.addAll(ancestorDocRefs);
         }
         return docRefs;
