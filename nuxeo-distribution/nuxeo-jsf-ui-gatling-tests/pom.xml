@@ -78,8 +78,8 @@
             <configuration>
               <overrideGatlingJvmArgs>false</overrideGatlingJvmArgs>
               <jvmArgs>
-                <jvmArg>-Xms1g</jvmArg>
-                <jvmArg>-Xmx2g</jvmArg>
+                <jvmArg>-Xms8g</jvmArg>
+                <jvmArg>-Xmx8g</jvmArg>
                 <jvmArg>-Xmn400m</jvmArg>
                 <jvmArg>-XX:+UseParNewGC</jvmArg>
                 <jvmArg>-XX:+UseConcMarkSweepGC</jvmArg>
