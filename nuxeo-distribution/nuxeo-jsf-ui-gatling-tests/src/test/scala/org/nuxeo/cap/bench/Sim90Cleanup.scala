@@ -38,7 +38,7 @@ class Sim90Cleanup extends Simulation {
     .baseURL(url)
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = scenario("Cleanup").exec(run(userCount))
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)

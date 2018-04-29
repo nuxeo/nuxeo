@@ -160,7 +160,7 @@ object NuxeoRest {
       .doIf("${blobPath.exists()}") {
         exec(
           http(comment)
-            .get(Constants.GAT_API_PATH + "/${url}/file:content/${blobFilename}")
+            .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
             .headers(Headers.base)
             .basicAuth("${user}", "${password}")
             .check(status.in(200, 412)) // 412 happens when blob has been already known ETAG

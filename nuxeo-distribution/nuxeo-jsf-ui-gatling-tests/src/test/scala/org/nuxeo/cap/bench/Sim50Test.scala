@@ -41,10 +41,10 @@ class Sim50Test extends Simulation {
     .disableWarmUp
     .disableCaching // needed because s3 does not handle If-None-Match header
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
   val scn = ScnTest.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(1).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.greaterThan(70))
+    .assertions(global.successfulRequests.percent.gte(70))
 }

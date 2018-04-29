@@ -36,7 +36,7 @@ class Sim80ReindexAll extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val scn = ScnReindexAll.get()
   setUp(scn.inject(atOnceUsers(1)))
     .protocols(httpProtocol)
