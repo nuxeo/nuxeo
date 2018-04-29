@@ -183,7 +183,7 @@ Default options: see below
 
 ## Running a single simulation on an existing instance
 
-    mvn -nsu test gatling:execute -Dgatling.simulationClass -Pbench
+    mvn -nsu gatling:test -Dgatling.simulationClass -Pbench
     ...
     Choose a simulation number:
      [0] org.nuxeo.cap.bench.Sim00Setup
@@ -214,7 +214,7 @@ Note that you may need to edit the administrator account if it is not the defaul
 
 You can also bypass the interactive mode and execute a simulation
 
-    mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench
+    mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench
 
 # Resources
 

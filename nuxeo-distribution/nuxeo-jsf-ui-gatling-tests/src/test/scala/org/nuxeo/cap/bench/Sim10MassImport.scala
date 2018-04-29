@@ -37,7 +37,7 @@ class Sim10MassImport extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val scn = ScnMassImport.get(Parameters.getConcurrentUsers(12), Parameters.getNbNodes())
   setUp(scn.inject(atOnceUsers(1)))
     .protocols(httpProtocol)

@@ -44,7 +44,7 @@ class Sim10CreateFolders extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val folders = Feeders.createFolderFeeder()
   val scn = ScnCreateFolders.get(folders, Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers(1)).over(Parameters.getRampDuration())))
