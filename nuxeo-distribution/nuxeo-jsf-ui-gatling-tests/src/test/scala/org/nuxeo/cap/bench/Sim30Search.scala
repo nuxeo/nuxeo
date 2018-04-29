@@ -52,7 +52,7 @@ class Sim30Search extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
   val scn = ScnSearch.get(Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses

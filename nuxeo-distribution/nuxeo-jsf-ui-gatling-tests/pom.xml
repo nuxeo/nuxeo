@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -15,7 +16,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <encoding>UTF-8</encoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencyManagement>
@@ -32,32 +33,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-app</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-recorder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-redis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -72,49 +50,22 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
   <build>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
-        <groupId>net.java.maven-incremental-build</groupId>
-        <artifactId>incremental-build-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <archive>
-                <manifestFile>
-                  src/test/resources/META-INF/MANIFEST.MF
-                </manifestFile>
-              </archive>
-            </configuration>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>io.gatling</groupId>
+        <artifactId>gatling-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
+
+
   <profiles>
     <profile>
       <id>bench</id>
@@ -147,7 +98,7 @@
               <execution>
                 <id>setup</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim00Setup</simulationClass>
@@ -156,7 +107,7 @@
               <execution>
                 <id>massImport</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim10MassImport</simulationClass>
@@ -165,7 +116,7 @@
               <execution>
                 <id>createFolders</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim10CreateFolders</simulationClass>
@@ -174,7 +125,7 @@
               <execution>
                 <id>createDocuments</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim20CreateDocuments</simulationClass>
@@ -183,7 +134,7 @@
               <execution>
                 <id>waitForAsync</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim25WaitForAsync</simulationClass>
@@ -192,7 +143,7 @@
               <execution>
                 <id>updateDocuments</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30UpdateDocuments</simulationClass>
@@ -201,7 +152,7 @@
               <execution>
                 <id>waitForAsync2</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim35WaitForAsync</simulationClass>
@@ -210,7 +161,7 @@
               <execution>
                 <id>navigation</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30Navigation</simulationClass>
@@ -219,7 +170,7 @@
               <execution>
                 <id>search</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30Search</simulationClass>
@@ -228,7 +179,7 @@
               <execution>
                 <id>warmup-jsf</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim25WarmUsersJsf</simulationClass>
@@ -237,7 +188,7 @@
               <execution>
                 <id>navigation-jsf</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30NavigationJsf</simulationClass>
@@ -246,7 +197,7 @@
               <execution>
                 <id>bench-mix</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim50Bench</simulationClass>
@@ -255,7 +206,7 @@
               <execution>
                 <id>bench-crud</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim50CRUD</simulationClass>
@@ -264,7 +215,7 @@
               <execution>
                 <id>waitForAsync3</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim55WaitForAsync</simulationClass>
@@ -273,7 +224,7 @@
               <execution>
                 <id>reindex</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim80ReindexAll</simulationClass>
@@ -337,9 +288,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>monitor</id>
     </profile>
   </profiles>
 </project>

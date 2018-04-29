@@ -36,7 +36,7 @@ class Sim50Bench extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
 
   setUp(
     scnNav.inject(rampUsers(Parameters.getConcurrentUsers(20, prefix = "nav."))
@@ -46,6 +46,5 @@ class Sim50Bench extends Simulation {
     scnUpdate.inject(rampUsers(Parameters.getConcurrentUsers(5, prefix = "upd."))
       .over(Parameters.getRampDuration(prefix = "upd."))).exponentialPauses
   ).protocols(httpProtocol)
-    .assertions(global.successfulRequests.percent.greaterThan(80))
-
+    .assertions(global.successfulRequests.percent.gte(80))
 }

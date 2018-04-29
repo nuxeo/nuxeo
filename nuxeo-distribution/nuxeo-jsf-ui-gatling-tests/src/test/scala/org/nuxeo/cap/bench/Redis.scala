@@ -18,7 +18,9 @@ package org.nuxeo.cap.bench
  */
 
 import com.redis.RedisClientPool
+
 import io.gatling.core.Predef._
+import java.nio.charset.StandardCharsets
 
 
 object Redis {
@@ -105,7 +107,7 @@ object Redis {
           println("XXX getNextDoc END OF FEED")
         } else {
           client.sadd(namespace + ":temp:doc:creating", docKey)
-          map = client.hgetall[String, String](namespace + ":data:" + docKey).get
+          map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
           map = map + ("key" -> docKey)
           // println("XXX getNextDoc " + docKey + " returns " + map)
         }
@@ -117,14 +119,16 @@ object Redis {
     var map = Map[String, String]()
     pool.withClient(
       client => {
-        val docKey = client.evalSHA[String](zpopSha, List(namespace + ":temp:folder:toCreate"), List()).get
+        // damn scala
+        val docKeyOpt: Option[Any] = client.evalSHA(zpopSha, List(namespace + ":temp:folder:toCreate"), List())
+        val docKey = new String(docKeyOpt.get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
         if (Constants.EMPTY_MARKER == docKey) {
           map = Map(Constants.END_OF_FEED -> "true")
           println("XXX getNextFolder END OF FEED")
         } else {
           // println("XXX get folder zpop " + docKey)
           client.sadd(namespace + ":temp:folder:creating", docKey)
-          map = client.hgetall[String, String](namespace + ":data:" + docKey).get
+          map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
           // println("XXX getNextFolder " + docKey + " return " + map)
         }
       })
@@ -162,7 +166,7 @@ object Redis {
     pool.withClient(
       client => {
         val docKey = client.srandmember[String](namespace + ":temp:doc:created").get
-        map = client.hgetall[String, String](namespace + ":data:" + docKey).get
+        map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
         // println("XXX getRandomDoc " + docKey + " returns " + map)
       })
     map
@@ -173,7 +177,7 @@ object Redis {
     pool.withClient(
       client => {
         val docKey = client.srandmember[String](namespace + ":temp:folder:created").get
-        map = client.hgetall[String, String](namespace + ":data:" + docKey).get
+        map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
         // println("XXX getRandomFolder " + docKey + " returns " + map)
       })
     map
