@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -164,6 +165,26 @@ public class TestSegmentIOService {
         Options options = (Options) data.get("options");
         Assert.assertEquals(1, options.getIntegrations().size());
         Assert.assertNotNull(options.getTimestamp());
+    }
+
+    @Test
+    public void shouldBeAbleToTrackScreenAndPage() {
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
+        component.screen((NuxeoPrincipal) session.getPrincipal(), "Login", new HashMap<>());
+
+        List<Map<String, Object>> testData = component.getTestData();
+        Assert.assertEquals(1, testData.size());
+        Map<String, Object> data = testData.remove(0);
+        Assert.assertEquals("screen", data.get("action"));
+        Assert.assertEquals("Login", data.get("eventName"));
+
+        component.page((NuxeoPrincipal) session.getPrincipal(), "login.jsp", new HashMap<>());
+        testData = component.getTestData();
+        Assert.assertEquals(1, testData.size());
+        data = testData.remove(0);
+        Assert.assertEquals("page", data.get("action"));
+        Assert.assertEquals("login.jsp", data.get("eventName"));
+
     }
 
     @Test

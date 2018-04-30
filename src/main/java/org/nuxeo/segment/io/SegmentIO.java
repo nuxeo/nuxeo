@@ -38,6 +38,12 @@ public interface SegmentIO {
 
     void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata);
 
+    void screen(NuxeoPrincipal principal, String screen, Map<String, Serializable> metadata);
+
+    void page(NuxeoPrincipal principal, String name, Map<String, Serializable> metadata);
+
+    void page(NuxeoPrincipal principal, String name, String category, Map<String, Serializable> metadata);
+
     void flush();
 
     Map<String, Boolean> getIntegrations();

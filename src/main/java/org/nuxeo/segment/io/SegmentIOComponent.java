@@ -67,6 +67,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String FILTERS_EP = "filters";
 
+    public enum ACTIONS {
+        track, screen, page
+    };
+
     protected boolean debugMode = false;
 
     protected Map<String, SegmentIOMapper> mappers;
@@ -302,32 +306,68 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata) {
-
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+        Props properties = generateProperties(wrapper, ACTIONS.track.name(), eventName);
+        if (properties != null) {
+            Analytics.getDefaultClient().track(wrapper.getUserId(), eventName, properties, buildOptions());
+        }
+    }
 
+    /**
+     * Generates a Analytics Props object. If user is ignored, or the execution in a test context the return is null and
+     * has been handled as app log.
+     *
+     * @return a filled Props object if the object has to be send for real.
+     */
+    protected Props generateProperties(SegmentIODataWrapper wrapper, String action, String name) {
         if (!mustTrackprincipal(wrapper.getUserId())) {
             if (log.isDebugEnabled()) {
-                log.debug("Skip user " + principal.getName());
+                log.debug("Skip user " + wrapper.getUserId());
             }
-            return;
+            return null;
         }
 
         if (debugMode) {
             if (log.isInfoEnabled()) {
-                log.info("send track for " + eventName + " user : " + wrapper.getUserId() + " with meta : "
-                        + metadata.toString());
+                log.info(String.format("Send %s for %s user : %s with meta : %s", action, name, wrapper.getUserId(),
+                        wrapper.getMetadata().toString()));
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("send track with " + metadata.toString());
+                log.debug(String.format("Send %s with %s", action, wrapper.getMetadata().toString()));
             }
             Props eventProperties = new Props();
             eventProperties.putAll(wrapper.getMetadata());
             if (Framework.isTestModeSet()) {
-                pushForTest("track", wrapper.getUserId(), eventName, eventProperties, buildOptions());
+                pushForTest(action, wrapper.getUserId(), name, eventProperties, buildOptions());
             } else {
-                Analytics.getDefaultClient().track(wrapper.getUserId(), eventName, eventProperties, buildOptions());
+                return eventProperties;
             }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void screen(NuxeoPrincipal principal, String screen, Map<String, Serializable> metadata) {
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+        Props properties = generateProperties(wrapper, ACTIONS.screen.name(), screen);
+        if (properties != null) {
+            Analytics.getDefaultClient().screen(wrapper.getUserId(), screen, properties, buildOptions());
+        }
+    }
+
+    @Override
+    public void page(NuxeoPrincipal principal, String name, Map<String, Serializable> metadata) {
+        this.page(principal, name, null, metadata);
+    }
+
+    @Override
+    public void page(NuxeoPrincipal principal, String name, String category, Map<String, Serializable> metadata) {
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+        Props properties = generateProperties(wrapper, ACTIONS.page.name(), name);
+        if (properties != null) {
+            Analytics.getDefaultClient().page(wrapper.getUserId(), name, category, properties, buildOptions());
         }
     }
 
