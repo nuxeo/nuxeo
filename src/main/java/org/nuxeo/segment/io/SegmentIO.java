@@ -28,6 +28,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface SegmentIO {
 
+    enum ACTIONS {
+        track, screen, page
+    }
+
     String getWriteKey();
 
     Map<String, String> getGlobalParameters();

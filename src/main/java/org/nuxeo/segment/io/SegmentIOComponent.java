@@ -67,10 +67,6 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String FILTERS_EP = "filters";
 
-    public enum ACTIONS {
-        track, screen, page
-    };
-
     protected boolean debugMode = false;
 
     protected Map<String, SegmentIOMapper> mappers;
