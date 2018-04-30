@@ -18,9 +18,8 @@ package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-
 import scala.sys.process._
-import scala.util.Random
+import scala.util.{Properties, Random}
 
 object NuxeoRest {
 
@@ -160,8 +159,8 @@ object NuxeoRest {
       .doIf("${blobPath.exists()}") {
         exec(
           http(comment)
-            .get("http://localhost:18080/api/download?url=http://nuxeo1/nuxeo" + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
-         //   .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
+            .get("http://localhost:18080/api/download?url=" + Parameters.getBaseUrl() + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
+//            .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
             .headers(Headers.base)
             .basicAuth("${user}", "${password}")
             .check(status.in(200, 404))
