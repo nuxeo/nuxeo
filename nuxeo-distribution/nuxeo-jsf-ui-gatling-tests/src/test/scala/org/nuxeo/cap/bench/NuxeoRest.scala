@@ -164,7 +164,7 @@ object NuxeoRest {
          //   .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
             .headers(Headers.base)
             .basicAuth("${user}", "${password}")
-            .check(status.in(200, 412)) // 412 happens when blob has been already known ETAG
+            .check(status.in(200, 404))
         )
       }
   }
