@@ -2123,8 +2123,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (cs.isBooleanPropertyTrue(IS_TRASHED_FROM_DELETE_TRANSITION)) {
             TrashService trashService = Framework.getService(TrashService.class);
             if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
-                if (log.isWarnEnabled()) {
-                    log.warn("Following the transition " + transition + " is deprecated.", new Throwable("stack trace"));
+                String message = "Following the transition " + transition + " is deprecated.";
+                if (log.isTraceEnabled()) {
+                    log.warn(message, new Throwable("stack trace"));
+                } else {
+                    log.warn(message);
                 }
                 docModel = readModel(doc);
                 docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
