@@ -39,6 +39,8 @@ import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.ecm.webengine.WebException;
+
 
 /**
  * Writer for a {@link DocumentBlobHolder}, keeping the context of the current document, which allows for later
@@ -64,7 +66,11 @@ public class DocumentBlobHolderWriter implements MessageBodyWriter<DocumentBlobH
     @Override
     public long getSize(DocumentBlobHolder blobHolder, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        long n = blobHolder.getBlob().getLength();
+        Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+          return 0;
+        }
+        long n = blob.getLength();
         return n < 0 ? -1 : n;
     }
 
@@ -75,6 +81,9 @@ public class DocumentBlobHolderWriter implements MessageBodyWriter<DocumentBlobH
         // ensure transaction is committed before writing blob to response
         commitAndReopenTransaction();
         Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+            throw new WebException("No blob found", 404);
+        }
         if (Framework.isTestModeSet()) {
             transferBlob(blob, entityStream);
             return;
