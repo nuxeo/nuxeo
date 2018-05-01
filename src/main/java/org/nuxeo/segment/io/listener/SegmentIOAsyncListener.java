@@ -82,10 +82,14 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
             }
 
             for (SegmentIOMapper mapper : mappers) {
-
                 Map<String, Object> ctx = new HashMap<>();
 
                 Principal princ = event.getContext().getPrincipal();
+                SegmentIO service = Framework.getService(SegmentIO.class);
+                if (!service.mustTrackprincipal(princ.getName())) {
+                    return;
+                }
+
                 NuxeoPrincipal principal;
                 if (princ instanceof NuxeoPrincipal) {
                     principal = (NuxeoPrincipal) princ;
@@ -103,9 +107,8 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                     ctx.put("session", docCtx.getCoreSession());
                     ctx.put("dest", docCtx.getDestination());
                 }
-                Map<String, Serializable> mapped = mapper.getMappedData(ctx);
 
-                SegmentIO service = Framework.getService(SegmentIO.class);
+                Map<String, Serializable> mapped = mapper.getMappedData(ctx);
                 if (mapper.isIdentify()) {
                     service.identify(principal, mapped);
                 } else if (mapper.isPage()) {

@@ -36,19 +36,42 @@ public interface SegmentIO {
 
     Map<String, String> getGlobalParameters();
 
+    /**
+     * @since 10.2
+     */
     void identify(NuxeoPrincipal principal);
 
+    /**
+     * @since 10.2
+     */
     void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata);
 
+    /**
+     * @since 10.2
+     */
     void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata);
 
+    /**
+     * @since 10.2
+     */
     void screen(NuxeoPrincipal principal, String screen, Map<String, Serializable> metadata);
 
+    /**
+     * @since 10.2
+     */
     void page(NuxeoPrincipal principal, String name, Map<String, Serializable> metadata);
 
+    /**
+     * @since 10.2
+     */
     void page(NuxeoPrincipal principal, String name, String category, Map<String, Serializable> metadata);
 
     void flush();
+
+    /**
+     * @since 10.2
+     */
+    boolean mustTrackprincipal(String principalName);
 
     Map<String, Boolean> getIntegrations();
 
