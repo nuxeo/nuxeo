@@ -92,6 +92,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
+import org.nuxeo.launcher.connect.LauncherRestartException;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -469,6 +470,13 @@ public abstract class NuxeoLauncher {
      * @since 5.7
      */
     public static final int EXIT_CODE_NOT_RUNNING = 7;
+
+    /**
+     * Launcher is changed.
+     *
+     * @since 10.2
+     */
+    public static final int EXIT_CODE_LAUNCHER_CHANGED = 128;
 
     private static final String OPTION_HELP_DESC_ENV = "\nENVIRONMENT VARIABLES\n"
             + "        NUXEO_HOME\t\tPath to server root directory.\n" //
@@ -1109,6 +1117,9 @@ public abstract class NuxeoLauncher {
                 launcher.setGUI(new NuxeoLauncherGUI(launcher));
             }
             launch(launcher);
+        } catch (LauncherRestartException e) {
+            log.info("Restarting launcher...");
+            System.exit(EXIT_CODE_LAUNCHER_CHANGED);
         } catch (ParseException e) {
             log.error("Invalid command line. " + e.getMessage());
             log.debug(e, e);
@@ -2670,6 +2681,7 @@ public abstract class NuxeoLauncher {
         if (new Version(info.distribution.version).isSnapshot()) {
             connectBroker.setAllowSNAPSHOT(true);
         }
+        connectBroker.setPendingFile(configurationGenerator.getInstallFile().toPath());
     }
 
     protected ConnectBroker getConnectBroker() throws IOException, PackageException {

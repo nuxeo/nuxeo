@@ -1,0 +1,20 @@
+<package type="addon" name="NXP-24507-B" version="1.0.0">
+  <title>Package NXP-24507 B</title>
+  <description>Package NXP-24507 B</description>
+  <home-page>http://doc.nuxeo.com/x/7YGo</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>server-8.3</platform>
+  </platforms>
+  <dependencies>
+    <package>NXP-24507-A:1.0.0</package>
+  </dependencies>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+  <visibility>PUBLIC</visibility>
+</package>
