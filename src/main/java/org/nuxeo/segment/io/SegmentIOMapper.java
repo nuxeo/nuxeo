@@ -36,6 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
+import org.nuxeo.segment.io.SegmentIO.ACTIONS;
 
 @XObject("mapper")
 public class SegmentIOMapper {
@@ -66,7 +67,15 @@ public class SegmentIOMapper {
     }
 
     public boolean isIdentify() {
-        return "identify".equalsIgnoreCase(target);
+        return ACTIONS.identify.name().equalsIgnoreCase(target);
+    }
+
+    public boolean isPage() {
+        return ACTIONS.page.name().equalsIgnoreCase(target);
+    }
+
+    public boolean isScreen() {
+        return ACTIONS.screen.name().equalsIgnoreCase(target);
     }
 
     public Map<String, Serializable> getMappedData(Map<String, Object> context) {

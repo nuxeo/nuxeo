@@ -105,14 +105,21 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 }
                 Map<String, Serializable> mapped = mapper.getMappedData(ctx);
 
+                SegmentIO service = Framework.getService(SegmentIO.class);
                 if (mapper.isIdentify()) {
-                    Framework.getService(SegmentIO.class).identify(principal, mapped);
+                    service.identify(principal, mapped);
+                } else if (mapper.isPage()) {
+                    service.page(principal, getNameWithDefault(event, "page"), mapped);
+                } else if (mapper.isScreen()) {
+                    service.screen(principal, getNameWithDefault(event, "screen"), mapped);
                 } else {
-                    Framework.getService(SegmentIO.class).track(principal, event.getName(), mapped);
+                    service.track(principal, event.getName(), mapped);
                 }
-
             }
         }
     }
 
+    protected String getNameWithDefault(Event e, String defaultName) {
+        return (String) e.getContext().getProperties().getOrDefault("name", defaultName);
+    }
 }

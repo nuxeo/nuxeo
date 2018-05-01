@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface SegmentIO {
 
     enum ACTIONS {
-        track, screen, page
+        track, screen, page, identify
     }
 
     String getWriteKey();
