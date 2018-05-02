@@ -31,9 +31,11 @@
           <eventCategory>default</eventCategory>
           <!-- Every first of the month at 3am -->
           <cronExpression>0 0 3 1 * ?</cronExpression>
+          <timezone>UTC</timezone>
         </schedule>
       </code>
       jobFactoryClass is optional and defaults to org.nuxeo.ecm.core.scheduler.DefaultEventJobFactory.
+      timezone is optional and defaults to system default.
 
       @see org.quartz.CronTrigger
       @see org.nuxeo.ecm.core.scheduler.EventJobFactory

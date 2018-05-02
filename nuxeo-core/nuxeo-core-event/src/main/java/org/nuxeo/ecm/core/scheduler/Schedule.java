@@ -80,4 +80,13 @@ public interface Schedule extends Serializable {
      */
     boolean isEnabled();
 
+    /**
+     * Returns the timezone to be used for the Cron Expression.
+     *
+     * @since 10.2
+     * @return the timezone, or {@code null} if not specified
+     */
+    String getTimeZone();
+
+
 }
