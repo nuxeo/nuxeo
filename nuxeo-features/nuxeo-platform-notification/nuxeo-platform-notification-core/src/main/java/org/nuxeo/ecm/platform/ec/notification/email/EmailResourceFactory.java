@@ -31,6 +31,8 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author matic
  */
@@ -53,7 +55,9 @@ public class EmailResourceFactory implements ObjectFactory {
             if ("factory".equals(attribute.getType())) {
                 continue;
             }
-            props.put(attribute.getType(), attribute.getContent());
+            String key = attribute.getType();
+            String value = Framework.expandVars((String) attribute.getContent());
+            props.put(key, value);
         }
         return props;
     }
