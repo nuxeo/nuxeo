@@ -54,7 +54,7 @@ object ScnNavigationDownload {
   def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
     scenario("Download").exec(
       during(duration, "counterName") {
-        feed(Feeders.users).repeat(5) {
+        feed(Feeders.users).repeat(2) {
           feed(documents)
             .exec(NuxeoRest.downloadBlob())
             .pause(pause)

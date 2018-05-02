@@ -22,12 +22,12 @@ import io.gatling.http.Predef._
 class Sim50Bench2 extends Simulation {
   val documents = Feeders.createRandomDocFeeder()
 
-  val scnNav = ScnNavigationDownload.get(documents, Parameters.getSimulationDuration(),
-    Parameters.getPause(5000, prefix = "nav."))
-  val scnQuery = ScnSearch.get(Parameters.getSimulationDuration(),
-    Parameters.getPause(5000, prefix = "search."))
-  val scnCreate = ScnCreateDocumentsDirectUpload.get(documents, Parameters.getSimulationDuration(),
-    Parameters.getPause(5000, prefix = "create."))
+  val scnNav = ScnNavigationDownload.get(documents, Parameters.getSimulationDuration(1800),
+    Parameters.getPause(4000, prefix = "nav."))
+  val scnQuery = ScnSearch.get(Parameters.getSimulationDuration(1800),
+    Parameters.getPause(4000, prefix = "search."))
+  val scnCreate = ScnCreateAgainDocuments.get(documents, Parameters.getSimulationDuration(1800),
+    Parameters.getPause(4000, prefix = "create."))
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
@@ -38,12 +38,12 @@ class Sim50Bench2 extends Simulation {
     .connectionHeader("keep-alive")
 
   setUp(
-    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(15, prefix = "nav."))
+    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(30, prefix = "nav."))
       .over(Parameters.getRampDuration(prefix = "nav."))).exponentialPauses,
-    scnQuery.inject(rampUsers(Parameters.getConcurrentUsers(15, prefix = "search."))
+    scnQuery.inject(rampUsers(Parameters.getConcurrentUsers(30, prefix = "search."))
       .over(Parameters.getRampDuration(prefix = "search."))).exponentialPauses,
-    scnCreate.inject(rampUsers(Parameters.getConcurrentUsers(20, prefix = "create."))
+    scnCreate.inject(rampUsers(Parameters.getConcurrentUsers(40, prefix = "create."))
       .over(Parameters.getRampDuration(prefix = "create."))).exponentialPauses
   ).protocols(httpProtocol)
-    .assertions(global.successfulRequests.percent.gte(80))
+    .assertions(global.successfulRequests.percent.gte(90))
 }
