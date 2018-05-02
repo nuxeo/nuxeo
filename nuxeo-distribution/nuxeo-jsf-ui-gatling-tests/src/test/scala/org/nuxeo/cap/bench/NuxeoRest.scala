@@ -30,13 +30,49 @@ object NuxeoRest {
 
   /** Create a document ins the gatling workspace  */
   def createDocument() = {
-    http("Create ${type}")
-      .post(Constants.GAT_API_PATH + "/${parentPath}")
-      .headers(Headers.base)
-      .header("Content-Type", "application/json")
-      .basicAuth("${user}", "${password}")
-      .body(StringBody("${payload}"))
-      .check(status.saveAs("status")).check(status.is(201))
+    exec()
+      .doIf("${blobPath.isUndefined()}") {
+        exec(
+          http("Create ${type}")
+            .post(Constants.GAT_API_PATH + "/${parentPath}")
+            .headers(Headers.base)
+            .header("Content-Type", "application/json")
+            .basicAuth("${user}", "${password}")
+            .body(StringBody("${payload}"))
+            .check(status.saveAs("status"))
+            .check(status.is(201))
+        )
+      }.doIf("${blobPath.exists()}") {
+      exec(
+        http("Upload Get a batch id")
+          .post("/api/v1/upload")
+          .headers(Headers.base)
+          .basicAuth("${user}", "${password}")
+          .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
+      ).exec(
+        http("Upload File ${type}")
+          .post("/api/v1/upload/${batchId}/0")
+          .headers(Headers.base)
+          .header("X-File-Name", "${blobFilename}")
+          .header("Content-Type", "${blobMimeType}")
+          .basicAuth("${user}", "${password}")
+          .body(RawFileBody("${blobPath}"))
+      ).exec(
+        http("Upload Create ${type} document")
+          .post(Constants.GAT_API_PATH + "/${parentPath}")
+          .headers(Headers.base)
+          .header("Content-Type", "application/json")
+          .basicAuth("${user}", "${password}")
+          .body(StringBody(session => session("payload").as[String].replaceAll("_BATCH_ID_", session("batchId").as[String])))
+          .check(status.saveAs("status"))
+          .check(status.in(201))
+      )
+    }
+  }
+
+  /** Create a document that may already exists, in this case Nuxeo will change the doc name */
+  def createAgainDocument() = {
+    createDocument()
   }
 
   /** Update the description of a document in the gatling workspace */
@@ -60,6 +96,38 @@ object NuxeoRest {
       .header("X-NXfetch.document", parts)
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
+  }
+
+  def downloadBlob(comment: String = "Download ${type} file") = {
+    exec()
+      .doIf("${blobPath.exists()}") {
+        exec(
+          http(comment)
+//            .get("http://localhost:18080/api/download?url=" + Parameters.getBaseUrl() + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
+            .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
+            .headers(Headers.base)
+            .basicAuth("${user}", "${password}")
+            .check(status.in(200, 404))
+        )
+      }
+  }
+
+  def directS3DownloadBlob(comment: String = "Download: ") = {
+    exec()
+      .doIf("${blobPath.exists()}") {
+        exec(
+            http(comment + "Ask S3 url")
+            .post(Constants.GAT_API_PATH + "/${url}/@op/Blob.Get")
+            .headers(Headers.base)
+            .header("Content-Type", "application/json")
+            .basicAuth("${user}", "${password}")
+            .body(StringBody("""{"params":{}}"""))
+            .disableFollowRedirect
+            .check(status.in(302)).check(header("Location").saveAs("s3url"))
+        ).exec(
+          http(comment + "S3 Download ${type}").get("${s3url}").check(status.in(200))
+        )
+      }
   }
 
   def deleteDocument() = {
