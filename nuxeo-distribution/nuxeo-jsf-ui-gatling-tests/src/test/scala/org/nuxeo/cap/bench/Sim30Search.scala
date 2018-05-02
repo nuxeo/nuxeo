@@ -32,9 +32,9 @@ object ScnSearch {
         feed(Feeders.users).repeat(10) {
           feed(Feeders.fulltextSearch)
             .randomSwitch(
-              40.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}'", comment = "Simple")),
-              30.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}' AND dc:nature = '${nature}' AND dc:language = '${language}' AND dc:coverage = '${coverage}'", sortBy = "dc:modified", sortOrder = "DESC", comment = "Medium")),
-              30.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}' AND dc:nature = '${nature}' AND dc:language = '${language}' AND dc:coverage = '${coverage}' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", sortBy = "dc:title", comment = "Complex"))
+              40.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}'", comment = "Search Simple")),
+              30.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}' AND dc:nature = '${nature}' AND dc:language = '${language}' AND dc:coverage = '${coverage}'", sortBy = "dc:modified", sortOrder = "DESC", comment = "Search Medium")),
+              30.0 -> exec(NuxeoRest.search("SELECT * FROM Document WHERE ecm:fulltext = '${term}' AND dc:nature = '${nature}' AND dc:language = '${language}' AND dc:coverage = '${coverage}' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0 AND ecm:isVersion = 0 AND ecm:currentLifeCycleState != 'deleted'", sortBy = "dc:title", comment = "Search Complex"))
             )
             .pause(pause)
         }

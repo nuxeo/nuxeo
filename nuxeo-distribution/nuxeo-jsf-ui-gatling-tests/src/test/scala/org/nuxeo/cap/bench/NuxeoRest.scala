@@ -43,13 +43,13 @@ object NuxeoRest {
         )
       }.doIf("${blobPath.exists()}") {
       exec(
-        http("Get a batch id")
+        http("Upload Get a batch id")
           .post("/api/v1/upload")
           .headers(Headers.base)
           .basicAuth("${user}", "${password}")
           .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
       ).exec(
-        http("Upload ${type} blob")
+        http("Upload File ${type}")
           .post("/api/v1/upload/${batchId}/0")
           .headers(Headers.base)
           .header("X-File-Name", "${blobFilename}")
@@ -57,7 +57,7 @@ object NuxeoRest {
           .basicAuth("${user}", "${password}")
           .body(RawFileBody("${blobPath}"))
       ).exec(
-        http("Create ${type} with blob")
+        http("Upload Create ${type} document")
           .post(Constants.GAT_API_PATH + "/${parentPath}")
           .headers(Headers.base)
           .header("Content-Type", "application/json")
@@ -154,7 +154,7 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
-  def downloadBlob(comment: String = "Download: ${type} blob") = {
+  def downloadBlob(comment: String = "Download ${type} file") = {
     exec()
       .doIf("${blobPath.exists()}") {
         exec(
