@@ -56,6 +56,12 @@ public class ScheduleImpl implements Schedule {
     @XNode("cronExpression")
     public String cronExpression;
 
+    /**
+     * @since 10.2
+     */
+    @XNode("timezone")
+    public String timeZone;
+
     @XNode("username")
     public String username;
 
@@ -123,5 +129,14 @@ public class ScheduleImpl implements Schedule {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+
+    /**
+     * @since 10.2
+     */
+    @Override
+    public String getTimeZone() {
+        return timeZone;
     }
 }

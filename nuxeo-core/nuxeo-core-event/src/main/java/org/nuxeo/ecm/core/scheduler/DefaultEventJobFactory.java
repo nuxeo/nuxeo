@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.scheduler;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -58,7 +59,11 @@ public class DefaultEventJobFactory implements EventJobFactory {
 
     @Override
     public ScheduleBuilder<?> buildSchedule(Schedule schedule) {
-        return CronScheduleBuilder.cronSchedule(schedule.getCronExpression());
+        CronScheduleBuilder builder = CronScheduleBuilder.cronSchedule(schedule.getCronExpression());
+        if (schedule.getTimeZone() != null) {
+            builder.inTimeZone(TimeZone.getTimeZone(schedule.getTimeZone()));
+        }
+        return builder;
     }
 
     protected Class<? extends EventJob> getJobClass() {
