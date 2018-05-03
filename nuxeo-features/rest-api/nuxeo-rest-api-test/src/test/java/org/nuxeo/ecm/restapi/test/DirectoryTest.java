@@ -23,6 +23,7 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -393,6 +394,29 @@ public class DirectoryTest extends BaseTest {
         assertEquals(TESTDIRNAME, node.get("directoryName").asText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
                 node.get("properties").get("label").asText());
+    }
+
+    @Test
+    public void itReturnsProperPagination() throws Exception {
+        DocumentModel docEntry = dirSession.getEntry("foo");
+        String jsonEntry = getDirectoryEntryAsJson(docEntry);
+        assertNotNull(jsonEntry);
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        int maxResults = 5;
+        queryParams.putSingle("pageSize", String.valueOf(maxResults));
+        queryParams.putSingle("maxResults", String.valueOf(maxResults));
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/directory/" + TESTDIRNAME,
+                queryParams)) {
+            String json = response.getEntity(String.class);
+            JsonNode jsonNode = mapper.readTree(json);
+            JsonNode entriesNode = jsonNode.get("entries");
+
+            assertTrue(entriesNode.isArray());
+            ArrayNode entriesArrayNode = (ArrayNode) entriesNode;
+            assertEquals(maxResults, entriesArrayNode.size());
+        }
     }
 
     private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException {

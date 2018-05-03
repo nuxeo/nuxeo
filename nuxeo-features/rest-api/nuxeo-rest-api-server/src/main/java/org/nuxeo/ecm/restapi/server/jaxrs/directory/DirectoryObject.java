@@ -42,7 +42,10 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.restapi.server.jaxrs.PaginableObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -54,12 +57,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "directoryObject")
 @Produces(MediaType.APPLICATION_JSON)
-public class DirectoryObject extends DefaultObject {
+public class DirectoryObject extends PaginableObject<DirectoryEntry> {
+
+    public static final String PAGE_PROVIDER_NAME = "nuxeo_directory_entry_listing";
 
     private Directory directory;
 
     @Override
     protected void initialize(Object... args) {
+        super.initialize(args);
         if (args.length < 1) {
             throw new IllegalArgumentException("Directory Object takes one parameter");
         }
@@ -70,21 +76,20 @@ public class DirectoryObject extends DefaultObject {
         }
     }
 
+    @Override
+    protected PageProviderDefinition getPageProviderDefinition() {
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+        return pageProviderService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
+    }
+
+    @Override
+    protected Object[] getParams() {
+        return new Object[] { directory };
+    }
+
     @GET
     public List<DirectoryEntry> getDirectoryEntries() {
-        return withDirectorySession(directory, new DirectorySessionRunner<List<DirectoryEntry>>() {
-
-            @Override
-            List<DirectoryEntry> run(Session session) {
-                DocumentModelList entries = session.query(Collections.emptyMap());
-                List<DirectoryEntry> dirEntries = new ArrayList<>();
-                for (DocumentModel doc : entries) {
-                    dirEntries.add(new DirectoryEntry(directory.getName(), doc));
-                }
-                return dirEntries;
-            }
-        });
-
+        return getPaginableEntries();
     }
 
     @POST

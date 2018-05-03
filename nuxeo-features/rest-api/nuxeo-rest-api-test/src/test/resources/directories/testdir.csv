@@ -4,3 +4,4 @@ id,label,obsolete
 "test3","Test 3",0
 "test4","Test 4",0
 "id/with/slash","An ID with slashes",0
+"foo","bar",0
