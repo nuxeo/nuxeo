@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.directory.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+
+    <genericPageProvider name="nuxeo_directory_entry_listing"
+                         class="org.nuxeo.ecm.directory.providers.DirectoryEntryPageProvider">
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

@@ -22,3 +22,4 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.directory.api;singleton:=true
+Nuxeo-Component: OSGI-INF/pageproviders-contrib.xml
