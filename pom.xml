@@ -142,8 +142,8 @@
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
 
-    <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
-    <eclipseVersion>${project.version}</eclipseVersion>
+    <!-- NXP-14406 deprecated property -->
+    <eclipseVersion>${git.build.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>11.1-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
@@ -5102,26 +5102,6 @@
         <!-- </additionalConfig> -->
         <!-- </configuration> -->
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <format>{0,date,yyyyMMdd-HHmmss}</format>
-          <items>
-            <item>timestamp</item>
-          </items>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-        </configuration>
-      </plugin>
       <!-- DEPRECATED: ECR provides usable versions for RCP -->
       <!-- <plugin> -->
       <!-- <groupId>org.apache.maven.plugins</groupId> -->
@@ -5208,6 +5188,19 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+            <phase>initialize</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
         <inherited>false</inherited>
@@ -5236,19 +5229,41 @@
           <version>3.2.1</version>
         </plugin>
         <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>2.2.6</version>
+	        <configuration>
+	          <injectAllReactorProjects>true</injectAllReactorProjects>
+            <generateGitPropertiesFile>true</generateGitPropertiesFile>
+            <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/git.properties</generateGitPropertiesFilename>
+            <failOnNoGitDirectory>false</failOnNoGitDirectory>
+            <commitIdGenerationMode>full</commitIdGenerationMode>
+            <gitDescribe>
+              <tags>true</tags>
+              <forceLongFormat>true</forceLongFormat>
+            </gitDescribe>
+	          <excludeProperties>
+	            <excludeProperty>git.build.user.email</excludeProperty>
+	            <excludeProperty>git.commit.message.full</excludeProperty>
+	            <excludeProperty>git.commit.message.short</excludeProperty>
+	            <excludeProperty>git.commit.time</excludeProperty>
+	            <excludeProperty>git.commit.user.email</excludeProperty>
+	            <excludeProperty>git.commit.user.name</excludeProperty>
+	            <excludeProperty>git.remote.origin.url</excludeProperty>
+	            <excludeProperty>git.total.commit.count</excludeProperty>
+            </excludeProperties>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-ejb-plugin</artifactId>
-          <version>2.3</version>
+          <version>3.0.1</version>
           <configuration>
             <ejbVersion>3.0</ejbVersion>
             <archive>
-              <manifestFile>
-                src/main/resources/META-INF/MANIFEST.MF
-              </manifestFile>
+              <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
-                <Bundle-Version>
-                  ${project.version}-t${buildNumber}
-                </Bundle-Version>
+                <Bundle-Version>${git.build.version}-${git.commit.id.describe}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
               </manifestEntries>
             </archive>
@@ -5258,13 +5273,14 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Newer versions don't build the expected MANIFEST.MF -->
-          <version>2.3.1</version>
+          <version>3.1.1</version>
           <configuration>
             <archive>
               <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
-                <Bundle-Version>${project.version}-t${buildNumber}</Bundle-Version>
+                <Bundle-Version>${git.build.version}-${git.commit.id.describe}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                <SCM-Revision>${git.commit.id.describe-short}</SCM-Revision>
               </manifestEntries>
             </archive>
           </configuration>
@@ -6000,11 +6016,6 @@
           <configuration>
             <preparationGoals>clean install</preparationGoals>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>1.2</version>
         </plugin>
         <plugin>
           <groupId>com.versioneye</groupId>
