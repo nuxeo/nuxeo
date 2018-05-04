@@ -34,6 +34,9 @@ class Column {
     if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
       Object.assign(this, SPECIAL_FIELDS[this.field].widget);
     }
+    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].properties) {
+      Object.assign(this.widget.properties, SPECIAL_FIELDS[this.field].properties);
+    }
     // Bind the renderer to this column
     if (this.renderer) {
       this.renderer = this.renderer.bind(this);
@@ -123,6 +126,12 @@ const SPECIAL_FIELDS = {
       readOnly: true
     },
     field: 'versionLabel'
+  },
+  'dc:nature': {
+    properties: {
+      dbl10n: false,
+      localize: true
+    }
   }
 };
 
