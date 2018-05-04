@@ -38,12 +38,9 @@ class Sim50Bench2 extends Simulation {
     .connectionHeader("keep-alive")
 
   setUp(
-    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(30, prefix = "nav."))
-      .over(Parameters.getRampDuration(prefix = "nav."))).exponentialPauses,
-    scnQuery.inject(rampUsers(Parameters.getConcurrentUsers(30, prefix = "search."))
-      .over(Parameters.getRampDuration(prefix = "search."))).exponentialPauses,
-    scnCreate.inject(rampUsers(Parameters.getConcurrentUsers(40, prefix = "create."))
-      .over(Parameters.getRampDuration(prefix = "create."))).exponentialPauses
+    scnNav.inject(rampUsers(30*6).over(1500)).exponentialPauses,
+    scnQuery.inject(rampUsers(30*6).over(1500)).exponentialPauses,
+    scnCreate.inject(rampUsers(40*6).over(1500)).exponentialPauses
   ).protocols(httpProtocol)
     .assertions(global.successfulRequests.percent.gte(90))
 }

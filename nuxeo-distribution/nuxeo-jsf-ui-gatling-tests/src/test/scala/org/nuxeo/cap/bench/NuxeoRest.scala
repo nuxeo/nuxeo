@@ -159,7 +159,8 @@ object NuxeoRest {
       .doIf("${blobPath.exists()}") {
         exec(
           http(comment)
-            .get("http://localhost:18080/api/download?url=" + Parameters.getBaseUrl() + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
+          .get("http://localhost:18080/api/download?url=http://nuxeo2/nuxeo" + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
+//          .get("http://localhost:18080/api/download?url=" + Parameters.getBaseUrl() + Constants.GAT_API_PATH + "/${url}/@blob/blobholder:0")
 //            .get(Constants.GAT_API_PATH + "/${url}/@blob/file:content")
             .headers(Headers.base)
             .basicAuth("${user}", "${password}")
