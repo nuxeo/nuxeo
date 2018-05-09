@@ -100,7 +100,7 @@ public class HotReloadStudioSnapshot {
     @OperationMethod
     public Blob run() throws Exception {
         try {
-            if (setInProgress(true)) {
+            if (!setInProgress(true)) {
                 return jsonHelper(inProgress, "Update in progress.", null);
             }
 
