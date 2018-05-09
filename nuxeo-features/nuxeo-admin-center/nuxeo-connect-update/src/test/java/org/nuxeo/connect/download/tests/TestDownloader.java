@@ -20,11 +20,16 @@
 
 package org.nuxeo.connect.download.tests;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -34,6 +39,7 @@ import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
+import org.nuxeo.connect.downloads.LocalDownloadingPackage;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.test.runner.Features;
@@ -81,6 +87,12 @@ public class TestDownloader {
             downloadInProgress = false;
             for (DownloadingPackage pkg : downloads) {
                 if (pkg.isCompleted()) {
+                    assertNull(pkg.getErrorMessage());
+                    File file = ((LocalDownloadingPackage) pkg).getFile();
+                    String content = FileUtils.readFileToString(file, UTF_8);
+                    assertEquals("Fake package\nFake line\nFake line\nFake line\nFake line\n" //
+                            + "Fake line\nFake line\nFake line\nFake line\nFake line\n", //
+                            content);
                     log.info(pkg.getId() + ":complete  - ");
                 } else {
                     downloadInProgress = true;
