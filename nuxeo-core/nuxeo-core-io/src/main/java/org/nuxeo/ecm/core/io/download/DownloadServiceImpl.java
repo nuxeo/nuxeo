@@ -43,6 +43,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -542,9 +543,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 }
             }
             long contentLength = byteRange == null ? length : byteRange.getLength();
-            if (contentLength < Integer.MAX_VALUE) {
-                response.setContentLength((int) contentLength);
-            }
+            setContentLength(response, contentLength);
 
             logDownload(doc, xpath, filename, reason, extendedInfos);
 
@@ -764,6 +763,19 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     protected static NuxeoPrincipal getPrincipal() {
         return ClientLoginModule.getCurrentPrincipal();
+    }
+
+    @SuppressWarnings("boxing")
+    protected void setContentLength(HttpServletResponse response, long length) {
+        try {
+            // check if we have a Servlet 3.1 compatible implementation
+            ServletResponse.class.getDeclaredMethod("setContentLengthLong", long.class).invoke(response, length);
+        } catch (ReflectiveOperationException e) {
+            // otherwise use older API limited to int values
+            if (length < Integer.MAX_VALUE) {
+                response.setContentLength((int) length);
+            }
+        }
     }
 
 }
