@@ -18,49 +18,15 @@
  */
 package org.nuxeo.connect.download.tests;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import org.apache.commons.io.FileUtils;
-import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Deploy("org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml")
-@Deploy("org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml")
+@Deploy("org.nuxeo.connect.client.wrapper")
 @Deploy("org.nuxeo.connect.update")
+@Deploy("org.nuxeo.connect.update.tests:OSGI-INF/runtimeserver-contrib.xml")
 @Features({ ServletContainerFeature.class })
-public class DownloadFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class DownloadFeature extends SimpleFeature {
 
-    @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
-    }
-
-    @Override
-    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
-        File dest = new File(workingDir, "web/root.war/WEB-INF/");
-        dest.mkdirs();
-
-        dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
-        try (InputStream in = getResource("webtest/WEB-INF/web.xml").openStream()) {
-            FileUtils.copyInputStreamToFile(in, dest);
-        }
-
-        File data = new File(workingDir, "web/root.war/test.data");
-        FileUtils.writeStringToFile(data, "TestMe", UTF_8);
-    }
-
-    private static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(resource);
-    }
 }

@@ -79,11 +79,5 @@
       <pattern>${org.nuxeo.ecm.contextPath}/site.*</pattern>
     </filterConfig>
   </extension>
-  
-  <!-- extension target="org.nuxeo.runtime.server" point="webapp">
-    <webapp name="nuxeo" path="/">
-      <root>web/root.war</root>
-    </webapp>
-  </extension-->
 
 </component>

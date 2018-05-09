@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.server">
+
+  <implementation class="org.nuxeo.runtime.server.ServerComponent"/>
+
+  <documentation>
+    Embedded Server Configuration.
+
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <extension-point name="webapp">
+    <object class="org.nuxeo.common.server.WebApplication"/>
+  </extension-point>
+
+  <extension-point name="servlet">
+    <object class="org.nuxeo.runtime.server.ServletDescriptor"/>
+    <object class="org.nuxeo.runtime.server.InitParamDescriptor"/>
+  </extension-point>
+
+  <extension-point name="filter">
+    <object class="org.nuxeo.runtime.server.FilterDescriptor"/>
+    <object class="org.nuxeo.runtime.server.InitParamDescriptor"/>
+    <object class="org.nuxeo.runtime.server.FilterMappingDescriptor"/>
+  </extension-point>
+
+  <extension-point name="listener">
+    <object class="org.nuxeo.runtime.server.ServletContextListenerDescriptor"/>
+  </extension-point>
+
+</component>

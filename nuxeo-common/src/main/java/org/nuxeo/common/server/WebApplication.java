@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  *
@@ -36,14 +36,17 @@ public class WebApplication {
     @XNode("webXml")
     protected String webXml;
 
-    @XNode("@name")
-    protected String name;
+    /**
+     * @since 10.2
+     */
+    @XNode("@context")
+    protected String context;
 
+    // compat
     @XNode("@path")
-    protected String path;
-
-    @XNode("@warPreprocessing")
-    protected boolean warPreprocessing = false;
+    protected void setPath(String path) {
+        this.context = path;
+    }
 
     public String getWebRoot() {
         return root;
@@ -53,16 +56,8 @@ public class WebApplication {
         return webXml;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getContextPath() {
-        return path;
-    }
-
-    public boolean needsWarPreprocessing() {
-        return warPreprocessing;
+        return context;
     }
 
 }

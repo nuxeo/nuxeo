@@ -60,6 +60,9 @@ public class JSFContainerInitializer implements ServletContainerInitializer {
 
     @Override
     public void onStartup(Set<Class<?>> some, ServletContext ctx) throws ServletException {
+        if (some == null) {
+            return;
+        }
         for (Class<?> each : some) {
             index(each);
         }

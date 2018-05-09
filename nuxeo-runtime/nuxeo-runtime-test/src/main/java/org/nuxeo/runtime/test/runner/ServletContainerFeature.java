@@ -18,19 +18,14 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URL;
 
-import org.apache.commons.io.FileUtils;
-import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
+import org.nuxeo.runtime.server.ServerComponent;
 
 import sun.net.www.http.HttpClient;
 
 /**
- * Runs an embedded Jetty server with the nuxeo webapp deployed.
+ * Runs an embedded servlet container.
  * <p>
  * Note that at initialization the feature disables the {@code retryPostProp} property of
  * {@link sun.net.www.http.HttpClient}, the underlying HTTP client used by {@link com.sun.jersey.api.client.Client}.
@@ -41,76 +36,26 @@ import sun.net.www.http.HttpClient;
  * this as it can hide errors occurring in the HTTP communication that should prevent an appropriate response from being
  * sent by the server.
  */
-@Deploy("org.nuxeo.runtime.jetty")
+@Deploy("org.nuxeo.runtime.server")
 @Features(RuntimeFeature.class)
-public class ServletContainerFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class ServletContainerFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         disableSunHttpClientRetryPostProp();
 
-        ServletContainer jetty = runner.getConfig(ServletContainer.class);
-        if (jetty == null) {
-            jetty = Defaults.of(ServletContainer.class);
+        ServletContainer conf = runner.getConfig(ServletContainer.class);
+        if (conf == null) {
+            conf = Defaults.of(ServletContainer.class);
         }
-        configureJetty(jetty);
-
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
+        configureServletContainer(conf);
     }
 
-    protected void configureJetty(ServletContainer jetty) {
-        int p = jetty.port();
-        try {
-            String s = System.getenv("JETTY_PORT");
-            if (s != null) {
-                p = Integer.parseInt(s);
-            }
-        } catch (Exception e) {
-            // do nothing ; the jetty.port
-        }
+    protected void configureServletContainer(ServletContainer conf) {
+        int p = conf.port();
         if (p > 0) {
-            System.setProperty("jetty.port", Integer.toString(p));
+            System.setProperty(ServerComponent.PORT_SYSTEM_PROP, String.valueOf(p));
         }
-
-        String host = System.getenv("JETTY_HOST");
-        if (host == null) {
-            host = jetty.host();
-        }
-        if (host.length() > 0) {
-            System.setProperty("jetty.host", host);
-        }
-
-        String config = System.getenv("JETTY_CONFIG");
-        if (config == null) {
-            config = jetty.config();
-        }
-        if (config.length() > 0) {
-            System.setProperty("org.nuxeo.jetty.config", config);
-        }
-
-        System.setProperty("org.nuxeo.jetty.propagateNaming", Boolean.toString(jetty.propagateNaming()));
-    }
-
-    @Override
-    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
-        File dest = new File(workingDir, "config");
-        dest.mkdirs();
-
-        dest = new File(workingDir + "/config", "default-web.xml");
-        try (InputStream in = getResource("jetty/default-web.xml").openStream()) {
-            FileUtils.copyInputStreamToFile(in, dest);
-        }
-
-        dest = new File(workingDir + "/config", "jetty.xml");
-        try (InputStream in = getResource("jetty/jetty.xml").openStream()) {
-            FileUtils.copyInputStreamToFile(in, dest);
-        }
-    }
-
-    private static URL getResource(String resource) {
-        // return
-        // Thread.currentThread().getContextClassLoader().getResource(resource);
-        return ServletContainer.class.getClassLoader().getResource(resource);
     }
 
     /**

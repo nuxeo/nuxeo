@@ -2,9 +2,30 @@
 <component name="org.nuxeo.ecm.login.token.runtime.server.test">
 
   <extension target="org.nuxeo.runtime.server" point="webapp">
-    <webapp name="nuxeo" path="/">
+    <webapp context="/">
       <root>web/root.war</root>
     </webapp>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet</servlet-class>
+      <url-pattern>/authentication/token</url-pattern>
+    </servlet>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="filter">
+    <filter context="/">
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter</filter-class>
+      <display-name>Nuxeo Authentication Filter</display-name>
+      <filter-mapping>
+        <url-pattern>/authentication/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+      </filter-mapping>
+    </filter>
   </extension>
 
 </component>

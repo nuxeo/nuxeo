@@ -39,8 +39,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,8 +54,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.connect.NuxeoConnectClient;
@@ -63,6 +61,7 @@ import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.fake.LocalConnectFakeConnector;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainer;
@@ -74,23 +73,21 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, ServletContainerFeature.class })
+@Deploy("org.nuxeo.connect.standalone.test:OSGI-INF/server-deploy-contrib.xml")
 @ServletContainer(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
 public class TestConnectBroker {
 
-    final String TEST_STORE_PATH = "src/test/resources/packages/store";
+    public static final String TEST_STORE_PATH = "src/test/resources/packages/store";
 
-    final String TEST_LOCAL_ONLY_PATH = TEST_STORE_PATH + "/local-only";
+    public static final String TEST_LOCAL_ONLY_PATH = TEST_STORE_PATH + "/local-only";
 
-    final File testStore = new File(TEST_STORE_PATH);
+    public static final File testStore = new File(TEST_STORE_PATH);
 
-    final File nuxeoHome = new File("target/launcher");
+    public static final File nuxeoHome = new File("target/launcher");
 
     protected ConnectBroker connectBroker;
 
     private Environment environment;
-
-    @Inject
-    Server server;
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
@@ -106,11 +103,13 @@ public class TestConnectBroker {
         }
     }
 
-    public class FakeConnectDownloadHandler extends AbstractHandler {
+    public static class FakeConnectDownloadServlet extends HttpServlet {
+
+        private static final long serialVersionUID = 1L;
 
         @Override
-        public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
-                throws IOException, ServletException {
+        public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            String target = request.getPathInfo();
             if (target.startsWith("/test")) {
                 String pkgId = target.substring(target.lastIndexOf("/") + 1);
                 File pkgZip = new File(testStore, pkgId + ".zip");
@@ -146,9 +145,6 @@ public class TestConnectBroker {
 
         // build test packages store
         buildInitialPackageStore();
-
-        // add fake connect request handler for package downloads
-        server.setHandler(new FakeConnectDownloadHandler());
 
         environment = Environment.getDefault();
         environment.setProperty(Environment.DISTRIBUTION_NAME, "server");

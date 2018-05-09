@@ -18,6 +18,7 @@
     <module>nuxeo-runtime-stream</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-deploy</module>
+    <module>nuxeo-runtime-server</module>
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>

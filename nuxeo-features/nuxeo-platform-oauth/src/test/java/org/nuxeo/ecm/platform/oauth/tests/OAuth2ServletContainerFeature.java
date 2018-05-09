@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.nuxeo.ecm.core.test.ServletContainerTransactionalFeature;
@@ -51,16 +52,11 @@ public class OAuth2ServletContainerFeature extends SimpleFeature implements Work
 
     @Override
     public void configure(RuntimeHarness harness, File workingDir) throws IOException, URISyntaxException {
-        File webInf = new File(workingDir, "web/root.war/WEB-INF/");
-        if (!webInf.mkdirs()) {
-            throw new IOException(String.format("Unable to create %s directory", webInf.getAbsolutePath()));
-        }
-
-        Files.copy(Paths.get(getResource("test-web.xml").toURI()), webInf.toPath().resolve("web.xml"));
-
+        Path war = workingDir.toPath().resolve("web/root.war");
+        Files.createDirectories(war);
         URI testPageURI = getResource("test-oauth2page.jsp").toURI();
-        Files.copy(Paths.get(testPageURI), workingDir.toPath().resolve("web/root.war/oauth2Grant.jsp"));
-        Files.copy(Paths.get(testPageURI), workingDir.toPath().resolve("web/root.war/oauth2error.jsp"));
+        Files.copy(Paths.get(testPageURI), war.resolve("oauth2Grant.jsp"));
+        Files.copy(Paths.get(testPageURI), war.resolve("oauth2error.jsp"));
     }
 
     private static URL getResource(String resource) {
