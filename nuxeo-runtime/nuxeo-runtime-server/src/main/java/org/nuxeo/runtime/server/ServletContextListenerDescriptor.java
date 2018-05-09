@@ -16,7 +16,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.jetty;
+package org.nuxeo.runtime.server;
 
 import javax.servlet.ServletContextListener;
 
@@ -32,16 +32,22 @@ public class ServletContextListenerDescriptor {
     @XNode("@name")
     protected String name;
 
-    @XNode("@class")
+    /**
+     * @since 10.2
+     */
+    @XNode("listener-class")
     protected Class<? extends ServletContextListener> clazz;
+
+    // compat
+    @XNode("@class")
+    public void setClass(Class<? extends ServletContextListener> clazz) {
+        this.clazz = clazz;
+    }
 
     @XNode("@context")
     protected String context = "/";
 
-    public ServletContextListenerDescriptor() {
-    }
-
-    public Class<?> getClazz() {
+    public Class<? extends ServletContextListener> getClazz() {
         return clazz;
     }
 

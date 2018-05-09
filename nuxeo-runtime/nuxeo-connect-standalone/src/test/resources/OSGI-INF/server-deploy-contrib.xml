@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.connect.standalone.test.server.deploy">
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Fake Connect Download Servlet</servlet-name>
+      <servlet-class>org.nuxeo.launcher.connect.TestConnectBroker$FakeConnectDownloadServlet</servlet-class>
+      <url-pattern>/*</url-pattern>
+    </servlet>
+  </extension>
+</component>

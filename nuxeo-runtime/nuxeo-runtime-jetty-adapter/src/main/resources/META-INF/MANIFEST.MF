@@ -7,7 +7,6 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/JettyComponent.xml
 Import-Package: javax.annotation;version="1.0",
  javax.servlet;version="2.5",
  javax.servlet.http;version="2.5",

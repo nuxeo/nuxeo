@@ -47,47 +47,13 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 @Deploy("org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml")
 @Features({ PlatformFeature.class, WebDriverFeature.class, ServletContainerTransactionalFeature.class,
         WebEngineFeatureCore.class })
-public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class WebEngineFeature extends SimpleFeature {
 
     protected URL config;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        WebXml anno = FeaturesRunner.getScanner().getFirstAnnotation(runner.getTargetTestClass(), WebXml.class);
-        if (anno == null) {
-            config = getResource("webengine/web/WEB-INF/web.xml");
-        } else {
-            config = runner.getTargetTestClass().getClassLoader().getResource(anno.value());
-        }
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
-    }
-
-    @Override
-    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         SessionFactory.setDefaultRepository("test");
-        File dest = new File(workingDir, "web/root.war/WEB-INF/");
-        dest.mkdirs();
-
-        if (config == null) {
-            throw new java.lang.IllegalStateException(
-                    "No custom web.xml was found. " + "Check your @WebXml annotation on the test class");
-        }
-        dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
-        try (InputStream in = config.openStream()) {
-            FileUtils.copyInputStreamToFile(in, dest);
-        }
     }
 
-    private static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(resource);
-    }
-
-    // public void deployTestModule() {
-    // URL currentDir =
-    // Thread.currentThread().getContextClassLoader().getResource(
-    // ".");
-    // ModuleManager moduleManager =
-    // Framework.getLocalService(WebEngine.class).getModuleManager();
-    // moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
-    // }
 }

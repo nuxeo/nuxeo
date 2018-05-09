@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.test.WebEngineComponentSetup">
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp context="/">
+      <root>web/root.war</root>
+    </webapp>
+  </extension>
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo Dummy Slow Downloader</servlet-name>
+      <servlet-class>org.nuxeo.connect.download.tests.SlowDownloaderServlet</servlet-class>
+      <url-pattern>/*</url-pattern>
+    </servlet>
+  </extension>
+</component>

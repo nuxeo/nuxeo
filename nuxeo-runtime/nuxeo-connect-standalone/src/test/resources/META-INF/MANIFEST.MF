@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Version: 0.0.1
+Bundle-SymbolicName: org.nuxeo.connect.standalone.test
