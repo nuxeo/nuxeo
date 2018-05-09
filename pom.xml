@@ -177,7 +177,7 @@
     <cxf.nx.version>3.1.3-NX2</cxf.nx.version>
     <pdfbox.version>1.8.9</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.11.93</aws.version>
+    <aws.version>1.11.325</aws.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.7.4</jackson.version>
