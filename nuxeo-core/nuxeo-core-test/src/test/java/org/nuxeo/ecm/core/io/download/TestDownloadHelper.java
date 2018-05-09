@@ -35,6 +35,15 @@ public class TestDownloadHelper {
     }
 
     @Test
+    public void testParseByteRangeVeryLarge() throws Exception {
+        // check values that don't fit in an int
+        ByteRange byteRange = DownloadHelper.parseRange("bytes=111222333444-222333444555", 666777888999L);
+        assertEquals(111222333444L, byteRange.getStart());
+        assertEquals(222333444555L, byteRange.getEnd());
+        assertEquals(111111111112L, byteRange.getLength());
+    }
+
+    @Test
     public void testParseByteRangeWithoutEnd() throws Exception {
         ByteRange byteRange = DownloadHelper.parseRange("bytes=0-", 12345);
         assertEquals(0, byteRange.getStart());
