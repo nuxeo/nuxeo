@@ -12,7 +12,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="softDeleteCleanup" async="true"
+    <listener name="storedRenditionsCleanup" async="true"
       class="org.nuxeo.ecm.platform.rendition.listener.StoredRenditionsCleanupListener">
       <event>storedRenditionsCleanup</event>
     </listener>
