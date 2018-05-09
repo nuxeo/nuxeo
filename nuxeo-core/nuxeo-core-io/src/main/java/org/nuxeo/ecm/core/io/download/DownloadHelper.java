@@ -73,14 +73,14 @@ public class DownloadHelper {
                 if (end.isEmpty()) {
                     return null;
                 }
-                rangeStart = length - Integer.parseInt(end);
+                rangeStart = length - Long.parseLong(end);
                 if (rangeStart < 0) {
                     rangeStart = 0;
                 }
             } else {
-                rangeStart = Integer.parseInt(start);
+                rangeStart = Long.parseLong(start);
                 if (!end.isEmpty()) {
-                    rangeEnd = Integer.parseInt(end);
+                    rangeEnd = Long.parseLong(end);
                 }
             }
             if (rangeStart > rangeEnd) {
