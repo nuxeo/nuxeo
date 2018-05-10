@@ -15,7 +15,7 @@
       <nxu:dataTable value="#{renditions}"
         var="rendition" styleClass="dataOutput">
         <nxu:column styleClass="iconColumn">
-          <nxu:graphicImage value="#{rendition.icon}" />
+          <nxu:graphicImage styleClass="smallIcon" value="#{rendition.icon}" />
         </nxu:column>
         <nxu:column>
           <a href="#{renditionAction.getRenditionURL(rendition.name)}" target="_blank">
