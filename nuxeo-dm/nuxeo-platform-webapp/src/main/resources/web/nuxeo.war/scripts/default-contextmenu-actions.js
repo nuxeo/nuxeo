@@ -95,7 +95,7 @@ function doRename(docid)
 }
 
 function doAccessRights(docid) {
-  navigateOnPopupDoc2('TAB_MANAGE','TAB_RIGHTS');
+  navigateOnPopupDoc('TAB_PERMISSIONS');
 }
 
 function doPreview(docid) {
