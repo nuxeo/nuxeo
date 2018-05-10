@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns:nxs="http://www.nuxeo.org/ecm/schemas/compoundDoc" 
+xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/" 
+xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/" 
+targetNamespace="http://www.nuxeo.org/ecm/schemas/compoundDoc">  
+
+  <xs:element name="docs">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id"/>
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.adobe.connector.page.providers">
+
+<extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+    <genericPageProvider class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider" name="adobe-connector-all-images">
+      <trackUsage>true</trackUsage>
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="adobe-connector-all-images_pp" name="system_fulltext"/>
+        </predicate>
+        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:mixinType = 'Picture'</fixedPart>
+      </whereClause>
+      <searchDocumentType>adobe-connector-all-images_pp</searchDocumentType>
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+    <genericPageProvider class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider" name="adobe-connector-search">
+      <trackUsage>true</trackUsage>
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="adobe-connector-search_pp" name="system_fulltext"/>
+        </predicate>
+        <predicate parameter="ecm:parentId" operator="=">
+          <field schema="adobe-connector-search_pp" name="system_parentId"/>
+        </predicate>
+        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+        </fixedPart>
+      </whereClause>
+      <searchDocumentType>adobe-connector-search_pp</searchDocumentType>
+      <quickFilters>
+        <quickFilter name="File">
+          <clause>ecm:primaryType = 'File'</clause>
+        </quickFilter>
+        <quickFilter name="Folder">
+          <clause>ecm:mixinType = 'Folderish'</clause>
+        </quickFilter>
+        <quickFilter name="Picture">
+          <clause>ecm:mixinType = 'Picture'</clause>
+        </quickFilter>
+      </quickFilters>
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+  </extension>
+  
+</component>

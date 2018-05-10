@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.adobe.cc.operation.setcompounddocs" version="1.0">
+
+  <extension point="operations" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="org.nuxeo.adobe.cc.CompoundAttach"/>
+  </extension>
+
+</component>

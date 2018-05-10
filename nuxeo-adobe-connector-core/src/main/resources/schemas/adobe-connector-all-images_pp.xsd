@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns:nxs="http://www.nuxeo.org/ecm/schemas/adobe_cc_search_images" 
+xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/" 
+xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/" 
+targetNamespace="http://www.nuxeo.org/ecm/schemas/adobe_cc_search_images">  
+
+  <xs:element name="system_fulltext" type="xs:string"/>
+
+</xs:schema>
