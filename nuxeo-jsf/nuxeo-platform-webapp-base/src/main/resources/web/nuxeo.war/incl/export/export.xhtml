@@ -63,7 +63,7 @@
                   <nxh:metaOutputLink value="#{action.getLink()}"
                     target="_blank" title="#{messages[tooltipMessage]}"
                     styleClass="tipsyShow">
-                    <h:graphicImage value="#{action.icon}"
+                    <h:graphicImage styleClass="smallIcon" value="#{action.icon}"
                       rendered="#{not empty action.icon}" />
                     <h:outputText value=" #{messages[action.label]}" />
                   </nxh:metaOutputLink>
