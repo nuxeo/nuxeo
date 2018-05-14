@@ -50,7 +50,7 @@ public class ServerComponent extends DefaultComponent {
 
     public static final String PORT_SYSTEM_PROP = "nuxeo.servlet-container.port";
 
-    protected static final String CONFIGURATOR_CLASS = "org.nuxeo.runtime.jetty.JettyServerConfigurator";
+    protected static final String CONFIGURATOR_CLASS = "org.nuxeo.runtime.server.tomcat.TomcatServerConfigurator";
 
     protected ServerConfigurator configurator;
 
