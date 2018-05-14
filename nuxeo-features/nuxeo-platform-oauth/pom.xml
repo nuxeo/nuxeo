@@ -131,6 +131,11 @@
       <artifactId>javax.inject</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jasper</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
