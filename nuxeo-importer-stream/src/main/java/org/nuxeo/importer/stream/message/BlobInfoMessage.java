@@ -46,6 +46,18 @@ public class BlobInfoMessage extends BlobInfo implements Message {
     }
 
     @Override
+    public String toString() {
+        return "BlobInfoMessage{" +
+                "key='" + key + '\'' +
+                ", mimeType='" + mimeType + '\'' +
+                ", encoding='" + encoding + '\'' +
+                ", filename='" + filename + '\'' +
+                ", length=" + length +
+                ", digest='" + digest + '\'' +
+                '}';
+    }
+
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeLong(length);
         out.writeObject(digest);
