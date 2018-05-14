@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = FileManagerImport.ID, category = Constants.CAT_SERVICES, label = "Create Document from file", description = "Create Document(s) from Blob(s) using the FileManagerService.")
+@Operation(id = FileManagerImport.ID, category = Constants.CAT_SERVICES, label = "Create Document from file", description = "Create Document(s) from Blob(s) using the FileManagerService. The destination container must be passed in a Context variable named currentDocument.")
 public class FileManagerImport {
 
     public static final String ID = "FileManager.Import";
