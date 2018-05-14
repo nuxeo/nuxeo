@@ -325,6 +325,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
+    public boolean isFulltextSearchDisabled() {
+        return isFulltextDisabled() || fulltextConfiguration.fulltextSearchDisabled;
+    }
+
+    @Override
     public boolean isChangeTokenEnabled() {
         return changeTokenEnabled;
     }
