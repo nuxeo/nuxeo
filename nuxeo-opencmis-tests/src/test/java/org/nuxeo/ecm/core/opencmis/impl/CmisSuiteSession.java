@@ -140,8 +140,6 @@ public class CmisSuiteSession {
 
     private static final Log log = LogFactory.getLog(CmisSuiteSession.class);
 
-    public static final String BASE_RESOURCE = "jetty-test";
-
     public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo
 
     public static final String NUXEO_ROOT_NAME = ""; // NuxeoPropertyDataName;

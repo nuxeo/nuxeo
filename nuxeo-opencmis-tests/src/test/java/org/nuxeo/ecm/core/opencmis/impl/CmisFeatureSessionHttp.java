@@ -24,13 +24,11 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -45,19 +43,10 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.apache.tomcat.util.net.AbstractEndpoint;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.resource.Resource;
-import org.mortbay.thread.QueuedThreadPool;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
@@ -76,18 +65,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
-    private static final Log log = LogFactory.getLog(CmisFeatureSessionHttp.class);
-
-    public static final String BASE_RESOURCE = "jetty-test";
+    public static final String BASE_RESOURCE = "web";
 
     public static final String HOST = "localhost";
 
     public static final int PORT = 17488;
-
-    public static final boolean USE_TOMCAT = true;
-
-    // Jetty server
-    public Server server;
 
     // Tomcat server
     public Tomcat tomcat;
@@ -172,69 +154,11 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
         FilterConfigDescriptor conf = new FilterConfigDescriptor("cmis-test", ".*", true, true, false, false, false,
                 null);
         ctrl.registerFilterConfig(conf);
-        if (USE_TOMCAT) {
-            setUpTomcat();
-        } else {
-            setUpJetty();
-        }
+        setUpTomcat();
     }
 
     protected void tearDownServer() throws Exception {
-        if (USE_TOMCAT) {
-            tearDownTomcat();
-        } else {
-            tearDownJetty();
-        }
-    }
-
-    protected void setUpJetty() throws Exception {
-        server = new Server();
-        Connector connector = new SocketConnector();
-        connector.setHost(HOST);
-        connector.setPort(PORT);
-        connector.setMaxIdleTime(60 * 1000); // 60 seconds
-        server.addConnector(connector);
-
-        Context context = new Context(server, "/", Context.SESSIONS);
-        context.setBaseResource(Resource.newClassPathResource("/" + BASE_RESOURCE));
-
-        context.setEventListeners(getEventListeners());
-        ServletHolder holder = new ServletHolder(getServlet());
-        holder.setInitParameter(CmisAtomPubServlet.PARAM_CALL_CONTEXT_HANDLER,
-                BasicAuthCallContextHandler.class.getName());
-        context.addServlet(holder, "/*");
-        // TODO filter
-
-        serverURI = new URI("http://" + HOST + ':' + PORT + '/');
-        server.start();
-    }
-
-    protected void tearDownJetty() throws Exception {
-        ((QueuedThreadPool) server.getThreadPool()).setMaxStopTimeMs(1000);
-        server.stop();
-        killRemainingServerThreads();
-        server.join();
-        server = null;
-    }
-
-    @SuppressWarnings("deprecation")
-    protected void killRemainingServerThreads() throws Exception {
-        QueuedThreadPool tp = (QueuedThreadPool) server.getThreadPool();
-        int n = tp.getThreads();
-        if (n == 0) {
-            return;
-        }
-        log.error(n + " Jetty threads failed to stop, killing them");
-        Object threadsLock = getFieldValue(tp, "_threadsLock");
-        @SuppressWarnings("unchecked")
-        Set<Thread> threadSet = (Set<Thread>) getFieldValue(tp, "_threads");
-        List<Thread> threads;
-        synchronized (threadsLock) {
-            threads = new ArrayList<Thread>(threadSet);
-        }
-        for (Thread t : threads) {
-            t.stop(); // try to stop thread brutally
-        }
+        tearDownTomcat();
     }
 
     // org.apache.chemistry.opencmis.server.shared.HttpUtils.splitPath returns [""] instead of []
@@ -292,34 +216,6 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
             tomcat = null;
         }
     }
-
-    // /** Creates SO_REUSEADDR server sockets. */
-    // protected static class ReuseAddrServerSocketFactory extends
-    // DefaultServerSocketFactory {
-    // public ReuseAddrServerSocketFactory(AbstractEndpoint endpoint) {
-    // super(endpoint);
-    // }
-    //
-    // @Override
-    // public ServerSocket createSocket(int port) throws IOException {
-    // return createSocket(port, 50, null);
-    // }
-    //
-    // @Override
-    // public ServerSocket createSocket(int port, int backlog)
-    // throws IOException {
-    // return createSocket(port, backlog, null);
-    // }
-    //
-    // @Override
-    // public ServerSocket createSocket(int port, int backlog,
-    // InetAddress ifAddress) throws IOException {
-    // ServerSocket serverSocket = new ServerSocket();
-    // serverSocket.setReuseAddress(true); // SO_REUSEADDR
-    // serverSocket.bind(new InetSocketAddress(ifAddress, port), backlog);
-    // return serverSocket;
-    // }
-    // }
 
     protected static Object getFieldValue(Object object, String name) throws Exception {
         Class<? extends Object> klass = object.getClass();

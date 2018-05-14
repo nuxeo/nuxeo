@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 
 public class FakeServletContext implements InvocationHandler {
 
-    public static final String BASE_RESOURCE = "jetty-test";
+    public static final String BASE_RESOURCE = CmisFeatureSessionHttp.BASE_RESOURCE;
 
     public static ServletContext getServletContext() {
         FakeServletContext handler = new FakeServletContext();
