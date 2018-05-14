@@ -232,7 +232,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
-        if (!isFulltextDisabled()) {
+        if (!isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
                     Indexes.text(KEY_FULLTEXT_BINARY) //
@@ -545,7 +545,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextDisabled()) {
+        if (builder.hasFulltext && isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         Document filter = builder.getQuery();
@@ -623,7 +623,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextDisabled()) {
+        if (builder.hasFulltext && isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         Bson filter = builder.getQuery();
