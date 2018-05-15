@@ -192,13 +192,13 @@ After this you need to use simulations in `nuxeo-distribution/nuxeo-jsf-ui-gatli
 
 ```
 # init the infra, creating a group of test users and a workspace
-mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench -Durl=http://localhost:8080/nuxeo
+mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench -DredisDb=0 -Durl=http://localhost:8080/nuxeo
 
 # import the folder structure
-mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders -Pbench -Durl=http://localhost:8080/nuxeo
+mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders -Pbench -DredisDb=0 -Durl=http://localhost:8080/nuxeo
 
 # import the documents using 8 concurrent users
-mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments -Pbench -Dusers=8 -Durl=http://localhost:8080/nuxeo
+mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments -Pbench -DredisDb=0 -Dusers=8 -Durl=http://localhost:8080/nuxeo
 
 ```
 
