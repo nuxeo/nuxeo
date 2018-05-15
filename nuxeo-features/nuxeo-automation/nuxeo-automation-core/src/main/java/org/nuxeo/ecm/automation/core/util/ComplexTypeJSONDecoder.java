@@ -52,10 +52,11 @@ public class ComplexTypeJSONDecoder {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<JSONBlobDecoder>();
+    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<>();
     static {
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         blobDecoders.add(new JSONStringBlobDecoder());
+        blobDecoders.add(new JSONManagedBlobDecoder());
     }
 
     public static void registerBlobDecoder(JSONBlobDecoder blobDecoder) {
