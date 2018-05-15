@@ -22,7 +22,6 @@
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>
-    <module>nuxeo-runtime-jetty-adapter</module>
     <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-metrics</module>
