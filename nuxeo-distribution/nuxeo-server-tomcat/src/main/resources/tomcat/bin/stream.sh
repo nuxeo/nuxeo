@@ -14,6 +14,6 @@ $ROOT/nxserver/lib/jgrapht-core-1.0.1.jar:\
 $ROOT/nxserver/lib/jackson-databind-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-core-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-annotations-2.7.4.jar:\
-$ROOT/nxserver/lib/nuxeo-stream-10.2-SNAPSHOT.jar
+$ROOT/nxserver/lib/nuxeo-stream-10.2-I20180515_0125.jar
 cd $ROOT
 java -cp $CLASSPATH org.nuxeo.lib.stream.tools.Main "$@"
