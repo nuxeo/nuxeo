@@ -42,27 +42,41 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
 
     protected final String logName;
 
+    protected final boolean countFolderAsDocument;
+
+    public RandomDocumentMessageProducerFactory(long nbDocuments, String lang, int blobSizeKb) {
+        this(nbDocuments, lang, blobSizeKb, true);
+    }
+
     /**
      * Generates random document messages that contains random blob.
      */
-    public RandomDocumentMessageProducerFactory(long nbDocuments, String lang, int blobSizeKb) {
+    public RandomDocumentMessageProducerFactory(long nbDocuments, String lang, int blobSizeKb,
+            Boolean countFolderAsDocument) {
         this.nbDocuments = nbDocuments;
         this.lang = lang;
         this.manager = null;
         this.blobSizeKb = blobSizeKb;
         this.logName = null;
+        this.countFolderAsDocument = countFolderAsDocument;
     }
 
     /**
      * Generates random documents messages that point to existing blobs.
      */
     public RandomDocumentMessageProducerFactory(long nbDocuments, String lang, LogManager manager,
-            String logBlobInfoName) {
+            String logBlobInfoName, Boolean countFolderAsDocument) {
         this.nbDocuments = nbDocuments;
         this.lang = lang;
         this.manager = manager;
         this.logName = logBlobInfoName;
         this.blobSizeKb = 0;
+        this.countFolderAsDocument = countFolderAsDocument;
+    }
+
+    public RandomDocumentMessageProducerFactory(long nbDocuments, String lang, LogManager manager,
+            String logBlobInfoName) {
+        this(nbDocuments, lang, manager, logBlobInfoName, true);
     }
 
     @SuppressWarnings("resource")
@@ -70,11 +84,14 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
     public ProducerIterator<DocumentMessage> createProducer(int producerId) {
         BlobInfoFetcher fetcher = null;
         if (manager != null) {
+            // read only on the first partition
             LogTailer<BlobInfoMessage> tailer = manager.createTailer(getGroupName(producerId),
                     Collections.singleton(LogPartition.of(logName, 0)));
             fetcher = new RandomLogBlobInfoFetcher(tailer);
         }
-        return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher).withBlob(blobSizeKb, false);
+        return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher).withBlob(blobSizeKb, false)
+                                                                                        .countFolderAsDocument(
+                                                                                                countFolderAsDocument);
     }
 
     protected String getGroupName(int producerId) {

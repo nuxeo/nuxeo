@@ -82,7 +82,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 
 2. Run consumers of blob messages importing into the Nuxeo binary store, saving blob information into a new Log.
   ```
-mkdir /tmp/a
 curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
   -d '{"params":{"blobProviderName": "default", "logBlobInfo": "blob-info"}}'
 ```
@@ -111,6 +110,106 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocu
 ```
 
 Same params listed in the previous previous runDocumentConsumers call.
+
+### Create blobs using existing files
+
+Create a file containing the list of files to import then:
+
+1. Generate blob messages corresponding to the files, dispatch the messages into 4 partitions:
+  ```
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runFileBlobProducers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+  -d '{"params":{"listFile": "/tmp/my-file-list.txt", "logSize": 4}}'
+```
+
+| Params| Default | Description |
+| --- | ---: | --- |
+| `listFile` | | The path to the listing file |
+| `basePath` | '' | The base path to use as prefix of each file listed in the `listFile` |
+| `nbBlobs` | 0 | The number of blobs to generate per producer thread, 0 means all entries, loop on `listFile` entries if necessary |
+| `nbThreads` | `1` | The number of concurrent producer to run |
+| `logName` | `import-blob` |  The name of the Log to append blobs. |
+| `logSize` | `$nbThreads`| The number of partitions in the Log which will fix the maximum number of consumer threads |
+| `logConfig` | `default` | The Log configuration registered in Nuxeo |
+
+
+The you can use the 3 others steps describes the above section to import blobs with 4 threads and create documents.
+
+Note that the type of document will be adapted to the detected mime type of the file so that
+- image file will generate a `Picture` document
+- video file will generate a `Video` document
+- other type will be translated to `File` document
+
+
+### Generate random file for testing purpose
+
+For testing purpose it can be handy to generate different file from an existing one, the goal is to generate lots of unique files with a limited set of files.
+
+To do this you need to first generates blob messages pointing to file (see previous section) and choose the `nbBlobs` corresponding to the expected number of blob to import,
+(use a greater number that the existing files).
+
+The next step is to add some special option to blob consumer so that instead of importing the existing file, a watermark will be
+added to the blob before importing it.
+
+
+2. Run consumers of blob messages adding watermark to file and importing into the Nuxeo binary store, saving blob information into a new Log.
+  ```
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+  -d '{"params":{"watermark": "foo"}}'
+```
+
+The additional parameters are:
+| Params| Default | Description |
+| --- | ---: | --- |
+| `watermark` | | Ask to add a watermark to the file before importing it, use the provided string if possible. |
+| `persistBlobPath` | | Use a path if you want to keep the generated files on disk |
+| `blobProviderName` | `default` | If blank there is no Nuxeo blob import, this can be useful for import with Gatling/Redis |
+
+
+Continue with other steps described above to generate and create documents.
+
+Note that only few mime type are supported for watermark so far:
+- `text/plain`: Insert a uniq tag at the beginning of text.
+- `image/jpeg`: Set the exif software tag to a uniq tag.
+- `video/mp4`:  Set the title with the uniq tag.
+
+
+### Import document using REST API via Gatling/Redis
+
+Instead of doing mass import creating document by batch with the efficient internal API,
+you can save them into Redis in a way it can be used by Gatling simulation, this way we can stress the REST API.
+
+To do this instead of the document creationg step 4 we do:
+
+4. Run Redis consumers of document messages
+  ```
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRedisDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+  -d '{"params":{"rootFolder": "/default-domain/workspaces"}}'
+```
+
+Note that the Nuxeo must be configured with Redis (`nuxeo.redis.enabled=true`).
+
+After this you need to use simulations in `nuxeo-distribution/nuxeo-jsf-ui-gatling-tests/`:
+
+```
+# init the infra, creating a group of test users and a workspace
+mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench -Durl=http://localhost:8080/nuxeo
+
+# import the folder structure
+mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders -Pbench -Durl=http://localhost:8080/nuxeo
+
+# import the documents using 8 concurrent users
+mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments -Pbench -Dusers=8 -Durl=http://localhost:8080/nuxeo
+
+```
+
+The node running the Gatling simulation must have access to the files to import.
+
+Here is an overview of possible usage to generate mass import and load tests with the stream importer:
+
+![import diagram](import-diag.png)
+
+Visit [nuxe-jsf-ui-gatling](https://github.com/nuxeo/nuxeo/tree/master/nuxeo-distribution/nuxeo-jsf-ui-gatling-tests) for more information.
+
 
 
 ## Building

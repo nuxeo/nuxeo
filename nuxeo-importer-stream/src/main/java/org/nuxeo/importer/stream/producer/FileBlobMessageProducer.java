@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.importer.stream.message.BlobMessage;
@@ -39,50 +40,74 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
 
     protected final File listFile;
 
-    protected int count = 0;
+    protected final String basePath;
 
-    protected Stream<String> stream;
+    protected long count = 0;
+
+    protected final long nbBlobs;
 
     protected Iterator<String> fileIterator;
 
-    public FileBlobMessageProducer(int producerId, File listFile) {
+    protected Stream<String> lines;
+
+    public FileBlobMessageProducer(int producerId, File listFile, String basePath, long nbBlobs) {
         super(producerId);
         this.listFile = listFile;
+        this.nbBlobs = nbBlobs;
+        this.basePath = StringUtils.defaultString(basePath);
         log.info("Producer using file list: " + listFile.getAbsolutePath());
+        getFileIterator();
+
+    }
+
+    protected void getFileIterator() {
         try {
-            stream = Files.lines(listFile.toPath());
-            fileIterator = stream.iterator();
+            if (lines != null) {
+                lines.close();
+            }
+            lines = Files.lines(listFile.toPath());
+            fileIterator = lines.iterator();
         } catch (IOException e) {
             String msg = "Failed to read file: " + listFile.getAbsolutePath();
             log.error(msg, e);
             throw new IllegalArgumentException(e);
         }
-
     }
 
     @Override
     public int getPartition(BlobMessage message, int partitions) {
-        return count % partitions;
+        return ((int) count) % partitions;
     }
 
     @Override
     public void close() throws Exception {
         super.close();
-        stream.close();
-        stream = null;
         fileIterator = null;
+        if (lines != null) {
+            lines.close();
+        }
+        lines = null;
     }
 
     @Override
     public boolean hasNext() {
-        return fileIterator.hasNext();
+        if (nbBlobs > 0 && count >= nbBlobs) {
+            return false;
+        }
+        if (!fileIterator.hasNext()) {
+            if (nbBlobs == 0) {
+                return false;
+            }
+            // loop until we get the nb blobs
+            getFileIterator();
+        }
+        return true;
     }
 
     @Override
     public BlobMessage next() {
         String filePath = fileIterator.next();
         count += 1;
-        // TODO: guess mimetype, length ?
-        return new BlobMessage.FileMessageBuilder(filePath).build();
+        return new BlobMessage.FileMessageBuilder(new File(basePath, filePath).toString()).build();
     }
 }

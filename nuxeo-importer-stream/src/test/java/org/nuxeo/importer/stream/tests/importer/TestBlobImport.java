@@ -20,6 +20,7 @@ package org.nuxeo.importer.stream.tests.importer;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +34,7 @@ import org.nuxeo.importer.stream.consumer.BlobInfoWriter;
 import org.nuxeo.importer.stream.consumer.BlobMessageConsumerFactory;
 import org.nuxeo.importer.stream.consumer.LogBlobInfoWriter;
 import org.nuxeo.importer.stream.message.BlobMessage;
+import org.nuxeo.importer.stream.producer.FileBlobMessageProducerFactory;
 import org.nuxeo.importer.stream.producer.RandomStringBlobMessageProducerFactory;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -75,7 +77,7 @@ public abstract class TestBlobImport {
 
             try (LogManager managerBlobInfo = getManager()) {
                 String blobProviderName = "test";
-                managerBlobInfo.createIfNotExists("blob-info", NB_QUEUE);
+                managerBlobInfo.createIfNotExists("blob-info", 1);
                 BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(managerBlobInfo.getAppender("blob-info"));
                 ConsumerPool<BlobMessage> consumers = new ConsumerPool<>("blob-import", manager,
                         new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
@@ -85,6 +87,43 @@ public abstract class TestBlobImport {
                 assertEquals(NB_PRODUCERS * NB_BLOBS, retConsumers.stream().mapToLong(r -> r.committed).sum());
             }
         }
+    }
+
+    @Test
+    public void fileBlobImporter() throws Exception {
+        final int NB_QUEUE = 2;
+        final short NB_PRODUCERS = 2;
+        final int NB_BLOBS = 50;
+
+        try (LogManager manager = getManager()) {
+            manager.createIfNotExists("blob-import", NB_QUEUE);
+
+            ProducerPool<BlobMessage> producers = new ProducerPool<>("blob-import", manager,
+                    new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"),
+                            NB_BLOBS),
+                    NB_PRODUCERS);
+            List<ProducerStatus> ret = producers.start().get();
+            assertEquals(NB_PRODUCERS * NB_BLOBS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
+
+            try (LogManager managerBlobInfo = getManager()) {
+                String blobProviderName = "test";
+                managerBlobInfo.createIfNotExists("blob-info", 1);
+                BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(managerBlobInfo.getAppender("blob-info"));
+                ConsumerPool<BlobMessage> consumers = new ConsumerPool<>("blob-import", manager,
+                        new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
+                        ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
+                List<ConsumerStatus> retConsumers = consumers.start().get();
+                assertEquals(NB_PRODUCERS * NB_BLOBS, retConsumers.stream().mapToLong(r -> r.committed).sum());
+            }
+        }
+    }
+
+    protected File getFileList(String filename) {
+        return new File(this.getClass().getClassLoader().getResource(filename).getPath());
+    }
+
+    protected String getBasePathList(String base) {
+        return this.getClass().getClassLoader().getResource(base).getPath();
     }
 
 }

@@ -25,12 +25,12 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.pattern.Message;
-import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
-import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
+import org.nuxeo.lib.stream.pattern.Message;
+import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
+import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
 
 /**
  * Run a pool of ConsumerRunner.

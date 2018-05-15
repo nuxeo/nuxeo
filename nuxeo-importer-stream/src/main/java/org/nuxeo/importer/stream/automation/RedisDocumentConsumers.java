@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.automation.RandomBlobProducers.DEFAULT_BLOB_LOG_NAME;
+import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +31,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.importer.stream.consumer.BlobInfoWriter;
-import org.nuxeo.importer.stream.consumer.BlobMessageConsumerFactory;
-import org.nuxeo.importer.stream.consumer.LogBlobInfoWriter;
-import org.nuxeo.importer.stream.message.BlobMessage;
+import org.nuxeo.importer.stream.consumer.RedisDocumentMessageConsumerFactory;
+import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
@@ -45,17 +43,15 @@ import org.nuxeo.runtime.stream.StreamService;
 import net.jodah.failsafe.RetryPolicy;
 
 /**
- * @since 9.1
+ * Import document message into Redis, so they can be used by Gatling simulation to create Nuxeo documents.
+ *
+ * @since 10.2
  */
-@Operation(id = BlobConsumers.ID, category = Constants.CAT_SERVICES, label = "Import blobs", since = "9.1", description = "Import blob into the binarystore.")
-public class BlobConsumers {
-    private static final Log log = LogFactory.getLog(BlobConsumers.class);
+@Operation(id = RedisDocumentConsumers.ID, category = Constants.CAT_SERVICES, label = "Imports document into Redis", since = "10.1", description = "Import documents into Redis.")
+public class RedisDocumentConsumers {
+    private static final Log log = LogFactory.getLog(RedisDocumentConsumers.class);
 
-    public static final String ID = "StreamImporter.runBlobConsumers";
-
-    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "import-blob-info";
-
-    public static final String DEFAULT_LOG_CONFIG = "default";
+    public static final String ID = "StreamImporter.runRedisDocumentConsumers";
 
     @Context
     protected OperationContext ctx;
@@ -63,14 +59,8 @@ public class BlobConsumers {
     @Param(name = "nbThreads", required = false)
     protected Integer nbThreads;
 
-    @Param(name = "blobProviderName", required = false)
-    protected String blobProviderName = "default";
-
-    @Param(name = "batchSize", required = false)
-    protected Integer batchSize = 10;
-
-    @Param(name = "batchThresholdS", required = false)
-    protected Integer batchThresholdS = 20;
+    @Param(name = "redisPrefix", required = false)
+    protected String redisPrefix;
 
     @Param(name = "retryMax", required = false)
     protected Integer retryMax = 3;
@@ -81,58 +71,33 @@ public class BlobConsumers {
     @Param(name = "logName", required = false)
     protected String logName;
 
-    @Param(name = "logBlobInfo", required = false)
-    protected String logBlobInfoName;
-
     @Param(name = "logConfig", required = false)
     protected String logConfig;
 
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
 
-    @Param(name = "watermark", required = false)
-    protected String watermark;
-
-    @Param(name = "persistBlobPath", required = false)
-    protected String persistBlobPath;
-
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
         ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
                                                       .name(ID)
-                                                      // we set the batch policy but batch is not used by the blob
-                                                      // consumer
-                                                      .batchPolicy(
-                                                              BatchPolicy.builder()
-                                                                         .capacity(batchSize)
-                                                                         .timeThreshold(
-                                                                                 Duration.ofSeconds(batchThresholdS))
-                                                                         .build())
+                                                      .batchPolicy(BatchPolicy.NO_BATCH)
                                                       .retryPolicy(new RetryPolicy().withMaxRetries(retryMax).withDelay(
                                                               retryDelayS, TimeUnit.SECONDS))
                                                       .maxThreads(getNbThreads())
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
+        log.warn(String.format("Import documents into Redis from log: %s, with policy: %s", getLogName(),
+                consumerPolicy));
         StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager(getLogConfig());
-        try (BlobInfoWriter blobInfoWriter = getBlobInfoWriter(manager)) {
-            ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(getLogName(), manager,
-                    new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark, persistBlobPath),
-                    consumerPolicy);
+        try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(getLogName(), manager,
+                new RedisDocumentMessageConsumerFactory(redisPrefix), consumerPolicy)) {
             consumers.start().get();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    protected BlobInfoWriter getBlobInfoWriter(LogManager managerBlobInfo) {
-        initBlobInfoMQ(managerBlobInfo);
-        return new LogBlobInfoWriter(managerBlobInfo.getAppender(getLogBlobInfoName()));
-    }
-
-    protected void initBlobInfoMQ(LogManager manager) {
-        manager.createIfNotExists(getLogBlobInfoName(), 1);
     }
 
     protected short getNbThreads() {
@@ -146,14 +111,7 @@ public class BlobConsumers {
         if (logName != null) {
             return logName;
         }
-        return DEFAULT_BLOB_LOG_NAME;
-    }
-
-    protected String getLogBlobInfoName() {
-        if (logBlobInfoName != null) {
-            return logBlobInfoName;
-        }
-        return DEFAULT_LOG_BLOB_INFO_NAME;
+        return RandomDocumentProducers.DEFAULT_DOC_LOG_NAME;
     }
 
     protected String getLogConfig() {

@@ -124,11 +124,11 @@ public class DocumentConsumers {
                                                                       Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                               .salted()
                                                               .build();
-        log.warn(String.format("Import documents from log: %s into: %s/%s, with policy: %s", getMQName(),
+        log.warn(String.format("Import documents from log: %s into: %s/%s, with policy: %s", getLogName(),
                 repositoryName, rootFolder, (DocumentConsumerPolicy) consumerPolicy));
         StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getMQConfig());
-        try (DocumentConsumerPool<DocumentMessage> consumers = new DocumentConsumerPool<>(getMQName(), manager,
+        LogManager manager = service.getLogManager(getLogConfig());
+        try (DocumentConsumerPool<DocumentMessage> consumers = new DocumentConsumerPool<>(getLogName(), manager,
                 new DocumentMessageConsumerFactory(repositoryName, rootFolder), consumerPolicy)) {
             consumers.start().get();
         } catch (Exception e) {
@@ -150,14 +150,14 @@ public class DocumentConsumers {
         return ctx.getCoreSession().getRepositoryName();
     }
 
-    protected String getMQName() {
+    protected String getLogName() {
         if (logName != null) {
             return logName;
         }
         return RandomDocumentProducers.DEFAULT_DOC_LOG_NAME;
     }
 
-    protected String getMQConfig() {
+    protected String getLogConfig() {
         if (logConfig != null) {
             return logConfig;
         }

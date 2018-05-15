@@ -24,15 +24,15 @@ import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
  * @since 9.2
  */
 public class DocumentConsumerPolicy extends ConsumerPolicy {
-    protected boolean blockIndexing = false;
+    protected boolean blockIndexing;
 
-    protected boolean bulkMode = false;
+    protected boolean bulkMode;
 
-    protected boolean blockAsyncListeners = false;
+    protected boolean blockAsyncListeners;
 
-    protected boolean blockPostCommitListeners = false;
+    protected boolean blockPostCommitListeners;
 
-    protected boolean blockDefaultSyncListeners = false;
+    protected boolean blockDefaultSyncListeners;
 
     public DocumentConsumerPolicy(DocumentConsumerPolicyBuilder builder) {
         super(builder);

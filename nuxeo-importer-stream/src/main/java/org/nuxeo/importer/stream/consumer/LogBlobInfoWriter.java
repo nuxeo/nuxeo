@@ -25,7 +25,7 @@ import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.lib.stream.log.LogAppender;
 
 /**
- * Write blob information to a Log
+ * Write blob information to a Log, use only one partition.
  *
  * @since 9.3
  */
@@ -38,11 +38,13 @@ public class LogBlobInfoWriter implements BlobInfoWriter {
 
     @Override
     public void save(DocumentMessage.Builder builder, BlobInfo info) {
-        appender.append(info.digest, new BlobInfoMessage(info));
+        // use only the first partition
+        appender.append(0, new BlobInfoMessage(info));
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
+        // not needed
     }
 
 }

@@ -24,12 +24,12 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
 import org.nuxeo.lib.stream.pattern.producer.ProducerFactory;
 import org.nuxeo.lib.stream.pattern.producer.ProducerIterator;
 import org.nuxeo.lib.stream.pattern.producer.ProducerStatus;
-import org.nuxeo.lib.stream.log.LogAppender;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;

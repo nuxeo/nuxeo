@@ -1,5 +1,5 @@
 <?xml version="1.0"?><!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
@@ -38,10 +38,6 @@
   </category>
 
   <category name="org.nuxeo">
-    <priority value="WARN" />
-  </category>
-
-  <category name="org.nuxeo.lib.core.mqueues">
     <priority value="WARN" />
   </category>
 
