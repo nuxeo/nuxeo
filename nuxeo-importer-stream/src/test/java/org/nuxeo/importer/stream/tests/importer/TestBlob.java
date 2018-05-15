@@ -18,6 +18,7 @@
  */
 package org.nuxeo.importer.stream.tests.importer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class TestBlob {
     }
 
     protected Blob createBlob(String content, String filename) {
-        return new StringBlob(content, "plain/text", "UTF-8", filename);
+        return new StringBlob(content, "plain/text", UTF_8.name(), filename);
     }
 
 }

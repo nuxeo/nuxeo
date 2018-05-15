@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.importer.stream.automation.BlobConsumers;
 import org.nuxeo.importer.stream.automation.DocumentConsumers;
+import org.nuxeo.importer.stream.automation.FileBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomDocumentProducers;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -51,6 +52,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.importer.stream:test-stream-contrib.xml")
+@Deploy("org.nuxeo.importer.stream:test-core-type-contrib.xml")
 public abstract class TestAutomation {
 
     @Inject
@@ -65,7 +67,7 @@ public abstract class TestAutomation {
     public abstract void addExtraParams(Map<String, Object> params);
 
     @Test
-    public void testBlobImport() throws Exception {
+    public void testRandomBlobImport() throws Exception {
         final int nbThreads = 4;
         OperationContext ctx = new OperationContext(session);
 
@@ -79,6 +81,28 @@ public abstract class TestAutomation {
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
+        addExtraParams(params);
+        automationService.run(ctx, BlobConsumers.ID, params);
+    }
+
+    @Test
+    public void testFileBlobImport() throws Exception {
+        final int nbThreads = 4;
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("nbBlobs", 10);
+        params.put("nbThreads", nbThreads);
+        params.put("logSize", nbThreads);
+        params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
+        params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
+        addExtraParams(params);
+        automationService.run(ctx, FileBlobProducers.ID, params);
+
+        params.clear();
+        params.put("blobProviderName", "test");
+        params.put("nbThreads", nbThreads);
+        params.put("watermark", "foo");
         addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
     }
@@ -169,6 +193,67 @@ public abstract class TestAutomation {
         // Check that all files has a non null blob
         int createdBlobs = session.query("SELECT * FROM Document WHERE  content/length > 0").size();
         assertEquals(createdFiles, createdBlobs);
+    }
+
+    @Test
+    public void testFileBlobAndDocumentImport() throws Exception {
+        final int nbBlobs = 10;
+        final int nbDocuments = 20;
+        final int nbThreads = 2;
+        final String marker = "youknowforsearch";
+
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        params.put("nbBlobs", nbBlobs);
+        params.put("nbThreads", nbThreads);
+        params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
+        params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
+        addExtraParams(params);
+        automationService.run(ctx, FileBlobProducers.ID, params);
+
+        // 2. import blobs into the binarystore, saving blob info into a log
+        params.clear();
+        params.put("blobProviderName", "test");
+        params.put("nbThreads", nbThreads);
+        params.put("logBlobInfo", "blob-info");
+        addExtraParams(params);
+        automationService.run(ctx, BlobConsumers.ID, params);
+
+        // 3. generates random document messages with blob references
+        params.clear();
+        params.put("nbDocuments", nbDocuments);
+        params.put("nbThreads", nbThreads);
+        params.put("countFolderAsDocument", false);
+        params.put("logBlobInfo", "blob-info");
+        addExtraParams(params);
+        automationService.run(ctx, RandomDocumentProducers.ID, params);
+
+        // 4. import document into the repository
+        params.clear();
+        params.put("rootFolder", "/");
+        params.put("nbThreads", nbThreads);
+        params.put("useBulkMode", true);
+        params.put("blockDefaultSyncListeners", true);
+        params.put("blockPostCommitListeners", true);
+        params.put("blockAsyncListeners", true);
+        params.put("blockIndexing", true);
+        addExtraParams(params);
+        automationService.run(ctx, DocumentConsumers.ID, params);
+
+        // WorkManager service = Framework.getService(WorkManager.class);
+        // assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+
+        // start a new transaction to prevent db isolation to hide our new documents
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        int createdDocuments = session.query(
+                "SELECT * FROM Document WHERE ecm:primaryType IN ('File', 'Picture', 'Video')").size();
+        assertEquals(nbThreads * nbDocuments, createdDocuments);
+
+        // Check that all documents have a blob
+        int createdBlobs = session.query("SELECT * FROM Document WHERE  content/length > 0").size();
+        assertEquals(createdDocuments, createdBlobs);
     }
 
 }

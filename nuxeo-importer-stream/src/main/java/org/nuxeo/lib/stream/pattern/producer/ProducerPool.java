@@ -23,10 +23,10 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
 import org.nuxeo.lib.stream.pattern.producer.internals.ProducerRunner;
-import org.nuxeo.lib.stream.log.LogManager;
 
 /**
  * A Pool of ProducerRunner

@@ -47,7 +47,7 @@ public class TestDocumentImportChronicle extends TestDocumentImport {
     @Override
     public LogManager getManager() throws Exception {
         if (basePath == null) {
-            basePath = folder.newFolder("mqueue").toPath();
+            basePath = folder.newFolder("log").toPath();
         }
         return new ChronicleLogManager(basePath);
     }

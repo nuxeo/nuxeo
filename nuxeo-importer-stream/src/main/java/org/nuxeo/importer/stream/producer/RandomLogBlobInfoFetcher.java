@@ -33,12 +33,15 @@ import org.nuxeo.lib.stream.log.LogTailer;
  * @since 9.3
  */
 public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
-    protected static final int READ_DELAY_MS = 10;
+    protected static final int READ_DELAY_MS = 100;
 
     protected final LogTailer<BlobInfoMessage> tailer;
 
+    protected boolean first;
+
     public RandomLogBlobInfoFetcher(LogTailer<BlobInfoMessage> blobInfoTailer) {
         this.tailer = blobInfoTailer;
+        this.first = true;
     }
 
     @Override
@@ -51,15 +54,20 @@ public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
             throw new RuntimeException(e);
         }
         if (record == null) {
+            if (first) {
+                // there is no record in this partition, no need to loop
+                return null;
+            }
             // start again from beginning
             tailer.toStart();
             return get(builder);
         }
+        first = false;
         return record.message();
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         tailer.close();
     }
 }

@@ -75,7 +75,7 @@ public abstract class TestPatternBoundedQueuing {
     @Test
     public void producersThenConsumers() throws Exception {
         final short NB_PRODUCERS = 15;
-        final int NB_DOCUMENTS = 1 * 1000;
+        final int NB_DOCUMENTS = 1_000;
 
         // 1. Create a log and run the producers
         manager.createIfNotExists(LOG_NAME, LOG_SIZE);

@@ -21,6 +21,8 @@ package org.nuxeo.importer.stream.message;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.nuxeo.lib.stream.pattern.Message;
 
@@ -142,8 +144,17 @@ public class BlobMessage implements Message {
         public FileMessageBuilder(String path) {
             super(null);
             this.setPath(path);
+            this.filename = Paths.get(path).getFileName().toString();
+            this.mimetype = guessMimeType();
         }
 
+        protected String guessMimeType() {
+            try {
+                return Files.probeContentType(Paths.get(path));
+            } catch (IOException e) {
+                return "application/octet-stream";
+            }
+        }
     }
 
     @Override

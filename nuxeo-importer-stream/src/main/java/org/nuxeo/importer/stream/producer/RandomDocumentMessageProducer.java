@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 import org.nuxeo.importer.stream.message.DocumentMessage;
@@ -49,7 +50,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
 
     protected int maxFoldersPerFolder = 50;
 
-    protected int maxDocumentsPerFolder = 500;
+    protected int maxDocumentsPerFolder = 10000;
 
     protected int blobSizeKB = 0;
 
@@ -63,23 +64,23 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
 
     protected static RandomTextGenerator gen;
 
-    static protected final String[] DC_NATURE = { "article", "acknowledgement", "assessment", "application", "order",
+    protected static final String[] DC_NATURE = { "article", "acknowledgement", "assessment", "application", "order",
             "contract", "quotation", "fax", "worksheet", "letter", "memo", "note", "notification", "procedure",
             "report", "internshipReport", "pressReview" };
 
-    static protected final String[] DC_SUBJECTS = { "art/architecture", "art/comics", "art/cinema", "art/culture",
+    protected static final String[] DC_SUBJECTS = { "art/architecture", "art/comics", "art/cinema", "art/culture",
             "art/danse", "art/music", "sciences/astronomy", "sciences/biology", "sciences/chemistry", "sciences/math",
             "sciences/physic", "society/ecology", "daily life/gastronomy", "daily life/gardening", "daily life/sport",
             "technology/it" };
 
-    static protected final String[] DC_RIGHTS = { "OpenContentL", "CC-BY-NC", "CC-BY-ND", "FreeArt", "ODbi", "GNUGPL",
+    protected static final String[] DC_RIGHTS = { "OpenContentL", "CC-BY-NC", "CC-BY-ND", "FreeArt", "ODbi", "GNUGPL",
             "FreeBSD", "CC0" };
 
-    static protected final String[] DC_LANGUAGE = { "IT", "DE", "FR", "US", "EN" };
+    protected static final String[] DC_LANGUAGE = { "IT", "DE", "FR", "US", "EN" };
 
-    static protected final String[] DC_SOURCE = { "internal", "external", "unknown" };
+    protected static final String[] DC_SOURCE = { "internal", "external", "unknown" };
 
-    static protected final String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
+    protected static final String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
             "oceania/Tonga", "africa/Mali", "asia/Japan", "north-america/United_States_of_America" };
 
     protected int foldersInCurrentFolderLimit;
@@ -149,7 +150,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         if (countFolderAsDocument) {
             return (documentCount + folderCount) < nbDocuments;
         }
-        return documentCount <= nbDocuments;
+        return documentCount < nbDocuments;
     }
 
     @Override
@@ -230,7 +231,13 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         DocumentMessage.Builder builder = DocumentMessage.builder(type, parentPath, name).setProperties(props);
         if (withBlob) {
             if (blobInfoFetcher != null) {
-                builder.setBlobInfo(blobInfoFetcher.get(builder));
+                BlobInfo blobInfo = blobInfoFetcher.get(builder);
+                if (blobInfo != null) {
+                    builder.setBlobInfo(blobInfo);
+                    if (blobInfo.mimeType != null) {
+                        builder.setType(getDocumentTypeForMimeType(blobInfo.mimeType));
+                    }
+                }
             } else {
                 builder.setBlob(getRandomBlob());
             }
@@ -238,16 +245,21 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         return builder.build();
     }
 
+    protected String getDocumentTypeForMimeType(String mimeType) {
+        if (mimeType.startsWith("image")) {
+            return "Picture";
+        }
+        if (mimeType.startsWith("video")) {
+            return "Video";
+        }
+        return "File";
+    }
+
     protected DocumentMessage getRandomNodeWithPrefix(String prefix, String type, String parentPath) {
         String title = getTitle();
         String name = prefix + getName(title);
         HashMap<String, Serializable> props = getRandomProperties(title);
         DocumentMessage.Builder builder = DocumentMessage.builder(type, parentPath, name).setProperties(props);
-        if (blobInfoFetcher != null) {
-            builder.setBlobInfo(blobInfoFetcher.get(builder));
-        } else {
-            builder.setBlob(getRandomBlob());
-        }
         return builder.build();
     }
 

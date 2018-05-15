@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo MQueues Contribs Test
+Bundle-Name: Nuxeo Stream Importer Test
 Bundle-SymbolicName: org.nuxeo.importer.stream.test;singleton:=true
 Bundle-Vendor: Nuxeo

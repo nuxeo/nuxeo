@@ -53,22 +53,22 @@ public class KeyValueMessage implements Message {
         this.forceBatch = forceBatch;
     }
 
-    static public KeyValueMessage of(String key, byte[] value) {
+    public static KeyValueMessage of(String key, byte[] value) {
         return new KeyValueMessage(key, value, false, false);
     }
 
-    static public KeyValueMessage of(String key) {
+    public static KeyValueMessage of(String key) {
         return new KeyValueMessage(key, null, false, false);
     }
 
     /**
      * A message that force the batch.
      */
-    static public KeyValueMessage ofForceBatch(String key, byte[] value) {
+    public static KeyValueMessage ofForceBatch(String key, byte[] value) {
         return new KeyValueMessage(key, value, false, true);
     }
 
-    static public KeyValueMessage ofForceBatch(String key) {
+    public static KeyValueMessage ofForceBatch(String key) {
         return new KeyValueMessage(key, null, false, true);
     }
 

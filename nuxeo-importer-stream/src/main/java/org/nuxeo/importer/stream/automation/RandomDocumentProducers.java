@@ -20,8 +20,6 @@ package org.nuxeo.importer.stream.automation;
 
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
-import java.util.Collection;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -33,8 +31,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.importer.stream.producer.RandomDocumentMessageProducerFactory;
 import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogPartition;
-import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
@@ -43,12 +39,13 @@ import org.nuxeo.runtime.stream.StreamService;
  * @since 9.1
  */
 @Operation(id = RandomDocumentProducers.ID, category = Constants.CAT_SERVICES, label = "Produces random blobs", since = "9.1", description = "Produces random blobs in a Log.")
-public class RandomDocumentProducers implements RebalanceListener {
+public class RandomDocumentProducers {
     private static final Log log = LogFactory.getLog(RandomDocumentProducers.class);
 
     public static final String ID = "StreamImporter.runRandomDocumentProducers";
 
     public static final String DEFAULT_DOC_LOG_NAME = "import-doc";
+
 
     @Context
     protected OperationContext ctx;
@@ -77,6 +74,9 @@ public class RandomDocumentProducers implements RebalanceListener {
     @Param(name = "logConfig", required = false)
     protected String logConfig;
 
+    @Param(name = "countFolderAsDocument", required = false)
+    protected Boolean countFolderAsDocument = true;
+
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
@@ -86,13 +86,11 @@ public class RandomDocumentProducers implements RebalanceListener {
             manager.createIfNotExists(getLogName(), getLogSize());
             ProducerPool<DocumentMessage> producers;
             if (logBlobInfoName != null) {
-                producers = new ProducerPool<>(getLogName(), manager,
-                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName),
-                        nbThreads.shortValue());
+                producers = new ProducerPool<>(getLogName(), manager, new RandomDocumentMessageProducerFactory(
+                        nbDocuments, lang, manager, logBlobInfoName, countFolderAsDocument), nbThreads.shortValue());
             } else {
-                producers = new ProducerPool<>(getLogName(), manager,
-                        new RandomDocumentMessageProducerFactory(nbDocuments, lang, avgBlobSizeKB),
-                        nbThreads.shortValue());
+                producers = new ProducerPool<>(getLogName(), manager, new RandomDocumentMessageProducerFactory(
+                        nbDocuments, lang, avgBlobSizeKB, countFolderAsDocument), nbThreads.shortValue());
             }
             producers.start().get();
             producers.close();
@@ -120,16 +118,6 @@ public class RandomDocumentProducers implements RebalanceListener {
             return logSize;
         }
         return nbThreads;
-    }
-
-    @Override
-    public void onPartitionsRevoked(Collection<LogPartition> partitions) {
-
-    }
-
-    @Override
-    public void onPartitionsAssigned(Collection<LogPartition> partitions) {
-
     }
 
 }
