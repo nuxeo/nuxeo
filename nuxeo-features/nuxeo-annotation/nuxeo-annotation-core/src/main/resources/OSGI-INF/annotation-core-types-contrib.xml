@@ -10,6 +10,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
     <doctype name="Annotation" extends="Document">
+      <schema name="dublincore"/>
       <schema name="annotation"/>
       <facet name="HiddenInNavigation"/>
     </doctype>
