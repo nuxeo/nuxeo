@@ -21,27 +21,35 @@
 package org.nuxeo.ecm.annotation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOC_TYPE;
 
-import java.util.Calendar;
+import java.util.List;
 
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @since 10.1
@@ -53,10 +61,30 @@ import com.google.inject.Inject;
 public class TestAnnotationService {
 
     @Inject
-    protected CoreSession session;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected AnnotationService annotationService;
+
+    protected CloseableCoreSession session;
+
+    @Before
+    public void setup() {
+        // open a session as a regular user
+        session = coreFeature.openCoreSession("jdoe");
+        // give permission to him
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE("jdoe", SecurityConstants.READ));
+        acl.add(new ACE("jdoe", SecurityConstants.WRITE));
+        ACPImpl acp = new ACPImpl();
+        acp.addACL(acl);
+        coreFeature.getCoreSession().setACP(new PathRef("/"), acp, true);
+    }
+
+    @After
+    public void tearDown() {
+        session.close();
+    }
 
     @Test
     public void testCreateAnnotation() {
@@ -65,22 +93,18 @@ public class TestAnnotationService {
         docToAnnotate = session.createDocument(docToAnnotate);
 
         String annotationId = "foo";
+        String docIdToAnnotate = docToAnnotate.getId();
         String xpathToAnnotate = "files:files/0/file";
-        Calendar annotationDate = Calendar.getInstance();
-        long annotationPage = 42L;
 
-        DocumentModel annotationModel = session.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
-        annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
-        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
-        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docToAnnotate.getId());
-
-        Annotation annotation = new AnnotationImpl(annotationModel);
-
+        Annotation annotation = new AnnotationImpl();
+        annotation.setId(annotationId);
+        annotation.setDocumentId(docIdToAnnotate);
+        annotation.setXpath(xpathToAnnotate);
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
         assertEquals(annotationId, annotation.getId());
-        assertEquals(docToAnnotate.getId(), annotation.getDocumentId());
+        assertEquals(docIdToAnnotate, annotation.getDocumentId());
         assertEquals(xpathToAnnotate, annotation.getXpath());
 
     }
@@ -89,25 +113,18 @@ public class TestAnnotationService {
     public void testGetAnnotation() {
 
         DocumentModel docToAnnotate = session.createDocumentModel("/", "testDoc", "File");
-        DocumentModel annotationModel = session.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
+        docToAnnotate = session.createDocument(docToAnnotate);
 
         String annotationId = "foo";
+        String docIdToAnnotate = docToAnnotate.getId();
         String xpathToAnnotate = "files:files/0/file";
-        String annotationLastModifier = "bob";
-        long annotationPage = 13L;
-        String annotationPosition = "0,0,0,0";
 
-        annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
-        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
-        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docToAnnotate.getId());
+        createAnnotationAsDocumentModel(annotationId, docIdToAnnotate, xpathToAnnotate);
 
-        annotationModel = session.createDocument(annotationModel);
-        session.save();
+        Annotation annotation = annotationService.getAnnotation(session, annotationId);
 
-        Annotation annotation = annotationService.getAnnotation(session,
-                (String) annotationModel.getPropertyValue(ANNOTATION_ID_PROPERTY));
-
-        assertEquals(docToAnnotate.getId(), annotation.getDocumentId());
+        assertNotNull("Unable to get the annotation", annotation);
+        assertEquals(docIdToAnnotate, annotation.getDocumentId());
 
     }
 
@@ -117,24 +134,23 @@ public class TestAnnotationService {
         DocumentModel docToAnnotate = session.createDocumentModel("/", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
+        String annotationId = "foo";
         String xpathToAnnotate = "files:files/0/file";
-        String annotationPosition = "0,0,0,0";
-        long annotationPage = 42L;
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setId("foo");
+        annotation.setId(annotationId);
         annotation.setDocumentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
-
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
-        long newAnnotationPage = 35L;
-        String annotationSubject = "testSubject";
+        assertNull(annotation.getEntity());
 
+        annotation.setEntity("Entity");
         annotationService.updateAnnotation(session, annotation);
         annotation = annotationService.getAnnotation(session, annotation.getId());
 
+        assertEquals("Entity", annotation.getEntity());
     }
 
     @Test
@@ -143,28 +159,29 @@ public class TestAnnotationService {
         DocumentModel docToAnnotate = session.createDocumentModel("/", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
-        DocumentModel annotationModel = session.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
-
         String annotationId = "foo";
         String xpathToAnnotate = "files:files/0/file";
-        annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
-        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
-        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docToAnnotate.getId());
-        annotationModel = session.createDocument(annotationModel);
+
+        Annotation annotation = new AnnotationImpl();
+        annotation.setId(annotationId);
+        annotation.setDocumentId(docToAnnotate.getId());
+        annotation.setXpath(xpathToAnnotate);
+        annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
-        Annotation annotation = new AnnotationImpl(annotationModel);
-
-        assertTrue(session.exists(new IdRef(annotationModel.getId())));
+        annotation = annotationService.getAnnotation(session, annotationId);
+        assertNotNull(annotation);
 
         try {
             annotationService.deleteAnnotation(session, "toto");
             fail("Deleting an unknown annotation should have failed");
         } catch (IllegalArgumentException e) {
             // ok
-            annotationService.deleteAnnotation(session, annotation.getId());
-            assertFalse(session.exists(new IdRef(annotationModel.getId())));
+            assertEquals("The annotation toto does not exist.", e.getMessage());
         }
+        annotationService.deleteAnnotation(session, annotation.getId());
+        annotation = annotationService.getAnnotation(session, annotationId);
+        assertNull(annotation);
 
     }
 
@@ -176,7 +193,8 @@ public class TestAnnotationService {
 
         String xpathToAnnotate = "files:files/0/file";
 
-        assertEquals(0, annotationService.getAnnotations(session, docToAnnotate.getId(), xpathToAnnotate).size());
+        List<Annotation> annotations = annotationService.getAnnotations(session, docToAnnotate.getId(), xpathToAnnotate);
+        assertTrue(annotations.isEmpty());
 
         DocumentModel docToAnnotate1 = session.createDocumentModel("/", "testDoc1", "File");
         docToAnnotate1 = session.createDocument(docToAnnotate1);
@@ -197,11 +215,22 @@ public class TestAnnotationService {
             annotationService.createAnnotation(session, annotation2);
         }
         session.save();
-        assertEquals(nbAnnotations1,
-                annotationService.getAnnotations(session, docToAnnotate1.getId(), xpathToAnnotate).size());
-        assertEquals(nbAnnotations2,
-                annotationService.getAnnotations(session, docToAnnotate2.getId(), xpathToAnnotate).size());
+        assertEquals(nbAnnotations1, annotationService.getAnnotations(session, docToAnnotate1.getId(), xpathToAnnotate)
+                                                      .size());
+        assertEquals(nbAnnotations2, annotationService.getAnnotations(session, docToAnnotate2.getId(), xpathToAnnotate)
+                                                      .size());
 
+    }
+
+    protected void createAnnotationAsDocumentModel(String annotationId, String docIdToAnnotate, String xpathToAnnotate) {
+        // create an annotation outside of service
+        CoreSession adminSession = coreFeature.getCoreSession();
+        DocumentModel annotationModel = adminSession.createDocumentModel(null, "testName", ANNOTATION_DOC_TYPE);
+        annotationModel.setPropertyValue(ANNOTATION_ID_PROPERTY, annotationId);
+        annotationModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpathToAnnotate);
+        annotationModel.setPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY, docIdToAnnotate);
+        adminSession.createDocument(annotationModel);
+        adminSession.save();
     }
 
 }
