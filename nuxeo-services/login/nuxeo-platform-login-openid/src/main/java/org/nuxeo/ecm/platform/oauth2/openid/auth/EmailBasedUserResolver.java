@@ -56,9 +56,7 @@ public class EmailBasedUserResolver extends UserResolver {
             Map<String, Serializable> query = new HashMap<String, Serializable>();
             query.put(userManager.getUserEmailField(), userInfo.getEmail());
 
-            DocumentModelList users = Framework.doPrivileged(() -> {
-                return userManager.searchUsers(query, null);
-            });
+            DocumentModelList users = Framework.doPrivileged(() -> userManager.searchUsers(query, null));
 
 
             if (users.isEmpty()) {
@@ -80,9 +78,7 @@ public class EmailBasedUserResolver extends UserResolver {
             UserManager userManager = Framework.getService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
 
-            Framework.doPrivileged(() -> {
-                userManager.updateUser(user);
-            });
+            Framework.doPrivileged(() -> userManager.updateUser(user));
         } catch (NuxeoException e) {
             log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
             return null;
