@@ -154,7 +154,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     }
 
     public String getName() {
-        return oauth2Provider.getServiceName();
+        return oauth2Provider != null ? oauth2Provider.getServiceName() : null;
     }
 
     public String getIcon() {

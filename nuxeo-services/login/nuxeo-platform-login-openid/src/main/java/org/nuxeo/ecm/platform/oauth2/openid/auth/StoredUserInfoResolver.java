@@ -69,7 +69,7 @@ public class StoredUserInfoResolver extends UserResolver {
         try {
             UserManager userManager = Framework.getService(UserManager.class);
             String userId = (String) user.getPropertyValue(userManager.getUserIdField());
-            getUserInfoStore().storeUserInfo(userId, userInfo);
+            Framework.doPrivileged(() -> getUserInfoStore().storeUserInfo(userId, userInfo));
         } catch (NuxeoException e) {
             log.error("Error while updating user info for user " + userInfo.getEmail(), e);
             return null;
