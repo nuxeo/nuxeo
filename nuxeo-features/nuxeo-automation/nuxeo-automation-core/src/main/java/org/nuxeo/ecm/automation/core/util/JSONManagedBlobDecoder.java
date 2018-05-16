@@ -21,6 +21,8 @@ package org.nuxeo.ecm.automation.core.util;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -47,15 +49,18 @@ public class JSONManagedBlobDecoder implements JSONBlobDecoder {
             return null;
         }
 
+        if (!blobProvider.hasCreateFromKeyPermission()) {
+            throw new NuxeoException("The current user does not have the rights to fetch the blob",
+                    HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
         try {
-            String key = providerId + ":" + jsonObject.get("key").textValue();
             BlobInfo blobInfo = new BlobInfo();
-            blobInfo.key = key;
+            blobInfo.key = providerId + ":" + jsonObject.get("key").textValue();
             return blobProvider.readBlob(blobInfo);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
-
     }
 
 }

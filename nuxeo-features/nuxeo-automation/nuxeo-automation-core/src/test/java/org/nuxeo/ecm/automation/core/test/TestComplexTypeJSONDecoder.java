@@ -20,15 +20,29 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -39,31 +53,128 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider.xml")
 public class TestComplexTypeJSONDecoder {
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @Inject
+    protected ClientLoginFeature loginFeature;
+
+    @Inject
+    protected UserManager userManager;
+
+    @Before
+    public void setUp() throws Exception {
+        loginFeature.login("Administrator");
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        loginFeature.logout();
+    }
+
     @Test
     public void testDecodeManagedBlob() throws Exception {
-
-        String emptyKeyJson = "{\"providerId\":\"testBlobProvider\"}";
-        ObjectMapper om = new ObjectMapper();
-
-        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) om.readTree(emptyKeyJson));
-        assertNull(blob);
-
-        String unknownProviderJson = "{\"providerId\":\"fakeBlobProvider\", \"key\":\"testKey\"}";
-        blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) om.readTree(unknownProviderJson));
-        assertNull(blob);
-
         String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
-        blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) om.readTree(json));
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertTrue(blob instanceof ManagedBlob);
         ManagedBlob managedBlob = (ManagedBlob) blob;
         assertEquals("testBlobProvider", managedBlob.getProviderId());
         assertEquals("testBlobProvider:testKey", managedBlob.getKey());
 
+    }
+
+    @Test
+    public void testDecodeManagedBlobEmptyKey() throws Exception {
+        String emptyKeyJson = "{\"providerId\":\"testBlobProvider\"}";
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(emptyKeyJson));
+        assertNull(blob);
+    }
+
+    @Test
+    public void testDecodeManagedBlobUnknownProvider() throws Exception {
+        String unknownProviderJson = "{\"providerId\":\"fakeBlobProvider\", \"key\":\"testKey\"}";
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(unknownProviderJson));
+        assertNull(blob);
+    }
+
+    @Test
+    public void testDecodeManagedBlobWithUnauthorizedAccess() throws Exception {
+        String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
+        loginFeature.login("dummyName");
+        try {
+            Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            fail("The blob should not have been fetched");
+        } catch (NuxeoException e) {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
+        } finally {
+            loginFeature.logout();
+        }
+    }
+
+    @Test
+    public void testDecodeManagedBlobWithAuthorizedUsers() throws Exception {
+
+        String testUser1 = "testUser1";
+        String testUser2 = "testUser2";
+        String testUser3 = "testUser3";
+        String testUser4 = "testUser4";
+        String testGroup = "testGroup";
+
+        createUser(testUser1);
+        createUser(testUser2);
+        createUser(testUser3);
+        createUser(testUser4);
+        createGroup(testGroup);
+
+        NuxeoPrincipal principal = userManager.getPrincipal(testUser3);
+        principal.setGroups(Arrays.asList(testGroup));
+        userManager.updateUser(principal.getModel());
+
+        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+        loginFeature.login(testUser1);
+        Blob blob;
+        try {
+            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            assertNotNull(blob);
+
+            loginFeature.logout();
+            loginFeature.login(testUser2);
+            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            assertNotNull(blob);
+
+            loginFeature.logout();
+            loginFeature.login(testUser3);
+            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            assertNotNull(blob);
+
+            loginFeature.logout();
+            loginFeature.login(testUser4);
+            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+
+        } catch (NuxeoException e) {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
+
+        } finally {
+            loginFeature.logout();
+        }
+    }
+
+    protected void createUser(String userId) {
+        DocumentModel userModel = userManager.getBareUserModel();
+        userModel.setProperty("user", "username", userId);
+        userModel.setProperty("user", "password", userId);
+        userManager.createUser(userModel);
+    }
+
+    protected void createGroup(String groupId) {
+        DocumentModel groupModel = userManager.getBareGroupModel();
+        groupModel.setProperty("group", "groupname", groupId);
+        userManager.createGroup(groupModel);
     }
 
 }

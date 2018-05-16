@@ -4,5 +4,12 @@
     <blobprovider name="testBlobProvider">
       <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
     </blobprovider>
+
+    <blobprovider name="testBlobProviderWithAuthorizedUsers">
+      <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
+      <property name="createFromKey.users">testUser1,testUser2</property>
+      <property name="createFromKey.groups">testGroup</property>
+    </blobprovider>
+
   </extension>
 </component>

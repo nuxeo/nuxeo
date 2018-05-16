@@ -294,4 +294,9 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         }
     }
 
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
 }

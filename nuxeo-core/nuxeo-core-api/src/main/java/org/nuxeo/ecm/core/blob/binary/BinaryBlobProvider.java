@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -116,6 +117,11 @@ public class BinaryBlobProvider implements BlobProvider {
     public String writeBlob(Blob blob) throws IOException {
         // writes the blob and return its digest
         return binaryManager.getBinary(blob).getDigest();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return Collections.emptyMap();
     }
 
 }
