@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth2.openid.directory">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="openIdUserInfos" extends="template-directory">
+      <schema>openIdUserInfo</schema>
+      <idField>id</idField>
+      <types>
+        <type>system</type>
+      </types>
+    </directory>
+
+  </extension>
+
+</component>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth2.openid.provider.test" version="1.0">
+
+  <requires>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry
+  </requires>
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry" point="providers">
+    <provider>
+      <name>provider1</name>
+      <clientId>clientID</clientId>
+      <clientSecret>superSecret</clientSecret>
+    </provider>
+
+    <provider>
+      <name>provider2</name>
+      <userResolverClass>org.nuxeo.ecm.platform.oauth2.openid.auth.StoredUserInfoResolver</userResolverClass>
+      <clientId>clientID</clientId>
+      <clientSecret>superSecret</clientSecret>
+    </provider>
+
+  </extension>
+
+</component>
