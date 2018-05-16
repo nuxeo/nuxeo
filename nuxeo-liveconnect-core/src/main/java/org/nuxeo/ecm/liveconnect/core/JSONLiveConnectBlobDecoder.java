@@ -22,6 +22,7 @@ package org.nuxeo.ecm.liveconnect.core;
 import java.io.IOException;
 
 import org.nuxeo.ecm.automation.core.util.JSONBlobDecoder;
+import org.nuxeo.ecm.automation.core.util.JSONManagedBlobDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -32,7 +33,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 8.4
+ * @deprecated since 10.2. Use {@link JSONManagedBlobDecoder} instead
  */
+@Deprecated
 public class JSONLiveConnectBlobDecoder implements JSONBlobDecoder {
 
     @Override
