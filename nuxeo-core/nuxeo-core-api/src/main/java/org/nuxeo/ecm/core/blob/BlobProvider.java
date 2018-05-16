@@ -209,4 +209,20 @@ public interface BlobProvider {
         return false;
     }
 
+    /**
+     * Returns the properties of the blob provider.
+     * 
+     * @since 10.2
+     */
+    Map<String, String> getProperties();
+
+    /**
+     * Checks if current user has the rights to create blobs in the blob provider using a key.
+     * 
+     * @since 10.2
+     */
+    default boolean hasCreateFromKeyPermission() {
+        return false;
+    }
+
 }

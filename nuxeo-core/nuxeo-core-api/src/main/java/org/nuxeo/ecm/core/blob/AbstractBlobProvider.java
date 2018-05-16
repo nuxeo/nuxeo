@@ -18,11 +18,19 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_GROUPS;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_USERS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 
 /**
  * Abstract implementation for {@link BlobProvider} providing common logic.
@@ -57,6 +65,31 @@ public abstract class AbstractBlobProvider implements BlobProvider {
     @Override
     public boolean isTransient() {
         return Boolean.parseBoolean(properties.get(TRANSIENT));
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public boolean hasCreateFromKeyPermission() {
+        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        if (principal == null) {
+            return false;
+        }
+
+        String createFromKeyUsers = properties.getOrDefault(CREATE_FROM_KEY_USERS, EMPTY);
+        String createFromKeyGroups = properties.getOrDefault(CREATE_FROM_KEY_GROUPS, EMPTY);
+
+        if ("*".equals(createFromKeyUsers) || "*".equals(createFromKeyGroups)) {
+            return true;
+        }
+        List<String> authorizedUsers = Arrays.asList(createFromKeyUsers.split(","));
+        List<String> authorizedGroups = Arrays.asList(createFromKeyGroups.split(","));
+
+        return principal.isAdministrator() || authorizedUsers.contains(principal.getName())
+                || authorizedGroups.stream().anyMatch(principal::isMemberOf);
     }
 
 }

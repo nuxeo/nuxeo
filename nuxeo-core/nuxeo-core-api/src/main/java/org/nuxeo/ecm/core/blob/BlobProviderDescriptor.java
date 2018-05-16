@@ -41,6 +41,20 @@ public class BlobProviderDescriptor {
      */
     public static final String TRANSIENT = "transient";
 
+    /**
+     * A comma-separated list of users that can create blobs in this blob provider based only on a key.
+     * 
+     * @since 10.2
+     */
+    public static final String CREATE_FROM_KEY_USERS = "createFromKey.users";
+
+    /**
+     * A comma-separated list of groups that can create blobs in this blob provider based only on a key.
+     *
+     * @since 10.2
+     */
+    public static final String CREATE_FROM_KEY_GROUPS = "createFromKey.groups";
+
     @XNode("@name")
     public String name = "";
 
