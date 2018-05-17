@@ -21,13 +21,10 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -36,7 +33,7 @@ import javax.xml.ws.WebServiceException;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
-import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Binder;
@@ -52,6 +49,7 @@ import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 /**
  * Feature that starts a Web Services session.
  */
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/servletcontainer-webservices-config.xml")
 public class CmisFeatureSessionWebServices extends CmisFeatureSessionHttp {
 
     public static final String JAXWS_XML = "/sun-jaxws.xml";
@@ -74,8 +72,8 @@ public class CmisFeatureSessionWebServices extends CmisFeatureSessionHttp {
     }
 
     @Override
-    protected void tearDownServer() throws Exception {
-        super.tearDownServer();
+    public void afterRun(FeaturesRunner runner) throws Exception {
+        super.afterRun(runner);
         System.clearProperty(LoginProvider.class.getName());
     }
 
@@ -93,21 +91,6 @@ public class CmisFeatureSessionWebServices extends CmisFeatureSessionHttp {
         params.put(SessionParameter.WEBSERVICES_MULTIFILING_SERVICE, uri + "MultiFilingService?wsdl");
         params.put(SessionParameter.WEBSERVICES_POLICY_SERVICE, uri + "PolicyService?wsdl");
         params.put(SessionParameter.WEBSERVICES_ACL_SERVICE, uri + "ACLService?wsdl");
-    }
-
-    @Override
-    protected Servlet getServlet() {
-        return new WSServlet();
-    }
-
-    @Override
-    protected List<FilterAndName> getFilters() {
-        return Collections.emptyList(); // XXX TODO
-    }
-
-    @Override
-    protected EventListener[] getEventListeners() {
-        return new EventListener[] { new NuxeoCmisContextListener(), new LocalWSServletContextListener() };
     }
 
     /**

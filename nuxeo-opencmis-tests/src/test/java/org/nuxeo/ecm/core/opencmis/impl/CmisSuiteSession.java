@@ -121,7 +121,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -152,9 +151,6 @@ public class CmisSuiteSession {
     public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
 
     public static final String NOT_NULL = "CONSTRAINT_NOT_NULL";
-
-    @Inject
-    protected HotDeployer deployer;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -1016,15 +1012,13 @@ public class CmisSuiteSession {
     }
 
     @Test
+    // deploy the LastModifiedServiceWrapper
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-servicefactorymanager-contrib.xml")
     public void testLastModifiedServiceWrapper() throws Exception {
         if (!(isAtomPub || isBrowser)) {
             // test only makes sense in the context of REST HTTP
             return;
         }
-
-        // deploy the LastModifiedServiceWrapper
-        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-servicefactorymanager-contrib.xml");
-        //session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         GregorianCalendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
@@ -1234,11 +1228,10 @@ public class CmisSuiteSession {
     }
 
     @Test
+    // listener that will cause a RecoverableClientException to be thrown
+    // when a doc whose name starts with "throw" is created
+    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml")
     public void testRecoverableException() throws Exception {
-        // listener that will cause a RecoverableClientException to be thrown
-        // when a doc whose name starts with "throw" is created
-        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml");
-
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "throw_foo");

@@ -18,15 +18,11 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import java.util.EventListener;
 import java.util.Map;
-
-import javax.servlet.Servlet;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet;
-import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Binder;
@@ -34,6 +30,7 @@ import com.google.inject.Binder;
 /**
  * Feature that starts an AtomPub session.
  */
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/servletcontainer-atompub-config.xml")
 public class CmisFeatureSessionAtomPub extends CmisFeatureSessionHttp {
 
     @Override
@@ -46,16 +43,6 @@ public class CmisFeatureSessionAtomPub extends CmisFeatureSessionHttp {
     protected void addParams(Map<String, String> params) {
         params.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
         params.put(SessionParameter.ATOMPUB_URL, serverURI.toString());
-    }
-
-    @Override
-    protected Servlet getServlet() {
-        return new NuxeoCmisAtomPubServlet();
-    }
-
-    @Override
-    protected EventListener[] getEventListeners() {
-        return new EventListener[] { new NuxeoCmisContextListener() };
     }
 
 }

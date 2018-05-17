@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.servletcontainer-base">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="cmis" transactional="true">
+      <pattern>.*</pattern>
+    </filterConfig>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp context="/context">
+      <root>web/root.war</root>
+    </webapp>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="filter">
+    <filter context="/context">
+      <filter-name>NuxeoRequestController</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+    <filter context="/context">
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.core.opencmis.impl.TrustingNuxeoAuthFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+  </extension>
+
+</component>
