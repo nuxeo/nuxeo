@@ -53,7 +53,7 @@ node('slacoin') {
                 sh 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipITs -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
-        return sh(returnStdout: true, script: 'cd $WORKSPACE; echo -n nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
+        return sh(returnStdout: true, script: 'echo -n $WORKSPACE/nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
     }
 
     stage('postgresql') {
@@ -91,7 +91,7 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
             stage(name) {
                 ws("${WORKSPACE}-${name}") {
                     unstash 'ws'
-                    zipopt = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
+                    zipopt = zipfile != "" ? "-Dzip.file=${zipfile}" : ""
                     mvncmd="mvn ${zipopt} -nsu -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
                     echo mvncmd
                     timeout(time: 2, unit: 'HOURS') {
