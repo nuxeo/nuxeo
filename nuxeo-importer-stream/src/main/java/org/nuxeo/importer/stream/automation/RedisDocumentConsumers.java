@@ -21,11 +21,13 @@ package org.nuxeo.importer.stream.automation;
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -78,7 +80,7 @@ public class RedisDocumentConsumers {
     protected Integer waitMessageTimeoutSeconds = 20;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
         ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
                                                       .name(ID)
@@ -95,8 +97,13 @@ public class RedisDocumentConsumers {
         try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(getLogName(), manager,
                 new RedisDocumentMessageConsumerFactory(redisPrefix), consumerPolicy)) {
             consumers.start().get();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("fail", e);
+            throw new OperationException(e);
         }
     }
 

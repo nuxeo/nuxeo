@@ -21,11 +21,13 @@ package org.nuxeo.importer.stream.automation;
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -101,7 +103,7 @@ public class DocumentConsumers {
     protected Integer waitMessageTimeoutSeconds = 20;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
         repositoryName = getRepositoryName();
         ConsumerPolicy consumerPolicy = DocumentConsumerPolicy.builder()
@@ -131,8 +133,13 @@ public class DocumentConsumers {
         try (DocumentConsumerPool<DocumentMessage> consumers = new DocumentConsumerPool<>(getLogName(), manager,
                 new DocumentMessageConsumerFactory(repositoryName, rootFolder), consumerPolicy)) {
             consumers.start().get();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("Operation fails", e);
+            throw new OperationException(e);
         }
     }
 

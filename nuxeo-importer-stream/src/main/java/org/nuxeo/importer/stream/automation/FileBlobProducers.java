@@ -22,10 +22,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -77,7 +79,7 @@ public class FileBlobProducers {
     protected String basePath;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         checkAccess(ctx);
         StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager(getLogConfig());
@@ -88,8 +90,13 @@ public class FileBlobProducers {
                     nbThreads.shortValue())) {
                 producers.start().get();
             }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("Operation fails", e);
+            throw new OperationException(e);
         }
     }
 

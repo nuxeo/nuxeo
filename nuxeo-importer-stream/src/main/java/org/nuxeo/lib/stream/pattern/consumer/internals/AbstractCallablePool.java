@@ -131,7 +131,7 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         supplyThreadPool.shutdownNow();
         threadPool.shutdownNow();
     }

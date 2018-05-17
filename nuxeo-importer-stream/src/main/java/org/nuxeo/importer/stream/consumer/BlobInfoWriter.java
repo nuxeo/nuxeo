@@ -30,4 +30,6 @@ public interface BlobInfoWriter extends AutoCloseable {
 
     void save(DocumentMessage.Builder builder, BlobInfo info);
 
+    @Override
+    void close();
 }
