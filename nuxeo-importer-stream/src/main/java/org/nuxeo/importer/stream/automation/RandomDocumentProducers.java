@@ -20,9 +20,12 @@ package org.nuxeo.importer.stream.automation;
 
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -45,7 +48,6 @@ public class RandomDocumentProducers {
     public static final String ID = "StreamImporter.runRandomDocumentProducers";
 
     public static final String DEFAULT_DOC_LOG_NAME = "import-doc";
-
 
     @Context
     protected OperationContext ctx;
@@ -78,24 +80,28 @@ public class RandomDocumentProducers {
     protected Boolean countFolderAsDocument = true;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
         StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager(getLogConfig());
-        try {
-            manager.createIfNotExists(getLogName(), getLogSize());
-            ProducerPool<DocumentMessage> producers;
-            if (logBlobInfoName != null) {
-                producers = new ProducerPool<>(getLogName(), manager, new RandomDocumentMessageProducerFactory(
-                        nbDocuments, lang, manager, logBlobInfoName, countFolderAsDocument), nbThreads.shortValue());
-            } else {
-                producers = new ProducerPool<>(getLogName(), manager, new RandomDocumentMessageProducerFactory(
-                        nbDocuments, lang, avgBlobSizeKB, countFolderAsDocument), nbThreads.shortValue());
-            }
+        manager.createIfNotExists(getLogName(), getLogSize());
+        RandomDocumentMessageProducerFactory factory;
+        if (logBlobInfoName != null) {
+            factory = new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName,
+                    countFolderAsDocument);
+        } else {
+            factory = new RandomDocumentMessageProducerFactory(nbDocuments, lang, avgBlobSizeKB, countFolderAsDocument);
+        }
+        try (ProducerPool<DocumentMessage> producers = new ProducerPool<>(getLogName(), manager, factory,
+                nbThreads.shortValue())) {
             producers.start().get();
-            producers.close();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("Operation fails", e);
+            throw new OperationException(e);
         }
     }
 

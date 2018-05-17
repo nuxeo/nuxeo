@@ -21,11 +21,13 @@ package org.nuxeo.importer.stream.automation;
 import static org.nuxeo.importer.stream.automation.RandomBlobProducers.DEFAULT_BLOB_LOG_NAME;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -97,7 +99,7 @@ public class BlobConsumers {
     protected String persistBlobPath;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
         ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
                                                       .name(ID)
@@ -121,8 +123,13 @@ public class BlobConsumers {
                     new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark, persistBlobPath),
                     consumerPolicy);
             consumers.start().get();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("Operation fails", e);
+            throw new OperationException(e);
         }
     }
 

@@ -137,7 +137,7 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         super.close();
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);

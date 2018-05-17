@@ -20,9 +20,12 @@ package org.nuxeo.importer.stream.automation;
 
 import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -75,19 +78,22 @@ public class RandomBlobProducers {
     protected String blobMarker;
 
     @OperationMethod
-    public void run() {
+    public void run() throws OperationException {
         checkAccess(ctx);
         StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager(getLogConfig());
-        try {
-            manager.createIfNotExists(getLogName(), getLogSize());
-            try (ProducerPool<BlobMessage> producers = new ProducerPool<>(getLogName(), manager,
-                    new RandomStringBlobMessageProducerFactory(nbBlobs, lang, avgBlobSizeKB, blobMarker),
-                    nbThreads.shortValue())) {
-                producers.start().get();
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        manager.createIfNotExists(getLogName(), getLogSize());
+        try (ProducerPool<BlobMessage> producers = new ProducerPool<>(getLogName(), manager,
+                new RandomStringBlobMessageProducerFactory(nbBlobs, lang, avgBlobSizeKB, blobMarker),
+                nbThreads.shortValue())) {
+            producers.start().get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Operation interrupted");
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            log.error("fail", e);
+            throw new OperationException(e);
         }
     }
 
@@ -118,4 +124,5 @@ public class RandomBlobProducers {
             throw new RuntimeException("Unauthorized access: " + principal);
         }
     }
+
 }
