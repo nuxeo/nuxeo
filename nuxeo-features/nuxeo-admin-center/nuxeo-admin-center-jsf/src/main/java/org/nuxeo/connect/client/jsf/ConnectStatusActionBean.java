@@ -247,7 +247,9 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public ConnectUpdateStatusInfo getDynamicConnectUpdateStatusInfo() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                                                  .getExternalContext()
+                                                                  .getRequest();
         String bannerType = req.getParameter("bannerType");
         if ("unregistered".equals(bannerType)) {
             return ConnectUpdateStatusInfo.unregistered();
