@@ -511,15 +511,28 @@ DropZoneUIHandler.prototype.removeDropPanel = function (dropId, batchId) {
     this.each(function () {
       var dropZoneEle = jQuery(this);
       var dropId = dropZoneEle.attr("id");
+      // only get the ids
+      // real underlying object will be initialized when needed
+      // to avoid any clash with other DnD features ...
       var dropZone = {
         id: dropId,
         initDone: false,
         options: options
       };
-      // only get the ids
-      // real underlying object will be initialized when needed
-      // to avoid any clash with other DnD features ...
-      dropZones.push(dropZone);
+
+      // avoid duplicate registered drop zones:
+      // check if there is already a drop zone registered for the given id
+      // if yes, replace the existing one with the new one
+      // otherwise just add it
+      var existing = dropZones.find(function(d) {
+        return d.id === dropId;
+      });
+      var index = existing ? dropZones.indexOf(existing) : -1;
+      if (index !== -1) {
+        dropZones[index] = dropZone;
+      } else {
+        dropZones.push(dropZone);
+      }
 
       if (dropZoneEle.data("loadalreadyuploadedfiles")) {
         highlightDropZones(null, dropZones, dropZone);
