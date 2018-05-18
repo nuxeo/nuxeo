@@ -35,33 +35,6 @@ limitations under the License.
                     value="{{document.properties.dc:description}}">
     </nuxeo-textarea>
 
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.nature')]]"
-                                name="nature"
-                                directory-name="nature"
-                                value="{{document.properties.dc:nature}}"
-                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
-                                min-chars="0">
-    </nuxeo-directory-suggestion>
-
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.subjects')]]"
-                                directory-name="l10nsubjects"
-                                name="subjects"
-                                value="{{document.properties.dc:subjects}}"
-                                multiple="true"
-                                dbl10n="true"
-                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
-                                min-chars="0">
-    </nuxeo-directory-suggestion>
-
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.coverage')]]"
-                                directory-name="l10ncoverage"
-                                name="coverage"
-                                value="{{document.properties.dc:coverage}}"
-                                dbl10n="true"
-                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
-                                min-chars="0">
-    </nuxeo-directory-suggestion>
-
     <nuxeo-date-picker role="widget" label="[[i18n('label.dublincore.expire')]]" name="expired"
                        value="{{document.properties.dc:expired}}" required>
     </nuxeo-date-picker>
