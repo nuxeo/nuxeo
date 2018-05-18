@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -685,5 +687,56 @@ public class TestTagService {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    @Test
+    public void testSanitize() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File");
+        file = session.createDocument(file);
+        session.save();
+        String fileId = file.getId();
+
+        List<String> charToTests = Arrays.asList(" ", "\\", "/", "'", "%");
+        String sanitizedLabel = "mytag";
+        Set<String> expectedTagLabels = singleton(sanitizedLabel);
+        for (String charToTest : charToTests) {
+            String tagLabel = "my" + charToTest + "tag";
+            String message = "Character '" + charToTest + "' is not well sanitized";
+
+            // add tag
+            tagService.tag(session, fileId, tagLabel, "Administrator");
+            session.save();
+            // find tag for doc
+            List<Tag> tags = tagService.getDocumentTags(session, fileId, "Administrator");
+            assertEquals(message, expectedTagLabels, labels(tags));
+            // find suggestion
+            List<Tag> suggestions = tagService.getSuggestions(session, "%" + charToTest + "tag", null);
+            assertEquals(message, expectedTagLabels, labels(suggestions));
+            // find documents with this tag
+            List<String> taggedDocIds = tagService.getTagDocumentIds(session, tagLabel, null);
+            assertEquals(message, singletonList(fileId), taggedDocIds);
+            // remove tag
+            tagService.untag(session, fileId, tagLabel, "Administrator");
+            session.save();
+            tags = tagService.getDocumentTags(session, fileId, "Administrator");
+            assertTrue(message, tags.isEmpty());
+
+            maybeSleep();
+
+            // add tag again to test sanitize version
+            tagService.tag(session, fileId, tagLabel, "Administrator");
+            session.save();
+            // find documents with this tag
+            taggedDocIds = tagService.getTagDocumentIds(session, sanitizedLabel, null);
+            assertEquals(message, singletonList(fileId), taggedDocIds);
+            // remove tag
+            tagService.untag(session, fileId, sanitizedLabel, "Administrator");
+            session.save();
+            tags = tagService.getDocumentTags(session, fileId, "Administrator");
+            assertTrue(message, tags.isEmpty());
+
+            maybeSleep();
+        }
     }
 }
