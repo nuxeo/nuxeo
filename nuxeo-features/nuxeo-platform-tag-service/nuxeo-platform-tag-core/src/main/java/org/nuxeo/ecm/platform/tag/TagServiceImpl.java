@@ -110,6 +110,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
         label = label.toLowerCase(); // lowercase
         label = label.replace(" ", ""); // no spaces
+        label = label.replace("/", ""); // no slash
         label = label.replace("\\", ""); // dubious char
         label = label.replace("'", ""); // dubious char
         if (!allowPercent) {
