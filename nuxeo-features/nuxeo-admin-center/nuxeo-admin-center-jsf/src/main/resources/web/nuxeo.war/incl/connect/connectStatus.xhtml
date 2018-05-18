@@ -145,6 +145,7 @@
 
 
       <c:if test="#{!connectStatus.status.isError()}">
+      <nxu:set var="expirationDate" value="#{connectStatus.registrationExpirationDate}" cache="true">
 
         <div class="processMessage completeSuccess">#{messages['connect.message.registred']}</div>
 
@@ -162,9 +163,21 @@
             </td>
           </tr>
           <tr>
-            <td class="focusColumn"><h:outputText
-                value="#{messages['label.nuxeo.connect.contractEndDate']}" /></td>
-            <td><h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning"/></td>
+            <td class="focusColumn">
+              <h:outputText value="#{messages[expirationDate != null
+                ? 'label.nuxeo.connect.registrationExpirationDate'
+                : 'label.nuxeo.connect.contractEndDate']}" />
+            </td>
+            <td>
+              <c:if test="#{expirationDate != null}">
+                <h:outputText value="#{expirationDate.time}" styleClass="label label-warning">
+                  <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}" timeZone="#{timeZone}" />
+                </h:outputText>
+              </c:if>
+              <c:if test="#{expirationDate == null}">
+                <h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning" />
+              </c:if>
+            </td>
           </tr>
           <tr>
             <td class="focusColumn"><h:outputText
@@ -204,6 +217,7 @@
               </h:form></td>
           </tr>
         </table>
+      </nxu:set>
       </c:if>
       <c:if test="#{connectStatus.status.isError()}">
         <br />

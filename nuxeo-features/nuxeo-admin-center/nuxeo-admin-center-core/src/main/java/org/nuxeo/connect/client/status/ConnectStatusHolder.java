@@ -27,6 +27,7 @@ import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
 import org.nuxeo.connect.connector.ConnectSecurityError;
 import org.nuxeo.connect.connector.ConnectServerError;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -122,6 +123,32 @@ public class ConnectStatusHolder {
             }
         }
         return instanceStatus;
+    }
+
+    /**
+     * Returns the registration expiration timestamp included in the CLID, or -1 if the CLID cannot be loaded or doesn't
+     * include the expiration timestamp (old v0 format).
+     *
+     * @since 10.2
+     */
+    public long getRegistrationExpirationTimestamp() {
+        LogicalInstanceIdentifier clid = getService().getCLID();
+        if (clid == null) {
+            return -1;
+        }
+        String clid1 = clid.getCLID1();
+        if (clid1.length() == 36) {
+            // no expiration timestamp (old v0 format)
+            return -1;
+        }
+        // check format
+        String[] split = clid1.split("\\.");
+        if (split.length != 3) {
+            // invalid format
+            return -1;
+        }
+        // return expiration timestamp
+        return Long.parseLong(split[1]);
     }
 
 }
