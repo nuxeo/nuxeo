@@ -23,6 +23,7 @@ package org.nuxeo.connect.client.jsf;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -167,6 +168,23 @@ public class ConnectStatusActionBean implements Serializable {
 
     public SubscriptionStatusWrapper getStatus() {
         return ConnectStatusHolder.instance().getStatus();
+    }
+
+    /**
+     * Returns the registration expiration date included in the CLID, or {@code null} if the CLID cannot be loaded or
+     * doesn't include the expiration date (old v0 format).
+     *
+     * @since 10.2
+     */
+    public Calendar getRegistrationExpirationDate() {
+        long timestamp = ConnectStatusHolder.instance().getRegistrationExpirationTimestamp();
+        if (timestamp > -1) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timestamp * 1000);
+            return calendar;
+        } else {
+            return null;
+        }
     }
 
     public String resetRegister() {
