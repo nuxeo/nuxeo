@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -609,6 +611,57 @@ public abstract class AbstractTestTagService {
             tags = tagService.getTags(benderSession, file1Id);
             assertEquals(1, tags.size());
             assertEquals("mytag", tags.toArray()[0]);
+        }
+    }
+
+    @Test
+    public void testSanitize() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File");
+        file = session.createDocument(file);
+        session.save();
+        String fileId = file.getId();
+
+        List<String> charToTests = Arrays.asList(" ", "\\", "/", "'", "%");
+        String sanitizedLabel = "mytag";
+        Set<String> expectedTagLabels = singleton(sanitizedLabel);
+        for (String charToTest : charToTests) {
+            String tagLabel = "my" + charToTest + "tag";
+            String message = "Character '" + charToTest + "' is not well sanitized";
+
+            // add tag
+            tagService.tag(session, fileId, tagLabel);
+            session.save();
+            // find tag for doc
+            Set<String> tags = tagService.getTags(session, fileId);
+            assertEquals(message, expectedTagLabels, tags);
+            // find suggestion
+            Set<String> suggestions = tagService.getSuggestions(session, "%" + charToTest + "tag");
+            assertEquals(message, expectedTagLabels, suggestions);
+            // find documents with this tag
+            List<String> taggedDocIds = tagService.getTagDocumentIds(session, tagLabel);
+            assertEquals(message, singletonList(fileId), taggedDocIds);
+            // remove tag
+            tagService.untag(session, fileId, tagLabel);
+            session.save();
+            tags = tagService.getTags(session, fileId);
+            assertTrue(message, tags.isEmpty());
+
+            maybeSleep();
+
+            // add tag again to test sanitize version
+            tagService.tag(session, fileId, tagLabel);
+            session.save();
+            // find documents with this tag
+            taggedDocIds = tagService.getTagDocumentIds(session, sanitizedLabel);
+            assertEquals(message, singletonList(fileId), taggedDocIds);
+            // remove tag
+            tagService.untag(session, fileId, sanitizedLabel);
+            session.save();
+            tags = tagService.getTags(session, fileId);
+            assertTrue(message, tags.isEmpty());
+
+            maybeSleep();
         }
     }
 
