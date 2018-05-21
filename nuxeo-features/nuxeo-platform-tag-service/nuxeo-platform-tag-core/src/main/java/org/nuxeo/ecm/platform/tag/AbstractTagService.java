@@ -180,7 +180,8 @@ public abstract class AbstractTagService implements TagService {
 
     @Override
     public List<String> getTagDocumentIds(CoreSession session, String label) {
-        return CoreInstance.doPrivileged(session, (CoreSession s) -> doGetTagDocumentIds(s, label));
+        String cleanLabel = cleanLabel(label, true, false);
+        return CoreInstance.doPrivileged(session, (CoreSession s) -> doGetTagDocumentIds(s, cleanLabel));
     }
 
     @Override
@@ -225,6 +226,7 @@ public abstract class AbstractTagService implements TagService {
         }
         label = label.toLowerCase(); // lowercase
         label = label.replace(" ", ""); // no spaces
+        label = label.replace("/", ""); // no slash
         label = label.replace("\\", ""); // dubious char
         label = label.replace("'", ""); // dubious char
         if (!allowPercent) {
