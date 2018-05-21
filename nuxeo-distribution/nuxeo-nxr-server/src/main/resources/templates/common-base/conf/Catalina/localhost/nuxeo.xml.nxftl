@@ -27,6 +27,8 @@
     loaderClass="org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader" />
 </#if>
 
+  <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
   <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
 <#noparse>
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
