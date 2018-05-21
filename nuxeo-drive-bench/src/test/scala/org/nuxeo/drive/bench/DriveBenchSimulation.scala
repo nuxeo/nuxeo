@@ -12,7 +12,7 @@ class Sim10BenchPolling extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetChangeSummary fails
 
   val poll = scenario("Poll").during(Parameters.getSimulationDuration(60)) {
@@ -37,7 +37,7 @@ class Sim40BenchRecursiveRemoteScan extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetChildren fails
 
   val remoteScan = RecursiveRemoteScan.run()
@@ -54,7 +54,7 @@ class Sim45BenchBatchedRemoteScan extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetChildren and ScrollDescendants fails
 
   val remoteScan = BatchedRemoteScan.run(Parameters.getDescendantsBatchSize(100), Parameters.getPause(100, prefix = "remoteScan."))

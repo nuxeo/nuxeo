@@ -56,7 +56,7 @@ class Sim00SetupPolling extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
 
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = scenario("Setup").exec(Setup.run(userCount))
@@ -72,7 +72,7 @@ class Sim30SetupRemoteScan extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetClientUpdateInfo fails
 
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1

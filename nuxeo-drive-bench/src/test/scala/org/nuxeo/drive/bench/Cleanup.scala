@@ -24,7 +24,7 @@ class Sim20CleanupPolling extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
 
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = scenario("Cleanup").exec(Cleanup.run(userCount))
@@ -40,7 +40,7 @@ class Sim50CleanupRemoteScan extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive")
+    .connectionHeader("keep-alive")
 
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(userCount))

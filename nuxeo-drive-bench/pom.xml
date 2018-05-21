@@ -20,32 +20,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-app</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gatling</groupId>
-      <artifactId>gatling-recorder</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.typesafe.scala-logging</groupId>
-      <artifactId>scala-logging_2.11</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
@@ -74,13 +51,6 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <!-- Run all [matching] tests] on mvn integration-test -->
@@ -152,9 +122,6 @@
       <id>tomcat</id>
     </profile>
     <profile>
-      <id>monitor</id>
-    </profile>
-    <profile>
       <id>polling</id>
       <build>
         <plugins>
@@ -165,7 +132,7 @@
               <execution>
                 <id>setup-polling</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim00SetupPolling</simulationClass>
@@ -174,7 +141,7 @@
               <execution>
                 <id>bench-polling</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim10BenchPolling</simulationClass>
@@ -187,7 +154,7 @@
               <execution>
                 <id>cleanup-polling</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim20CleanupPolling</simulationClass>
@@ -209,7 +176,7 @@
               <execution>
                 <id>setup-remote-scan</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim30SetupRemoteScan</simulationClass>
@@ -218,7 +185,7 @@
               <execution>
                 <id>bench-recursive-remote-scan</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim40BenchRecursiveRemoteScan</simulationClass>
@@ -231,7 +198,7 @@
               <execution>
                 <id>bench-batched-remote-scan</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim45BenchBatchedRemoteScan</simulationClass>
@@ -257,7 +224,7 @@
               <execution>
                 <id>cleanup-remote-scan</id>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim50CleanupRemoteScan</simulationClass>
