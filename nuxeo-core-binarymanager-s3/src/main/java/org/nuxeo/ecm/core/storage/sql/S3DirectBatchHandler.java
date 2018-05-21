@@ -43,7 +43,6 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 
@@ -79,9 +78,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             AWS_ID_PROPERTY, //
             AWS_SECRET_PROPERTY, //
             BUCKET_NAME_PROPERTY, //
-            BUCKET_REGION_PROPERTY, //
-            POLICY_TEMPLATE_PROPERTY //
-    );
+            BUCKET_REGION_PROPERTY);
 
     // keys in the batch properties, returned to the client
 
@@ -101,8 +98,6 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     public static final String INFO_USE_S3_ACCELERATE = "useS3Accelerate";
 
-    public static final String INFO_POLICY_TEMPLATE = "policyTemplate";
-
     protected AWSSecurityTokenService stsClient;
 
     protected AmazonS3 amazonS3;
@@ -117,7 +112,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected int expiration;
 
-    protected String policyTemplate;
+    protected String policy;
 
     @Override
     protected void initialize(Map<String, String> properties) {
@@ -134,7 +129,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         String awsSecretKeyId = properties.get(AWS_ID_PROPERTY);
         String awsSecretAccessKey = properties.get(AWS_SECRET_PROPERTY);
         expiration = Integer.parseInt(defaultIfEmpty(properties.get(INFO_EXPIRATION), "0"));
-        policyTemplate = properties.get(POLICY_TEMPLATE_PROPERTY);
+        policy = properties.get(POLICY_TEMPLATE_PROPERTY);
 
         AWSCredentialsProvider awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsSecretKeyId,
                 awsSecretAccessKey);
@@ -165,29 +160,25 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         // create the batch
         Batch batch = new Batch(batchId, parameters, getName(), getTransientStore());
 
-        String bucketPath = bucketPrefix + batchId + "/";
+        String name = batchId.substring(0, Math.min(32, batchId.length()));
 
-        String policy = REGEX_BUCKET_PATH_PLACE_HOLDER.matcher(policyTemplate).replaceAll(bucketPath);
-
-        String federatedUserName = batchId + "_" + ClientLoginModule.getCurrentPrincipal().getOriginatingUser();
-        GetFederationTokenRequest federationTokenRequest = new GetFederationTokenRequest().withPolicy(policy)
-                                                                                          .withName(federatedUserName);
+        GetFederationTokenRequest request = new GetFederationTokenRequest().withPolicy(policy).withName(name);
 
         if (expiration > 0) {
-            federationTokenRequest.setDurationSeconds(expiration);
+            request.setDurationSeconds(expiration);
         }
 
-        Credentials credentials = stsClient.getFederationToken(federationTokenRequest).getCredentials();
+        Credentials credentials = stsClient.getFederationToken(request).getCredentials();
+
         Map<String, Object> properties = batch.getProperties();
         properties.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
         properties.put(INFO_AWS_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
         properties.put(INFO_AWS_SESSION_TOKEN, credentials.getSessionToken());
         properties.put(INFO_BUCKET, bucket);
-        properties.put(INFO_BASE_KEY, bucketPath);
+        properties.put(INFO_BASE_KEY, bucketPrefix);
         properties.put(INFO_EXPIRATION, credentials.getExpiration().toInstant().toEpochMilli());
         properties.put(INFO_AWS_REGION, region);
         properties.put(INFO_USE_S3_ACCELERATE, accelerateModeEnabled);
-        properties.put(INFO_POLICY_TEMPLATE, policyTemplate);
 
         return batch;
     }
