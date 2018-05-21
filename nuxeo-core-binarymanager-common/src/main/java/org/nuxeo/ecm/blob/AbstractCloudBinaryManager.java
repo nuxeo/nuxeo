@@ -243,4 +243,9 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     public boolean isTransient() {
         return transientFlag;
     }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
 }
