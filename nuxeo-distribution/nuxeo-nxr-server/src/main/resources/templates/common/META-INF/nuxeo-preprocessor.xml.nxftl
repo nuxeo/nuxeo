@@ -18,6 +18,9 @@
   <template name="jaxws" src="META-INF/templates/sun-jaxws.xml"
     installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" />
 
+  <template name="rewrite" src="META-INF/templates/rewrite.config"
+    installPath="nuxeo.war/WEB-INF/rewrite.config" required="false" />
+
   <directory>bundles</directory>
 <#if "${nuxeo.server.sdk}" == "true">
   <directory>dev-bundles</directory>
