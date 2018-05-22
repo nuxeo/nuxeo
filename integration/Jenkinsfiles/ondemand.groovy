@@ -31,10 +31,11 @@ node('slacoin') {
         stash('ws')
     }
     
+
     stage('compile') {
         withBuildStatus('compile', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                sh 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
+                echo 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
             }
         }
     }
@@ -42,7 +43,7 @@ node('slacoin') {
     stage('test') {
         withBuildStatus('test', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() { 
-               sh 'mvn -nsu -B test -Pqa,addons,distrib -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+               echo 'mvn -nsu -B test -Pqa,addons,distrib -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
     }
@@ -50,7 +51,7 @@ node('slacoin') {
     def zipfile=stage('verify') {
         withBuildStatus('verify', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                sh 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipITs -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+                echo 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
         zipfile = sh(returnStdout: true, script: 'echo -n nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
@@ -99,11 +100,36 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
                     echo mvncmd
                     timeout(time: 2, unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                            withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", mvncmd, post)
+                            withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", post) {
+                                withMaven(
+				}
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+def withDockerCompose(String name, String file, Closure post, Closure body) {
+  withEnv(["COMPOSE_PROJECT_NAME=$name"]) {
+    try {
+      sh """#!/bin/bash -ex
+                 docker-compose -f $file pull
+                 docker-compose -f $file up --no-color --build --abort-on-container-exit
+             """
+      node(name) {
+        body()
+      }
+    } finally {
+      try {
+        post()
+      } finally {
+        sh """#!/bin/bash -ex
+                 docker-compose -f $file down --rmi local --volumes --remove-orphans
+              """
+      }
+    }
+  }
 }
