@@ -17,10 +17,10 @@ package org.nuxeo.cap.bench
  *     Delbosc Benoit
  */
 
-import com.redis.RedisClientPool
-
-import io.gatling.core.Predef._
 import java.nio.charset.StandardCharsets
+
+import com.redis.RedisClientPool
+import io.gatling.core.Predef._
 
 
 object Redis {

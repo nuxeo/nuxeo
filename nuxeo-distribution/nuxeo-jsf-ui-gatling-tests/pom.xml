@@ -11,7 +11,7 @@
   <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
   <name>Nuxeo JSF UI Gatling Bench</name>
   <description>Gatling bench on Nuxeo JSF UI</description>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -35,7 +35,6 @@
     <dependency>
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -52,26 +51,17 @@
   </dependencies>
 
   <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <configuration>
-              <archive>
-                <manifestFile>
-                  src/test/resources/META-INF/MANIFEST.MF
-                </manifestFile>
-              </archive>
-            </configuration>
+            <id>scala-compile</id>
             <goals>
-              <goal>test-jar</goal>
+              <goal>compile</goal>
             </goals>
           </execution>
         </executions>

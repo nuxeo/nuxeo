@@ -181,7 +181,6 @@
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
-        <type>test-jar</type>
         <scope>test</scope>
       </dependency>
     </dependencies>
