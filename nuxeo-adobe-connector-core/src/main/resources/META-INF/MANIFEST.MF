@@ -10,5 +10,4 @@ Nuxeo-Component: OSGI-INF/nuxeo-adobe-connector-page-providers.xml,
  OSGI-INF/nuxeo-adobe-connector-doc-types.xml,
  OSGI-INF/nuxeo-adobe-connector-search-doc-types.xml,
  OSGI-INF/nuxeo-adobe-connector-operations-contrib.xml,
- OSGI-INF/nuxeo-adobe-connector-directory-contrib.xml,
  OSGI-INF/nuxeo-adobe-connector-service.xml
