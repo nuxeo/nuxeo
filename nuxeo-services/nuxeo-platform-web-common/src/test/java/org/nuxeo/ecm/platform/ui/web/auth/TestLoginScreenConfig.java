@@ -147,6 +147,12 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
+
         pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-loginscreenconfig-merge.xml");
 
         authService = getAuthService();
@@ -194,6 +200,71 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertEquals(3, config.getSupportedLocales().size());
         assertTrue(config.getSupportedLocales().contains("es_ES"));
         assertTrue(config.getSupportedLocales().contains("fr"));
+        assertTrue(config.getSupportedLocales().contains("de"));
+    }
+
+    /**
+     * Non-regression test for NXP-23786.
+     */
+    @Test
+    public void testMergeConfigLanguages() throws Exception {
+        PluggableAuthenticationService authService = getAuthService();
+        assertNotNull(authService);
+
+        LoginScreenConfig config = authService.getLoginScreenConfig();
+
+        assertNotNull(config);
+        assertEquals("#CCCCCC", config.getHeaderStyle());
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
+
+        pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-loginscreenconfig-merge2.xml");
+
+        authService = getAuthService();
+        config = authService.getLoginScreenConfig();
+
+        assertNotNull(config);
+        assertEquals("#DDDDDD", config.getHeaderStyle());
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
+    }
+
+    /**
+     * Non-regression test for NXP-23786.
+     */
+    @Test
+    public void testMergeConfigLanguagesNoAppend() throws Exception {
+        PluggableAuthenticationService authService = getAuthService();
+        assertNotNull(authService);
+
+        LoginScreenConfig config = authService.getLoginScreenConfig();
+
+        assertNotNull(config);
+        assertEquals("#CCCCCC", config.getHeaderStyle());
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
+
+        pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-loginscreenconfig-merge3.xml");
+
+        authService = getAuthService();
+        config = authService.getLoginScreenConfig();
+
+        assertNotNull(config);
+        assertEquals("#DDDDDD", config.getHeaderStyle());
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        // de replaced fr
         assertTrue(config.getSupportedLocales().contains("de"));
     }
 
