@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.annotation.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      If set to false, annotations are stored in a hidden folder created in the domain
+      of the annotated document (or in the root repository if the annotated document is a direct child of it).
+      Default value is true, which makes the annotations stored as placeless documents.
+    </documentation>
+    <property name="nuxeo.annotations.placeless.storage">true</property>
+  </extension>
+
+</component>
