@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.annotation;
 
-import java.util.Calendar;
 
 /**
  * Annotation interface
