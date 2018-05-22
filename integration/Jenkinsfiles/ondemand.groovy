@@ -96,12 +96,12 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
                     unstash 'ws'
                     unstash 'zipfile'
                     zipopt = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
-                    mvncmd="mvn ${zipopt} -nsu -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
                     echo mvncmd
                     timeout(time: 2, unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
                             withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", post) {
-                                withMaven(
+                                withMaven() {
+                                    sh "mvn ${zipopt} -nsu -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
 				}
                             }
                         }
