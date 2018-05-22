@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webdav.tests.servletcontainer">
+
+  <require>org.nuxeo.ecm.webengine.test.WebEngineComponentSetup</require>
+
+  <!-- redefine WebEngineServlet to bind WebDAV as its Application -->
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet</servlet-class>
+      <url-pattern>/*</url-pattern>
+      <init-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>org.nuxeo.ecm.webdav.Application</param-value>
+      </init-param>
+      <init-param>
+        <param-name>application.name</param-name>
+        <param-value>nuxeo-webdav</param-value>
+      </init-param>
+      <init-param>
+        <param-name>com.sun.jersey.config.feature.IgnoreMatrixParams</param-name>
+        <param-value>true</param-value>
+      </init-param>
+    </servlet>
+  </extension>
+
+</component>

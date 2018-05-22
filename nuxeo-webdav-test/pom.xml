@@ -110,16 +110,6 @@
       <artifactId>hamcrest-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
