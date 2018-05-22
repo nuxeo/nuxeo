@@ -6,4 +6,5 @@ Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/annotation-service.xml,
  OSGI-INF/annotation-core-types-contrib.xml,
  OSGI-INF/annotation-pageprovider-contrib.xml,
- OSGI-INF/annotation-marshaller-contrib.xml
+ OSGI-INF/annotation-marshaller-contrib.xml,
+ OSGI-INF/annotation-properties-contrib.xml

@@ -37,11 +37,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 10.1
@@ -56,11 +59,38 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     protected static final String GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
 
+    protected static final String ANNOTATIONS_PLACELESS_STORAGE_PROPERTY = "nuxeo.annotations.placeless.storage";
+
+    protected static final String HIDDEN_FOLDER_TYPE = "HiddenFolder";
+
+    protected static final String ANNOTATION_FOLDER_NAME = "Annotations";
+
     @Override
     public Annotation createAnnotation(CoreSession session, Annotation annotation) {
-        // Create annotation as a placeless document
+
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        boolean annotationPlaceless = configurationService.isBooleanPropertyTrue(
+                ANNOTATIONS_PLACELESS_STORAGE_PROPERTY);
+
         return CoreInstance.doPrivileged(session, s -> {
-            DocumentModel annotationModel = s.createDocumentModel(null, ANNOTATION_NAME, ANNOTATION_DOC_TYPE);
+            String path = null;
+            if (!annotationPlaceless) {
+                // Create or retrieve the folder to store the annotation.
+                // If the document is under a domain, the folder is a child of this domain.
+                // Otherwise, it is a child of the root document.
+                DocumentModel annotatedDoc = s.getDocument(new IdRef(annotation.getDocumentId()));
+                String parentPath = s.getRootDocument().getPathAsString();
+                if (annotatedDoc.getPath().segmentCount() > 1) {
+                    parentPath += annotatedDoc.getPath().segment(0);
+                }
+                PathRef ref = new PathRef(parentPath, ANNOTATION_FOLDER_NAME);
+                DocumentModel annotationFolderDoc = s.createDocumentModel(parentPath, ANNOTATION_FOLDER_NAME,
+                        HIDDEN_FOLDER_TYPE);
+                s.getOrCreateDocument(annotationFolderDoc);
+                s.save();
+                path = ref.toString();
+            }
+            DocumentModel annotationModel = s.createDocumentModel(path, ANNOTATION_NAME, ANNOTATION_DOC_TYPE);
             setAnnotationProperties(annotationModel, annotation);
             annotationModel = s.createDocument(annotationModel);
             return new AnnotationImpl(annotationModel);
