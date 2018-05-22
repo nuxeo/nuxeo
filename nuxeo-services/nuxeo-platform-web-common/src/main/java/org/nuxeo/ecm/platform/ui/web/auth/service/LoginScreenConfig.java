@@ -145,7 +145,7 @@ public class LoginScreenConfig implements Serializable {
      * @since 8.4
      */
     @XNode("supportedLocales@append")
-    boolean appendSupportedLocales;
+    Boolean appendSupportedLocales;
 
     /**
      * @since 8.4
@@ -351,7 +351,7 @@ public class LoginScreenConfig implements Serializable {
     /**
      * @since 8.4
      */
-    public boolean isAppendSupportedLocales() {
+    public Boolean isAppendSupportedLocales() {
         return appendSupportedLocales;
     }
 
@@ -363,8 +363,9 @@ public class LoginScreenConfig implements Serializable {
         if (supportedLocales != null) {
             res.addAll(supportedLocales);
         }
-        if (!res.contains(getDefaultLocale())) {
-            res.add(getDefaultLocale());
+        String defaultLocale = getDefaultLocale();
+        if (defaultLocale != null && !res.contains(defaultLocale)) {
+            res.add(defaultLocale);
         }
         return res;
     }
@@ -459,10 +460,10 @@ public class LoginScreenConfig implements Serializable {
             defaultLocale = newConfig.defaultLocale;
         }
 
-        boolean append = newConfig.isAppendSupportedLocales();
+        Boolean append = newConfig.isAppendSupportedLocales();
         List<String> newLocales = newConfig.getSupportedLocales();
         Set<String> mergedLocales = new HashSet<String>();
-        if (append && supportedLocales != null) {
+        if ((Boolean.TRUE.equals(append) || append == null) && supportedLocales != null) {
             mergedLocales.addAll(supportedLocales);
         }
         if (newLocales != null) {
