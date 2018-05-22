@@ -34,7 +34,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jdt.internal.core.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -171,7 +170,7 @@ public class TestSnapshotPersist {
         }
         try (InputStream in = new FileInputStream(tempFile)) {
             DocumentModel doc = snapshotManager.importTmpSnapshot(session, in);
-            Assert.isNotNull(doc);
+            assertNotNull(doc);
         }
         tempFile.delete();
     }
