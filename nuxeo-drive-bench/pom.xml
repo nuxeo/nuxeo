@@ -35,6 +35,17 @@
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-drive-elasticsearch</artifactId>
+      <exclusions>
+        <!-- exclude netty client from elasticsearch because it conflicts with gatling (4.0.x vs 4.1.y) -->
+        <exclusion>
+          <groupId>org.elasticsearch.plugin</groupId>
+          <artifactId>transport-netty3-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.elasticsearch.plugin</groupId>
+          <artifactId>transport-netty4-client</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
