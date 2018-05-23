@@ -2482,6 +2482,7 @@
         <artifactId>jboss-seam</artifactId>
         <version>${nxseam.version}</version>
         <exclusions>
+          <!-- use org.apache.tomcat:tomcat-el-api instead -->
           <exclusion>
             <groupId>javax.el</groupId>
             <artifactId>el-api</artifactId>
@@ -2586,6 +2587,13 @@
         <groupId>org.jboss.el</groupId>
         <artifactId>jboss-el</artifactId>
         <version>1.0_02.CR6</version>
+        <exclusions>
+          <!-- use org.apache.tomcat:tomcat-el-api instead -->
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -3684,10 +3692,6 @@
             <artifactId>commons-beanutils-core</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>el-api</artifactId>
-          </exclusion>
-          <exclusion>
             <groupId>com.google.code.guice</groupId>
             <artifactId>guice</artifactId>
           </exclusion>
@@ -4030,10 +4034,11 @@
         <version>${tomcat.version}</version>
       </dependency>
       <dependency>
+        <!-- this implements a more recent version of the EL spec than javax.el:el-api:1.0 -->
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-el-api</artifactId>
         <version>${tomcat.version}</version>
-        <scope>provided</scope>
+        <scope>provided</scope> <!-- provided by Tomcat as jasper.jar -->
       </dependency>
       <!-- saml -->
       <dependency>
@@ -5610,6 +5615,12 @@
                   <exclude>org.mortbay.jetty:servlet-api-2.5</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
                 </excludes>
                 <message>org.mortbay.jetty:servlet-api-2.5 must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javax.el:el-api</exclude> <!-- use more recent org.apache.tomcat:tomcat-el-api instead -->
+                </excludes>
+                <message>javax.el:el-api must not be used, use org.apache.tomcat:tomcat-el-api instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
