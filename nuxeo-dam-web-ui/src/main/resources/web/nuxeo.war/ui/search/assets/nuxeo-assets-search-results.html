@@ -37,7 +37,11 @@ limitations under the License.
 
     <nuxeo-results name="assets" nx-provider="[[nxProvider]]">
 
-      <nuxeo-justified-grid name="grid" icon="icons:apps" class="results" selection-enabled></nuxeo-justified-grid>
+      <nuxeo-justified-grid name="grid" icon="icons:apps" class="results" selection-enabled>
+        <template>
+          <nuxeo-justified-grid-item></nuxeo-justified-grid-item>
+        </template>
+      </nuxeo-justified-grid>
 
       <nuxeo-data-table name="table" icon="icons:list" class="results"
                         settings-enabled
