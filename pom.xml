@@ -62,6 +62,7 @@
     <nuxeo.target.platforms.version>10.2-SNAPSHOT</nuxeo.target.platforms.version>
     <nuxeo.web.ui.version>10.2-SNAPSHOT</nuxeo.web.ui.version>
     <nuxeo.jsf.to.web.ui.version>10.2-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
+    <nuxeo.adobe.cc.version>10.2-SNAPSHOT</nuxeo.adobe.cc.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>10.2-SNAPSHOT</nuxeo.sync.version>
@@ -132,6 +133,7 @@
     <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage-directory</module>
+    <module>nuxeo-adobe-connector</module>
   </modules>
 
   <dependencyManagement>
@@ -1141,6 +1143,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-audit-storage-directory</artifactId>
         <version>${nuxeo.addons.version}</version>
+      </dependency>
+      
+      <!-- Adobe CC Connector -->
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-adobe-connector-core</artifactId>
+        <version>${nuxeo.adobe.cc.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
