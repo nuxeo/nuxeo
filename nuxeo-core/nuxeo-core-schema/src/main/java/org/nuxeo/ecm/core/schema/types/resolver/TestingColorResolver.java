@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,20 +28,20 @@ import java.util.Map;
 
 public class TestingColorResolver implements ObjectResolver {
 
-    public static enum MODE {
-        PRIMARY, SECONDARY;
+    public enum MODE {
+        PRIMARY, SECONDARY
     }
 
     public interface Color {
         String name();
     }
 
-    public static enum PrimaryColor implements Color {
-        RED, BLUE, YELLOW;
+    public enum PrimaryColor implements Color {
+        RED, BLUE, YELLOW
     }
 
-    public static enum SecondaryColor implements Color {
-        VIOLET, ORANGE, GREEN;
+    public enum SecondaryColor implements Color {
+        VIOLET, ORANGE, GREEN
     }
 
     public static final String COLOR_MODE = "mode";
@@ -57,7 +57,7 @@ public class TestingColorResolver implements ObjectResolver {
     @Override
     public List<Class<?>> getManagedClasses() {
         if (managedClasses == null) {
-            managedClasses = new ArrayList<Class<?>>();
+            managedClasses = new ArrayList<>();
             managedClasses.add(Color.class);
         }
         return managedClasses;
@@ -77,7 +77,7 @@ public class TestingColorResolver implements ObjectResolver {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("missing mode param", e);
         }
-        this.parameters = new HashMap<String, Serializable>();
+        this.parameters = new HashMap<>();
         this.parameters.put(COLOR_MODE, mode.name());
     }
 
@@ -143,19 +143,17 @@ public class TestingColorResolver implements ObjectResolver {
         checkConfig();
         if (entity instanceof Color) {
             Color color = (Color) entity;
-            if (color != null) {
-                switch (mode) {
-                case PRIMARY:
-                    if (color instanceof PrimaryColor) {
-                        return color.name();
-                    }
-                    break;
-                case SECONDARY:
-                    if (color instanceof SecondaryColor) {
-                        return color.name();
-                    }
-                    break;
+            switch (mode) {
+            case PRIMARY:
+                if (color instanceof PrimaryColor) {
+                    return color.name();
                 }
+                break;
+            case SECONDARY:
+                if (color instanceof SecondaryColor) {
+                    return color.name();
+                }
+                break;
             }
         }
         return null;

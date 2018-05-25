@@ -167,9 +167,7 @@ public interface ObjectResolver extends Serializable {
             }
             Object[] params = new Object[1 + additionnalParameters.length];
             params[0] = computedInvalidValue;
-            for (int i = 1; i < params.length; i++) {
-                params[i] = additionnalParameters[i - 1];
-            }
+            System.arraycopy(additionnalParameters, 0, params, 1, params.length - 1);
             Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
             String message;
             try {

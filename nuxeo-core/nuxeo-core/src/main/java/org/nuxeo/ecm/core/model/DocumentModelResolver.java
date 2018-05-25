@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,7 +149,7 @@ public class DocumentModelResolver implements ObjectResolver {
     @Override
     public boolean validate(Object value) throws IllegalStateException {
         checkConfig();
-        if (value != null && value instanceof String) {
+        if (value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
@@ -170,7 +170,7 @@ public class DocumentModelResolver implements ObjectResolver {
     @Override
     public Object fetch(Object value) throws IllegalStateException {
         checkConfig();
-        if (value != null && value instanceof String) {
+        if (value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
@@ -221,7 +221,7 @@ public class DocumentModelResolver implements ObjectResolver {
     @Override
     public Serializable getReference(Object entity) throws IllegalStateException {
         checkConfig();
-        if (entity != null && entity instanceof DocumentModel) {
+        if (entity instanceof DocumentModel) {
             DocumentModel doc = (DocumentModel) entity;
             String repositoryName = doc.getRepositoryName();
             if (repositoryName != null) {

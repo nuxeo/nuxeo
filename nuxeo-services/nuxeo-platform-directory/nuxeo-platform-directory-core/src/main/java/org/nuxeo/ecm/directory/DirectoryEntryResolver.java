@@ -169,7 +169,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
     @Override
     public Object fetch(Object value) throws IllegalStateException {
         checkConfig();
-        if (value != null && value instanceof String) {
+        if (value instanceof String) {
             String id = (String) value;
             if (hierarchical) {
                 String[] ids = StringUtils.split(id, separator);
