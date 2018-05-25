@@ -100,8 +100,6 @@ public class XSDLoader {
 
     private static final String ATTR_CORE_EXTERNAL_REFERENCES = "resolver";
 
-    private static final String ATTR_CORE_EXTERNAL_REFERENCES_VALIDATION = "validation";
-
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
     private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
@@ -621,11 +619,7 @@ public class XSDLoader {
                 ObjectResolver resolver = getObjectResolverService().getResolver(refName, refParameters);
                 if (resolver != null) {
                     simpleType.setResolver(resolver);
-                    String validation = refParameters.getOrDefault(ATTR_CORE_EXTERNAL_REFERENCES_VALIDATION,
-                            Boolean.TRUE.toString());
-                    if (Boolean.parseBoolean(validation)) {
-                        constraints.add(new ObjectResolverConstraint(resolver));
-                    }
+                    constraints.add(new ObjectResolverConstraint(resolver));
                 } else {
                     log.info("type of " + fieldName + "|" + type.getName()
                             + " targets ObjectResolver namespace but has no matching resolver registered "

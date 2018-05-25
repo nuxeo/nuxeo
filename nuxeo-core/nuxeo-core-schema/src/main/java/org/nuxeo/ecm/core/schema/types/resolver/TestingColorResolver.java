@@ -21,12 +21,11 @@ package org.nuxeo.ecm.core.schema.types.resolver;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class TestingColorResolver implements ObjectResolver {
+public class TestingColorResolver extends AbstractObjectResolver implements ObjectResolver {
 
     public static enum MODE {
         PRIMARY, SECONDARY;
@@ -50,8 +49,6 @@ public class TestingColorResolver implements ObjectResolver {
 
     private MODE mode;
 
-    private Map<String, Serializable> parameters;
-
     private List<Class<?>> managedClasses = null;
 
     @Override
@@ -65,9 +62,7 @@ public class TestingColorResolver implements ObjectResolver {
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalStateException, IllegalArgumentException {
-        if (this.parameters != null) {
-            throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
-        }
+        super.configure(parameters);
         String modeParam = parameters.get(COLOR_MODE);
         if (modeParam == null || modeParam.trim().isEmpty()) {
             throw new IllegalArgumentException("missing mode param");
@@ -77,7 +72,6 @@ public class TestingColorResolver implements ObjectResolver {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("missing mode param", e);
         }
-        this.parameters = new HashMap<String, Serializable>();
         this.parameters.put(COLOR_MODE, mode.name());
     }
 
@@ -85,18 +79,6 @@ public class TestingColorResolver implements ObjectResolver {
     public String getName() throws IllegalStateException {
         checkConfig();
         return NAME;
-    }
-
-    @Override
-    public Map<String, Serializable> getParameters() throws IllegalStateException {
-        checkConfig();
-        return Collections.unmodifiableMap(parameters);
-    }
-
-    @Override
-    public boolean validate(Object value) throws IllegalStateException {
-        checkConfig();
-        return fetch(value) != null;
     }
 
     @Override
@@ -165,13 +147,6 @@ public class TestingColorResolver implements ObjectResolver {
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
         return String.format("\"%s\" is not a correct %s color", invalidValue, mode.name().toLowerCase());
-    }
-
-    private void checkConfig() throws IllegalStateException {
-        if (parameters == null) {
-            throw new IllegalStateException(
-                    "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
-        }
     }
 
 }
