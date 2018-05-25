@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +28,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
@@ -68,7 +67,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  *
  * @since 7.1
  */
-public class UserManagerResolver implements ObjectResolver {
+public class UserManagerResolver extends AbstractObjectResolver implements ObjectResolver {
 
     private static final long serialVersionUID = 1L;
 
@@ -83,8 +82,6 @@ public class UserManagerResolver implements ObjectResolver {
     public static final String PARAM_INCLUDE_USERS = "includeUsers";
 
     public static final String PARAM_INCLUDE_GROUPS = "includeGroups";
-
-    private Map<String, Serializable> parameters;
 
     private boolean includingUsers = true;
 
@@ -117,15 +114,12 @@ public class UserManagerResolver implements ObjectResolver {
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalStateException {
-        if (this.parameters != null) {
-            throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
-        }
+        super.configure(parameters);
         if (FILTER_USER.equals(parameters.get(INPUT_PARAM_FILTER))) {
             includingGroups = false;
         } else if (FILTER_GROUP.equals(parameters.get(INPUT_PARAM_FILTER))) {
             includingUsers = false;
         }
-        this.parameters = new HashMap<>();
         this.parameters.put(PARAM_INCLUDE_GROUPS, includingGroups);
         this.parameters.put(PARAM_INCLUDE_USERS, includingUsers);
     }
@@ -134,18 +128,6 @@ public class UserManagerResolver implements ObjectResolver {
     public String getName() throws IllegalStateException {
         checkConfig();
         return UserManagerResolver.NAME;
-    }
-
-    @Override
-    public Map<String, Serializable> getParameters() throws IllegalStateException {
-        checkConfig();
-        return Collections.unmodifiableMap(parameters);
-    }
-
-    @Override
-    public boolean validate(Object value) throws IllegalStateException {
-        checkConfig();
-        return fetch(value) != null;
     }
 
     @Override
@@ -239,13 +221,6 @@ public class UserManagerResolver implements ObjectResolver {
     public boolean isIncludingGroups() throws IllegalStateException {
         checkConfig();
         return includingGroups;
-    }
-
-    private void checkConfig() throws IllegalStateException {
-        if (parameters == null) {
-            throw new IllegalStateException(
-                    "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
-        }
     }
 
 }

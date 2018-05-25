@@ -86,28 +86,40 @@ public class ConfigTest extends BaseTest {
         JsonNode fields = node.get("fields");
         assertTrue(fields.size() > 0);
 
+        // Test that creator has a constraint with validation disabled
+        JsonNode creatorField = fields.get("creator");
+        assertEquals("string", creatorField.get("type").textValue());
+        ArrayNode constraints = (ArrayNode) creatorField.get("constraints");
+        assertEquals(2, constraints.size());
+        JsonNode userConstraint = getConstraint(constraints, "userManagerResolver");
+        assertNotNull(userConstraint);
+        JsonNode userConstraintParams = userConstraint.get("parameters");
+        assertEquals(3, userConstraintParams.size());
+        assertEquals("true", userConstraintParams.get("includeUsers").textValue());
+        assertEquals("false", userConstraintParams.get("includeGroups").textValue());
+        assertEquals("false", userConstraintParams.get("validation").textValue());
+
         // Test that nature has a constraint checking if value exists in directory
         JsonNode natureField = fields.get("nature");
         assertEquals("string", natureField.get("type").textValue());
-        ArrayNode constraints = (ArrayNode) natureField.get("constraints");
+        constraints = (ArrayNode) natureField.get("constraints");
         assertEquals(2, constraints.size());
+        JsonNode natureConstraint = getConstraint(constraints, "directoryResolver");
+        assertNotNull(natureConstraint);
+        JsonNode natureConstraintParams = natureConstraint.get("parameters");
+        assertEquals(2, natureConstraintParams.size());
+        assertEquals("nature", natureConstraintParams.get("directory").textValue());
+    }
+
+    protected JsonNode getConstraint(ArrayNode constraints, String name) {
         JsonNode natureConstraint = null;
         for (JsonNode constraint : constraints) {
-            if ("directoryResolver".equals(constraint.get("name").textValue())) {
+            if (name.equals(constraint.get("name").textValue())) {
                 natureConstraint = constraint;
                 break;
             }
         }
-        assertNotNull(natureConstraint);
-        JsonNode natureConstraintParams = natureConstraint.get("parameters");
-        assertEquals(1, natureConstraintParams.size());
-        assertEquals("nature", natureConstraintParams.get("directory").textValue());
-
-        // Test that creator doesn't have a constraint checking if user exists - it still has a constraint for type
-        JsonNode creatorField = fields.get("creator");
-        assertEquals("string", creatorField.get("type").textValue());
-        constraints = (ArrayNode) creatorField.get("constraints");
-        assertEquals(1, constraints.size());
+        return natureConstraint;
     }
 
     /**

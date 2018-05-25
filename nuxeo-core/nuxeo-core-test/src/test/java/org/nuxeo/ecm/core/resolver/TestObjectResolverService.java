@@ -18,10 +18,12 @@
  */
 package org.nuxeo.ecm.core.resolver;
 
+import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver.VALIDATION_PARAMETER_KEY;
 import static org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.COLOR_MODE;
 import static org.nuxeo.ecm.core.schema.types.resolver.TestingColorResolver.NAME;
 
@@ -138,16 +140,19 @@ public class TestObjectResolverService {
         assertNotNull(resolver);
         assertTrue(resolver instanceof TestingColorResolver);
         Map<String, Serializable> parameters = resolver.getParameters();
-        assertEquals(1, parameters.size());
+        assertEquals(2, parameters.size());
         assertEquals(MODE.PRIMARY.name(), parameters.get(COLOR_MODE));
+        assertEquals(TRUE, parameters.get(VALIDATION_PARAMETER_KEY));
         Set<Constraint> constraints = simpleType.getConstraints();
         ObjectResolverConstraint constraint = ConstraintUtils.getConstraint(constraints,
                 ObjectResolverConstraint.class);
+        assertNotNull(constraint);
         Description description = constraint.getDescription();
         assertEquals(NAME, description.getName());
         Map<String, Serializable> constraintParameters = description.getParameters();
-        assertEquals(1, constraintParameters.size());
+        assertEquals(2, constraintParameters.size());
         assertEquals(MODE.PRIMARY.name(), parameters.get(COLOR_MODE));
+        assertEquals(TRUE, parameters.get(VALIDATION_PARAMETER_KEY));
     }
 
 }
