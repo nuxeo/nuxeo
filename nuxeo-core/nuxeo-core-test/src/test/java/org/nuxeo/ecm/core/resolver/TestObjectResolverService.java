@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class TestObjectResolverService {
     protected ObjectResolverService referenceService;
 
     @Inject
-    protected SchemaManager metamodel;
+    protected SchemaManager schemaManager;
 
     @Before
     public void setUp() {
@@ -79,55 +79,55 @@ public class TestObjectResolverService {
 
     @Test
     public void testConfigurationOnRestrictionWorks() {
-        Field field = metamodel.getField("res:isReference1");
+        Field field = schemaManager.getField("res:isReference1");
         checkResolver(field);
     }
 
     @Test
     public void testConfigurationOnRestrictionAndSimpleTypeWorks() {
-        Field field = metamodel.getField("res:isReference2");
+        Field field = schemaManager.getField("res:isReference2");
         checkResolver(field);
     }
 
     @Test
     public void testConfigurationOnSimpleTypeWorks() {
-        Field field = metamodel.getField("res:isReference3");
+        Field field = schemaManager.getField("res:isReference3");
         checkResolver(field);
     }
 
     @Test
     public void testSimpleTypeIsNotReference() {
-        Field field = metamodel.getField("res:isNotReference1");
+        Field field = schemaManager.getField("res:isNotReference1");
         checkNoResolver(field);
     }
 
     @Test
     public void testSimpleTypeWithRestrictionIsNotReference() {
-        Field field = metamodel.getField("res:isNotReference2");
+        Field field = schemaManager.getField("res:isNotReference2");
         checkNoResolver(field);
     }
 
     @Test
     public void testFieldSimpleTypeWithRestrictionAndParamButNoResolverIsNotReference() {
-        Field field = metamodel.getField("res:isNotReference3");
+        Field field = schemaManager.getField("res:isNotReference3");
         checkNoResolver(field);
     }
 
     @Test
     public void testFieldFieldWithMissingParamIsNotReference() {
-        Field field = metamodel.getField("res:isReferenceButParamMissingFailed1");
+        Field field = schemaManager.getField("res:isReferenceButParamMissingFailed1");
         checkNoResolver(field);
     }
 
     @Test
     public void testFieldFieldWithWrongParamIsNotReference() {
-        Field field = metamodel.getField("res:isReferenceButWrongParamFailed1");
+        Field field = schemaManager.getField("res:isReferenceButWrongParamFailed1");
         checkNoResolver(field);
     }
 
     private void checkNoResolver(Field field) {
         assertNull(field.getType().getObjectResolver());
-        Set<Constraint> constraints = ((SimpleType) field.getType()).getConstraints();
+        Set<Constraint> constraints = field.getType().getConstraints();
         assertNull(ConstraintUtils.getConstraint(constraints, ObjectResolverConstraint.class));
     }
 
@@ -141,7 +141,8 @@ public class TestObjectResolverService {
         assertEquals(1, parameters.size());
         assertEquals(MODE.PRIMARY.name(), parameters.get(COLOR_MODE));
         Set<Constraint> constraints = simpleType.getConstraints();
-        ObjectResolverConstraint constraint = ConstraintUtils.getConstraint(constraints, ObjectResolverConstraint.class);
+        ObjectResolverConstraint constraint = ConstraintUtils.getConstraint(constraints,
+                ObjectResolverConstraint.class);
         Description description = constraint.getDescription();
         assertEquals(NAME, description.getName());
         Map<String, Serializable> constraintParameters = description.getParameters();

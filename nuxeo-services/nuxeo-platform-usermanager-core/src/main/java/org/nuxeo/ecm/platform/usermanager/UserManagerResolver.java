@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class UserManagerResolver implements ObjectResolver {
     @Override
     public List<Class<?>> getManagedClasses() {
         if (managedClasses == null) {
-            managedClasses = new ArrayList<Class<?>>();
+            managedClasses = new ArrayList<>();
             if (includingUsers) {
                 managedClasses.add(NuxeoPrincipal.class);
             }
@@ -125,7 +125,7 @@ public class UserManagerResolver implements ObjectResolver {
         } else if (FILTER_GROUP.equals(parameters.get(INPUT_PARAM_FILTER))) {
             includingUsers = false;
         }
-        this.parameters = new HashMap<String, Serializable>();
+        this.parameters = new HashMap<>();
         this.parameters.put(PARAM_INCLUDE_GROUPS, includingGroups);
         this.parameters.put(PARAM_INCLUDE_USERS, includingUsers);
     }
@@ -151,7 +151,7 @@ public class UserManagerResolver implements ObjectResolver {
     @Override
     public Object fetch(Object value) throws IllegalStateException {
         checkConfig();
-        if (value != null && value instanceof String) {
+        if (value instanceof String) {
             String name = (String) value;
             boolean userPrefix = name.startsWith(NuxeoPrincipal.PREFIX);
             boolean groupPrefix = name.startsWith(NuxeoGroup.PREFIX);
