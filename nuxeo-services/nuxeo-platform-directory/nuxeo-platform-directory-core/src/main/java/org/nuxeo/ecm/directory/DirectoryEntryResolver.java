@@ -21,14 +21,13 @@ package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -71,7 +70,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.1
  */
-public class DirectoryEntryResolver implements ObjectResolver {
+public class DirectoryEntryResolver extends AbstractObjectResolver implements ObjectResolver {
 
     private static final long serialVersionUID = 1L;
 
@@ -87,8 +86,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     private String schema;
 
-    private Map<String, Serializable> parameters;
-
     private boolean hierarchical = false;
 
     private String parentField = null;
@@ -101,9 +98,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalStateException {
-        if (this.parameters != null) {
-            throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
-        }
+        super.configure(parameters);
         directoryName = parameters.get(PARAM_DIRECTORY);
         if (directoryName != null) {
             directoryName = directoryName.trim();
@@ -126,7 +121,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
             parentField = parentFieldParam;
             separator = separatorParam;
         }
-        this.parameters = new HashMap<String, Serializable>();
         this.parameters.put(PARAM_DIRECTORY, directoryName);
     }
 
@@ -152,18 +146,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
     public String getName() {
         checkConfig();
         return NAME;
-    }
-
-    @Override
-    public Map<String, Serializable> getParameters() {
-        checkConfig();
-        return Collections.unmodifiableMap(parameters);
-    }
-
-    @Override
-    public boolean validate(Object value) throws IllegalStateException {
-        checkConfig();
-        return fetch(value) != null;
     }
 
     @Override
@@ -245,13 +227,6 @@ public class DirectoryEntryResolver implements ObjectResolver {
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
         return Helper.getConstraintErrorMessage(this, invalidValue, locale, directoryName);
-    }
-
-    private void checkConfig() throws IllegalStateException {
-        if (parameters == null) {
-            throw new IllegalStateException(
-                    "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
-        }
     }
 
 }

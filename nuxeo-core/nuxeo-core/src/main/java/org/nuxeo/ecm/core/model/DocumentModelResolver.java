@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
 
@@ -82,7 +82,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.1
  */
-public class DocumentModelResolver implements ObjectResolver {
+public class DocumentModelResolver extends AbstractObjectResolver implements ObjectResolver {
 
     private static final long serialVersionUID = 1L;
 
@@ -93,8 +93,6 @@ public class DocumentModelResolver implements ObjectResolver {
     public static final String STORE_PATH_REF = "path";
 
     public static final String STORE_ID_REF = "id";
-
-    private Map<String, Serializable> parameters;
 
     public enum MODE {
         PATH_REF, ID_REF
@@ -119,9 +117,7 @@ public class DocumentModelResolver implements ObjectResolver {
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalStateException {
-        if (this.parameters != null) {
-            throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
-        }
+        super.configure(parameters);
         String store = parameters.get(PARAM_STORE);
         if (store != null) {
             if (STORE_ID_REF.equals(store)) {
@@ -130,7 +126,6 @@ public class DocumentModelResolver implements ObjectResolver {
                 mode = MODE.PATH_REF;
             }
         }
-        this.parameters = new HashMap<>();
         this.parameters.put(PARAM_STORE, mode == MODE.ID_REF ? STORE_ID_REF : STORE_PATH_REF);
     }
 
@@ -141,14 +136,12 @@ public class DocumentModelResolver implements ObjectResolver {
     }
 
     @Override
-    public Map<String, Serializable> getParameters() {
-        checkConfig();
-        return Collections.unmodifiableMap(parameters);
-    }
-
-    @Override
     public boolean validate(Object value) throws IllegalStateException {
         checkConfig();
+        if (!validation) {
+            return true;
+        }
+
         if (value != null && value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
@@ -249,12 +242,6 @@ public class DocumentModelResolver implements ObjectResolver {
         }
     }
 
-    private void checkConfig() throws IllegalStateException {
-        if (parameters == null) {
-            throw new IllegalStateException(
-                    "you should call #configure(Map<String, String>) before. Please get this resolver through ExternalReferenceService which is in charge of resolver configuration.");
-        }
-    }
 
     protected static final class REF {
 

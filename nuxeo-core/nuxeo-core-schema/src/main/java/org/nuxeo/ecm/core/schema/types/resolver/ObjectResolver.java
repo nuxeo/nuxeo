@@ -41,6 +41,13 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 public interface ObjectResolver extends Serializable {
 
     /**
+     * The validation parameter key to enable/disable validation on resolver. Enabled by default.
+     *
+     * @since 10.2
+     */
+    String VALIDATION_PARAMETER_KEY = "validation";
+
+    /**
      * Configure this resolver.
      *
      * @param parameters A map of parameter whose keys are parameter names and map value are corresponding values.
