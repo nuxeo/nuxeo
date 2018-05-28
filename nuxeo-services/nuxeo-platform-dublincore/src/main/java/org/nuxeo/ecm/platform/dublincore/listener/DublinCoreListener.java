@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Thierry Delprat (td@nuxeo.com)
+ *     Ruslan Spivak (rspivak@nuxeo.com)
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -27,6 +29,9 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
+import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CONTRIBUTORS_PROPERTY;
+import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CREATOR_PROPERTY;
+import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -40,18 +45,15 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.dublincore.NXDublinCore;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Core Event Listener for updating DublinCore.
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 public class DublinCoreListener implements EventListener {
 
@@ -70,23 +72,8 @@ public class DublinCoreListener implements EventListener {
      */
     @Override
     public void handleEvent(Event event) {
-
-        DocumentEventContext docCtx;
-        if (event.getContext() instanceof DocumentEventContext) {
-            docCtx = (DocumentEventContext) event.getContext();
-        } else {
-            return;
-        }
-        String eventId = event.getName();
-
-        if (!eventId.equals(ABOUT_TO_CREATE) && !eventId.equals(BEFORE_DOC_UPDATE) && !eventId.equals(TRANSITION_EVENT)
-                && !eventId.equals(DOCUMENT_PUBLISHED) && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
-            return;
-        }
-
-        DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
-        if (service == null) {
-            log.error("DublinCoreStorage service not found ... !");
+        EventContext ctx = event.getContext();
+        if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
 
@@ -96,6 +83,7 @@ public class DublinCoreListener implements EventListener {
             return;
         }
 
+        DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (doc.isVersion()) {
@@ -111,6 +99,8 @@ public class DublinCoreListener implements EventListener {
         Date eventDate = new Date(event.getTime());
         Calendar cEventDate = Calendar.getInstance();
         cEventDate.setTime(eventDate);
+
+        String eventId = event.getName();
 
         if (doc.isProxy()) {
             if (eventId.equals(DOCUMENT_PUBLISHED)) {
@@ -132,24 +122,27 @@ public class DublinCoreListener implements EventListener {
             }
         }
 
+        DublinCoreStorageService service = Framework.getService(DublinCoreStorageService.class);
+
         Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);
-        boolean resetCreatorProperty = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                RESET_CREATOR_PROPERTY);
+        boolean resetCreatorProperty = Framework.getService(ConfigurationService.class)
+                                                .isBooleanPropertyTrue(RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
-            service.setModificationDate(doc, cEventDate, event);
+            service.setModificationDate(doc, cEventDate);
             service.addContributor(doc, event);
         } else if (eventId.equals(ABOUT_TO_CREATE)) {
-            service.setCreationDate(doc, cEventDate, event);
-            service.setModificationDate(doc, cEventDate, event);
+            service.setCreationDate(doc, cEventDate);
+            service.setModificationDate(doc, cEventDate);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED_BY_COPY)
                 && (resetCreatorProperty || Boolean.TRUE.equals(resetCreator))) {
-            doc.setProperty("dublincore", "creator", null);
-            doc.setProperty("dublincore", "contributors", null);
-            service.setCreationDate(doc, cEventDate, event);
-            service.setModificationDate(doc, cEventDate, event);
+            doc.setPropertyValue(DUBLINCORE_CREATOR_PROPERTY, null);
+            doc.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, null);
+            doc.setPropertyValue(DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY, null);
+            service.setCreationDate(doc, cEventDate);
+            service.setModificationDate(doc, cEventDate);
             service.addContributor(doc, event);
         }
     }
@@ -162,7 +155,8 @@ public class DublinCoreListener implements EventListener {
 
         Serializable value;
 
-        protected UnrestrictedPropertySetter(CoreSession session, DocumentRef docRef, String xpath, Serializable value) {
+        protected UnrestrictedPropertySetter(CoreSession session, DocumentRef docRef, String xpath,
+                Serializable value) {
             super(session);
             this.docRef = docRef;
             this.xpath = xpath;

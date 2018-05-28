@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.dublincore.events.single-event-contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="single" async="false" postCommit="false"
+              class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="150">
+      <event>newEvent</event>
+    </listener>
+
+  </extension>
+
+</component>

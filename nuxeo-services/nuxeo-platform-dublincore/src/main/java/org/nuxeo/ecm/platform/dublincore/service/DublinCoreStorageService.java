@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,109 +14,60 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Nuno Cunha (ncunha@nuxeo.com)
  */
 
 package org.nuxeo.ecm.platform.dublincore.service;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Service that writes Metadata.
+ * Former implementation for DublinCore schema storage.
  *
- * @author <a href="td@nuxeo.com">Thierry Delprat</a>
+ * @since 10.2
  */
-public class DublinCoreStorageService extends DefaultComponent {
+public interface DublinCoreStorageService {
 
-    public static final String ID = "DublinCoreStorageService";
-
-    public void setCreationDate(DocumentModel doc, Calendar creationDate, Event event) {
-        doc.setProperty("dublincore", "created", creationDate);
-        addContributor(doc, event);
-    }
-
-    public void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event) {
-        doc.setProperty("dublincore", "modified", modificationDate);
-        if (doc.getProperty("dublincore", "created") == null) {
-            setCreationDate(doc, modificationDate, event);
-        }
-    }
-
-    public void addContributor(DocumentModel doc, Event event) {
-        Principal principal = event.getContext().getPrincipal();
-        if (principal == null) {
-            return;
-        }
-
-        String principalName = principal.getName();
-        if (principal instanceof SystemPrincipal) {
-            SystemPrincipal nxp = (SystemPrincipal) principal;
-            String originatingUser = nxp.getOriginatingUser();
-            if ((originatingUser == null || SYSTEM_USERNAME.equals(originatingUser))
-                    && !ABOUT_TO_CREATE.equals(event.getName())) {
-                return;
-            } else {
-                principalName = originatingUser;
-            }
-        }
-
-        if (doc.getProperty("dublincore", "creator") == null) {
-            // First time only => creator
-            doc.setProperty("dublincore", "creator", principalName);
-        }
-
-        List<String> contributors = getSanitizedExistingContributors(doc);
-        if (!contributors.contains(principalName)) {
-            contributors.add(principalName);
-        }
-        doc.setProperty("dublincore", "contributors", contributors);
-        doc.setProperty("dublincore", "lastContributor", principalName);
-    }
-
-    public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {
-        doc.setPropertyValue("dc:issued", issuedDate);
-    }
+    String ID = "DublinCoreStorageService";
 
     /**
-     * Returns a "Sanitized" list of contributors according to NXP-25005
-     *
-     * @param doc The document from which the contributors list will be retrieved.
-     * @return A list of contributors without repetitions and prefixed entries.
+     * Sets the document's creation date.
      */
-    protected List<String> getSanitizedExistingContributors(DocumentModel doc) {
-        String[] contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
-        if (ArrayUtils.isEmpty(contributorsArray)) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(contributorsArray)
-                .map(DublinCoreStorageService::stripPrincipalPrefix)
-                .distinct()
-                .collect(Collectors.toList());
-    }
+    void setCreationDate(DocumentModel doc, Calendar creationDate);
 
-    protected static String stripPrincipalPrefix(String principal) {
-        if (principal.startsWith(NuxeoPrincipal.PREFIX)) {
-            return principal.substring(NuxeoPrincipal.PREFIX.length());
-        } else {
-            return principal;
-        }
-    }
+    /**
+     * Sets the document's creation date.
+     *
+     * @deprecated since 10.2, use directly {@link DublinCoreStorageService#setCreationDate(DocumentModel, Calendar)}
+     */
+    @Deprecated
+    void setCreationDate(DocumentModel doc, Calendar creationDate, Event event);
+
+    /**
+     * Sets the document's issued date.
+     */
+    void setIssuedDate(DocumentModel doc, Calendar issuedDate);
+
+    /**
+     * Sets the document's modified date.
+     */
+    void setModificationDate(DocumentModel doc, Calendar modificationDate);
+
+    /**
+     * Sets the document's modified date.
+     *
+     * @deprecated since 10.2, use directly
+     *             {@link DublinCoreStorageService#setModificationDate(DocumentModel, Calendar)}
+     */
+    @Deprecated
+    void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event);
+
+    /**
+     * Adds a contributor to the document.
+     */
+    void addContributor(DocumentModel doc, Event event);
 
 }

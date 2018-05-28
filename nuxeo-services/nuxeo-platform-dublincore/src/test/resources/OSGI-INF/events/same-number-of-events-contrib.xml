@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.dublincore.events.same-number-of-events-contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="same" async="false" postCommit="false"
+              class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="170">
+      <event>newEvent1</event>
+      <event>newEvent2</event>
+      <event>newEvent3</event>
+      <event>newEvent4</event>
+      <event>newEvent5</event>
+    </listener>
+
+  </extension>
+
+</component>

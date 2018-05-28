@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.dublincore.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -29,6 +31,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,7 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-public class DublinCoreStorageServiceTest {
+public class DublinCoreStorageServiceImplTest {
 
     @Inject
     protected DublinCoreStorageService storageService;
@@ -68,6 +71,107 @@ public class DublinCoreStorageServiceTest {
     @Test
     public void shouldBeUpAndRunning() {
         assertNotNull(storageService);
+    }
+
+    @Test
+    public void shouldSetCreationDate() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        Calendar currentDate = Calendar.getInstance();
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+        Set<String> expectedChangedProperties = Collections.singleton("dc:created");
+
+        storageService.setCreationDate(doc, currentDate);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, expectedChangedProperties);
+        assertEquals(currentDate, doc.getPropertyValue("dc:created"));
+    }
+
+    @Test
+    public void shouldSetModificationDateOnlyWhenCreationDateExists() throws InterruptedException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        Calendar currentDate = Calendar.getInstance();
+
+        storageService.setCreationDate(doc, currentDate);
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+        Set<String> expectedChangedProperties = Collections.singleton("dc:modified");
+
+        Thread.sleep(1000);
+
+        currentDate = Calendar.getInstance();
+        storageService.setModificationDate(doc, currentDate);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, expectedChangedProperties);
+
+        assertEquals(currentDate, doc.getPropertyValue("dc:modified"));
+        assertThat((Calendar) doc.getPropertyValue("dc:modified"),
+                greaterThan((Calendar) doc.getPropertyValue("dc:created")));
+    }
+
+    @Test
+    public void shouldSetModificationDateAndCreationDateWhenCreationDateNotExists() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+        Set<String> expectedChangedProperties = new HashSet<>();
+        expectedChangedProperties.add("dc:created");
+        expectedChangedProperties.add("dc:modified");
+
+        Calendar currentDate = Calendar.getInstance();
+        storageService.setModificationDate(doc, currentDate);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, expectedChangedProperties);
+
+        assertEquals(currentDate, doc.getPropertyValue("dc:created"));
+        assertEquals(currentDate, doc.getPropertyValue("dc:modified"));
+    }
+
+    @Test
+    public void shouldSetIssuedDate() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+        Set<String> expectedChangedProperties = Collections.singleton("dc:issued");
+
+        Calendar currentDate = Calendar.getInstance();
+        storageService.setIssuedDate(doc, currentDate);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, expectedChangedProperties);
+
+        assertEquals(currentDate, doc.getPropertyValue("dc:issued"));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenNoPrincipalIsProvided() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+
+        Event event = getEventFromDocumentContext(ABOUT_TO_CREATE, session, null);
+        storageService.addContributor(doc, event);
+    }
+
+    @Test
+    public void shouldDoNothingWhenNoOriginatingUserIsProvided() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+
+        Event event = getEventFromDocumentContext(BEFORE_DOC_UPDATE, session, new SystemPrincipal(null));
+        storageService.addContributor(doc, event);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, new HashSet<>());
+    }
+
+    @Test
+    public void shouldDoNothingWhenOriginatingUserIsSystem() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+
+        Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
+
+        Event event = getEventFromDocumentContext(BEFORE_DOC_UPDATE, session, new SystemPrincipal("system"));
+        storageService.addContributor(doc, event);
+
+        assertDocumentPropertiesChanges(doc, originalProperties, new HashSet<>());
     }
 
     @Test
