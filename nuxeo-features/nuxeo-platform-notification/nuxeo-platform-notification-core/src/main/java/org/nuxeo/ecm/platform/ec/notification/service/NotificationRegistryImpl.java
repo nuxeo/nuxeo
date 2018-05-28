@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,17 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +44,9 @@ public class NotificationRegistryImpl implements NotificationRegistry {
     private static final Log log = LogFactory.getLog(NotificationRegistryImpl.class);
 
     // maps EventId to a list of notifications
-    private final Map<String, List<Notification>> notificationRegistry = new HashMap<String, List<Notification>>();
+    private final Map<String, List<Notification>> notificationRegistry = new HashMap<>();
 
-    private final List<Notification> notificationList = new ArrayList<Notification>();
+    private final List<Notification> notificationList = new ArrayList<>();
 
     @Override
     public void clear() {
@@ -71,7 +69,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
             }
 
             if (notificationList.contains(notification)) {
-                unregisterNotification(notification, events);
+                unregisterNotification(notification);
             }
             notificationList.add(notification);
 
@@ -84,18 +82,8 @@ public class NotificationRegistryImpl implements NotificationRegistry {
                 }
             }
         } else {
-            unregisterNotification(notif, events);
+            unregisterNotification(notif);
         }
-    }
-
-    @Override
-    @Deprecated
-    /**
-     * Please use unregisterNotification(Notification notif) instead.
-     * Deprecated since 5.7.2
-     */
-    public void unregisterNotification(Notification notif, List<String> events) {
-        unregisterNotification(notif);
     }
 
     @Override
@@ -109,29 +97,17 @@ public class NotificationRegistryImpl implements NotificationRegistry {
                 notif.getSubjectTemplate(), notif.getAutoSubscribed(), notif.getSubject(), notif.getAvailableIn(),
                 notif.getLabel());
 
-        if (notificationList.contains(notification)) {
-            notificationList.remove(notification);
-        }
-
-        for (String event : notificationRegistry.keySet()) {
-            for (int i = notificationRegistry.get(event).size() - 1; i >= 0; i--) {
-                List<Notification> regNotifs = notificationRegistry.get(event);
-                if (regNotifs.contains(notification)) {
-                    regNotifs.remove(notification);
-                }
-            }
-        }
+        notificationList.remove(notification);
+        notificationRegistry.values().forEach(notifications -> notifications.remove(notification));
     }
 
     @Override
     public Set<String> getNotificationEventNames() {
-        Set<String> ret = new HashSet<String>();
-        for (String name : notificationRegistry.keySet()) {
-            if (!notificationRegistry.get(name).isEmpty()) {
-                ret.add(name);
-            }
-        }
-        return ret;
+        return notificationRegistry.entrySet()
+                                   .stream()
+                                   .filter(entry -> !entry.getValue().isEmpty())
+                                   .map(Entry::getKey)
+                                   .collect(Collectors.toSet());
     }
 
     /**
@@ -139,11 +115,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
      */
     @Override
     public List<Notification> getNotificationsForEvent(String eventId) {
-        if (notificationRegistry.get(eventId) == null) {
-            notificationRegistry.put(eventId, new ArrayList<Notification>());
-        }
-
-        return notificationRegistry.get(eventId);
+        return notificationRegistry.computeIfAbsent(eventId, k -> new ArrayList<>());
     }
 
     @Override
@@ -151,13 +123,17 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         return notificationList;
     }
 
+    /**
+     * @deprecated since 10.2, seems unused
+     */
+    @Deprecated
     public Map<String, List<Notification>> getNotificationRegistry() {
         return notificationRegistry;
     }
 
     @Override
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
-        List<Notification> result = new ArrayList<Notification>();
+        List<Notification> result = new ArrayList<>();
         for (Notification notification : notificationList) {
             if (notification.getAutoSubscribed()) {
                 continue;
