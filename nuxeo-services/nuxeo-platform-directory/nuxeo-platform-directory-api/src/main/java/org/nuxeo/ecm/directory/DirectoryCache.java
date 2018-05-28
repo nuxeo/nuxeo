@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheManagement;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -129,12 +130,12 @@ public class DirectoryCache {
                 } catch (CloneNotSupportedException e) {
                     // ignore, no concurrency issues if not a DocumentModelImpl
                 }
-                cache.put(entryId, dm);
+                ((CacheManagement) cache).putLocal(entryId, dm);
                 if (fetchReferences) {
                     sizeCounter.inc();
                 }
             } else if (negativeCaching) {
-                cache.put(entryId, CACHE_MISS);
+                ((CacheManagement) cache).putLocal(entryId, CACHE_MISS);
             }
             missesCounter.inc();
         } else {
