@@ -1,6 +1,5 @@
 # Nuxeo Gatling bench
 
-
 # Overview
 
 This module provides [Gatling](http://gatling.io/) bench scripts and make it easy to create new one.
@@ -183,15 +182,7 @@ Default options: see below
 
 ## Running a single simulation on an existing instance
 
-    mvn -nsu gatling:test -Dgatling.simulationClass -Pbench
-    ...
-    Choose a simulation number:
-     [0] org.nuxeo.cap.bench.Sim00Setup
-     [1] org.nuxeo.cap.bench.Sim10CreateFolders
-     [2] org.nuxeo.cap.bench.Sim20CreateDocuments
-     [3] org.nuxeo.cap.bench.Sim30Navigation
-     [4] org.nuxeo.cap.bench.Sim30UpdateDocuments
-     ...
+    mvn -nsu test gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup  -Pbench
 
 Common options with default values:
 
@@ -212,9 +203,6 @@ Note that you may need to edit the administrator account if it is not the defaul
 
     src/test/resources/data/admins.csv
 
-You can also bypass the interactive mode and execute a simulation
-
-    mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench
 
 # Resources
 
