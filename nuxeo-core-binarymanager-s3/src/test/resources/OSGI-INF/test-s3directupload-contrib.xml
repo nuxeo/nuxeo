@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<component name="s3DirectUpload" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.storage.cloud.managment.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <store name="s3TransientStore" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
+      <targetMaxSizeMB>100</targetMaxSizeMB>
+      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
+      <firstLevelTTL>120</firstLevelTTL>
+      <secondLevelTTL>10</secondLevelTTL>
+    </store>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="s3TransientStore">
+      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="bucket">nxp-24754-transient</property>
+      <property name="region">eu-west-3</property>
+      <property name="bucket.prefix"></property>
+      <property name="cachesize">100MB</property>
+      <property name="connection.max">50</property>
+      <property name="connection.retry">3</property>
+      <property name="connection.timeout">50000</property>
+      <property name="socket.timeout">50000</property>
+      <!-- this blob provider is used for transient storage -->
+      <property name="transient">true</property>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.automation.server.BatchManager" point="handlers">
+    <batchHandler>
+      <name>s3</name>
+      <class>org.nuxeo.ecm.core.storage.sql.MockedS3DirectBatchHandler</class>
+      <property name="transientStore">s3TransientStore</property>
+      <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="bucket">nxp-24754-transient</property>
+      <property name="region">eu-west-3</property>
+      <property name="policyTemplate">{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:PutObject","Resource":["arn:aws:s3:::nxp-24754-transient/*"]}]}
+      </property>
+    </batchHandler>
+  </extension>
+
+</component>

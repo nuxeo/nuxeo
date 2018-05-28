@@ -43,6 +43,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 
@@ -131,23 +132,30 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         expiration = Integer.parseInt(defaultIfEmpty(properties.get(INFO_EXPIRATION), "0"));
         policy = properties.get(POLICY_TEMPLATE_PROPERTY);
 
-        AWSCredentialsProvider awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsSecretKeyId,
-                awsSecretAccessKey);
-        stsClient = AWSSecurityTokenServiceClientBuilder.standard()
-                                                        .withRegion(region)
-                                                        .withCredentials(awsCredentialsProvider)
-                                                        .build();
-        amazonS3 = AmazonS3ClientBuilder.standard()
-                                        .withRegion(region)
-                                        .withCredentials(awsCredentialsProvider)
-                                        .withAccelerateModeEnabled(accelerateModeEnabled)
-                                        .build();
+        AWSCredentialsProvider credentials = S3Utils.getAWSCredentialsProvider(awsSecretKeyId, awsSecretAccessKey);
+        stsClient = initializeSTSClient(credentials);
+        amazonS3 = initializeS3Client(credentials);
 
         if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith("/")) {
             log.warn(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
                     BUCKET_PREFIX_PROPERTY, bucketPrefix));
             bucketPrefix += "/";
         }
+    }
+
+    protected AWSSecurityTokenService initializeSTSClient(AWSCredentialsProvider credentials) {
+        return AWSSecurityTokenServiceClientBuilder.standard()
+                                                   .withRegion(region)
+                                                   .withCredentials(credentials)
+                                                   .build();
+    }
+
+    protected AmazonS3 initializeS3Client(AWSCredentialsProvider credentials) {
+        return AmazonS3ClientBuilder.standard()
+                                    .withRegion(region)
+                                    .withCredentials(credentials)
+                                    .withAccelerateModeEnabled(accelerateModeEnabled)
+                                    .build();
     }
 
     @Override
@@ -168,7 +176,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             request.setDurationSeconds(expiration);
         }
 
-        Credentials credentials = stsClient.getFederationToken(request).getCredentials();
+        Credentials credentials = getSTSCredentials(request);
 
         Map<String, Object> properties = batch.getProperties();
         properties.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
@@ -183,13 +191,14 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         return batch;
     }
 
+    protected Credentials getSTSCredentials(GetFederationTokenRequest request) {
+        return stsClient.getFederationToken(request).getCredentials();
+    }
+
     @Override
     public boolean completeUpload(String batchId, String fileIndex, BatchFileInfo fileInfo) {
         String fileKey = fileInfo.getKey();
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
-        if (metadata == null) {
-            return false;
-        }
         String etag = metadata.getETag();
         if (isEmpty(etag)) {
             return false;
@@ -198,7 +207,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         String encoding = metadata.getContentEncoding();
 
         ObjectMetadata newMetadata;
-        if (metadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
+        if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
             newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, etag, true);
         } else {
             newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, etag, true);
@@ -215,12 +224,16 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         long length = newMetadata.getContentLength();
         String digest = newMetadata.getContentMD5();
         String blobProviderId = transientStoreName; // TODO decouple this
-        Blob blob = new BinaryBlob(new LazyBinary(blobKey, blobProviderId, null), blobKey, filename, mimeType, encoding,
-                digest, length);
+        Binary binary = new LazyBinary(blobKey, blobProviderId, null);
+        Blob blob = new BinaryBlob(binary, blobKey, filename, mimeType, encoding, digest, length);
         Batch batch = getBatch(batchId);
         batch.addFile(fileIndex, blob, filename, mimeType);
 
         return true;
+    }
+
+    protected long lowerThresholdToUseMultipartCopy() {
+        return NON_MULTIPART_COPY_MAX_SIZE;
     }
 
 }

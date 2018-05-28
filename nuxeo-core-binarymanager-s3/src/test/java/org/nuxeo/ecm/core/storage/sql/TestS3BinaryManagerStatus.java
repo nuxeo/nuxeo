@@ -37,9 +37,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.runtime.management")
-@Deploy("org.nuxeo.ecm.core.management")
-@Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
+@Deploy({ "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.core.management",
+        "org.nuxeo.ecm.core.storage.binarymanager.s3" })
 public class TestS3BinaryManagerStatus {
 
     @Inject
