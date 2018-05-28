@@ -8,4 +8,5 @@
   <bindPassword>changeme</bindPassword>
   <poolingEnabled>false</poolingEnabled>
   <verifyServerCert>false</verifyServerCert>
+  <poolingTimeout>300000</poolingTimeout>
 </server>

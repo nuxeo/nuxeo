@@ -208,7 +208,8 @@ public class LDAPDirectory extends AbstractDirectory {
             // the rest of the properties controlling pool configuration are system properties!
             setSystemProperty("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
             setSystemProperty("com.sun.jndi.ldap.connect.pool.authentication", "none simple DIGEST-MD5");
-            setSystemProperty("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30 min
+            setSystemProperty("com.sun.jndi.ldap.connect.pool.timeout",
+                    Integer.toString(serverConfig.getPoolingTimeout())); // 1 min by default
         }
 
         if (!serverConfig.isVerifyServerCert() && serverConfig.useSsl) {

@@ -41,6 +41,7 @@
           <retries>5</retries>
 
           <poolingEnabled>true</poolingEnabled>
+          <poolingConnectionTimeout>60000</poolingConnectionTimeout>
           <verifyServerCert>true</verifyServerCert>
 
           <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
@@ -62,6 +63,10 @@
 
       The poolingEnabled element specifies whether to use LDAP connection pooling.
       The default is true.
+
+      The poolingTimeout element specifies, in milliseconds, how long a connection
+      may remain in the pool when LDAP connection pooling is enabled.
+      The default is 60000.
 
       The verifyServerCert element specifies whether, in SSL mode, all certificates
       should be checked. This should only be disabled when testing with test server
