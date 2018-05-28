@@ -147,7 +147,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         }
     }
 
-    protected static class CacheInvalidation implements SerializableMessage {
+    public static class CacheInvalidation implements SerializableMessage {
 
         private static final long serialVersionUID = 1L;
 
@@ -185,7 +185,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         }
     }
 
-    protected static abstract class AbstractCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
+    public static abstract class AbstractCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
 
         public static final String ALL_KEYS = "__ALL__";
 
