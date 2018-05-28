@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,18 @@
  */
 package org.nuxeo.ecm.platform.ec.notification.service;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -77,6 +79,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
+    /** @deprecated since 10.2, seems unused */
+    @Deprecated
     public static final String SUBSCRIPTION_NAME = "UserSubscription";
 
     protected static final String NOTIFICATIONS_EP = "notifications";
@@ -185,7 +189,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         String serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
         if (serverPrefix != null) {
             generalSettings.serverPrefix = serverPrefix.endsWith("//")
-                    ? serverPrefix.substring(0, serverPrefix.length() - 1) : serverPrefix;
+                    ? serverPrefix.substring(0, serverPrefix.length() - 1)
+                    : serverPrefix;
         }
         generalSettings.eMailSubjectPrefix = Framework.expandVars(generalSettings.eMailSubjectPrefix);
         generalSettings.mailSessionJndiName = Framework.expandVars(generalSettings.mailSessionJndiName);
@@ -206,7 +211,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
-                notificationRegistry.unregisterNotification(notifDesc, getNames(notifDesc.getEvents()));
+                notificationRegistry.unregisterNotification(notifDesc);
             }
         } else if (TEMPLATES_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
@@ -239,10 +244,10 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     protected void disableEvents(DocumentModel doc) {
-        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
-        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, TRUE);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, TRUE);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, TRUE);
     }
 
     protected void restoreEvents(DocumentModel doc) {
@@ -332,7 +337,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public void removeSubscription(String username, String notification, DocumentModel doc) {
-        removeSubscriptions(username, Arrays.asList(notification), doc);
+        removeSubscriptions(username, singletonList(notification), doc);
     }
 
     private static void registerTemplate(TemplateDescriptor td) {
@@ -493,7 +498,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
         return CoreInstance.doPrivileged(repositoryName,
                 (CoreSession s) -> s.query(nxql).stream().map(NotificationService::detachDocumentModel).collect(
-                        Collectors.toList()));
+                        toList()));
     }
 
     protected static DocumentModel detachDocumentModel(DocumentModel doc) {

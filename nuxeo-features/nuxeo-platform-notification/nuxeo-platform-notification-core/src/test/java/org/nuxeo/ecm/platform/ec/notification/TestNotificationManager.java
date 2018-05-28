@@ -18,13 +18,16 @@
  */
 package org.nuxeo.ecm.platform.ec.notification;
 
+import static java.lang.Boolean.FALSE;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,11 +38,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 9.1
@@ -55,6 +58,9 @@ public class TestNotificationManager {
     @Inject
     protected NotificationManager notificationManager;
 
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
     @Test
     public void testSubscribedDocuments() {
 
@@ -68,46 +74,41 @@ public class TestNotificationManager {
         // Add subscriptions
         DocumentModel doc1 = session.createDocument(session.createDocumentModel("/", "doc1", "File"));
         DocumentModel doc2 = session.createDocument(session.createDocumentModel("/", "doc2", "File"));
-        notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc1, false, principal,
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc1, FALSE, principal,
                 "notification1");
 
         // Make sure we don't change the context data, that could affect following write operations
         assertNull(doc1.getContextData().get(DISABLE_AUDIT_LOGGER));
 
-        notificationManager.addSubscription(prefixedPrincipalName, "notification2", doc1, false, principal,
+        notificationManager.addSubscription(prefixedPrincipalName, "notification2", doc1, FALSE, principal,
                 "notification1");
-        notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc2, false, principal,
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc2, FALSE, principal,
                 "notification1");
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
+        transactionalFeature.nextTransaction();
+
         List<DocumentModel> subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName,
                 repositoryName);
-        Collections.sort(subscribedDocuments, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-        assertEquals(Arrays.asList(doc1, doc2), subscribedDocuments);
+        subscribedDocuments.sort(comparing(DocumentModel::getTitle));
+        assertEquals(asList(doc1, doc2), subscribedDocuments);
 
         // Check that we can get the user's subscriptions from the doc adapter
         List<String> doc1Notifications = subscribedDocuments.get(0)
                                                             .getAdapter(SubscriptionAdapter.class)
                                                             .getUserSubscriptions(prefixedPrincipalName);
-        Collections.sort(doc1Notifications);
-        List<String> expectedDoc1Notifications = Arrays.asList("notification1", "notification2");
+        doc1Notifications.sort(naturalOrder());
+        List<String> expectedDoc1Notifications = asList("notification1", "notification2");
         assertEquals(expectedDoc1Notifications, doc1Notifications);
         List<String> doc2Notifications = subscribedDocuments.get(1)
                                                             .getAdapter(SubscriptionAdapter.class)
                                                             .getUserSubscriptions(prefixedPrincipalName);
-        assertEquals(Collections.singletonList("notification1"), doc2Notifications);
+        assertEquals(singletonList("notification1"), doc2Notifications);
 
         // Remove subscriptions
         notificationManager.removeSubscriptions(prefixedPrincipalName, expectedDoc1Notifications, doc1);
         notificationManager.removeSubscription(prefixedPrincipalName, "notification1", doc2);
         assertNull(doc2.getContextData().get(DISABLE_AUDIT_LOGGER));
-
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
+        transactionalFeature.nextTransaction();
+        
         assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
     }
 

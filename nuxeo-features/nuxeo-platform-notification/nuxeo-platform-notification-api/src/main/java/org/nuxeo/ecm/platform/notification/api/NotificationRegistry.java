@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.notification.api;
 
 import java.io.Serializable;
@@ -36,11 +33,12 @@ public interface NotificationRegistry extends Serializable {
 
     void registerNotification(Notification notif, List<String> events);
 
-    @Deprecated
     /**
-     * Deperecated since 5.7.2. Prefer to use unregisterNotification(Notification notif)
+     * Unregister notification contribution and remove reference in event registry
+     *
+     * @since 5.6
      */
-    void unregisterNotification(Notification notif, List<String> events);
+    void unregisterNotification(Notification notif);
 
     /**
      * Gets the list of event names used by notifications.
@@ -54,12 +52,5 @@ public interface NotificationRegistry extends Serializable {
     List<Notification> getNotifications();
 
     List<Notification> getNotificationsForSubscriptions(String parentType);
-
-    /**
-     * Unregister notification contribution and remove reference in event registry
-     *
-     * @since 5.6
-     */
-    void unregisterNotification(Notification notif);
 
 }

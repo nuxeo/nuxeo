@@ -44,13 +44,13 @@ public class SubscriptionAdapter {
 
     public static final String NOTIFIABLE_FACET = "Notifiable";
 
-    private static final String NOTIF_PROPERTY = "notif:notifications";
+    protected static final String NOTIF_PROPERTY = "notif:notifications";
 
-    private static final String NOTIF_SUBSCRIBERSKEY = "subscribers";
+    protected static final String NOTIF_SUBSCRIBERSKEY = "subscribers";
 
-    private static final String NOTIF_NAMEKEY = "name";
+    protected static final String NOTIF_NAMEKEY = "name";
 
-    private DocumentModel doc;
+    protected DocumentModel doc;
 
     public SubscriptionAdapter(DocumentModel doc) {
         this.doc = doc;
@@ -65,16 +65,14 @@ public class SubscriptionAdapter {
      * <dd>list of subscribers</dd>
      * </dl>
      * After having modified the map, update the doc with {@link #setNotificationMap(Map)}
-     *
-     * @return
      */
-    private Map<String, Set<String>> getNotificationMap() {
+    protected Map<String, Set<String>> getNotificationMap() {
 
         if (!doc.hasFacet(SubscriptionAdapter.NOTIFIABLE_FACET)) {
             return new HashMap<>();
         }
 
-        Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> result = new HashMap<>();
 
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> props = (List<Map<String, Serializable>>) doc.getPropertyValue(NOTIF_PROPERTY);
@@ -84,7 +82,7 @@ public class SubscriptionAdapter {
 
             if (subscribers != null && subscribers.length > 0) {
                 if (!result.containsKey(notificationName)) {
-                    Set<String> subscribersSet = new HashSet<String>();
+                    Set<String> subscribersSet = new HashSet<>();
                     result.put(notificationName, subscribersSet);
                 }
                 result.get(notificationName).addAll(Arrays.asList(subscribers));
@@ -98,14 +96,14 @@ public class SubscriptionAdapter {
      * Take a map and store it in the document's notification property. To get the original map, use
      * {@link #getNotificationMap()}
      */
-    private void setNotificationMap(Map<String, Set<String>> map) {
-        List<Map<String, Serializable>> props = new ArrayList<Map<String, Serializable>>();
+    protected void setNotificationMap(Map<String, Set<String>> map) {
+        List<Map<String, Serializable>> props = new ArrayList<>();
         for (Entry<String, Set<String>> entry : map.entrySet()) {
             Set<String> subscribers = entry.getValue();
             if (!subscribers.isEmpty()) {
                 Map<String, Serializable> propMap = new HashMap<>();
                 propMap.put(NOTIF_NAMEKEY, entry.getKey());
-                propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<String>(subscribers));
+                propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<>(subscribers));
                 props.add(propMap);
             }
         }
@@ -121,9 +119,6 @@ public class SubscriptionAdapter {
 
     /**
      * Return the list of subscribers name for a given notification.
-     *
-     * @param notification
-     * @return
      */
     public List<String> getNotificationSubscribers(String notification) {
         Set<String> subscribers = getNotificationMap().get(notification);
@@ -132,11 +127,9 @@ public class SubscriptionAdapter {
 
     /**
      * Return the list of of subscriptions for a given user
-     *
-     * @return
      */
     public List<String> getUserSubscriptions(String username) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Entry<String, Set<String>> entry : getNotificationMap().entrySet()) {
             if (entry.getValue().contains(username)) {
                 result.add(entry.getKey());
@@ -147,9 +140,6 @@ public class SubscriptionAdapter {
 
     /**
      * Add a subscription to a notification for a given user.
-     *
-     * @param username
-     * @param notification
      */
     public void addSubscription(String username, String notification) {
         Map<String, Set<String>> notificationMap = getNotificationMap();
@@ -162,12 +152,10 @@ public class SubscriptionAdapter {
 
     /**
      * Add a subscription to all notification for a given user
-     *
-     * @param username
      */
     public void addSubscriptionsToAll(String username) {
 
-        Set<String> notificationNames = new HashSet<String>();
+        Set<String> notificationNames = new HashSet<>();
 
         NotificationManager ns = Framework.getService(NotificationManager.class);
 
@@ -194,9 +182,6 @@ public class SubscriptionAdapter {
 
     /**
      * Remove a subscription to a notification for a given user.
-     *
-     * @param username
-     * @param notification
      */
     public void removeUserNotificationSubscription(String username, String notification) {
         Map<String, Set<String>> map = getNotificationMap();
@@ -208,8 +193,6 @@ public class SubscriptionAdapter {
 
     /**
      * Copy the subscriptions of the current doc to the targetted document.
-     *
-     * @param targetDoc
      */
     public void copySubscriptionsTo(DocumentModel targetDoc) {
         if (!targetDoc.hasFacet(NOTIFIABLE_FACET)) {
