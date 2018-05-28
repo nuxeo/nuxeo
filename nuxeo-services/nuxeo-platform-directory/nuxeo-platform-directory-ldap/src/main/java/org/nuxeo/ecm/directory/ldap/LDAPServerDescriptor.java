@@ -75,6 +75,12 @@ public class LDAPServerDescriptor {
     @XNode("retries")
     public int retries = 5;
 
+    /**
+     * @since 10.2
+     */
+    @XNode("poolingTimeout")
+    protected int poolingTimeout = 60000;
+
     protected LinkedHashSet<LdapEntry> ldapEntries;
 
     protected boolean isDynamicServerList = false;
@@ -304,6 +310,13 @@ public class LDAPServerDescriptor {
 
     public int getConnectionTimeout() {
         return connectionTimeout;
+    }
+
+    /**
+     * @since 10.2
+     */
+    public int getPoolingTimeout() {
+        return poolingTimeout;
     }
 
     public void setConnectionTimeout(int connectionTimeout) {
