@@ -234,4 +234,13 @@ public class TestLDAPDescriptors {
         assertEquals("cn=emptyRef", descriptor.getEmptyRefMarker());
     }
 
+    /**
+     * @since 10.2
+     */
+    @Test
+    public void testGetPoolingTimeout() {
+        assertEquals(60000, server1.getPoolingTimeout());
+        assertEquals(300000, server2.getPoolingTimeout());
+    }
+
 }
