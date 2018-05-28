@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,7 +231,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() {
+    public void testContributorsAndModifiedDoesNotChangeIfThereAreNoChanges() {
         DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         childFile = session.createDocument(childFile);
         DataModel dm = childFile.getDataModel("dublincore");
