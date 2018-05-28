@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <component name="DublinCoreStorageService" version="1.0.0">
 
-  <implementation
-    class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService" />
+
+  <implementation class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService"/>
+  </service>
 
   <documentation>
     The DublinCoreStorageService listen to Core event DOCUMENT_UPDATED and
@@ -25,7 +29,7 @@
     </documentation>
 
     <listener name="dclistener" async="false" postCommit="false"
-        class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
+              class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
       <event>documentPublished</event>

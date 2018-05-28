@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
-import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -75,23 +74,17 @@ public class TestDublinCoreStorage {
     @Inject
     protected CoreFeature feature;
 
-    protected StorageConfiguration storageConfiguration;
-
     @Inject
     protected CoreSession session;
 
     @Inject
     protected HotDeployer deployer;
 
+    protected StorageConfiguration storageConfiguration;
+
     @Before
     public void before() {
         storageConfiguration = feature.getStorageConfiguration();
-    }
-
-    @Test
-    public void testStorageService() {
-        DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
-        assertNotNull(service);
     }
 
     @Test

@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Julien Anguenot (ja@nuxeo.com)
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -26,8 +27,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCore service facade.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class NXDublinCore {
 
@@ -37,7 +36,10 @@ public final class NXDublinCore {
 
     /**
      * Locates the core service using NXRuntime.
+     *
+     * @deprecated since 10.2, use directly {@link Framework#getService(Class)}
      */
+    @Deprecated
     public static DublinCoreStorageService getDublinCoreStorageService() {
         return (DublinCoreStorageService) Framework.getRuntime().getComponent(DublinCoreStorageService.ID);
     }
