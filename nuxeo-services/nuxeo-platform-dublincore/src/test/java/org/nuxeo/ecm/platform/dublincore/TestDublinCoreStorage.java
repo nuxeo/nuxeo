@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
-import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -83,9 +82,6 @@ public class TestDublinCoreStorage {
 
     @Inject
     protected HotDeployer deployer;
-
-    @Inject
-    protected TrashService trashService;
 
     @Before
     public void before() {
@@ -224,7 +220,8 @@ public class TestDublinCoreStorage {
         }
 
         // Test if a previously contributor will be move to the end of the list
-        try (CloseableCoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+        try (CloseableCoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(),
+                "Administrator")) {
             DocumentModel childFile3 = session4.getDocument(childFile2.getRef());
             childFile3.setProperty("dublincore", "source", "testing");
             childFile3 = session4.saveDocument(childFile3);
@@ -237,7 +234,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() {
+    public void testContributorsAndModifiedDoesNotChangeIfThereAreNoChanges() {
         DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         childFile = session.createDocument(childFile);
         DataModel dm = childFile.getDataModel("dublincore");
