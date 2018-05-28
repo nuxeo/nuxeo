@@ -29,14 +29,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -80,35 +81,46 @@ public class DublinCoreStorageService extends DefaultComponent {
             }
         }
 
-        String[] contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
-
-        List<String> contributorsList = new ArrayList<String>();
-
-        if (contributorsArray != null && contributorsArray.length > 0) {
-            contributorsList = Arrays.asList(contributorsArray);
-            // make it resizable
-            contributorsList = new ArrayList<String>(contributorsList);
-        } else {
-            // initialize creator too
-            SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
-            if (schemaMgr.getSchema("dublincore").getField("creator") != null) {
-                // First time only => creator
-                doc.setProperty("dublincore", "creator", principalName);
-            }
+        if (doc.getProperty("dublincore", "creator") == null) {
+            // First time only => creator
+            doc.setProperty("dublincore", "creator", principalName);
         }
 
-        if (!contributorsList.contains(principalName)) {
-            contributorsList.add(principalName);
-            String[] contributorListIn = new String[contributorsList.size()];
-            contributorsList.toArray(contributorListIn);
-            doc.setProperty("dublincore", "contributors", contributorListIn);
+        List<String> contributors = getSanitizedExistingContributors(doc);
+        if (!contributors.contains(principalName)) {
+            contributors.add(principalName);
         }
-
+        doc.setProperty("dublincore", "contributors", contributors);
         doc.setProperty("dublincore", "lastContributor", principalName);
     }
 
     public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {
         doc.setPropertyValue("dc:issued", issuedDate);
+    }
+
+    /**
+     * Returns a "Sanitized" list of contributors according to NXP-25005
+     *
+     * @param doc The document from which the contributors list will be retrieved.
+     * @return A list of contributors without repetitions and prefixed entries.
+     */
+    protected List<String> getSanitizedExistingContributors(DocumentModel doc) {
+        String[] contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
+        if (ArrayUtils.isEmpty(contributorsArray)) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(contributorsArray)
+                .map(DublinCoreStorageService::stripPrincipalPrefix)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    protected static String stripPrincipalPrefix(String principal) {
+        if (principal.startsWith(NuxeoPrincipal.PREFIX)) {
+            return principal.substring(NuxeoPrincipal.PREFIX.length());
+        } else {
+            return principal;
+        }
     }
 
 }
