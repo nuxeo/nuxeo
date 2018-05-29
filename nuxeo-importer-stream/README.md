@@ -158,6 +158,7 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlob
 ```
 
 The additional parameters are:
+
 | Params| Default | Description |
 | --- | ---: | --- |
 | `watermark` | | Ask to add a watermark to the file before importing it, use the provided string if possible. |
