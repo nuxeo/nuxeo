@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Basic implementation of {@link ObjectResolver} which provides {@link #parameters} and {@link #validation} support.
+ *
  * @since 10.2
  */
 public abstract class AbstractObjectResolver implements ObjectResolver {
