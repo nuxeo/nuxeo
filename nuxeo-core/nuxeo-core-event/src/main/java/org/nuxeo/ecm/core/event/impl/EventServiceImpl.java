@@ -271,7 +271,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     log.error(message, e);
                 }
                 // rethrow or swallow
-                if (event.isBubbleException()) {
+                if (TransactionHelper.isTransactionMarkedRollback()) {
+                    throw e;
+                } else if (event.isBubbleException()) {
                     throw e;
                 } else if (event.isMarkedForRollBack()) {
                     Exception ee;

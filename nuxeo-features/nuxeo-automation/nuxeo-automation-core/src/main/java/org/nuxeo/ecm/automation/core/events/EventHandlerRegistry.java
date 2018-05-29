@@ -129,8 +129,12 @@ public class EventHandlerRegistry {
                     // TODO this will save the session at each iteration!
                     svc.run(ctx, handler.getChainId());
                 }
-            } catch (NuxeoException | OperationException e) {
+            } catch (OperationException e) {
                 log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
+                throw new NuxeoException(e);
+            } catch (NuxeoException e) {
+                log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
+                throw e;
             }
         }
     }
