@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Refresh Faces locale and timezone when the userProfileDocument is updated (and created).
@@ -44,6 +45,11 @@ public class UserLocaleSelectorListener implements EventListener {
 
         // The document should be the current user profile doc
         if (!userProfileDocument.hasFacet("UserProfile")) {
+            return;
+        }
+        // No need to sync Seam session for system user
+        if (LoginComponent.SYSTEM_USERNAME.equals(ctx.getPrincipal().getName())){
+            log.debug("Skip locale update for system user");
             return;
         }
 
