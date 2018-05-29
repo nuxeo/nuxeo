@@ -203,7 +203,7 @@
     <gatling.version>2.3.1</gatling.version>
     <gatling-plugin.version>2.2.4</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
-    <scala-logging.version>3.1.0</scala-logging.version>
+    <scala-logging.version>3.9.0</scala-logging.version>
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
     <jgiven.version>0.15.1</jgiven.version>
 
@@ -4869,7 +4869,7 @@
       </dependency>
       <dependency>
         <groupId>com.typesafe.scala-logging</groupId>
-        <artifactId>scala-logging_2.11</artifactId>
+        <artifactId>scala-logging_2.12</artifactId>
         <version>${scala-logging.version}</version>
       </dependency>
       <dependency>
@@ -4918,12 +4918,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
-        <artifactId>kafka_2.11</artifactId>
+        <artifactId>kafka_2.12</artifactId>
         <version>${kafka.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
-        <artifactId>kafka_2.11</artifactId>
+        <artifactId>kafka_2.12</artifactId>
         <version>${kafka.version}</version>
         <classifier>test</classifier>
         <scope>test</scope>
