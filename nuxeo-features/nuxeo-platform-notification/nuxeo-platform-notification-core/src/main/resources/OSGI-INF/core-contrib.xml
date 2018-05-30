@@ -2,7 +2,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
-    <schema name="notification" prefix="notif" src="schemas/notification.xsd" />
+    <schema name="notification" prefix="notif" src="schemas/notification.xsd" isVersionWritable="true" />
   </extension>
 
 
