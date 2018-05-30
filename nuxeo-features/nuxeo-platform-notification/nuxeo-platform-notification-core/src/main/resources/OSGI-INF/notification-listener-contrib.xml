@@ -4,6 +4,15 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
     <documentation>
+      Remove notification subscriptions from document when it is checked in.
+    </documentation>
+
+    <listener name="notificationCheckedInListener" async="false" postCommit="false"
+              class="org.nuxeo.ecm.platform.ec.notification.NotificationCheckedInListener" priority="-30">
+      <event>documentCheckedIn</event>
+    </listener>
+
+    <documentation>
       Copy relations from the source document to the newly published proxy.
     </documentation>
 
