@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ec.notification;
 
+import static java.lang.Boolean.FALSE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +26,7 @@ import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -108,6 +110,68 @@ public class TestNotificationManager {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
+
+        assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
+    }
+
+    @Test
+    // NXP-24185: test I can subscribe to published document
+    public void testSubscriptionOnPublishedDocument() {
+
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String prefixedPrincipalName = NuxeoPrincipal.PREFIX + principal.getName();
+        String repositoryName = session.getRepositoryName();
+
+        // no subscribed documents at first
+        assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
+
+        // create container for publication and file
+        DocumentModel section = session.createDocument(session.createDocumentModel("/", "section", "Section"));
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file", "File"));
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", file, FALSE, principal,
+                "notification1");
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+
+        // publish it
+        DocumentModel publishedDocument = session.publishDocument(file, section);
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+
+        // check that notification was removed from version (which allows to subscribe to proxy)
+        List<DocumentModel> subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName,
+                repositoryName);
+        assertEquals(Collections.singletonList(file), subscribedDocuments);
+
+        // add subscriptions to proxy
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", publishedDocument, FALSE, principal,
+                "notification1");
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+
+        // check that we now have published document but not the version
+        subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName);
+        subscribedDocuments.sort(Comparator.comparing(DocumentModel::getPathAsString));
+        assertEquals(Arrays.asList(file, publishedDocument), subscribedDocuments);
+
+        // Remove subscriptions
+        notificationManager.removeSubscription(prefixedPrincipalName, "notification1", file);
+        notificationManager.removeSubscription(prefixedPrincipalName, "notification1", publishedDocument);
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+
         assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
     }
 
