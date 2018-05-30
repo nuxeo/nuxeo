@@ -2097,7 +2097,7 @@ public class NuxeoCmisService extends AbstractCmisService
         }
         // PWC last
         DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef()) : doc;
-        if (pwc != null && pwc.isCheckedOut()) {
+        if (pwc != null && (pwc.isCheckedOut() || list.isEmpty())) {
             NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter, includeAllowableActions,
                     IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, extension);
             list.add(od);
