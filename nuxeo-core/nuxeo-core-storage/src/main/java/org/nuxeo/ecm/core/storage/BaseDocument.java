@@ -116,6 +116,11 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
 
+    /**
+     * Only on 7.10-HF
+     */
+    protected static final String NOTIFICATION_SCHEMA = "notification";
+
     public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(Arrays.asList( //
             FULLTEXT_JOBID_PROP, //
             FULLTEXT_BINARYTEXT_PROP, //
@@ -273,7 +278,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (!isVersion()) {
             throw new PropertyException("Cannot write readonly property: " + name);
         }
-        if (!name.startsWith(DC_PREFIX)) {
+        if (!name.startsWith(DC_PREFIX) && !NOTIFICATION_SCHEMA.equals(property.getSchema().getName())) {
             throw new PropertyException("Cannot set property on a version: " + name);
         }
         // ignore write if value can quickly be detected as unchanged
