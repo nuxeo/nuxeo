@@ -3,13 +3,13 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/externalReferenceSample"
   xmlns:nxs="http://nuxeo.com/schemas/resolver" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
 
-  <xs:element name="docIdRef">
+  <xs:element name="docRepoAndIdRef">
     <xs:simpleType>
       <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id" />
     </xs:simpleType>
   </xs:element>
 
-  <xs:element name="docPathRef">
+  <xs:element name="docRepoAndPathRef">
     <xs:simpleType>
       <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
     </xs:simpleType>
