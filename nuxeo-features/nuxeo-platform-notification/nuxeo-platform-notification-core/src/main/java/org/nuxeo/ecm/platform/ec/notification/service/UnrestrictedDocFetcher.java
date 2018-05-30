@@ -21,6 +21,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class UnrestrictedDocFetcher extends UnrestrictedSessionRunner {
 
@@ -33,7 +35,7 @@ public class UnrestrictedDocFetcher extends UnrestrictedSessionRunner {
     private String query;
 
     private UnrestrictedDocFetcher() {
-        super("default");
+        super(Framework.getService(RepositoryManager.class).getDefaultRepositoryName());
     }
 
     @Override
