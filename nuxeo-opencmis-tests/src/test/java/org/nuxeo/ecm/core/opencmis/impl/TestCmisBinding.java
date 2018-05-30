@@ -3349,6 +3349,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         } catch (CmisObjectNotFoundException confe) {
             assertEquals("/testfolder2/testfolder3/testfile6", confe.getMessage());
         }
+
+        // check that getAllVersions still returns the proxy
+        List<ObjectData> vers = verService.getAllVersions(repositoryId, proxy.getId(), null, null, null, null);
+        assertEquals(1, vers.size());
+        assertEquals(proxy.getId(), vers.get(0).getId());
     }
 
     /*
@@ -3394,6 +3399,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "john", ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+
+        // check that getAllVersions still returns the proxy
+        List<ObjectData> vers = verService.getAllVersions(repositoryId, proxy.getId(), null, null, null, null);
+        assertEquals(1, vers.size());
+        assertEquals(proxy.getId(), vers.get(0).getId());
     }
 
     @Test
