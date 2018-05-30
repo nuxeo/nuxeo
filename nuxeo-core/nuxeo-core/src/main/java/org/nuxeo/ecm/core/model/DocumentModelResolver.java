@@ -90,15 +90,28 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
 
     public static final String PARAM_STORE = "store";
 
-    public static final String STORE_PATH_REF = "path";
+    /** @deprecated since 10.2, use {@link #STORE_REPO_AND_PATH instead} */
+    @Deprecated
+    public static final String STORE_PATH_COMPAT = "path";
 
-    public static final String STORE_ID_REF = "id";
+    /** Since 10.2 */
+    public static final String STORE_REPO_AND_PATH = "repoAndPath";
+
+    /** @deprecated since 10.2, use {@link #STORE_REPO_AND_ID instead} */
+    @Deprecated
+    public static final String STORE_ID_COMPAT = "id";
+
+    /** Since 10.2 */
+    public static final String STORE_REPO_AND_ID = "repoAndId";
 
     public enum MODE {
-        PATH_REF, ID_REF
+        /** Reference is a path optionally prefixed with a repository name. */
+        REPO_AND_PATH_REF,
+        /** Reference is an id optionally prefixed with a repository name. */
+        REPO_AND_ID_REF,
     }
 
-    private MODE mode = MODE.ID_REF;
+    private MODE mode = MODE.REPO_AND_ID_REF;
 
     public MODE getMode() {
         return mode;
@@ -119,14 +132,23 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
     public void configure(Map<String, String> parameters) throws IllegalStateException {
         super.configure(parameters);
         String store = parameters.get(PARAM_STORE);
-        if (store != null) {
-            if (STORE_ID_REF.equals(store)) {
-                mode = MODE.ID_REF;
-            } else if (STORE_PATH_REF.equals(store)) {
-                mode = MODE.PATH_REF;
-            }
+        if (store == null) {
+            store = ""; // use default
         }
-        this.parameters.put(PARAM_STORE, mode == MODE.ID_REF ? STORE_ID_REF : STORE_PATH_REF);
+        switch (store) {
+        case STORE_REPO_AND_PATH:
+        case STORE_PATH_COMPAT:
+            mode = MODE.REPO_AND_PATH_REF;
+            store = STORE_REPO_AND_PATH;
+            break;
+        case STORE_REPO_AND_ID:
+        case STORE_ID_COMPAT:
+        default:
+            mode = MODE.REPO_AND_ID_REF;
+            store = STORE_REPO_AND_ID;
+            break;
+        }
+        this.parameters.put(PARAM_STORE, store);
     }
 
     @Override
@@ -146,9 +168,9 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
             if (ref != null) {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     switch (mode) {
-                    case ID_REF:
+                    case REPO_AND_ID_REF:
                         return session.exists(new IdRef(ref.ref));
-                    case PATH_REF:
+                    case REPO_AND_PATH_REF:
                         return session.exists(new PathRef(ref.ref));
                     }
                 } catch (LocalException le) { // no such repo
@@ -170,10 +192,10 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
                     DocumentRef docRef;
 
                     switch (mode) {
-                    case ID_REF:
+                    case REPO_AND_ID_REF:
                         docRef = new IdRef(ref.ref);
                         break;
-                    case PATH_REF:
+                    case REPO_AND_PATH_REF:
                         docRef = new PathRef(ref.ref);
                         break;
                     default:
@@ -218,9 +240,9 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
             String repositoryName = doc.getRepositoryName();
             if (repositoryName != null) {
                 switch (mode) {
-                case ID_REF:
+                case REPO_AND_ID_REF:
                     return repositoryName + ":" + doc.getId();
-                case PATH_REF:
+                case REPO_AND_PATH_REF:
                     return repositoryName + ":" + doc.getPath().toString();
                 }
             }
@@ -232,9 +254,9 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
         switch (mode) {
-        case ID_REF:
+        case REPO_AND_ID_REF:
             return Helper.getConstraintErrorMessage(this, "id", invalidValue, locale);
-        case PATH_REF:
+        case REPO_AND_PATH_REF:
             return Helper.getConstraintErrorMessage(this, "path", invalidValue, locale);
         default:
             return String.format("%s cannot resolve reference %s", getName(), invalidValue);
