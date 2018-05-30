@@ -118,6 +118,15 @@ public class SubscriptionAdapter {
     }
 
     /**
+     * Clears the notification in the document's property.
+     *
+     * @since 10.2
+     */
+    protected void clearNotification() {
+        doc.setPropertyValue(NOTIF_PROPERTY, null);
+    }
+
+    /**
      * Return the list of subscribers name for a given notification.
      *
      * @param notification
