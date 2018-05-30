@@ -9,28 +9,28 @@
   <xs:element name="propDate" type="xs:date" />
   <xs:element name="propBoolean" type="xs:boolean" />
 
-  <xs:element name="docPathRef">
+  <xs:element name="docRepoAndPathRef">
     <xs:simpleType>
-      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndPath" />
     </xs:simpleType>
   </xs:element>
 
-  <xs:element name="docPathRefSimpleList">
+  <xs:element name="docRepoAndPathRefSimpleList">
     <xs:simpleType>
       <xs:list>
         <xs:simpleType>
-          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
+          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndPath" />
         </xs:simpleType>
       </xs:list>
     </xs:simpleType>
   </xs:element>
 
-  <xs:element name="docPathRefList">
+  <xs:element name="docRepoAndPathRefList">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="docPathRefsElements" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="docRepoAndPathRefsElements" minOccurs="0" maxOccurs="unbounded">
           <xs:simpleType>
-            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
+            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndPath" />
           </xs:simpleType>
         </xs:element>
       </xs:sequence>
@@ -40,14 +40,14 @@
   <xs:element name="docRefType">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="docRefTypeId">
+        <xs:element name="docRefRepoAndId">
           <xs:simpleType>
-            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id" />
+            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndId" />
           </xs:simpleType>
         </xs:element>
-        <xs:element name="docRefTypePath">
+        <xs:element name="docRefRepoAndPath">
           <xs:simpleType>
-            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path" />
+            <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndPath" />
           </xs:simpleType>
         </xs:element>
       </xs:sequence>
