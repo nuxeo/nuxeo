@@ -84,7 +84,6 @@
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
       <filter-id>isNotVersion</filter-id>
-      <filter-id>canFollow</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -97,7 +96,6 @@
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
       <filter-id>isNotVersion</filter-id>
-      <filter-id>canFollow</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -268,6 +266,9 @@
       </rule>
     </filter>
 
+    <!--
+    Not used since 10.2, kept it for backward compatibility
+    -->
     <filter id="canFollow">
       <rule grant="true">
         <condition>#{subscriptionAction.canFollow()}</condition>
