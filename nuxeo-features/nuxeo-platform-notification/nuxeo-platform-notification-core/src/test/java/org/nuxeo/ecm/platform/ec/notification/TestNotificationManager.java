@@ -108,7 +108,52 @@ public class TestNotificationManager {
         notificationManager.removeSubscription(prefixedPrincipalName, "notification1", doc2);
         assertNull(doc2.getContextData().get(DISABLE_AUDIT_LOGGER));
         transactionalFeature.nextTransaction();
-        
+
+        assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
+    }
+
+    @Test
+    // NXP-24185: test I can subscribe to published document
+    public void testSubscriptionOnPublishedDocument() {
+
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String prefixedPrincipalName = NuxeoPrincipal.PREFIX + principal.getName();
+        String repositoryName = session.getRepositoryName();
+
+        // no subscribed documents at first
+        assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
+
+        // create container for publication and file
+        DocumentModel section = session.createDocument(session.createDocumentModel("/", "section", "Section"));
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file", "File"));
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", file, FALSE, principal,
+                "notification1");
+        transactionalFeature.nextTransaction();
+
+        // publish it
+        DocumentModel publishedDocument = session.publishDocument(file, section);
+        transactionalFeature.nextTransaction();
+
+        // check that notification was removed from version (which allows to subscribe to proxy)
+        List<DocumentModel> subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName,
+                repositoryName);
+        assertEquals(singletonList(file), subscribedDocuments);
+
+        // add subscriptions to proxy
+        notificationManager.addSubscription(prefixedPrincipalName, "notification1", publishedDocument, FALSE, principal,
+                "notification1");
+        transactionalFeature.nextTransaction();
+
+        // check that we now have published document but not the version
+        subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName);
+        subscribedDocuments.sort(comparing(DocumentModel::getPathAsString));
+        assertEquals(asList(file, publishedDocument), subscribedDocuments);
+
+        // Remove subscriptions
+        notificationManager.removeSubscription(prefixedPrincipalName, "notification1", file);
+        notificationManager.removeSubscription(prefixedPrincipalName, "notification1", publishedDocument);
+        transactionalFeature.nextTransaction();
+
         assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
     }
 
