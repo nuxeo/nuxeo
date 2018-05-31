@@ -32,7 +32,9 @@
       <nxu:set var="info"
         value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(model.rowData) : userSuggestionActions.getUserInfo(model.rowData)}">
         <nxu:set var="hideIcon" value="true">
-          <ui:include src="user_group_display_template.xhtml" />
+          <ui:include src="user_group_display_template.xhtml">
+            <ui:param name="data" value="#{model.rowData}" />
+          </ui:include>
         </nxu:set>
       </nxu:set>
       <h:outputText rendered="#{model.rowIndex != model.rowCount -1}"
@@ -47,7 +49,9 @@
         <nxu:set var="info"
           value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}"
           cache="false">
-          <ui:include src="user_group_display_template.xhtml" />
+          <ui:include src="user_group_display_template.xhtml">
+            <ui:param name="data" value="#{item}" />
+          </ui:include>
         </nxu:set>
       </h:column>
     </h:dataTable>
@@ -63,7 +67,9 @@
       <ui:repeat value="#{field}" var="item">
           <nxu:set var="info"
             value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}">
-            <ui:include src="user_group_display_template.xhtml" />
+            <ui:include src="user_group_display_template.xhtml">
+              <ui:param name="data" value="#{item}" />
+            </ui:include>
           </nxu:set>
       </ui:repeat>
     </div>
