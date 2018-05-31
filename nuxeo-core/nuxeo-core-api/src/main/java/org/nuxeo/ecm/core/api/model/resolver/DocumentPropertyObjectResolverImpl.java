@@ -63,12 +63,22 @@ public class DocumentPropertyObjectResolverImpl implements PropertyObjectResolve
 
     @Override
     public boolean validate() {
-        return resolver.validate(doc.getPropertyValue(xpath));
+        return resolver.validate(doc.getPropertyValue(xpath), doc.getCoreSession());
+    }
+
+    @Override
+    public boolean validate(Object context) {
+        return resolver.validate(doc.getPropertyValue(xpath), context);
     }
 
     @Override
     public Object fetch() {
-        return resolver.fetch(doc.getPropertyValue(xpath));
+        return resolver.fetch(doc.getPropertyValue(xpath), doc.getCoreSession());
+    }
+
+    @Override
+    public Object fetch(Object context) {
+        return resolver.fetch(doc.getPropertyValue(xpath), context);
     }
 
     @Override
