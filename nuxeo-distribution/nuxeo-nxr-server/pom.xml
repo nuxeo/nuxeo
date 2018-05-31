@@ -654,6 +654,16 @@
       <artifactId>quartz-mongodb</artifactId>
     </dependency>
 
+    <!-- Not needed by the platform, but useful when configuring log4j appenders with log aggregation platforms -->
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.logstash.log4j</groupId>
+      <artifactId>jsonevent-layout</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
