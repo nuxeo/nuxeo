@@ -45,11 +45,29 @@ public interface PropertyObjectResolver {
     boolean validate();
 
     /**
+     * {@link ObjectResolver#validate(Object,Object)}
+     *
+     * @since 10.2
+     */
+    default boolean validate(Object context) {
+        return validate();
+    }
+
+    /**
      * {@link ObjectResolver#fetch(Object)}
      *
      * @since 7.1
      */
     Object fetch();
+
+    /**
+     * {@link ObjectResolver#fetch(Object,Object)}
+     *
+     * @since 10.2
+     */
+    default Object fetch(Object context) {
+        return fetch();
+    }
 
     /**
      * {@link ObjectResolver#fetch(Class, Object)}
