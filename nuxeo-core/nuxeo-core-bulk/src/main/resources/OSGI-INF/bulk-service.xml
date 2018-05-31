@@ -6,7 +6,14 @@
   </documentation>
 
   <service>
-    <provide interface="org.nuxeo.ecm.core.bulk.BulkService"/>
+    <provide interface="org.nuxeo.ecm.core.bulk.BulkService" />
   </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      Allows to define the bulk service implementation.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.bulk.BulkServiceDescriptor" />
+  </extension-point>
 
 </component>
