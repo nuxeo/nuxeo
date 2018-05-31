@@ -49,8 +49,18 @@ public class PropertyObjectResolverImpl implements PropertyObjectResolver {
     }
 
     @Override
+    public boolean validate(Object context) {
+        return resolver.validate(property.getValue(), context);
+    }
+
+    @Override
     public Object fetch() {
         return resolver.fetch(property.getValue());
+    }
+
+    @Override
+    public Object fetch(Object context) {
+        return resolver.fetch(property.getValue(), context);
     }
 
     @Override

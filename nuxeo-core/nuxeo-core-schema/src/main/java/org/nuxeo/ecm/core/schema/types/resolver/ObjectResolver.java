@@ -91,6 +91,19 @@ public interface ObjectResolver extends Serializable {
     boolean validate(Object value);
 
     /**
+     * Validates some value references an existing entity, in the given context
+     *
+     * @param value The reference.
+     * @param context A resolver-specific context allowing resolution of the value.
+     * @return true if value could be resolved as an existing external reference, false otherwise.
+     * @throws IllegalStateException If this resolver has not been configured.
+     * @since 10.2
+     */
+    default boolean validate(Object value, Object context) {
+        return validate(value);
+    }
+
+    /**
      * Provides the entity referenced by a value.
      *
      * @param value The reference.
@@ -99,6 +112,19 @@ public interface ObjectResolver extends Serializable {
      * @since 7.1
      */
     Object fetch(Object value);
+
+    /**
+     * Provides the entity referenced by a value, in the given context.
+     *
+     * @param value The reference.
+     * @param context A resolver-specific context allowing resolution of the value.
+     * @return The referenced entity, null if no entity matches the value.
+     * @throws IllegalStateException If this resolver has not been configured.
+     * @since 10.2
+     */
+    default Object fetch(Object value, Object context) {
+        return fetch(value);
+    }
 
     /**
      * Provides the entity referenced by a value, return the entity as expected type.

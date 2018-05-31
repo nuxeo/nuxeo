@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
@@ -145,7 +146,10 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
                 }
             }
             if (fetch) {
-                Object object = resolver.fetch(value);
+                // use the current doc's session as the resolver context to fetch properties
+                DocumentModel doc = ctx.getParameter(ENTITY_TYPE);
+                CoreSession context = doc == null ? null : doc.getCoreSession();
+                Object object = resolver.fetch(value, context);
                 if (object != null) {
                     try {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();

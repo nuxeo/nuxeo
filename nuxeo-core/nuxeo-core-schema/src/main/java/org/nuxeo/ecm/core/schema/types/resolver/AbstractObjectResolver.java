@@ -60,6 +60,12 @@ public abstract class AbstractObjectResolver implements ObjectResolver {
         return !validation || fetch(value) != null;
     }
 
+    @Override
+    public boolean validate(Object value, Object context) throws IllegalStateException {
+        checkConfig();
+        return !validation || fetch(value, context) != null;
+    }
+
     protected void checkConfig() throws IllegalStateException {
         if (parameters == null) {
             throw new IllegalStateException(

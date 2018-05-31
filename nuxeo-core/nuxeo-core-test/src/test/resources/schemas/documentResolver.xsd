@@ -29,4 +29,16 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="docIdOnlyRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="idOnly" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="docPathOnlyRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="pathOnly" />
+    </xs:simpleType>
+  </xs:element>
+
 </xs:schema>

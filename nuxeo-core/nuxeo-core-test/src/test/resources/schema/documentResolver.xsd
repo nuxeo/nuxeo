@@ -9,6 +9,24 @@
   <xs:element name="propDate" type="xs:date" />
   <xs:element name="propBoolean" type="xs:boolean" />
 
+  <xs:element name="docIdOnlyRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="idOnly" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="docPathOnlyRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="pathOnly" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="docRepoAndIdRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndId" />
+    </xs:simpleType>
+  </xs:element>
+
   <xs:element name="docRepoAndPathRef">
     <xs:simpleType>
       <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="repoAndPath" />

@@ -45,7 +45,13 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public static final String PROP_DOC_PATH_REF = "dr:docRepoAndPathRef";
+    public static final String PROP_DOC_ID_ONLY_REF = "dr:docIdOnlyRef";
+
+    public static final String PROP_DOC_PATH_ONLY_REF = "dr:docPathOnlyRef";
+
+    public static final String PROP_DOC_REPO_AND_ID_REF = "dr:docRepoAndIdRef";
+
+    public static final String PROP_DOC_REPO_AND_PATH_REF = "dr:docRepoAndPathRef";
 
     public static final String PROP_DOC_PATH_REF_LIST = "dr:docRepoAndPathRefList";
 
@@ -232,21 +238,98 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     @Test
     public void testNoFetching() throws Exception {
         String pathRef = REPO + ":/";
-        String xpath = PROP_DOC_PATH_REF;
+        String xpath = PROP_DOC_REPO_AND_PATH_REF;
         document.setPropertyValue(xpath, pathRef);
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").get());
         json.has("properties." + xpath).isEquals(pathRef);
     }
 
     @Test
-    public void testSimpleFetching() throws Exception {
-        String pathRef = REPO + ":/";
-        String xpath = PROP_DOC_PATH_REF;
+    public void testSimpleFetchingRepoAndPath() throws Exception {
+        String xpath = PROP_DOC_REPO_AND_PATH_REF;
+
+        // test with repo + path
+        String pathRef = REPO + ":/myDoc";
         document.setPropertyValue(xpath, pathRef);
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
         json = json.has("properties." + xpath).isObject();
         json.has("entity-type").isEquals("document");
-        json.has("path").isEquals("/");
+        json.has("path").isEquals("/myDoc");
+
+        // test with missing repo
+        pathRef = "/myDoc";
+        document.setPropertyValue(xpath, pathRef);
+        json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+
+        // TODO other repo
+    }
+
+    @Test
+    public void testSimpleFetchingRepoAndId() throws Exception {
+        String xpath = PROP_DOC_REPO_AND_ID_REF;
+
+        // test with repo + id
+        String idRef = REPO + ":" + document.getId();
+        document.setPropertyValue(xpath, idRef);
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+
+        // test with missing repo
+        idRef = document.getId();
+        document.setPropertyValue(xpath, idRef);
+        json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+
+        // TODO other repo
+    }
+
+    @Test
+    public void testSimpleFetchingPathOnly() throws Exception {
+        String xpath = PROP_DOC_PATH_ONLY_REF;
+
+        // test with path
+        String pathRef = "/myDoc";
+        document.setPropertyValue(xpath, pathRef);
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+
+        // test with repo + path
+        pathRef = REPO + ":/myDoc";
+        document.setPropertyValue(xpath, pathRef);
+        json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+    }
+
+    @Test
+    public void testSimpleFetchingIdOnly() throws Exception {
+        String xpath = PROP_DOC_ID_ONLY_REF;
+
+        // test with id
+        String idRef = document.getId();
+        document.setPropertyValue(xpath, idRef);
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
+
+        // test with repo + id
+        idRef = REPO + ":" + document.getId();
+        document.setPropertyValue(xpath, idRef);
+        json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc(xpath).get());
+        json = json.has("properties." + xpath).isObject();
+        json.has("entity-type").isEquals("document");
+        json.has("path").isEquals("/myDoc");
     }
 
     @Test
@@ -275,13 +358,13 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     @Test
     public void testFullFetching() throws Exception {
         String pathRef = REPO + ":/";
-        document.setPropertyValue(PROP_DOC_PATH_REF, pathRef);
+        document.setPropertyValue(PROP_DOC_REPO_AND_PATH_REF, pathRef);
         document.getProperty(PROP_DOC_REF_TYPE).setValue(SUBPROP_REPO_AND_PATH, pathRef);
         document.getProperty(PROP_DOC_PATH_REF_LIST).addValue(pathRef);
         document.getProperty(PROP_DOC_PATH_REF_SIMPLE_LIST).setValue(new String[] { pathRef, pathRef });
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").fetchInDoc("properties").get());
         JsonAssert child;
-        child = json.has("properties." + PROP_DOC_PATH_REF).isObject();
+        child = json.has("properties." + PROP_DOC_REPO_AND_PATH_REF).isObject();
         child.has("entity-type").isEquals("document");
         child.has("path").isEquals("/");
         child = json.has("properties." + PROP_DOC_REF_TYPE + "." + SUBPROP_REPO_AND_PATH).isObject();
