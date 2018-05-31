@@ -31,7 +31,9 @@
     <nxu:set var="info"
       value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(field) : userSuggestionActions.getUserInfo(field)}">
       <nxu:set var="hideIcon" value="true">
-        <ui:include src="user_group_display_template.xhtml" />
+        <ui:include src="user_group_display_template.xhtml">
+          <ui:param name="data" value="#{field}" />
+        </ui:include>
       </nxu:set>
     </nxu:set>
   </c:if>
@@ -39,7 +41,9 @@
     <nxp:html>
     <nxu:set var="info"
       value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(field) : userSuggestionActions.getUserInfo(field)}" cache="false">
-      <ui:include src="user_group_display_template.xhtml" />
+      <ui:include src="user_group_display_template.xhtml">
+        <ui:param name="data" value="#{field}" />
+      </ui:include>
     </nxu:set>
     </nxp:html>
   </c:if>
@@ -50,7 +54,9 @@
 
     <nxu:set var="info"
       value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(field) : userSuggestionActions.getUserInfo(field)}" cache="false">
-      <ui:include src="user_group_display_template.xhtml" />
+      <ui:include src="user_group_display_template.xhtml">
+        <ui:param name="data" value="#{field}" />
+      </ui:include>
     </nxu:set>
 
   </c:if>
