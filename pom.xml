@@ -3820,6 +3820,16 @@
         <artifactId>json</artifactId>
         <version>20070829</version>
       </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>net.logstash.log4j</groupId>
+        <artifactId>jsonevent-layout</artifactId>
+        <version>1.7</version>
+      </dependency>
       <!-- NXP-10566: juel-api is mentioned here for reference but is exluded
         by the distribution: org.apache.tomcat:tomcat-el-api should be used
         instead as the reference EL API module for now.
