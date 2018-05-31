@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.bulk.config" version="1.0.0">
+
+  <require>org.nuxeo.runtime.stream.service</require>
+
+  <!-- Basic BulkService configuration -->
+  <extension target="org.nuxeo.ecm.core.bulk" point="configuration">
+    <bulkConfig>
+      <logConfig>bulk</logConfig>
+      <kvStore>bulk</kvStore>
+    </bulkConfig>
+  </extension>
+
+</component>

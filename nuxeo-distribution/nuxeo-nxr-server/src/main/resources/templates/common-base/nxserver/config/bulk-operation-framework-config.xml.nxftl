@@ -1,0 +1,32 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.bulk.config">
+  <require>org.nuxeo.runtime.stream.service</require>
+  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+  <#if "${kafka.enabled}" == "true">
+    <logConfig name="bulk" type="kafka">
+      <option name="kafkaConfig">default</option>
+    </logConfig>
+  <#else>
+    <logConfig name="bulk" type="chronicle">
+      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    </logConfig>
+  </#if>
+  </extension>
+
+  <#if "${nuxeo.keyvalue.provider}" == "redis">
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="bulk" class="org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore">
+      <property name="namespace">kv</property>
+    </store>
+  </extension>
+  <#elseif "${nuxeo.keyvalue.provider}" == "mongodb">
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="bulk" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore">
+      <property name="namespace">kv</property>
+    </store>
+  </extension>
+  </#if>
+
+</component>
+</#escape>
