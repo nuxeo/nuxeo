@@ -13,6 +13,7 @@
   Parameters:
   - info: user or group info (map grom userSuggestionAction,
     resolved from the user or group id)
+  - data: field value to display in case 'info.type' is empty
   - firstLabelField: usually 'firstName', useful for user display
   - secondLabelField: usually 'lastName', useful for user display
   - thirdLabelField: usually 'email', useful for user display
@@ -100,5 +101,5 @@
     </h:commandLink>
   </c:if>
 </ui:fragment>
-<h:outputText rendered="#{empty info.type}" value="#{item}" />
+<h:outputText rendered="#{empty info.type and not empty data}" value="#{data}" />
 </c:if>
