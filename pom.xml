@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>9.10-HF09-SNAPSHOT</version>
+    <version>9.10-HF10-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-addons-parent</artifactId>
@@ -19,52 +19,52 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>9.10-HF09-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>9.10-HF09-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.businessdays.version>9.10-HF09-SNAPSHOT</nuxeo.businessdays.version>
-    <nuxeo.shell.version>9.10-HF09-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webembedded.version>9.10-HF09-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.fsconnectors.version>9.10-HF09-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.importer.version>9.10-HF09-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>9.10-HF09-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>9.10-HF09-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.audio.version>9.10-HF09-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>9.10-HF09-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.replication.version>9.10-HF09-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>9.10-HF09-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.suggestbox.version>9.10-HF09-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.dam.version>9.10-HF09-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.quota.version>9.10-HF09-SNAPSHOT</nuxeo.quota.version>
-    <nuxeo.binary.metadata.version>9.10-HF09-SNAPSHOT</nuxeo.binary.metadata.version>
-    <nuxeo.web.mobile.version>9.10-HF09-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>9.10-HF09-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>9.10-HF09-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>9.10-HF09-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>9.10-HF09-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>9.10-HF09-SNAPSHOT</nuxeo.agenda.version>
-    <nuxeo.templates.version>9.10-HF09-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.csv.version>9.10-HF09-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.drive.version>9.10-HF09-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.resources.compat.version>9.10-HF09-SNAPSHOT</nuxeo.resources.compat.version>
-    <nuxeo.dmk.version>9.10-HF09-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.style.guide.version>9.10-HF09-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.easyshare.version>9.10-HF09-SNAPSHOT</nuxeo.easyshare.version>
-    <nuxeo.logs.viewer.version>9.10-HF09-SNAPSHOT</nuxeo.logs.viewer.version>
-    <nuxeo.spreadsheet.version>9.10-HF09-SNAPSHOT</nuxeo.spreadsheet.version>
-    <nuxeo.datadog.reporter.version>9.10-HF09-SNAPSHOT</nuxeo.datadog.reporter.version>
-    <nuxeo.review.workflows.dashboards.version>9.10-HF09-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
-    <nuxeo.playground.version>9.10-HF09-SNAPSHOT</nuxeo.playground.version>
-    <nuxeo.fsexporter.version>9.10-HF09-SNAPSHOT</nuxeo.fsexporter.version>
-    <nuxeo.javaagent.version>9.10-HF09-SNAPSHOT</nuxeo.javaagent.version>
-    <nuxeo.pdfutils.version>9.10-HF09-SNAPSHOT</nuxeo.pdfutils.version>
-    <nuxeo.threed.version>9.10-HF09-SNAPSHOT</nuxeo.threed.version>
-    <nuxeo.mongodb.ext.version>9.10-HF09-SNAPSHOT</nuxeo.mongodb.ext.version>
-    <nuxeo.target.platforms.version>9.10-HF09-SNAPSHOT</nuxeo.target.platforms.version>
-    <nuxeo.web.ui.version>9.10-HF09-SNAPSHOT</nuxeo.web.ui.version>
-    <nuxeo.jsf.to.web.ui.version>9.10-HF09-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
+    <nuxeo.addons.version>9.10-HF10-SNAPSHOT</nuxeo.addons.version>
+    <nuxeo.opencmis.version>9.10-HF10-SNAPSHOT</nuxeo.opencmis.version>
+    <nuxeo.businessdays.version>9.10-HF10-SNAPSHOT</nuxeo.businessdays.version>
+    <nuxeo.shell.version>9.10-HF10-SNAPSHOT</nuxeo.shell.version>
+    <nuxeo.webembedded.version>9.10-HF10-SNAPSHOT</nuxeo.webembedded.version>
+    <nuxeo.fsconnectors.version>9.10-HF10-SNAPSHOT</nuxeo.fsconnectors.version>
+    <nuxeo.importer.version>9.10-HF10-SNAPSHOT</nuxeo.importer.version>
+    <nuxeo.routing.version>9.10-HF10-SNAPSHOT</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>9.10-HF10-SNAPSHOT</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>9.10-HF10-SNAPSHOT</nuxeo.audio.version>
+    <nuxeo.video.version>9.10-HF10-SNAPSHOT</nuxeo.video.version>
+    <nuxeo.replication.version>9.10-HF10-SNAPSHOT</nuxeo.replication.version>
+    <nuxeo.activity.version>9.10-HF10-SNAPSHOT</nuxeo.activity.version>
+    <nuxeo.suggestbox.version>9.10-HF10-SNAPSHOT</nuxeo.suggestbox.version>
+    <nuxeo.dam.version>9.10-HF10-SNAPSHOT</nuxeo.dam.version>
+    <nuxeo.quota.version>9.10-HF10-SNAPSHOT</nuxeo.quota.version>
+    <nuxeo.binary.metadata.version>9.10-HF10-SNAPSHOT</nuxeo.binary.metadata.version>
+    <nuxeo.web.mobile.version>9.10-HF10-SNAPSHOT</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>9.10-HF10-SNAPSHOT</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>9.10-HF10-SNAPSHOT</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>9.10-HF10-SNAPSHOT</nuxeo.user.registration.version>
+    <nuxeo.rating.version>9.10-HF10-SNAPSHOT</nuxeo.rating.version>
+    <nuxeo.agenda.version>9.10-HF10-SNAPSHOT</nuxeo.agenda.version>
+    <nuxeo.templates.version>9.10-HF10-SNAPSHOT</nuxeo.templates.version>
+    <nuxeo.csv.version>9.10-HF10-SNAPSHOT</nuxeo.csv.version>
+    <nuxeo.drive.version>9.10-HF10-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.resources.compat.version>9.10-HF10-SNAPSHOT</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>9.10-HF10-SNAPSHOT</nuxeo.dmk.version>
+    <nuxeo.style.guide.version>9.10-HF10-SNAPSHOT</nuxeo.style.guide.version>
+    <nuxeo.easyshare.version>9.10-HF10-SNAPSHOT</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>9.10-HF10-SNAPSHOT</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>9.10-HF10-SNAPSHOT</nuxeo.spreadsheet.version>
+    <nuxeo.datadog.reporter.version>9.10-HF10-SNAPSHOT</nuxeo.datadog.reporter.version>
+    <nuxeo.review.workflows.dashboards.version>9.10-HF10-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
+    <nuxeo.playground.version>9.10-HF10-SNAPSHOT</nuxeo.playground.version>
+    <nuxeo.fsexporter.version>9.10-HF10-SNAPSHOT</nuxeo.fsexporter.version>
+    <nuxeo.javaagent.version>9.10-HF10-SNAPSHOT</nuxeo.javaagent.version>
+    <nuxeo.pdfutils.version>9.10-HF10-SNAPSHOT</nuxeo.pdfutils.version>
+    <nuxeo.threed.version>9.10-HF10-SNAPSHOT</nuxeo.threed.version>
+    <nuxeo.mongodb.ext.version>9.10-HF10-SNAPSHOT</nuxeo.mongodb.ext.version>
+    <nuxeo.target.platforms.version>9.10-HF10-SNAPSHOT</nuxeo.target.platforms.version>
+    <nuxeo.web.ui.version>9.10-HF10-SNAPSHOT</nuxeo.web.ui.version>
+    <nuxeo.jsf.to.web.ui.version>9.10-HF10-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
 
     <!-- optional addons -->
-    <nuxeo.sync.version>9.10-HF09-SNAPSHOT</nuxeo.sync.version>
+    <nuxeo.sync.version>9.10-HF10-SNAPSHOT</nuxeo.sync.version>
     <!-- end of optional addons -->
   </properties>
 
