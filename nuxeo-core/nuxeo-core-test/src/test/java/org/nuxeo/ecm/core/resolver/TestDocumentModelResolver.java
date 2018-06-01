@@ -25,6 +25,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.NAME;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.PARAM_STORE;
+import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_ID_ONLY;
+import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_PATH_ONLY;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_REPO_AND_ID;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_REPO_AND_PATH;
 
@@ -443,19 +445,39 @@ public class TestDocumentModelResolver {
     }
 
     @Test
-    public void testGetReferenceIdRef() {
+    public void testGetReferenceRepoAndId() {
         DocumentModelResolver dmrr = new DocumentModelResolver();
-        dmrr.configure(new HashMap<>());
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put(PARAM_STORE, STORE_REPO_AND_ID);
+        dmrr.configure(parameters);
         assertEquals(repoAndIdRef, dmrr.getReference(doc));
     }
 
     @Test
-    public void testGetReferenceGroup() {
+    public void testGetReferenceRepoAndPath() {
         DocumentModelResolver dmrr = new DocumentModelResolver();
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(PARAM_STORE, STORE_REPO_AND_PATH);
         dmrr.configure(parameters);
         assertEquals(repoAndPathRef, dmrr.getReference(doc));
+    }
+
+    @Test
+    public void testGetReferenceIdOnly() {
+        DocumentModelResolver dmrr = new DocumentModelResolver();
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put(PARAM_STORE, STORE_ID_ONLY);
+        dmrr.configure(parameters);
+        assertEquals(idOnlyRef, dmrr.getReference(doc));
+    }
+
+    @Test
+    public void testGetReferencePathOnly() {
+        DocumentModelResolver dmrr = new DocumentModelResolver();
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put(PARAM_STORE, STORE_PATH_ONLY);
+        dmrr.configure(parameters);
+        assertEquals(pathOnlyRef, dmrr.getReference(doc));
     }
 
     @Test
