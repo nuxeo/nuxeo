@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.connect.tools</groupId>
     <artifactId>nuxeo-connect-tools</artifactId>
-    <version>9.10-HF09-SNAPSHOT</version>
+    <version>9.10-HF09</version>
   </parent>
 
   <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
