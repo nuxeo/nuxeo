@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.bulk">
+<component name="org.nuxeo.ecm.core.bulk" version="1.0.0">
 
   <documentation>
     The Bulk Service allows to prepare document sets to perform bulk operations.
   </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.bulk.BulkComponent" />
 
   <service>
     <provide interface="org.nuxeo.ecm.core.bulk.BulkService" />

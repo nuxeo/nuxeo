@@ -11,4 +11,11 @@
   <artifactId>nuxeo-core-bulk</artifactId>
   <name>Nuxeo Core Bulk module</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
