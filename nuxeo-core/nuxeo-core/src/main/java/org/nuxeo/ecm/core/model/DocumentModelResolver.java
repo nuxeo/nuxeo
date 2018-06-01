@@ -21,22 +21,23 @@ package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing {@link DocumentModel} references (id or
@@ -92,13 +93,23 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
 
     public static final String STORE_REPO_AND_PATH = "path";
 
+    /** Since 10.2 */
+    public static final String STORE_PATH_ONLY = "pathOnly";
+
     public static final String STORE_REPO_AND_ID = "id";
 
+    /** Since 10.2 */
+    public static final String STORE_ID_ONLY = "idOnly";
+
     public enum MODE {
-        /** Reference is a path optionally prefixed with a repository name. */
+        /** Reference is a path prefixed with a repository. */
         REPO_AND_PATH_REF,
-        /** Reference is an id optionally prefixed with a repository name. */
+        /** Reference is an id prefixed with a repository. */
         REPO_AND_ID_REF,
+        /** Reference is a path. */
+        PATH_ONLY_REF,
+        /** Reference is an id. */
+        ID_ONLY_REF,
     }
 
     private MODE mode = MODE.REPO_AND_ID_REF;
@@ -126,9 +137,14 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
             store = ""; // use default
         }
         switch (store) {
+        case STORE_PATH_ONLY:
+            mode = MODE.PATH_ONLY_REF;
+            break;
+        case STORE_ID_ONLY:
+            mode = MODE.ID_ONLY_REF;
+            break;
         case STORE_REPO_AND_PATH:
             mode = MODE.REPO_AND_PATH_REF;
-            store = STORE_REPO_AND_PATH;
             break;
         case STORE_REPO_AND_ID:
         default:
@@ -146,65 +162,101 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
     }
 
     @Override
-    public boolean validate(Object value) throws IllegalStateException {
-        checkConfig();
-        if (!validation) {
-            return true;
-        }
-        if (value instanceof String) {
-            REF ref = REF.fromValue((String) value);
-            if (ref != null) {
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
-                    switch (mode) {
-                    case REPO_AND_ID_REF:
-                        return session.exists(new IdRef(ref.ref));
-                    case REPO_AND_PATH_REF:
-                        return session.exists(new PathRef(ref.ref));
-                    }
-                } catch (LocalException le) { // no such repo
-                    return false;
-                }
-            }
-        }
-        return false;
+    public boolean validate(Object value) {
+        return validate(value, null);
     }
 
     @Override
-    public Object fetch(Object value) throws IllegalStateException {
+    public boolean validate(Object value, Object context) {
+        MutableBoolean validated = new MutableBoolean();
+        resolve(value, context, (session, docRef) -> {
+            if (session.exists(docRef)) {
+                validated.setTrue();
+            }
+        });
+        return validated.isTrue();
+    }
+
+    @Override
+    public Object fetch(Object value) {
+        return fetch(value, null);
+    }
+
+    @Override
+    public Object fetch(Object value, Object context) {
+        MutableObject<DocumentModel> docHolder = new MutableObject<>();
+        resolve(value, context, (session, docRef) -> {
+            if (session.exists(docRef)) {
+                DocumentModel doc = session.getDocument(docRef);
+                // detach because we're about to close the session
+                doc.detach(true);
+                docHolder.setValue(doc);
+            }
+        });
+        return docHolder.getValue();
+    }
+
+    /**
+     * Resolves the value (in the context) into a session and docRef, and passes them to the resolver.
+     * <p>
+     * The resolver is not called if the value cannot be resolved.
+     */
+    protected void resolve(Object value, Object context, BiConsumer<CoreSession, DocumentRef> resolver) {
         checkConfig();
-        if (value instanceof String) {
-            REF ref = REF.fromValue((String) value);
-            if (ref != null) {
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
-                    DocumentModel doc;
-                    DocumentRef docRef;
-
-                    switch (mode) {
-                    case REPO_AND_ID_REF:
-                        docRef = new IdRef(ref.ref);
-                        break;
-                    case REPO_AND_PATH_REF:
-                        docRef = new PathRef(ref.ref);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
+        if (!(value instanceof String)) {
+            return;
+        }
+        REF ref = REF.fromValue((String) value);
+        if (ref == null) {
+            return;
+        }
+        CloseableCoreSession closeableCoreSession = null;
+        try {
+            CoreSession session;
+            try {
+                if (ref.repo != null) {
+                    // we have an explicit repository name
+                    if (context != null && ref.repo.equals(((CoreSession) context).getRepositoryName())) {
+                        // if it's the same repository as the context session, use it directly
+                        session = (CoreSession) context;
+                    } else {
+                        // otherwise open a new one
+                        closeableCoreSession = CoreInstance.openCoreSession(ref.repo);
+                        session = closeableCoreSession;
                     }
-
-                    if (!session.exists(docRef)) {
-                        // the document doesn't exist or is not accessible by the current user
-                        return null;
+                } else {
+                    // use session from context
+                    session = (CoreSession) context;
+                    if (session == null) {
+                        // use the default repository if none is provided in the context
+                        closeableCoreSession = CoreInstance.openCoreSession(null);
+                        session = closeableCoreSession;
                     }
-
-                    doc = session.getDocument(docRef);
-                    // detach because we're about to close the session
-                    doc.detach(true);
-                    return doc;
-                } catch (LocalException le) { // no such repo
-                    return null;
                 }
+            } catch (LocalException e) {
+                // no such repository
+                return;
+            }
+            DocumentRef docRef;
+            switch (mode) {
+            case ID_ONLY_REF:
+            case REPO_AND_ID_REF:
+                docRef = new IdRef(ref.ref);
+                break;
+            case PATH_ONLY_REF:
+            case REPO_AND_PATH_REF:
+                docRef = new PathRef(ref.ref);
+                break;
+            default:
+                // unknown ref type
+                return;
+            }
+            resolver.accept(session, docRef);
+        } finally {
+            if (closeableCoreSession != null) {
+                closeableCoreSession.close();
             }
         }
-        return null;
     }
 
     @Override
@@ -225,14 +277,15 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
         checkConfig();
         if (entity instanceof DocumentModel) {
             DocumentModel doc = (DocumentModel) entity;
-            String repositoryName = doc.getRepositoryName();
-            if (repositoryName != null) {
-                switch (mode) {
-                case REPO_AND_ID_REF:
-                    return repositoryName + ":" + doc.getId();
-                case REPO_AND_PATH_REF:
-                    return repositoryName + ":" + doc.getPath().toString();
-                }
+            switch (mode) {
+            case ID_ONLY_REF:
+                return doc.getId();
+            case PATH_ONLY_REF:
+                return doc.getPath().toString();
+            case REPO_AND_ID_REF:
+                return doc.getRepositoryName() + ":" + doc.getId();
+            case REPO_AND_PATH_REF:
+                return doc.getRepositoryName() + ":" + doc.getPath().toString();
             }
         }
         return null;
@@ -242,8 +295,10 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
     public String getConstraintErrorMessage(Object invalidValue, Locale locale) {
         checkConfig();
         switch (mode) {
+        case ID_ONLY_REF:
         case REPO_AND_ID_REF:
             return Helper.getConstraintErrorMessage(this, "id", invalidValue, locale);
+        case PATH_ONLY_REF:
         case REPO_AND_PATH_REF:
             return Helper.getConstraintErrorMessage(this, "path", invalidValue, locale);
         default:
@@ -265,7 +320,7 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
             String[] split = value.split(":");
             if (split.length == 1) {
                 REF ref = new REF();
-                ref.repo = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
+                ref.repo = null; // caller will use context session, or the default repo
                 ref.ref = split[0];
                 return ref;
             }
