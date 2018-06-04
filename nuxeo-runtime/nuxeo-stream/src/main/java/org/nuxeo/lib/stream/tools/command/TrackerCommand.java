@@ -123,7 +123,7 @@ public class TrackerCommand extends Command {
     }
 
     protected List<String> getLogNames(LogManager manager, String names) {
-        if (ALL_LOGS.equals(names.toLowerCase())) {
+        if (ALL_LOGS.equalsIgnoreCase(names)) {
             return manager.listAll().stream().filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX)).collect(
                     Collectors.toList());
         }

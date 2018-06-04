@@ -36,6 +36,7 @@ public interface KafkaConfigService {
 
     /**
      * Returns the Zookeeper servers for a configuration.
+     *
      * @deprecated since 10.2 NXP-24634: we don't want to depend anymore on Zookeeper
      */
     @Deprecated

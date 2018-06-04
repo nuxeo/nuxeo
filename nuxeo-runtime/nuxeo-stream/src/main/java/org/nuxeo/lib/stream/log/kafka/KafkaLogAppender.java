@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.log.kafka;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import java.io.Externalizable;
 import java.time.Duration;
 import java.util.Collections;
@@ -36,13 +38,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
-
-import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * Apache Kafka implementation of Log.
@@ -137,9 +138,9 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
             result = future.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Unable to send record: " + record, e);
+            throw new StreamRuntimeException("Unable to send record: " + record, e);
         } catch (ExecutionException e) {
-            throw new RuntimeException("Unable to send record: " + record, e);
+            throw new StreamRuntimeException("Unable to send record: " + record, e);
         }
         LogOffset ret = new LogOffsetImpl(name, partition, result.offset());
         if (log.isDebugEnabled()) {

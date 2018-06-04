@@ -164,6 +164,7 @@ public class TestCodec {
         testCodec(record, codec);
 
     }
+
     protected byte[] readFile(String path) throws IOException {
         byte[] ret = new byte[MAX_DATA_SIZE];
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)) {

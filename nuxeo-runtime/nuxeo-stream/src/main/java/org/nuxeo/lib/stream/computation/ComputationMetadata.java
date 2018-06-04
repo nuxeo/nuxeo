@@ -50,7 +50,7 @@ public class ComputationMetadata {
         }
 
         if (this.inputStreams.isEmpty() && this.outputStreams.isEmpty()) {
-            throw new RuntimeException("Both input and output streams are empty");
+            throw new IllegalArgumentException("Both input and output streams are empty");
         }
     }
 

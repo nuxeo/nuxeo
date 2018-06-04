@@ -23,6 +23,8 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -33,6 +35,7 @@ import org.nuxeo.lib.stream.tools.renderer.Renderer;
  * @since 9.3
  */
 public class TailCommand extends Command {
+    private static final Log log = LogFactory.getLog(TailCommand.class);
 
     protected static final String NAME = "tail";
 
@@ -121,7 +124,7 @@ public class TailCommand extends Command {
             while (true) {
                 LogRecord<Record> record = tailer.read(Duration.ofSeconds(timeout));
                 if (record == null) {
-                    System.err.println("tail timeout");
+                    log.error("tail timeout");
                     break;
                 }
                 render.accept(record);

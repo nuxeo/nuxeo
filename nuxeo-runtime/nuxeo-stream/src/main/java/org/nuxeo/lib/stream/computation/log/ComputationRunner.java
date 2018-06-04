@@ -150,10 +150,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         } catch (InterruptedException e) {
             interrupted = true; // Thread.currentThread().interrupt() in finally
             // this is expected when the pool is shutdownNow
+            String msg = metadata.name() + ": Interrupted";
             if (log.isTraceEnabled()) {
-                log.debug(metadata.name() + ": Interrupted", e);
+                log.debug(msg, e);
             } else {
-                log.debug(metadata.name() + ": Interrupted");
+                log.debug(msg);
             }
         } catch (Exception e) {
             if (Thread.currentThread().isInterrupted()) {

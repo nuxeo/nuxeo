@@ -52,6 +52,7 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
  *
  * @since 9.3
  */
+@SuppressWarnings("squid:S2925")
 public class TestLibChronicle implements StoreFileListener {
     protected static final Log log = LogFactory.getLog(TestLibChronicle.class);
 
@@ -63,7 +64,7 @@ public class TestLibChronicle implements StoreFileListener {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
-    public void skipWindowsThatDontCleanTempFolder() {
+    public void skipWindowsThatDoNotCleanTempFolder() {
         assumeFalse(IS_WIN);
     }
 

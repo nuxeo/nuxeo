@@ -36,9 +36,6 @@ public class WatermarkMonotonicInterval {
 
     protected Watermark high = Watermark.LOWEST;
 
-    public WatermarkMonotonicInterval() {
-    }
-
     /**
      * Take in account the watermark.<br/>
      * Not thread safe.
@@ -79,7 +76,6 @@ public class WatermarkMonotonicInterval {
     public long checkpoint() {
         low = Watermark.completedOf(high);
         lowest = low;
-        // System.out.println(low);
         return low.getValue();
     }
 

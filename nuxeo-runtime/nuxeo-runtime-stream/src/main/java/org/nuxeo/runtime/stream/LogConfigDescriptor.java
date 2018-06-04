@@ -74,6 +74,7 @@ public class LogConfigDescriptor {
         public Integer size = DEFAULT_PARTITIONS;
 
         public StreamDescriptor() {
+            // empty constructor
         }
     }
 

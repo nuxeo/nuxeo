@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
@@ -50,6 +52,7 @@ import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
  * @since 10.1
  */
 public class RestoreCommand extends Command {
+    private static final Log log = LogFactory.getLog(RestoreCommand.class);
 
     protected static final String NAME = "restore";
 
@@ -120,7 +123,7 @@ public class RestoreCommand extends Command {
         Map<LogPartitionGroup, Latency> latencies = readLatencies(manager);
         Map<LogPartitionGroup, LogOffset> offsets = searchOffsets(manager, latencies);
         if (dryRun) {
-            System.out.println("# Dry run mode returning without doing any changes");
+            log.info("# Dry run mode returning without doing any changes");
             return true;
         }
         updatePositions(manager, offsets);
@@ -128,7 +131,7 @@ public class RestoreCommand extends Command {
     }
 
     protected void updatePositions(LogManager manager, Map<LogPartitionGroup, LogOffset> offsets) {
-        System.out.println("# Update positions");
+        log.info("# Update positions");
         offsets.forEach((key, offset) -> updatePosition(manager, key, offset));
     }
 
@@ -146,9 +149,9 @@ public class RestoreCommand extends Command {
     protected Map<LogPartitionGroup, LogOffset> searchOffsets(LogManager manager,
             Map<LogPartitionGroup, Latency> latencies) throws InterruptedException {
         Map<LogPartitionGroup, LogOffset> ret = new HashMap<>(latencies.size());
-        System.out.println("# Searching records matching the latencies lower timestamp and key");
-        for (LogPartitionGroup key : latencies.keySet()) {
-            ret.put(key, findOffset(manager, key, latencies.get(key)));
+        log.info("# Searching records matching the latencies lower timestamp and key");
+        for (Map.Entry<LogPartitionGroup, Latency> entry : latencies.entrySet()) {
+            ret.put(entry.getKey(), findOffset(manager, entry.getKey(), entry.getValue()));
         }
         return ret;
     }
@@ -165,13 +168,13 @@ public class RestoreCommand extends Command {
                 }
                 long timestamp = Watermark.ofValue(rec.message().getWatermark()).getTimestamp();
                 if (targetWatermark == timestamp) {
-                    System.out.println(String.format("%s: offset: %s wm: %d key: %s", key, rec.offset(),
+                    log.info(String.format("%s: offset: %s wm: %d key: %s", key, rec.offset(),
                             rec.message().getWatermark(), rec.message().getKey()));
                     return rec.offset().nextOffset();
                 }
             }
         }
-        System.err.println("No offset found for: " + key + ", matching: " + latency.asJson());
+        log.error("No offset found for: " + key + ", matching: " + latency.asJson());
         return null;
     }
 
@@ -196,8 +199,8 @@ public class RestoreCommand extends Command {
                 }
             }
         }
-        System.out.println("# Latencies found (group:log:partition -> lat)");
-        latencies.forEach((key, latency) -> System.out.println(String.format("%s: %s", key, latency.asJson())));
+        log.info("# Latencies found (group:log:partition -> lat)");
+        latencies.forEach((key, latency) -> log.info(String.format("%s: %s", key, latency.asJson())));
         return latencies;
     }
 
@@ -205,7 +208,7 @@ public class RestoreCommand extends Command {
         try {
             return Latency.fromJson(new String(data, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            System.err.println("Cannot decode message" + e.getMessage() + " " + Arrays.toString(data));
+            log.error("Cannot decode message" + e.getMessage() + " " + Arrays.toString(data));
         }
         return null;
     }

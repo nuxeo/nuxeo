@@ -42,8 +42,7 @@ public class AvroComponent extends DefaultComponent {
 
     public static final int APPLICATION_START_ORDER = -600;
 
-    protected static class AvroMapperDescriptorRegistry
-            extends SimpleContributionRegistry<AvroMapperDescriptor> {
+    protected static class AvroMapperDescriptorRegistry extends SimpleContributionRegistry<AvroMapperDescriptor> {
         @Override
         public String getContributionId(AvroMapperDescriptor contrib) {
             return contrib.type;
@@ -66,8 +65,7 @@ public class AvroComponent extends DefaultComponent {
         }
     }
 
-    protected static class AvroSchemaDescriptorRegistry
-            extends SimpleContributionRegistry<AvroSchemaDescriptor> {
+    protected static class AvroSchemaDescriptorRegistry extends SimpleContributionRegistry<AvroSchemaDescriptor> {
         @Override
         public String getContributionId(AvroSchemaDescriptor contrib) {
             return contrib.name;
@@ -120,20 +118,20 @@ public class AvroComponent extends DefaultComponent {
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case SCHEMA_XP:
-                schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
-                break;
-            case MAPPER_XP:
-                avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
-                break;
-            case FACTORY_XP:
-                avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
-                break;
-            case REPLACEMENT_XP:
-                replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
-                break;
-            default:
-                throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
+        case SCHEMA_XP:
+            schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
+            break;
+        case MAPPER_XP:
+            avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
+            break;
+        case FACTORY_XP:
+            avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
+            break;
+        case REPLACEMENT_XP:
+            replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
+            break;
+        default:
+            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
         }
     }
 
@@ -196,20 +194,20 @@ public class AvroComponent extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case SCHEMA_XP:
-                schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
-                break;
-            case MAPPER_XP:
-                avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
-                break;
-            case FACTORY_XP:
-                avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
-                break;
-            case REPLACEMENT_XP:
-                replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
-                break;
-            default:
-                throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
+        case SCHEMA_XP:
+            schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
+            break;
+        case MAPPER_XP:
+            avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
+            break;
+        case FACTORY_XP:
+            avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
+            break;
+        case REPLACEMENT_XP:
+            replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
+            break;
+        default:
+            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
         }
     }
 

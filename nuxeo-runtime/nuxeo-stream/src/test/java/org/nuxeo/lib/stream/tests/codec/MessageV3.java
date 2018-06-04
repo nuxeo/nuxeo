@@ -25,6 +25,7 @@ import org.apache.avro.reflect.AvroName;
 /**
  * @since 10.2
  */
+@SuppressWarnings("CanBeFinal")
 public class MessageV3 {
     @AvroName("intValue")
     public int myInt = 3;

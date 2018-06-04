@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 
@@ -31,6 +33,7 @@ import org.nuxeo.lib.stream.log.LogManager;
  * @since 9.3
  */
 public class LagCommand extends Command {
+    private static final Log log = LogFactory.getLog(LagCommand.class);
 
     protected static final String NAME = "lag";
 
@@ -61,14 +64,14 @@ public class LagCommand extends Command {
     }
 
     protected void lag(LogManager manager) {
-        System.out.println("# " + manager);
+        log.info("# " + manager);
         for (String name : manager.listAll()) {
             lag(manager, name);
         }
     }
 
     protected void lag(LogManager manager, String name) {
-        System.out.println("## Log: " + name + " partitions: " + manager.size(name));
+        log.info("## Log: " + name + " partitions: " + manager.size(name));
         List<String> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
@@ -78,15 +81,15 @@ public class LagCommand extends Command {
     }
 
     protected void renderLag(String group, List<LogLag> lags) {
-        System.out.println("### Group: " + group);
-        System.out.println("| partition | lag | pos | end | posOffset | endOffset |\n"
+        log.info("### Group: " + group);
+        log.info("| partition | lag | pos | end | posOffset | endOffset |\n"
                 + "| --- | ---: | ---: | ---: | ---: | ---: |");
         LogLag all = LogLag.of(lags);
-        System.out.println(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
+        log.info(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
                 all.upperOffset()));
         if (verbose && lags.size() > 1) {
             AtomicInteger i = new AtomicInteger();
-            lags.forEach(lag -> System.out.println(String.format("|%s|%d|%d|%d|%d|%d|", i.getAndIncrement(), lag.lag(),
+            lags.forEach(lag -> log.info(String.format("|%s|%d|%d|%d|%d|%d|", i.getAndIncrement(), lag.lag(),
                     lag.lower(), lag.upper(), lag.lowerOffset(), lag.upperOffset())));
         }
     }

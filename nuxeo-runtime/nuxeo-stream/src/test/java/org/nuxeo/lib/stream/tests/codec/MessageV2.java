@@ -25,6 +25,7 @@ import org.apache.avro.reflect.Nullable;
 /**
  * @since 10.2
  */
+@SuppressWarnings("CanBeFinal")
 public class MessageV2 extends MessageV1 {
 
     // the new field must be annotated as Nullable or AvroDefault

@@ -76,19 +76,19 @@ public class Topology {
             if (VertexType.COMPUTATION.equals(vertex.getType())) {
                 String name = vertex.getName();
                 int concurrency = settings.getConcurrency(vertex.getName());
-                ret.append(String.format("node %s [%s\n----\n%d threads]\n", name, name, concurrency));
+                ret.append(String.format("node %s [%s%n----%n%d threads]%n", name, name, concurrency));
             } else if (VertexType.STREAM.equals(vertex.getType())) {
                 String name = vertex.getName();
                 int partitions = settings.getPartitions(vertex.getName());
-                ret.append(String.format("queue %s [%s\n----\n%d partitions]\n", name, name, partitions));
+                ret.append(String.format("queue %s [%s%n----%n%d partitions]%n", name, name, partitions));
             }
         }
         for (DefaultEdge edge : dag.edgeSet()) {
             ret.append(
-                    String.format("%s==>%s\n", dag.getEdgeSource(edge).getName(), dag.getEdgeTarget(edge).getName()));
+                    String.format("%s==>%s%n", dag.getEdgeSource(edge).getName(), dag.getEdgeTarget(edge).getName()));
         }
         ret.append("@enduml\n");
-        return ret.toString().replace("\n1 partitions", "\n1 partition").replace("\n1 threads", "\n1 thread");
+        return ret.toString().replace("%n1 partitions", "%n1 partition").replace("%n1 threads", "%n1 thread");
     }
 
     protected void generateDag(Set<ComputationMetadataMapping> metadataSet)

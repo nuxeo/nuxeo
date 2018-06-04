@@ -44,15 +44,15 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Watermark wm = Watermark.ofValue(watermark);
-        return String.format("%s:%d %s", dateFormat.format(new Date(wm.getTimestamp())), wm.getSequence(),
-                wm.isCompleted() ? "completed" : "uncompleted");
+        return String.format("%s:%d%s", dateFormat.format(new Date(wm.getTimestamp())), wm.getSequence(),
+                wm.isCompleted() ? " completed" : "");
     }
 
     protected String binaryString(byte[] data) {
         String overview = "";
         if (data != null) {
             try {
-                overview += new String(data, "UTF-8").substring(0, min(data.length, 512)) + '"';
+                overview += new String(data, "UTF-8").substring(0, min(data.length, 512));
             } catch (UnsupportedEncodingException e) {
                 overview = "unsupported encoding";
             }

@@ -53,6 +53,7 @@ import org.nuxeo.lib.stream.log.LogTailer;
 /**
  * @since 9.3
  */
+@SuppressWarnings("squid:S2925")
 public abstract class TestStreamProcessor {
     private static final Log log = LogFactory.getLog(TestStreamProcessor.class);
 
@@ -62,7 +63,7 @@ public abstract class TestStreamProcessor {
 
     public abstract LogManager getLogManager() throws Exception;
 
-    public abstract LogManager getSameLogManager() throws Exception;
+    public abstract LogManager getSameLogManager();
 
     public abstract StreamProcessor getStreamProcessor(LogManager logManager);
 
@@ -443,7 +444,7 @@ public abstract class TestStreamProcessor {
     }
 
     @Test
-    public void testInvalidProcessorWithMultipleOuptutCodec() throws Exception {
+    public void testInvalidProcessorWithMultipleOutputCodec() throws Exception {
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationForward("C1", 1, 2),
                                             Arrays.asList("i1:input", "o1:output-avro", "o2:output-json"))

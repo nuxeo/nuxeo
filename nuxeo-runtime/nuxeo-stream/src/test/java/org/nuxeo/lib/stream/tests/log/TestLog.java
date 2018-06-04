@@ -485,6 +485,7 @@ public abstract class TestLog {
         assertEquals(LogLag.of(5, 10), manager.getLag(logName, "group-b"));
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     @Test
     public void waitForConsumer() throws Exception {
         final int LOG_SIZE = 1;
@@ -630,7 +631,6 @@ public abstract class TestLog {
             if (record == null) {
                 stop = true;
             } else {
-                // System.out.println(record.value());
                 assertEquals(msg1, record.message());
                 i++;
             }
@@ -707,7 +707,7 @@ public abstract class TestLog {
             assertFalse(groups.isEmpty());
             assertTrue(groups.toString(), groups.contains(GROUP1));
             assertTrue(groups.toString(), groups.contains(GROUP2));
-            System.out.println(manager.getLagPerPartition(logName, GROUP1));
+            // System.out.println(manager.getLagPerPartition(logName, GROUP1));
         } finally {
             tailer.close();
             tailer2.close();
@@ -786,7 +786,7 @@ public abstract class TestLog {
         Latency latency = Latency.of(latencies);
         // there are 3 un read records
         assertEquals(3, latency.lag().lag());
-        System.out.println(latency);
+        // System.out.println(latency);
     }
 
     protected void assertRecordKeyEquals(String expectedKey, LogRecord<Record> record) {
@@ -875,7 +875,7 @@ public abstract class TestLog {
         Codec<KeyValueMessage> codec1Bis = new AvroBinaryCodec<>(KeyValueMessage.class);
         LogAppender<KeyValueMessage> goodAppender = manager.getAppender(logName, codec1Bis);
         goodAppender.append(0, msg1);
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName, codec2)){
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName, codec2)) {
             tailer.read(DEF_TIMEOUT);
             fail("Should not be possible to read with a wrong codec");
         } catch (IllegalArgumentException e) {

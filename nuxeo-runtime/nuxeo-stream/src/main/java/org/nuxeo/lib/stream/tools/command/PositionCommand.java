@@ -29,6 +29,8 @@ import java.util.Objects;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogLag;
@@ -44,12 +46,17 @@ import org.nuxeo.lib.stream.log.LogTailer;
  * @since 10.1
  */
 public class PositionCommand extends Command {
+    private static final Log log = LogFactory.getLog(PositionCommand.class);
 
     public static final Duration FIRST_READ_TIMEOUT = Duration.ofMillis(1000);
 
     public static final Duration READ_TIMEOUT = Duration.ofMillis(100);
 
     protected static final String NAME = "position";
+
+    public static final String AFTER_DATE_OPT = "after-date";
+
+    public static final String TO_WATERMARK_OPT = "to-watermark";
 
     protected static long getTimestampFromDate(String dateIso8601) {
         if (dateIso8601 == null || dateIso8601.isEmpty()) {
@@ -59,8 +66,8 @@ public class PositionCommand extends Command {
             Instant instant = Instant.parse(dateIso8601);
             return instant.toEpochMilli();
         } catch (DateTimeException e) {
-            System.err.println("Failed to read the timeout: " + e.getMessage());
-            System.err.println("The timestamp should be in ISO-8601 format, eg. " + Instant.now());
+            log.error("Failed to read the timeout: " + e.getMessage());
+            log.error("The timestamp should be in ISO-8601 format, eg. " + Instant.now());
         }
         return -1;
     }
@@ -89,7 +96,7 @@ public class PositionCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder()
-                      .longOpt("after-date")
+                      .longOpt(AFTER_DATE_OPT)
                       .desc("Sets the committed positions for the group to a specific date."
                               + " The date used to find the offset depends on the implementation, for Kafka this is the"
                               + " LogAppendTime. The position is set to the earliest offset whose timestamp is greater than or equal to the given date."
@@ -100,7 +107,7 @@ public class PositionCommand extends Command {
                       .build());
         options.addOption(
                 Option.builder()
-                      .longOpt("to-watermark")
+                      .longOpt(TO_WATERMARK_OPT)
                       .desc("Sets the committed positions for the group to a specific date."
                               + " The date used to find the offset is contained in a record watermark. "
                               + " This means that the LOG_NAME is expected to be a computation stream with records with populated watermark."
@@ -117,13 +124,13 @@ public class PositionCommand extends Command {
         String name = cmd.getOptionValue("log-name");
         String group = cmd.getOptionValue("group", "tools");
 
-        if (cmd.hasOption("after-date")) {
-            long timestamp = getTimestampFromDate(cmd.getOptionValue("after-date"));
+        if (cmd.hasOption(AFTER_DATE_OPT)) {
+            long timestamp = getTimestampFromDate(cmd.getOptionValue(AFTER_DATE_OPT));
             if (timestamp >= 0) {
                 return positionAfterDate(manager, group, name, timestamp);
             }
-        } else if (cmd.hasOption("to-watermark")) {
-            long timestamp = getTimestampFromDate(cmd.getOptionValue("to-watermark"));
+        } else if (cmd.hasOption(TO_WATERMARK_OPT)) {
+            long timestamp = getTimestampFromDate(cmd.getOptionValue(TO_WATERMARK_OPT));
             if (timestamp >= 0) {
                 return positionToWatermark(manager, group, name, timestamp);
             }
@@ -132,7 +139,7 @@ public class PositionCommand extends Command {
         } else if (cmd.hasOption("reset")) {
             return reset(manager, group, name);
         } else {
-            System.err.println("Invalid option, try 'help position'");
+            log.error("Invalid option, try 'help position'");
         }
         return false;
     }
@@ -143,8 +150,7 @@ public class PositionCommand extends Command {
             tailer.toEnd();
             tailer.commit();
         }
-        System.out.println(
-                String.format("# Moved log %s, group: %s, from: %s to %s", name, group, lag.lower(), lag.upper()));
+        log.info(String.format("# Moved log %s, group: %s, from: %s to %s", name, group, lag.lower(), lag.upper()));
         return true;
     }
 
@@ -154,7 +160,7 @@ public class PositionCommand extends Command {
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             tailer.reset();
         }
-        System.out.println(String.format("# Reset log %s, group: %s, from: %s to 0", name, group, pos));
+        log.info(String.format("# Reset log %s, group: %s, from: %s to 0", name, group, pos));
         return true;
     }
 
@@ -165,21 +171,20 @@ public class PositionCommand extends Command {
                 LogPartition logPartition = new LogPartition(name, partition);
                 LogOffset logOffset = tailer.offsetForTimestamp(logPartition, timestamp);
                 if (logOffset == null) {
-                    System.err.println(String.format("# Could not find an offset for group: %s, partition: %s", group,
+                    log.error(String.format("# Could not find an offset for group: %s, partition: %s", group,
                             logPartition));
                     continue;
                 }
                 tailer.seek(logOffset);
                 movedOffset = true;
-                System.out.println(
-                        String.format("# Set log %s, group: %s, to offset %s", name, group, logOffset.offset()));
+                log.info(String.format("# Set log %s, group: %s, to offset %s", name, group, logOffset.offset()));
             }
             if (movedOffset) {
                 tailer.commit();
                 return true;
             }
         }
-        System.err.println("No offset found for the specified date");
+        log.error("No offset found for the specified date");
         return false;
     }
 
@@ -204,17 +209,16 @@ public class PositionCommand extends Command {
         }
         if (offsets.stream().noneMatch(Objects::nonNull)) {
             if (LogLag.of(lags).upper() == 0) {
-                System.err.println("No offsets found because log is empty");
+                log.error("No offsets found because log is empty");
                 return false;
             }
-            System.err.println("Timestamp: " + timestamp + " is earlier as any records, resetting positions");
+            log.error("Timestamp: " + timestamp + " is earlier as any records, resetting positions");
             return reset(manager, group, name);
         }
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             offsets.stream().filter(Objects::nonNull).forEach(tailer::seek);
             tailer.commit();
-            offsets.stream().filter(Objects::nonNull).forEach(
-                    offset -> System.out.println("# Moving consumer to: " + offset));
+            offsets.stream().filter(Objects::nonNull).forEach(offset -> log.info("# Moving consumer to: " + offset));
         }
         return true;
     }

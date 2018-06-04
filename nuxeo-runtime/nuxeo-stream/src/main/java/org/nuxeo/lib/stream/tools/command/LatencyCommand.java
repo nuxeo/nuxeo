@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
@@ -36,6 +38,7 @@ import org.nuxeo.lib.stream.log.LogManager;
  * @since 9.3
  */
 public class LatencyCommand extends Command {
+    private static final Log log = LogFactory.getLog(LatencyCommand.class);
 
     protected static final String NAME = "latency";
 
@@ -76,24 +79,15 @@ public class LatencyCommand extends Command {
         return true;
     }
 
-<<<<<<< HEAD
-    protected Codec<Record> getCodec() {
-        return null;
-    }
-
-    protected void latency(LogManager manager) {
-        System.out.println("# " + manager);
-=======
     protected void latency(LogManager manager, Codec<Record> codec) {
         log.info("# " + manager);
->>>>>>> fe9e10e... add tool codec
         for (String name : manager.listAll()) {
             latency(manager, name, codec);
         }
     }
 
     protected void latency(LogManager manager, String name, Codec<Record> codec) {
-        System.out.println("## Log: " + name + " partitions: " + manager.size(name));
+        log.info("## Log: " + name + " partitions: " + manager.size(name));
         List<String> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
@@ -104,22 +98,22 @@ public class LatencyCommand extends Command {
                     (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey))));
         } catch (IllegalStateException e) {
             // happen when this is not a stream of Record
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
     protected void renderLatency(String group, List<Latency> latencies) {
-        System.out.println(String.format("### Group: %s", group));
-        System.out.println(
+        log.info(String.format("### Group: %s", group));
+        log.info(
                 "| partition | lag | latencyMs | latency | posTimestamp | posDate | curDate | pos | end | posOffset | endOffset | posKey |\n"
                         + "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |");
         Latency all = Latency.of(latencies);
-        System.out.println(String.format("|All|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|", all.lag().lag(), all.latency(),
+        log.info(String.format("|All|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|", all.lag().lag(), all.latency(),
                 formatInterval(all.latency()), all.lower(), formatDate(all.lower()), formatDate(all.upper()),
                 all.lag().lower(), all.lag().upper(), all.lag().lowerOffset(), all.lag().upperOffset(), all.key()));
         if (verbose && latencies.size() > 1) {
             AtomicInteger i = new AtomicInteger();
-            latencies.forEach(lat -> System.out.println(String.format("|%d|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|",
+            latencies.forEach(lat -> log.info(String.format("|%d|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|",
                     i.getAndIncrement(), lat.lag().lag(), lat.latency(), formatInterval(lat.latency()), lat.lower(),
                     formatDate(lat.lower()), formatDate(lat.upper()), lat.lag().lower(), lat.lag().upper(),
                     lat.lag().lowerOffset(), lat.lag().upperOffset(), lat.key())));

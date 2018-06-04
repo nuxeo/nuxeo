@@ -74,7 +74,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     @Override
     public LogManager getLogManager(String name) {
-        // TODO: return a wrapper that don't expose the LogManager#close
+        // TODO: returns a wrapper that don't expose the LogManager#close
         if (!managers.containsKey(name)) {
             if (!configs.containsKey(name)) {
                 throw new IllegalArgumentException("Unknown logConfig: " + name);

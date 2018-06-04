@@ -109,6 +109,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         this.consumer = new KafkaConsumer<>(consumerProps);
     }
 
+    @SuppressWarnings("squid:S2095")
     public static <M extends Externalizable> KafkaLogTailer<M> createAndAssign(Codec<M> codec, KafkaNamespace ns,
             Collection<LogPartition> partitions, String group, Properties consumerProps) {
         KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
@@ -123,6 +124,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         return ret;
     }
 
+    @SuppressWarnings("squid:S2095")
     public static <M extends Externalizable> KafkaLogTailer<M> createAndSubscribe(Codec<M> codec, KafkaNamespace ns,
             Collection<String> names, String group, Properties consumerProps, RebalanceListener listener) {
         KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
@@ -390,6 +392,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         return codec;
     }
 
+    @SuppressWarnings("squid:S1181")
     @Override
     public void close() {
         if (consumer != null) {

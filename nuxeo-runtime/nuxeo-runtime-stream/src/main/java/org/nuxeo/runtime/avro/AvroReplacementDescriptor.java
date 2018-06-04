@@ -48,6 +48,7 @@ public class AvroReplacementDescriptor implements Comparable<AvroReplacementDesc
     @XNode("@priority")
     protected int priority;
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(AvroReplacementDescriptor o) {
         if (priority != o.priority) {
@@ -90,8 +91,7 @@ public class AvroReplacementDescriptor implements Comparable<AvroReplacementDesc
 
     @Override
     public String toString() {
-        return "AvroReplacementDescriptor [forbidden=" + forbidden + ", "
-                + "replacement=" + replacement + ","
+        return "AvroReplacementDescriptor [forbidden=" + forbidden + ", " + "replacement=" + replacement + ","
                 + " priority=" + priority + "]";
     }
 

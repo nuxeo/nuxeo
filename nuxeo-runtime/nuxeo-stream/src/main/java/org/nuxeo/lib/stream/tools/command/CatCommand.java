@@ -55,11 +55,11 @@ public class CatCommand extends Command {
         options.addOption(
                 Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
         options.addOption(Option.builder()
-                .longOpt("codec")
-                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
-                .hasArg()
-                .argName("CODEC")
-                .build());
+                                .longOpt("codec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
 
