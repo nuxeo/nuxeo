@@ -39,6 +39,7 @@ import javax.transaction.SystemException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -249,6 +250,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     // break loop
                     return;
                 }
+            } catch (ConcurrentUpdateException e) {
+                // never swallow ConcurrentUpdateException
+                throw e;
             } catch (RuntimeException e) {
                 // get message
                 SequenceTracer.destroy("failure");
