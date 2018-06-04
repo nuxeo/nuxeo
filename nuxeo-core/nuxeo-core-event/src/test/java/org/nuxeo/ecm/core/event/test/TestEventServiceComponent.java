@@ -22,11 +22,13 @@ package org.nuxeo.ecm.core.event.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
@@ -255,6 +257,22 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         assertEquals(2, DummyPostCommitEventListener.handledCount());
         Thread.sleep(2 * 1000);
         assertEquals("Threads not dead", 0, Thread.activeCount() - initialThreadCount);
+    }
+
+    @Test
+    public void testConcurrentUpdateExceptionNotSwallowed() throws Exception {
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-async-listeners.xml"); // contains a sync listener too
+
+        EventService service = Framework.getService(EventService.class);
+
+        Event event = new EventImpl("testasync", new EventContextImpl());
+        event.getContext().setProperty("throw-concurrent", "yes");
+        try {
+            service.fireEvent(event);
+            fail("should throw ConcurrentUpdateException");
+        } catch (ConcurrentUpdateException e) {
+            assertEquals("too fast bro", e.getMessage());
+        }
     }
 
 }
