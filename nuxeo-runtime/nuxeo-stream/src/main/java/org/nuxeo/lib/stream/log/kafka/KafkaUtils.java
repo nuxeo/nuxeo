@@ -45,6 +45,7 @@ import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.log.LogPartition;
 
 import kafka.admin.AdminClient;
@@ -162,11 +163,11 @@ public class KafkaUtils implements AutoCloseable {
             ret.all().get(5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (TimeoutException e) {
-            throw new RuntimeException("Unable to create topics " + topic + " within the timeout", e);
+            throw new StreamRuntimeException("Unable to create topics " + topic + " within the timeout", e);
         }
     }
 
@@ -186,12 +187,12 @@ public class KafkaUtils implements AutoCloseable {
             return desc.partitions().size();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
                 return -1;
             }
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         }
     }
 
@@ -200,9 +201,9 @@ public class KafkaUtils implements AutoCloseable {
             return getNewAdminClient().listTopics().names().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         }
     }
 
@@ -263,9 +264,9 @@ public class KafkaUtils implements AutoCloseable {
             getNewAdminClient().deleteTopics(Collections.singleton(topic)).all().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         }
     }
 
@@ -275,9 +276,9 @@ public class KafkaUtils implements AutoCloseable {
             return descriptions.values().get(topic).get().partitions().size();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new StreamRuntimeException(e);
         }
     }
 

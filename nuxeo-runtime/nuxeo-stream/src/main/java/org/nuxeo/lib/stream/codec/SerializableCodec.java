@@ -53,7 +53,7 @@ public class SerializableCodec<T extends Serializable> implements Codec<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "squid:S2093" })
     @Override
     public T decode(byte[] data) {
         // TODO: check if it worth to switch to commons-lang3 SerializationUtils
@@ -71,7 +71,7 @@ public class SerializableCodec<T extends Serializable> implements Codec<T> {
                 }
                 bis.close();
             } catch (IOException ex) {
-                // we want to ignore close exception so no try-with-resources
+                // we want to ignore close exception so no try-with-resources squid:S2093
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,17 @@
  * Contributors:
  *     bdelbosc
  */
-package org.nuxeo.lib.stream.tools.command;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.nuxeo.lib.stream.log.LogManager;
+package org.nuxeo.lib.stream;
 
 /**
- * @since 10.1
+ * @since 10.2
  */
-public class TestCommand extends Command {
-
-    protected static final String NAME = "test";
-
-    @Override
-    public String name() {
-        return NAME;
+public class StreamRuntimeException extends RuntimeException {
+    public StreamRuntimeException(Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public void updateOptions(Options options) {
-        // nothing to update
-    }
-
-    @Override
-    public boolean run(LogManager manager, CommandLine cmd) {
-        return true;
+    public StreamRuntimeException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

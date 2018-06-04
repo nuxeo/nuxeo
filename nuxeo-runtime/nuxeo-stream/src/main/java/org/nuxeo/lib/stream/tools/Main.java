@@ -30,6 +30,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
@@ -40,10 +42,15 @@ import org.nuxeo.lib.stream.tools.command.HelpCommand;
  * @since 9.3
  */
 public class Main {
+    private static final Log log = LogFactory.getLog(Main.class);
 
     protected static final String NUXEO_KAFKA_FILE_CONF = "nxserver/config/kafka-config.xml";
 
     protected static final String NUXEO_KAFKA_CONF = "default";
+
+    protected static final String CHRONICLE_OPT = "chronicle";
+
+    protected static final String KAFKA_OPT = "kafka";
 
     protected final Map<String, Command> commandMap = new HashMap<>();
 
@@ -79,12 +86,12 @@ public class Main {
             createManager(cmd, cmdLine);
             return cmd.run(manager, cmdLine);
         } catch (ParseException e) {
-            System.err.println("Parse error: " + e.getMessage() + ", try: help " + command);
+            log.error("Parse error: " + e.getMessage() + ", try: help " + command);
         } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("Interrupted: " + e.getMessage());
+            log.error("Interrupted: " + e.getMessage());
         }
         return false;
     }
@@ -93,10 +100,10 @@ public class Main {
         if (cmd instanceof HelpCommand) {
             return;
         }
-        if (cmdLine.hasOption("chronicle")) {
-            createChronicleManager(cmdLine.getOptionValue("chronicle"));
-        } else if (cmdLine.hasOption("kafka") || cmdLine.hasOption("k")) {
-            String contribPath = cmdLine.getOptionValue("kafka", NUXEO_KAFKA_FILE_CONF);
+        if (cmdLine.hasOption(CHRONICLE_OPT)) {
+            createChronicleManager(cmdLine.getOptionValue(CHRONICLE_OPT));
+        } else if (cmdLine.hasOption(KAFKA_OPT) || cmdLine.hasOption("k")) {
+            String contribPath = cmdLine.getOptionValue(KAFKA_OPT, NUXEO_KAFKA_FILE_CONF);
             createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
         } else {
             throw new IllegalArgumentException("Missing required option: --chronicle or --kafka");
@@ -127,13 +134,13 @@ public class Main {
 
     protected void initDefaultOptions() {
         options.addOption(Option.builder()
-                                .longOpt("chronicle")
+                                .longOpt(CHRONICLE_OPT)
                                 .desc("Base path of the Chronicle Queue LogManager")
                                 .hasArg()
                                 .argName("PATH")
                                 .build());
         options.addOption(Option.builder()
-                                .longOpt("kafka")
+                                .longOpt(KAFKA_OPT)
                                 .desc("Nuxeo Kafka configuration contribution file: nxserver/config/kafka-config.xml")
                                 .hasArg()
                                 .argName("PATH")

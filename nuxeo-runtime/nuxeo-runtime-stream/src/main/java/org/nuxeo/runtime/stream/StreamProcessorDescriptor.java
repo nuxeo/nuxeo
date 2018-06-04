@@ -30,6 +30,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
@@ -93,7 +94,7 @@ public class StreamProcessorDescriptor {
             return klass.getDeclaredConstructor().newInstance().getTopology(options);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                 | NoSuchMethodException e) {
-            throw new RuntimeException("Can not create topology for processor: " + name, e);
+            throw new StreamRuntimeException("Can not create topology for processor: " + name, e);
         }
 
     }
@@ -108,6 +109,7 @@ public class StreamProcessorDescriptor {
         public Integer concurrency = DEFAULT_CONCURRENCY;
 
         public ComputationDescriptor() {
+            // empty constructor
         }
     }
 
@@ -125,6 +127,7 @@ public class StreamProcessorDescriptor {
         public String codec;
 
         public StreamDescriptor() {
+            // empty constructor
         }
 
     }

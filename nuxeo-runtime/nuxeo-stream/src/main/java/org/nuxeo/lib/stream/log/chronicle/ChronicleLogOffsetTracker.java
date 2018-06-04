@@ -134,16 +134,12 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
                 }
             });
         } while (offset[0] == 0 && hasNext);
-        // System.out.println("last committed returned from: " + offsetQueue.file() + " " + offset[0] + " hasNext: " +
-        // hasNext);
         return offset[0];
     }
 
     public void commit(long offset) {
         ExcerptAppender appender = offsetQueue.acquireAppender();
         appender.writeBytes(b -> b.writeInt(partition).writeLong(offset).writeLong(System.currentTimeMillis()));
-        // System.out.println(String.format("COMMIT %s, partition: %s, offset: %s, pos: %s",
-        // offsetQueue.file(), partition, offset, appender.lastIndexAppended()));
         lastCommittedOffset = offset;
     }
 

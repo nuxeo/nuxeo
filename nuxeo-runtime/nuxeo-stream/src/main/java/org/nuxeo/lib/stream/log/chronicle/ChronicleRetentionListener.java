@@ -28,6 +28,7 @@ import java.util.NavigableSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 
 import net.openhft.chronicle.queue.impl.StoreFileListener;
 import net.openhft.chronicle.queue.impl.WireStore;
@@ -100,7 +101,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
             allCycles.iterator().forEachRemaining(cycle -> ret.add(cycle.intValue()));
             return ret;
         } catch (ParseException e) {
-            throw new RuntimeException("Fail to list cycles for queue: " + queue, e);
+            throw new StreamRuntimeException("Fail to list cycles for queue: " + queue, e);
         }
     }
 

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.tools.renderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogRecord;
 
@@ -25,23 +27,25 @@ import org.nuxeo.lib.stream.log.LogRecord;
  * @since 9.3
  */
 public class MarkdownRenderer extends Renderer {
+    private static final Log log = LogFactory.getLog(Renderer.class);
+
     protected static final String MD_DATA = "```";
 
     @Override
     public void accept(LogRecord<Record> record) {
         Record rec = record.message();
-        System.out.println(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.getKey(),
+        log.info(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.getKey(),
                 watermarkString(rec.getWatermark()), rec.getData().length, rec.getFlags()));
-        System.out.println(MD_DATA + binaryString(rec.getData()) + MD_DATA);
+        log.info(MD_DATA + binaryString(rec.getData()) + MD_DATA);
     }
 
     @Override
     public void header() {
-        System.out.println("## Records");
+        log.info("## Records");
     }
 
     @Override
     public void footer() {
-        System.out.println("");
+        log.info("");
     }
 }

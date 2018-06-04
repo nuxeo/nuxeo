@@ -26,16 +26,16 @@ import java.util.Objects;
  *
  * @since 9.3
  */
-final public class Watermark implements Comparable<Watermark> {
-    final public static Watermark LOWEST = new Watermark(0, (short) 0, false);
+public final class Watermark implements Comparable<Watermark> {
+    public static final Watermark LOWEST = new Watermark(0, (short) 0, false);
 
-    final protected long timestamp;
+    protected final long timestamp;
 
-    final protected short sequence;
+    protected final short sequence;
 
-    final protected boolean completed;
+    protected final boolean completed;
 
-    final protected long value;
+    protected final long value;
 
     private Watermark(long timestamp, short sequence, boolean completed) {
         if (timestamp < 0) {
@@ -127,9 +127,9 @@ final public class Watermark implements Comparable<Watermark> {
             return ret;
         }
         if (diff > 0) {
-            return Integer.MAX_VALUE;
+            return 1;
         }
-        return Integer.MIN_VALUE;
+        return -1;
     }
 
 }

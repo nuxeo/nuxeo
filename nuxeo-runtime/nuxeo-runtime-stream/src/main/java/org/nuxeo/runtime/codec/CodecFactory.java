@@ -18,9 +18,9 @@
  */
 package org.nuxeo.runtime.codec;
 
-import org.nuxeo.lib.stream.codec.Codec;
-
 import java.util.Map;
+
+import org.nuxeo.lib.stream.codec.Codec;
 
 /**
  * Factory to init and provide codec object.
@@ -30,15 +30,12 @@ import java.util.Map;
 public interface CodecFactory {
 
     /**
-     * Inits the codec factory using a map of options.
-     *
-     * @param options
+     * Initializes the codec factory using a map of options.
      */
     void init(Map<String, String> options);
 
     /**
      * Returns a codec object enables to encode/decode object ot class T.
-     *
      */
     <T> Codec<T> newCodec(Class<T> objectClass);
 }

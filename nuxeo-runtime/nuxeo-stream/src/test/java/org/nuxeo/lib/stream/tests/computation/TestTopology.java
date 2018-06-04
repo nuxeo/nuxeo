@@ -27,20 +27,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.Topology;
 
 /**
  * @since 9.3
  */
 public class TestTopology {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void testTopology() throws Exception {
+    public void testTopology() {
 
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationSource("C1"),
@@ -97,7 +93,7 @@ public class TestTopology {
     }
 
     @Test
-    public void testTopologyMultiRoot() throws Exception {
+    public void testTopologyMultiRoot() {
 
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationSource("R1"),

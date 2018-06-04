@@ -73,7 +73,8 @@ public class TestToolsKafka extends TestTools {
 
     protected String getConfigFile() {
         if (configFile == null) {
-            configFile = Objects.requireNonNull(this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE)).getFile();
+            configFile = Objects.requireNonNull(this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE))
+                                .getFile();
         }
         return configFile;
     }

@@ -131,6 +131,7 @@ public class TestLogKafka extends TestLog {
         }
     }
 
+    @SuppressWarnings("squid:S2925")
     @Test
     public void testSeekByTimestamp() throws Exception {
 
@@ -239,6 +240,7 @@ public class TestLogKafka extends TestLog {
         ExecutorService service = Executors.newFixedThreadPool(NB_CONSUMER, new ThreadFactory() {
             protected final AtomicInteger count = new AtomicInteger(0);
 
+            @SuppressWarnings("NullableProblems")
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r, String.format("%s-%02d", "consumer", count.getAndIncrement()));

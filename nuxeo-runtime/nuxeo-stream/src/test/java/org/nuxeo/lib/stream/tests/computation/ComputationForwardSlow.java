@@ -38,6 +38,7 @@ public class ComputationForwardSlow extends ComputationForward {
         this.averageDelayMs = averageDelayMs;
     }
 
+    @SuppressWarnings("squid:S2925")
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         try {

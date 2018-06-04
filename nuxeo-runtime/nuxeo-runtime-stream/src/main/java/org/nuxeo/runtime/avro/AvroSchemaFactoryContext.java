@@ -82,9 +82,7 @@ public class AvroSchemaFactoryContext {
             return Collections.emptyList();
         }
         List<U> sortedChildren = new ArrayList<>(children);
-        sortedChildren.sort((o1, o2) -> Objects.compare(
-                factory.getQualifiedName(o1),
-                factory.getQualifiedName(o2),
+        sortedChildren.sort((o1, o2) -> Objects.compare(factory.getQualifiedName(o1), factory.getQualifiedName(o2),
                 String::compareTo));
         return sortedChildren;
     }

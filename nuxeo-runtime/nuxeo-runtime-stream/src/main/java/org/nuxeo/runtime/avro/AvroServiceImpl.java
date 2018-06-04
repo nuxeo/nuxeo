@@ -36,9 +36,7 @@ import org.nuxeo.runtime.RuntimeServiceException;
 /**
  * @since 10.2
  */
-public class AvroServiceImpl
-        extends SchemaStore.Cache
-        implements AvroService {
+public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
 
     private static final AvroMapper<Object, Object> NULL = new AvroMapper<Object, Object>(null) {
 

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.tools.renderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogRecord;
 
@@ -25,28 +27,27 @@ import org.nuxeo.lib.stream.log.LogRecord;
  * @since 9.3
  */
 public class TextRenderer extends Renderer {
+    private static final Log log = LogFactory.getLog(TextRenderer.class);
 
     @Override
     public void accept(LogRecord<Record> record) {
         try {
             Record rec = record.message();
-            System.out.println(
-                String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.getKey(), watermarkString(rec.getWatermark()),
-                        rec.getData().length, rec.getFlags(), binaryString(rec.getData())));
+            log.info(String.format("|%s|%s|%s|%s|%d|%s|", record.offset(), watermarkString(rec.getWatermark()),
+                    rec.getFlags(), rec.getKey(), rec.getData().length, binaryString(rec.getData())));
         } catch (ClassCastException e) {
             // Try to render something else than a stream Record
-            System.out.println(String.format("%s", record.message()));
+            log.info(String.format("%s", record.message()));
         }
     }
 
     @Override
     public void header() {
-        System.out.println(
-                "| offset | key | watermark | length | flag | data |\n" + "| --- | ---: | --- | ---: | --- | --- |");
+        log.info("| offset | watermark | flag | key | length | data |\n" + "| --- | --- | --- | --- | ---: | --- |");
     }
 
     @Override
     public void footer() {
-        System.out.println("");
+        log.info("");
     }
 }

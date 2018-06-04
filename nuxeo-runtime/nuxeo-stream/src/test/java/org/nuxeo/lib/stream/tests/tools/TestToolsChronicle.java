@@ -37,6 +37,7 @@ public class TestToolsChronicle extends TestTools {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
     protected Path basePath;
 
     @Test

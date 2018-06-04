@@ -30,7 +30,7 @@ public class SerializableCodecFactory implements CodecFactory {
 
     @Override
     public void init(Map<String, String> options) {
-
+        // nothing to init
     }
 
     @SuppressWarnings("unchecked")

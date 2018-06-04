@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.log.chronicle;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +45,6 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
-
-import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * Chronicle Queue implementation of LogAppender.

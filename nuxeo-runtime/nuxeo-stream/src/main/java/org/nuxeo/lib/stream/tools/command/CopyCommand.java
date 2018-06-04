@@ -23,6 +23,8 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -33,6 +35,7 @@ import org.nuxeo.lib.stream.log.LogTailer;
  * @since 9.3
  */
 public class CopyCommand extends Command {
+    private static final Log log = LogFactory.getLog(CopyCommand.class);
 
     protected static final String NAME = "copy";
 
@@ -91,11 +94,11 @@ public class CopyCommand extends Command {
             String group) {
         log.info(String.format("# Copy %s to %s", src, dest));
         if (!manager.exists(src)) {
-            System.err.println("source log not found: " + src);
+            log.error("source log not found: " + src);
             return false;
         }
         if (manager.exists(dest)) {
-            System.err.println("destination log already exists: " + dest);
+            log.error("destination log already exists: " + dest);
             return false;
         }
         manager.createIfNotExists(dest, manager.size(src));
@@ -110,7 +113,7 @@ public class CopyCommand extends Command {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("Interrupted");
+            log.error("Interrupted");
             return false;
         }
         return true;

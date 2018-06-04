@@ -23,6 +23,7 @@ import java.util.Objects;
 /**
  * @since 10.2
  */
+@SuppressWarnings("CanBeFinal")
 public class MessageV1 {
     public int intValue = 1;
 

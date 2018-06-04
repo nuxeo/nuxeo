@@ -21,7 +21,6 @@ package org.nuxeo.lib.stream.tests.computation;
 import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +41,7 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     protected File basePath;
 
     @Before
-    public void skipWindowsThatDontCleanTempFolder() {
+    public void skipWindowsThatDoNotCleanTempFolder() {
         org.junit.Assume.assumeFalse(IS_WIN);
     }
 
@@ -53,7 +52,7 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     }
 
     @Override
-    public LogManager getSameLogManager() throws IOException {
+    public LogManager getSameLogManager() {
         return new ChronicleLogManager(basePath.toPath());
     }
 

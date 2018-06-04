@@ -36,11 +36,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Latency {
     protected final LogLag lag;
 
-    protected long lower;
+    protected final long lower;
 
-    protected long upper;
+    protected final long upper;
 
-    protected String key;
+    protected final String key;
 
     public Latency(long lower, long upper, LogLag lag, String key) {
         Objects.requireNonNull(lag);

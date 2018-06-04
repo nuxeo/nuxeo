@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.nuxeo.lib.stream.codec.AvroJsonCodec;
@@ -29,8 +31,6 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.tools.renderer.MarkdownRenderer;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
 import org.nuxeo.lib.stream.tools.renderer.TextRenderer;
-
-import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * @since 9.3
@@ -56,16 +56,16 @@ public abstract class Command {
             return NO_CODEC;
         }
         switch (codec) {
-            case "java":
-                return new SerializableCodec<>();
-            case "avro":
-                return new AvroMessageCodec<>(Record.class);
-            case "avroJson":
-                return new AvroJsonCodec<>(Record.class);
-            case "avroBinary":
-                return new AvroJsonCodec<>(Record.class);
-            default:
-                throw new IllegalArgumentException("Unknown codec: " + codec);
+        case "java":
+            return new SerializableCodec<>();
+        case "avro":
+            return new AvroMessageCodec<>(Record.class);
+        case "avroJson":
+            return new AvroJsonCodec<>(Record.class);
+        case "avroBinary":
+            return new AvroJsonCodec<>(Record.class);
+        default:
+            throw new IllegalArgumentException("Unknown codec: " + codec);
         }
     }
 

@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.computation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -50,4 +51,23 @@ public class ComputationMetadataMapping extends ComputationMetadata {
         return reverseMapping.getOrDefault(name, name);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        ComputationMetadataMapping that = (ComputationMetadataMapping) o;
+        return Objects.equals(mapping, that.mapping) && Objects.equals(reverseMapping, that.reverseMapping);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mapping, reverseMapping);
+    }
 }

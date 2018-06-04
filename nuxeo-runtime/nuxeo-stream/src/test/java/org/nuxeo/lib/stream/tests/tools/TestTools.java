@@ -45,6 +45,7 @@ import org.nuxeo.lib.stream.tools.Main;
 /**
  * @since 9.3
  */
+@SuppressWarnings("squid:S2925")
 public abstract class TestTools {
     protected static final int NB_RECORD = 10;
 
@@ -199,7 +200,7 @@ public abstract class TestTools {
             tailer.commit(); // commit on record 2
             LogRecord<Record> nextLogRecord = tailer.read(Duration.ofSeconds(1));
             nextRecord = nextLogRecord.message();
-            System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.getKey());
+            // System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.getKey());
         }
         // track the current latencies
         run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 1 -c 1", getManagerOptions(), LOG_NAME,
@@ -282,7 +283,7 @@ public abstract class TestTools {
     }
 
     protected boolean runCommand(String commandLine) {
-        System.out.println("# stream.sh " + commandLine);
+        // System.out.println("# stream.sh " + commandLine);
         String[] args = commandLine.split(" ");
         return new Main().run(args);
     }

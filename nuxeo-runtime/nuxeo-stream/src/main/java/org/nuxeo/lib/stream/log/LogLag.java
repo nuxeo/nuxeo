@@ -29,13 +29,13 @@ import java.util.List;
  * @since 9.3
  */
 public class LogLag {
-    final protected long lowerOffset;
+    protected final long lowerOffset;
 
-    final protected long upperOffset;
+    protected final long upperOffset;
 
-    final protected long lag;
+    protected final long lag;
 
-    final protected long upper;
+    protected final long upper;
 
     public LogLag(long lowerOffset, long upperOffset) {
         this(lowerOffset, upperOffset, upperOffset - lowerOffset, upperOffset);
