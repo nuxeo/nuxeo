@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.event.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
@@ -265,6 +267,19 @@ public class TestEventServiceComponent {
         if (timeout) {
             // wait for listeners to finish
             Thread.sleep(2000);
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml") // contains a sync listener too
+    public void testConcurrentUpdateExceptionNotSwallowed() throws Exception {
+        Event event = new EventImpl("testasync", new EventContextImpl());
+        event.getContext().setProperty("throw-concurrent", "yes");
+        try {
+            getService().fireEvent(event);
+            fail("should throw ConcurrentUpdateException");
+        } catch (ConcurrentUpdateException e) {
+            assertEquals("too fast bro", e.getMessage());
         }
     }
 

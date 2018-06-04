@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 
@@ -30,6 +31,9 @@ public class DummyInlineListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
+        if (event.getContext().getProperty("throw-concurrent") != null) {
+            throw new ConcurrentUpdateException("too fast bro");
+        }
         event.getContext().setProperty("foo", "bar");
     }
 
