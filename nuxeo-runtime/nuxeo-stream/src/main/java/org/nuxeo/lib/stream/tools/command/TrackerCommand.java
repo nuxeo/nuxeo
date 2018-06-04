@@ -35,13 +35,13 @@ import org.nuxeo.lib.stream.log.LogManager;
  */
 public class TrackerCommand extends Command {
 
-    protected static final String NAME = "tracker";
-
     public static final String COMPUTATION_NAME = "LatencyTracker";
 
     public static final String INPUT_STREAM = "log_null";
 
     public static final String INTERNAL_LOG_PREFIX = "_";
+
+    protected static final String NAME = "tracker";
 
     protected static final String DEFAULT_INTERVAL = "60";
 
@@ -64,6 +64,8 @@ public class TrackerCommand extends Command {
     protected Topology topology;
 
     protected LogStreamProcessor processor;
+
+    protected String codec;
 
     @Override
     public String name() {
@@ -98,6 +100,12 @@ public class TrackerCommand extends Command {
                                 .hasArg()
                                 .argName("COUNT")
                                 .build());
+        options.addOption(Option.builder()
+                                .longOpt("codec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(Option.builder().longOpt("verbose").build());
     }
 
@@ -105,6 +113,7 @@ public class TrackerCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) {
         logNames = getLogNames(manager, cmd.getOptionValue("log-name"));
         output = cmd.getOptionValue("log-output", DEFAULT_LATENCIES_LOG);
+        codec = cmd.getOptionValue("codec");
         verbose = cmd.hasOption("verbose");
         interval = Integer.parseInt(cmd.getOptionValue("interval", DEFAULT_INTERVAL));
         count = Integer.parseInt(cmd.getOptionValue("count", DEFAULT_COUNT));
@@ -129,14 +138,16 @@ public class TrackerCommand extends Command {
 
     protected void initTopology(LogManager manager) {
         topology = Topology.builder()
-                           .addComputation(() -> new LatencyTrackerComputation(manager, logNames, COMPUTATION_NAME,
-                                   interval, count, verbose), Arrays.asList("i1:" + INPUT_STREAM, "o1:" + output))
+                           .addComputation(
+                                   () -> new LatencyTrackerComputation(manager, logNames, COMPUTATION_NAME, interval,
+                                           count, verbose, getRecordCodec(codec)),
+                                   Arrays.asList("i1:" + INPUT_STREAM, "o1:" + output))
                            .build();
     }
 
     protected boolean runProcessor(LogManager manager) {
         processor = new LogStreamProcessor(manager);
-        Settings settings = new Settings(1, 1);
+        Settings settings = new Settings(1, 1, getRecordCodec(codec));
         processor.init(topology, settings).start();
         while (!processor.isTerminated()) {
             try {

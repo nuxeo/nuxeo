@@ -26,9 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
@@ -39,8 +37,6 @@ import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
  * @since 9.3
  */
 public class TestComputation {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testComputationForward() throws Exception {
@@ -71,8 +67,8 @@ public class TestComputation {
         assertEquals(0, context.getRecords("o3").size());
         assertEquals(0, context.getRecords("o4").size());
 
-        assertEquals("foo", context.getRecords("o1").get(0).key);
-        assertEquals("bar", new String(context.getRecords("o1").get(0).data, UTF_8));
+        assertEquals("foo", context.getRecords("o1").get(0).getKey());
+        assertEquals("bar", new String(context.getRecords("o1").get(0).getData(), UTF_8));
 
         // ask to process another record
         comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes("UTF-8")));
@@ -85,7 +81,7 @@ public class TestComputation {
     }
 
     @Test
-    public void testComputationSource() throws Exception {
+    public void testComputationSource() {
         int nbRecordsToGenerate = 7;
         int batchSize = 3;
         int outputStreams = 2;
@@ -145,7 +141,7 @@ public class TestComputation {
         assertEquals(1, context.getRecords("o1").size());
 
         // the key contains the total
-        assertEquals("42", context.getRecords("o1").get(0).key);
+        assertEquals("42", context.getRecords("o1").get(0).getKey());
 
         // Add a new record
         comp.processRecord(context, "i2", Record.of("foo", null));
@@ -155,7 +151,7 @@ public class TestComputation {
         // we now have 2 counter results
         assertEquals(2, context.getRecords("o1").size());
         // the counter has been reset
-        assertEquals("1", context.getRecords("o1").get(1).key);
+        assertEquals("1", context.getRecords("o1").get(1).getKey());
 
     }
 

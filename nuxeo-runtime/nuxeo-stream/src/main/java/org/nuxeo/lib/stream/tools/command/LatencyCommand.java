@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
@@ -53,38 +54,54 @@ public class LatencyCommand extends Command {
                                 .hasArg()
                                 .argName("LOG_NAME")
                                 .build());
+        options.addOption(Option.builder()
+                                .longOpt("codec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(Option.builder().longOpt("verbose").desc("Display latency for each partition").build());
     }
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
         String name = cmd.getOptionValue("log-name");
+        Codec<Record> codec = getRecordCodec(cmd.getOptionValue("codec"));
         verbose = cmd.hasOption("verbose");
         if (name != null) {
-            latency(manager, name);
+            latency(manager, name, codec);
         } else {
-            latency(manager);
+            latency(manager, codec);
         }
         return true;
     }
 
+<<<<<<< HEAD
+    protected Codec<Record> getCodec() {
+        return null;
+    }
+
     protected void latency(LogManager manager) {
         System.out.println("# " + manager);
+=======
+    protected void latency(LogManager manager, Codec<Record> codec) {
+        log.info("# " + manager);
+>>>>>>> fe9e10e... add tool codec
         for (String name : manager.listAll()) {
-            latency(manager, name);
+            latency(manager, name, codec);
         }
     }
 
-    protected void latency(LogManager manager, String name) {
-        System.out.println("## Log: " + name + " partitions: " + manager.getAppender(name).size());
+    protected void latency(LogManager manager, String name, Codec<Record> codec) {
+        System.out.println("## Log: " + name + " partitions: " + manager.size(name));
         List<String> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
             consumers.add("tools");
         }
         try {
-            consumers.forEach(group -> renderLatency(group, manager.<Record> getLatencyPerPartition(name, group,
-                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key))));
+            consumers.forEach(group -> renderLatency(group, manager.<Record> getLatencyPerPartition(name, group, codec,
+                    (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey))));
         } catch (IllegalStateException e) {
             // happen when this is not a stream of Record
             System.err.println(e.getMessage());

@@ -24,6 +24,7 @@ import static org.nuxeo.lib.stream.tests.log.TestLog.DEF_TIMEOUT;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class TestToolsKafka extends TestTools {
                 getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
         // move to target timestamp
         run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(),
-                LOG_NAME, Instant.ofEpochMilli(Watermark.ofValue(targetRecord.watermark).getTimestamp())));
+                LOG_NAME, Instant.ofEpochMilli(Watermark.ofValue(targetRecord.getWatermark()).getTimestamp())));
         // open a tailer with the moved group we should be on the same record
         try (LogTailer<Record> tailer = getManager().createTailer("anotherGroup", LOG_NAME)) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
@@ -72,7 +73,7 @@ public class TestToolsKafka extends TestTools {
 
     protected String getConfigFile() {
         if (configFile == null) {
-            configFile = this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE).getFile();
+            configFile = Objects.requireNonNull(this.getClass().getClassLoader().getResource(KAFKA_CONF_FILE)).getFile();
         }
         return configFile;
     }

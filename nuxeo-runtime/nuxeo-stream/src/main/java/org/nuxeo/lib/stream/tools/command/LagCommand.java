@@ -49,7 +49,7 @@ public class LagCommand extends Command {
     }
 
     @Override
-    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+    public boolean run(LogManager manager, CommandLine cmd) {
         String name = cmd.getOptionValue("log-name");
         verbose = cmd.hasOption("verbose");
         if (name != null) {
@@ -68,7 +68,7 @@ public class LagCommand extends Command {
     }
 
     protected void lag(LogManager manager, String name) {
-        System.out.println("## Log: " + name + " partitions: " + manager.getAppender(name).size());
+        System.out.println("## Log: " + name + " partitions: " + manager.size(name));
         List<String> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions

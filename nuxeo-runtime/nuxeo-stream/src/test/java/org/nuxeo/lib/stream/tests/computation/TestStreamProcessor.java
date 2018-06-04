@@ -19,7 +19,10 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -27,13 +30,20 @@ import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
+import org.nuxeo.lib.stream.codec.AvroJsonCodec;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -45,6 +55,10 @@ import org.nuxeo.lib.stream.log.LogTailer;
  */
 public abstract class TestStreamProcessor {
     private static final Log log = LogFactory.getLog(TestStreamProcessor.class);
+
+    protected static final String OUTPUT_STREAM = "output";
+
+    public Codec<Record> codec = new AvroMessageCodec<>(Record.class);
 
     public abstract LogManager getLogManager() throws Exception;
 
@@ -67,10 +81,10 @@ public abstract class TestStreamProcessor {
                                             Arrays.asList("i1:s3", "o1:s4"))
                                     .addComputation(
                                             () -> new ComputationRecordCounter("COUNTER", Duration.ofMillis(100)),
-                                            Arrays.asList("i1:s4", "o1:output"))
+                                            Arrays.asList("i1:s4", "o1:" + OUTPUT_STREAM))
                                     .build();
         // one thread for each computation
-        Settings settings = new Settings(concurrency, concurrency).setConcurrency("GENERATOR", 1);
+        Settings settings = new Settings(concurrency, concurrency, codec).setConcurrency("GENERATOR", 1);
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
@@ -92,7 +106,7 @@ public abstract class TestStreamProcessor {
             Latency latency = processor.getLatency("COUNTER");
             assertEquals(latency.toString(), 0, latency.latency());
             // read the results
-            int result = readCounterFrom(manager, "output");
+            int result = readOutputCounter(manager);
             int expected = nbRecords * settings.getConcurrency("GENERATOR");
             if (result != expected) {
                 processor = getStreamProcessor(manager);
@@ -119,6 +133,51 @@ public abstract class TestStreamProcessor {
         testSimpleTopo(1, 1);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSimpleTopoOneRecordOneThreadLegacyCodec() throws Exception {
+        codec = NO_CODEC;
+        try {
+            testSimpleTopo(1, 1);
+        } finally {
+            restoreDefaultCodec();
+        }
+    }
+
+    @Test
+    public void testSimpleTopoOneRecordOneThreadAvroJsonCodec() throws Exception {
+        codec = new AvroJsonCodec<>(Record.class);
+        try {
+            testSimpleTopo(1, 1);
+        } finally {
+            restoreDefaultCodec();
+        }
+    }
+
+    @Test
+    public void testSimpleTopoOneRecordOneThreadSerializableCodec() throws Exception {
+        codec = new SerializableCodec<>();
+        try {
+            testSimpleTopo(1, 1);
+        } finally {
+            restoreDefaultCodec();
+        }
+    }
+
+    @Test
+    public void testSimpleTopoOneRecordOneThreadAvroCodec() throws Exception {
+        codec = new AvroBinaryCodec<>(Record.class);
+        try {
+            testSimpleTopo(1, 1);
+        } finally {
+            restoreDefaultCodec();
+        }
+    }
+
+    protected void restoreDefaultCodec() {
+        codec = new AvroMessageCodec<>(Record.class);
+    }
+
     @Test
     public void testSimpleTopoFewRecordsOneThread() throws Exception {
         testSimpleTopo(17, 1);
@@ -129,7 +188,8 @@ public abstract class TestStreamProcessor {
         testSimpleTopo(1003, 1);
     }
 
-    // @Test
+    @Ignore("A wrong case")
+    @Test
     public void testSimpleTopoManyRecordsManyThread() throws Exception {
         // because of the concurrency record arrive in disorder in the final counter
         // if the last record is processed by the final counter
@@ -142,7 +202,6 @@ public abstract class TestStreamProcessor {
 
     public void testComplexTopo(int nbRecords, int concurrency, int partitions) throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
-        final long targetWatermark = Watermark.ofTimestamp(targetTimestamp).getValue();
         Topology topology = Topology.builder()
                                     .addComputation(
                                             () -> new ComputationSource("GENERATOR", 1, nbRecords, 5, targetTimestamp),
@@ -162,7 +221,7 @@ public abstract class TestStreamProcessor {
                                             Arrays.asList("i1:s5", "o1:output"))
                                     .build();
 
-        Settings settings = new Settings(concurrency, partitions).setPartitions("output", 1);
+        Settings settings = new Settings(concurrency, partitions, codec).setPartitions("output", 1);
         settings.setConcurrency("C4", 16).setPartitions("s3", 16).setConcurrency("COUNTER", 4).setPartitions("s5", 4);
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
@@ -172,12 +231,11 @@ public abstract class TestStreamProcessor {
             processor.init(topology, settings).start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
-            long lowWatermark = processor.getLowWatermark();
 
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
             double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
             // read the results
-            int result = readCounterFrom(manager, "output");
+            int result = readOutputCounter(manager);
             log.info(String.format(
                     "topo: complex, concurrency: %d, records: %s, took: %.2fs, throughput: %.2f records/s", concurrency,
                     result, elapsed, result / elapsed));
@@ -233,7 +291,6 @@ public abstract class TestStreamProcessor {
     @Test
     public void testStopAndResume() throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
-        final long targetWatermark = Watermark.ofTimestamp(targetTimestamp).getValue();
         final int nbRecords = 1001;
         final int concurrent = 8;
         Topology topology1 = Topology.builder()
@@ -242,7 +299,7 @@ public abstract class TestStreamProcessor {
                                              Collections.singletonList("o1:s1"))
                                      .build();
 
-        Settings settings1 = new Settings(concurrent, concurrent);
+        Settings settings1 = new Settings(concurrent, concurrent, codec);
 
         Topology topology2 = Topology.builder()
                                      .addComputation(() -> new ComputationForward("C1", 1, 2),
@@ -258,8 +315,8 @@ public abstract class TestStreamProcessor {
                                              Arrays.asList("i1:s5", "o1:output"))
                                      .build();
 
-        Settings settings2 = new Settings(concurrent, concurrent).setPartitions("output", 1).setConcurrency("COUNTER",
-                concurrent);
+        Settings settings2 = new Settings(concurrent, concurrent, codec).setPartitions("output", 1)
+                                                                        .setConcurrency("COUNTER", concurrent);
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
 
@@ -282,7 +339,6 @@ public abstract class TestStreamProcessor {
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
                 StreamProcessor processor = getStreamProcessor(manager);
-                long start = System.currentTimeMillis();
                 log.info("RESUME computations");
                 processor.init(topology2, settings2).start();
                 assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -290,7 +346,7 @@ public abstract class TestStreamProcessor {
                 Thread.sleep(400 + i * 10);
                 log.info("KILL computations pool");
                 processor.shutdown();
-                long processed = readCounterFrom(manager, "output");
+                long processed = readOutputCounter(manager);
                 result += processed;
                 log.info("processed: " + processed + " total: " + result);
             }
@@ -305,7 +361,7 @@ public abstract class TestStreamProcessor {
             assertTrue(processor.drainAndStop(Duration.ofSeconds(200)));
             double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
             // read the results
-            long processed = readCounterFrom(manager, "output");
+            long processed = readOutputCounter(manager);
             result += processed;
             // the number of results can be bigger than expected, in the case of checkpoint failure
             // some records can be reprocessed (duplicate), this is a delivery at least one, not exactly one.
@@ -327,7 +383,7 @@ public abstract class TestStreamProcessor {
                                              () -> new ComputationSource("GENERATOR", 1, nbRecords, 1, targetTimestamp),
                                              Collections.singletonList("o1:s1"))
                                      .build();
-        Settings settings1 = new Settings(concurrent, concurrent);
+        Settings settings1 = new Settings(concurrent, concurrent, codec);
 
         try (LogManager manager = getLogManager()) {
             StreamProcessor processor = getStreamProcessor(manager);
@@ -366,25 +422,92 @@ public abstract class TestStreamProcessor {
         }
     }
 
+    @Test
+    public void testInvalidProcessorWithMultipleInputCodec() throws Exception {
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationForward("C1", 2, 1),
+                                            Arrays.asList("i1:input-json", "i2:input-avro", "o1:output-avro"))
+                                    .build();
+        Settings settings = new Settings(1, 1).setCodec("input-json", new AvroJsonCodec<>(Record.class))
+                                              .setCodec("input-java", new SerializableCodec<>())
+                                              .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
+        try (LogManager manager = getLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            try {
+                processor.init(topology, settings).start();
+                fail("It should not be possible to read from input streams with different encoding");
+            } catch (IllegalArgumentException e) {
+                // expected
+            }
+        }
+    }
+
+    @Test
+    public void testInvalidProcessorWithMultipleOuptutCodec() throws Exception {
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationForward("C1", 1, 2),
+                                            Arrays.asList("i1:input", "o1:output-avro", "o2:output-json"))
+                                    .build();
+        Settings settings = new Settings(1, 1, new AvroJsonCodec<>(Record.class)).setCodec("output-avro",
+                new AvroMessageCodec<>(Record.class));
+        try (LogManager manager = getLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            try {
+                processor.init(topology, settings).start();
+                fail("It should not be possible to write to output streams with different encoding");
+            } catch (IllegalArgumentException e) {
+                // expected
+            }
+        }
+    }
+
+    @Test
+    public void testProcessorWithDifferentInputOutputCodec() throws Exception {
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationForward("C1", 1, 1),
+                                            Arrays.asList("i1:input-json", "o1:output-avro"))
+                                    .build();
+        Settings settings = new Settings(1, 1).setCodec("input-json", new AvroJsonCodec<>(Record.class))
+                                              .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
+        try (LogManager manager = getLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            processor.init(topology, settings).start();
+            // The processor init has already configured the codec for source stream
+            LogAppender<Record> appender = manager.getAppender("input-json");
+            assertEquals("avroJson", appender.getCodec().getName());
+
+            // write some input
+            appender.append(0, Record.of("key", "value".getBytes("UTF-8")));
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
+            // read output using avro codec
+            try (LogTailer<Record> tailer = manager.createTailer("test", "output-avro",
+                    new AvroMessageCodec<>(Record.class))) {
+                assertEquals("avro", tailer.getCodec().getName());
+                assertNotNull(tailer.read(Duration.ofSeconds(1)));
+            }
+        }
+    }
+
     // ---------------------------------
     // helpers
-    protected int readCounterFrom(LogManager manager, String stream) throws InterruptedException {
-        int partitions = manager.getAppender(stream).size();
+    protected int readOutputCounter(LogManager manager) throws InterruptedException {
+        int partitions = manager.size(OUTPUT_STREAM);
         int ret = 0;
         for (int i = 0; i < partitions; i++) {
-            ret += readCounterFromPartition(manager, stream, i);
+            ret += readCounterFromPartition(manager, OUTPUT_STREAM, i);
         }
         return ret;
     }
 
     protected int readCounterFromPartition(LogManager manager, String stream, int partition)
             throws InterruptedException {
-        LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition));
+        LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition), codec);
         int result = 0;
         tailer.toStart();
         for (LogRecord<Record> logRecord = tailer.read(
                 Duration.ofMillis(1000)); logRecord != null; logRecord = tailer.read(Duration.ofMillis(500))) {
-            result += Integer.valueOf(logRecord.message().key);
+            result += Integer.valueOf(logRecord.message().getKey());
         }
         tailer.commit();
         return result;
@@ -392,14 +515,14 @@ public abstract class TestStreamProcessor {
 
     protected int countRecordIn(LogManager manager, String stream) throws Exception {
         int ret = 0;
-        for (int i = 0; i < manager.getAppender(stream).size(); i++) {
+        for (int i = 0; i < manager.size(stream); i++) {
             ret += countRecordInPartition(manager, stream, i);
         }
         return ret;
     }
 
     protected int countRecordInPartition(LogManager manager, String stream, int partition) throws Exception {
-        try (LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition))) {
+        try (LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition), codec)) {
             int result = 0;
             tailer.toStart();
             for (LogRecord<Record> logRecord = tailer.read(

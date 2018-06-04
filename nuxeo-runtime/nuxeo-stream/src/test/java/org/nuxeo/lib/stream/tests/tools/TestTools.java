@@ -162,7 +162,7 @@ public abstract class TestTools {
 
         // move to the watermark of targetRecord, this work as expected because each record as a unique timestamp
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
-                Instant.ofEpochMilli(Watermark.ofValue(targetRecord.watermark).getTimestamp()), LOG_NAME));
+                Instant.ofEpochMilli(Watermark.ofValue(targetRecord.getWatermark()).getTimestamp()), LOG_NAME));
         // open a tailer with the moved group we should be on the same record
         try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
@@ -199,7 +199,7 @@ public abstract class TestTools {
             tailer.commit(); // commit on record 2
             LogRecord<Record> nextLogRecord = tailer.read(Duration.ofSeconds(1));
             nextRecord = nextLogRecord.message();
-            System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.key);
+            System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.getKey());
         }
         // track the current latencies
         run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 1 -c 1", getManagerOptions(), LOG_NAME,

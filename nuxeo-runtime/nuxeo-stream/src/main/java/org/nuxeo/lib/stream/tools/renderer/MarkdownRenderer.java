@@ -30,9 +30,9 @@ public class MarkdownRenderer extends Renderer {
     @Override
     public void accept(LogRecord<Record> record) {
         Record rec = record.message();
-        System.out.println(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.key,
-                watermarkString(rec.watermark), rec.data.length, rec.flags));
-        System.out.println(MD_DATA + binaryString(rec.data) + MD_DATA);
+        System.out.println(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.getKey(),
+                watermarkString(rec.getWatermark()), rec.getData().length, rec.getFlags()));
+        System.out.println(MD_DATA + binaryString(rec.getData()) + MD_DATA);
     }
 
     @Override

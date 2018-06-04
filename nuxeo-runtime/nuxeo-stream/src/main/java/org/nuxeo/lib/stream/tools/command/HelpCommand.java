@@ -46,7 +46,7 @@ public class HelpCommand extends Command {
     }
 
     @Override
-    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+    public boolean run(LogManager manager, CommandLine cmd) {
         List<Command> commands = new CommandRegistry().commands();
         displayCommonOptions();
         if (cmd.getArgList().isEmpty()) {

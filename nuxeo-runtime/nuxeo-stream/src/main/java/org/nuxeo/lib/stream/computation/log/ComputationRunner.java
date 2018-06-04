@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
@@ -71,6 +72,10 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected final WatermarkMonotonicInterval lowWatermark = new WatermarkMonotonicInterval();
 
+    protected final Codec<Record> inputCodec;
+
+    protected final Codec<Record> outputCodec;
+
     protected ComputationContextImpl context;
 
     protected volatile boolean stop;
@@ -95,18 +100,21 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<LogPartition> defaultAssignment, LogManager logManager) {
+            List<LogPartition> defaultAssignment, LogManager logManager, Codec<Record> inputCodec,
+            Codec<Record> outputCodec) {
         this.supplier = supplier;
         this.metadata = metadata;
         this.logManager = logManager;
         this.context = new ComputationContextImpl(metadata);
+        this.inputCodec = inputCodec;
+        this.outputCodec = outputCodec;
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
             assignmentLatch.countDown();
         } else if (logManager.supportSubscribe()) {
-            this.tailer = logManager.subscribe(metadata.name(), metadata.inputStreams(), this);
+            this.tailer = logManager.subscribe(metadata.name(), metadata.inputStreams(), this, inputCodec);
         } else {
-            this.tailer = logManager.createTailer(metadata.name(), defaultAssignment);
+            this.tailer = logManager.createTailer(metadata.name(), defaultAssignment, inputCodec);
             assignmentLatch.countDown();
         }
     }
@@ -267,9 +275,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             record = logRecord.message();
             lastReadTime = System.currentTimeMillis();
             inRecords++;
-            lowWatermark.mark(record.watermark);
+            lowWatermark.mark(record.getWatermark());
             String from = metadata.reverseMap(logRecord.offset().partition().name());
-            // System.out.println(metadata.name() + ": Receive from " + from + " record: " + record);
             computation.processRecord(context, from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();
@@ -289,17 +296,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         long watermark = context.getSourceLowWatermark();
         if (watermark > 0) {
             lowWatermark.mark(Watermark.ofValue(watermark));
-            // System.out.println(metadata.name() + ": Set source wm " + lowWatermark);
             context.setSourceLowWatermark(0);
         }
     }
 
     protected void checkRecordFlags(Record record) {
-        if (record.flags.contains(Record.Flag.POISON_PILL)) {
+        if (record.getFlags().contains(Record.Flag.POISON_PILL)) {
             log.info(metadata.name() + ": Receive POISON PILL");
             context.askForCheckpoint();
             stop = true;
-        } else if (record.flags.contains(Record.Flag.COMMIT)) {
+        } else if (record.getFlags().contains(Record.Flag.COMMIT)) {
             context.askForCheckpoint();
         }
     }
@@ -323,16 +329,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         sendRecords();
         saveTimers();
         saveState();
-        // Simulate slow checkpoint
-        // try {
-        // Thread.sleep(1);
-        // } catch (InterruptedException e) {
-        // Thread.currentThread().interrupt();
-        // throw e;
-        // }
+        // To Simulate slow checkpoint add a Thread.sleep(1)
         saveOffsets();
         lowWatermark.checkpoint();
-        // System.out.println("checkpoint " + metadata.name() + " " + lowWatermark);
         context.removeCheckpointFlag();
         log.debug(metadata.name() + ": checkpoint");
         setThreadName("checkpoint");
@@ -354,14 +353,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void sendRecords() {
         for (String stream : metadata.outputStreams()) {
-            LogAppender<Record> appender = logManager.getAppender(stream);
+            LogAppender<Record> appender = logManager.getAppender(stream, outputCodec);
             for (Record record : context.getRecords(stream)) {
-                // System.out.println(metadata.name() + " send record to " + stream + " lowWatermark " + lowWatermark);
-                if (record.watermark == 0) {
+                if (record.getWatermark() == 0) {
                     // use low watermark when not set
-                    record.watermark = lowWatermark.getLow().getValue();
+                    record.setWatermark(lowWatermark.getLow().getValue());
                 }
-                appender.append(record.key, record);
+                appender.append(record.getKey(), record);
                 outRecords++;
             }
             context.getRecords(stream).clear();

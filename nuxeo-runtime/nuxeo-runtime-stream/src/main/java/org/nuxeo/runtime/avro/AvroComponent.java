@@ -40,6 +40,8 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class AvroComponent extends DefaultComponent {
 
+    public static final int APPLICATION_START_ORDER = -600;
+
     protected static class AvroMapperDescriptorRegistry
             extends SimpleContributionRegistry<AvroMapperDescriptor> {
         @Override
@@ -117,23 +119,33 @@ public class AvroComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (SCHEMA_XP.equals(extensionPoint)) {
-            schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
-        } else if (MAPPER_XP.equals(extensionPoint)) {
-            avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
-        } else if (FACTORY_XP.equals(extensionPoint)) {
-            avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
-        } else if (REPLACEMENT_XP.equals(extensionPoint)) {
-            replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
-        } else {
-            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
+        switch (extensionPoint) {
+            case SCHEMA_XP:
+                schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
+                break;
+            case MAPPER_XP:
+                avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
+                break;
+            case FACTORY_XP:
+                avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
+                break;
+            case REPLACEMENT_XP:
+                replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
+                break;
+            default:
+                throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
         }
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return APPLICATION_START_ORDER;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void start(ComponentContext context) {
-        // schema factories can be give to the constrcutor since they don't need a service instance
+        // schema factories can be give to the constructor since they don't need a service instance
         Collection<AvroSchemaFactoryDescriptor> factoryDescriptors = avroSchemaFactoryDescriptors.getDescriptors();
         Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(factoryDescriptors.size());
         for (AvroSchemaFactoryDescriptor descriptor : factoryDescriptors) {
@@ -146,10 +158,10 @@ public class AvroComponent extends DefaultComponent {
         }
         // as well as replacements
         AvroServiceImpl impl = new AvroServiceImpl(replacementDescriptors.getDescriptors(), factories);
-        // mappers are instanciated with an instance of the service
-        Collection<AvroMapperDescriptor> mapperDecriptors = avroMapperDescriptors.getDescriptors();
-        Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDecriptors.size());
-        for (AvroMapperDescriptor descriptor : mapperDecriptors) {
+        // mappers are instantiated with an instance of the service
+        Collection<AvroMapperDescriptor> mapperDescriptors = avroMapperDescriptors.getDescriptors();
+        Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDescriptors.size());
+        for (AvroMapperDescriptor descriptor : mapperDescriptors) {
             try {
                 Class<Object> type = (Class<Object>) Class.forName(descriptor.type);
                 Class<AvroMapper<?, ?>> clazz = (Class<AvroMapper<?, ?>>) Class.forName(descriptor.clazz);
@@ -177,22 +189,27 @@ public class AvroComponent extends DefaultComponent {
     }
 
     @Override
-    public void stop(ComponentContext context) throws InterruptedException {
+    public void stop(ComponentContext context) {
         avroService = null;
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (SCHEMA_XP.equals(extensionPoint)) {
-            schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
-        } else if (MAPPER_XP.equals(extensionPoint)) {
-            avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
-        } else if (FACTORY_XP.equals(extensionPoint)) {
-            avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
-        } else if (REPLACEMENT_XP.equals(extensionPoint)) {
-            replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
-        } else {
-            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
+        switch (extensionPoint) {
+            case SCHEMA_XP:
+                schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
+                break;
+            case MAPPER_XP:
+                avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
+                break;
+            case FACTORY_XP:
+                avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
+                break;
+            case REPLACEMENT_XP:
+                replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
+                break;
+            default:
+                throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
         }
     }
 

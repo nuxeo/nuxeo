@@ -100,7 +100,7 @@ public class StreamAuditWriter implements StreamProcessorTopology {
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
             try {
-                logEntries.add(getLogEntryFromJson(record.data));
+                logEntries.add(getLogEntryFromJson(record.getData()));
             } catch (NuxeoException e) {
                 log.error("Discard invalid record: " + record, e);
                 return;

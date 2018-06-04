@@ -23,6 +23,7 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -33,8 +34,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
+import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -59,14 +62,23 @@ public class ComputationPool {
 
     protected final List<ComputationRunner> runners;
 
+    protected final Codec<Record> inputCodec;
+
+    protected final Codec<Record> outputCodec;
+
     protected ExecutorService threadPool;
 
     public ComputationPool(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<List<LogPartition>> defaultAssignments, LogManager manager) {
+            List<List<LogPartition>> defaultAssignments, LogManager manager, Codec<Record> inputCodec,
+            Codec<Record> outputCodec) {
+        Objects.requireNonNull(inputCodec);
+        Objects.requireNonNull(outputCodec);
         this.supplier = supplier;
         this.manager = manager;
         this.metadata = metadata;
         this.threads = defaultAssignments.size();
+        this.inputCodec = inputCodec;
+        this.outputCodec = outputCodec;
         this.defaultAssignments = defaultAssignments;
         this.runners = new ArrayList<>(threads);
     }
@@ -80,7 +92,8 @@ public class ComputationPool {
         log.info(metadata.name() + ": Starting pool");
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
-            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, manager);
+            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, manager, inputCodec,
+                    outputCodec);
             threadPool.submit(runner);
             runners.add(runner);
         });

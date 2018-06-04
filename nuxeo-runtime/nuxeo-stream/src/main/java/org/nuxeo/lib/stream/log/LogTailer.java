@@ -22,6 +22,8 @@ import java.io.Externalizable;
 import java.time.Duration;
 import java.util.Collection;
 
+import org.nuxeo.lib.stream.codec.Codec;
+
 /**
  * Sequential reader for a partition or multiple partitions. A tailer is not thread safe and should not be shared by
  * multiple threads.
@@ -83,10 +85,11 @@ public interface LogTailer<M extends Externalizable> extends AutoCloseable {
     void seek(LogOffset offset);
 
     /**
-     * Look up the offset for the given partition by timestamp.
-     * The position is the earliest offset whose timestamp is greater than or equal to the given timestamp.<p/>
-     * The timestamp used depends on the implementation, for Kafka this is the LogAppendTime.
-     * Returns null if no record offset is found with an appropriate timestamp.
+     * Look up the offset for the given partition by timestamp. The position is the earliest offset whose timestamp is
+     * greater than or equal to the given timestamp.
+     * <p/>
+     * The timestamp used depends on the implementation, for Kafka this is the LogAppendTime. Returns null if no record
+     * offset is found with an appropriate timestamp.
      *
      * @since 10.1
      */
@@ -114,4 +117,11 @@ public interface LogTailer<M extends Externalizable> extends AutoCloseable {
      * Returns {@code true} if the tailer has been closed.
      */
     boolean closed();
+
+    /**
+     * Returns the codec used to read the records. A null codec is the default legacy encoding.
+     *
+     * @since 10.2
+     */
+    Codec<M> getCodec();
 }

@@ -65,6 +65,8 @@ public class RestoreCommand extends Command {
 
     protected boolean dryRun;
 
+    protected String codec;
+
     @Override
     public String name() {
         return NAME;
@@ -93,6 +95,12 @@ public class RestoreCommand extends Command {
                                 .hasArg()
                                 .argName("DATE")
                                 .build());
+        options.addOption(Option.builder()
+                                .longOpt("codec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(Option.builder().longOpt("verbose").build());
         options.addOption(Option.builder().longOpt("dry-run").desc("Do not change any position").build());
     }
@@ -104,6 +112,7 @@ public class RestoreCommand extends Command {
         date = getTimestampFromDate(cmd.getOptionValue("to-date"));
         verbose = cmd.hasOption("verbose");
         dryRun = cmd.hasOption("dry-run");
+        codec = cmd.getOptionValue("codec");
         return restorePosition(manager);
     }
 
@@ -127,8 +136,8 @@ public class RestoreCommand extends Command {
         if (offset == null) {
             return;
         }
-        System.out.println(key + " new position: " + offset);
-        try (LogTailer<Record> tailer = manager.createTailer(key.group, key.getLogPartition())) {
+        log.info(key + " new position: " + offset);
+        try (LogTailer<Record> tailer = manager.createTailer(key.group, key.getLogPartition(), getRecordCodec(codec))) {
             tailer.seek(offset);
             tailer.commit();
         }
@@ -148,16 +157,16 @@ public class RestoreCommand extends Command {
             throws InterruptedException {
         long targetWatermark = latency.lower();
         String targetKey = latency.key();
-        try (LogTailer<Record> tailer = manager.createTailer(GROUP, key.getLogPartition())) {
+        try (LogTailer<Record> tailer = manager.createTailer(GROUP, key.getLogPartition(), getRecordCodec(codec))) {
             for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(
                     READ_TIMEOUT)) {
-                if (targetKey != null && !targetKey.equals(rec.message().key)) {
+                if (targetKey != null && !targetKey.equals(rec.message().getKey())) {
                     continue;
                 }
-                long timestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
+                long timestamp = Watermark.ofValue(rec.message().getWatermark()).getTimestamp();
                 if (targetWatermark == timestamp) {
                     System.out.println(String.format("%s: offset: %s wm: %d key: %s", key, rec.offset(),
-                            rec.message().watermark, rec.message().key));
+                            rec.message().getWatermark(), rec.message().getKey()));
                     return rec.offset().nextOffset();
                 }
             }
@@ -168,19 +177,19 @@ public class RestoreCommand extends Command {
 
     protected Map<LogPartitionGroup, Latency> readLatencies(LogManager manager) throws InterruptedException {
         Map<LogPartitionGroup, Latency> latencies = new HashMap<>();
-        System.out.println("# Reading latencies log: " + input + ", searching for the higher timestamp <= " + date);
-        try (LogTailer<Record> tailer = manager.createTailer(GROUP, input)) {
+        log.info("# Reading latencies log: " + input + ", searching for the higher timestamp <= " + date);
+        try (LogTailer<Record> tailer = manager.createTailer(GROUP, input, getRecordCodec(codec))) {
             for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(
                     READ_TIMEOUT)) {
-                long timestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
+                long timestamp = Watermark.ofValue(rec.message().getWatermark()).getTimestamp();
                 if (date > 0 && timestamp > date) {
                     continue;
                 }
-                LogPartitionGroup key = decodeKey(rec.message().key);
+                LogPartitionGroup key = decodeKey(rec.message().getKey());
                 if (!logNames.contains(key.name)) {
                     continue;
                 }
-                Latency latency = decodeLatency(rec.message().data);
+                Latency latency = decodeLatency(rec.message().getData());
                 if (latency != null && latency.lower() > 0) {
                     // we don't want latency.lower = 0, this means either no record either records with unset watermark
                     latencies.put(key, latency);

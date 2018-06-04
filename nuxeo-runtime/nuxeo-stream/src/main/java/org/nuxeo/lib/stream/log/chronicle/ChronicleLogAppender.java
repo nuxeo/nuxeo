@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -42,6 +43,8 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
+
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * Chronicle Queue implementation of LogAppender.
@@ -57,6 +60,8 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
 
     protected static final int MAX_PARTITIONS = 100;
 
+    public static final String MSG_KEY = "msg";
+
     protected final List<ChronicleQueue> partitions;
 
     protected final int nbPartitions;
@@ -70,15 +75,17 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
 
     protected final ChronicleRetentionDuration retention;
 
+    protected final Codec<M> codec;
+
     protected volatile boolean closed;
 
-    protected ChronicleLogAppender(File basePath, int size, ChronicleRetentionDuration retention) {
+    protected ChronicleLogAppender(Codec<M> codec, File basePath, int size, ChronicleRetentionDuration retention) {
         if (size == 0) {
             // open
             if (!exists(basePath)) {
                 throw new IllegalArgumentException("Cannot open Chronicle Queues, invalid path: " + basePath);
             }
-            this.nbPartitions = findNbQueues(basePath);
+            this.nbPartitions = partitions(basePath);
         } else {
             // create
             if (size > MAX_PARTITIONS) {
@@ -94,6 +101,8 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
             }
             this.nbPartitions = size;
         }
+        Objects.requireNonNull(codec);
+        this.codec = codec;
         this.name = basePath.getName();
         this.basePath = basePath;
         this.retention = retention;
@@ -135,31 +144,31 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     /**
      * Create a new log
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> create(File basePath, int size,
+    public static <M extends Externalizable> ChronicleLogAppender<M> create(Codec<M> codec, File basePath, int size,
             ChronicleRetentionDuration retention) {
-        return new ChronicleLogAppender<>(basePath, size, retention);
+        return new ChronicleLogAppender<>(codec, basePath, size, retention);
     }
 
     /**
      * Create a new log.
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> create(File basePath, int size) {
-        return new ChronicleLogAppender<>(basePath, size, ChronicleRetentionDuration.DISABLE);
+    public static <M extends Externalizable> ChronicleLogAppender<M> create(Codec<M> codec, File basePath, int size) {
+        return new ChronicleLogAppender<>(codec, basePath, size, ChronicleRetentionDuration.DISABLE);
     }
 
     /**
      * Open an existing log.
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> open(File basePath) {
-        return new ChronicleLogAppender<>(basePath, 0, ChronicleRetentionDuration.DISABLE);
+    public static <M extends Externalizable> ChronicleLogAppender<M> open(Codec<M> codec, File basePath) {
+        return new ChronicleLogAppender<>(codec, basePath, 0, ChronicleRetentionDuration.DISABLE);
     }
 
     /**
      * Open an existing log.
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> open(File basePath,
+    public static <M extends Externalizable> ChronicleLogAppender<M> open(Codec<M> codec, File basePath,
             ChronicleRetentionDuration retention) {
-        return new ChronicleLogAppender<>(basePath, 0, retention);
+        return new ChronicleLogAppender<>(codec, basePath, 0, retention);
     }
 
     public String getBasePath() {
@@ -179,7 +188,12 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     @Override
     public LogOffset append(int partition, M message) {
         ExcerptAppender appender = partitions.get(partition).acquireAppender();
-        appender.writeDocument(w -> w.write("msg").object(message));
+        if (NO_CODEC.equals(codec)) {
+            // default format for backward compatibility
+            appender.writeDocument(w -> w.write(MSG_KEY).object(message));
+        } else {
+            appender.writeDocument(w -> w.write().bytes(codec.encode(message)));
+        }
         long offset = appender.lastIndexAppended();
         LogOffset ret = new LogOffsetImpl(name, partition, offset);
         if (log.isDebugEnabled()) {
@@ -188,8 +202,8 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         return ret;
     }
 
-    public LogTailer<M> createTailer(LogPartition partition, String group) {
-        return addTailer(new ChronicleLogTailer<>(basePath.toString(),
+    public LogTailer<M> createTailer(LogPartition partition, String group, Codec<M> codec) {
+        return addTailer(new ChronicleLogTailer<>(codec, basePath.toString(),
                 partitions.get(partition.partition()).createTailer(), partition, group, retention));
     }
 
@@ -216,8 +230,6 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
             }
             return 0;
         }
-        // System.out.println("partition: " + partition + ", count from " + lowerOffset + " to " + upperOffset + " = " +
-        // ret);
         return ret;
     }
 
@@ -253,6 +265,11 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         return closed;
     }
 
+    @Override
+    public Codec<M> getCodec() {
+        return codec;
+    }
+
     protected boolean isProcessed(ChronicleLogOffsetTracker tracker, long offset) {
         long last = tracker.readLastCommittedOffset();
         return last > 0 && last >= offset;
@@ -268,11 +285,11 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         closed = true;
     }
 
-    protected int findNbQueues(File basePath) {
+    public static int partitions(File basePath) {
         int ret;
         try (Stream<Path> paths = Files.list(basePath.toPath())) {
             ret = (int) paths.filter(
-                    path -> (Files.isDirectory(path) && path.getFileName().toString().startsWith(PARTITION_PREFIX)))
+                    path -> (path.toFile().isDirectory() && path.getFileName().toString().startsWith(PARTITION_PREFIX)))
                              .count();
             if (ret == 0) {
                 throw new IOException("No chronicles queues file found");
@@ -286,7 +303,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     @Override
     public String toString() {
         return "ChronicleLogAppender{" + "nbPartitions=" + nbPartitions + ", basePath=" + basePath + ", name='" + name
-                + '\'' + ", retention=" + retention + ", closed=" + closed + '}';
+                + '\'' + ", retention=" + retention + ", closed=" + closed + ", codec=" + codec + '}';
     }
 
     public ChronicleRetentionDuration getRetention() {

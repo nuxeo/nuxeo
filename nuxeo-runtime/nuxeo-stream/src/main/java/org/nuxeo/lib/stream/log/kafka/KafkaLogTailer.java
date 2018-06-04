@@ -19,12 +19,9 @@
 package org.nuxeo.lib.stream.log.kafka;
 
 import static java.util.stream.Collectors.toMap;
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
-import java.io.ByteArrayInputStream;
 import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +46,8 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.utils.Bytes;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -73,6 +72,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected final KafkaNamespace ns;
 
+    protected final Codec<M> codec;
+
+    protected final Codec<M> decodeCodec;
+
     protected KafkaConsumer<String, Bytes> consumer;
 
     protected String id;
@@ -92,19 +95,23 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected boolean consumerMoved;
 
-    protected KafkaLogTailer(KafkaNamespace ns, String group, Properties consumerProps) {
+    protected KafkaLogTailer(Codec<M> codec, KafkaNamespace ns, String group, Properties consumerProps) {
+        this.codec = codec;
+        if (NO_CODEC.equals(codec)) {
+            this.decodeCodec = new SerializableCodec<>();
+        } else {
+            this.decodeCodec = codec;
+        }
         Objects.requireNonNull(group);
         this.ns = ns;
         this.group = group;
-        // this.prefixedGroup = group;
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, ns.getKafkaGroup(group));
         this.consumer = new KafkaConsumer<>(consumerProps);
-
     }
 
-    public static <M extends Externalizable> KafkaLogTailer<M> createAndAssign(KafkaNamespace ns,
+    public static <M extends Externalizable> KafkaLogTailer<M> createAndAssign(Codec<M> codec, KafkaNamespace ns,
             Collection<LogPartition> partitions, String group, Properties consumerProps) {
-        KafkaLogTailer<M> ret = new KafkaLogTailer<>(ns, group, consumerProps);
+        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
         ret.id = buildId(ret.group, partitions);
         ret.partitions = partitions;
         ret.topicPartitions = partitions.stream()
@@ -116,9 +123,9 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         return ret;
     }
 
-    public static <M extends Externalizable> KafkaLogTailer<M> createAndSubscribe(KafkaNamespace ns,
+    public static <M extends Externalizable> KafkaLogTailer<M> createAndSubscribe(Codec<M> codec, KafkaNamespace ns,
             Collection<String> names, String group, Properties consumerProps, RebalanceListener listener) {
-        KafkaLogTailer<M> ret = new KafkaLogTailer<>(ns, group, consumerProps);
+        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
         ret.id = buildSubscribeId(ret.group, names);
         ret.names = names;
         Collection<String> topics = names.stream().map(ns::getTopicName).collect(Collectors.toList());
@@ -159,7 +166,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         ConsumerRecord<String, Bytes> record = records.poll();
         lastOffsets.put(new TopicPartition(record.topic(), record.partition()), record.offset());
-        M value = messageOf(record.value());
+        M value = decodeCodec.decode(record.value().get());
         LogPartition partition = LogPartition.of(ns.getLogName(record.topic()), record.partition());
         LogOffset offset = new LogOffsetImpl(partition, record.offset());
         consumerMoved = false;
@@ -167,27 +174,6 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
             log.debug(String.format("Read from %s/%s, key: %s, value: %s", offset, group, record.key(), value));
         }
         return new LogRecord<>(value, offset);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected M messageOf(Bytes value) {
-        // TODO: switch to commons-lang3 SerializationUtils
-        ByteArrayInputStream bis = new ByteArrayInputStream(value.get());
-        ObjectInput in = null;
-        try {
-            in = new ObjectInputStream(bis);
-            return (M) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                // ignore close exception
-            }
-        }
     }
 
     protected int poll(Duration timeout) throws InterruptedException {
@@ -210,10 +196,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         if (log.isDebugEnabled()) {
             String msg = "Polling " + id + " returns " + records.size() + " records";
-            if (records.size() > 0) {
-                log.debug(msg);
-            } else {
+            if (records.isEmpty()) {
                 log.trace(msg);
+            } else {
+                log.debug(msg);
             }
         }
         return records.size();
@@ -247,10 +233,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                              .map(tp -> String.format("%s-%02d:+%d", ns.getLogName(tp.topic()), tp.partition(),
                                      toLastCommitted(tp)))
                              .collect(Collectors.joining("|"));
-        if (msg.length() > 0) {
-            if (log.isInfoEnabled()) {
-                log.info("toLastCommitted offsets: " + group + ":" + msg);
-            }
+        if (msg.length() > 0 && log.isInfoEnabled()) {
+            log.info("toLastCommitted offsets: " + group + ":" + msg);
         }
         lastOffsets.clear();
         records.clear();
@@ -271,7 +255,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
             consumer.seekToBeginning(Collections.singletonList(topicPartition));
             offset = consumer.position(topicPartition);
         }
-        lastCommittedOffsets.put(topicPartition,offset);
+        lastCommittedOffsets.put(topicPartition, offset);
         if (log.isDebugEnabled()) {
             log.debug(String.format(" toLastCommitted: %s-%02d:+%d", ns.getLogName(topicPartition.topic()),
                     topicPartition.partition(), offset));
@@ -346,9 +330,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         if (log.isDebugEnabled()) {
             String msg = offsetToCommit.entrySet()
                                        .stream()
-                                       .map(entry -> String.format("%s-%02d:+%d",
-                                               ns.getLogName(entry.getKey().topic()), entry.getKey().partition(),
-                                               entry.getValue().offset()))
+                                       .map(entry -> String.format("%s-%02d:+%d", ns.getLogName(entry.getKey().topic()),
+                                               entry.getKey().partition(), entry.getValue().offset()))
                                        .collect(Collectors.joining("|"));
             log.debug("Committed offsets  " + group + ":" + msg);
         }
@@ -360,8 +343,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected void forceCommit() {
         log.info("Force commit after a move");
 
-        Map<TopicPartition, OffsetAndMetadata> offsets =
-                topicPartitions.stream().collect(toMap(tp -> tp, tp -> new OffsetAndMetadata(consumer.position(tp))));
+        Map<TopicPartition, OffsetAndMetadata> offsets = topicPartitions.stream().collect(
+                toMap(tp -> tp, tp -> new OffsetAndMetadata(consumer.position(tp))));
         consumer.commitSync(offsets);
         offsets.forEach((topicPartition, offset) -> lastCommittedOffsets.put(topicPartition, offset.offset()));
         consumerMoved = false;
@@ -403,6 +386,11 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     }
 
     @Override
+    public Codec<M> getCodec() {
+        return codec;
+    }
+
+    @Override
     public void close() {
         if (consumer != null) {
             log.info("Closing tailer: " + id);
@@ -428,7 +416,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public String toString() {
-        return "KafkaLogTailer{" + "ns='" + ns + '\'' + ", id=" + id + ", closed=" + closed + '}';
+        return "KafkaLogTailer{" + "ns='" + ns + '\'' + ", id=" + id + ", closed=" + closed + ", codec=" + codec + '}';
     }
 
     @Override

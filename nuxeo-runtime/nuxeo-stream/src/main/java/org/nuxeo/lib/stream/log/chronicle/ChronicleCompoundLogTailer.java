@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -43,6 +44,8 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
 
     protected final List<LogPartition> logPartitions = new ArrayList<>();
 
+    protected final Codec<M> codec;
+
     protected boolean closed;
 
     protected long counter;
@@ -52,6 +55,11 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
         this.tailers.addAll(tailers);
         this.group = group;
         this.size = tailers.size();
+        if (tailers.isEmpty()) {
+            this.codec = null;
+        } else {
+            this.codec = tailers.iterator().next().getCodec();
+        }
         tailers.forEach(partition -> logPartitions.addAll(partition.assignments()));
     }
 
@@ -135,6 +143,11 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
     }
 
     @Override
+    public Codec<M> getCodec() {
+        return codec;
+    }
+
+    @Override
     public void seek(LogOffset offset) {
         for (LogTailer<M> tailer : tailers) {
             if (tailer.assignments().contains(offset.partition())) {
@@ -174,4 +187,5 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
         }
         closed = true;
     }
+
 }

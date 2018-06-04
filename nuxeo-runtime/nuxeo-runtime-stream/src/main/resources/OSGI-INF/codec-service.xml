@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.codec.service" version="1.0">
+
+  <documentation>
+    The component allows you to register a Codec to encode records.
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.codec.CodecServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.codec.CodecService" />
+  </service>
+
+  <extension-point name="codec">
+    <object class="org.nuxeo.runtime.codec.CodecDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.codec.service" point="codec">
+    <codec name="legacy" class="org.nuxeo.runtime.codec.NoCodecFactory" />
+    <codec name="java" class="org.nuxeo.runtime.codec.SerializableCodecFactory" />
+    <codec name="avro" class="org.nuxeo.runtime.codec.AvroCodecFactory">
+      <option name="encoding">message</option>
+    </codec>
+    <codec name="avroBinary" class="org.nuxeo.runtime.codec.AvroCodecFactory">
+      <option name="encoding">binary</option>
+    </codec>
+    <codec name="avroJson" class="org.nuxeo.runtime.codec.AvroCodecFactory">
+      <option name="encoding">json</option>
+    </codec>
+  </extension>
+
+</component>

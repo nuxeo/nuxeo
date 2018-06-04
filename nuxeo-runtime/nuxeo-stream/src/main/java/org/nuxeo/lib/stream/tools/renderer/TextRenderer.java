@@ -30,8 +30,9 @@ public class TextRenderer extends Renderer {
     public void accept(LogRecord<Record> record) {
         try {
             Record rec = record.message();
-            System.out.println(String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.key,
-                    watermarkString(rec.watermark), rec.data.length, rec.flags, binaryString(rec.data)));
+            System.out.println(
+                String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.getKey(), watermarkString(rec.getWatermark()),
+                        rec.getData().length, rec.getFlags(), binaryString(rec.getData())));
         } catch (ClassCastException e) {
             // Try to render something else than a stream Record
             System.out.println(String.format("%s", record.message()));

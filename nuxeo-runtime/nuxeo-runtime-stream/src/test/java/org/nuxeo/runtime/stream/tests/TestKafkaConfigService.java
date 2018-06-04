@@ -23,9 +23,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -41,9 +42,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.runtime.stream:test-kafka-config-contrib.xml")
 public class TestKafkaConfigService {
 
+    @Inject
+    public KafkaConfigService service;
+
     @Test
     public void testService() {
-        KafkaConfigService service = Framework.getService(KafkaConfigService.class);
         assertNotNull(service);
         assertFalse(service.listConfigNames().isEmpty());
         assertEquals(3, service.listConfigNames().size());
@@ -58,6 +61,5 @@ public class TestKafkaConfigService {
         assertNotNull(service.getConsumerProperties(config2));
         assertNotNull(service.getProducerProperties(config2));
         assertEquals("foo", service.getTopicPrefix(config2));
-
     }
 }

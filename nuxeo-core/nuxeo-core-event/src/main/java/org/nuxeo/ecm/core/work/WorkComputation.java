@@ -63,7 +63,7 @@ public class WorkComputation extends AbstractComputation {
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        Work work = deserialize(record.data);
+        Work work = deserialize(record.getData());
         try {
             if (work.isIdempotent() && workIds.contains(work.getId())) {
                 log.warn("Duplicate work id: " + work.getId() + " skipping");

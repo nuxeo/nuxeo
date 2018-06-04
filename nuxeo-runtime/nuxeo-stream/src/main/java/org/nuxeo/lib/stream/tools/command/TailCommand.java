@@ -59,6 +59,12 @@ public class TailCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
+        options.addOption(Option.builder()
+                                .longOpt("codec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder("t")
@@ -75,21 +81,22 @@ public class TailCommand extends Command {
         String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
+        String codec = cmd.getOptionValue("codec");
         int timeout = Integer.parseInt(cmd.getOptionValue("timeout", "120"));
-        tail(manager, name, group, lines, getRecordRenderer(render));
+        tail(manager, name, group, lines, getRecordRenderer(render), codec);
         if (cmd.hasOption("follow")) {
-            follow(manager, name, group, getRecordRenderer(render), timeout);
+            follow(manager, name, group, getRecordRenderer(render), timeout, codec);
         }
         return true;
     }
 
     @SuppressWarnings("unchecked")
-    protected void tail(LogManager manager, String name, String group, int lines, Renderer render)
+    protected void tail(LogManager manager, String name, String group, int lines, Renderer render, String codec)
             throws InterruptedException {
         LogRecord<Record>[] records = new LogRecord[lines];
         render.header();
         int count = 0;
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Record> tailer = manager.createTailer(group, name, getRecordCodec(codec))) {
             LogRecord<Record> record;
             do {
                 record = tailer.read(Duration.ofMillis(500));
@@ -107,9 +114,9 @@ public class TailCommand extends Command {
         render.footer();
     }
 
-    protected void follow(LogManager manager, String name, String group, Renderer render, int timeout)
+    protected void follow(LogManager manager, String name, String group, Renderer render, int timeout, String codec)
             throws InterruptedException {
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Record> tailer = manager.createTailer(group, name, getRecordCodec(codec))) {
             tailer.toEnd();
             while (true) {
                 LogRecord<Record> record = tailer.read(Duration.ofSeconds(timeout));
