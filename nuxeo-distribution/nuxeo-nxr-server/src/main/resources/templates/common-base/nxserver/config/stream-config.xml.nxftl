@@ -52,7 +52,7 @@
   </extension>
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="auditLogWriter" logConfig="${nuxeo.stream.audit.log.config}" defaultConcurrency="1" defaultPartitions="1"
-      class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter">
+      defaultCodec="${nuxeo.stream.audit.log.codec}" class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter">
       <option name="batchSize">${nuxeo.stream.audit.batch.size}</option>
       <option name="batchTimeThresholdMs">${nuxeo.stream.audit.batch.threshold.ms}</option>
     </streamProcessor>
@@ -76,6 +76,7 @@
     <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
       <option name="logConfig">${nuxeo.stream.pubsub.log.config}</option>
       <option name="logName">${nuxeo.stream.pubsub.log.name}</option>
+      <option name="codec">${nuxeo.stream.pubsub.log.codec}</option>
     </provider>
   </extension>
 </#if>

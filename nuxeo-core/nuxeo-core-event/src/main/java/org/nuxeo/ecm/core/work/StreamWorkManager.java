@@ -39,22 +39,22 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -75,6 +75,10 @@ public class StreamWorkManager extends WorkManagerImpl {
     public static final String WORK_LOG_CONFIG_PROP = "nuxeo.stream.work.log.config";
 
     public static final String DEFAULT_WORK_LOG_CONFIG = "work";
+
+    public static final String WORK_CODEC_PROP = "nuxeo.stream.work.log.codec";
+
+    public static final String DEFAULT_WORK_CODEC = "legacy";
 
     public static final String WORK_OVER_PROVISIONING_PROP = "nuxeo.stream.work.over.provisioning.factor";
 
@@ -100,6 +104,14 @@ public class StreamWorkManager extends WorkManagerImpl {
         return 1;
     }
 
+    protected String getCodecName() {
+        return Framework.getProperty(WORK_CODEC_PROP, DEFAULT_WORK_CODEC);
+    }
+
+    protected Codec<Record> getCodec() {
+        return Framework.getService(CodecService.class).getCodec(getCodecName(), Record.class);
+    }
+
     @Override
     public void schedule(Work work, Scheduling scheduling, boolean afterCommit) {
         String queueId = getStreamForCategory(work.getCategory());
@@ -120,6 +132,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         WorkSchedulePath.newInstance(work);
+        // We don't need to set a codec because appender is initialized with proper codec during processor init
         LogAppender<Record> appender = logManager.getAppender(getStreamForCategory(work.getCategory()));
         if (appender == null) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
@@ -173,13 +186,8 @@ public class StreamWorkManager extends WorkManagerImpl {
     class ComponentListener implements ComponentManager.Listener {
         @Override
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
-            try {
-                if (!shutdown(10, TimeUnit.SECONDS)) {
-                    log.error("Some processors are still active");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new NuxeoException("Interrupted while stopping work manager thread pools", e);
+            if (!shutdown(10, TimeUnit.SECONDS)) {
+                log.error("Some processors are still active");
             }
         }
 
@@ -252,7 +260,7 @@ public class StreamWorkManager extends WorkManagerImpl {
                 item -> builder.addComputation(() -> new WorkComputation(item),
                         Collections.singletonList("i1:" + item)));
         this.topology = builder.build();
-        this.settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY));
+        this.settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec());
         workQueueConfig.getQueueIds()
                        .forEach(item -> settings.setConcurrency(item, workQueueConfig.get(item).getMaxThreads()));
         workQueueConfig.getQueueIds().forEach(
@@ -335,13 +343,13 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     @Override
-    public boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) {
         log.warn("Shutdown a queue is not supported with computation implementation");
         return false;
     }
 
     @Override
-    public boolean shutdown(long timeout, TimeUnit timeUnit) throws InterruptedException {
+    public boolean shutdown(long timeout, TimeUnit timeUnit) {
         log.info("Shutdown WorkManager in " + timeUnit.toMillis(timeout) + " ms");
         shutdownInProgress = true;
         try {
