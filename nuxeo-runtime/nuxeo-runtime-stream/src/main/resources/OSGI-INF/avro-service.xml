@@ -3,8 +3,8 @@
 
   <documentation>
     The Avro component.
-    It provides services 
-    - that allow to register and retreive schemas
+    It provides services
+    - that allow to register and retrieve schemas
     - that allow to create Avro schemas from custom types
     - that allow to map Avro records from/to custom types
   </documentation>
@@ -22,7 +22,7 @@
     </documentation>
     <object class="org.nuxeo.runtime.avro.AvroSchemaDescriptor" />
   </extension-point>
-  
+
   <extension-point name="factory">
     <documentation>
       Allows to register an Avro Factory implementation dedicated to a custom type.
@@ -36,7 +36,7 @@
     </documentation>
     <object class="org.nuxeo.runtime.avro.AvroReplacementDescriptor" />
   </extension-point>
-  
+
   <extension-point name="mapper">
     <documentation>
       Allows to register an Avro Mapper implementation dedicated to a custom type.

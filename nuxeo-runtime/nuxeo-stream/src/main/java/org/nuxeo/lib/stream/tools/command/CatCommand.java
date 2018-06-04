@@ -54,6 +54,12 @@ public class CatCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
+        options.addOption(Option.builder()
+                .longOpt("codec")
+                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                .hasArg()
+                .argName("CODEC")
+                .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
 
@@ -65,14 +71,15 @@ public class CatCommand extends Command {
         String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
-        cat(manager, name, group, limit, getRecordRenderer(render));
+        String codec = cmd.getOptionValue("codec");
+        cat(manager, name, group, limit, getRecordRenderer(render), codec);
         return true;
     }
 
-    protected void cat(LogManager manager, String name, String group, int limit, Renderer render)
+    protected void cat(LogManager manager, String name, String group, int limit, Renderer render, String codec)
             throws InterruptedException {
         render.header();
-        try (LogTailer<Record> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Record> tailer = manager.createTailer(group, name, getRecordCodec(codec))) {
             int count = 0;
             do {
                 LogRecord<Record> record = tailer.read(Duration.ofMillis(1000));

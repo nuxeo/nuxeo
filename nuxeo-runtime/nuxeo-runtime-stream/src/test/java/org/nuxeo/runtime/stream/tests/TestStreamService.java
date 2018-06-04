@@ -24,6 +24,8 @@ import static org.junit.Assert.fail;
 
 import java.time.Duration;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.lib.stream.computation.Record;
@@ -31,7 +33,6 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -47,9 +48,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.runtime.stream:test-stream-contrib.xml")
 public class TestStreamService {
 
+    @Inject
+    public StreamService service;
+
     @Test
     public void testLogManagerAccess() {
-        StreamService service = Framework.getService(StreamService.class);
         assertNotNull(service);
 
         LogManager manager = service.getLogManager("default");
@@ -69,12 +72,11 @@ public class TestStreamService {
         assertNotNull(manager);
 
         manager.exists("input");
-        assertEquals(1, manager.getAppender("input").size());
+        assertEquals(1, manager.size("input"));
     }
 
     @Test
     public void testBasicLogUsage() throws Exception {
-        StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager("default");
         String logName = "myLog";
         String key = "a key";
@@ -86,15 +88,14 @@ public class TestStreamService {
         try (LogTailer<Record> tailer = manager.createTailer("myGroup", logName)) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
             assertNotNull(logRecord);
-            assertEquals(key, logRecord.message().key);
-            assertEquals(value, new String(logRecord.message().data, "UTF-8"));
+            assertEquals(key, logRecord.message().getKey());
+            assertEquals(value, new String(logRecord.message().getData(), "UTF-8"));
         }
         // never close the manager this is done by the service
     }
 
     @Test
     public void testStreamProcessor() throws Exception {
-        StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager("default");
         LogAppender<Record> appender = manager.getAppender("input");
         LogTailer<Record> tailer = manager.createTailer("counter", "output");
@@ -107,7 +108,7 @@ public class TestStreamService {
         // the computation should forward this message to the output
         LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
         assertNotNull("Record not found in output stream", logRecord);
-        assertEquals(key, logRecord.message().key);
-        assertEquals(value, new String(logRecord.message().data, "UTF-8"));
+        assertEquals(key, logRecord.message().getKey());
+        assertEquals(value, new String(logRecord.message().getData(), "UTF-8"));
     }
 }

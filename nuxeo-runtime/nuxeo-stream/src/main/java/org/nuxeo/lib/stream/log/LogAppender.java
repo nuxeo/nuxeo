@@ -22,6 +22,8 @@ import java.io.Externalizable;
 import java.time.Duration;
 import java.util.Objects;
 
+import org.nuxeo.lib.stream.codec.Codec;
+
 /**
  * An appender is used to append message into a Log. Implementations must be thread safe.
  *
@@ -71,4 +73,11 @@ public interface LogAppender<M extends Externalizable> {
      * Returns {@code true} if the appender has been closed by the manager.
      */
     boolean closed();
+
+    /**
+     * Returns the codec used to write record. A null codec is the default legacy encoding.
+     *
+     * @since 10.2
+     */
+    Codec<M> getCodec();
 }

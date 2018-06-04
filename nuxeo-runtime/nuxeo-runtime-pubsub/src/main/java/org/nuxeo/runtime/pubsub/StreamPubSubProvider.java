@@ -120,7 +120,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
                             continue;
                         }
                         Record record = logRecord.message();
-                        localPublish(record.key, record.data);
+                        localPublish(record.getKey(), record.getData());
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         log.debug("Subscriber thread interrupted, exiting");

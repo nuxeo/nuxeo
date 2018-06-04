@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -50,12 +51,14 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     protected final boolean verbose;
 
+    protected final Codec<Record> codec;
+
     protected int remaining;
 
     protected List<LogPartitionGroup> logGroups;
 
     public LatencyTrackerComputation(LogManager manager, List<String> logNames, String computationName,
-            int intervalSecond, int count, boolean verbose) {
+            int intervalSecond, int count, boolean verbose, Codec<Record> codec) {
         super(computationName, 1, 1);
         this.manager = manager;
         this.logNames = logNames;
@@ -63,6 +66,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
         this.count = count;
         this.remaining = count;
         this.verbose = verbose;
+        this.codec = codec;
     }
 
     @Override
@@ -87,7 +91,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
         }
         debug(String.format("Tracking latency %d/%d", count - remaining, count));
         for (LogPartitionGroup logGroup : logGroups) {
-            List<Latency> latencies = getLatenciesForPartition(logGroup);
+            List<Latency> latencies = getLatenciesForPartition(logGroup, codec);
             if (latencies == null) {
                 continue;
             }
@@ -123,10 +127,10 @@ public class LatencyTrackerComputation extends AbstractComputation {
         }
     }
 
-    protected List<Latency> getLatenciesForPartition(LogPartitionGroup logGroup) {
+    protected List<Latency> getLatenciesForPartition(LogPartitionGroup logGroup, Codec<Record> codec) {
         try {
-            return manager.<Record> getLatencyPerPartition(logGroup.name, logGroup.group,
-                    (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
+            return manager.getLatencyPerPartition(logGroup.name, logGroup.group, codec,
+                    (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
         } catch (Exception e) {
             if (e.getCause() instanceof ClassNotFoundException || e instanceof IllegalStateException) {
                 error("log does not contains Record, remove partition: " + logGroup);

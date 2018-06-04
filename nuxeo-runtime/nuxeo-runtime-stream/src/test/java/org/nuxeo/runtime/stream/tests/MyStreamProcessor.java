@@ -30,6 +30,8 @@ import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
+ * Example of a dummy stream processor.
+ *
  * @since 9.3
  */
 public class MyStreamProcessor implements StreamProcessorTopology {
@@ -51,7 +53,7 @@ public class MyStreamProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            log.warn(metadata.name() + " got record: " + record);
+            log.debug(metadata.name() + " got record: " + record);
             context.produceRecord("o1", record);
             context.askForCheckpoint();
         }

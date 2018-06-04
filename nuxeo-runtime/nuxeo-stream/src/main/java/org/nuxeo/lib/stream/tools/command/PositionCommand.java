@@ -161,7 +161,7 @@ public class PositionCommand extends Command {
     protected boolean positionAfterDate(LogManager manager, String group, String name, long timestamp) {
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             boolean movedOffset = false;
-            for (int partition = 0; partition < manager.getAppender(name).size(); partition++) {
+            for (int partition = 0; partition < manager.size(name); partition++) {
                 LogPartition logPartition = new LogPartition(name, partition);
                 LogOffset logOffset = tailer.offsetForTimestamp(logPartition, timestamp);
                 if (logOffset == null) {
@@ -186,7 +186,7 @@ public class PositionCommand extends Command {
     protected boolean positionToWatermark(LogManager manager, String group, String name, long timestamp)
             throws InterruptedException {
         String newGroup = "tools";
-        int size = manager.getAppender(name).size();
+        int size = manager.size(name);
         List<LogOffset> offsets = new ArrayList<>(size);
         List<LogLag> lags = manager.getLagPerPartition(name, newGroup);
         int partition = 0;
@@ -222,7 +222,7 @@ public class PositionCommand extends Command {
     protected LogOffset searchWatermarkOffset(LogTailer<Record> tailer, long timestamp) throws InterruptedException {
         LogOffset lastOffset = null;
         for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(READ_TIMEOUT)) {
-            long recTimestamp = Watermark.ofValue(rec.message().watermark).getTimestamp();
+            long recTimestamp = Watermark.ofValue(rec.message().getWatermark()).getTimestamp();
             if (recTimestamp == timestamp) {
                 return rec.offset();
             } else if (recTimestamp > timestamp) {

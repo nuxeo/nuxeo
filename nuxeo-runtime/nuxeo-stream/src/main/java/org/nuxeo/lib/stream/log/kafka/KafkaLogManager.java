@@ -33,6 +33,7 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -68,7 +69,8 @@ public class KafkaLogManager extends AbstractLogManager {
      * @deprecated since 10.2, zookeeper is not needed anymore, you need to remove the zkServers parameter.
      */
     @Deprecated
-    public KafkaLogManager(String zkServers, String prefix, Properties producerProperties, Properties consumerProperties) {
+    public KafkaLogManager(String zkServers, String prefix, Properties producerProperties,
+            Properties consumerProperties) {
         this(prefix, producerProperties, consumerProperties);
     }
 
@@ -93,20 +95,25 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
+    protected int getSize(String name) {
+        return kUtils.partitions(ns.getTopicName(name));
+    }
+
+    @Override
     public boolean exists(String name) {
         return kUtils.topicExists(ns.getTopicName(name));
     }
 
     @Override
-    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name) {
-        return KafkaLogAppender.open(ns, name, producerProperties, consumerProperties);
+    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name, Codec<M> codec) {
+        return KafkaLogAppender.open(codec, ns, name, producerProperties, consumerProperties);
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions,
-            String group) {
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, String group,
+            Codec<M> codec) {
         partitions.forEach(this::checkValidPartition);
-        return KafkaLogTailer.createAndAssign(ns, partitions, group, (Properties) consumerProperties.clone());
+        return KafkaLogTailer.createAndAssign(codec, ns, partitions, group, (Properties) consumerProperties.clone());
     }
 
     protected void checkValidPartition(LogPartition partition) {
@@ -143,8 +150,9 @@ public class KafkaLogManager extends AbstractLogManager {
 
     @Override
     protected <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
-            RebalanceListener listener) {
-        return KafkaLogTailer.createAndSubscribe(ns, names, group, (Properties) consumerProperties.clone(), listener);
+            RebalanceListener listener, Codec<M> codec) {
+        return KafkaLogTailer.createAndSubscribe(codec, ns, names, group, (Properties) consumerProperties.clone(),
+                listener);
     }
 
     protected Properties normalizeProducerProperties(Properties producerProperties) {

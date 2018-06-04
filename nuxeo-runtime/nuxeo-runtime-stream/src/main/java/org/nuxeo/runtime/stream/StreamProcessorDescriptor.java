@@ -24,13 +24,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.runtime.codec.CodecService;
 
 @SuppressWarnings("CanBeFinal")
 @XObject("streamProcessor")
@@ -52,6 +56,9 @@ public class StreamProcessorDescriptor {
     @XNode("@defaultPartitions")
     public Integer defaultPartitions = DEFAULT_CONCURRENCY;
 
+    @XNode("@defaultCodec")
+    public String defaultCodec;
+
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();
 
@@ -65,11 +72,20 @@ public class StreamProcessorDescriptor {
         return name;
     }
 
-    public Settings getSettings() {
-        Settings settings = new Settings(defaultConcurrency, defaultPartitions);
+    public Settings getSettings(CodecService codecService) {
+        Settings settings = new Settings(defaultConcurrency, defaultPartitions, getDefaultCodec(codecService));
         computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
         streams.forEach(stream -> settings.setPartitions(stream.name, stream.partitions));
+        streams.stream().filter(stream -> Objects.nonNull(stream.codec)).forEach(
+                stream -> settings.setCodec(stream.name, codecService.getCodec(stream.codec, Record.class)));
         return settings;
+    }
+
+    public Codec<Record> getDefaultCodec(CodecService codecService) {
+        if (defaultCodec == null) {
+            return null;
+        }
+        return codecService.getCodec(defaultCodec, Record.class);
     }
 
     public Topology getTopology() {
@@ -105,7 +121,11 @@ public class StreamProcessorDescriptor {
         @XNode("@partitions")
         public Integer partitions = DEFAULT_CONCURRENCY;
 
+        @XNode("@codec")
+        public String codec;
+
         public StreamDescriptor() {
         }
+
     }
 }

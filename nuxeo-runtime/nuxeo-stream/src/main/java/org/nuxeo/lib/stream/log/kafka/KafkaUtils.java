@@ -50,7 +50,7 @@ import org.nuxeo.lib.stream.log.LogPartition;
 import kafka.admin.AdminClient;
 import kafka.coordinator.group.GroupOverview;
 import scala.collection.Iterator;
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 /**
  * Misc Kafka Utils
@@ -102,9 +102,7 @@ public class KafkaUtils implements AutoCloseable {
         } catch (RuntimeException e) {
             return false;
         } finally {
-            if (client != null) {
-                client.close();
-            }
+            client.close();
         }
     }
 
@@ -173,6 +171,10 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public boolean topicExists(String topic) {
+        return partitions(topic) > 0;
+    }
+
+    public int partitions(String topic) {
         try {
             TopicDescription desc = getNewAdminClient().describeTopics(Collections.singletonList(topic))
                                                        .values()
@@ -181,13 +183,13 @@ public class KafkaUtils implements AutoCloseable {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Topic %s exists: %s", topic, desc));
             }
-            return true;
+            return desc.partitions().size();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
-                return false;
+                return -1;
             }
             throw new RuntimeException(e);
         }
@@ -210,11 +212,11 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     protected List<String> getConsumerTopics(String group) {
-        return JavaConversions.mapAsJavaMap(getAdminClient().listGroupOffsets(group))
-                              .keySet()
-                              .stream()
-                              .map(TopicPartition::topic)
-                              .collect(Collectors.toList());
+        return JavaConverters.mapAsJavaMap(getAdminClient().listGroupOffsets(group))
+                             .keySet()
+                             .stream()
+                             .map(TopicPartition::topic)
+                             .collect(Collectors.toList());
     }
 
     protected org.apache.kafka.clients.admin.AdminClient getNewAdminClient() {

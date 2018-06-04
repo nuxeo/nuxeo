@@ -4,6 +4,7 @@ CLASSPATH=$ROOT/lib/jcl-over-slf4j-1.7.21.jar:\
 $ROOT/lib/slf4j-api-1.7.21.jar:\
 $ROOT/lib/slf4j-log4j12-1.7.21.jar:\
 $ROOT/lib/log4j-1.2.17.jar:\
+$ROOT/nxserver/lib/avro-1.8.2.jar:\
 $ROOT/nxserver/lib/commons-cli-1.4.jar:\
 $ROOT/nxserver/lib/chronicle-queue-4.6.44.jar:\
 $ROOT/nxserver/lib/kafka-clients-1.0.0.jar:\
@@ -14,6 +15,9 @@ $ROOT/nxserver/lib/jgrapht-core-1.0.1.jar:\
 $ROOT/nxserver/lib/jackson-databind-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-core-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-annotations-2.7.4.jar:\
+$ROOT/nxserver/lib/jackson-core-asl-1.8.1.jar:\
+$ROOT/nxserver/lib/jackson-mapper-asl-1.8.1.jar:\
+$ROOT/nxserver/lib/paranamer-2.7.jar:\
 $ROOT/nxserver/bundles/nuxeo-importer-stream-10.2-SNAPSHOT.jar:\
 $ROOT/nxserver/bundles/nuxeo-core-api-10.2-SNAPSHOT.jar:\
 $ROOT/nxserver/lib/nuxeo-stream-10.2-SNAPSHOT.jar

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
@@ -40,6 +41,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
+import org.nuxeo.lib.stream.codec.AvroJsonCodec;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
@@ -78,7 +84,7 @@ public abstract class TestLog {
     }
 
     @After
-    public void closeManager() throws Exception {
+    public void closeManager() {
         if (manager != null) {
             manager.close();
         }
@@ -98,20 +104,20 @@ public abstract class TestLog {
         assertFalse(manager.exists(logName));
         assertTrue(manager.createIfNotExists(logName, LOG_SIZE));
         assertTrue(manager.exists(logName));
-        assertEquals(LOG_SIZE, manager.getAppender(logName).size());
+        assertEquals(LOG_SIZE, manager.size(logName));
 
         resetManager();
         assertTrue(manager.exists(logName));
-        assertEquals(LOG_SIZE, manager.getAppender(logName).size());
+        assertEquals(LOG_SIZE, manager.size(logName));
 
         resetManager();
         // this should have no effect
         assertFalse(manager.createIfNotExists(logName, 1));
-        assertEquals(LOG_SIZE, manager.getAppender(logName).size());
+        assertEquals(LOG_SIZE, manager.size(logName));
     }
 
     @Test
-    public void testGetAppender() throws Exception {
+    public void testGetAppender() {
         final int LOG_SIZE = 5;
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -145,7 +151,7 @@ public abstract class TestLog {
     }
 
     @Test
-    public void canNotAppendOnClosedAppender() throws Exception {
+    public void canNotAppendOnClosedAppender() {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -162,7 +168,7 @@ public abstract class TestLog {
     }
 
     @Test
-    public void testCreateTailer() throws Exception {
+    public void testCreateTailer() {
         final int LOG_SIZES = 5;
         final String group = "defaultTest";
         final LogPartition partition = LogPartition.of(logName, 1);
@@ -224,7 +230,7 @@ public abstract class TestLog {
     }
 
     @Test
-    public void canNotOpeningTwiceTheSameTailer() throws Exception {
+    public void canNotOpeningTwiceTheSameTailer() {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
 
@@ -513,9 +519,9 @@ public abstract class TestLog {
             assertFalse(appender.waitFor(offset5, group, SMALL_TIMEOUT));
             assertFalse(appender.waitFor(offset, group, SMALL_TIMEOUT));
 
-            // drain
-            while (tailer.read(DEF_TIMEOUT) != null)
-                ;
+            while (tailer.read(DEF_TIMEOUT) != null) {
+                // drain
+            }
 
             // message is processed but not yet committed
             assertFalse(appender.waitFor(offset, group, SMALL_TIMEOUT));
@@ -656,7 +662,7 @@ public abstract class TestLog {
     }
 
     @Test
-    public void testListAll() throws Exception {
+    public void testListAll() {
         final int LOG_SIZES = 2;
 
         assertTrue(manager.createIfNotExists(logName, LOG_SIZES));
@@ -731,6 +737,7 @@ public abstract class TestLog {
         assertEquals(LogLag.of(NB_APPENDERS * NB_MSG), manager.getLag(logName, "counter"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testLatencies() throws Exception {
         final int LOG_SIZE = 5;
@@ -768,8 +775,8 @@ public abstract class TestLog {
             tailer1.commit();
             tailer2.commit();
         }
-        List<Latency> latencies = manager.<Record> getLatencyPerPartition(logName, GROUP1,
-                (rec -> Watermark.ofValue(rec.watermark).getTimestamp()), (rec -> rec.key));
+        List<Latency> latencies = manager.getLatencyPerPartition(logName, GROUP1, NO_CODEC,
+                (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
         // check that the latency point to the last committed keys
         assertEquals(latencies.get(0).toString(), "here", latencies.get(0).key());
         assertEquals(latencies.get(1).toString(), "here", latencies.get(1).key());
@@ -784,11 +791,121 @@ public abstract class TestLog {
 
     protected void assertRecordKeyEquals(String expectedKey, LogRecord<Record> record) {
         assertNotNull(record);
-        assertEquals(expectedKey, record.message().key);
+        assertEquals(expectedKey, record.message().getKey());
     }
 
     protected Record createRecord(String key) throws UnsupportedEncodingException {
         return Record.of(key, ("value" + key).getBytes("UTF-8"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testNoCodec() throws Exception {
+        testCodec(NO_CODEC);
+    }
+
+    @Test
+    public void testSerializableCodec() throws Exception {
+        Codec<KeyValueMessage> codec = new SerializableCodec<>();
+        testCodec(codec);
+    }
+
+    @Test
+    public void testAvroBinaryCodec() throws Exception {
+        Codec<KeyValueMessage> codec = new AvroBinaryCodec<>(KeyValueMessage.class);
+        testCodec(codec);
+    }
+
+    @Test
+    public void testAvroJsonCodec() throws Exception {
+        Codec<KeyValueMessage> codec = new AvroJsonCodec<>(KeyValueMessage.class);
+        testCodec(codec);
+    }
+
+    @Test
+    public void testAvroMessageCodec() throws Exception {
+        Codec<KeyValueMessage> codec = new AvroMessageCodec<>(KeyValueMessage.class);
+        testCodec(codec);
+    }
+
+    protected void testCodec(Codec<KeyValueMessage> codec) throws Exception {
+        final int LOG_SIZE = 1;
+        final String GROUP = "defaultTest";
+        manager.createIfNotExists(logName, LOG_SIZE);
+
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName, codec);
+        KeyValueMessage msg1 = KeyValueMessage.ofForceBatch("key", "value".getBytes("UTF-8"));
+        KeyValueMessage msg2 = KeyValueMessage.of("id2", "foo".getBytes("UTF-8"));
+        KeyValueMessage msg3 = KeyValueMessage.of("1234567890", "0987654321".getBytes("UTF-8"));
+        appender.append(0, msg1);
+        appender.append(0, msg2);
+        appender.append(0, msg3);
+        appender.append(0, msg1);
+
+        try (LogTailer<KeyValueMessage> tailer1 = manager.createTailer(GROUP, LogPartition.of(logName, 0), codec)) {
+            assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
+            assertEquals(msg2, tailer1.read(DEF_TIMEOUT).message());
+            assertEquals(msg3, tailer1.read(DEF_TIMEOUT).message());
+            assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
+            assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+        }
+    }
+
+    @Test
+    public void testCodecCheck() throws Exception {
+        final int LOG_SIZE = 1;
+        final String GROUP = "defaultTest";
+        final String GROUP2 = "defaultTest2";
+        manager.createIfNotExists(logName, LOG_SIZE);
+        KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes("UTF-8"));
+
+        Codec<KeyValueMessage> codec1 = new AvroBinaryCodec<>(KeyValueMessage.class);
+        Codec<KeyValueMessage> codec2 = new SerializableCodec<>();
+
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName, codec1);
+        assertEquals(codec1.getName(), appender.getCodec().getName());
+        appender.append(0, msg1);
+        try {
+            LogAppender<KeyValueMessage> wrongAppender = manager.getAppender(logName, codec2);
+            wrongAppender.append(0, msg1);
+            fail("Should not be possible to open an appender with a wrong codec on the same manager");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        Codec<KeyValueMessage> codec1Bis = new AvroBinaryCodec<>(KeyValueMessage.class);
+        LogAppender<KeyValueMessage> goodAppender = manager.getAppender(logName, codec1Bis);
+        goodAppender.append(0, msg1);
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName, codec2)){
+            tailer.read(DEF_TIMEOUT);
+            fail("Should not be possible to read with a wrong codec");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        // the encoding is known by the log manager
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName)) {
+            assertEquals(codec1.getName(), tailer.getCodec().getName());
+        }
+        // reset the log manager, so read on legacy
+        resetManager();
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName)) {
+            tailer.read(DEF_TIMEOUT);
+            fail("Should not be possible to read with a wrong codec");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName)) {
+            tailer.read(DEF_TIMEOUT);
+            fail("Should not be possible to read with a wrong legacy codec");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        resetManager();
+        // works only with the explicit good codec
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logName, codec1)) {
+            assertEquals(msg1, tailer.read(DEF_TIMEOUT).message());
+            tailer.read(DEF_TIMEOUT);
+        }
+
     }
 
     protected String readKey(LogTailer<KeyValueMessage> tailer) throws InterruptedException {
@@ -796,22 +913,6 @@ public abstract class TestLog {
             return tailer.read(DEF_TIMEOUT).message().key();
         } catch (RebalanceException e) {
             return tailer.read(DEF_TIMEOUT).message().key();
-        }
-    }
-
-    protected void listConsumerLags() throws Exception {
-        List<String> names = manager.listAll();
-        for (String name : names) {
-            System.out.println("# Log: " + name);
-            for (String group : manager.listConsumerGroups(name)) {
-                System.out.println("## consumer group: " + group);
-                List<LogLag> lags = manager.getLagPerPartition(name, group);
-                int i = 0;
-                for (LogLag lag : lags) {
-                    System.out.println(String.format(" partition: %d, position: %d, end: %d, lag: %d", i++, lag.lower(),
-                            lag.upper(), lag.lag()));
-                }
-            }
         }
     }
 

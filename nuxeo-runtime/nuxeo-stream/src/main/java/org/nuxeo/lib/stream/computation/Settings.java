@@ -18,8 +18,12 @@
  */
 package org.nuxeo.lib.stream.computation;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import org.nuxeo.lib.stream.codec.Codec;
 
 /**
  * Settings defines stream's partitions and computation's concurrency.
@@ -31,16 +35,34 @@ public class Settings {
 
     protected final int defaultPartitions;
 
+    protected final Codec<Record> defaultCodec;
+
     protected final Map<String, Integer> concurrencies = new HashMap<>();
 
     protected final Map<String, Integer> partitions = new HashMap<>();
 
+    protected final Map<String, Codec<Record>> codecs = new HashMap<>();
+
     /**
      * Default concurrency and partition to use if not specified explicitly
      */
+    @SuppressWarnings("unchecked")
     public Settings(int defaultConcurrency, int defaultPartitions) {
+        this(defaultConcurrency, defaultPartitions, NO_CODEC);
+    }
+
+    /**
+     * Default concurrency and partition to use if not specified explicitly
+     */
+    @SuppressWarnings("unchecked")
+    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec) {
         this.defaultConcurrency = defaultConcurrency;
         this.defaultPartitions = defaultPartitions;
+        if (defaultCodec == null) {
+            this.defaultCodec = NO_CODEC;
+        } else {
+            this.defaultCodec = defaultCodec;
+        }
     }
 
     /**
@@ -67,4 +89,22 @@ public class Settings {
         return partitions.getOrDefault(streamName, defaultPartitions);
     }
 
+    /**
+     * Set the codec for a stream
+     *
+     * @since 10.2
+     */
+    public Settings setCodec(String streamName, Codec<Record> codec) {
+        codecs.put(streamName, codec);
+        return this;
+    }
+
+    /**
+     * Get a codec for a stream
+     *
+     * @since 10.2
+     */
+    public Codec<Record> getCodec(String streamName) {
+        return codecs.getOrDefault(streamName, defaultCodec);
+    }
 }

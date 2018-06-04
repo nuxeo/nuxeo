@@ -54,7 +54,7 @@ public interface AvroService extends SchemaStore {
     String decodeName(String input);
 
     /**
-     * Encodes a name for it to be elligible to Avro limitations (alphanumeric and _).<br>
+     * Encodes a name for it to be eligible to Avro limitations (alphanumeric and _).<br>
      * <br>
      * By default Nuxeo can encode - and :<br>
      * Other replacements can be registered to the AvroComponent.<br>

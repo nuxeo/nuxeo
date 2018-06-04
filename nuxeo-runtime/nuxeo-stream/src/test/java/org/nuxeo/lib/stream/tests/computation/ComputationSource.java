@@ -53,7 +53,7 @@ public class ComputationSource extends AbstractComputation {
     }
 
     public ComputationSource(String name, int outputs, int records, int batchSize, long targetTimestamp, boolean uniq) {
-        super(name, uniq ? 1: 0, outputs);
+        super(name, uniq ? 1 : 0, outputs);
         if (outputs <= 0) {
             throw new IllegalArgumentException("Cannot produce records without output streams");
         }
@@ -107,14 +107,14 @@ public class ComputationSource extends AbstractComputation {
 
     protected Record getRandomRecord() {
         String msg = "data from " + metadata.name() + " msg " + generated;
-        Record ret = null;
+        Record ret;
         try {
             ret = Record.of("key" + generated, msg.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             // should never happen
             throw new RuntimeException(e);
         }
-        ret.watermark = getWatermark();
+        ret.setWatermark(getWatermark());
         return ret;
     }
 }

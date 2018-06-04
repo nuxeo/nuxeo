@@ -36,6 +36,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -150,7 +151,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         LogManager manager = getLogManager(descriptor.config);
         Topology topology = descriptor.getTopology();
         StreamProcessor streamProcessor = new LogStreamProcessor(manager);
-        Settings settings = descriptor.getSettings();
+        Settings settings = descriptor.getSettings(Framework.getService(CodecService.class));
         if (log.isDebugEnabled()) {
             log.debug("Starting computation topology: " + name + "\n" + topology.toPlantuml(settings));
         }

@@ -51,11 +51,23 @@ public class CopyCommand extends Command {
                                 .argName("LOG_NAME")
                                 .build());
         options.addOption(Option.builder()
+                                .longOpt("srcCodec")
+                                .desc("Codec used to read record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
+                                .build());
+        options.addOption(Option.builder()
                                 .longOpt("dest")
                                 .desc("Target log name")
                                 .required()
                                 .hasArg()
                                 .argName("LOG_NAME")
+                                .build());
+        options.addOption(Option.builder()
+                                .longOpt("destCodec")
+                                .desc("Codec used to write record, can be: java, avro, avroBinary, avroJson")
+                                .hasArg()
+                                .argName("CODEC")
                                 .build());
         options.addOption(Option.builder("g")
                                 .longOpt("group")
@@ -66,15 +78,18 @@ public class CopyCommand extends Command {
     }
 
     @Override
-    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+    public boolean run(LogManager manager, CommandLine cmd) {
         String src = cmd.getOptionValue("src");
         String dest = cmd.getOptionValue("dest");
         String group = cmd.getOptionValue("group", "tools");
-        return copy(manager, src, dest, group);
+        String srcCodec = cmd.getOptionValue("srcCodec");
+        String destCodec = cmd.getOptionValue("destCodec");
+        return copy(manager, src, srcCodec, dest, destCodec, group);
     }
 
-    protected boolean copy(LogManager manager, String src, String dest, String group) {
-        System.out.println(String.format("# Copy %s to %s", src, dest));
+    protected boolean copy(LogManager manager, String src, String srcCodec, String dest, String destCodec,
+            String group) {
+        log.info(String.format("# Copy %s to %s", src, dest));
         if (!manager.exists(src)) {
             System.err.println("source log not found: " + src);
             return false;
@@ -83,15 +98,15 @@ public class CopyCommand extends Command {
             System.err.println("destination log already exists: " + dest);
             return false;
         }
-        manager.createIfNotExists(dest, manager.getAppender(src).size());
-        LogAppender<Record> appender = manager.getAppender(dest);
-        try (LogTailer<Record> tailer = manager.createTailer(group, src)) {
+        manager.createIfNotExists(dest, manager.size(src));
+        LogAppender<Record> appender = manager.getAppender(dest, getRecordCodec(destCodec));
+        try (LogTailer<Record> tailer = manager.createTailer(group, src, getRecordCodec(srcCodec))) {
             while (true) {
                 LogRecord<Record> record = tailer.read(Duration.ofSeconds(5));
                 if (record == null) {
                     break;
                 }
-                appender.append(record.message().key, record.message());
+                appender.append(record.message().getKey(), record.message());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

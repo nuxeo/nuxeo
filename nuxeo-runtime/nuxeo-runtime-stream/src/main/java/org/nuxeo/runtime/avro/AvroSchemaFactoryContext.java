@@ -34,7 +34,7 @@ import org.apache.avro.Schema;
  * qualified name.<br>
  * <br>
  * Avro does not permit to declare twice a schema with the same qualified name. Thus a schema has to be fully described
- * the first time it appears in the object, and then be refered by name.<br>
+ * the first time it appears in the object, and then be referred by name.<br>
  *
  * @since 10.2
  */
@@ -53,9 +53,9 @@ public class AvroSchemaFactoryContext {
         }
     };
 
-    protected Map<Class<?>, AvroSchemaFactory<?>> factories = new HashMap<>();
+    protected final Map<Class<?>, AvroSchemaFactory<?>> factories = new HashMap<>();
 
-    protected Map<String, Schema> createdSchemas = new HashMap<>();
+    protected final Map<String, Schema> createdSchemas = new HashMap<>();
 
     protected final AvroService service;
 

@@ -6,5 +6,5 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/kafka-config-service.xml,
  OSGI-INF/stream-service.xml,
  OSGI-INF/avro-service.xml,
+ OSGI-INF/codec-service.xml,
  OSGI-INF/avro-contrib.xml
-
