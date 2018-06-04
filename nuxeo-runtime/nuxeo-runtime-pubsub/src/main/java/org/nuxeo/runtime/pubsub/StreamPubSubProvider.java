@@ -27,12 +27,13 @@ import java.util.function.BiConsumer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
@@ -53,6 +54,10 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     protected static final String LOG_NAME_OPT = "logName";
 
+    protected static final String CODEC_OPT = "codec";
+
+    protected static final String DEFAULT_CODEC = "avroBinary";
+
     protected static final Random RANDOM = new Random();
 
     protected String logConfig;
@@ -63,6 +68,8 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     protected Thread thread;
 
+    protected Codec<Record> codec;
+
     @Override
     public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
         log.debug("Initializing ");
@@ -72,7 +79,10 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         if (StringUtils.isBlank(logName)) {
             throw new IllegalArgumentException("Missing option logName in StreamPubSubProviderDescriptor");
         }
-        appender = Framework.getService(StreamService.class).getLogManager(logConfig).getAppender(logName);
+        String codecName = options.getOrDefault(CODEC_OPT, DEFAULT_CODEC);
+        CodecService codecService = Framework.getService(CodecService.class);
+        codec = codecService.getCodec(codecName, Record.class);
+        appender = Framework.getService(StreamService.class).getLogManager(logConfig).getAppender(logName, codec);
         startConsumerThread();
         log.debug("Initialized");
     }
@@ -110,7 +120,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
             log.debug("Starting subscriber thread with group: " + group);
             try (LogTailer<Record> tailer = Framework.getService(StreamService.class)
                                                      .getLogManager(logConfig)
-                                                     .createTailer(group, logName)) {
+                                                     .createTailer(group, logName, codec)) {
                 // Only interested in new messages
                 tailer.toEnd();
                 for (;;) {

@@ -4,6 +4,7 @@
     <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
       <option name="logConfig">default</option>
       <option name="logName">pubsub</option>
+      <option name="codec">avroBinary</option>
     </provider>
   </extension>
 </component>

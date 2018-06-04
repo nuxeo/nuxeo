@@ -158,15 +158,17 @@ nuxeo.stream.chronicle.retention.duration=4d
 # Stream WorkManager
 nuxeo.stream.work.enabled=false
 nuxeo.stream.work.log.config=work
+nuxeo.stream.work.log.codec=legacy
 nuxeo.stream.work.over.provisioning.factor=3
 
 # Stream AuditWriter
 nuxeo.stream.audit.enabled=true
 nuxeo.stream.audit.log.config=audit
+nuxeo.stream.audit.log.codec=legacy
 nuxeo.stream.audit.batch.size=25
 nuxeo.stream.audit.batch.threshold.ms=500
 
 # Stream PubSub
 nuxeo.stream.pubsub.log.config=pubsub
 nuxeo.stream.pubsub.log.name=pubsub
-
+nuxeo.stream.pubsub.log.codec=avroBinary
