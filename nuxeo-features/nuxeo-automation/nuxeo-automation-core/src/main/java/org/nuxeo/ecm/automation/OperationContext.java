@@ -127,7 +127,7 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
     }
 
     public boolean isCommit() {
-        return commit;
+        return commit && !TransactionHelper.isTransactionMarkedRollback();
     }
 
     public CoreSession getCoreSession() {
