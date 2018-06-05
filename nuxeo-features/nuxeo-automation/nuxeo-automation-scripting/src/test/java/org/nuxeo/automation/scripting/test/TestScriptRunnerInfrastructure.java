@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -725,6 +726,19 @@ public class TestScriptRunnerInfrastructure {
 
     protected String computeDocumentFieldRef(String value) {
         return session.getRepositoryName() + ":" + value;
+    }
+
+    /**
+     * Tests that the default classFilter contrib allows some non-standard imports.
+     */
+    @Test
+    public void testImportWithClassFilter() throws IOException, OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            Blob blob = (Blob) automationService.run(ctx, "Scripting.TestImport", Collections.emptyMap());
+            assertEquals("application/json", blob.getMimeType());
+            String string = blob.getString();
+            assertTrue(string, string.startsWith("{'uuid': "));
+        }
     }
 
 }

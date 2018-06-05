@@ -655,6 +655,18 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestImport">
+      <inputType>void</inputType>
+      <outputType>blob</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+            var uuid = java.util.UUID.randomUUID().toString();
+            return org.nuxeo.ecm.core.api.Blobs.createJSONBlob("{'uuid': \"" + uuid + "\"}");
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
