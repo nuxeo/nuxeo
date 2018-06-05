@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.events.EventStatsHolder;
 import org.nuxeo.ecm.core.management.events.EventStatsImpl;
+import org.nuxeo.ecm.core.management.probes.HealthCheckProbesDescriptor;
 import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
 import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
@@ -51,6 +52,8 @@ public class CoreManagementComponent extends DefaultComponent {
     public static final String STORAGE_HANDLERS_EP = "storageHandlers";
 
     public static final String STORAGE_CONFIG_EP = "storageConfiguration";
+
+    public static final String HEALTH_CHECK_EP = "healthCheck";
 
     protected static CoreManagementComponent defaultComponent;
 
@@ -97,6 +100,8 @@ public class CoreManagementComponent extends DefaultComponent {
             storageManager.registerHandler((DocumentStoreHandlerDescriptor) contribution);
         } else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
             storageManager.registerConfig((DocumentStoreConfigurationDescriptor) contribution);
+        } else if (extensionPoint.equals(HEALTH_CHECK_EP)) {
+            probeRunner.registerProbeForHealthCheck((HealthCheckProbesDescriptor) contribution);
         } else {
             super.registerContribution(contribution, extensionPoint, contributor);
         }

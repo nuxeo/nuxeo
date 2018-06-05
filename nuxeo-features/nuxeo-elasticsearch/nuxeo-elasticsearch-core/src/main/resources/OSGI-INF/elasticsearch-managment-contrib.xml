@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.managment.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="probes">
+    <probe name="elasticSearchStatus" class="org.nuxeo.elasticsearch.status.ElasticSearchStatusProbe">
+      <label>Elastic Search probe</label>
+    </probe>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
+    <probe name="elasticSearchStatus" enabled="true" />
+  </extension>
+
+</component>

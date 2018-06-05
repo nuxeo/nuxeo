@@ -38,6 +38,24 @@
       <label>Local Instance availability</label>
       <description>Test if local Nuxeo Instance is available</description>
     </probe>
+    
+    <probe name="runtimeStatus"
+      class="org.nuxeo.ecm.core.management.statuses.RuntimeStartedProbe">
+      <label>Runtime started probe</label>
+      <description>Test if the runtime is started or not</description>
+    </probe>
+    
+    <probe name="repositoryStatus"
+      class="org.nuxeo.ecm.core.management.statuses.RepositoryStatusProbe">
+      <label>Repository started probe</label>
+      <description>Test the repository by fetching the root document</description>
+    </probe>
+    
+  </extension>
+  
+   <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
+     <probe name="runtimeStatus" enabled="true"/>
+     <probe name="repositoryStatus" enabled="true"/>
   </extension>
 
 </component>

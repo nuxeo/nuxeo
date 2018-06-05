@@ -7,4 +7,5 @@ Nuxeo-Component: OSGI-INF/elasticsearch-service.xml,
  OSGI-INF/listener-contrib.xml,
  OSGI-INF/workmanager-contrib.xml,
  OSGI-INF/elasticsearch-service-contrib.xml,
- OSGI-INF/marshallers-contrib.xml
+ OSGI-INF/marshallers-contrib.xml,
+ OSGI-INF/elasticsearch-managment-contrib.xml

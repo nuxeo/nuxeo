@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -33,8 +34,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.webengine.core",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.management" })
 @Features(CoreFeature.class)
+@LocalDeploy({"org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
     @Override
@@ -52,5 +54,4 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
         // Uncomment to use Derby when h2 lucene lib is not aligned with ES
         // DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
-
 }

@@ -10,5 +10,9 @@
             <description>Test access on each declared LDAP Directory</description>
          </probe>
   </extension>
+  
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
+     <probe name="ldapDirectories" enabled="true"/>
+  </extension>
 
 </component>
