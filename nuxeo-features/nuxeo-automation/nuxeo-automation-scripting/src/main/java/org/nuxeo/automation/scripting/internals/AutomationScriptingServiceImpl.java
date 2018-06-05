@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.function.Supplier;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -51,7 +50,9 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
-    private final Supplier<ScriptEngine> supplier = new Factory().supplier;
+    private static final Log log = LogFactory.getLog(AutomationScriptingServiceImpl.class);
+
+    protected final ScriptEngine engine = getScriptEngine();
 
     protected AutomationScriptingParamsInjector paramsInjector;
 
@@ -64,9 +65,6 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     public Session get(OperationContext context) {
         return new Bridge(context);
     }
-
-
-    final ScriptEngine engine = supplier.get();
 
     class Bridge implements Session {
 
@@ -143,84 +141,47 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         }
     }
 
-    class Factory {
-
-        final NashornScriptEngineFactory nashorn = new NashornScriptEngineFactory();
-
-        final Supplier<ScriptEngine> supplier = supplier();
-
-        Supplier<ScriptEngine> supplier() {
-
-            Log log = LogFactory.getLog(AutomationScriptingServiceImpl.class);
-            String version = Framework.getProperty("java.version");
-            // Check if jdk8
-            if (!checkJavaVersion(version, NASHORN_JAVA_VERSION)) {
-                throw new UnsupportedOperationException(NASHORN_JAVA_VERSION);
-            }
-            // Check if version < jdk8u25 -> no cache.
-            if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CACHE)) {
-                log.warn(NASHORN_WARN_CACHE);
-                return noCache();
-            }
-            // Check if jdk8u25 <= version < jdk8u40 -> only cache.
-            if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CLASS_FILTER)) {
-                if (Boolean.parseBoolean(
-                        Framework.getProperty(AUTOMATION_SCRIPTING_PRECOMPILE, DEFAULT_PRECOMPILE_STATUS))) {
-                    log.warn(NASHORN_WARN_CLASS_FILTER);
-                    return cache();
-                } else {
-                    log.warn(NASHORN_WARN_CLASS_FILTER);
-                    return noCache();
-                }
-            }
-            // Else if version >= jdk8u40 -> cache + class filter
-            try {
-                if (Boolean.parseBoolean(
-                        Framework.getProperty(AUTOMATION_SCRIPTING_PRECOMPILE, DEFAULT_PRECOMPILE_STATUS))) {
-                    return cacheAndClassFilter();
-                } else {
-                    return noCacheAndClassFilter();
-                }
-            } catch (NoClassDefFoundError cause) {
-                log.warn(NASHORN_WARN_CLASS_FILTER);
-                return cache();
-            }
+    protected ScriptEngine getScriptEngine() {
+        String version = Framework.getProperty("java.version");
+        // Check if jdk8
+        if (!checkJavaVersion(version, NASHORN_JAVA_VERSION)) {
+            throw new UnsupportedOperationException(NASHORN_JAVA_VERSION);
         }
-
-        Supplier<ScriptEngine> noCache() {
-            return () -> nashorn.getScriptEngine(new String[] { "-strict" });
+        // Check if version < jdk8u25 -> no cache.
+        if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CACHE)) {
+            log.warn(NASHORN_WARN_CACHE);
+            return getScriptEngine(false, false);
         }
-
-        Supplier<ScriptEngine> cache() {
-            return () -> nashorn.getScriptEngine(
-                    new String[] { "-strict", "--optimistic-types=true", "--persistent-code-cache", "--class-cache-size=50" },
-                    Thread.currentThread().getContextClassLoader());
+        boolean cache = Boolean.parseBoolean(
+                Framework.getProperty(AUTOMATION_SCRIPTING_PRECOMPILE, DEFAULT_PRECOMPILE_STATUS));
+        // Check if jdk8u25 <= version < jdk8u40 -> only cache.
+        if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CLASS_FILTER)) {
+            log.warn(NASHORN_WARN_CLASS_FILTER);
+            return getScriptEngine(cache, false);
         }
-
-        Supplier<ScriptEngine> cacheAndClassFilter() {
-            return () -> nashorn.getScriptEngine(
-                    new String[] { "-strict", "--optimistic-types=true", "--persistent-code-cache", "--class-cache-size=50" },
-                    Thread.currentThread().getContextClassLoader(), new ClassFilter() {
-
-                        @Override
-                        public boolean exposeToScripts(String className) {
-                            return false;
-                        }
-
-                    });
+        // Else if version >= jdk8u40 -> cache + class filter
+        try {
+            return getScriptEngine(cache, true);
+        } catch (NoClassDefFoundError cause) {
+            log.warn(NASHORN_WARN_CLASS_FILTER);
+            return getScriptEngine(cache, false);
         }
+    }
 
-        Supplier<ScriptEngine> noCacheAndClassFilter() {
-            return () -> nashorn.getScriptEngine(new String[] { "-strict" },
-                    Thread.currentThread().getContextClassLoader(), new ClassFilter() {
+    protected ScriptEngine getScriptEngine(boolean cache, boolean filter) {
+        NashornScriptEngineFactory nashorn = new NashornScriptEngineFactory();
+        String[] args = cache
+                ? new String[] { "-strict", "--optimistic-types=true", "--persistent-code-cache",
+                        "--class-cache-size=50" }
+                : new String[] { "-strict" };
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassFilter classFilter = filter ? getClassFilter() : null;
+        return nashorn.getScriptEngine(args, classLoader, classFilter);
+    }
 
-                        @Override
-                        public boolean exposeToScripts(String className) {
-                            return false;
-                        }
-
-                    });
-        };
+    protected ClassFilter getClassFilter() {
+        // we forbid all classloading (NXP-16480)
+        return className -> false;
     }
 
 }
