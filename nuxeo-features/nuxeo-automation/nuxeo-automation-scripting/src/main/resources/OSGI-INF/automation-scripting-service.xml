@@ -31,6 +31,7 @@
 
   <extension-point name="operation">
     <documentation>
+      <code>
       <scriptedOperation id="Scripting.HelloWorld">
         <inputType>string</inputType>
         <outputType>string</outputType>
@@ -45,11 +46,40 @@
           }
         </script>
       </scriptedOperation>
+      </code>
     </documentation>
 
     <object
       class="org.nuxeo.automation.scripting.internals.ScriptingOperationDescriptor" />
   </extension-point>
 
+  <extension-point name="classFilter">
+    <documentation>
+      This can be used to allow additional classes to be accessible by the scripting engine.
+      The deny element can be used to disallow classes allowed by previous contributions.
+      By default, no classes are allowed.
+
+      @since 10.2
+      <code>
+        <classFilter>
+          <allow>java.util.ArrayList</allow>
+          <allow>java.util.UUID</allow>
+          <deny>java.io.File</deny>
+          <deny>java.lang.Class</deny>
+        </classFilter>
+      </code>
+
+      To deny everything from previous contributions and only allow specific classes, use:
+      <code>
+        <classFilter>
+          <deny>*</deny>
+          <allow>java.util.ArrayList</allow>
+        </classFilter>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.automation.scripting.internals.ClassFilterDescriptor" />
+  </extension-point>
 
 </component>

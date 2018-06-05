@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.scripting.classfilter.test.contrib" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="classFilter">
+    <classFilter>
+      <allow>java.io.File</allow> <!-- you wouldn't allow this in a real setup of course, this is for tests -->
+    </classFilter>
+  </extension>
+
+</component>

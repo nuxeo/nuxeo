@@ -20,6 +20,11 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
@@ -37,9 +42,15 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
 
+    protected static final String XP_OPERATION = "operation";
+
+    protected static final String XP_CLASSFILTER = "classFilter";
+
     protected final AutomationScriptingServiceImpl service = new AutomationScriptingServiceImpl();
 
     protected final AutomationScriptingRegistry registry = new AutomationScriptingRegistry();
+
+    protected final List<ClassFilterDescriptor> classFilterDescriptors = new ArrayList<>();
 
     @Override
     public void activate(ComponentContext context) {
@@ -57,8 +68,10 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof ScriptingOperationDescriptor) {
+        if (XP_OPERATION.equals(extensionPoint)) {
             registry.addContribution((ScriptingOperationDescriptor) contribution);
+        } else if (XP_CLASSFILTER.equals(extensionPoint)) {
+            registerClassFilter((ClassFilterDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -66,11 +79,39 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof ScriptingOperationDescriptor) {
+        if (XP_OPERATION.equals(extensionPoint)) {
             registry.removeContribution((ScriptingOperationDescriptor) contribution);
+        } else if (XP_CLASSFILTER.equals(extensionPoint)) {
+            unregisterClassFilter((ClassFilterDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
+    }
+
+    protected void registerClassFilter(ClassFilterDescriptor desc) {
+        classFilterDescriptors.add(desc);
+        recomputeClassFilters();
+    }
+
+    protected void unregisterClassFilter(ClassFilterDescriptor desc) {
+        classFilterDescriptors.remove(desc);
+        recomputeClassFilters();
+    }
+
+    protected void recomputeClassFilters() {
+        Set<String> allowedClassNames = new HashSet<>();
+        for (ClassFilterDescriptor desc : classFilterDescriptors) {
+            if (desc.deny.contains("*")) {
+                allowedClassNames.clear();
+                allowedClassNames.addAll(desc.allow);
+            } else {
+                allowedClassNames.addAll(desc.allow);
+                allowedClassNames.removeAll(desc.deny);
+            }
+        }
+        // we don't care about update atomicity, as nothing executes concurrently with XML config
+        service.allowedClassNames.clear();
+        service.allowedClassNames.addAll(allowedClassNames);
     }
 
     @Override
