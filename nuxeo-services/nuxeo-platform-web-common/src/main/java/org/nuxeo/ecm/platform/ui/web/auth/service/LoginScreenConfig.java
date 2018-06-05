@@ -463,7 +463,7 @@ public class LoginScreenConfig implements Serializable {
         Boolean append = newConfig.isAppendSupportedLocales();
         List<String> newLocales = newConfig.getSupportedLocales();
         Set<String> mergedLocales = new HashSet<String>();
-        if ((Boolean.TRUE.equals(append) || append == null) && supportedLocales != null) {
+        if (!Boolean.FALSE.equals(append) && supportedLocales != null) {
             mergedLocales.addAll(supportedLocales);
         }
         if (newLocales != null) {
