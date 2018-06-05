@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -55,6 +57,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected final ScriptEngine engine = getScriptEngine();
 
     protected AutomationScriptingParamsInjector paramsInjector;
+
+    // updated in-place only by extension points, so no concurrency issues
+    protected Set<String> allowedClassNames = new HashSet<>();
 
     @Override
     public Session get(CoreSession session) {
@@ -180,8 +185,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     protected ClassFilter getClassFilter() {
-        // we forbid all classloading (NXP-16480)
-        return className -> false;
+        return className -> allowedClassNames.contains(className);
     }
 
 }

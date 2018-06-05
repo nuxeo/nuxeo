@@ -64,4 +64,16 @@ public class AutomationScriptingFeature extends SimpleFeature {
         }
     }
 
+    /**
+     * This version receives an explicit {@code scripting} parameter because of a bug in injection that doesn't allow to
+     * use the previous method with a test-method-level {@code Deploy} (the old value of a component stays injected).
+     *
+     * @since 10.2
+     */
+    public <T> T run(AutomationScriptingService scripting, String location, CoreSession session, Class<T> typeof) throws Exception {
+        try (AutomationScriptingService.Session context = scripting.get(session)) {
+            return typeof.cast(context.run(load(location)));
+        }
+    }
+
 }

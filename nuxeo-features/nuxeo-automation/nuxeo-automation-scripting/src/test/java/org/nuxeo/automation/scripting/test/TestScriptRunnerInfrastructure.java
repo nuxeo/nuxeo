@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.AutomationScriptingFeature;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -85,6 +87,9 @@ public class TestScriptRunnerInfrastructure {
 
     @Inject
     AutomationScriptingFeature feature;
+
+    @Inject
+    protected AutomationScriptingService service;
 
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
@@ -267,6 +272,24 @@ public class TestScriptRunnerInfrastructure {
     public void testClassFilter() throws Exception {
         try {
             scripting.run("classFilterScript.js", session, Void.class);
+        } catch (RuntimeException cause) {
+            assertEquals(ClassNotFoundException.class, cause.getCause().getClass());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.scripting.tests:OSGI-INF/classfilter-contrib.xml")
+    public void testClassFilterAllowed() throws Exception {
+        // injected fields in features aren't recomputed correctly (bug), so pass service explicitly
+        feature.run(service, "classFilterScript.js", session, Void.class);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.scripting.tests:OSGI-INF/classfilter2-contrib.xml")
+    public void testClassFilterDenied() throws Exception {
+        // injected fields in features aren't recomputed correctly (bug), so pass service explicitly
+        try {
+            feature.run(service, "classFilterScript.js", session, Void.class);
         } catch (RuntimeException cause) {
             assertEquals(ClassNotFoundException.class, cause.getCause().getClass());
         }
