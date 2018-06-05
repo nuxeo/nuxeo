@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -741,6 +742,17 @@ public class CoreOperationsTest {
             assertEquals(null, out.getPropertyValue("dc:description"));
             assertEquals("", out.getPropertyValue("dc:format"));
             assertEquals(null, out.getPropertyValue("dc:language"));
+        }
+    }
+
+    /**
+     * Checks that calling close() on an OperationContext containing a disconnected CoreSession, while the current
+     * transaction is marked rollback-only, does not cause an exception (NXP-25123).
+     */
+    @Test
+    public void testOperationContextCloseWhenRollback() throws Exception {
+        try (OperationContext ctx = new OperationContext(session)) {
+            service.run(ctx, SetTransactionRollbackOnlyOperation.ID, Collections.emptyMap());
         }
     }
 
