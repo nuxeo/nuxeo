@@ -354,7 +354,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 tx = TransactionHelper.startTransaction();
             }
             String xpath = downloadBlobInfo.xpath;
-            String filename = downloadBlobInfo.filename;
+            String filename = FILENAME_SANITIZATION_REGEX.matcher(downloadBlobInfo.filename).replaceAll("");
             try (CloseableCoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
