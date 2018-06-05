@@ -3,16 +3,16 @@
 
    <documentation>
     Automation Scripting is a Nuxeo module which provides ability to create and contribute Automation chain/operation in JavaScript.
-    
+
     For backward compatibility with version prior to 9.1, you may want to inline the context in the scripting parameters by contributing the
-    extension 
+    extension
     <code>
       <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
         <property name="nuxeo.automation.scripting.inline-context-in-params">true</property>
       </extension>
     </code>
   </documentation>
-  
+
   <require>org.nuxeo.ecm.core.operation.OperationServiceComponent</require>
 
   <implementation class="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" />
@@ -28,7 +28,7 @@
      </documentation>
      <property name="nuxeo.automation.scripting.inline-context-in-params">false</property>
    </extension>
-   
+
   <extension-point name="operation">
     <documentation>
       <scriptedOperation id="Scripting.HelloWorld">
@@ -46,7 +46,7 @@
         </script>
       </scriptedOperation>
     </documentation>
-    
+
     <object
       class="org.nuxeo.automation.scripting.internals.ScriptingOperationDescriptor" />
   </extension-point>
