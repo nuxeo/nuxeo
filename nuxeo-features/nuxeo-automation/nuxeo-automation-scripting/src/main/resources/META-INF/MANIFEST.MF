@@ -6,4 +6,5 @@ Bundle-Name: org.nuxeo.ecm.automation.scripting
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.automation.scripting
 Nuxeo-Component: OSGI-INF/automation-scripting-service.xml,
- OSGI-INF/helpers-contrib.xml
+ OSGI-INF/helpers-contrib.xml,
+ OSGI-INF/classfilter-contrib.xml

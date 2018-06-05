@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.scripting.classfilter" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="classFilter">
+    <classFilter>
+      <allow>java.util.ArrayList</allow>
+      <allow>java.util.Arrays</allow>
+      <allow>java.util.Collections</allow>
+      <allow>java.util.UUID</allow>
+      <allow>org.nuxeo.runtime.transaction.TransactionHelper</allow>
+      <allow>org.nuxeo.ecm.core.api.Blobs</allow>
+      <allow>org.nuxeo.ecm.core.api.impl.blob.StringBlob</allow>
+      <allow>org.nuxeo.ecm.core.api.impl.blob.JSONBlob</allow>
+    </classFilter>
+  </extension>
+
+</component>
