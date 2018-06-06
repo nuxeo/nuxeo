@@ -30,3 +30,16 @@ If you need to know the default environment variables set, then you can issue on
 
     export TESTS_COMMAND="env|sort"
     docker-compose -f integration/Jenkinsfiles/docker-compose-mongodb-3.4.yml up --no-color --build --abort-on-container-exit tests db
+
+## Build Status Test and Push (ondemand.groovy)
+
+1° Clone	- Clone or update the Nuxeo Platform source code to the master branch, including all addons and Nuxeo
+
+2° Rebase	- Used to rebase all branchs compared to the master branch (fallback on master if branch doesn't exist)
+
+3° Compile	- Build the Nuxeo Platform `mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests`
+
+4° Test		- Unit tests
+
+5° MultiDB	- Build the Nuxeo Platform with various databases started by docker-compose (pgsql, mongodb, kafka)
+
