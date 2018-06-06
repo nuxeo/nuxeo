@@ -49,6 +49,8 @@ public class BulkStatus implements Serializable {
 
     protected ZonedDateTime creationDate;
 
+    protected Long scrolledDocumentCount;
+
     /**
      * Gets bulk operation id.
      *
@@ -75,7 +77,6 @@ public class BulkStatus implements Serializable {
     public BulkCommand getCommand() {
         return command;
     }
-
 
     /**
      * Sets bulk operation command.
@@ -122,4 +123,21 @@ public class BulkStatus implements Serializable {
         this.creationDate = creationDate;
     }
 
+    /**
+     * Gets number of scrolled document
+     *
+     * @return the number of scrolled document
+     */
+    public Long getScrolledDocumentCount() {
+        return scrolledDocumentCount;
+    }
+
+    /**
+     * Sets number of scrolled document.
+     *
+     * @param scrolledDocumentCount the number of scrolled document
+     */
+    protected void setScrolledDocumentCount(Long scrolledDocumentCount) {
+        this.scrolledDocumentCount = scrolledDocumentCount;
+    }
 }
