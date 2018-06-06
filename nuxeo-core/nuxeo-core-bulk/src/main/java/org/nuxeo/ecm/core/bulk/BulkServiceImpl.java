@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
@@ -47,11 +49,11 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     protected static final String SET_STREAM_NAME = "documentSet";
 
-    protected static final String REPOSITORY = ":repository";
-
-    protected static final String QUERY = ":query";
+    protected static final String COMMAND = ":command";
 
     protected static final String CREATION_DATE = ":creationDate";
 
@@ -90,18 +92,18 @@ public class BulkServiceImpl implements BulkService {
         status.setCreationDate(ZonedDateTime.now());
         status.setCommand(command);
 
-        // store the bulk command and status in the key/value store
-        KeyValueStore keyValueStore = getKvStore();
-        keyValueStore.put(bulkOperationId + STATE, status.getState().toString());
-        keyValueStore.put(bulkOperationId + CREATION_DATE, status.getCreationDate().toString());
-        keyValueStore.put(bulkOperationId + REPOSITORY, command.getRepository());
-        keyValueStore.put(bulkOperationId + QUERY, command.getQuery());
-
         try {
+            byte[] commandAsBytes = OBJECT_MAPPER.writeValueAsBytes(command);
+
+            // store the bulk command and status in the key/value store
+            KeyValueStore keyValueStore = getKvStore();
+            keyValueStore.put(bulkOperationId + STATE, status.getState().toString());
+            keyValueStore.put(bulkOperationId + CREATION_DATE, status.getCreationDate().toString());
+            keyValueStore.put(bulkOperationId + COMMAND, commandAsBytes);
+
             // send it to nuxeo-stream
             String key = bulkOperationId.toString();
-            byte[] value = new ObjectMapper().writeValueAsBytes(command);
-            getLogManager().getAppender(SET_STREAM_NAME).append(key, new Record(key, value));
+            getLogManager().getAppender(SET_STREAM_NAME).append(key, new Record(key, commandAsBytes));
         } catch (JsonProcessingException e) {
             throw new NuxeoException("Unable to serialize the bulk command=" + command, e);
         }
@@ -110,7 +112,30 @@ public class BulkServiceImpl implements BulkService {
 
     @Override
     public BulkStatus getStatus(UUID bulkOperationId) {
-        return null;
+        String commandAsString = "";
+        try {
+            BulkStatus status = new BulkStatus();
+            status.setUUID(bulkOperationId);
+
+            // retrieve values from KeyValueStore
+            KeyValueStore keyValueStore = getKvStore();
+            String state = keyValueStore.getString(bulkOperationId + STATE);
+            status.setState(State.valueOf(state));
+
+            String creationDate = keyValueStore.getString(bulkOperationId + CREATION_DATE);
+            status.setCreationDate(ZonedDateTime.parse(creationDate));
+
+            commandAsString = keyValueStore.getString(bulkOperationId + COMMAND);
+            BulkCommand command = OBJECT_MAPPER.readValue(commandAsString, BulkCommand.class);
+            status.setCommand(command);
+
+            Long scrolledDocumentCount = keyValueStore.getLong(bulkOperationId + SCROLLED_DOCUMENT_COUNT);
+            status.setScrolledDocumentCount(scrolledDocumentCount);
+
+            return status;
+        } catch (IOException e) {
+            throw new NuxeoException("Unable to deserialize the bulk command=" + commandAsString, e);
+        }
     }
 
     public KeyValueStore getKvStore() {
