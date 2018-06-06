@@ -23,19 +23,13 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -73,10 +67,6 @@ public class BasePermissionsJsonEnricher extends AbstractJsonEnricher<DocumentMo
 
     public static final String NAME = "permissions";
 
-    private final List<String> availablePermissions = Arrays.asList(SecurityConstants.READ, SecurityConstants.WRITE,
-        SecurityConstants.EVERYTHING, SecurityConstants.ADD_CHILDREN, SecurityConstants.READ_CHILDREN,
-        SecurityConstants.REMOVE_CHILDREN);
-
     public BasePermissionsJsonEnricher() {
         super(NAME);
     }
@@ -93,12 +83,9 @@ public class BasePermissionsJsonEnricher extends AbstractJsonEnricher<DocumentMo
     }
 
     private Collection<String> getPermissionsInSession(DocumentModel doc, CoreSession session) {
-        Principal principal = session.getPrincipal();
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
-        Set<String> permissions = permissionProvider.getUserVisiblePermissionDescriptors(doc.getType()).stream().map(
-            UserVisiblePermission::getId).collect(Collectors.toSet());
-        permissions.addAll(availablePermissions);
-        return session.filterGrantedPermissions(principal, doc.getRef(), permissions);
+        return session.filterGrantedPermissions(session.getPrincipal(), doc.getRef(),
+                Arrays.asList(permissionProvider.getPermissions()));
     }
 
 }
