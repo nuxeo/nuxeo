@@ -18,7 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
+
+import java.math.BigInteger;
+import java.time.Duration;
 
 import javax.inject.Inject;
 
@@ -29,6 +35,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogRecord;
+import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,13 +60,28 @@ public class TestBulkService {
     public CoreSession session;
 
     @Test
-    public void testCreateDocumentSet() {
+    public void testRunBulkOperation() throws Exception {
+
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+
         // TODO change operation name
         BulkStatus status = service.runOperation(new BulkCommand().withQuery(nxql).withOperation("count"));
         assertNotNull(status);
+        assertEquals(SCHEDULED, status.getState());
+
+        LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
+        try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
+            for (int i = 1; i <= 10; i++) {
+                LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
+                assertEquals(i, new BigInteger(logRecord.message().data).intValue());
+            }
+        }
+
         status = service.getStatus(status.getUUID());
         assertNotNull(status);
+        assertEquals(COMPLETED, status.getState());
+        assertNotNull(status.getScrolledDocumentCount());
+        assertEquals(10, status.getScrolledDocumentCount().longValue());
     }
 }

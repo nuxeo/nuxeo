@@ -6,7 +6,12 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="bulk" type="chronicle" />
+    <logConfig name="bulk" type="chronicle"/>
+  </extension>
+
+  <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
+    <streamProcessor name="testCountProcessor" class="org.nuxeo.ecm.core.bulk.TestCountProcessor" defaultConcurrency="1"
+      defaultPartitions="1" logConfig="bulk" />
   </extension>
 
 </component>
