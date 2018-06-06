@@ -21,10 +21,17 @@ package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
@@ -42,14 +49,27 @@ public class BasePermissionsJsonEnricherTest extends
     @Inject
     private CoreSession session;
 
+    @Before
+    public void setup() {
+        DocumentModel document = session.createDocumentModel("/", "myDoc1", "Document");
+        document = session.createDocument(document);
+        ACP acp = session.getACP(document.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE("user1", SecurityConstants.READ));
+        session.setACP(document.getRef(), acp, true);
+        session.save();
+    }
+
     @Test
     public void test() throws Exception {
-        DocumentModel root = session.getDocument(new PathRef("/"));
-        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("permissions").get());
-        json = json.has("contextParameters").isObject();
-        json.properties(1);
-        json = json.has("permissions").contains("Read", "Write", "Everything",
-            "AddChildren", "ReadChildren", "RemoveChildren", "ReadWrite");
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
+            DocumentModel doc = userSession.getDocument(new PathRef("/myDoc1"));
+            JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc("permissions").get());
+            json = json.has("contextParameters").isObject();
+            json.properties(1);
+            json.has("permissions").contains("Browse", "Read", "ReadVersion", "ReadProperties", "ReadChildren",
+                    "ReadLifeCycle", "ReadSecurity", "ReviewParticipant");
+        }
     }
 
 }
