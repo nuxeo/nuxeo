@@ -65,7 +65,7 @@ public class BulkStatus implements Serializable {
      *
      * @param uuid the id
      */
-    protected void setUUID(UUID uuid) {
+    public void setUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -83,7 +83,7 @@ public class BulkStatus implements Serializable {
      *
      * @param command the bulk operation command
      */
-    protected void setCommand(BulkCommand command) {
+    public void setCommand(BulkCommand command) {
         this.command = command;
     }
 
@@ -101,7 +101,7 @@ public class BulkStatus implements Serializable {
      *
      * @param state the state
      */
-    protected void setState(State state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -119,7 +119,7 @@ public class BulkStatus implements Serializable {
      *
      * @param creationDate the creation date
      */
-    protected void setCreationDate(ZonedDateTime creationDate) {
+    public void setCreationDate(ZonedDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -137,7 +137,7 @@ public class BulkStatus implements Serializable {
      *
      * @param scrolledDocumentCount the number of scrolled document
      */
-    protected void setScrolledDocumentCount(Long scrolledDocumentCount) {
+    public void setScrolledDocumentCount(Long scrolledDocumentCount) {
         this.scrolledDocumentCount = scrolledDocumentCount;
     }
 }
