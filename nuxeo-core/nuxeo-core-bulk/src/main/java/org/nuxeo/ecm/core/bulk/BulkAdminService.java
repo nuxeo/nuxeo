@@ -14,20 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     Funsho David
+ *       Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.UUID;
+import java.util.List;
+
+import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
- * API to manage Bulk Operation Framework.
+ * The Bulk admin service, it's an internal service in order to access configuration from Bulk Operation Framework.
  *
  * @since 10.2
  */
-public interface BulkService {
+// This service is needed by stream processors to create appropriate streams
+public interface BulkAdminService {
 
-    BulkStatus runOperation(BulkCommand command);
+    /**
+     * @return the {@link KeyValueStore} name used by service.
+     */
+    String getKeyValueStore();
 
-    BulkStatus getStatus(UUID bulkOperationId);
+    /**
+     * Return a list of declared Bulk Operations. By design a Bulk Operation listen the stream of its own name.
+     *
+     * @return a list of declared Bulk Operations.
+     */
+    List<String> getOperations();
+
 }
