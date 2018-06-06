@@ -179,7 +179,7 @@
     <aws.version>1.11.325</aws.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.7.4</jackson.version>
+    <jackson.version>2.9.5</jackson.version>
     <bouncycastle.version>1.59</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
 
@@ -2032,7 +2032,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.10</version>
+        <version>1.11</version>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
