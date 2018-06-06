@@ -334,7 +334,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 tx = TransactionHelper.startTransaction();
             }
             String xpath = downloadBlobInfo.xpath;
-            String filename = downloadBlobInfo.filename;
+            String filename = FILENAME_SANITIZATION_REGEX.matcher(downloadBlobInfo.filename).replaceAll("");
             DocumentModel doc = getDownloadDocument(downloadBlobInfo.repository, downloadBlobInfo.docId);
             if (doc == null) {
                 // Send a security exception to force authentication, if the current user is anonymous
