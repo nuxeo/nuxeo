@@ -386,7 +386,6 @@ public abstract class TestLog {
             assertEquals("id2", tailer.read(DEF_TIMEOUT).message().key());
         }
         assertEquals(LogLag.of(1, 4), manager.getLag(logName, GROUP));
-
         // reset offsets
         try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, LogPartition.of(logName, 1))) {
             tailer.reset();

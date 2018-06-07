@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -51,6 +52,8 @@ public abstract class TestTools {
 
     protected static final String LOG_NAME = "myLog";
 
+    protected static final int LOG_SIZE = 1;
+
     protected boolean initialized;
 
     protected Record targetRecord;
@@ -63,13 +66,13 @@ public abstract class TestTools {
             return;
         }
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(LOG_NAME, 1);
+            manager.createIfNotExists(LOG_NAME, LOG_SIZE);
             LogAppender<Record> appender = manager.getAppender(LOG_NAME);
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
                 Record record = Record.of(key, value.getBytes("UTF-8"));
-                appender.append(key, record);
+                appender.append(i % LOG_SIZE, record);
                 if (i == NB_RECORD / 2) {
                     targetRecord = record;
                 }
@@ -147,6 +150,18 @@ public abstract class TestTools {
     }
 
     @Test
+    public void testPositionOnPartition() {
+        run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
+        List<LogLag> lags = getManager().getLagPerPartition(LOG_NAME, "anotherGroup");
+        assertEquals(0, lags.get(0).lag());
+        // then reset a the first partition
+        run(String.format("position %s --reset --log-name %s --partition 0 --group anotherGroup", getManagerOptions(),
+                LOG_NAME));
+        lags = getManager().getLagPerPartition(LOG_NAME, "anotherGroup");
+        assertTrue(lags.get(0).lag() > 0);
+    }
+
+    @Test
     public void testPositionToWatermark() throws InterruptedException {
         // move before all records, lag is maximum
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
@@ -155,11 +170,12 @@ public abstract class TestTools {
         LogLag lag = manager.getLag(LOG_NAME, "anotherGroup");
         assertTrue(lag.toString(), lag.lag() > 1);
 
-        // move to the position to the last record, lag = 1
+        // move to the position to the last record,
+        // consumer will process the last message of each partition so lag is equal to the number o partitions
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
                 Instant.now().plus(1, ChronoUnit.DAYS), LOG_NAME));
         lag = manager.getLag(LOG_NAME, "anotherGroup");
-        assertEquals(lag.toString(), 1, lag.lag());
+        assertEquals(lag.toString(), LOG_SIZE, lag.lag());
 
         // move to the watermark of targetRecord, this work as expected because each record as a unique timestamp
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
@@ -208,11 +224,6 @@ public abstract class TestTools {
 
         // reset the position
         run(String.format("position %s --reset --log-name %s --group %s", getManagerOptions(), LOG_NAME, group));
-        // ensure that we have reset the position
-        try (LogTailer<Record> tailer = getTailer(group)) {
-            Record rec = read(tailer);
-            assertEquals(firstRecord, rec);
-        }
 
         // restore position
         run(String.format("restore %s --verbose --log-name %s -i %s-latencies", getManagerOptions(), LOG_NAME,
@@ -239,6 +250,14 @@ public abstract class TestTools {
         } catch (RebalanceException e) {
             return tailer.read(DEF_TIMEOUT).message();
         }
+    }
+
+    @Test
+    public void testDump() {
+        run(String.format("help dump", getManagerOptions(), LOG_NAME));
+
+        run(String.format("dump %s --log-name %s --count 4 --partition 0 --output /tmp/foo.avro", getManagerOptions(),
+                LOG_NAME));
     }
 
     @Test

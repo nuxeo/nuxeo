@@ -86,6 +86,12 @@ public class PositionCommand extends Command {
                                 .hasArg()
                                 .argName("LOG_NAME")
                                 .build());
+        options.addOption(Option.builder("p")
+                                .longOpt("partition")
+                                .desc("Read only this partition")
+                                .hasArg()
+                                .argName("PARTITION")
+                                .build());
         options.addOption(
                 Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
         options.addOption(
@@ -123,52 +129,80 @@ public class PositionCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         String name = cmd.getOptionValue("log-name");
         String group = cmd.getOptionValue("group", "tools");
-
+        int partition = Integer.parseInt(cmd.getOptionValue("partition", "-1"));
         if (cmd.hasOption(AFTER_DATE_OPT)) {
             long timestamp = getTimestampFromDate(cmd.getOptionValue(AFTER_DATE_OPT));
             if (timestamp >= 0) {
-                return positionAfterDate(manager, group, name, timestamp);
+                return positionAfterDate(manager, group, name, partition, timestamp);
             }
         } else if (cmd.hasOption(TO_WATERMARK_OPT)) {
             long timestamp = getTimestampFromDate(cmd.getOptionValue(TO_WATERMARK_OPT));
             if (timestamp >= 0) {
-                return positionToWatermark(manager, group, name, timestamp);
+                return positionToWatermark(manager, group, name, partition, timestamp);
             }
         } else if (cmd.hasOption("to-end")) {
-            return toEnd(manager, group, name);
+            return toEnd(manager, group, name, partition);
         } else if (cmd.hasOption("reset")) {
-            return reset(manager, group, name);
+            return reset(manager, group, name, partition);
         } else {
             log.error("Invalid option, try 'help position'");
         }
         return false;
     }
 
-    protected boolean toEnd(LogManager manager, String group, String name) {
-        LogLag lag = manager.getLag(name, group);
-        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
+    protected boolean toEnd(LogManager manager, String group, String name, int partition) {
+        LogLag lag = getLag(manager, group, name, partition);
+        try (LogTailer<Externalizable> tailer = createTailer(manager, name, partition, group)) {
             tailer.toEnd();
             tailer.commit();
         }
-        log.info(String.format("# Moved log %s, group: %s, from: %s to %s", name, group, lag.lower(), lag.upper()));
+        log.info(String.format("# Moved log %s, group: %s, from: %s to %s", labelFor(name, partition), group,
+                lag.lower(), lag.upper()));
         return true;
     }
 
-    protected boolean reset(LogManager manager, String group, String name) {
-        LogLag lag = manager.getLag(name, group);
+    protected String labelFor(int partition) {
+        return partition >= 0 ? Integer.toString(partition) : "all";
+    }
+
+    protected String labelFor(String name, int partition) {
+        return partition >= 0 ?  name + ":" + labelFor(partition): name;
+    }
+
+    protected LogLag getLag(LogManager manager, String group, String name, int partition) {
+        if (partition >= 0) {
+            return manager.getLagPerPartition(name, group).get(partition);
+        } else {
+            return manager.getLag(name, group);
+        }
+    }
+
+    protected <T extends Externalizable> LogTailer<T> createTailer(LogManager manager, String name, int partition,
+            String group) {
+        if (partition >= 0) {
+            return manager.createTailer(group, new LogPartition(name, partition));
+        }
+        return manager.createTailer(group, name);
+    }
+
+    protected boolean reset(LogManager manager, String group, String name, int partition) {
+        LogLag lag = getLag(manager, group, name, partition);
         long pos = lag.lower();
-        try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
+        try (LogTailer<Externalizable> tailer = createTailer(manager, name, partition, group)) {
             tailer.reset();
         }
-        log.info(String.format("# Reset log %s, group: %s, from: %s to 0", name, group, pos));
+        log.warn(String.format("# Reset log %s, group: %s, from: %s to 0", labelFor(name, partition), group, pos));
         return true;
     }
 
-    protected boolean positionAfterDate(LogManager manager, String group, String name, long timestamp) {
+    protected boolean positionAfterDate(LogManager manager, String group, String name, int partition, long timestamp) {
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             boolean movedOffset = false;
-            for (int partition = 0; partition < manager.size(name); partition++) {
-                LogPartition logPartition = new LogPartition(name, partition);
+            for (int part = 0; part < manager.size(name); part++) {
+                if (partition >= 0 && part != partition) {
+                    continue;
+                }
+                LogPartition logPartition = new LogPartition(name, part);
                 LogOffset logOffset = tailer.offsetForTimestamp(logPartition, timestamp);
                 if (logOffset == null) {
                     log.error(String.format("# Could not find an offset for group: %s, partition: %s", group,
@@ -177,7 +211,7 @@ public class PositionCommand extends Command {
                 }
                 tailer.seek(logOffset);
                 movedOffset = true;
-                log.info(String.format("# Set log %s, group: %s, to offset %s", name, group, logOffset.offset()));
+                log.info(String.format("# Set log %s, group: %s, to offset %s", labelFor(name, part), group, logOffset.offset()));
             }
             if (movedOffset) {
                 tailer.commit();
@@ -188,24 +222,27 @@ public class PositionCommand extends Command {
         return false;
     }
 
-    protected boolean positionToWatermark(LogManager manager, String group, String name, long timestamp)
+    protected boolean positionToWatermark(LogManager manager, String group, String name, int partition, long timestamp)
             throws InterruptedException {
         String newGroup = "tools";
         int size = manager.size(name);
         List<LogOffset> offsets = new ArrayList<>(size);
         List<LogLag> lags = manager.getLagPerPartition(name, newGroup);
-        int partition = 0;
+        int part = 0;
         // find the offsets first
         for (LogLag lag : lags) {
             if (lag.lag() == 0) {
                 // empty partition nothing to do
                 offsets.add(null);
             } else {
-                try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, partition))) {
+                if (partition >= 0 && part!= partition) {
+                    offsets.add(null);
+                }
+                try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, part))) {
                     offsets.add(searchWatermarkOffset(tailer, timestamp));
                 }
             }
-            partition++;
+            part++;
         }
         if (offsets.stream().noneMatch(Objects::nonNull)) {
             if (LogLag.of(lags).upper() == 0) {
@@ -213,7 +250,7 @@ public class PositionCommand extends Command {
                 return false;
             }
             log.error("Timestamp: " + timestamp + " is earlier as any records, resetting positions");
-            return reset(manager, group, name);
+            return reset(manager, group, name, partition);
         }
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             offsets.stream().filter(Objects::nonNull).forEach(tailer::seek);
