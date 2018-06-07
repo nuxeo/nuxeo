@@ -30,6 +30,8 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
 
 /**
+ * Output records to stdout.
+ *
  * @since 9.3
  */
 public class CatCommand extends Command {

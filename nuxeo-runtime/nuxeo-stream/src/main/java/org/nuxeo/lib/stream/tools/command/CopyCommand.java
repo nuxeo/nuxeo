@@ -32,6 +32,7 @@ import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 
 /**
+ * Copy a Log to another
  * @since 9.3
  */
 public class CopyCommand extends Command {

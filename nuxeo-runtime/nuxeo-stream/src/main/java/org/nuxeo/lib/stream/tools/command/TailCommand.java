@@ -32,6 +32,8 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
 
 /**
+ * Output the last records on a Log.
+ *
  * @since 9.3
  */
 public class TailCommand extends Command {

@@ -35,6 +35,8 @@ import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
+ * Display the current latencies of consumers.
+ *
  * @since 9.3
  */
 public class LatencyCommand extends Command {

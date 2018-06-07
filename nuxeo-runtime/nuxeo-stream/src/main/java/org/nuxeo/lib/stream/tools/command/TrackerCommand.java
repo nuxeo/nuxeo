@@ -31,6 +31,8 @@ import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
+ * Track consumer positions so they can be restored in case of fail-over
+ *
  * @since 10.1
  */
 public class TrackerCommand extends Command {

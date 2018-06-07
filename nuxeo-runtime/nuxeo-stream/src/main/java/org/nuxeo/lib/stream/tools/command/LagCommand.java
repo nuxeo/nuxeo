@@ -30,6 +30,8 @@ import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
+ * Display the current lags of consumers.
+ *
  * @since 9.3
  */
 public class LagCommand extends Command {

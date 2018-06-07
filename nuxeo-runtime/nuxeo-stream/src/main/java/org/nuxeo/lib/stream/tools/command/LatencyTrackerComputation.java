@@ -36,7 +36,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
- * A computation that sends periodically latencies information.
+ * A computation that sends periodically latencies information into a Log.
  *
  * @since 10.1
  */

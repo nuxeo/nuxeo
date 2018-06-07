@@ -18,6 +18,7 @@ $ROOT/nxserver/lib/jackson-core-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-annotations-2.7.4.jar:\
 $ROOT/nxserver/lib/jackson-core-asl-1.8.1.jar:\
 $ROOT/nxserver/lib/jackson-mapper-asl-1.8.1.jar:\
+$ROOT/nxserver/lib/snappy-java-1.1.1.3.jar:\
 $ROOT/nxserver/lib/paranamer-2.7.jar:\
 $ROOT/nxserver/bundles/nuxeo-importer-stream-10.2-SNAPSHOT.jar:\
 $ROOT/nxserver/bundles/nuxeo-core-api-10.2-SNAPSHOT.jar:\

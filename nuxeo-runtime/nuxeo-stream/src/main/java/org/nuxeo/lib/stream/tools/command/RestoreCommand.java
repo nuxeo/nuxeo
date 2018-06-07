@@ -49,6 +49,8 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
+ * Restore consumer positions using the latency tracker Log.
+ *
  * @since 10.1
  */
 public class RestoreCommand extends Command {

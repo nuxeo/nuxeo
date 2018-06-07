@@ -21,9 +21,11 @@ package org.nuxeo.lib.stream.tools;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.lib.stream.tools.command.AppendCommand;
 import org.nuxeo.lib.stream.tools.command.CatCommand;
 import org.nuxeo.lib.stream.tools.command.Command;
 import org.nuxeo.lib.stream.tools.command.CopyCommand;
+import org.nuxeo.lib.stream.tools.command.DumpCommand;
 import org.nuxeo.lib.stream.tools.command.HelpCommand;
 import org.nuxeo.lib.stream.tools.command.LagCommand;
 import org.nuxeo.lib.stream.tools.command.LatencyCommand;
@@ -49,6 +51,8 @@ public class CommandRegistry {
         ret.add(new PositionCommand());
         ret.add(new TrackerCommand());
         ret.add(new RestoreCommand());
+        ret.add(new DumpCommand());
+        ret.add(new AppendCommand());
         ret.add(new TestCommand());
         return ret;
     }
