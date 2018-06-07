@@ -1,23 +1,37 @@
-//if (currentBuild.previousBuild == null) { // first build, should configure job
+if (currentBuild.previousBuild == null) { // first build, should configure job
     properties([
         [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']],
         disableConcurrentBuilds(),
+        [$class: 'ParametersDefinitionProperty', parameterDefinitions:
+         [[$class: 'StringParameterDefinition', name: 'BRANCH', defaultValue: 'master'],
+          [$class: 'StringParameterDefinition', name: 'PARENT_BRANCH', defaultValue: 'master'],
+          [$class: 'BooleanParameterDefinition', name: 'INCREMENTAL', defaultValue: 'false'],
+          [$class: 'StringParameterDefinition', name: 'SLAVE', defaultValue, 'SLAVE']
+        ],
         [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/nuxeo/nuxeo/'],
         [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]])
-//}
+}
 
-node('slacoin') {
+@Library('nuxeo@feature-NXBT-2323-compose-swarm') _
+
+node(SLAVE) {
     
     def sha = stage('clone') {
+        def emitExtensions = { isCleanRequired = false ->
+            def extensions = []
+            if (isCleanRequired) {
+                extensions.add([$class 'CleanBeforeCheckout'])
+            }
+            extensions.add([$class: 'CloneOption', noTags: true, reference: '', shallow: false])
+            return extensions
+        }
+        
         checkout(
             [$class: 'GitSCM',
-             branches: [[name: '*/${BRANCH_NAME}']],
+             branches: [[name: '*/${BRANCH}']],
              browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/nuxeo'],
              doGenerateSubmoduleConfigurations: false,
-             extensions: [
-                    [$class: 'CleanBeforeCheckout'],
-                    [$class: 'CloneOption', noTags: true, reference: '', shallow: false]
-                ],
+             extensions: emitExtensions(isCleanRequired=!INCREMENTAL),
              submoduleCfg: [],
              userRemoteConfigs: [[url: 'git@github.com:nuxeo/nuxeo.git']]
             ])
@@ -26,16 +40,15 @@ node('slacoin') {
 
     stage('rebase') {
         withBuildStatus('rebase', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-            sh "./clone.py $BRANCH_NAME -f master --rebase"
+            sh "./clone.py ${BRANCH} -f ${PARENT_BRANCH} --rebase"
         }
         stash('ws')
     }
     
-
     stage('compile') {
         withBuildStatus('compile', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                echo 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
+                sh 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
             }
         }
     }
@@ -43,7 +56,7 @@ node('slacoin') {
     stage('test') {
         withBuildStatus('test', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() { 
-               echo 'mvn -nsu -B test -Pqa,addons,distrib -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+               sh 'mvn -nsu -B test -Pqa,addons,distrib -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
     }
@@ -51,7 +64,7 @@ node('slacoin') {
     def zipfile=stage('verify') {
         withBuildStatus('verify', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             withMaven() {
-                echo 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
+                sh 'mvn -nsu -B verify -Pqa,addons,distrib,tomcat -DskipTests -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
             }
         }
         zipfile = sh(returnStdout: true, script: 'echo -n nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-*.zip')
@@ -99,7 +112,7 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
                     echo mvncmd
                     timeout(time: 2, unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                            withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", post) {
+                            withSwarmCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml", post) {
                                 withMaven() {
                                     sh "mvn ${zipopt} -nsu -B -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} verify"
 				}
@@ -110,26 +123,4 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
             }
         }
     }
-}
-
-def withDockerCompose(String name, String file, Closure post, Closure body) {
-  withEnv(["COMPOSE_PROJECT_NAME=$name"]) {
-    try {
-      sh """#!/bin/bash -ex
-                 docker-compose -f $file pull
-                 docker-compose -f $file up --no-color --build --abort-on-container-exit
-             """
-      node(name) {
-        body()
-      }
-    } finally {
-      try {
-        post()
-      } finally {
-        sh """#!/bin/bash -ex
-                 docker-compose -f $file down --rmi local --volumes --remove-orphans
-              """
-      }
-    }
-  }
 }
