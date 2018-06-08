@@ -2,7 +2,11 @@
 <component name="org.nuxeo.ecm.core.bulk.tests" version="1.0.0">
 
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
-    <store name="bulk" class="org.nuxeo.runtime.kv.MemKeyValueStore" />
+    <store name="bulk" class="org.nuxeo.runtime.kv.MemKeyValueStore"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="operations">
+    <operation name="count"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
