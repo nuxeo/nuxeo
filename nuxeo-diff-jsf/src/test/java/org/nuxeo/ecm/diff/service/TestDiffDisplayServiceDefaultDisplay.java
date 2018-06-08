@@ -38,10 +38,10 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
@@ -56,9 +56,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * Tests the {@link DiffDisplayService} for the default diff display.
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(DirectoryFeature.class)
+@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.diff.core")
 @Deploy("org.nuxeo.diff.test")
+@Deploy("org.nuxeo.diff.test:OSGI-INF/test-diff-constraint-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.client")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml")
 @Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml")
@@ -158,6 +160,45 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         }
     }
 
+    /**
+     * @since 10.2
+     */
+    @Test
+    public void testConstraints() {
+        // Create left doc and set constrained properties
+        DocumentModel leftDoc = session.createDocumentModel("/", "leftSampleType", "SampleType");
+        leftDoc = session.createDocument(leftDoc);
+        leftDoc.setPropertyValue("constraints:string", "foo");
+        leftDoc.setPropertyValue("constraints:multivaluedString", new String[] { "foo", "joe" });
+        leftDoc.setPropertyValue("constraints:multivaluedDirectory", new String[] { "article", "acknowledgement" });
+
+        // Create right doc and set constrained properties
+        DocumentModel rightDoc = session.createDocumentModel("/", "rightSampleType", "OtherSampleType");
+        rightDoc = session.createDocument(rightDoc);
+        rightDoc.setPropertyValue("constraints:string", "bar");
+        rightDoc.setPropertyValue("constraints:multivaluedString", new String[] { "bar", "jack" });
+        rightDoc.setPropertyValue("constraints:multivaluedDirectory", new String[] { "certificate" });
+
+        // Do doc diff
+        DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+
+        // Get diff display blocks
+        List<DiffDisplayBlock> diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
+        assertNotNull(diffDisplayBlocks);
+
+        // Check diff display blocks
+        assertEquals(1, diffDisplayBlocks.size());
+        DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.constraints", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "constraints", 3,
+                Arrays.asList("string", "multivaluedString", "multivaluedDirectory"));
+
+        LayoutDefinition layoutDefinition = diffDisplayBlock.getLayoutDefinition();
+        checkWidgetType(layoutDefinition, "constraints:string", "text");
+        checkSubWidgetType(layoutDefinition, "constraints:multivaluedString", 1, "text");
+        checkSubWidgetType(layoutDefinition, "constraints:multivaluedDirectory", 1, "text");
+    }
+
     @Override
     protected boolean checkDiffDisplayBlock(DiffDisplayBlock diffDisplayBlock, String label, int schemaCount) {
 
@@ -253,5 +294,18 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
                 }
             }
         }
+    }
+
+    protected void checkWidgetType(LayoutDefinition layoutDefinition, String xpath, String type) {
+        assertEquals(type, getWidgetTypeProperty(layoutDefinition.getWidgetDefinition(xpath)));
+    }
+
+    protected void checkSubWidgetType(LayoutDefinition layoutDefinition, String xpath, int index, String type) {
+        assertEquals(type,
+                getWidgetTypeProperty(layoutDefinition.getWidgetDefinition(xpath).getSubWidgetDefinitions()[index]));
+    }
+
+    protected String getWidgetTypeProperty(WidgetDefinition widgetDefinition) {
+        return (String) widgetDefinition.getProperties().get("any").get("widgetType");
     }
 }
