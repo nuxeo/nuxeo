@@ -31,8 +31,8 @@ import java.util.Map;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
@@ -110,10 +110,14 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
 
     protected PageProviderService pageProviderService;
 
+    protected boolean skipAggregates;
+
     private static final Log log = LogFactory.getLog(SearchObject.class);
 
     public void initExecutor() {
         pageProviderService = Framework.getService(PageProviderService.class);
+        skipAggregates = Boolean.parseBoolean(
+                ctx.getHttpHeaders().getRequestHeaders().getFirst(PageProvider.SKIP_AGGREGATES_PROP));
     }
 
     protected String getQuery(MultivaluedMap<String, String> queryParams) {
@@ -273,6 +277,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     protected Map<String, Serializable> getProperties() {
         Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
+        props.put(PageProvider.SKIP_AGGREGATES_PROP, skipAggregates);
         return props;
     }
 
