@@ -23,4 +23,11 @@
     <object class="org.nuxeo.ecm.core.bulk.BulkServiceDescriptor" />
   </extension-point>
 
+  <extension-point name="operations">
+    <documentation>
+      Allows to define the bulk operations
+    </documentation>
+    <object class="org.nuxeo.ecm.core.bulk.BulkOperationDescriptor" />
+  </extension-point>
+
 </component>

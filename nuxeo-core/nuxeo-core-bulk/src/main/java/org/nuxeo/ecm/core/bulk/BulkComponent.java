@@ -18,11 +18,10 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.util.Collections.singletonList;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -43,7 +42,11 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
 
     public static final String CONFIGURATION_XP = "configuration";
 
+    public static final String OPERATIONS_XP = "operations";
+
     protected Queue<BulkServiceDescriptor> configurationRegistry = new LinkedList<>();
+
+    protected Queue<BulkOperationDescriptor> operationsRegistry = new LinkedList<>();
 
     protected BulkService bulkService;
 
@@ -62,6 +65,8 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_XP.equals(extensionPoint)) {
             configurationRegistry.add((BulkServiceDescriptor) contribution);
+        } else if (OPERATIONS_XP.equals(extensionPoint)) {
+            operationsRegistry.add((BulkOperationDescriptor) contribution);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);
         }
@@ -105,7 +110,6 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
 
     @Override
     public List<String> getOperations() {
-        // TODO change that when doing bulk computation part
-        return singletonList("count");
+        return operationsRegistry.stream().map(BulkOperationDescriptor::getName).collect(Collectors.toList());
     }
 }
