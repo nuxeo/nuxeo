@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -54,14 +54,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Tests the {@link DiffDisplayService} for the default diff display.
- *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml")
 @Deploy("org.nuxeo.diff.core")
 @Deploy("org.nuxeo.diff.test")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml")
 @Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml")
 @Deploy("org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml")

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -28,15 +28,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.diff.service.ComplexPropertyHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * Tests the ComplexPropertyHelper class. TODO: add tests
- *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * Tests the ComplexPropertyHelper class.
+ * <p>
+ * TODO: add tests
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
