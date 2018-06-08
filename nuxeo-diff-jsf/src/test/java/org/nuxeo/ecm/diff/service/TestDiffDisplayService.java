@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -61,20 +61,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Tests the {@link DiffDisplayService}.
- *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DocumentDiffRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml", "org.nuxeo.diff.core",
-        "org.nuxeo.diff.test", "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
-        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml",
-        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml",
-        "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml", "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml",
-        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml",
-        "org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml",
-        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-widgets-contrib.xml" })
+@Deploy({ "org.nuxeo.diff.core", //
+        "org.nuxeo.diff.test", //
+        "org.nuxeo.ecm.platform.forms.layout.client", //
+        "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml", //
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml", //
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml", //
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml", //
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml", //
+        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml", //
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml", //
+        "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-widgets-contrib.xml" //
+})
 public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
     @Inject
@@ -303,8 +305,8 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         Map<String, PropertyDiffDisplay> expectedFields = new HashMap<String, PropertyDiffDisplay>();
         // description
-        expectedFields.put("description", new PropertyDiffDisplayImpl("description",
-                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        expectedFields.put("description",
+                new PropertyDiffDisplayImpl("description", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         // subjects
         List<Map<String, Serializable>> subjects = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> subject = new HashMap<String, Serializable>();
@@ -315,14 +317,15 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // no diff display for dc:created since it is < 1 minute
         // modified
         Calendar cal = DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25);
-        expectedFields.put("modified", new PropertyDiffDisplayImpl(cal.getTime(),
-                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        expectedFields.put("modified",
+                new PropertyDiffDisplayImpl(cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
         // contributors
         List<Map<String, Serializable>> contributors = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> contributor1 = new HashMap<String, Serializable>();
         contributor1.put("index", 1);
-        contributor1.put("value", new PropertyDiffDisplayImpl("Administrator", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributor1.put("value",
+                new PropertyDiffDisplayImpl("Administrator", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor1);
         Map<String, Serializable> contributor2 = new HashMap<String, Serializable>();
         contributor2.put("index", 3);
@@ -347,15 +350,15 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // no diff display for dc:created since it is < 1 minute
         // modified
         cal = DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02);
-        expectedFields.put("modified", new PropertyDiffDisplayImpl(cal.getTime(),
-                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        expectedFields.put("modified",
+                new PropertyDiffDisplayImpl(cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
         // contributors
         contributors = new ArrayList<Map<String, Serializable>>();
         contributor1 = new HashMap<String, Serializable>();
         contributor1.put("index", 1);
-        contributor1.put("value", new PropertyDiffDisplayImpl("anotherAdministrator",
-                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributor1.put("value",
+                new PropertyDiffDisplayImpl("anotherAdministrator", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor1);
         contributor2 = new HashMap<String, Serializable>();
         contributor2.put("index", 3);

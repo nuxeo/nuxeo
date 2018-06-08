@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -33,12 +33,15 @@ import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * TODO: refactor as a service + use xpath for fetching doc property values. Helper to get complex property names and
- * values, and list property values.
- *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * Helper to get complex property names and values, and list property values.
+ * <p>
+ * TODO: refactor as a service + use xpath for fetching doc property values.
  */
 public final class ComplexPropertyHelper {
+
+    private ComplexPropertyHelper() {
+        // helper class
+    }
 
     public static Field getField(String schemaName, String fieldName) {
 
@@ -73,7 +76,7 @@ public final class ComplexPropertyHelper {
                     String.format("Field [%s] is not a complex type.", field.getName().getLocalName()));
         }
 
-        return new ArrayList<Field>(((ComplexType) fieldType).getFields());
+        return new ArrayList<>(((ComplexType) fieldType).getFields());
     }
 
     public static Field getListFieldItem(Field field) {
@@ -121,8 +124,7 @@ public final class ComplexPropertyHelper {
                 fieldTypeName = PropertyType.SCALAR_LIST;
             }
         }
-        // Scalar type (string, boolean, date, integer, long, double) or content
-        // type.
+        // Scalar type (string, boolean, date, integer, long, double)
         else {
             fieldTypeName = fieldType.getName();
         }
