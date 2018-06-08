@@ -171,7 +171,7 @@ public class XSDLoader {
         }
 
         @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+        public InputSource resolveEntity(String publicId, String systemId) throws IOException {
 
             String[] parts = systemId.split("/" + SchemaManagerImpl.SCHEMAS_DIR_NAME + "/");
             String importXSDSubPath = parts[1];
@@ -209,7 +209,7 @@ public class XSDLoader {
         }
 
         @Override
-        public void warning(SAXParseException e) throws SAXException {
+        public void warning(SAXParseException e) {
             log.error("Warning: " + e.getMessage());
         }
     }
@@ -307,12 +307,12 @@ public class XSDLoader {
      * @since 8.4
      */
     protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement)
-            throws SAXException, TypeException {
+            throws TypeException {
         return loadSchema(name, prefix, schemaSet, xsdElement, false);
     }
 
     protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement,
-            boolean isVersionWritable) throws SAXException, TypeException {
+            boolean isVersionWritable) throws TypeException {
         if (schemaSet == null) {
             return null;
         }
@@ -805,8 +805,7 @@ public class XSDLoader {
                 particle.getMinOccurs().intValue(), particle.getMaxOccurs().intValue());
     }
 
-    protected static ListType createListType(Schema schema, String name, Type itemType, int min, int max)
-            throws TypeBindingException {
+    protected static ListType createListType(Schema schema, String name, Type itemType, int min, int max) {
         String elementName = name + "#item";
         return new ListTypeImpl(schema.getName(), name, itemType, elementName, null, min, max);
     }
@@ -911,14 +910,8 @@ public class XSDLoader {
      * @since 7.1
      */
     protected static boolean isNillable(XSElementDecl element) {
-        boolean computedNillable;
         String value = element.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
-        if (!element.isNillable() && value != null && !Boolean.parseBoolean(value)) {
-            computedNillable = false;
-        } else {
-            computedNillable = true;
-        }
-        return computedNillable;
+        return element.isNillable() || value == null || Boolean.parseBoolean(value);
     }
 
 }

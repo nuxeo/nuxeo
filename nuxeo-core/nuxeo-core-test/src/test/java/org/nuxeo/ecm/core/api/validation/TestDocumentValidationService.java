@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-service-contrib.xml")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@SuppressWarnings("AutoBoxing")
 public class TestDocumentValidationService {
 
     // it comes from the message bundle messages_en.properties
@@ -98,7 +99,7 @@ public class TestDocumentValidationService {
         doc = session.createDocument(doc);
         doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
         doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
-        Map<String, String> complex = new HashMap();
+        Map<String, String> complex = new HashMap<>();
         complex.put("a_string", "not_null");
         doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
         doc = session.saveDocument(doc);
@@ -201,7 +202,7 @@ public class TestDocumentValidationService {
         Property complexMand = doc.getProperty(COMPLEX_MANDATORY);
         complexMand.setValue(Collections.emptyMap());
         checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
-        Map complex = new HashMap();
+        Map<String, String> complex = new HashMap<>();
         complex.put("a_string", null);
         complexMand.setValue(complex);
         checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
@@ -222,28 +223,28 @@ public class TestDocumentValidationService {
     @Test
     public void testFieldListWithoutViolation() {
         Field field = metamodel.getField(LIST_FIELD);
-        ArrayList<String> roles = createRoles("role1", "role2", "role3");
+        List<String> roles = createRoles("role1", "role2", "role3");
         checkOk(validator.validate(field, roles));
     }
 
     @Test
     public void testFieldListWithViolation1() {
         Field field = metamodel.getField(LIST_FIELD);
-        ArrayList<String> roles = createRoles("role1", null, "role3");
+        List<String> roles = createRoles("role1", null, "role3");
         checkNotNullOnRoles(validator.validate(field, roles));
     }
 
     @Test
     public void testFieldListWithViolation2() {
         Field field = metamodel.getField(LIST_FIELD);
-        ArrayList<String> roles = createRoles("role1", "role2", "invalid role3");
+        List<String> roles = createRoles("role1", "role2", "invalid role3");
         checkPatternOnRoles(validator.validate(field, roles));
     }
 
     @Test
     public void testFieldComplexListWithoutViolation() {
         Field field = metamodel.getField(COMPLEX_LIST_FIELD);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser("Sandy", "Cheeks"));
@@ -253,7 +254,7 @@ public class TestDocumentValidationService {
     @Test
     public void testFieldComplexListWithViolation1() {
         Field field = metamodel.getField(COMPLEX_LIST_FIELD);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser(null, "Cheeks"));
@@ -263,7 +264,7 @@ public class TestDocumentValidationService {
     @Test
     public void testFieldComplexListWithViolation2() {
         Field field = metamodel.getField(COMPLEX_LIST_FIELD);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser("   ", "Cheeks"));
@@ -345,7 +346,7 @@ public class TestDocumentValidationService {
     @Test
     public void testComplexListFieldWithoutViolation() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser("Sandy", "Cheeks"));
@@ -358,7 +359,7 @@ public class TestDocumentValidationService {
     @Test
     public void testComplexListFieldWithItemSubFieldNullViolation1() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser(null, "Sandy"));
@@ -371,7 +372,7 @@ public class TestDocumentValidationService {
     @Test
     public void testComplexListFieldWithSubFieldPatternViolation2() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("Bob", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser("   ", "Cheeks"));
@@ -384,7 +385,7 @@ public class TestDocumentValidationService {
     @Test
     public void testComplexListFieldWithMultipleSubFieldViolations() {
         doc.setPropertyValue(SIMPLE_FIELD, 12345);
-        ArrayList<Map<String, String>> value = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> value = new ArrayList<>();
         value.add(createUser("   ", "Sponge"));
         value.add(createUser("Patrick", "Star"));
         value.add(createUser("   ", "Cheeks"));
@@ -510,7 +511,7 @@ public class TestDocumentValidationService {
     public void testValidateDocumentPropertyViolationMessage() {
         DocumentValidationReport violations;
         doc.setPropertyValue("vs:groupCode", 123);
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         user.put("lastname", "The kid");
         doc.getProperty("vs:users").addValue(0, user);
         violations = validator.validate(doc);
@@ -525,7 +526,7 @@ public class TestDocumentValidationService {
     public void testValidatePropertyViolationMessage() {
         DocumentValidationReport violations;
         doc.setPropertyValue("vs:groupCode", 123);
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         user.put("lastname", "The kid");
         doc.getProperty("vs:users").addValue(0, user);
         Property userFirstnameProperty = doc.getProperty("vs:users").get(0).get("firstname");
@@ -564,11 +565,11 @@ public class TestDocumentValidationService {
     // End of the tests : Usefull methods //
 
     private ArrayList<String> createRoles(String... roles) {
-        return new ArrayList<String>(Arrays.asList(roles));
+        return new ArrayList<>(Arrays.asList(roles));
     }
 
     private HashMap<String, String> createUser(String firstname, String lastname) {
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         user.put("firstname", firstname);
         user.put("lastname", lastname);
         return user;

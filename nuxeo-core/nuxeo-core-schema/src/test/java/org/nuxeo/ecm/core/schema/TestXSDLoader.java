@@ -25,15 +25,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -56,9 +57,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
-public class TestSchemaLoader {
-
-    public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
+public class TestXSDLoader {
 
     @Inject
     private SchemaManager typeMgr;
@@ -70,10 +69,7 @@ public class TestSchemaLoader {
         reader = new XSDLoader((SchemaManagerImpl) typeMgr);
     }
 
-    // FIXME: this tests makes too string assumptions on how the fields will be
-    // ordered when we iterate over them (fails under Java 6)
     @Test
-    @Ignore
     public void testXSDReader() throws Exception {
         URL url = ResourceHelper.getResource("schema/schema.xsd");
 
@@ -86,19 +82,14 @@ public class TestSchemaLoader {
         assertEquals("http://www.nuxeo.org/ecm/schemas/MySchema", schema.getNamespace().uri);
         assertEquals("", schema.getNamespace().prefix);
 
-        Collection<Field> fields = schema.getFields();
+        List<Field> fields = new ArrayList<>(schema.getFields());
         assertEquals(5, fields.size());
+
+        // sort to assert them
+        fields.sort(Comparator.comparing(f -> f.getName().getPrefixedName()));
 
         Iterator<Field> it = fields.iterator();
         Field field;
-        field = it.next();
-        assertEquals("title", field.getName().getPrefixedName());
-        assertEquals("myString", field.getType().getName());
-
-        field = it.next();
-        assertEquals("numericId", field.getName().getPrefixedName());
-        assertEquals("long", field.getType().getName());
-
         field = it.next();
         assertEquals("data", field.getName().getPrefixedName());
         assertEquals("newsml", field.getType().getName());
@@ -108,13 +99,21 @@ public class TestSchemaLoader {
         assertEquals("string", field.getType().getName());
 
         field = it.next();
+        assertEquals("numericId", field.getName().getPrefixedName());
+        assertEquals("long", field.getType().getName());
+
+        field = it.next();
         assertEquals("person", field.getName().getPrefixedName());
         assertEquals("personInfo", field.getType().getName());
+
+        field = it.next();
+        assertEquals("title", field.getName().getPrefixedName());
+        assertEquals("myString", field.getType().getName());
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
-    public void testContribs() throws Exception {
+    public void testContribs() {
 
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
