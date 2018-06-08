@@ -1111,4 +1111,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public long getResultsCountLimit() {
         return 0;
     }
+
+    @Override
+    public boolean isSkipAggregates() {
+        return (boolean) getProperties().getOrDefault(SKIP_AGGREGATES_PROP, false);
+    }
+
 }

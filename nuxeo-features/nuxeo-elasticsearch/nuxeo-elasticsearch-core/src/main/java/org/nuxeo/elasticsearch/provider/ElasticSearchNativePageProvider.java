@@ -132,8 +132,13 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
 
     private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
         ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
+        boolean skip = isSkipAggregates();
         for (AggregateDefinition def : getAggregateDefinitions()) {
-            ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
+            AggregateEsBase<? extends Bucket> agg = AggregateFactory.create(def, getSearchDocumentModel());
+            if (!skip || !agg.getSelection().isEmpty()) {
+                // if we want to skip aggregates but one is selected, it has to be computed to filter the result set
+                ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
+            }
         }
         return ret;
     }

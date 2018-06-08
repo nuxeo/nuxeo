@@ -149,6 +149,35 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
+     <genericPageProvider name="aggregates" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+       <searchDocumentType>NamedParamDoc</searchDocumentType>
+       <property name="coreSession">#{documentManager}</property>
+       <property name="maxResults">10000</property>
+       <pageSize>20</pageSize>
+       <pattern>SELECT * FROM Document</pattern>
+       <aggregates>
+         <aggregate id="dc_created_agg" parameter="dc:created" type="date_range">
+           <field name="dc_created_agg" schema="named_param" />
+           <properties>
+             <property name="format">MM-yyy</property>
+           </properties>
+           <dateRanges>
+             <dateRange key="long_time_ago" toDate="now-10w" />
+             <dateRange fromDate="now-10w" key="some_time_ago" toDate="now-3w" />
+             <dateRange fromDate="now-3w" key="last_month" />
+           </dateRanges>
+         </aggregate>
+         <aggregate id="common_size_agg" parameter="file:content/length" type="range">
+           <field name="common_size_agg" schema="named_param" />
+           <ranges>
+             <range key="small" to="2048" />
+             <range from="2048" key="medium" to="6144" />
+             <range from="6144" key="big" />
+           </ranges>
+         </aggregate>
+       </aggregates>
+     </genericPageProvider>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">

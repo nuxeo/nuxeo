@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.search.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,12 +38,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.search.QueryExecutor;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -50,6 +53,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.api.client.ClientResponse;
@@ -61,8 +65,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, PlatformFeature.class })
+@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, PlatformFeature.class })
 @ServletContainer(port = 18090)
+@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")
@@ -467,6 +472,39 @@ public class SearchTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(2, getLogEntries(node).size());
+        }
+    }
+
+    /**
+     * @since 10.2
+     */
+    @Test
+    public void iCanPerformPageProviderWithOrWithoutAggregates() throws JsonProcessingException, IOException {
+        String searchPath = getSearchPageProviderExecutePath("aggregates");
+        String aggKey;
+        int docCount;
+        try (CloseableClientResponse response = getResponse(RequestType.GET, searchPath)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.has("aggregations"));
+            aggKey = node.get("aggregations").get("dc_created_agg").get("buckets").get(0).get("key").textValue();
+            docCount = node.get("aggregations").get("dc_created_agg").get("buckets").get(0).get("docCount").intValue();
+        }
+        Map<String, String> headers = new HashMap<>();
+        headers.put(PageProvider.SKIP_AGGREGATES_PROP, "true");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, searchPath, headers)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertFalse(node.has("aggregations"));
+        }
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("dc_created_agg", "[\"" + aggKey + "\"]");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, searchPath, null, queryParams, null,
+                headers)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.has("aggregations"));
+            assertEquals(docCount, node.get("entries").size());
         }
     }
 

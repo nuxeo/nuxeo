@@ -74,6 +74,11 @@ public interface PageProvider<T> extends Serializable {
     public static final String HIGHLIGHT_CTX_DATA = "highlight";
 
     /**
+     * @since 10.2
+     */
+    public static final String SKIP_AGGREGATES_PROP = "skipAggregates";
+
+    /**
      * Returns the provider identifier
      */
     String getName();
@@ -420,6 +425,11 @@ public interface PageProvider<T> extends Serializable {
      * @since 6.0
      */
     boolean hasAggregateSupport();
+
+    /**
+     * @since 10.2
+     */
+    boolean isSkipAggregates();
 
     /**
      * @since 8.4
