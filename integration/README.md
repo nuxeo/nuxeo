@@ -33,13 +33,20 @@ If you need to know the default environment variables set, then you can issue on
 
 ## Build Status Test and Push (ondemand.groovy)
 
-1° Clone	- Clone or update the Nuxeo Platform source code to the master branch, including all addons and Nuxeo
+1.1° Clone	- Clone or update the Nuxeo Platform source code to the master branch, including all addons and Nuxeo
 
-2° Rebase	- Used to rebase all branchs compared to the master branch (fallback on master if branch doesn't exist)
+1.2° Rebase	- Used to rebase all branchs compared to the master branch (fallback on master if branch doesn't exist)
 
-3° Compile	- Build the Nuxeo Platform `mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests`
+1.3° Compile	- Build the Nuxeo Platform `mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests`
 
-4° Test		- Unit tests
+1.4° Test	- Test the compiled source code
 
-5° MultiDB	- Build the Nuxeo Platform with various databases started by docker-compose (pgsql, mongodb, kafka)
+1.5° Verify	- Run checks on integration tests
+
+2.1° Postgresql	- Build the Nuxeo Platform with pgsql database started by docker-compose
+
+2.2° MongoDB 	- Build the Nuxeo Platform with mongodb database started by docker-compose 
+
+2.3° Kafka 	- Build the Nuxeo Platform with kafka database started by docker-compose 
+
 
