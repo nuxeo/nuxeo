@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface BundleInfo extends NuxeoArtifact {
 
@@ -40,7 +40,7 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String PROP_JAR_NAME = "nxbundle:jarName";
 
-    @JsonBackReference("component")
+    @JsonIgnore
     Collection<ComponentInfo> getComponents();
 
     String getFileName();

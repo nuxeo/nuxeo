@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -51,10 +51,10 @@ public interface ComponentInfo extends NuxeoArtifact {
     @JsonManagedReference("component")
     BundleInfo getBundle();
 
-    @JsonBackReference("point")
+    @JsonIgnore
     Collection<ExtensionPointInfo> getExtensionPoints();
 
-    @JsonBackReference("extension")
+    @JsonIgnore
     Collection<ExtensionInfo> getExtensions();
 
     ExtensionPointInfo getExtensionPoint(String name);
