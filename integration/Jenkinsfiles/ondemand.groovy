@@ -44,7 +44,7 @@ node(SLAVE) {
         withBuildStatus('1.2 rebase', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
             sh "./clone.py ${BRANCH} -f ${PARENT_BRANCH} --rebase"
         }
-        stash(name: 'ws', excludes: '**/target')
+        stash(name: 'ws', excludes: '**/target/, **/node_modules/a, **/bower_components/, marketplace/')
     }
     
     stage('compile') {
