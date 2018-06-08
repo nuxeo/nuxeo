@@ -116,7 +116,7 @@ public class TestDirectoryAuditStorage {
         jsonEntryMap2.put(LOG_REPOSITORY_ID, "default");
         jsonEntryMap2.put(LOG_EVENT_DATE, "2017-11-13T09:15:13.102Z");
         jsonEntryMap2.put(LOG_DOC_UUID, "4f86a82f-3521-132b-92c3-6ac5f65c6422");
-        jsonEntryMap2.put(LOG_LOG_DATE, "2017-11-13T09:15:13.138ZZ");
+        jsonEntryMap2.put(LOG_LOG_DATE, "2017-11-13T09:15:13.138Z");
         jsonEntryMap2.put(LOG_EXTENDED, Collections.emptyMap());
 
         String jsonEntry1 = OBJECT_MAPPER.writeValueAsString(jsonEntryMap1);
