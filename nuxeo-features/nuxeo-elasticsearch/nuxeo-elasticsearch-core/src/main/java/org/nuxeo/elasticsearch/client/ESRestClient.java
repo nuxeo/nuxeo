@@ -22,6 +22,7 @@ import static java.util.Collections.emptyMap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +32,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -50,6 +52,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
@@ -375,7 +378,20 @@ public class ESRestClient implements ESClient {
     @Override
     public ClearScrollResponse clearScroll(ClearScrollRequest request) {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Clearing scroll ids: %s",
+                        Arrays.toString(request.getScrollIds().toArray())));
+            }
             return client.clearScroll(request);
+        } catch (ElasticsearchStatusException e) {
+            if (RestStatus.NOT_FOUND.equals(e.status())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Scroll ids not found, they have certainly been already closed",
+                            Arrays.toString(request.getScrollIds().toArray())));
+                }
+                return new ClearScrollResponse(true, 0);
+            }
+            throw new NuxeoException(e);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
