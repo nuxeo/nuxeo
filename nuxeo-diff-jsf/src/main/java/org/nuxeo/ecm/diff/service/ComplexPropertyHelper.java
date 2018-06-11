@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.runtime.api.Framework;
@@ -123,6 +124,10 @@ public final class ComplexPropertyHelper {
             }
         }
         // Scalar type (string, boolean, date, integer, long, double)
+        else if (fieldType.isSimpleType()) {
+            fieldTypeName = ((SimpleType) fieldType).getPrimitiveType().getName();
+        }
+        // Fallback, should never happen
         else {
             fieldTypeName = fieldType.getName();
         }
