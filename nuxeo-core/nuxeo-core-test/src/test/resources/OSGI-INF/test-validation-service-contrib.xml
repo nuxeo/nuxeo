@@ -17,4 +17,8 @@
     <validation context="importDocument" activated="false" />
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.ObjectResolverService" point="resolvers">
+    <resolver type="dummyResolver" class="org.nuxeo.ecm.core.api.validation.DummyResolverForValidation" />
+  </extension>
+
 </component>
