@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
-@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.ecm.core.event",
+@Deploy({ "org.nuxeo.runtime.kv", "org.nuxeo.runtime.stream", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core.event.test:test-workmanager-config.xml" })
 @LocalDeploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
 public class StreamWorkManagerTest extends WorkManagerTest {
@@ -153,7 +153,8 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Test
     public void testNoConcurrentJobsWithSameId() throws Exception {
         // default workmanager guaranty that works with the same id can not be scheduled while another is running
-        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or completed)
+        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
+        // completed)
         super.testNoConcurrentJobsWithSameId();
     }
 

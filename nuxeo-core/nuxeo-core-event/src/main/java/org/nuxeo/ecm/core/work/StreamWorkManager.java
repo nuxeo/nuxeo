@@ -49,15 +49,17 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -70,6 +72,7 @@ import com.codahale.metrics.MetricRegistry;
  * @since 9.3
  */
 public class StreamWorkManager extends WorkManagerImpl {
+
     protected static final Log log = LogFactory.getLog(StreamWorkManager.class);
 
     public static final String WORK_LOG_CONFIG_PROP = "nuxeo.stream.work.log.config";
@@ -82,6 +85,48 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     public static final int DEFAULT_CONCURRENCY = 4;
 
+    /**
+     * @since 10.2
+     */
+    public static final String KV_NAME = "workManager";
+
+    /**
+     * @since 10.2
+     */
+    public static final String STATE_SUFFIX = ":state";
+
+    /**
+     * @since 10.2
+     */
+    public static final String STATETTL_KEY = "nuxeo.stream.work.state.ttl.seconds";
+
+    /**
+     * @since 10.2
+     */
+    public static final String STORESTATE_KEY = "nuxeo.stream.work.storestate.enabled";
+
+    /**
+     * @since 10.2
+     */
+    public static final String STATETTL_DEFAULT_VALUE = "3600";
+
+    /**
+     * @since 10.2
+     */
+    protected static Work.State getState(String workId) {
+        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
+        String stringState = kvStore.getString(workId + STATE_SUFFIX);
+        return stringState == null ? null : Work.State.valueOf(stringState);
+    }
+
+    /**
+     * @since 10.2
+     */
+    protected static void setState(String workId, String state, long ttl) {
+        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
+        kvStore.put(workId + STATE_SUFFIX, state, ttl);
+    }
+
     protected Topology topology;
 
     protected Settings settings;
@@ -91,6 +136,10 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected LogManager logManager;
 
     protected final Set<String> streamIds = new HashSet<>();
+
+    protected boolean storeState;
+
+    protected long stateTTL;
 
     protected int getOverProvisioningFactor() {
         // Enable over provisioning only if the log can be distributed
@@ -128,6 +177,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         }
         String key = work.getPartitionKey();
         appender.append(key, Record.of(key, WorkComputation.serialize(work)));
+        if (storeState) {
+            setState(work.getId(), Work.State.SCHEDULED.toString(), stateTTL);
+        }
     }
 
     protected String getStreamForCategory(String category) {
@@ -146,6 +198,9 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public void start(ComponentContext context) {
         init();
+        storeState = Boolean.parseBoolean(Framework.getService(ConfigurationService.class).getProperty(STORESTATE_KEY));
+        stateTTL = Long.parseLong(
+                Framework.getService(ConfigurationService.class).getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
     }
 
     @Override
@@ -161,8 +216,8 @@ public class StreamWorkManager extends WorkManagerImpl {
             supplantWorkManagerImpl();
             workQueueConfig.index();
             initTopology();
-            this.logManager = getLogManager();
-            this.streamProcessor = new LogStreamProcessor(logManager);
+            logManager = getLogManager();
+            streamProcessor = new LogStreamProcessor(logManager);
             streamProcessor.init(topology, settings);
             started = true;
             new ComponentListener().install();
@@ -251,8 +306,8 @@ public class StreamWorkManager extends WorkManagerImpl {
         workQueueConfig.getQueueIds().stream().filter(item -> workQueueConfig.get(item).isProcessingEnabled()).forEach(
                 item -> builder.addComputation(() -> new WorkComputation(item),
                         Collections.singletonList("i1:" + item)));
-        this.topology = builder.build();
-        this.settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY));
+        topology = builder.build();
+        settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY));
         workQueueConfig.getQueueIds()
                        .forEach(item -> settings.setConcurrency(item, workQueueConfig.get(item).getMaxThreads()));
         workQueueConfig.getQueueIds().forEach(
@@ -284,7 +339,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         @Override
         public void afterCompletion(int status) {
             if (status == Status.STATUS_COMMITTED) {
-                StreamWorkManager.this.schedule(this.work, this.scheduling, false);
+                StreamWorkManager.this.schedule(work, scheduling, false);
             } else {
                 if (status != Status.STATUS_ROLLEDBACK) {
                     throw new IllegalArgumentException("Unsupported transaction status " + status);
@@ -441,11 +496,11 @@ public class StreamWorkManager extends WorkManagerImpl {
             Thread.sleep(100);
             long wm = getLowWaterMark(queueId);
             if (wm == lowWatermark) {
-                log.debug("awaitCompletion for " + ((queueId == null) ? "all" : queueId) + " completed " + wm);
+                log.debug("awaitCompletion for " + (queueId == null ? "all" : queueId) + " completed " + wm);
                 return true;
             }
             if (log.isDebugEnabled()) {
-                log.debug("awaitCompletion low wm  for " + ((queueId == null) ? "all" : queueId) + ":" + wm + " diff: "
+                log.debug("awaitCompletion low wm  for " + (queueId == null ? "all" : queueId) + ":" + wm + " diff: "
                         + (wm - lowWatermark));
             }
             lowWatermark = wm;
@@ -462,9 +517,11 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     @Override
-    public Work.State getWorkState(String s) {
-        // always not found
-        return null;
+    public Work.State getWorkState(String workId) {
+        if (!storeState) {
+            return null;
+        }
+        return getState(workId);
     }
 
     @Override

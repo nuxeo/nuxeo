@@ -16,4 +16,9 @@
     <logConfig name="work" />
   </extension>
 
+   <!--  this enables the state storage in StreamWorkManager so tests are run in the most complete way -->
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.stream.work.storestate.enabled">true</property>
+  </extension>
+
 </component>
