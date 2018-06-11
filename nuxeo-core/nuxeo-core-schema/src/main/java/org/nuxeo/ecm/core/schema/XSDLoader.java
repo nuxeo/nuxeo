@@ -376,17 +376,14 @@ public class XSDLoader {
         return ecmSchema;
     }
 
+    /**
+     * @param schema the nuxeo schema into we register the type.
+     * @param type the XSD type to load
+     * @param fieldName the field name owning this type, this is used when type is anonymous/local
+     * @return the loaded type
+     */
     protected Type loadType(Schema schema, XSType type, String fieldName) throws TypeBindingException {
-        String name;
-        if (type.getName() == null || type.isLocal()) {
-            name = getAnonymousTypeName(type, fieldName);
-            if (name == null) {
-                log.warn("Unable to load type - no name found");
-                return null;
-            }
-        } else {
-            name = type.getName();
-        }
+        String name = getTypeName(type, fieldName);
         // look into global types
         Type ecmType = getType(name);
         if (ecmType != null) {
@@ -465,11 +462,7 @@ public class XSDLoader {
     }
 
     protected SimpleType loadSimpleType(Schema schema, XSType type, String fieldName) throws TypeBindingException {
-        String name = type.getName();
-        if (name == null) {
-            // probably a local type
-            name = fieldName + ANONYMOUS_TYPE_SUFFIX;
-        }
+        String name = getTypeName(type, fieldName);
         XSType baseType = type.getBaseType();
         SimpleType superType = null;
         if (baseType != type) {
@@ -643,11 +636,7 @@ public class XSDLoader {
 
     protected ListType loadListType(Schema schema, XSListSimpleType type, String fieldName)
             throws TypeBindingException {
-        String name = type.getName();
-        if (name == null) {
-            // probably a local type
-            name = fieldName + ANONYMOUS_TYPE_SUFFIX;
-        }
+        String name = getTypeName(type, fieldName);
         XSType xsItemType = type.getItemType();
         Type itemType;
         if (xsItemType.getTargetNamespace().equals(NS_XSD)) {
@@ -737,17 +726,23 @@ public class XSDLoader {
                     processModelGroup(schema, superType, name, ct, term.asModelGroup(), abstractType);
                 }
             } else {
+                XSType elementType = element.getType();
+                // type could be anonymous
+                // concat complex name to enforce inner element type unity across type
+                String fieldName = name + '#' + element.getName();
                 if (maxOccur < 0 || maxOccur > 1) {
-                    Type fieldType = loadType(schema, element.getType(), element.getName());
+                    Type fieldType = loadType(schema, elementType, fieldName);
                     if (fieldType != null) {
-                        ListType listType = createListType(schema, element.getName() + "#anonymousListType", fieldType,
-                                0, maxOccur);
+                        ListType listType = createListType(schema, fieldName + "#anonymousListType", fieldType, 0,
+                                maxOccur);
                         // add the listfield to the current CT
-                        String fieldName = element.getName();
-                        ct.addField(fieldName, listType, null, 0, null);
+                        ct.addField(element.getName(), listType, null, 0, null);
                     }
                 } else {
-                    loadComplexTypeElement(schema, ct, element);
+                    Type fieldType = loadType(schema, elementType, fieldName);
+                    if (fieldType != null) {
+                        createField(ct, element, fieldType);
+                    }
                 }
             }
         }
@@ -768,7 +763,9 @@ public class XSDLoader {
             log.warn("Ignoring " + name + " unsupported list type");
             return null;
         }
-        Type type = loadType(schema, element.getType(), element.getName());
+        // type could be anonymous
+        // concat list name to enforce inner element type unity across type
+        Type type = loadType(schema, element.getType(), name + '#' + element.getName());
         if (type == null) {
             log.warn("Unable to find type for " + element.getName());
             return null;
@@ -886,6 +883,15 @@ public class XSDLoader {
             constraints.addAll(fieldType.getConstraints());
         }
         return type.addField(elementName, fieldType, defValue, flags, constraints);
+    }
+
+    protected static String getTypeName(XSType type, String fieldName) {
+        String typeName = type.getName();
+        if (typeName == null || type.isLocal()) {
+            return getAnonymousTypeName(type, fieldName);
+        } else {
+            return typeName;
+        }
     }
 
     protected static String getAnonymousTypeName(XSType type, String fieldName) {
