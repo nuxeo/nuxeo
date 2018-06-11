@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/validationSample"
-  xmlns:nxv="http://nuxeo.com/schemas/validationSample" xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/">
+           xmlns:nxv="http://nuxeo.com/schemas/validationSample"
+           xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+           xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
 
   <xs:element name="groupCode" type="xs:string" nillable="false" nxsv:nillable="false">
     <xs:simpleType>
@@ -91,5 +93,27 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:element name="dummyComplex1" type="nxv:t_dummyComplex1"/>
+  <xs:complexType name="t_dummyComplex1">
+    <xs:sequence>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="dummyResolver" ref:fetchIt="true"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="dummyComplex2" type="nxv:t_dummyComplex2"/>
+  <xs:complexType name="t_dummyComplex2">
+    <xs:sequence>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="dummyResolver" ref:fetchIt="false"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
 
