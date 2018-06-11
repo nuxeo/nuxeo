@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://nuxeo.com/schemas/sameInner"
+           targetNamespace="http://nuxeo.com/schemas/sameInner">
+
+  <xs:element name="complexWithString" type="nxs:t_complexWithString" />
+  <xs:complexType name="t_complexWithString">
+    <xs:sequence>
+      <xs:element name="list" minOccurs="0" maxOccurs="unbounded">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexWithInteger" type="nxs:t_complexWithInteger" />
+  <xs:complexType name="t_complexWithInteger">
+    <xs:sequence>
+      <xs:element name="list" minOccurs="0" maxOccurs="unbounded">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer" />
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
