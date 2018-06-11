@@ -119,20 +119,22 @@ public class TestBulkDownloadOperation {
         Blob resultBlob = (Blob) automationService.run(ctx, BulkDownload.ID);
 
         assertNotNull(resultBlob);
-        coreFeature.waitForAsyncCompletion();
-        if (resultBlob instanceof AsyncBlob) {
-            TransientStoreService tss = Framework.getService(TransientStoreService.class);
-            TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
-            List<Blob> blobs = ts.getBlobs(((AsyncBlob) resultBlob).getKey());
-            assertNotNull(blobs);
-            assertEquals(1, blobs.size());
-            resultBlob = blobs.get(0);
-            assertTrue(resultBlob instanceof FileBlob);
-        }
-        assertTrue(resultBlob.getLength() > 0);
-        assertEquals("application/zip", resultBlob.getMimeType());
+        assertTrue(resultBlob instanceof AsyncBlob);
 
-        try (CloseableFile source = resultBlob.getCloseableFile()) {
+        coreFeature.waitForAsyncCompletion();
+
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
+        List<Blob> blobs = ts.getBlobs(((AsyncBlob) resultBlob).getKey());
+        assertNotNull(blobs);
+        assertEquals(1, blobs.size());
+
+        Blob actualZip = resultBlob = blobs.get(0);
+        assertTrue(actualZip instanceof FileBlob);
+        assertTrue(actualZip.getLength() > 0);
+        assertEquals("application/zip", actualZip.getMimeType());
+
+        try (CloseableFile source = actualZip.getCloseableFile()) {
             try (ZipFile zip = new ZipFile(source.getFile())) {
                 assertEquals(nbDocs, zip.size());
             }
