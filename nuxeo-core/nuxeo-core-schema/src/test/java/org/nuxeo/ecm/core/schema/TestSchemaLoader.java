@@ -19,8 +19,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -501,6 +504,125 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         Field address = schema.getField("address");
         assertEquals("prefix:address", address.getName().getPrefixedName());
         assertEquals("extension", address.getDeclaringType().getName());
+    }
+
+    /**
+     * NXP-24660
+     */
+    @Test
+    public void testComplexWithSameInnerField() throws Exception {
+
+        URL url = getResource("schema/testComplexWithSameInnerField.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("extension", "prefix", url, "employee");
+
+        assertNotNull(schema);
+
+        // check complex fields
+        assertTrue(schema.hasField("complexWithString"));
+        assertTrue(schema.hasField("complexWithInteger"));
+
+        // check complex types
+        checkComplexTypes(schema, "t_complexWithString", StringType.class);
+        checkComplexTypes(schema, "t_complexWithInteger", LongType.class);
+    }
+
+    private void checkComplexTypes(Schema schema, String typeName, Class<? extends Type> expectedInnerType) {
+        Type type = schema.getType(typeName);
+        assertNotNull(type);
+        assertTrue(type.isComplexType());
+        ComplexType complexType = (ComplexType) type;
+        assertEquals(1, complexType.getFieldsCount());
+
+        // check inner field/type
+        Field valueField = complexType.getFields().iterator().next();
+        assertNotNull(valueField);
+        Type valueType = valueField.getType();
+        assertTrue(typeName + " inner value is a " + valueType.getSuperType().getClass(),
+                expectedInnerType.isInstance(valueType.getSuperType()));
+    }
+
+    /**
+     * NXP-24660
+     */
+    @Test
+    public void testListWithSameInnerField() throws Exception {
+
+        URL url = getResource("schema/testListWithSameInnerField.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("extension", "prefix", url, "employee");
+
+        assertNotNull(schema);
+
+        // check complex fields
+        assertTrue(schema.hasField("listWithString"));
+        assertTrue(schema.hasField("listWithInteger"));
+
+        // check complex types
+        checkListTypes(schema, "t_listWithString", StringType.class);
+        checkListTypes(schema, "t_listWithInteger", LongType.class);
+    }
+
+    private void checkListTypes(Schema schema, String typeName, Class<? extends Type> expectedInnerType) {
+        Type type = schema.getType(typeName);
+        assertNotNull(type);
+        assertTrue(type.isListType());
+        ListType listType = (ListType) type;
+
+        // check inner field/type
+        Field valueField = listType.getField();
+        assertNotNull(valueField);
+        Type valueType = valueField.getType();
+        assertTrue(typeName + " inner value is a " + valueType.getSuperType().getClass(),
+                expectedInnerType.isInstance(valueType.getSuperType()));
+    }
+
+    /**
+     * NXP-24660
+     */
+    @Test
+    public void testComplexWithSameInnerListAndField() throws Exception {
+
+        URL url = getResource("schema/testComplexWithSameInnerListAndField.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("extension", "prefix", url, "employee");
+
+        assertNotNull(schema);
+
+        // check complex fields
+        assertTrue(schema.hasField("complexWithString"));
+        assertTrue(schema.hasField("complexWithInteger"));
+
+        // check complex types
+        checkComplexWithListAndFieldTypes(schema, "t_complexWithString", StringType.class);
+        checkComplexWithListAndFieldTypes(schema, "t_complexWithInteger", LongType.class);
+    }
+
+    private void checkComplexWithListAndFieldTypes(Schema schema, String typeName,
+            Class<? extends Type> expectedInnerType) {
+        Type type = schema.getType(typeName);
+        assertNotNull(type);
+        assertTrue(type.isComplexType());
+        ComplexType complexType = (ComplexType) type;
+        assertEquals(2, complexType.getFieldsCount());
+
+        List<Field> fields = new ArrayList<>(complexType.getFields());
+        fields.sort(Comparator.comparing(f -> f.getName().getPrefixedName()));
+
+        // check inner field/type
+        Field listField = fields.get(0);
+        assertNotNull(listField);
+        Type listType = listField.getType();
+        assertTrue(listType instanceof ListType);
+        Type listItemType = ((ListType) listType).getFieldType();
+        assertTrue(typeName + " inner value is a " + listItemType.getSuperType().getClass(),
+                expectedInnerType.isInstance(listItemType.getSuperType()));
+
+        Field valueField = fields.get(1);
+        assertNotNull(valueField);
+        Type valueType = valueField.getType();
+        assertTrue(typeName + " inner value is a " + valueType.getSuperType().getClass(),
+                expectedInnerType.isInstance(valueType.getSuperType()));
     }
 
 }

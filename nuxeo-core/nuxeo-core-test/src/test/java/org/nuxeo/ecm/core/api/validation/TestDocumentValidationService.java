@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.api.validation;
 
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -68,6 +69,10 @@ public class TestDocumentValidationService {
     private static final String LIST_FIELD = "vs:roles";
 
     private static final String COMPLEX_LIST_FIELD = "vs:users";
+
+    public static final String COMPLEX_DUMMY_RESOLVER_1 = "vs:dummyComplex1";
+
+    public static final String COMPLEX_DUMMY_RESOLVER_2 = "vs:dummyComplex2";
 
     private static final String SCHEMA = "validationSample";
 
@@ -502,6 +507,18 @@ public class TestDocumentValidationService {
         assertEquals(1, violationList.size());
         violation = violationList.get(0);
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+    }
+
+    // NXP-24660
+    @Test
+    public void testValidationOnSchemaWithTwoComplexHavingSameChild() {
+        Property complexDummy1 = doc.getProperty(COMPLEX_DUMMY_RESOLVER_1);
+        complexDummy1.setValue(singletonMap("value", "value1"));
+        checkOk(validator.validate(complexDummy1));
+        Property complexDummy2 = doc.getProperty(COMPLEX_DUMMY_RESOLVER_2);
+        complexDummy2.setValue(singletonMap("value", "value2"));
+        DocumentValidationReport report = validator.validate(complexDummy2);
+        assertEquals(1, report.numberOfErrors());
     }
 
     // //////////////////////////////////////
