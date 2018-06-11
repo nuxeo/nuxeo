@@ -136,6 +136,10 @@ public class XSDLoader {
         this.sd = sd;
     }
 
+    /**
+     * @deprecated since 10.2, seems unused
+     */
+    @Deprecated
     public XSDLoader(SchemaManagerImpl schemaManager, boolean collectReferencedXSD) {
         this.schemaManager = schemaManager;
         this.collectReferencedXSD = collectReferencedXSD;
@@ -807,16 +811,6 @@ public class XSDLoader {
         return new ListTypeImpl(schema.getName(), name, itemType, elementName, null, min, max);
     }
 
-    protected void loadComplexTypeElement(Schema schema, ComplexType type, XSElementDecl element)
-            throws TypeBindingException {
-        XSType elementType = element.getType();
-
-        Type fieldType = loadType(schema, elementType, element.getName());
-        if (fieldType != null) {
-            createField(type, element, fieldType);
-        }
-    }
-
     protected static Field createField(ComplexType type, XSElementDecl element, Type fieldType) {
         String elementName = element.getName();
         XmlString dv = element.getDefaultValue();
@@ -904,6 +898,10 @@ public class XSDLoader {
         }
     }
 
+    /**
+     * @deprecated since 10.2, seems unused
+     */
+    @Deprecated
     public List<String> getReferencedXSD() {
         return referencedXSD;
     }
