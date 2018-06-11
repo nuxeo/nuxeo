@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import static org.nuxeo.ecm.core.work.StreamWorkManager.KV_NAME;
+import static org.nuxeo.ecm.core.work.StreamWorkManager.STATETTL_DEFAULT_VALUE;
+import static org.nuxeo.ecm.core.work.StreamWorkManager.STATETTL_KEY;
+import static org.nuxeo.ecm.core.work.StreamWorkManager.STATE_SUFFIX;
+import static org.nuxeo.ecm.core.work.StreamWorkManager.STORESTATE_KEY;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +41,11 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
@@ -55,10 +65,14 @@ public class WorkComputation extends AbstractComputation {
 
     protected final Timer workTimer;
 
+    private final long stateTTL;
+
     public WorkComputation(String name) {
         super(name, 1, 0);
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         workTimer = registry.timer(MetricRegistry.name("nuxeo", "works", name, "total"));
+        stateTTL = Long.parseLong(
+                Framework.getService(ConfigurationService.class).getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
     }
 
     @Override
@@ -68,7 +82,16 @@ public class WorkComputation extends AbstractComputation {
             if (work.isIdempotent() && workIds.contains(work.getId())) {
                 log.warn("Duplicate work id: " + work.getId() + " skipping");
             } else {
+                boolean storeState = Boolean.parseBoolean(
+                        Framework.getService(ConfigurationService.class).getProperty(STORESTATE_KEY));
+                if (storeState) {
+                    StreamWorkManager.setState(work.getId(), Work.State.RUNNING.toString(), stateTTL);
+                }
                 new WorkHolder(work).run();
+                if (storeState) {
+                    KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
+                    kvStore.put(work.getId() + STATE_SUFFIX, (String) null);
+                }
                 workIds.add(work.getId());
             }
             work.cleanUp(true, null);
