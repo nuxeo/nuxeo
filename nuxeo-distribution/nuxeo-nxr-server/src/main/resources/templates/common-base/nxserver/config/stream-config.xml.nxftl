@@ -3,13 +3,13 @@
   <require>org.nuxeo.runtime.stream.service</require>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
-      <logConfig name="default" type="kafka">
-        <option name="kafkaConfig">default</option>
-      </logConfig>
+    <logConfig name="default" type="kafka">
+      <option name="kafkaConfig">default</option>
+    </logConfig>
   <#else>
-      <logConfig name="default" type="chronicle">
-        <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
-      </logConfig>
+    <logConfig name="default" type="chronicle">
+      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    </logConfig>
   </#if>
   </extension>
 <#if "${nuxeo.stream.work.enabled}" == "true">
@@ -22,15 +22,15 @@
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
   </extension-point>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-<#if "${kafka.enabled}" == "true">
+  <#if "${kafka.enabled}" == "true">
     <logConfig name="${nuxeo.stream.work.log.config}" type="kafka">
       <option name="kafkaConfig">default</option>
     </logConfig>
-<#else>
+  <#else>
     <logConfig name="${nuxeo.stream.work.log.config}" type="chronicle">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
     </logConfig>
-</#if>
+  </#if>
   </extension>
 </#if>
 <#if "${nuxeo.stream.audit.enabled}" == "true">
