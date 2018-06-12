@@ -1,0 +1,5 @@
+<component name="org.nuxeo.core.event.workmanagerimpl.shutdown.delay">
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.ecm.core.work.shutdown.delay">5000</property>
+  </extension>
+</component>
