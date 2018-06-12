@@ -5,8 +5,8 @@
     <store name="bulk" class="org.nuxeo.runtime.kv.MemKeyValueStore"/>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.bulk" point="operations">
-    <operation name="count"/>
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="count"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">

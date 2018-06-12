@@ -18,11 +18,18 @@
  */
 package org.nuxeo.ecm.automation.io.services.bulk;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COMMAND;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COUNT;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_SUBMIT;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ID;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
@@ -39,32 +46,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
 
     public BulkJsonReader() {
-        super("bulk");
+        super(BULK_ENTITY_TYPE);
     }
 
     @Override
     public BulkStatus readEntity(JsonNode jn) throws IOException {
-        // misc
-        String creation = jn.get("creation").asText();
-        State state = State.valueOf(jn.get("state").asText());
-        // command
-        String query = jn.get("query").asText();
-        String operation = jn.get("operation").asText();
-        String repository = jn.get("repository").asText();
-        String username = jn.get("username").asText();
-        Long scrolledDocumentCount = null;
-        if (jn.get("scrolledDocumentCount").isNumber()) {
-            scrolledDocumentCount = Long.valueOf(jn.get("scrolledDocumentCount").longValue());
-        }
-        BulkCommand command = new BulkCommand().withOperation(operation)
-                                               .withQuery(query)
-                                               .withRepository(repository)
-                                               .withUsername(username);
         BulkStatus status = new BulkStatus();
-        status.setCommand(command);
-        status.setState(state);
-        status.setCreationDate(ZonedDateTime.parse(creation));
-        status.setScrolledDocumentCount(scrolledDocumentCount);
+
+        String id = jn.get(BULK_ID).asText();
+        status.setId(id);
+
+        String state = getStringField(jn, BULK_STATE);
+        if (isNotEmpty(state)) {
+            status.setState(State.valueOf(state));
+        }
+
+        String creation = getStringField(jn, BULK_SUBMIT);
+
+        if (isNotEmpty(creation)) {
+            status.setSubmitTime(Instant.parse(creation));
+        }
+
+        JsonNode jnCommand = jn.get(BULK_COMMAND);
+        if (jnCommand != null && !jnCommand.isNull()) {
+            BulkCommand command = readEntity(BulkCommand.class, BulkCommand.class, jnCommand);
+            status.setCommand(command);
+        }
+
+        Long count = getLongField(jn, BULK_COUNT);
+        status.setCount(count);
+
         return status;
     }
 

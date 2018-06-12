@@ -5,7 +5,7 @@
     The Bulk Service allows to execute a Bulk Command. This consists of two steps:
     <ul>
       <li>Creation of a document set by scrolling the database</li>
-      <li>Execution of an Bulk Operation on document set</li>
+      <li>Execution of a bulk on document set</li>
     </ul>
   </documentation>
 
@@ -23,11 +23,11 @@
     <object class="org.nuxeo.ecm.core.bulk.BulkServiceDescriptor" />
   </extension-point>
 
-  <extension-point name="operations">
+  <extension-point name="actions">
     <documentation>
-      Allows to define the bulk operations
+      Allows to define the bulk actions
     </documentation>
-    <object class="org.nuxeo.ecm.core.bulk.BulkOperationDescriptor" />
+    <object class="org.nuxeo.ecm.core.bulk.BulkActionDescriptor" />
   </extension-point>
 
 </component>

@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-contrib-tests.xml")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
-public class TestRunBulkOperation {
+public class TestRunBulkAction {
 
     @Inject
     protected CoreSession session;
@@ -67,14 +67,14 @@ public class TestRunBulkOperation {
     public void test() throws OperationException {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxsql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
 
         OperationContext ctx = new OperationContext(session);
         Map<String, String> params = new HashMap<>();
-        params.put("operation", "count");
-        params.put("query", nxsql);
+        params.put("action", "count");
+        params.put("query", nxql);
 
-        BulkStatus result = (BulkStatus) service.run(ctx, RunBulkOperation.ID, params);
+        BulkStatus result = (BulkStatus) service.run(ctx, RunBulkAction.ID, params);
 
         Assert.assertNotNull(result);
 

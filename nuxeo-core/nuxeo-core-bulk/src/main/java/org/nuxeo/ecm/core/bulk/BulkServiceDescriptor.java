@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * The Bulk Operation Service configuration.
+ * The Bulk Action Service configuration.
  *
  * @since 10.2
  */

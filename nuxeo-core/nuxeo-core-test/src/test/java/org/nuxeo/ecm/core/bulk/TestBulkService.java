@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -60,28 +59,30 @@ public class TestBulkService {
     public CoreSession session;
 
     @Test
-    public void testRunBulkOperation() throws Exception {
+    public void testRunBulkAction() throws Exception {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
 
-        // TODO change operation name
-        BulkStatus status = service.runOperation(new BulkCommand().withQuery(nxql).withOperation("count"));
-        assertNotNull(status);
-        assertEquals(SCHEDULED, status.getState());
+        String bulkId = service.submit(new BulkCommand().withUsername(session.getPrincipal().getName())
+                                                        .withRepository(session.getRepositoryName())
+                                                        .withQuery(nxql)
+                                                        .withAction("count"));
+        assertNotNull(bulkId);
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
         try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
             for (int i = 1; i <= 10; i++) {
                 LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
-                assertEquals(i, new BigInteger(logRecord.message().data).intValue());
+                assertEquals(i, new BigInteger(logRecord.message().getData()).intValue());
             }
         }
 
-        status = service.getStatus(status.getUUID());
+        BulkStatus status = service.getStatus(bulkId);
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
-        assertNotNull(status.getScrolledDocumentCount());
-        assertEquals(10, status.getScrolledDocumentCount().longValue());
+        assertNotNull(status.getCount());
+        assertEquals(10, status.getCount().longValue());
     }
+
 }

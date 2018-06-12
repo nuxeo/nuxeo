@@ -27,8 +27,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @since 10.2
  */
-@XObject("operation")
-public class BulkOperationDescriptor implements Serializable {
+@XObject("action")
+public class BulkActionDescriptor implements Serializable {
 
     @XNode("@name")
     protected String name;

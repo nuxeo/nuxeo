@@ -18,16 +18,23 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.UUID;
-
 /**
- * API to manage Bulk Operation Framework.
+ * API to manage Bulk Computation.
  *
  * @since 10.2
  */
 public interface BulkService {
 
-    BulkStatus runOperation(BulkCommand command);
+    /**
+     * Submits a {@link BulkCommand} that will be processed asynchronously.
+     *
+     * @param command the command to submit
+     * @return a unique bulk command identifier
+     */
+    String submit(BulkCommand command);
 
-    BulkStatus getStatus(UUID bulkOperationId);
+    /**
+     * @return the command status corresponding to the command identifier.
+     */
+    BulkStatus getStatus(String bulkId);
 }
