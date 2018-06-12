@@ -31,10 +31,10 @@ import org.nuxeo.ecm.core.bulk.BulkStatus;
 /**
  * @since 10.2
  */
-@Operation(id = RunBulkOperation.ID, category = Constants.CAT_SERVICES, label = "Create a bulk command", addToStudio = true, description = "blabla")
-public class RunBulkOperation {
+@Operation(id = RunBulkAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk", addToStudio = true, description = "Run a bulk on a set of documents expressed by a NXQL.")
+public class RunBulkAction {
 
-    public static final String ID = "Bulk.RunOperation";
+    public static final String ID = "Bulk.RunAction";
 
     @Context
     protected BulkService service;
@@ -45,18 +45,21 @@ public class RunBulkOperation {
     @Param(name = "query", required = true)
     protected String query;
 
-    @Param(name = "operation", required = true)
-    protected String operation;
+    @Param(name = "action", required = true)
+    protected String action;
 
     @OperationMethod
     public BulkStatus run() {
         String repositoryName = session.getRepositoryName();
         String userName = session.getPrincipal().getName();
         BulkCommand command = new BulkCommand().withRepository(repositoryName)
-                                               .withOperation(operation)
+                                               .withAction(action)
                                                .withUsername(userName)
                                                .withQuery(query);
-        return service.runOperation(command);
+        String bulkId = service.submit(command);
+        BulkStatus bulkStatus = new BulkStatus();
+        bulkStatus.setId(bulkId);
+        return bulkStatus;
     }
 
 }

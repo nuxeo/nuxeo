@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.bulk;
 
 import java.io.Serializable;
 
-import com.google.common.base.MoreObjects;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * A command to execute by {@link BulkService}.
@@ -31,15 +31,15 @@ public class BulkCommand implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** The username which run the bulk operation. */
+    /** The username which run the bulk command. */
     protected String username;
 
     protected String repository;
 
     protected String query;
 
-    /** The Bulk operation to execute. */
-    protected String operation;
+    /** The bulk action to execute. */
+    protected String action;
 
     public BulkCommand() {
     }
@@ -63,7 +63,7 @@ public class BulkCommand implements Serializable {
     }
 
     /**
-     * @param query the query used to get the document set concerned by the operation
+     * @param query the query used to get the document set concerned by the action
      */
     public BulkCommand withQuery(String query) {
         this.query = query;
@@ -74,17 +74,17 @@ public class BulkCommand implements Serializable {
         return query;
     }
 
-    public BulkCommand withOperation(String operation) {
-        this.operation = operation;
+    public BulkCommand withAction(String action) {
+        this.action = action;
         return this;
     }
 
-    public String getOperation() {
-        return operation;
+    public String getAction() {
+        return action;
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("repository", repository).add("query", query).toString();
+        return ToStringBuilder.reflectionToString(this);
     }
 }

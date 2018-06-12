@@ -33,20 +33,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 10.2
  */
-/*
- * BulkAdminService is implemented by the component and not as a service like BulkService because StreamBulkScroller
- * needs bulk configuration during its initialization. Its initialization happens during StreamService's start step
- * which is before BulkComponent's start step, so at a moment where services are not yet created.
- */
 public class BulkComponent extends DefaultComponent implements BulkAdminService {
 
     public static final String CONFIGURATION_XP = "configuration";
 
-    public static final String OPERATIONS_XP = "operations";
+    public static final String ACTIONS_XP = "actions";
 
     protected Queue<BulkServiceDescriptor> configurationRegistry = new LinkedList<>();
 
-    protected Queue<BulkOperationDescriptor> operationsRegistry = new LinkedList<>();
+    protected Queue<BulkActionDescriptor> actionsRegistry = new LinkedList<>();
 
     protected BulkService bulkService;
 
@@ -56,6 +51,10 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
         if (adapter.isAssignableFrom(BulkService.class)) {
             return (T) bulkService;
         } else if (adapter.isAssignableFrom(BulkAdminService.class)) {
+            // BulkAdminService is implemented by the component and not as a service like BulkService because
+            // StreamBulkScroller needs bulk configuration during its initialization. Its initialization happens during
+            // StreamService's start step which is before BulkComponent's start step, so at a moment where services are
+            // not yet created.
             return (T) this;
         }
         return null;
@@ -65,8 +64,8 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_XP.equals(extensionPoint)) {
             configurationRegistry.add((BulkServiceDescriptor) contribution);
-        } else if (OPERATIONS_XP.equals(extensionPoint)) {
-            operationsRegistry.add((BulkOperationDescriptor) contribution);
+        } else if (ACTIONS_XP.equals(extensionPoint)) {
+            actionsRegistry.add((BulkActionDescriptor) contribution);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);
         }
@@ -109,7 +108,7 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     }
 
     @Override
-    public List<String> getOperations() {
-        return operationsRegistry.stream().map(BulkOperationDescriptor::getName).collect(Collectors.toList());
+    public List<String> getActions() {
+        return actionsRegistry.stream().map(BulkActionDescriptor::getName).collect(Collectors.toList());
     }
 }

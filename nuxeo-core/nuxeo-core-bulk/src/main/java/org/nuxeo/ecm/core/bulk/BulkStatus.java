@@ -20,13 +20,12 @@
 package org.nuxeo.ecm.core.bulk;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
-import java.util.UUID;
+import java.time.Instant;
 
 /**
  * This object holds the current bulk command execution status.
  * <p/>
- * This aggregates status and metrics of documentSet creation and operation computation.
+ * This aggregates status and metrics of documentSet creation and action computation.
  *
  * @since 10.2
  */
@@ -35,69 +34,76 @@ public class BulkStatus implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Possible states of bulk operation.
+     * Possible states of bulk execution.
      */
     public enum State {
-        SCHEDULED, BUILDING, COMPLETED
+        /** The {@link BulkCommand} has been submitted to the system. */
+        SCHEDULED,
+
+        /** System is currently scrolling the database. */
+        BUILDING,
+
+        /** System has finished to scroll. */
+        COMPLETED
     }
 
-    protected UUID uuid;
+    protected String id;
 
     protected BulkCommand command;
 
     protected State state;
 
-    protected ZonedDateTime creationDate;
+    protected Instant submitTime;
 
-    protected Long scrolledDocumentCount;
+    protected Long count;
 
     /**
-     * Gets bulk operation id.
+     * Gets bulk id.
      *
      * @return the id
      */
-    public UUID getUUID() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets bulk operation id.
+     * Sets bulk action id.
      *
-     * @param uuid the id
+     * @param id the id
      */
-    public void setUUID(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
-     * Gets bulk operation command.
+     * Gets bulk command.
      *
-     * @return the bulk operation command.
+     * @return the bulk command.
      */
     public BulkCommand getCommand() {
         return command;
     }
 
     /**
-     * Sets bulk operation command.
+     * Sets bulk command.
      *
-     * @param command the bulk operation command
+     * @param command the bulk command
      */
     public void setCommand(BulkCommand command) {
         this.command = command;
     }
 
     /**
-     * Gets bulk operation state. Possible values are SCHEDULED, BUILDING or COMPLETED.
+     * Returns the bulk action state.
      *
-     * @return the state
+     * @return the bulk action state
      */
     public State getState() {
         return state;
     }
 
     /**
-     * Sets bulk operation state.
+     * Sets bulk action state.
      *
      * @param state the state
      */
@@ -106,38 +112,38 @@ public class BulkStatus implements Serializable {
     }
 
     /**
-     * Gets bulk operation creation date. This corresponds to the bulk command submission date.
+     * Gets bulk action submission time.
      *
-     * @return the creation date
+     * @return the submit time
      */
-    public ZonedDateTime getCreationDate() {
-        return creationDate;
+    public Instant getSubmitTime() {
+        return submitTime;
     }
 
     /**
-     * Sets bulk operation creation date.
+     * Sets bulk submission time.
      *
-     * @param creationDate the creation date
+     * @param submitTime the submit time
      */
-    public void setCreationDate(ZonedDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setSubmitTime(Instant submitTime) {
+        this.submitTime = submitTime;
     }
 
     /**
-     * Gets number of scrolled document
+     * Gets number of element touched in this bulk.
      *
-     * @return the number of scrolled document
+     * @return the number of element
      */
-    public Long getScrolledDocumentCount() {
-        return scrolledDocumentCount;
+    public Long getCount() {
+        return count;
     }
 
     /**
-     * Sets number of scrolled document.
+     * Sets number of element touched in this bulk.
      *
-     * @param scrolledDocumentCount the number of scrolled document
+     * @param count the number of element
      */
-    public void setScrolledDocumentCount(Long scrolledDocumentCount) {
-        this.scrolledDocumentCount = scrolledDocumentCount;
+    public void setCount(Long count) {
+        this.count = count;
     }
 }

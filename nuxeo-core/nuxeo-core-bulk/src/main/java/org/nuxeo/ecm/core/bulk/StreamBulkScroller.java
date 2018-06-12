@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,20 +75,20 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         int scrollBatchSize = getOptionAsInteger(options, SCROLL_BATCH_SIZE_OPT, DEFAULT_SCROLL_BATCH_SIZE);
         int scrollKeepAliveSeconds = getOptionAsInteger(options, SCROLL_KEEP_ALIVE_SECONDS_OPT,
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
-        // retrieve bulk operations to deduce output streams
+        // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         String kvStore = service.getKeyValueStore();
-        List<String> operations = service.getOperations();
+        List<String> actions = service.getActions();
         List<String> mapping = new ArrayList<>();
         mapping.add("i1:" + SET_STREAM_NAME);
         int i = 1;
-        for (String operation : operations) {
-            mapping.add(String.format("o%s:%s", i, operation));
+        for (String action : actions) {
+            mapping.add(String.format("o%s:%s", i, action));
             i++;
         }
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, operations.size(), kvStore,
+                               () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, actions.size(), kvStore,
                                        scrollBatchSize, scrollKeepAliveSeconds), //
                                mapping)
                        .build();
@@ -102,9 +101,6 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         protected final int scrollBatchSize;
 
         protected final int scrollKeepAliveSeconds;
-
-        /** Lazy initialized. */
-        protected KeyValueStore kvStore;
 
         public BulkDocumentScrollerComputation(String name, int nbOutputStreams, String kvStoreName,
                 int scrollBatchSize, int scrollKeepAliveSeconds) {
@@ -120,11 +116,13 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         }
 
         protected void processRecord(ComputationContext context, Record record) {
-            KeyValueStore kvStore = getKeyValueStore();
+            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(kvStoreName);
             try {
-                BulkCommand command = getBulkCommandJson(record.data);
-                if (!kvStore.compareAndSet(record.key + STATE, SCHEDULED.toString(), BUILDING.toString())) {
+                String bulkId = record.getKey();
+                BulkCommand command = getBulkCommandJson(record.getData());
+                if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), BUILDING.toString())) {
                     log.error("Discard record: " + record + " because it's already building");
+                    context.askForCheckpoint();
                     return;
                 }
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository(),
@@ -136,10 +134,10 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                     while (scroll.hasResults()) {
                         List<String> docIds = scroll.getResults();
                         // send these ids as keys to the appropriate stream
-                        // key will be bulkOperationId/docId
+                        // key will be bulkId/docId
                         // value/data is a BulkCommand serialized as JSON
-                        docIds.forEach(docId -> context.produceRecord(command.getOperation(), record.key + '/' + docId,
-                                record.data));
+                        docIds.forEach(docId -> context.produceRecord(command.getAction(),
+                                bulkId + '/' + docId, record.getData()));
                         documentCount += docIds.size();
                         context.askForCheckpoint();
                         // next batch
@@ -147,8 +145,8 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
                     }
-                    kvStore.put(record.key + STATE, COMPLETED.toString());
-                    kvStore.put(record.key + SCROLLED_DOCUMENT_COUNT, documentCount);
+                    kvStore.put(bulkId + STATE, COMPLETED.toString());
+                    kvStore.put(bulkId + SCROLLED_DOCUMENT_COUNT, documentCount);
                 }
             } catch (NuxeoException e) {
                 log.error("Discard invalid record: " + record, e);
@@ -156,29 +154,20 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         }
 
         protected BulkCommand getBulkCommandJson(byte[] data) {
-            String json = "";
+            String json = new String(data, UTF_8);
             try {
-                json = new String(data, UTF_8);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(json, BulkCommand.class);
-            } catch (UnsupportedEncodingException e) {
-                throw new NuxeoException("Discard bulk command, invalid byte array", e);
             } catch (IOException e) {
                 throw new NuxeoException("Invalid json bulkCommand=" + json, e);
             }
         }
 
-        protected KeyValueStore getKeyValueStore() {
-            if (kvStore == null) {
-                kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(kvStoreName);
-            }
-            return kvStore;
-        }
     }
 
     // TODO copied from StreamAuditWriter - where can we put that ?
     protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
         String value = options.get(option);
-        return value == null ? defaultValue : Integer.valueOf(value);
+        return value == null ? defaultValue : Integer.parseInt(value);
     }
 }

@@ -22,15 +22,15 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -55,100 +55,78 @@ public class BulkServiceImpl implements BulkService {
 
     protected static final String COMMAND = ":command";
 
-    protected static final String CREATION_DATE = ":creationDate";
+    protected static final String SUBMIT_TIME = ":submitTime";
 
     protected static final String STATE = ":state";
 
-    protected static final String SCROLLED_DOCUMENT_COUNT = ":scrolledDocumentCount";
+    protected static final String SCROLLED_DOCUMENT_COUNT = ":count";
 
     protected final BulkServiceDescriptor descriptor;
-
-    /** Initialized in a lazy way. */
-    protected KeyValueStore kvStore;
-
-    /** Initialized in a lazy way. */
-    protected LogManager logManager;
 
     public BulkServiceImpl(BulkServiceDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
     @Override
-    public BulkStatus runOperation(BulkCommand command) {
+    public String submit(BulkCommand command) {
         if (log.isDebugEnabled()) {
-            log.debug("Run operation with command=" + command);
+            log.debug("Run action with command=" + command);
         }
-        // fill command object
-        if (isEmpty(command.getRepository())) {
-            String repository = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
-            command.withRepository(repository);
+        // check command
+        if (isEmpty(command.getRepository()) || isEmpty(command.getQuery()) || isEmpty(command.getAction())) {
+            throw new IllegalArgumentException("Missing mandatory values");
         }
-        // create the operation id and status
-        UUID bulkOperationId = UUID.randomUUID();
-
-        BulkStatus status = new BulkStatus();
-        status.setUUID(bulkOperationId);
-        status.setState(SCHEDULED);
-        status.setCreationDate(ZonedDateTime.now());
-        status.setCommand(command);
+        // create the action id and status
+        String bulkId = UUID.randomUUID().toString();
 
         try {
             byte[] commandAsBytes = OBJECT_MAPPER.writeValueAsBytes(command);
 
             // store the bulk command and status in the key/value store
             KeyValueStore keyValueStore = getKvStore();
-            keyValueStore.put(bulkOperationId + STATE, status.getState().toString());
-            keyValueStore.put(bulkOperationId + CREATION_DATE, status.getCreationDate().toString());
-            keyValueStore.put(bulkOperationId + COMMAND, commandAsBytes);
+            keyValueStore.put(bulkId + STATE, SCHEDULED.toString());
+            keyValueStore.put(bulkId + SUBMIT_TIME, Instant.now().toEpochMilli());
+            keyValueStore.put(bulkId + COMMAND, commandAsBytes);
 
             // send it to nuxeo-stream
-            String key = bulkOperationId.toString();
-            getLogManager().getAppender(SET_STREAM_NAME).append(key, new Record(key, commandAsBytes));
+            LogManager logManager = Framework.getService(StreamService.class).getLogManager(descriptor.logConfig);
+            LogAppender<Record> logAppender = logManager.getAppender(SET_STREAM_NAME);
+            logAppender.append(bulkId, new Record(bulkId, commandAsBytes));
         } catch (JsonProcessingException e) {
             throw new NuxeoException("Unable to serialize the bulk command=" + command, e);
         }
-        return status;
+        return bulkId;
     }
 
     @Override
-    public BulkStatus getStatus(UUID bulkOperationId) {
-        String commandAsString = "";
+    public BulkStatus getStatus(String bulkId) {
+        BulkStatus status = new BulkStatus();
+        status.setId(bulkId);
+
+        // retrieve values from KeyValueStore
+        KeyValueStore keyValueStore = getKvStore();
+        String state = keyValueStore.getString(bulkId + STATE);
+        status.setState(State.valueOf(state));
+
+        Long submitTime = keyValueStore.getLong(bulkId + SUBMIT_TIME);
+        status.setSubmitTime(Instant.ofEpochMilli(submitTime.longValue()));
+
+        String commandAsString = keyValueStore.getString(bulkId + COMMAND);
         try {
-            BulkStatus status = new BulkStatus();
-            status.setUUID(bulkOperationId);
-
-            // retrieve values from KeyValueStore
-            KeyValueStore keyValueStore = getKvStore();
-            String state = keyValueStore.getString(bulkOperationId + STATE);
-            status.setState(State.valueOf(state));
-
-            String creationDate = keyValueStore.getString(bulkOperationId + CREATION_DATE);
-            status.setCreationDate(ZonedDateTime.parse(creationDate));
-
-            commandAsString = keyValueStore.getString(bulkOperationId + COMMAND);
             BulkCommand command = OBJECT_MAPPER.readValue(commandAsString, BulkCommand.class);
             status.setCommand(command);
-
-            Long scrolledDocumentCount = keyValueStore.getLong(bulkOperationId + SCROLLED_DOCUMENT_COUNT);
-            status.setScrolledDocumentCount(scrolledDocumentCount);
-
-            return status;
         } catch (IOException e) {
             throw new NuxeoException("Unable to deserialize the bulk command=" + commandAsString, e);
         }
+
+        Long scrolledDocumentCount = keyValueStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT);
+        status.setCount(scrolledDocumentCount);
+
+        return status;
     }
 
     public KeyValueStore getKvStore() {
-        if (kvStore == null) {
-            kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(descriptor.kvStore);
-        }
-        return kvStore;
+        return Framework.getService(KeyValueService.class).getKeyValueStore(descriptor.kvStore);
     }
 
-    public LogManager getLogManager() {
-        if (logManager == null) {
-            logManager = Framework.getService(StreamService.class).getLogManager(descriptor.logConfig);
-        }
-        return logManager;
-    }
 }

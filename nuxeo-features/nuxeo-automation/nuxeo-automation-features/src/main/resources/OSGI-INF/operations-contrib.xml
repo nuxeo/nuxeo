@@ -142,7 +142,7 @@
       class="org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries" />
 
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.bulk.RunBulkOperation" />
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.RunBulkAction" />
 
   </extension>
 

@@ -170,6 +170,30 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
     }
 
     /**
+     * Tries to get a long property of the given {@link JsonNode}. Return {@code null} if the node is {@code null} or
+     * not a number.
+     *
+     * @param jn the {@link JsonNode} to parse
+     * @param elName the property name
+     * @return the long value if it exists and is a long property, {@code null} otherwise
+     * @since 10.2
+     */
+    protected Long getLongField(JsonNode jn, String elName) {
+        JsonNode elNode = jn.get(elName);
+        if (elNode != null && !elNode.isNull()) {
+            if (elNode.isNumber()) {
+                return elNode.longValue();
+            } else if (elNode.isTextual()) {
+                return Long.valueOf(elNode.textValue());
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Tries to get a string list property of the given {@link JsonNode}. Return {@code null} if the node is
      * {@code null} or not a string list.
      *

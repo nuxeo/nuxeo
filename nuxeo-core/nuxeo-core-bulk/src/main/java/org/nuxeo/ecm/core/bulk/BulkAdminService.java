@@ -23,7 +23,7 @@ import java.util.List;
 import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
- * The Bulk admin service, it's an internal service in order to access configuration from Bulk Operation Framework.
+ * The Bulk admin service, it's an internal service in order to access configuration from Bulk Action Framework.
  *
  * @since 10.2
  */
@@ -31,15 +31,17 @@ import org.nuxeo.runtime.kv.KeyValueStore;
 public interface BulkAdminService {
 
     /**
-     * @return the {@link KeyValueStore} name used by service.
+     * Returns the key/value store name used by service.
+     *
+     * @return the {@link KeyValueStore} name used by service
      */
     String getKeyValueStore();
 
     /**
-     * Return a list of declared Bulk Operations. By design a Bulk Operation listen the stream of its own name.
+     * Returns a list of declared bulk actions. By design a bulk action listen the stream of its own name.
      *
-     * @return a list of declared Bulk Operations.
+     * @return a list of declared bulk actions
      */
-    List<String> getOperations();
+    List<String> getActions();
 
 }

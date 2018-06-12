@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ecm.automation.io.services.bulk;
 
+import static org.nuxeo.ecm.automation.core.operations.blob.BulkDownload.ID;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COMMAND;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COUNT;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_SUBMIT;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -36,20 +42,18 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
 
     public BulkJsonWriter() {
-        super("bulk", BulkStatus.class);
+        super(BULK_ENTITY_TYPE, BulkStatus.class);
     }
 
     @Override
     public void writeEntityBody(BulkStatus entity, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
-        jg.writeStringField("state", entity.getState().toString());
-        jg.writeStringField("creation", String.valueOf(entity.getCreationDate().toString()));
-        jg.writeStringField("repository", entity.getCommand().getRepository());
-        jg.writeStringField("operation", entity.getCommand().getOperation());
-        jg.writeStringField("username", entity.getCommand().getUsername());
-        jg.writeStringField("query", entity.getCommand().getQuery());
-        if (entity.getScrolledDocumentCount() != null) {
-            jg.writeNumberField("scrolledDocumentCount", entity.getScrolledDocumentCount().longValue());
+        jg.writeStringField(ID, entity.getId());
+        jg.writeStringField(BULK_STATE, entity.getState().toString());
+        jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime().toString());
+        jg.writeObjectField(BULK_COMMAND, entity.getCommand());
+        if (entity.getCount() != null) {
+            jg.writeNumberField(BULK_COUNT, entity.getCount().longValue());
         }
         jg.writeEndObject();
     }
