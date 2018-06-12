@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -278,7 +280,7 @@ public class WorkManagerTest {
         assertEquals(1 + initSyncEvntCount, WorkFailureEventListener.getCount());
 
         eventService.waitForAsyncCompletion();
-        
+
         assertEquals(1 + initCount, DummyPostCommitEventListener.handledCount());
         assertEquals(1 + initEvtCount, DummyPostCommitEventListener.eventCount());
     }
@@ -516,6 +518,24 @@ public class WorkManagerTest {
 
         assertTrue(service.awaitCompletion(2 * durationMS, TimeUnit.MILLISECONDS));
         assertMetrics(0, 0, 3, 0);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:test-shutdown-delay.xml")
+    public void testSleepDurationTakenIntoAccount() {
+        try {
+            String shutdownDelayAsString = Framework.getService(ConfigurationService.class)
+                                                    .getProperty(WorkManagerImpl.SHUTDOWN_DELAY_KEY, "0");
+            Integer shutdownDelay = Integer.parseInt(shutdownDelayAsString);
+            Work work = new SleepWork(100000);
+            service.schedule(work);
+            long start = System.currentTimeMillis();
+            service.shutdown(0, TimeUnit.SECONDS);
+            long shutdownDuration = System.currentTimeMillis() - start;
+            assertTrue(shutdownDuration > shutdownDelay);
+        } catch (InterruptedException e) {
+            fail();
+        }
     }
 
 }

@@ -63,6 +63,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
@@ -91,6 +92,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public static final String DEFAULT_CATEGORY = "default";
 
     protected static final String THREAD_PREFIX = "Nuxeo-Work-";
+
+    public static final String SHUTDOWN_DELAY_KEY = "nuxeo.work.shutdown.delay";
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -680,6 +683,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                     log.trace("suspending and rescheduling " + work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
+                }
+                // sleep for a given amount of time for works to have time to persist their state and stop properly
+                long shutDowndelay = Long.parseLong(Framework.getService(ConfigurationService.class)
+                                                             .getProperty(SHUTDOWN_DELAY_KEY, "0"));
+                if (shutDowndelay > 0) {
+                    Thread.sleep(shutDowndelay);
                 }
                 shutdownNow();
             } finally {
