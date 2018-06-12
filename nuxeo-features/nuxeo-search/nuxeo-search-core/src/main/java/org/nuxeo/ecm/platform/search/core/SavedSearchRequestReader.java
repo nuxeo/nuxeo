@@ -74,19 +74,4 @@ public class SavedSearchRequestReader extends EntityJsonReader<SavedSearchReques
         return new SavedSearchRequest(id, title, queryParams, params, query, queryLanguage, pageProviderName, pageSize,
                 currentPageIndex, maxResults, sortBy, sortOrder, contentViewData);
     }
-
-    protected Long getLongField(JsonNode jn, String elName) {
-        JsonNode elNode = jn.get(elName);
-        if (elNode != null && !elNode.isNull()) {
-            if (elNode.isNumber()) {
-                return elNode.longValue();
-            } else if (elNode.isTextual()) {
-                return Long.valueOf(elNode.textValue());
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
 }
