@@ -35,11 +35,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BulkComponent extends DefaultComponent implements BulkAdminService {
 
-    public static final String CONFIGURATION_XP = "configuration";
+    public static final String BULK_LOG_MANAGER_NAME = "bulk";
+
+    public static final String BULK_KV_STORE_NAME = "bulk";
 
     public static final String ACTIONS_XP = "actions";
-
-    protected Queue<BulkServiceDescriptor> configurationRegistry = new LinkedList<>();
 
     protected Queue<BulkActionDescriptor> actionsRegistry = new LinkedList<>();
 
@@ -62,9 +62,7 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_XP.equals(extensionPoint)) {
-            configurationRegistry.add((BulkServiceDescriptor) contribution);
-        } else if (ACTIONS_XP.equals(extensionPoint)) {
+        if (ACTIONS_XP.equals(extensionPoint)) {
             actionsRegistry.add((BulkActionDescriptor) contribution);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);
@@ -73,7 +71,7 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
 
     @Override
     public void start(ComponentContext context) {
-        bulkService = new BulkServiceImpl(getCurrentConfiguration());
+        bulkService = new BulkServiceImpl();
     }
 
     @Override
@@ -84,28 +82,16 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_XP.equals(extensionPoint)) {
-            configurationRegistry.remove(contribution);
+        if (ACTIONS_XP.equals(extensionPoint)) {
+            actionsRegistry.remove(contribution);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);
         }
     }
 
-    protected BulkServiceDescriptor getCurrentConfiguration() {
-        if (configurationRegistry.isEmpty()) {
-            throw new NuxeoException("BulkService must be configured through contribution");
-        }
-        return configurationRegistry.peek();
-    }
-
     // ---------------------
     // BulkAdminService part
     // ---------------------
-
-    @Override
-    public String getKeyValueStore() {
-        return getCurrentConfiguration().kvStore;
-    }
 
     @Override
     public List<String> getActions() {

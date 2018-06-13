@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.bulk;
 
 import java.util.List;
 
-import org.nuxeo.runtime.kv.KeyValueStore;
-
 /**
  * The Bulk admin service, it's an internal service in order to access configuration from Bulk Action Framework.
  *
@@ -29,13 +27,6 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  */
 // This service is needed by stream processors to create appropriate streams
 public interface BulkAdminService {
-
-    /**
-     * Returns the key/value store name used by service.
-     *
-     * @return the {@link KeyValueStore} name used by service
-     */
-    String getKeyValueStore();
 
     /**
      * Returns a list of declared bulk actions. By design a bulk action listen the stream of its own name.

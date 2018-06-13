@@ -6,8 +6,14 @@
     <logConfig name="default" type="kafka">
       <option name="kafkaConfig">default</option>
     </logConfig>
+    <logConfig name="bulk" type="kafka">
+      <option name="kafkaConfig">default</option>
+    </logConfig>
   <#else>
     <logConfig name="default" type="chronicle">
+      <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+    </logConfig>
+    <logConfig name="bulk" type="chronicle">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
     </logConfig>
   </#if>

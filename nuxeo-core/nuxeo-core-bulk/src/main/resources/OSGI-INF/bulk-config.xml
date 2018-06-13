@@ -3,14 +3,6 @@
 
   <require>org.nuxeo.runtime.stream.service</require>
 
-  <!-- Basic BulkService configuration -->
-  <extension target="org.nuxeo.ecm.core.bulk" point="configuration">
-    <bulkConfig>
-      <logConfig>bulk</logConfig>
-      <kvStore>bulk</kvStore>
-    </bulkConfig>
-  </extension>
-
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- Processor used by BulkService to scroll DB -->
     <streamProcessor name="bulkDocumentScroller" class="org.nuxeo.ecm.core.bulk.StreamBulkScroller"

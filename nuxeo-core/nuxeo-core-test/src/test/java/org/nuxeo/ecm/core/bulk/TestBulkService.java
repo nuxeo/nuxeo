@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 
 import java.math.BigInteger;
@@ -70,7 +71,7 @@ public class TestBulkService {
                                                         .withAction("count"));
         assertNotNull(bulkId);
 
-        LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
             for (int i = 1; i <= 10; i++) {
                 LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));

@@ -16,13 +16,6 @@
     <provide interface="org.nuxeo.ecm.core.bulk.BulkAdminService" />
   </service>
 
-  <extension-point name="configuration">
-    <documentation>
-      Allows to define the bulk service implementation.
-    </documentation>
-    <object class="org.nuxeo.ecm.core.bulk.BulkServiceDescriptor" />
-  </extension-point>
-
   <extension-point name="actions">
     <documentation>
       Allows to define the bulk actions
