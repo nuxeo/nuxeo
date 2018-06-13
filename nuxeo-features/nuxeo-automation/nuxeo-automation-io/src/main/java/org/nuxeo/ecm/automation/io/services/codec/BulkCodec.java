@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.io.services.codec;
 
+import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
+
 import org.nuxeo.ecm.automation.io.services.bulk.BulkJsonReader;
 import org.nuxeo.ecm.automation.io.services.bulk.BulkJsonWriter;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
@@ -28,7 +30,7 @@ import org.nuxeo.ecm.core.bulk.BulkStatus;
 public class BulkCodec extends AbstractMarshallingRegistryCodec<BulkStatus> {
 
     public BulkCodec() {
-        super(BulkStatus.class, "bulk", BulkJsonReader.class, BulkJsonWriter.class);
+        super(BulkStatus.class, BULK_ENTITY_TYPE, BulkJsonReader.class, BulkJsonWriter.class);
     }
 
 }

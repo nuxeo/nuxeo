@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATE;
@@ -77,7 +78,6 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
         // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
-        String kvStore = service.getKeyValueStore();
         List<String> actions = service.getActions();
         List<String> mapping = new ArrayList<>();
         mapping.add("i1:" + SET_STREAM_NAME);
@@ -88,7 +88,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         }
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, actions.size(), kvStore,
+                               () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, actions.size(),
                                        scrollBatchSize, scrollKeepAliveSeconds), //
                                mapping)
                        .build();
@@ -96,16 +96,13 @@ public class StreamBulkScroller implements StreamProcessorTopology {
 
     public static class BulkDocumentScrollerComputation extends AbstractComputation {
 
-        protected final String kvStoreName;
-
         protected final int scrollBatchSize;
 
         protected final int scrollKeepAliveSeconds;
 
-        public BulkDocumentScrollerComputation(String name, int nbOutputStreams, String kvStoreName,
-                int scrollBatchSize, int scrollKeepAliveSeconds) {
+        public BulkDocumentScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize,
+                int scrollKeepAliveSeconds) {
             super(name, 1, nbOutputStreams);
-            this.kvStoreName = kvStoreName;
             this.scrollBatchSize = scrollBatchSize;
             this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
         }
@@ -116,7 +113,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         }
 
         protected void processRecord(ComputationContext context, Record record) {
-            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(kvStoreName);
+            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
             try {
                 String bulkId = record.getKey();
                 BulkCommand command = getBulkCommandJson(record.getData());
