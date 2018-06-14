@@ -33,8 +33,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -73,6 +78,9 @@ public class TestManualIndexing {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected BlobManager manager;
 
     @Inject
     ElasticSearchAdmin esa;
@@ -131,6 +139,36 @@ public class TestManualIndexing {
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "Testme")));
         searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void shouldHandleMissingBlob() throws Exception {
+
+        // Create the document with a string blob
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "myBlobFile", "File");
+        doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc.setPropertyValue("dc:title", "myBlob");
+        Blob fb = Blobs.createBlob("Not worth it", "image/jpeg");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // Remove the binary
+        BlobProperty blobProperty = (BlobProperty) doc.getProperty("file:content");
+        String blobDigest = (String) blobProperty.getValue("digest");
+        manager.getBlobProvider(session.getRepositoryName())
+               .getBinaryManager()
+               .getBinary(blobDigest)
+               .getFile()
+               .delete();
+
+        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
+        esi.indexNonRecursive(cmd);
+        assertNumberOfCommandProcessed(1);
+
+        esi.indexNonRecursive(Arrays.asList(cmd, cmd));
+        assertNumberOfCommandProcessed(3);
     }
 
     @Test
