@@ -53,7 +53,7 @@ timestamps {
         }
 
         stage('compile') {
-            timeout(time: 1, unit: 'HOURS') {
+            timeout(time: 2, unit: 'HOURS') {
                 withBuildStatus('ondemand/2-compile', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
                     withMaven() {
                         sh 'mvn -nsu -B test-compile -Pqa,addons,distrib -DskipTests'
@@ -63,7 +63,7 @@ timestamps {
         }
 
         stage('test') {
-            timeout(time: 1, unit: 'HOURS') {
+            timeout(time: 2, unit: 'HOURS') {
                 withBuildStatus('ondemand/3-test', 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
                     withMaven() { 
                         sh 'mvn -nsu -B test -Pqa,addons,distrib -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT'
