@@ -23,6 +23,7 @@ import java.io.IOException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -56,6 +57,7 @@ public class HttpClient {
     public static String get(String url) throws IOException {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
+            request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             try (CloseableHttpResponse response = client.execute(request)) {
                 HttpEntity entity = response.getEntity();
                 return entity != null ? EntityUtils.toString(entity) : null;
@@ -69,6 +71,7 @@ public class HttpClient {
         }
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpGetWithEntity request = new HttpGetWithEntity(url);
+            request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             request.setEntity(
                     new StringEntity(payload, ContentType.create(MediaType.APPLICATION_FORM_URLENCODED, UTF8_CHARSET)));
             try (CloseableHttpResponse response = client.execute(request)) {

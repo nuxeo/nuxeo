@@ -188,16 +188,19 @@ public class TestHighlight {
         Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(
                 PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(1, highlights.size());
-        assertEquals(3, highlights.get("ecm:binarytext").size());
+        assertEquals(4, highlights.get("ecm:binarytext").size());
         assertEquals(
-                " neque dui egestas sit amet nibh eget maximus <em>vehicula</em> nisi aenean non eros id mauris imperdiet",
+                "sit amet aenean vel euismod risus eu rhoncus erat nulla neque dui egestas sit amet nibh eget maximus <em>vehicula</em>",
                 highlights.get("ecm:binarytext").get(0));
         assertEquals(
-                " lobortis quis nunc nam eu est nunc proin ac libero <em>vehicula</em> mollis turpis quis tempus sem donec <em>vehicula</em>",
+                "mauris aenean quam risus vestibulum sed mattis ac lobortis quis nunc nam eu est nunc proin ac libero <em>vehicula</em>",
                 highlights.get("ecm:binarytext").get(1));
         assertEquals(
-                " morbi at suscipit augue morbi tincidunt eros eu rutrum semper nam auctor enim vel lacinia <em>vehicula</em> leo",
+                "mollis turpis quis tempus sem donec <em>vehicula</em> ante eget porttitor hendrerit orci nibh rhoncus turpis",
                 highlights.get("ecm:binarytext").get(2));
+        assertEquals(
+                "congue posuere morbi at suscipit augue morbi tincidunt eros eu rutrum semper nam auctor enim vel lacinia <em>vehicula</em>",
+                highlights.get("ecm:binarytext").get(3));
 
     }
 

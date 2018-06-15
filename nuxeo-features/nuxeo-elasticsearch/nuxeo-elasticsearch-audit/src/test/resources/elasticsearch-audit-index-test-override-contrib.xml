@@ -21,18 +21,18 @@
                 "json": {
                   "properties": {
                     "k1": {
-                      "type": "string"
+                      "type": "keyword"
                     },
                     "k2": {
-                      "type": "string"
+                      "type": "keyword"
                     },
                     "k3": {
                       "properties": {
                         "k4": {
-                          "type": "string"
+                          "type": "keyword"
                         },
                         "k5": {
-                          "type": "string"
+                          "type": "keyword"
                         }
                       }
                     }
@@ -41,10 +41,10 @@
                 "json2": {
                   "properties": {
                     "t1": {
-                      "type": "string"
+                      "type": "keyword"
                     },
                     "t2": {
-                      "type": "string"
+                      "type": "keyword"
                     }
                   }
                 }

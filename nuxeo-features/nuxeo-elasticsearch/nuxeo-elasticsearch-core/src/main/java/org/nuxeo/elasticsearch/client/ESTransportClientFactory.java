@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
@@ -77,7 +77,7 @@ public class ESTransportClientFactory implements ESClientFactory {
                 log.debug("Add transport address: " + item);
                 try {
                     InetAddress inet = InetAddress.getByName(address[0]);
-                    client.addTransportAddress(new InetSocketTransportAddress(inet, Integer.parseInt(address[1])));
+                    client.addTransportAddress(new TransportAddress(inet, Integer.parseInt(address[1])));
                 } catch (UnknownHostException e) {
                     log.error("Unable to resolve host " + address[0], e);
                 }

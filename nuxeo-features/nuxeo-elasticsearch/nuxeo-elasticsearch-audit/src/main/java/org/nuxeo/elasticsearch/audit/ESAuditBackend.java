@@ -19,6 +19,7 @@
  */
 package org.nuxeo.elasticsearch.audit;
 
+import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
@@ -61,7 +62,6 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryParseContext;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchModule;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -344,8 +344,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected SearchRequest createSearchRequest() {
-        return new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                                                  .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        return new SearchRequest(getESIndexName()).searchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
@@ -376,8 +375,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchModule searchModule = new SearchModule(Settings.EMPTY, false, Collections.emptyList());
         try {
             try (XContentParser parser = XContentFactory.xContent(XContentType.JSON).createParser(
-                    new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
-                searchSourceBuilder.parseXContent(new QueryParseContext(parser));
+                    new NamedXContentRegistry(searchModule.getNamedXContents()), THROW_UNSUPPORTED_OPERATION, query)) {
+                searchSourceBuilder.parseXContent(parser);
             }
         } catch (IOException | ParsingException e) {
             log.error("Invalid query: " + query + ": " + e.getMessage(), e);
@@ -514,7 +513,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     @Override
     public Long getEventsCount(String eventId) {
         SearchResponse res = esClient.search(
-                new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE).source(
+                new SearchRequest(getESIndexName()).source(
                         new SearchSourceBuilder().query(
                                 QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("eventId", eventId)))
                                                  .size(0)));

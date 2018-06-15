@@ -7,7 +7,6 @@
 
       <settings>
         {
-        "mapping.single_type": true,
         "number_of_shards" : 1,
         "auto_expand_replicas" : "0-all"
         }

@@ -6,7 +6,6 @@
   "number_of_shards": "1",
   "number_of_replicas": "0",
 </#if>
-  "mapping.single_type": true,
   "analysis": {
     "filter": {
       "truncate_filter": {

@@ -14,8 +14,7 @@
              "must": {
                "match": {
                   "docPath": {
-                    "query": "/dummy",
-                    "type": "boolean"
+                    "query": "/dummy"
                   }
                }
              },
@@ -62,7 +61,6 @@
               "must": {
                 "match": {
                   "docPath": {
-                    "type": "boolean",
                     "query": "/withParams"
                   }
                 }
@@ -84,8 +82,7 @@
             "must" : {
               "match" : {
                 "docUUID" : {
-                  "query" : "?",
-                  "type" : "boolean"
+                  "query" : "?"
                 }
               }
             }

@@ -69,6 +69,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import static org.junit.Assert.assertTrue;
+
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml")
@@ -101,7 +103,7 @@ public class TestAggregates {
         TransactionHelper.commitOrRollbackTransaction();
         // wait for async jobs
         WorkManager wm = Framework.getService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(60, TimeUnit.SECONDS));
+        assertTrue(wm.awaitCompletion(60, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         esa.refresh();
         TransactionHelper.startTransaction();
@@ -126,51 +128,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"source_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"source\" : {\n" +
-                        "          \"terms\" : {\n" +
-                        "            \"field\" : \"dc:source\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 10,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"show_term_doc_count_error\" : false,\n" +
-                        "            \"order\" : [\n" +
-                        "              {\n" +
-                        "                \"_count\" : \"asc\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"_term\" : \"asc\"\n" +
-                        "              }\n" +
-                        "            ],\n" +
-                        "            \"include\" : \"bar*\",\n" +
-                        "            \"exclude\" : \"foo*\"\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"asc\"},{\"_key\":\"asc\"}],\"include\":\"bar*\",\"exclude\":\"foo*\"}}}}}}", //
                 request.toString());
     }
 
@@ -186,49 +144,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"fulltext_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"fulltext\" : {\n" +
-                        "          \"terms\" : {\n" +
-                        "            \"field\" : \"all_field\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 1,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"show_term_doc_count_error\" : false,\n" +
-                        "            \"order\" : [\n" +
-                        "              {\n" +
-                        "                \"_count\" : \"desc\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"_term\" : \"asc\"\n" +
-                        "              }\n" +
-                        "            ]\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"fulltext_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"fulltext\":{\"terms\":{\"field\":\"all_field\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
                 request.toString());
     }
 
@@ -247,42 +163,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"source_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"source\" : {\n" +
-                        "          \"significant_terms\" : {\n" +
-                        "            \"field\" : \"dc:source\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 10,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"jlh\" : { }\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
@@ -305,53 +186,7 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"source_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"source\" : {\n" +
-                        "          \"range\" : {\n" +
-                        "            \"field\" : \"common:size\",\n" +
-                        "            \"ranges\" : [\n" +
-                        "              {\n" +
-                        "                \"key\" : \"small\",\n" +
-                        "                \"to\" : 2048.0\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"key\" : \"medium\",\n" +
-                        "                \"from\" : 2048.0,\n" +
-                        "                \"to\" : 6144.0\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"key\" : \"big\",\n" +
-                        "                \"from\" : 6144.0\n" +
-                        "              }\n" +
-                        "            ],\n" +
-                        "            \"keyed\" : false\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"range\":{\"field\":\"common:size\",\"ranges\":[{\"key\":\"small\",\"to\":2048.0},{\"key\":\"medium\",\"from\":2048.0,\"to\":6144.0},{\"key\":\"big\",\"from\":6144.0}],\"keyed\":false}}}}}}",
                 request.toString());
     }
 
@@ -373,54 +208,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"created_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"created\" : {\n" +
-                        "          \"date_range\" : {\n" +
-                        "            \"field\" : \"dc:created\",\n" +
-                        "            \"ranges\" : [\n" +
-                        "              {\n" +
-                        "                \"key\" : \"10monthAgo\",\n" +
-                        "                \"to\" : \"now-10M/M\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"key\" : \"1monthAgo\",\n" +
-                        "                \"from\" : \"now-10M/M\",\n" +
-                        "                \"to\" : \"now-1M/M\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"key\" : \"thisMonth\",\n" +
-                        "                \"from\" : \"now-1M/M\"\n" +
-                        "              }\n" +
-                        "            ],\n" +
-                        "            \"keyed\" : false\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_range\":{\"field\":\"dc:created\",\"ranges\":[{\"key\":\"10monthAgo\",\"to\":\"now-10M/M\"},{\"key\":\"1monthAgo\",\"from\":\"now-10M/M\",\"to\":\"now-1M/M\"},{\"key\":\"thisMonth\",\"from\":\"now-1M/M\"}],\"keyed\":false}}}}}}",
                 request.toString());
     }
 
@@ -438,49 +226,7 @@ public class TestAggregates {
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"size_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"size\" : {\n" +
-                        "          \"histogram\" : {\n" +
-                        "            \"field\" : \"common:size\",\n" +
-                        "            \"interval\" : 1024.0,\n" +
-                        "            \"offset\" : 0.0,\n" +
-                        "            \"order\" : {\n" +
-                        "              \"_key\" : \"asc\"\n" +
-                        "            },\n" +
-                        "            \"keyed\" : false,\n" +
-                        "            \"min_doc_count\" : 0,\n" +
-                        "            \"extended_bounds\" : {\n" +
-                        "              \"min\" : 0.0,\n" +
-                        "              \"max\" : 10240.0\n" +
-                        "            }\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
                 request.toString());
     }
 
@@ -502,76 +248,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"post_filter\" : {\n" +
-                        "    \"bool\" : {\n" +
-                        "      \"must\" : [\n" +
-                        "        {\n" +
-                        "          \"bool\" : {\n" +
-                        "            \"should\" : [\n" +
-                        "              {\n" +
-                        "                \"range\" : {\n" +
-                        "                  \"dc:created\" : {\n" +
-                        "                    \"from\" : 1470009600000,\n" +
-                        "                    \"to\" : 1472688000000,\n" +
-                        "                    \"include_lower\" : true,\n" +
-                        "                    \"include_upper\" : false,\n" +
-                        "                    \"format\" : \"epoch_millis\",\n" +
-                        "                    \"boost\" : 1.0\n" +
-                        "                  }\n" +
-                        "                }\n" +
-                        "              }\n" +
-                        "            ],\n" +
-                        "            \"disable_coord\" : false,\n" +
-                        "            \"adjust_pure_negative\" : true,\n" +
-                        "            \"boost\" : 1.0\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"disable_coord\" : false,\n" +
-                        "      \"adjust_pure_negative\" : true,\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"created_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"created\" : {\n" +
-                        "          \"date_histogram\" : {\n" +
-                        "            \"field\" : \"dc:created\",\n" +
-                        "            \"format\" : \"yyy-MM\",\n" +
-                        "            \"time_zone\" : \"UTC\",\n" +
-                        "            \"interval\" : \"month\",\n" +
-                        "            \"offset\" : 0,\n" +
-                        "            \"order\" : {\n" +
-                        "              \"_count\" : \"desc\"\n" +
-                        "            },\n" +
-                        "            \"keyed\" : false,\n" +
-                        "            \"min_doc_count\" : 0\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"dc:created\":{\"from\":1470009600000,\"to\":1472688000000,\"include_lower\":true,\"include_upper\":false,\"format\":\"epoch_millis\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"format\":\"yyy-MM\",\"time_zone\":\"UTC\",\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}",
                 request.toString());
     }
 
@@ -589,48 +266,9 @@ public class TestAggregates {
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
-
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"created_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"created\" : {\n" +
-                        "          \"date_histogram\" : {\n" +
-                        "            \"field\" : \"dc:created\",\n" +
-                        "            \"time_zone\" : \"" + DateTimeZone.getDefault().getID() +"\",\n" +
-                        "            \"interval\" : \"month\",\n" +
-                        "            \"offset\" : 0,\n" +
-                        "            \"order\" : {\n" +
-                        "              \"_count\" : \"desc\"\n" +
-                        "            },\n" +
-                        "            \"keyed\" : false,\n" +
-                        "            \"min_doc_count\" : 0\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
-                request.toString());
+        // The request will use the JVM time_zone
+        assertTrue(request.toString(), request.toString().startsWith("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
+        assertTrue(request.toString(), request.toString().endsWith("\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}"));
     }
 
     @Test
@@ -661,107 +299,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"post_filter\" : {\n" +
-                        "    \"bool\" : {\n" +
-                        "      \"must\" : [\n" +
-                        "        {\n" +
-                        "          \"terms\" : {\n" +
-                        "            \"dc:source\" : [\n" +
-                        "              \"foo\",\n" +
-                        "              \"bar\"\n" +
-                        "            ],\n" +
-                        "            \"boost\" : 1.0\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"disable_coord\" : false,\n" +
-                        "      \"adjust_pure_negative\" : true,\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"source_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"source\" : {\n" +
-                        "          \"terms\" : {\n" +
-                        "            \"field\" : \"dc:source\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 1,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"show_term_doc_count_error\" : false,\n" +
-                        "            \"order\" : [\n" +
-                        "              {\n" +
-                        "                \"_count\" : \"desc\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"_term\" : \"asc\"\n" +
-                        "              }\n" +
-                        "            ]\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    },\n" +
-                        "    \"nature_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"bool\" : {\n" +
-                        "          \"must\" : [\n" +
-                        "            {\n" +
-                        "              \"terms\" : {\n" +
-                        "                \"dc:source\" : [\n" +
-                        "                  \"foo\",\n" +
-                        "                  \"bar\"\n" +
-                        "                ],\n" +
-                        "                \"boost\" : 1.0\n" +
-                        "              }\n" +
-                        "            }\n" +
-                        "          ],\n" +
-                        "          \"disable_coord\" : false,\n" +
-                        "          \"adjust_pure_negative\" : true,\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"nature\" : {\n" +
-                        "          \"terms\" : {\n" +
-                        "            \"field\" : \"dc:nature\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 1,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"show_term_doc_count_error\" : false,\n" +
-                        "            \"order\" : [\n" +
-                        "              {\n" +
-                        "                \"_count\" : \"desc\"\n" +
-                        "              },\n" +
-                        "              {\n" +
-                        "                \"_term\" : \"asc\"\n" +
-                        "              }\n" +
-                        "            ]\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}},\"nature_filter\":{\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"aggregations\":{\"nature\":{\"terms\":{\"field\":\"dc:nature\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
                 request.toString());
     }
 
@@ -780,42 +318,7 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows(
-                "{\n" +
-                        "  \"from\" : 0,\n" +
-                        "  \"size\" : 10,\n" +
-                        "  \"query\" : {\n" +
-                        "    \"match_all\" : {\n" +
-                        "      \"boost\" : 1.0\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"_source\" : {\n" +
-                        "    \"includes\" : [\n" +
-                        "      \"_id\"\n" +
-                        "    ],\n" +
-                        "    \"excludes\" : [ ]\n" +
-                        "  },\n" +
-                        "  \"aggregations\" : {\n" +
-                        "    \"source_filter\" : {\n" +
-                        "      \"filter\" : {\n" +
-                        "        \"match_all\" : {\n" +
-                        "          \"boost\" : 1.0\n" +
-                        "        }\n" +
-                        "      },\n" +
-                        "      \"aggregations\" : {\n" +
-                        "        \"source\" : {\n" +
-                        "          \"significant_terms\" : {\n" +
-                        "            \"field\" : \"prefix:foo.bar\",\n" +
-                        "            \"size\" : 10,\n" +
-                        "            \"min_doc_count\" : 10,\n" +
-                        "            \"shard_min_doc_count\" : 0,\n" +
-                        "            \"jlh\" : { }\n" +
-                        "          }\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "}", //
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"prefix:foo.bar\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
