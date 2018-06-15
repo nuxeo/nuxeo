@@ -43,7 +43,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Tests the indexing of proxies
  */
-public class ProxiesIndexingTest {
+public class TestProxiesIndexing {
     @Inject
     protected CoreSession coreSession;
 
