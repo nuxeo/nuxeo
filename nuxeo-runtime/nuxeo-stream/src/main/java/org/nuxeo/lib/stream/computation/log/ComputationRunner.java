@@ -122,6 +122,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     public void stop() {
         log.debug(metadata.name() + ": Receives Stop signal");
         stop = true;
+        if (computation != null) {
+            computation.signalStop();
+        }
     }
 
     public void drain() {

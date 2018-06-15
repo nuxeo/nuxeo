@@ -68,4 +68,17 @@ public interface Computation {
      * @return computation's metadata.
      */
     ComputationMetadata metadata();
+
+    /**
+     * A hook to inform that computation will be soon destroyed. It gives a way for long processing to cooperate to a
+     * quick shutdown. <br>
+     * This method is not invoked from the computation thread, it should only set some volatile flag and returns
+     * immediately.
+     * 
+     * @since 10.2
+     */
+    @SuppressWarnings("EmptyMethod")
+    default void signalStop() {
+
+    }
 }
