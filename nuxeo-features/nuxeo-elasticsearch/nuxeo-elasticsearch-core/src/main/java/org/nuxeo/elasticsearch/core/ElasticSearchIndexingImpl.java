@@ -422,7 +422,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             JsonFactory factory = new JsonFactory();
             OutputStream out = new BytesStreamOutput();
-            JsonGenerator jsonGen = factory.createJsonGenerator(out);
+            JsonGenerator jsonGen = factory.createGenerator(out);
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             IndexRequest request = new IndexRequest(getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).source(jsonBuilder(out));

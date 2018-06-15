@@ -197,11 +197,11 @@ public class TestMapping {
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
         doc.setPropertyValue("dc:title", "FooBar12 test");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         doc = session.createDocumentModel("/", "testDoc2", "File");
         doc.setPropertyValue("dc:title", "foobar42");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();

@@ -7,7 +7,6 @@
   "number_of_shards": "1",
   "number_of_replicas": "0",
 </#if>
-  "mapping.single_type": true,
   "analysis": {
     "filter": {
       "truncate_filter": {
@@ -64,7 +63,7 @@
       "ngram_tokenizer": {
         "type": "nGram",
         "min_gram": 3,
-        "max_gram": 12
+        "max_gram": 4
       }
     },
     "analyzer": {

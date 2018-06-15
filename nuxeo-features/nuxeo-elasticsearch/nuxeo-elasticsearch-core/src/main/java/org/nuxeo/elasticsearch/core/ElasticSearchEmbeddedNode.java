@@ -21,17 +21,12 @@ package org.nuxeo.elasticsearch.core;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.BindException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
@@ -86,7 +81,9 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         Settings settings = buidler.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
 
-        Collection<Class<? extends Plugin>> plugins = Collections.singletonList(Netty4Plugin.class);
+        Collection<Class<? extends Plugin>> plugins = new HashSet<>();
+        plugins.add(Netty4Plugin.class);
+        plugins.add(CommonAnalysisPlugin.class);
         try {
             node = new PluginConfigurableNode(settings, plugins);
             node.start();
@@ -127,21 +124,8 @@ public class ElasticSearchEmbeddedNode implements Closeable {
     public void close() throws IOException {
         log.info("Closing embedded (in JVM) Elasticsearch");
         node.close();
-        // TODO: should we delete the lock ?
-        // deleteLuceneFileLock(config.getDataPath());
         log.info("Node closed: " + node.isClosed());
         node = null;
-    }
-
-    protected void deleteLuceneFileLock(String root) throws IOException {
-        try (Stream<Path> files = Files.walk(Paths.get(root))) {
-            List<Path> locks = files.filter(f -> f.getFileName().toString().equals("node.lock"))
-                                    .collect(Collectors.toList());
-            if (!locks.isEmpty()) {
-                locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
-                locks.forEach(f -> f.toFile().delete());
-            }
-        }
     }
 
     public ElasticSearchEmbeddedServerConfig getConfig() {

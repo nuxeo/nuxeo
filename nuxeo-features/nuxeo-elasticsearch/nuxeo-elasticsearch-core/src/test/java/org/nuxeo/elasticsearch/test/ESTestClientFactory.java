@@ -84,7 +84,7 @@ public class ESTestClientFactory implements ESClientFactory {
     }
 
     protected void addOptions(ElasticSearchClientConfig config) {
-        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY);
+        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY, "localhost:9300");
         if (addressList != null) {
             config.options.put("addressList", addressList);
         }

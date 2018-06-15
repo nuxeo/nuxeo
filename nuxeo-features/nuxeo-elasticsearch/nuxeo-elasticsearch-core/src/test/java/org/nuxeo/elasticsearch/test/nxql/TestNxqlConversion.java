@@ -194,7 +194,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -220,7 +219,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -259,7 +257,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -283,7 +280,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -327,7 +323,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -376,7 +371,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -479,7 +473,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -504,7 +497,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -563,7 +555,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -601,7 +592,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -647,7 +637,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -703,7 +692,7 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
+
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -721,7 +710,7 @@ public class TestNxqlConversion {
                 "    \"filter\" : {\n" +
                 "      \"term\" : {\n" +
                 "        \"ecm:isVersion\" : {\n" +
-                "          \"value\" : \"1\",\n" +
+                "          \"value\" : \"true\",\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
@@ -749,8 +738,11 @@ public class TestNxqlConversion {
                 "    \"analyzer\" : \"fulltext\",\n" +
                 "    \"flags\" : -1,\n" +
                 "    \"default_operator\" : \"and\",\n" +
-                "    \"lenient\" : false,\n" +
                 "    \"analyze_wildcard\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
@@ -766,8 +758,11 @@ public class TestNxqlConversion {
                 "    \"analyzer\" : \"fulltext\",\n" +
                 "    \"flags\" : -1,\n" +
                 "    \"default_operator\" : \"and\",\n" +
-                "    \"lenient\" : false,\n" +
                 "    \"analyze_wildcard\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
@@ -788,13 +783,15 @@ public class TestNxqlConversion {
                 "              \"analyzer\" : \"fulltext\",\n" +
                 "              \"flags\" : -1,\n" +
                 "              \"default_operator\" : \"and\",\n" +
-                "              \"lenient\" : false,\n" +
                 "              \"analyze_wildcard\" : false,\n" +
+                "              \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "              \"fuzzy_prefix_length\" : 0,\n" +
+                "              \"fuzzy_max_expansions\" : 50,\n" +
+                "              \"fuzzy_transpositions\" : true,\n" +
                 "              \"boost\" : 1.0\n" +
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -821,8 +818,11 @@ public class TestNxqlConversion {
                 "    \"analyzer\" : \"fulltext\",\n" +
                 "    \"flags\" : -1,\n" +
                 "    \"default_operator\" : \"or\",\n" +
-                "    \"lenient\" : false,\n" +
                 "    \"analyze_wildcard\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
@@ -864,7 +864,6 @@ public class TestNxqlConversion {
                 + "            }\n" //
                 + "          }\n" //
                 + "        ],\n" //
-                + "        \"disable_coord\" : false,\n" //
                 + "        \"adjust_pure_negative\" : true,\n" //
                 + "        \"boost\" : 1.0\n" //
                 + "      }\n" //
@@ -921,7 +920,6 @@ public class TestNxqlConversion {
                 + "            }\n" //
                 + "          }\n" //
                 + "        ],\n" //
-                + "        \"disable_coord\" : false,\n" //
                 + "        \"adjust_pure_negative\" : true,\n" //
                 + "        \"boost\" : 1.0\n" //
                 + "      }\n" //
@@ -964,7 +962,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1000,7 +997,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1050,7 +1046,6 @@ public class TestNxqlConversion {
                 "              }\n" +
                 "            }\n" +
                 "          ],\n" +
-                "          \"disable_coord\" : false,\n" +
                 "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
@@ -1069,7 +1064,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1107,7 +1101,6 @@ public class TestNxqlConversion {
                 "              }\n" +
                 "            }\n" +
                 "          ],\n" +
-                "          \"disable_coord\" : false,\n" +
                 "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
@@ -1126,7 +1119,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1180,13 +1172,11 @@ public class TestNxqlConversion {
                 "                    }\n" +
                 "                  }\n" +
                 "                ],\n" +
-                "                \"disable_coord\" : false,\n" +
                 "                \"adjust_pure_negative\" : true,\n" +
                 "                \"boost\" : 1.0\n" +
                 "              }\n" +
                 "            }\n" +
                 "          ],\n" +
-                "          \"disable_coord\" : false,\n" +
                 "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
@@ -1204,7 +1194,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1394,7 +1383,6 @@ public class TestNxqlConversion {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -1438,7 +1426,6 @@ public class TestNxqlConversion {
                 "            }\n" +
                 "          }\n" +
                 "        ],\n" +
-                "        \"disable_coord\" : false,\n" +
                 "        \"adjust_pure_negative\" : true,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
@@ -1464,6 +1451,7 @@ public class TestNxqlConversion {
                 "      \"fuzzy_transpositions\" : true,\n" +
                 "      \"lenient\" : false,\n" +
                 "      \"zero_terms_query\" : \"NONE\",\n" +
+                "      \"auto_generate_synonyms_phrase_query\" : true,\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -1475,6 +1463,7 @@ public class TestNxqlConversion {
                 "    \"dc:title\" : {\n" +
                 "      \"query\" : \"foo\",\n" +
                 "      \"slop\" : 0,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
                 "      \"boost\" : 1.0\n" +
                 "    }\n" +
                 "  }\n" +
@@ -1509,8 +1498,9 @@ public class TestNxqlConversion {
                         "    \"slop\" : 0,\n" +
                         "    \"prefix_length\" : 0,\n" +
                         "    \"max_expansions\" : 50,\n" +
-                        "    \"lenient\" : false,\n" +
                         "    \"zero_terms_query\" : \"NONE\",\n" +
+                        "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                        "    \"fuzzy_transpositions\" : true,\n" +
                         "    \"boost\" : 1.0\n" +
                         "  }\n" +
                         "}",
@@ -1571,8 +1561,11 @@ public class TestNxqlConversion {
                 "    ],\n" +
                 "    \"flags\" : -1,\n" +
                 "    \"default_operator\" : \"or\",\n" +
-                "    \"lenient\" : false,\n" +
                 "    \"analyze_wildcard\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
@@ -1588,11 +1581,9 @@ public class TestNxqlConversion {
                 "      \"dc:description^1.0\",\n" +
                 "      \"dc:title^1.0\"\n" +
                 "    ],\n" +
-                "    \"use_dis_max\" : true,\n" +
-                "    \"tie_breaker\" : 0.0,\n" +
+                "    \"type\" : \"best_fields\",\n" +
                 "    \"default_operator\" : \"or\",\n" +
                 "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"auto_generate_phrase_queries\" : false,\n" +
                 "    \"max_determinized_states\" : 10000,\n" +
                 "    \"enable_position_increments\" : true,\n" +
                 "    \"fuzziness\" : \"AUTO\",\n" +
@@ -1600,7 +1591,8 @@ public class TestNxqlConversion {
                 "    \"fuzzy_max_expansions\" : 50,\n" +
                 "    \"phrase_slop\" : 0,\n" +
                 "    \"escape\" : false,\n" +
-                "    \"split_on_whitespace\" : true,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
@@ -1611,7 +1603,6 @@ public class TestNxqlConversion {
                 "  \"common\" : {\n" +
                 "    \"dc:title\" : {\n" +
                 "      \"query\" : \"this is bonsai cool\",\n" +
-                "      \"disable_coord\" : true,\n" +
                 "      \"high_freq_operator\" : \"OR\",\n" +
                 "      \"low_freq_operator\" : \"OR\",\n" +
                 "      \"cutoff_frequency\" : 0.01,\n" +
@@ -1663,14 +1654,17 @@ public class TestNxqlConversion {
                         "  \"simple_query_string\" : {\n" +
                         "    \"query\" : \"foo\",\n" +
                         "    \"fields\" : [\n" +
-                        "      \"dc:description.fulltext^1.0\",\n" +
-                        "      \"dc:title.fulltext^3^1.0\"\n" +
+                        "      \"dc:title.fulltext^3^1.0\",\n" +
+                        "      \"dc:description.fulltext^1.0\"\n" +
                         "    ],\n" +
                         "    \"analyzer\" : \"fulltext\",\n" +
                         "    \"flags\" : -1,\n" +
                         "    \"default_operator\" : \"and\",\n" +
-                        "    \"lenient\" : false,\n" +
                         "    \"analyze_wildcard\" : false,\n" +
+                        "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                        "    \"fuzzy_prefix_length\" : 0,\n" +
+                        "    \"fuzzy_max_expansions\" : 50,\n" +
+                        "    \"fuzzy_transpositions\" : true,\n" +
                         "    \"boost\" : 1.0\n" +
                         "  }\n" +
                         "}",
@@ -1761,73 +1755,6 @@ public class TestNxqlConversion {
                 "        \"distance\" : 20000.0,\n" +
                 "        \"distance_type\" : \"arc\",\n" +
                 "        \"validation_method\" : \"STRICT\",\n" +
-                "        \"ignore_unmapped\" : false,\n" +
-                "        \"boost\" : 1.0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
-                "}", es);
-
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */"
-                + "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"geo_distance_range\" : {\n" +
-                "        \"osm:location\" : [\n" +
-                "          -74.1,\n" +
-                "          40.73\n" +
-                "        ],\n" +
-                "        \"from\" : \"500m\",\n" +
-                "        \"to\" : \"20km\",\n" +
-                "        \"include_lower\" : true,\n" +
-                "        \"include_upper\" : true,\n" +
-                "        \"unit\" : \"m\",\n" +
-                "        \"distance_type\" : \"arc\",\n" +
-                "        \"validation_method\" : \"STRICT\",\n" +
-                "        \"ignore_unmapped\" : false,\n" +
-                "        \"boost\" : 1.0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
-                "}", es);
-
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */"
-                + "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"geo_distance_range\" : {\n" +
-                "        \"osm:location\" : [\n" +
-                "          -74.1,\n" +
-                "          40.73\n" +
-                "        ],\n" +
-                "        \"from\" : \"500m\",\n" +
-                "        \"to\" : \"20km\",\n" +
-                "        \"include_lower\" : true,\n" +
-                "        \"include_upper\" : true,\n" +
-                "        \"unit\" : \"m\",\n" +
-                "        \"distance_type\" : \"arc\",\n" +
-                "        \"validation_method\" : \"STRICT\",\n" +
-                "        \"ignore_unmapped\" : false,\n" +
-                "        \"boost\" : 1.0\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
-                "}", es);
-
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_hash_cell) */"
-                + "osm:location IN ('40.73, -74.1', '2')").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"geohash_cell\" : {\n" +
-                "        \"neighbors\" : false,\n" +
-                "        \"precision\" : 10,\n" +
-                "        \"osm:location\" : \"dr5r9ydj2y73\",\n" +
                 "        \"ignore_unmapped\" : false,\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +

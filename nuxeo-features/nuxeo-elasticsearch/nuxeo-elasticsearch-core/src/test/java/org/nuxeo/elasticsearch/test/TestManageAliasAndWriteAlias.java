@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;
 
@@ -52,14 +53,14 @@ public class TestManageAliasAndWriteAlias {
     protected ElasticSearchAdmin esa;
 
     @Test
-    public void testClientAliasMethods() throws Exception {
+    public void testClientAliasMethods() {
         ESClient client = esa.getClient();
         assertFalse("Expecting alias does not exist", client.aliasExists("unknown-name"));
         assertFalse("Expecting alias does not exist", client.indexExists("unknown-name"));
 
         String index = "a-test-index";
         assertFalse(client.indexExists(index));
-        client.createIndex(index, "");
+        client.createIndex(index, "{}");
         assertTrue(client.indexExists(index));
         assertFalse(client.aliasExists(index));
 
@@ -70,15 +71,20 @@ public class TestManageAliasAndWriteAlias {
         assertTrue(client.indexExists(alias));
 
         assertEquals(index, client.getFirstIndexForAlias(alias));
-
-        client.deleteIndex(alias, 10);
+        try {
+            client.deleteIndex(alias, 10);
+            fail("Deleting an alias is not possible in 6.0 you must delete the index");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        client.deleteIndex(index, 10);
         assertFalse(client.indexExists(alias));
         assertFalse(client.aliasExists(alias));
         assertFalse(client.indexExists(index));
     }
 
     @Test
-    public void testDefaultIndex() throws Exception {
+    public void testDefaultIndex() {
         // default contrib one single index no alias
         String repo = esa.getRepositoryNames().iterator().next();
         String index = esa.getIndexNameForRepository(repo);
@@ -89,7 +95,7 @@ public class TestManageAliasAndWriteAlias {
 
     @Test
     @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-alias-contrib.xml")
-    public void testIndexWithManageAlias() throws Exception {
+    public void testIndexWithManageAlias() {
         String repo = esa.getRepositoryNames().iterator().next();
         assertEquals("test", repo);
 
@@ -146,7 +152,7 @@ public class TestManageAliasAndWriteAlias {
 
     @Test
     @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-write-alias-contrib.xml")
-    public void testIndexWithWriteAlias() throws Exception {
+    public void testIndexWithWriteAlias() {
         String repo = esa.getRepositoryNames().iterator().next();
         assertEquals("test", repo);
 

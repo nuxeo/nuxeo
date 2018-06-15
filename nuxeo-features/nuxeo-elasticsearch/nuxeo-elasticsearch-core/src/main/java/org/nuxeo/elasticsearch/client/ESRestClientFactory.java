@@ -87,11 +87,11 @@ public class ESRestClientFactory implements ESClientFactory {
             throw new IllegalArgumentException(
                     "Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
         }
-        RestClient lowLevelRestClient = RestClient.builder(
-                new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort()))).build();
-        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+        RestClientBuilder lowLevelRestClientBuilder = RestClient.builder(
+                new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort())));
+        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClientBuilder);
         // checkConnection(client);
-        return new ESRestClient(lowLevelRestClient, client);
+        return new ESRestClient(client.getLowLevelClient(), client);
     }
 
     protected ESClient createRestClient(ElasticSearchClientConfig config) {
@@ -115,10 +115,9 @@ public class ESRestClientFactory implements ESClientFactory {
                 || StringUtils.isNotBlank(config.getOption(KEYSTORE_PATH_OPT))) {
             addClientCallback(config, builder);
         }
-        RestClient lowLevelRestClient = builder.build();
-        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+        RestHighLevelClient client = new RestHighLevelClient(builder);
         // checkConnection(client);
-        return new ESRestClient(lowLevelRestClient, client);
+        return new ESRestClient(client.getLowLevelClient(), client);
     }
 
     private void addClientCallback(ElasticSearchClientConfig config, RestClientBuilder builder) {

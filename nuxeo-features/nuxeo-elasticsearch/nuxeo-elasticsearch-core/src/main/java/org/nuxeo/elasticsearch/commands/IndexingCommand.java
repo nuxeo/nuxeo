@@ -214,7 +214,7 @@ public class IndexingCommand implements Serializable {
     public String toJSON() throws IOException {
         StringWriter out = new StringWriter();
         JsonFactory factory = new JsonFactory();
-        JsonGenerator jsonGen = factory.createJsonGenerator(out);
+        JsonGenerator jsonGen = factory.createGenerator(out);
         toJSON(jsonGen);
         out.flush();
         jsonGen.close();

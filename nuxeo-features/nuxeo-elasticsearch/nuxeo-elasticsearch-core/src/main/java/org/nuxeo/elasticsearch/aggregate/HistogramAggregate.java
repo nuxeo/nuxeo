@@ -38,6 +38,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.HistogramAggregationBuilder;
@@ -70,16 +71,16 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
         if (props.containsKey(AGG_ORDER_PROP)) {
             switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
             case AGG_ORDER_COUNT_DESC:
-                ret.order(Histogram.Order.COUNT_DESC);
+                ret.order(BucketOrder.count(false));
                 break;
             case AGG_ORDER_COUNT_ASC:
-                ret.order(Histogram.Order.COUNT_ASC);
+                ret.order(BucketOrder.count(true));
                 break;
             case AGG_ORDER_KEY_DESC:
-                ret.order(Histogram.Order.KEY_DESC);
+                ret.order(BucketOrder.key(false));
                 break;
             case AGG_ORDER_KEY_ASC:
-                ret.order(Histogram.Order.KEY_ASC);
+                ret.order(BucketOrder.key(true));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));

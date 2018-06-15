@@ -36,10 +36,10 @@ import java.util.Map;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
@@ -74,16 +74,16 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
         if (props.containsKey(AGG_ORDER_PROP)) {
             switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
             case AGG_ORDER_COUNT_DESC:
-                ret.order(Terms.Order.count(false));
+                ret.order(BucketOrder.count(false));
                 break;
             case AGG_ORDER_COUNT_ASC:
-                ret.order(Terms.Order.count(true));
+                ret.order(BucketOrder.count(true));
                 break;
             case AGG_ORDER_TERM_DESC:
-                ret.order(Terms.Order.term(false));
+                ret.order(BucketOrder.key(false));
                 break;
             case AGG_ORDER_TERM_ASC:
-                ret.order(Terms.Order.term(true));
+                ret.order(BucketOrder.key(true));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));

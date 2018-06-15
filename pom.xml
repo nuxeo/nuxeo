@@ -143,9 +143,8 @@
     <jaxws-api.version>2.2.9</jaxws-api.version>
     <jaxws.version>2.2.8</jaxws.version>
     <tomcat.version>8.5.23</tomcat.version>
-    <lucene.version>6.6.1</lucene.version>
-    <elasticsearch.version>5.6.3</elasticsearch.version>
-    <elasticsearch.shield.version>2.3.5</elasticsearch.shield.version>
+    <lucene.version>7.3.1</lucene.version>
+    <elasticsearch.version>6.3.0</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -2156,6 +2155,12 @@
         <groupId>org.elasticsearch.plugin</groupId>
         <artifactId>transport-netty4-client</artifactId>
         <version>${elasticsearch.version}</version>
+      </dependency>
+      <!-- needed for embedded mode -->
+      <dependency>
+        <groupId>org.codelibs.elasticsearch.module</groupId>
+        <artifactId>analysis-common</artifactId>
+        <version>6.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>

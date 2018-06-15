@@ -19,8 +19,10 @@
  */
 package org.nuxeo.elasticsearch.query;
 
+import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -79,6 +81,7 @@ import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.trash.TrashService.Feature;
@@ -250,47 +253,16 @@ public final class NxqlQueryConverter {
                 filter = QueryBuilders.boolQuery().mustNot(filter);
             }
         } else if (nxqlName.equals(NXQL.ECM_ISTRASHED)) {
-            boolean equalsDeleted;
-            switch (op) {
-            case "=":
-                equalsDeleted = true;
-                break;
-            case "<>":
-            case "!=":
-                equalsDeleted = false;
-                break;
-            default:
-                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
-            }
-            if ("0".equals(value)) {
-                equalsDeleted = !equalsDeleted;
-            } else if ("1".equals(value)) {
-                // equalsDeleted unchanged
-            } else {
-                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
-            }
-            TrashService trashService = Framework.getService(TrashService.class);
-            if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
-                filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
-            } else if (trashService.hasFeature(Feature.TRASHED_STATE_IN_MIGRATION)) {
-                filter = QueryBuilders.boolQuery()
-                                      .should(QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE,
-                                              LifeCycleConstants.DELETED_STATE))
-                                      .should(QueryBuilders.termQuery(name, true));
-            } else if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
-                filter = QueryBuilders.termQuery(name, true);
-            }
-            if (!equalsDeleted) {
-                filter = QueryBuilders.boolQuery().mustNot(filter);
-            }
+            filter = makeTrashedFilter(op, name, (String) value);
+
         } else
             switch (op) {
             case "=":
-                filter = QueryBuilders.termQuery(name, value);
+                filter = QueryBuilders.termQuery(name, checkBoolValue(nxqlName, value));
                 break;
             case "<>":
             case "!=":
-                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, value));
+                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, checkBoolValue(nxqlName, value)));
                 break;
             case ">":
                 filter = QueryBuilders.rangeQuery(name).gt(value);
@@ -343,6 +315,67 @@ public final class NxqlQueryConverter {
         return new QueryAndFilter(query, filter);
     }
 
+    protected static Object checkBoolValue(String nxqlName, Object value) {
+        if (! "0".equals(value) && !"1".equals(value)) {
+            return value;
+        }
+        switch (nxqlName) {
+            case NXQL.ECM_ISPROXY:
+            case NXQL.ECM_ISCHECKEDIN:
+            case NXQL.ECM_ISTRASHED:
+            case NXQL.ECM_ISVERSION:
+            case NXQL.ECM_ISVERSION_OLD:
+            case NXQL.ECM_ISLATESTMAJORVERSION:
+            case NXQL.ECM_ISLATESTVERSION:
+                break;
+            default:
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+                Field field = schemaManager.getField(nxqlName);
+                if (field == null || !BooleanType.ID.equals(field.getType().getName())) {
+                    return value;
+                }
+        }
+        return "0".equals(value) ? "false": "true";
+    }
+
+    protected static QueryBuilder makeTrashedFilter(String op, String name, String value) {
+        boolean equalsDeleted;
+        switch (op) {
+            case "=":
+                equalsDeleted = true;
+                break;
+            case "<>":
+            case "!=":
+                equalsDeleted = false;
+                break;
+            default:
+                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
+        }
+        if ("0".equals(value)) {
+            equalsDeleted = !equalsDeleted;
+        } else if ("1".equals(value)) {
+            // equalsDeleted unchanged
+        } else {
+            throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires literal 0 or 1 as right argument");
+        }
+        TrashService trashService = Framework.getService(TrashService.class);
+        QueryBuilder filter = null;
+        if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+        } else if (trashService.hasFeature(Feature.TRASHED_STATE_IN_MIGRATION)) {
+            filter = QueryBuilders.boolQuery()
+                    .should(QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE,
+                            LifeCycleConstants.DELETED_STATE))
+                    .should(QueryBuilders.termQuery(name, true));
+        } else if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
+            filter = QueryBuilders.termQuery(name, true);
+        }
+        if (!equalsDeleted) {
+            filter = QueryBuilders.boolQuery().mustNot(filter);
+        }
+        return filter;
+    }
+
     private static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
         QueryBuilder ret;
         switch (hint.operator) {
@@ -365,24 +398,9 @@ public final class NxqlQueryConverter {
             ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
             break;
         case "geo_distance_range":
-            if (values.length != 3) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 3 parameters: point, " + "minimal and maximal distance", hint.operator));
-            }
-            center = parseGeoPointString((String) values[0]);
-            String from = (String) values[1];
-            String to = (String) values[2];
-            ret = QueryBuilders.geoDistanceRangeQuery(name, center.lat(), center.lon()).from(from).to(to);
-            break;
+            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.1");
         case "geo_hash_cell":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 2 parameters: point and " + "geohash precision", hint.operator));
-            }
-            center = parseGeoPointString((String) values[0]);
-            String precision = (String) values[1];
-            ret = QueryBuilders.geoHashCellQuery(name, center).precision(precision);
-            break;
+            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.2");
         case "geo_shape":
             if (values.length != 4) {
                 throw new IllegalArgumentException(String.format(
@@ -409,8 +427,10 @@ public final class NxqlQueryConverter {
         try {
             XContentBuilder content = JsonXContent.contentBuilder();
             content.value(value);
+            content.flush();
+            content.close();
             try (XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY,
-                    content.bytes())) {
+                    THROW_UNSUPPORTED_OPERATION, ((ByteArrayOutputStream) content.getOutputStream()).toByteArray())) {
                 parser.nextToken();
                 return GeoUtils.parseGeoPoint(parser);
             }

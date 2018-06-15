@@ -7,9 +7,6 @@
     <elasticSearchIndex name="audit" type="entry" >
       <mapping>
       {
-        "_all": {
-          "enabled": false
-        },
         "dynamic_templates": [
           {
             "strings": {

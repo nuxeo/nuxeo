@@ -244,7 +244,7 @@ public class TestPageProvider {
                 + "        }\n" + "      }\n" + "    ],\n" + "    \"filter\" : [\n" + "      {\n"
                 + "        \"terms\" : {\n" + "          \"ecm:primaryType\" : [\n" + "            \"File\"\n"
                 + "          ],\n" + "          \"boost\" : 1.0\n" + "        }\n" + "      }\n" + "    ],\n"
-                + "    \"disable_coord\" : false,\n" + "    \"adjust_pure_negative\" : true,\n"
+                + "    \"adjust_pure_negative\" : true,\n"
                 + "    \"boost\" : 1.0\n" + "  }\n" + "}", esquery);
 
         Assert.assertEquals(10, pp.getResultsCount());
@@ -339,7 +339,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -364,7 +363,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -409,7 +407,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -439,7 +436,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -466,10 +462,8 @@ public class TestPageProvider {
                 "        \"query_string\" : {\n" +
                 "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
                 "          \"fields\" : [ ],\n" +
-                "          \"use_dis_max\" : true,\n" +
-                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"type\" : \"best_fields\",\n" +
                 "          \"default_operator\" : \"or\",\n" +
-                "          \"auto_generate_phrase_queries\" : false,\n" +
                 "          \"max_determinized_states\" : 10000,\n" +
                 "          \"enable_position_increments\" : true,\n" +
                 "          \"fuzziness\" : \"AUTO\",\n" +
@@ -477,7 +471,8 @@ public class TestPageProvider {
                 "          \"fuzzy_max_expansions\" : 50,\n" +
                 "          \"phrase_slop\" : 0,\n" +
                 "          \"escape\" : false,\n" +
-                "          \"split_on_whitespace\" : true,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
@@ -497,7 +492,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -537,10 +531,8 @@ public class TestPageProvider {
                 "        \"query_string\" : {\n" +
                 "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
                 "          \"fields\" : [ ],\n" +
-                "          \"use_dis_max\" : true,\n" +
-                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"type\" : \"best_fields\",\n" +
                 "          \"default_operator\" : \"or\",\n" +
-                "          \"auto_generate_phrase_queries\" : false,\n" +
                 "          \"max_determinized_states\" : 10000,\n" +
                 "          \"enable_position_increments\" : true,\n" +
                 "          \"fuzziness\" : \"AUTO\",\n" +
@@ -548,7 +540,8 @@ public class TestPageProvider {
                 "          \"fuzzy_max_expansions\" : 50,\n" +
                 "          \"phrase_slop\" : 0,\n" +
                 "          \"escape\" : false,\n" +
-                "          \"split_on_whitespace\" : true,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
@@ -561,7 +554,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -577,10 +569,8 @@ public class TestPageProvider {
                 "        \"query_string\" : {\n" +
                 "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
                 "          \"fields\" : [ ],\n" +
-                "          \"use_dis_max\" : true,\n" +
-                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"type\" : \"best_fields\",\n" +
                 "          \"default_operator\" : \"or\",\n" +
-                "          \"auto_generate_phrase_queries\" : false,\n" +
                 "          \"max_determinized_states\" : 10000,\n" +
                 "          \"enable_position_increments\" : true,\n" +
                 "          \"fuzziness\" : \"AUTO\",\n" +
@@ -588,7 +578,8 @@ public class TestPageProvider {
                 "          \"fuzzy_max_expansions\" : 50,\n" +
                 "          \"phrase_slop\" : 0,\n" +
                 "          \"escape\" : false,\n" +
-                "          \"split_on_whitespace\" : true,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
@@ -612,7 +603,6 @@ public class TestPageProvider {
                 "                  }\n" +
                 "                }\n" +
                 "              ],\n" +
-                "              \"disable_coord\" : false,\n" +
                 "              \"adjust_pure_negative\" : true,\n" +
                 "              \"boost\" : 1.0\n" +
                 "            }\n" +
@@ -621,7 +611,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -637,10 +626,8 @@ public class TestPageProvider {
                 "        \"query_string\" : {\n" +
                 "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
                 "          \"fields\" : [ ],\n" +
-                "          \"use_dis_max\" : true,\n" +
-                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"type\" : \"best_fields\",\n" +
                 "          \"default_operator\" : \"or\",\n" +
-                "          \"auto_generate_phrase_queries\" : false,\n" +
                 "          \"max_determinized_states\" : 10000,\n" +
                 "          \"enable_position_increments\" : true,\n" +
                 "          \"fuzziness\" : \"AUTO\",\n" +
@@ -648,7 +635,8 @@ public class TestPageProvider {
                 "          \"fuzzy_max_expansions\" : 50,\n" +
                 "          \"phrase_slop\" : 0,\n" +
                 "          \"escape\" : false,\n" +
-                "          \"split_on_whitespace\" : true,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
@@ -672,7 +660,6 @@ public class TestPageProvider {
                 "                  }\n" +
                 "                }\n" +
                 "              ],\n" +
-                "              \"disable_coord\" : false,\n" +
                 "              \"adjust_pure_negative\" : true,\n" +
                 "              \"boost\" : 1.0\n" +
                 "            }\n" +
@@ -681,7 +668,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -693,10 +679,8 @@ public class TestPageProvider {
                 "  \"query_string\" : {\n" +
                 "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\",\n" +
                 "    \"fields\" : [ ],\n" +
-                "    \"use_dis_max\" : true,\n" +
-                "    \"tie_breaker\" : 0.0,\n" +
+                "    \"type\" : \"best_fields\",\n" +
                 "    \"default_operator\" : \"or\",\n" +
-                "    \"auto_generate_phrase_queries\" : false,\n" +
                 "    \"max_determinized_states\" : 10000,\n" +
                 "    \"enable_position_increments\" : true,\n" +
                 "    \"fuzziness\" : \"AUTO\",\n" +
@@ -704,7 +688,8 @@ public class TestPageProvider {
                 "    \"fuzzy_max_expansions\" : 50,\n" +
                 "    \"phrase_slop\" : 0,\n" +
                 "    \"escape\" : false,\n" +
-                "    \"split_on_whitespace\" : true,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", qb.toString());
@@ -729,10 +714,8 @@ public class TestPageProvider {
                 "        \"query_string\" : {\n" +
                 "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
                 "          \"fields\" : [ ],\n" +
-                "          \"use_dis_max\" : true,\n" +
-                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"type\" : \"best_fields\",\n" +
                 "          \"default_operator\" : \"or\",\n" +
-                "          \"auto_generate_phrase_queries\" : false,\n" +
                 "          \"max_determinized_states\" : 10000,\n" +
                 "          \"enable_position_increments\" : true,\n" +
                 "          \"fuzziness\" : \"AUTO\",\n" +
@@ -740,7 +723,8 @@ public class TestPageProvider {
                 "          \"fuzzy_max_expansions\" : 50,\n" +
                 "          \"phrase_slop\" : 0,\n" +
                 "          \"escape\" : false,\n" +
-                "          \"split_on_whitespace\" : true,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
@@ -753,13 +737,15 @@ public class TestPageProvider {
                 "          \"analyzer\" : \"fulltext\",\n" +
                 "          \"flags\" : -1,\n" +
                 "          \"default_operator\" : \"and\",\n" +
-                "          \"lenient\" : false,\n" +
                 "          \"analyze_wildcard\" : false,\n" +
+                "          \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"fuzzy_transpositions\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -825,7 +811,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
@@ -891,7 +876,6 @@ public class TestPageProvider {
                 "        }\n" +
                 "      }\n" +
                 "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
                 "    \"adjust_pure_negative\" : true,\n" +
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +

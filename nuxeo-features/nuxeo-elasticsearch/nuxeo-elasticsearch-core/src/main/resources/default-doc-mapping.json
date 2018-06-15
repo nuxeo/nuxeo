@@ -1,7 +1,4 @@
 {
-  "_all": {
-    "enabled": false
-  },
   "dynamic_templates": [
     {
       "no_thumbnail_template": {

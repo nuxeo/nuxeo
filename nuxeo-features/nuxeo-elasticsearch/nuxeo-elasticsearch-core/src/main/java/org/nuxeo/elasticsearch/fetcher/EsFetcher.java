@@ -50,7 +50,7 @@ public class EsFetcher extends Fetcher {
         String sid = getSession().getSessionId();
         for (SearchHit hit : getResponse().getHits()) {
             // TODO: this does not work on multi repo
-            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid).getDocumentModel();
+            doc = DocumentModelReaders.fromSource(hit.getSourceAsMap()).sid(sid).getDocumentModel();
             // Add highlight if it exists
             Map<String, HighlightField> esHighlights = hit.getHighlightFields();
             if (!esHighlights.isEmpty()) {

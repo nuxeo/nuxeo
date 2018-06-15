@@ -47,11 +47,13 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -188,6 +190,10 @@ public class ESRestClient implements ESClient {
             response = lowLevelClient.performRequest("DELETE",
                     String.format("/%s?master_timeout=%ds", indexName, timeoutSecond));
         } catch (IOException e) {
+            if (e.getMessage() != null && e.getMessage().contains("illegal_argument_exception")) {
+                // when trying to delete an alias, throws the same exception than the transport client
+                throw new IllegalArgumentException(e);
+            }
             throw new NuxeoException(e);
         }
         int code = response.getStatusLine().getStatusCode();
@@ -370,6 +376,12 @@ public class ESRestClient implements ESClient {
     public IndexResponse index(IndexRequest request) {
         try {
             return client.index(request);
+        } catch (ResponseException e) {
+            if (e.getMessage() != null && e.getMessage().contains("409 Conflict")) {
+                // when a more recent version already exists, throws the same exception than the transport client
+                throw new VersionConflictEngineException(null, e.getMessage(), e);
+            }
+            throw new NuxeoException(e);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

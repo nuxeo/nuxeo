@@ -153,8 +153,8 @@ public class TestAuditMigration {
 
         String singleQuery = "            {\"query\": {\n" + "                \"bool\" : {\n"
                 + "                  \"must\" : {\n" + "                    \"match\" : {\n"
-                + "                      \"docUUID\" : {\n" + "                        \"query\" : \"mydoc\",\n"
-                + "                        \"type\" : \"boolean\"\n" + "                      }\n"
+                + "                      \"docUUID\" : {\n" + "                        \"query\" : \"mydoc\"\n"
+                + "                      }\n"
                 + "                    }\n" + "                  }\n" + "                }\n"
                 + "              }}          \n" + "";
         List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0, 1001);

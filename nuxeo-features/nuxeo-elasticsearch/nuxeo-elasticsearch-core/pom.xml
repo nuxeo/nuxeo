@@ -220,6 +220,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.codelibs.elasticsearch.module</groupId>
+      <artifactId>analysis-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>test</scope>

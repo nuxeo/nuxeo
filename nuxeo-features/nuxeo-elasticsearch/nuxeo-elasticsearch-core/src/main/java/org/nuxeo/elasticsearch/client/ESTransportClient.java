@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.client;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -170,11 +171,18 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public String getFirstIndexForAlias(String aliasName) {
-        ImmutableOpenMap<String, List<AliasMetaData>> aliases = client.admin().indices().prepareGetAliases(aliasName).get().getAliases();
-        if (aliases.isEmpty()) {
-            return null;
+        ImmutableOpenMap<String, List<AliasMetaData>> aliases = client.admin()
+                                                                      .indices()
+                                                                      .prepareGetAliases(aliasName)
+                                                                      .get()
+                                                                      .getAliases();
+        for (Iterator<String> it = aliases.keysIt(); it.hasNext();) {
+            String indexName = it.next();
+            if (!aliases.get(indexName).isEmpty()) {
+                return indexName;
+            }
         }
-        return aliases.keysIt().next();
+        return null;
     }
 
     @Override
@@ -222,7 +230,7 @@ public class ESTransportClient implements ESClient {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (client != null) {
             client.close();
             client = null;
