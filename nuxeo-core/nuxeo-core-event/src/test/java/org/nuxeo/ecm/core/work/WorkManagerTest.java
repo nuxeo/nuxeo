@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
@@ -522,20 +521,16 @@ public class WorkManagerTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-shutdown-delay.xml")
-    public void testSleepDurationTakenIntoAccount() {
-        try {
-            String shutdownDelayAsString = Framework.getService(ConfigurationService.class)
-                                                    .getProperty(WorkManagerImpl.SHUTDOWN_DELAY_KEY, "0");
-            Integer shutdownDelay = Integer.parseInt(shutdownDelayAsString);
-            Work work = new SleepWork(100000);
-            service.schedule(work);
-            long start = System.currentTimeMillis();
-            service.shutdown(0, TimeUnit.SECONDS);
-            long shutdownDuration = System.currentTimeMillis() - start;
-            assertTrue(shutdownDuration > shutdownDelay);
-        } catch (InterruptedException e) {
-            fail();
-        }
+    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
+        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
+        String shutdownDelayAsString = configuration.getProperty(WorkManagerImpl.SHUTDOWN_DELAY_MS_KEY, "0");
+        int shutdownDelay = Integer.parseInt(shutdownDelayAsString);
+        assertEquals(5000, shutdownDelay);
+        service.schedule(new SleepWork(100000));
+        long start = System.currentTimeMillis();
+        service.shutdown(0, TimeUnit.SECONDS);
+        long shutdownDuration = System.currentTimeMillis() - start;
+        assertTrue(shutdownDuration > shutdownDelay);
     }
 
 }
