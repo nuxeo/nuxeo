@@ -93,7 +93,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected static final String THREAD_PREFIX = "Nuxeo-Work-";
 
-    public static final String SHUTDOWN_DELAY_KEY = "nuxeo.work.shutdown.delay";
+    public static final String SHUTDOWN_DELAY_MS_KEY = "nuxeo.work.shutdown.delay.ms";
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -170,7 +170,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 return;
             }
             String what = " processing=" + processing;
-            what += queuing == null ? "" : (" queuing=" + queuing);
+            what += queuing == null ? "" : " queuing=" + queuing;
             log.info("Setting on all work queues:" + what);
             // activate/deactivate processing/queuing on all queues
             List<String> queueIds = new ArrayList<>(workQueueConfig.getQueueIds()); // copy
@@ -450,7 +450,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (!executor.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
                 return false;
             }
-            timeout -= unit.convert(System.currentTimeMillis() - t0, TimeUnit.MILLISECONDS);
+            timeout -= System.currentTimeMillis() - t0;
         }
         return true;
     }
@@ -678,17 +678,21 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 deactivateQueueMetrics(queueId);
                 queuing.setActive(queueId, false);
                 // suspend all running work
+                boolean hasWorkRunning = false;
                 for (Work work : running) {
                     work.setWorkInstanceSuspending();
                     log.trace("suspending and rescheduling " + work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
+                    hasWorkRunning = true;
                 }
-                // sleep for a given amount of time for works to have time to persist their state and stop properly
-                long shutDowndelay = Long.parseLong(Framework.getService(ConfigurationService.class)
-                                                             .getProperty(SHUTDOWN_DELAY_KEY, "0"));
-                if (shutDowndelay > 0) {
-                    Thread.sleep(shutDowndelay);
+                if (hasWorkRunning) {
+                    // sleep for a given amount of time for works to have time to persist their state and stop properly
+                    long shutDowndelay = Long.parseLong(Framework.getService(ConfigurationService.class)
+                                                                 .getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
+                    if (shutDowndelay > 0) {
+                        Thread.sleep(shutDowndelay);
+                    }
                 }
                 shutdownNow();
             } finally {
@@ -868,7 +872,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (!isStarted()) {
             return true;
         }
-        SequenceTracer.start("awaitCompletion on " + ((queueId == null) ? "all queues" : queueId));
+        SequenceTracer.start("awaitCompletion on " + (queueId == null ? "all queues" : queueId));
         long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
         long deadline = getTimestampAfter(durationInMs);
         int pause = (int) Math.min(durationInMs, 500L);

@@ -169,7 +169,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Override
     @Ignore
     @Test
-    public void testSleepDurationTakenIntoAccount() {
+    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
         // shutdown duration does not concern StreamWorkManager
         super.testSleepDurationTakenIntoAccount();
     }
