@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,13 +164,4 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         // Canceling is not supported, but we can not assume on duration with random id
         super.testWorkManagerCancelScheduling();
     }
-
-    @Override
-    @Ignore
-    @Test
-    public void testSleepDurationTakenIntoAccount() {
-        // shutdown duration does not concern StreamWorkManager
-        super.testSleepDurationTakenIntoAccount();
-    }
-
 }
