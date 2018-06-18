@@ -18,9 +18,9 @@ import org.dom4j.Element;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.ImportExtension;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -29,6 +29,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.4
  */
+// TODO Is it really used ?
 public class DocumentLockImporter implements ImportExtension {
 
     @Override

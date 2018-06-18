@@ -72,7 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Florent Guillaume
  */
-public class SQLSession implements Session {
+public class SQLSession implements Session<QueryFilter> {
 
     protected final Log log = LogFactory.getLog(SQLSession.class);
 

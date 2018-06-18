@@ -40,8 +40,8 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.security.Principal;

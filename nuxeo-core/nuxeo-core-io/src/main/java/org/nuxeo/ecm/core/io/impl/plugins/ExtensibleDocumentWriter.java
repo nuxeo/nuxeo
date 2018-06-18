@@ -31,12 +31,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportExtension;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.ImportExtension;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Compared to the default {@link DocumentModelWriter} implementation this one does handle versions and allows to plug

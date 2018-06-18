@@ -3,6 +3,7 @@
   version="1.0">
 
   <service>
+    <provide interface="org.nuxeo.ecm.core.api.trash.TrashService" />
     <provide interface="org.nuxeo.ecm.core.trash.TrashService" />
   </service>
 

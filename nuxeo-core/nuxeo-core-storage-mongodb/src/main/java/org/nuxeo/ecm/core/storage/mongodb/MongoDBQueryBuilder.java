@@ -20,6 +20,9 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -33,9 +36,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_UID_MINOR_VERSION;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_META;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_TEXT_SCORE;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
