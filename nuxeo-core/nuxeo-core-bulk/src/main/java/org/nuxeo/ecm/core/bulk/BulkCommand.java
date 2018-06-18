@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.bulk;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -41,7 +43,10 @@ public class BulkCommand implements Serializable {
     /** The bulk action to execute. */
     protected String action;
 
+    protected Map<String, Serializable> params;
+
     public BulkCommand() {
+        params = new HashMap<>();
     }
 
     public BulkCommand withUsername(String username) {
@@ -81,6 +86,15 @@ public class BulkCommand implements Serializable {
 
     public String getAction() {
         return action;
+    }
+
+    public BulkCommand withParams(Map<String, Serializable> params) {
+        this.params.putAll(params);
+        return this;
+    }
+
+    public Map<String, Serializable> getParams() {
+        return params;
     }
 
     @Override

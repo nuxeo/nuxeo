@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,13 +71,17 @@ public class TestRunBulkAction {
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
 
         OperationContext ctx = new OperationContext(session);
-        Map<String, String> params = new HashMap<>();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("action", "count");
         params.put("query", nxql);
+        Map<String, Object> actionParams = new HashMap<>();
+        actionParams.put("dummyParam", "dummyValue");
+        params.put("parameters", (Serializable) actionParams);
 
         BulkStatus result = (BulkStatus) service.run(ctx, RunBulkAction.ID, params);
 
         Assert.assertNotNull(result);
+        Assert.assertEquals("dummyValue", result.getCommand().getParams().get("dummyParam"));
 
     }
 

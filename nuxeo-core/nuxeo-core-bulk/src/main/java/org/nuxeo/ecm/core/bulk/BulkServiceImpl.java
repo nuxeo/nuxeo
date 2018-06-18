@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
+import org.nuxeo.ecm.core.bulk.io.BulkCommandJsonReader;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -109,7 +110,7 @@ public class BulkServiceImpl implements BulkService {
 
         String commandAsString = keyValueStore.getString(bulkId + COMMAND);
         try {
-            BulkCommand command = OBJECT_MAPPER.readValue(commandAsString, BulkCommand.class);
+            BulkCommand command = new BulkCommandJsonReader().readBulkCommandAsString(commandAsString);
             status.setCommand(command);
         } catch (IOException e) {
             throw new NuxeoException("Unable to deserialize the bulk command=" + commandAsString, e);

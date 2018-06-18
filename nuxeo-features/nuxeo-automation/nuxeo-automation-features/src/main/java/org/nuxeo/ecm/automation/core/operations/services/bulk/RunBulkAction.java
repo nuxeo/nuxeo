@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -48,6 +52,9 @@ public class RunBulkAction {
     @Param(name = "action", required = true)
     protected String action;
 
+    @Param(name = "parameters", required = false)
+    protected Map<String, Serializable> parameters = new HashMap<>();
+
     @OperationMethod
     public BulkStatus run() {
         String repositoryName = session.getRepositoryName();
@@ -55,7 +62,8 @@ public class RunBulkAction {
         BulkCommand command = new BulkCommand().withRepository(repositoryName)
                                                .withAction(action)
                                                .withUsername(userName)
-                                               .withQuery(query);
+                                               .withQuery(query)
+                                               .withParams(parameters);
         String bulkId = service.submit(command);
         BulkStatus bulkStatus = new BulkStatus();
         bulkStatus.setId(bulkId);

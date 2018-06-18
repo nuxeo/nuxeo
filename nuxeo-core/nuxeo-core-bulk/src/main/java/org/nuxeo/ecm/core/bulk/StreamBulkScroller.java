@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
@@ -27,7 +26,6 @@ import static org.nuxeo.ecm.core.bulk.BulkStatus.State.BUILDING;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +45,6 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Computation that consumes a {@link BulkCommand} and produce document ids. This scroller takes a query to execute on
@@ -116,7 +112,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
             try {
                 String bulkId = record.getKey();
-                BulkCommand command = getBulkCommandJson(record.getData());
+                BulkCommand command = BulkCommandHelper.getBulkCommandJson(record.getData());
                 if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), BUILDING.toString())) {
                     log.error("Discard record: " + record + " because it's already building");
                     context.askForCheckpoint();
@@ -149,17 +145,6 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                 log.error("Discard invalid record: " + record, e);
             }
         }
-
-        protected BulkCommand getBulkCommandJson(byte[] data) {
-            String json = new String(data, UTF_8);
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(json, BulkCommand.class);
-            } catch (IOException e) {
-                throw new NuxeoException("Invalid json bulkCommand=" + json, e);
-            }
-        }
-
     }
 
     // TODO copied from StreamAuditWriter - where can we put that ?
