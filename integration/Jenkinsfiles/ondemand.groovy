@@ -12,7 +12,6 @@ if (currentBuild.previousBuild == null) { // first build, should configure job
         [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]])
 }
 
-@Library('nuxeo@feature-NXBT-2323-compose-swarm') _
 
 timestamps {
 
@@ -112,6 +111,8 @@ def verifyProfile(String profile, String version, String sha, String zipfile) {
         )
     }
 }
+
+def withSwarmCompose = load "${WORKSPACE}/integration/Jenkinsfiles/withSwarmCompose.groovy"
 
 def emitVerifyClosure(String sha, String zipfile, String name, String module, Closure post) {
     return {
