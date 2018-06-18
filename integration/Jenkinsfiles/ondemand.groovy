@@ -1,5 +1,5 @@
 if (currentBuild.previousBuild == null) { // first build, should configure job
-      properties([
+    properties([
         [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']],
         disableConcurrentBuilds(),
         [$class: 'ParametersDefinitionProperty', parameterDefinitions:
@@ -88,10 +88,10 @@ timestamps {
             verifyProfile('mongodb', '3.4', sha, zipfile)
             
             verifyProfile('kafka', '1.0', sha, zipfile)
-        }
-    } finally {
-        if (!incremental) {
-            cleanWs(cleanWhenFailure: false, notFailBuild: true)
+        } finally {
+            if (!incremental) {
+                cleanWs(cleanWhenFailure: false, notFailBuild: true)
+            }
         }
     }
 }
