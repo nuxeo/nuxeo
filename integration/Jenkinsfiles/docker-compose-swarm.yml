@@ -8,12 +8,8 @@ services:
        dockerfile: Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
-      - workspace:/opt/jenkins/workspace
+      - /opt/jenkins/workspace:/opt/jenkins/workspace
     environment:
       - JAVA_OPTS=-Xms512m -Xmx3g
     command: /sbin/my_init -- su - jenkins -c "java -jar /opt/jenkins/bin/swarm-client.jar -master $JENKINS_MASTER -name $COMPOSE_PROJECT_NAME -deleteExistingClients  -disableClientsUniqueId -retry 3 -username jenkins -password $JENKINS_API_TOKEN -labels swarm"
 
-volumes:
-   workspace:
-     external:
-       name: jenkins_workspace
