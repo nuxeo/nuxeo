@@ -3,6 +3,10 @@
 
   <require>org.nuxeo.runtime.stream.service</require>
 
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="setProperty"/>
+  </extension>
+
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- Processor used by BulkService to scroll DB -->
     <streamProcessor name="bulkDocumentScroller" class="org.nuxeo.ecm.core.bulk.StreamBulkScroller"
@@ -10,6 +14,10 @@
       <option name="scrollBatchSize">100</option>
       <option name="scrollKeepAlive">60</option>
     </streamProcessor>
+
+    <!-- SetProperty processor -->
+    <streamProcessor name="setProperty" class="org.nuxeo.ecm.core.bulk.actions.SetPropertyAction" logConfig="bulk"
+      defaultConcurrency="1" defaultPartitions="1"/>
   </extension>
 
 </component>
