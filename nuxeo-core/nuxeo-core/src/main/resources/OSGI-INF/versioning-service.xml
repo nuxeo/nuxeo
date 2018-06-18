@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.core.versioning.VersioningService">
 
   <service>
+    <provide interface="org.nuxeo.ecm.core.api.versioning.VersioningService" />
     <provide interface="org.nuxeo.ecm.core.versioning.VersioningService" />
   </service>
 

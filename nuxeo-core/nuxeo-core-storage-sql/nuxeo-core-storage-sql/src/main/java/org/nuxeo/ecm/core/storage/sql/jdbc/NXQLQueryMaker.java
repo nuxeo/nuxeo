@@ -18,9 +18,10 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
-import static org.nuxeo.ecm.core.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
+
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
 import java.sql.Types;

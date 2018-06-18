@@ -226,7 +226,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         if (docs == null) {
             return null;
         }
-        TrashInfo info = getTrashService().getTrashInfo(docs, currentUser, false, false);
+        TrashInfo info = (TrashInfo) getTrashService().getTrashInfo(docs, currentUser, false, false);
 
         DocumentModel targetContext = getTrashService().getAboveDocument(navigationContext.getCurrentDocument(),
                 info.rootPaths);

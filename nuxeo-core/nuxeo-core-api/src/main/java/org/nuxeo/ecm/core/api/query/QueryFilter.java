@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Funsho David
  */
-package org.nuxeo.ecm.core.trash;
+
+package org.nuxeo.ecm.core.api.query;
+
+import java.security.Principal;
+import java.util.Collection;
+
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 
 /**
- * Service containing the logic about deleting/purging/undeleting a document.
- *
- * @deprecated since 10.2, use {@link org.nuxeo.ecm.core.api.trash.TrashService} instead.
+ * @since 10.2
  */
-@Deprecated
-public interface TrashService extends org.nuxeo.ecm.core.api.trash.TrashService {
+public interface QueryFilter<T> {
 
+    Principal getPrincipal();
+
+    String[] getPrincipals();
+
+    String[] getPermissions();
+
+    FacetFilter getFacetFilter();
+
+    Collection<T> getQueryTransformers();
+
+    long getLimit();
+
+    long getOffset();
 }

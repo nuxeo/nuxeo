@@ -153,7 +153,7 @@ import com.codahale.metrics.Timer;
  *
  * @since 5.9.4
  */
-public class DBSSession implements Session {
+public class DBSSession implements Session<QueryFilter> {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 

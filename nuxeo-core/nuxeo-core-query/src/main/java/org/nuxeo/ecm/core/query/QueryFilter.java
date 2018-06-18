@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  *
  * @author Florent Guillaume
  */
-public class QueryFilter implements Serializable {
+public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQLQuery.Transformer>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

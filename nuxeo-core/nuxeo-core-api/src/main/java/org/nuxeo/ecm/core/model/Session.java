@@ -30,13 +30,14 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.api.query.QueryFilter;
 
 /**
  * Internal Session accessing the low-level storage.
  */
-public interface Session {
+public interface Session<T extends QueryFilter> {
 
     // parameters for the session contexts
     String USER_NAME = "username";
@@ -53,20 +54,20 @@ public interface Session {
      *
      * @since 5.9.4
      */
-    PartialList<Document> query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
+    PartialList<Document> query(String query, String queryType, T queryFilter, long countUpTo);
 
     /**
      * Does a query and fetch the individual results as maps.
      */
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
-            boolean distinctDocuments, Object[] params);
+    IterableQueryResult queryAndFetch(String query, String queryType, T queryFilter, boolean distinctDocuments,
+            Object[] params);
 
     /**
      * Does a query and fetch the individual results as maps.
      *
      * @since 7.10-HF25, 8.10-HF06, 9.2
      */
-    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter,
+    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, T queryFilter,
             boolean distinctDocuments, long countUpTo, Object[] params);
 
     /**
@@ -79,7 +80,7 @@ public interface Session {
 
     /**
      * Get the next batch of result containing id of documents.
-     * 
+     *
      * @since 8.4
      */
     ScrollResult<String> scroll(String scrollId);

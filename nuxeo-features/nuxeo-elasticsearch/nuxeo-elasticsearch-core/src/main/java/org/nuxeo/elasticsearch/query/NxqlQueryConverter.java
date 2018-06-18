@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.trash.TrashService.Feature;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
@@ -81,7 +82,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.core.trash.TrashService.Feature;
 import org.nuxeo.runtime.api.Framework;
 
 /**
