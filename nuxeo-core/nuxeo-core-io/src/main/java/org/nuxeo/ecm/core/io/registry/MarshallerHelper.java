@@ -130,8 +130,17 @@ public final class MarshallerHelper {
      * @param ctx May be null - otherwise, use {@link CtxBuilder} to create the context.
      * @return the resulting object.
      * @since 7.2
+     * @deprecated since 10.2 use {@link #jsonToObject(Class, String, RenderingContext)} instead.
      */
+    @Deprecated
     public static <T> T objectToJson(Class<T> type, String json, RenderingContext ctx) throws IOException {
+        return jsonToObject(type, json, ctx);
+    }
+
+    /**
+     * @since 10.2
+     */
+    public static <T> T jsonToObject(Class<T> type, String json, RenderingContext ctx) throws IOException {
         Reader<T> reader = getService().getReader(ctx, type, APPLICATION_JSON_TYPE);
         checkMarshaller(type, reader);
         return reader.read(type, type, APPLICATION_JSON_TYPE, new ByteArrayInputStream(json.getBytes()));
@@ -150,8 +159,18 @@ public final class MarshallerHelper {
      * @param ctx May be null - otherwise, use {@link CtxBuilder} to create the context.
      * @return the resulting object.
      * @since 7.2
+     * @deprecated since 10.2, use {@link #jsonToObject(Class, Type, String, RenderingContext)} instead.
      */
+    @Deprecated
     public static <T> T objectToJson(Class<T> type, Type genericType, String json, RenderingContext ctx)
+            throws IOException {
+        return jsonToObject(type, genericType, json, ctx);
+    }
+
+    /**
+     * @since 10.2
+     */
+    public static <T> T jsonToObject(Class<T> type, Type genericType, String json, RenderingContext ctx)
             throws IOException {
         Reader<T> reader = getService().getReader(ctx, type, genericType, APPLICATION_JSON_TYPE);
         checkMarshaller(genericType, reader);
@@ -169,9 +188,19 @@ public final class MarshallerHelper {
      * @param ctx May be null - otherwise, use {@link CtxBuilder} to create the context.
      * @return the resulting list.
      * @since 7.2
+     * @deprecated since 10.2, use {@link #jsonToList(Class, String, RenderingContext)} instead.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <T> List<T> listToJson(Class<T> elementType, String json, RenderingContext ctx) throws IOException {
+        return jsonToList(elementType, json, ctx);
+    }
+
+    /**
+     * @since 10.2
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> jsonToList(Class<T> elementType, String json, RenderingContext ctx) throws IOException {
         Type genericType = TypeUtils.parameterize(List.class, elementType);
         @SuppressWarnings("rawtypes")
         Reader<List> reader = getService().getReader(ctx, List.class, genericType, APPLICATION_JSON_TYPE);
