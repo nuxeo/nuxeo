@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  * Contributors:
- *     pierre
+ *     Funsho David
  */
-package org.nuxeo.ecm.automation.io.services.bulk;
+package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.automation.core.operations.blob.BulkDownload.ID;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COMMAND;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COUNT;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_SUBMIT;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COMMAND;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -48,7 +48,7 @@ public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
     @Override
     public void writeEntityBody(BulkStatus entity, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
-        jg.writeStringField(ID, entity.getId());
+        jg.writeStringField(BULK_ID, entity.getId());
         jg.writeStringField(BULK_STATE, entity.getState().toString());
         jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime().toString());
         jg.writeObjectField(BULK_COMMAND, entity.getCommand());

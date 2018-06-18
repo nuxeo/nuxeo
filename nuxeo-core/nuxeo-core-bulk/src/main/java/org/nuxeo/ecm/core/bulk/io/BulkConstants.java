@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *       Kevin Leturc <kleturc@nuxeo.com>
+ *     Funsho David
  */
-package org.nuxeo.ecm.automation.io.services.bulk;
+package org.nuxeo.ecm.core.bulk.io;
 
 /**
  * Bulk constants for serialization.
@@ -49,7 +49,9 @@ public class BulkConstants {
 
     public static final String COMMAND_QUERY = "query";
 
-    public static final String COMMAND_OPERATION = "operation";
+    public static final String COMMAND_ACTION = "action";
+
+    public static final String COMMAND_PARAMS = "params";
 
     private BulkConstants() {
         // constants class

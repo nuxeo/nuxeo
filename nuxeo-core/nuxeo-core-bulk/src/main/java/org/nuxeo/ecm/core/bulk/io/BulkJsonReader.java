@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  * Contributors:
- *     pierre
+ *     Funsho David
  */
-package org.nuxeo.ecm.automation.io.services.bulk;
+package org.nuxeo.ecm.core.bulk.io;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COMMAND;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_COUNT;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_SUBMIT;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ID;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COMMAND;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 

@@ -23,8 +23,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -85,5 +88,4 @@ public class TestBulkService {
         assertNotNull(status.getCount());
         assertEquals(10, status.getCount().longValue());
     }
-
 }

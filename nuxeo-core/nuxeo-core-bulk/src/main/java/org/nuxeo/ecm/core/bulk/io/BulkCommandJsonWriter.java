@@ -14,22 +14,26 @@
  * limitations under the License.
  *
  * Contributors:
- *       Kevin Leturc <kleturc@nuxeo.com>
+ *     Funsho David
  */
-package org.nuxeo.ecm.automation.io.services.bulk;
+package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.COMMAND_ENTITY_TYPE;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.COMMAND_OPERATION;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.COMMAND_QUERY;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.COMMAND_REPOSITORY;
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.COMMAND_USERNAME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.2
@@ -43,11 +47,18 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
     @Override
     protected void writeEntityBody(BulkCommand command, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
-        // everything is mandatory
+        // everything is mandatory except parameters
         jg.writeStringField(COMMAND_USERNAME, command.getUsername());
         jg.writeStringField(COMMAND_REPOSITORY, command.getRepository());
         jg.writeStringField(COMMAND_QUERY, command.getQuery());
-        jg.writeStringField(COMMAND_OPERATION, command.getAction());
+        jg.writeStringField(COMMAND_ACTION, command.getAction());
+
+        Map<String, Serializable> params = command.getParams();
+        if (!params.isEmpty()) {
+            jg.writeObjectFieldStart(COMMAND_PARAMS);
+            jg.writeRawValue(new ObjectMapper().writeValueAsString(params));
+            jg.writeEndObject();
+        }
         jg.writeEndObject();
     }
 }

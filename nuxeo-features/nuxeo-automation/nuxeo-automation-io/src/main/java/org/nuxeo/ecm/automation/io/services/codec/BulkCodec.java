@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.automation.io.services.codec;
 
-import static org.nuxeo.ecm.automation.io.services.bulk.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 
-import org.nuxeo.ecm.automation.io.services.bulk.BulkJsonReader;
-import org.nuxeo.ecm.automation.io.services.bulk.BulkJsonWriter;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
+import org.nuxeo.ecm.core.bulk.io.BulkJsonReader;
+import org.nuxeo.ecm.core.bulk.io.BulkJsonWriter;
 
 /**
  * @since 10.2
