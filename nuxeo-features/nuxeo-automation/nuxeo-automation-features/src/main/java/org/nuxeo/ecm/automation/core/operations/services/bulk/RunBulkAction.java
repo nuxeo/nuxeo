@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public class RunBulkAction {
     protected String action;
 
     @Param(name = "parameters", required = false)
-    protected Map<String, Serializable> parameters = new HashMap<>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     @OperationMethod
     public BulkStatus run() {

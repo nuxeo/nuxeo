@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
@@ -87,5 +88,42 @@ public class TestBulkService {
         assertEquals(COMPLETED, status.getState());
         assertNotNull(status.getCount());
         assertEquals(10, status.getCount().longValue());
+    }
+
+    @Test
+    public void testSetPropertyBulkOperation() throws Exception {
+
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+
+        String title = "test title";
+        String description = "test description";
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put("dc:title", title);
+        properties.put("dc:description", description);
+
+        String bulkId = service.submit(
+                new BulkCommand().withRepository(session.getRepositoryName())
+                                 .withUsername(session.getPrincipal().getName())
+                                 .withQuery(nxql)
+                                 .withAction("setProperties")
+                                 .withParams(singletonMap("properties", (Serializable) properties)));
+
+        LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
+        try (LogTailer<Record> tailer = manager.createTailer("setProperties", "setProperties")) {
+            for (int i = 0; i <= 10; i++) {
+                tailer.read(Duration.ofSeconds(1));
+            }
+        }
+
+        BulkStatus status = service.getStatus(bulkId);
+        assertNotNull(status);
+        assertEquals(COMPLETED, status.getState());
+
+        for (DocumentModel child : session.getChildren(model.getRef())) {
+            assertEquals(title, child.getTitle());
+            assertEquals(description, child.getPropertyValue("dc:description"));
+        }
+
     }
 }
