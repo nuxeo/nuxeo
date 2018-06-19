@@ -18,20 +18,18 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
-import org.nuxeo.ecm.core.bulk.io.BulkCommandJsonReader;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -39,9 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamService;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Basic implementation of {@link BulkService}.
@@ -51,8 +46,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
-
-    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     protected static final String SET_STREAM_NAME = "documentSet";
 
@@ -75,23 +68,19 @@ public class BulkServiceImpl implements BulkService {
         }
         // create the action id and status
         String bulkId = UUID.randomUUID().toString();
+        byte[] commandAsBytes = BulkCommands.toBytes(command);
 
-        try {
-            byte[] commandAsBytes = OBJECT_MAPPER.writeValueAsBytes(command);
+        // store the bulk command and status in the key/value store
+        KeyValueStore keyValueStore = getKvStore();
+        keyValueStore.put(bulkId + STATE, SCHEDULED.toString());
+        keyValueStore.put(bulkId + SUBMIT_TIME, Instant.now().toEpochMilli());
+        keyValueStore.put(bulkId + COMMAND, commandAsBytes);
 
-            // store the bulk command and status in the key/value store
-            KeyValueStore keyValueStore = getKvStore();
-            keyValueStore.put(bulkId + STATE, SCHEDULED.toString());
-            keyValueStore.put(bulkId + SUBMIT_TIME, Instant.now().toEpochMilli());
-            keyValueStore.put(bulkId + COMMAND, commandAsBytes);
+        // send it to nuxeo-stream
+        LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
+        LogAppender<Record> logAppender = logManager.getAppender(SET_STREAM_NAME);
+        logAppender.append(bulkId, Record.of(bulkId, commandAsBytes));
 
-            // send it to nuxeo-stream
-            LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
-            LogAppender<Record> logAppender = logManager.getAppender(SET_STREAM_NAME);
-            logAppender.append(bulkId, new Record(bulkId, commandAsBytes));
-        } catch (JsonProcessingException e) {
-            throw new NuxeoException("Unable to serialize the bulk command=" + command, e);
-        }
         return bulkId;
     }
 
@@ -109,12 +98,8 @@ public class BulkServiceImpl implements BulkService {
         status.setSubmitTime(Instant.ofEpochMilli(submitTime.longValue()));
 
         String commandAsString = keyValueStore.getString(bulkId + COMMAND);
-        try {
-            BulkCommand command = new BulkCommandJsonReader().readBulkCommandAsString(commandAsString);
-            status.setCommand(command);
-        } catch (IOException e) {
-            throw new NuxeoException("Unable to deserialize the bulk command=" + commandAsString, e);
-        }
+        BulkCommand command = BulkCommands.fromBytes(commandAsString.getBytes(UTF_8));
+        status.setCommand(command);
 
         Long scrolledDocumentCount = keyValueStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT);
         status.setCount(scrolledDocumentCount);

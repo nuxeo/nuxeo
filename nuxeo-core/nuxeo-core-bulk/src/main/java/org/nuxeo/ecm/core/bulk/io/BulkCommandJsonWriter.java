@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,13 +33,14 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
+import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.2
  */
+@Setup(mode = SINGLETON, priority = REFERENCE)
 public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkCommand> {
 
     public BulkCommandJsonWriter() {
@@ -46,7 +49,6 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
 
     @Override
     protected void writeEntityBody(BulkCommand command, JsonGenerator jg) throws IOException {
-        jg.writeStartObject();
         // everything is mandatory except parameters
         jg.writeStringField(COMMAND_USERNAME, command.getUsername());
         jg.writeStringField(COMMAND_REPOSITORY, command.getRepository());
@@ -55,10 +57,7 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
 
         Map<String, Serializable> params = command.getParams();
         if (!params.isEmpty()) {
-            jg.writeObjectFieldStart(COMMAND_PARAMS);
-            jg.writeRawValue(new ObjectMapper().writeValueAsString(params));
-            jg.writeEndObject();
+            jg.writeObjectField(COMMAND_PARAMS, params);
         }
-        jg.writeEndObject();
     }
 }

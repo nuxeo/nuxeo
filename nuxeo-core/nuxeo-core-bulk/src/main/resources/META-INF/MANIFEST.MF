@@ -4,4 +4,5 @@ Bundle-Name: Nuxeo Core Bulk
 Bundle-SymbolicName: org.nuxeo.ecm.core.bulk;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/bulk-component.xml,
- OSGI-INF/bulk-config.xml
+ OSGI-INF/bulk-config.xml,
+ OSGI-INF/bulk-io-contrib.xml

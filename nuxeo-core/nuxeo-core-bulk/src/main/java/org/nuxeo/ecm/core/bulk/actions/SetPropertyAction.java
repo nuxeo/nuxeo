@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
-import org.nuxeo.ecm.core.bulk.BulkCommandHelper;
+import org.nuxeo.ecm.core.bulk.BulkCommands;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -67,7 +67,7 @@ public class SetPropertyAction implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            BulkCommand command = BulkCommandHelper.getBulkCommandJson(record.getData());
+            BulkCommand command = BulkCommands.fromBytes(record.getData());
             String xpath = (String) command.getParams().get("xpath");
             Serializable value = command.getParams().get("value");
             String docId = record.getKey().split("/")[1];

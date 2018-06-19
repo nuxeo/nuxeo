@@ -112,7 +112,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
             try {
                 String bulkId = record.getKey();
-                BulkCommand command = BulkCommandHelper.getBulkCommandJson(record.getData());
+                BulkCommand command = BulkCommands.fromBytes(record.getData());
                 if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), BUILDING.toString())) {
                     log.error("Discard record: " + record + " because it's already building");
                     context.askForCheckpoint();
