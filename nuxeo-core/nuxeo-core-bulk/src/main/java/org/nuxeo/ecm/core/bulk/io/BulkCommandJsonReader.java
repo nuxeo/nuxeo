@@ -31,17 +31,18 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.2
@@ -94,8 +95,13 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
                 }
                 break;
             case ARRAY:
+                List<Map<String, Serializable>> arrayParams = StreamSupport.stream(paramNode.getValue().spliterator(),
+                        false).map(this::fillMap).collect(Collectors.toList());
+                params.put(paramNode.getKey(), (Serializable) arrayParams);
+                break;
             case OBJECT:
-                fillParams(paramNode.getValue(), params);
+                Map<String, Serializable> subParams = fillMap(paramNode.getValue());
+                params.put(paramNode.getKey(), (Serializable) subParams);
                 break;
             default:
                 throw new NuxeoException("Unknown node type : " + paramNode.getValue().getNodeType());
@@ -103,7 +109,10 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         }
     }
 
-    public BulkCommand readBulkCommandAsString(String command) throws IOException {
-        return readEntity(new ObjectMapper().readTree(command));
+    protected Map<String, Serializable> fillMap(JsonNode node) {
+        Map<String, Serializable> map = new HashMap<>();
+        fillParams(node, map);
+        return map;
     }
+
 }
