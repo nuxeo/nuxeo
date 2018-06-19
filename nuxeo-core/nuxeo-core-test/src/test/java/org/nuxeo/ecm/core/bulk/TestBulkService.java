@@ -18,17 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -98,16 +94,13 @@ public class TestBulkService {
 
         String title = "test title";
         String description = "test description";
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put("dc:title", title);
-        properties.put("dc:description", description);
 
-        String bulkId = service.submit(
-                new BulkCommand().withRepository(session.getRepositoryName())
-                                 .withUsername(session.getPrincipal().getName())
-                                 .withQuery(nxql)
-                                 .withAction("setProperties")
-                                 .withParams(singletonMap("properties", (Serializable) properties)));
+        String bulkId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
+                                                        .withUsername(session.getPrincipal().getName())
+                                                        .withQuery(nxql)
+                                                        .withAction("setProperties")
+                                                        .withParam("dc:title", title)
+                                                        .withParam("dc:description", description));
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
         try (LogTailer<Record> tailer = manager.createTailer("setProperties", "setProperties")) {
