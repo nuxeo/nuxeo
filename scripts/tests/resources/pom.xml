@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>8.10-HF31-SNAPSHOT</version>
+  <version>8.10-HF31</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Scripts Tests</name>
 
