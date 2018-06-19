@@ -22,21 +22,38 @@ import {WIDGETS, WIDGET_TYPES} from './widgets';
 class Column {
   constructor( connection, def, widget, defaultRenderer = Handsontable.renderers.TextRenderer) {
     Object.assign(this, {connection, def, widget, defaultRenderer});
+
+    // These widgets use all the properties for rendering
+    // so we must either replicate the logic here or just fall back to the sort property
+    if (this.widget.field === 'data') {
+      this.widget.field = this.def.properties.any.sortPropertyName;
+    }
+
     // Mixin widget
-    if (WIDGETS[widget.name]) {
+    if (WIDGETS[this.widget.name]) {
       Object.assign(this.widget, WIDGETS[widget.name]);
     }
+
+    // Mixin custom field widget
+    const field = this.widget.field;
+    if (CUSTOM_FIELDS[field] && CUSTOM_FIELDS[field].widget) {
+      Object.assign(this.widget, CUSTOM_FIELDS[field].widget);
+    }
+    if (CUSTOM_FIELDS[field] && CUSTOM_FIELDS[field].properties) {
+      Object.assign(this.widget.properties, CUSTOM_FIELDS[field].properties);
+    }
+
     // Mixin widget type
-    if (WIDGET_TYPES[widget.type]) {
-      Object.assign(this, WIDGET_TYPES[widget.type]);
+    if (WIDGET_TYPES[this.widget.type]) {
+      // reset custom type since it's not known to handsontable
+      const type = this.widget.type;
+      delete this.widget.type;
+      Object.assign(this.widget, WIDGET_TYPES[type]);
     }
-    // Mixin special field widget
-    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
-      Object.assign(this, SPECIAL_FIELDS[this.field].widget);
-    }
-    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].properties) {
-      Object.assign(this.widget.properties, SPECIAL_FIELDS[this.field].properties);
-    }
+
+    // Make widget properties available in the columns
+    Object.assign(this, this.widget);
+
     // Bind the renderer to this column
     if (this.renderer) {
       this.renderer = this.renderer.bind(this);
@@ -45,25 +62,13 @@ class Column {
     }
   }
 
-  get field() {
-    var field = this.widget.field;
-
-    // These widgets use all the properties for rendering
-    // so we must either replicate the logic here or just fall back to the sort property
-    if (field === 'data') {
-      field = this.def.properties.any.sortPropertyName;
-    }
-
-    return field;
-  }
-
   get data() {
     if (!this.field) {
       return null;
     }
     // Check for special field overrides
-    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].field) {
-      return SPECIAL_FIELDS[this.field].field;
+    if (CUSTOM_FIELDS[this.field] && CUSTOM_FIELDS[this.field].field) {
+      return CUSTOM_FIELDS[this.field].field;
     }
     return `properties.${this.field}`;
   }
@@ -71,7 +76,7 @@ class Column {
   get header() {
     var header = this.def.properties.any.label || this.field;
     if (this.def.properties.any.useFirstWidgetLabelAsColumnHeader) {
-      header = this.widget.label;
+      header = this.widget.label || this.widget.labels.any;
     }
     return header;
   }
@@ -81,7 +86,7 @@ class Column {
   }
 }
 
-const SPECIAL_FIELDS = {
+const CUSTOM_FIELDS = {
 
   // system metadata fields
   'dc:created': {
@@ -132,7 +137,13 @@ const SPECIAL_FIELDS = {
       dbl10n: false,
       localize: true
     }
-  }
+  },
+  'thumb:thumbnail': {
+    widget: {
+      readOnly: true,
+      type: 'image'
+    }
+  },
 };
 
 export {Column};
