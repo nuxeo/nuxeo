@@ -18,10 +18,8 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import static org.nuxeo.ecm.core.work.StreamWorkManager.KV_NAME;
 import static org.nuxeo.ecm.core.work.StreamWorkManager.STATETTL_DEFAULT_VALUE;
 import static org.nuxeo.ecm.core.work.StreamWorkManager.STATETTL_KEY;
-import static org.nuxeo.ecm.core.work.StreamWorkManager.STATE_SUFFIX;
 import static org.nuxeo.ecm.core.work.StreamWorkManager.STORESTATE_KEY;
 
 import java.io.ByteArrayInputStream;
@@ -42,8 +40,6 @@ import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -65,7 +61,9 @@ public class WorkComputation extends AbstractComputation {
 
     protected final Timer workTimer;
 
-    private final long stateTTL;
+    protected final long stateTTL;
+
+    protected Work work;
 
     public WorkComputation(String name) {
         super(name, 1, 0);
@@ -76,8 +74,15 @@ public class WorkComputation extends AbstractComputation {
     }
 
     @Override
+    public void signalStop() {
+        if (work != null) {
+            work.setWorkInstanceSuspending();
+        }
+    }
+
+    @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        Work work = deserialize(record.data);
+        work = deserialize(record.data);
         try {
             if (work.isIdempotent() && workIds.contains(work.getId())) {
                 log.warn("Duplicate work id: " + work.getId() + " skipping");
@@ -85,17 +90,23 @@ public class WorkComputation extends AbstractComputation {
                 boolean storeState = Boolean.parseBoolean(
                         Framework.getService(ConfigurationService.class).getProperty(STORESTATE_KEY));
                 if (storeState) {
-                    StreamWorkManager.setState(work.getId(), Work.State.RUNNING.toString(), stateTTL);
+                    if (WorkStateHelper.getState(work.getId()) != Work.State.SCHEDULED) {
+                        log.warn("work has been canceled, saving and returning");
+                        context.askForCheckpoint();
+                        return;
+                    }
+                    WorkStateHelper.setState(work.getId(), Work.State.RUNNING, stateTTL);
                 }
                 new WorkHolder(work).run();
                 if (storeState) {
-                    KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
-                    kvStore.put(work.getId() + STATE_SUFFIX, (String) null);
+                    WorkStateHelper.setState(work.getId(), null, stateTTL);
                 }
                 workIds.add(work.getId());
             }
             work.cleanUp(true, null);
-            context.askForCheckpoint();
+            if (!work.isWorkInstanceSuspended()) {
+                context.askForCheckpoint();
+            }
         } catch (Exception e) {
             if (ExceptionUtils.hasInterruptedCause(e)) {
                 Thread.currentThread().interrupt();
@@ -115,6 +126,7 @@ public class WorkComputation extends AbstractComputation {
             work.cleanUp(false, e);
         } finally {
             workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
+            work = null;
         }
     }
 

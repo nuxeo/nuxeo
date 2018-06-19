@@ -93,6 +93,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected static final String THREAD_PREFIX = "Nuxeo-Work-";
 
+    /**
+     * @since 10.2
+     */
     public static final String SHUTDOWN_DELAY_MS_KEY = "nuxeo.work.shutdown.delay.ms";
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -678,21 +681,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 deactivateQueueMetrics(queueId);
                 queuing.setActive(queueId, false);
                 // suspend all running work
-                boolean hasWorkRunning = false;
+                boolean hasRunningWork = false;
                 for (Work work : running) {
                     work.setWorkInstanceSuspending();
                     log.trace("suspending and rescheduling " + work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
-                    hasWorkRunning = true;
+                    hasRunningWork = true;
                 }
-                if (hasWorkRunning) {
+                if (hasRunningWork) {
+                    long shutdownDelay = Long.parseLong(
+                            Framework.getService(ConfigurationService.class).getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
                     // sleep for a given amount of time for works to have time to persist their state and stop properly
-                    long shutDowndelay = Long.parseLong(Framework.getService(ConfigurationService.class)
-                                                                 .getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
-                    if (shutDowndelay > 0) {
-                        Thread.sleep(shutDowndelay);
-                    }
+                    Thread.sleep(shutdownDelay);
                 }
                 shutdownNow();
             } finally {
@@ -738,6 +739,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             break;
         case CANCEL_SCHEDULED:
             getExecutor(queueId).removeScheduled(workId);
+            WorkStateHelper.setCanceled(work.getId());
             break;
         case IF_NOT_SCHEDULED:
         case IF_NOT_RUNNING_OR_SCHEDULED:

@@ -54,8 +54,6 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -88,16 +86,6 @@ public class StreamWorkManager extends WorkManagerImpl {
     /**
      * @since 10.2
      */
-    public static final String KV_NAME = "workManager";
-
-    /**
-     * @since 10.2
-     */
-    public static final String STATE_SUFFIX = ":state";
-
-    /**
-     * @since 10.2
-     */
     public static final String STATETTL_KEY = "nuxeo.stream.work.state.ttl.seconds";
 
     /**
@@ -109,23 +97,6 @@ public class StreamWorkManager extends WorkManagerImpl {
      * @since 10.2
      */
     public static final String STATETTL_DEFAULT_VALUE = "3600";
-
-    /**
-     * @since 10.2
-     */
-    protected static Work.State getState(String workId) {
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
-        String stringState = kvStore.getString(workId + STATE_SUFFIX);
-        return stringState == null ? null : Work.State.valueOf(stringState);
-    }
-
-    /**
-     * @since 10.2
-     */
-    protected static void setState(String workId, String state, long ttl) {
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
-        kvStore.put(workId + STATE_SUFFIX, state, ttl);
-    }
 
     protected Topology topology;
 
@@ -162,7 +133,14 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         if (CANCEL_SCHEDULED.equals(scheduling)) {
-            log.warn("Canceling a work is not supported by this impl, skipping work: " + work);
+            if (storeState) {
+                if (WorkStateHelper.getState(work.getId()) != null) {
+                    WorkStateHelper.setCanceled(work.getId());
+                }
+            } else {
+                log.warn(String.format("Canceling a work is only supported if '%s' is true. Skipping work: %s",
+                        STORESTATE_KEY, work));
+            }
             return;
         }
         if (afterCommit && scheduleAfterCommit(work, scheduling)) {
@@ -178,7 +156,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         String key = work.getPartitionKey();
         appender.append(key, Record.of(key, WorkComputation.serialize(work)));
         if (storeState) {
-            setState(work.getId(), Work.State.SCHEDULED.toString(), stateTTL);
+            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
     }
 
@@ -198,9 +176,9 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public void start(ComponentContext context) {
         init();
-        storeState = Boolean.parseBoolean(Framework.getService(ConfigurationService.class).getProperty(STORESTATE_KEY));
-        stateTTL = Long.parseLong(
-                Framework.getService(ConfigurationService.class).getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
+        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
+        storeState = configuration.isBooleanPropertyTrue(STORESTATE_KEY);
+        stateTTL = Long.parseLong(configuration.getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
     }
 
     @Override
@@ -400,7 +378,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         log.info("Shutdown WorkManager in " + timeUnit.toMillis(timeout) + " ms");
         shutdownInProgress = true;
         try {
-            boolean ret = streamProcessor.stop(Duration.ofMillis(timeUnit.toMillis(timeout)));
+            long shutdownDelay = Long.parseLong(Framework.getService(ConfigurationService.class)
+                                                         .getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
+            boolean ret = streamProcessor.stop(Duration.ofMillis(Math.max(timeUnit.toMillis(timeout), shutdownDelay)));
             if (!ret) {
                 log.error("Not able to stop worker pool within the timeout.");
             }
@@ -521,7 +501,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (!storeState) {
             return null;
         }
-        return getState(workId);
+        return WorkStateHelper.getState(workId);
     }
 
     @Override
