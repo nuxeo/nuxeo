@@ -98,6 +98,15 @@ public class BulkCommand implements Serializable {
         return Collections.unmodifiableMap(params);
     }
 
+    public BulkCommand withParam(String key, String value) {
+        params.put(key, value);
+        return this;
+    }
+
+    public String getParam(String key) {
+        return params.get(key);
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

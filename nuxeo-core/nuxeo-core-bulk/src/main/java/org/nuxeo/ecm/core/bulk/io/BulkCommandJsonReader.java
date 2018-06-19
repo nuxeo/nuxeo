@@ -55,7 +55,10 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         Function<String, String> getter = fieldName -> jn.get(fieldName).asText();
 
         Map<String, String> params = new HashMap<>();
-        fillParams(jn.get(COMMAND_PARAMS), params);
+        JsonNode commandNode = jn.get(COMMAND_PARAMS);
+        if (commandNode != null) {
+            fillParams(jn.get(COMMAND_PARAMS), params);
+        }
 
         return new BulkCommand().withUsername(getter.apply(COMMAND_USERNAME))
                                 .withRepository(getter.apply(COMMAND_REPOSITORY))
