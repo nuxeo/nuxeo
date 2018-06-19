@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.connect.tools</groupId>
     <artifactId>nuxeo-connect-tools</artifactId>
-    <version>8.10-HF31-SNAPSHOT</version>
+    <version>8.10-HF32-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-connect-tools-report-core</artifactId>
   <name>Nuxeo Connect Tools Report Core</name>
