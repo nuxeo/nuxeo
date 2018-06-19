@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-video-parent</artifactId>
-    <version>8.10-HF31-SNAPSHOT</version>
+    <version>8.10-HF32-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-video-convert</artifactId>
