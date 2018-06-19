@@ -4,7 +4,7 @@
   <require>org.nuxeo.runtime.stream.service</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="setProperty"/>
+    <action name="setProperties"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
@@ -16,7 +16,7 @@
     </streamProcessor>
 
     <!-- SetProperty processor -->
-    <streamProcessor name="setProperty" class="org.nuxeo.ecm.core.bulk.actions.SetPropertyAction" logConfig="bulk"
+    <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.actions.SetPropertiesAction" logConfig="bulk"
       defaultConcurrency="1" defaultPartitions="1"/>
   </extension>
 

@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
@@ -27,15 +27,10 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
@@ -59,7 +54,7 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         // everything is mandatory except parameters
         Function<String, String> getter = fieldName -> jn.get(fieldName).asText();
 
-        Map<String, Serializable> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         fillParams(jn.get(COMMAND_PARAMS), params);
 
         return new BulkCommand().withUsername(getter.apply(COMMAND_USERNAME))
@@ -69,50 +64,22 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
                                 .withParams(params);
     }
 
-    protected void fillParams(JsonNode node, Map<String, Serializable> params) {
+    protected void fillParams(JsonNode node, Map<String, String> params) {
         for (Iterator<Map.Entry<String, JsonNode>> paramsNode = node.fields(); paramsNode.hasNext();) {
             Map.Entry<String, JsonNode> paramNode = paramsNode.next();
             switch (paramNode.getValue().getNodeType()) {
             case STRING:
-                params.put(paramNode.getKey(), paramNode.getValue().textValue());
-                break;
             case BOOLEAN:
-                params.put(paramNode.getKey(), paramNode.getValue().booleanValue());
-                break;
             case NUMBER:
-                Number number = paramNode.getValue().numberValue();
-                if (number instanceof Long) {
-                    params.put(paramNode.getKey(), paramNode.getValue().longValue());
-                } else {
-                    params.put(paramNode.getKey(), paramNode.getValue().doubleValue());
-                }
-                break;
-            case BINARY:
-                try {
-                    params.put(paramNode.getKey(), paramNode.getValue().binaryValue());
-                } catch (IOException e) {
-                    throw new NuxeoException(e);
-                }
+            case BINARY: // binary will be converted to base64
+                params.put(paramNode.getKey(), paramNode.getValue().asText());
                 break;
             case ARRAY:
-                List<Map<String, Serializable>> arrayParams = StreamSupport.stream(paramNode.getValue().spliterator(),
-                        false).map(this::fillMap).collect(Collectors.toList());
-                params.put(paramNode.getKey(), (Serializable) arrayParams);
-                break;
             case OBJECT:
-                Map<String, Serializable> subParams = fillMap(paramNode.getValue());
-                params.put(paramNode.getKey(), (Serializable) subParams);
-                break;
             default:
-                throw new NuxeoException("Unknown node type : " + paramNode.getValue().getNodeType());
+                throw new NuxeoException("Node type=" + paramNode.getValue().getNodeType() + " is not supported");
             }
         }
-    }
-
-    protected Map<String, Serializable> fillMap(JsonNode node) {
-        Map<String, Serializable> map = new HashMap<>();
-        fillParams(node, map);
-        return map;
     }
 
 }

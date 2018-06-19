@@ -55,7 +55,7 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
         jg.writeStringField(COMMAND_QUERY, command.getQuery());
         jg.writeStringField(COMMAND_ACTION, command.getAction());
 
-        Map<String, Serializable> params = command.getParams();
+        Map<String, String> params = command.getParams();
         if (!params.isEmpty()) {
             jg.writeObjectField(COMMAND_PARAMS, params);
         }
