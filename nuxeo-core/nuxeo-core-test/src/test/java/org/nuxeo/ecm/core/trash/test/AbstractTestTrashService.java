@@ -124,7 +124,7 @@ public abstract class AbstractTestTrashService {
         assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(doc1), principal));
         assertFalse(trashService.canPurgeOrUntrash(Collections.singletonList(doc2), principal));
 
-        TrashInfo info = (TrashInfo) trashService.getTrashInfo(Arrays.asList(fold, doc1, doc3), principal, false, false);
+        TrashInfo info = trashService.getTrashInfo(Arrays.asList(fold, doc1, doc3), principal, false, false);
         assertEquals(3, info.docs.size());
         assertEquals(2, info.rootRefs.size());
         assertEquals(new HashSet<>(Arrays.asList(new Path("/fold"), new Path("/doc3"))), info.rootPaths);

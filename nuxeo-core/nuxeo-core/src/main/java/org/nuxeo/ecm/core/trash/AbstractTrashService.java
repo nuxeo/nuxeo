@@ -290,6 +290,11 @@ public abstract class AbstractTrashService implements TrashService {
         return session.query(String.format(TRASHED_QUERY, parent.getId()));
     }
 
+    @Override
+    public void untrashDocuments(List<DocumentModel> docs) {
+        undeleteDocuments(docs);
+    }
+
     /**
      * Matches names of documents in the trash, created by {@link #trashDocuments(List)}.
      */
