@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-platform-tag-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>8.10-HF31-SNAPSHOT</version>
+    <version>8.10-HF32-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-tag-api</artifactId>

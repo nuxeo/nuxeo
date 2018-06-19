@@ -26,13 +26,13 @@
 
 MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
-NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-server-tomcat/target/nuxeo-server-8.10-HF31-SNAPSHOT-tomcat; pwd -P)}
+NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-server-tomcat/target/nuxeo-server-8.10-HF32-SNAPSHOT-tomcat; pwd -P)}
 
 if [ "x$1" = "xadd-dm" ]; then
     cp "$NUXEO_HOME/nxserver/data/installAfterRestart-DM.log" "$NUXEO_HOME/nxserver/data/installAfterRestart.log"
     exit 0
 fi
 
-cp target/nuxeo-launcher-8.10-HF31-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
+cp target/nuxeo-launcher-8.10-HF32-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
 cp ../nuxeo-server-tomcat/src/main/resources/tomcat/bin/nuxeoctl "$NUXEO_HOME"/bin/
 "$NUXEO_HOME"/bin/nuxeoctl $@

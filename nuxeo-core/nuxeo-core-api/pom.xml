@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>8.10-HF31-SNAPSHOT</version>
+    <version>8.10-HF32-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-core-api</artifactId>
   <name>Nuxeo Core API</name>
