@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,7 +61,8 @@ import org.nuxeo.runtime.trackers.files.FileEvent;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.event.test:test-workmanager-config.xml" })
+@Deploy({ "org.nuxeo.runtime.kv", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.event.test:test-workmanager-config.xml" })
 public class WorkManagerTest {
 
     protected static class CreateFile extends AbstractWork implements Serializable {
@@ -115,7 +115,7 @@ public class WorkManagerTest {
 
         protected MetricsTracker(String queueId) {
             this.queueId = queueId;
-            this.initialMetrics = service.getMetrics(QUEUE);
+            initialMetrics = service.getMetrics(QUEUE);
         }
 
         public void assertDiff(long scheduled, long running, long completed, long canceled) {
@@ -520,17 +520,16 @@ public class WorkManagerTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.event.test:test-shutdown-delay.xml")
-    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
-        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        String shutdownDelayAsString = configuration.getProperty(WorkManagerImpl.SHUTDOWN_DELAY_MS_KEY, "0");
-        int shutdownDelay = Integer.parseInt(shutdownDelayAsString);
-        assertEquals(5000, shutdownDelay);
-        service.schedule(new SleepWork(100000));
-        long start = System.currentTimeMillis();
-        service.shutdown(0, TimeUnit.SECONDS);
-        long shutdownDuration = System.currentTimeMillis() - start;
-        assertTrue(shutdownDuration > shutdownDelay);
+    public void testRunningWorkIsCanceled() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        service.schedule(new SleepWork(10000, false, "1"));
+        // ensure the job is running
+        Thread.sleep(100);
+        tracker.assertDiff(0, 1, 0, 0);
+        assertFalse(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
+        service.schedule(new SleepWork(10000, false, "1"), WorkManager.Scheduling.CANCEL_SCHEDULED);
+        assertTrue(WorkStateHelper.isCanceled("1"));
+        assertTrue(service.awaitCompletion(100, TimeUnit.MILLISECONDS));
     }
 
 }
