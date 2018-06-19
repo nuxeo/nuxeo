@@ -60,6 +60,7 @@ import org.nuxeo.runtime.trackers.files.FileEvent;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
+@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 public class WorkManagerTest {
@@ -520,7 +521,18 @@ public class WorkManagerTest {
         long start = System.currentTimeMillis();
         service.shutdown(0, TimeUnit.SECONDS);
         long shutdownDuration = System.currentTimeMillis() - start;
-        assertTrue(shutdownDuration > shutdownDelay);
+        assertTrue(shutdownDuration > shutdownDelay && shutdownDuration < shutdownDelay + 1000);
+    }
+
+    @Test
+    public void testRunningWorkIsCanceled() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        service.schedule(new SleepWork(10000, "1"));
+        tracker.assertDiff(0, 1, 0, 0);
+        assertFalse(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
+        service.schedule(new SleepWork(10000, "1"), WorkManager.Scheduling.CANCEL_SCHEDULED);
+        assertTrue(WorkStateHelper.isCanceled("1"));
+        assertTrue(service.awaitCompletion(100, TimeUnit.MILLISECONDS));
     }
 
 }

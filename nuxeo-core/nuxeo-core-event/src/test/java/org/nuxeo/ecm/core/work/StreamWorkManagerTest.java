@@ -107,7 +107,12 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         tracker.assertDiff(0, 0, 6, 0);
     }
 
+    /**
+     * This test cannot be run with storeState enabled.<br>
+     * When the first work finishes, its status is not scheduled anymore and following works are not run.
+     */
     @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-disable-storestate.xml")
     public void testWorkNonIdempotent() throws InterruptedException {
         MetricsTracker tracker = new MetricsTracker();
         SleepWork work = new SleepWork(1000, false);
@@ -154,24 +159,9 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Test
     public void testNoConcurrentJobsWithSameId() throws Exception {
         // default workmanager guaranty that works with the same id can not be scheduled while another is running
-        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or completed)
+        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
+        // completed)
         super.testNoConcurrentJobsWithSameId();
-    }
-
-    @Override
-    @Ignore
-    @Test
-    public void testWorkManagerCancelScheduling() throws Exception {
-        // Canceling is not supported, but we can not assume on duration with random id
-        super.testWorkManagerCancelScheduling();
-    }
-
-    @Override
-    @Ignore
-    @Test
-    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
-        // shutdown duration does not concern StreamWorkManager
-        super.testSleepDurationTakenIntoAccount();
     }
 
 }
