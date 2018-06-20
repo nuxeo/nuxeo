@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>7.10-HF41-SNAPSHOT</version>
+    <version>7.10-HF41</version>
   </parent>
 
   <artifactId>nuxeo-addons-parent</artifactId>
@@ -19,53 +19,53 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>7.10-HF41-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>7.10-HF41-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.businessdays.version>7.10-HF41-SNAPSHOT</nuxeo.businessdays.version>
-    <nuxeo.shell.version>7.10-HF41-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webembedded.version>7.10-HF41-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.fsconnectors.version>7.10-HF41-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.classification.version>7.10-HF41-SNAPSHOT</nuxeo.classification.version>
-    <nuxeo.importer.version>7.10-HF41-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>7.10-HF41-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>7.10-HF41-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.audio.version>7.10-HF41-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>7.10-HF41-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.categorization.version>7.10-HF41-SNAPSHOT</nuxeo.categorization.version>
-    <nuxeo.replication.version>7.10-HF41-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>7.10-HF41-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.suggestbox.version>7.10-HF41-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.dam.version>7.10-HF41-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.quota.version>7.10-HF41-SNAPSHOT</nuxeo.quota.version>
-    <nuxeo.binary.metadata.version>7.10-HF41-SNAPSHOT</nuxeo.binary.metadata.version>
-    <nuxeo.web.mobile.version>7.10-HF41-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>7.10-HF41-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>7.10-HF41-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>7.10-HF41-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>7.10-HF41-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>7.10-HF41-SNAPSHOT</nuxeo.agenda.version>
-    <nuxeo.templates.version>7.10-HF41-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.csv.version>7.10-HF41-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.drive.version>7.10-HF41-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.resources.compat.version>7.10-HF41-SNAPSHOT</nuxeo.resources.compat.version>
-    <nuxeo.dmk.version>7.10-HF41-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.style.guide.version>7.10-HF41-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.imaging.recompute.version>7.10-HF41-SNAPSHOT</nuxeo.imaging.recompute.version>
-    <nuxeo.box.version>7.10-HF41-SNAPSHOT</nuxeo.box.version>
-    <nuxeo.easyshare.version>7.10-HF41-SNAPSHOT</nuxeo.easyshare.version>
-    <nuxeo.logs.viewer.version>7.10-HF41-SNAPSHOT</nuxeo.logs.viewer.version>
-    <nuxeo.spreadsheet.version>7.10-HF41-SNAPSHOT</nuxeo.spreadsheet.version>
-    <nuxeo.theme.compat.version>7.10-HF41-SNAPSHOT</nuxeo.theme.compat.version>
-    <nuxeo.datadog.reporter.version>7.10-HF41-SNAPSHOT</nuxeo.datadog.reporter.version>
-    <nuxeo.review.workflows.dashboards.version>7.10-HF41-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
-    <nuxeo.playground.version>7.10-HF41-SNAPSHOT</nuxeo.playground.version>
-    <nuxeo.fsexporter.version>7.10-HF41-SNAPSHOT</nuxeo.fsexporter.version>
-    <nuxeo.javaagent.version>7.10-HF41-SNAPSHOT</nuxeo.javaagent.version>
-    <nuxeo.target.platforms.version>7.10-HF41-SNAPSHOT</nuxeo.target.platforms.version>
+    <nuxeo.addons.version>7.10-HF41</nuxeo.addons.version>
+    <nuxeo.opencmis.version>7.10-HF41</nuxeo.opencmis.version>
+    <nuxeo.businessdays.version>7.10-HF41</nuxeo.businessdays.version>
+    <nuxeo.shell.version>7.10-HF41</nuxeo.shell.version>
+    <nuxeo.webembedded.version>7.10-HF41</nuxeo.webembedded.version>
+    <nuxeo.fsconnectors.version>7.10-HF41</nuxeo.fsconnectors.version>
+    <nuxeo.classification.version>7.10-HF41</nuxeo.classification.version>
+    <nuxeo.importer.version>7.10-HF41</nuxeo.importer.version>
+    <nuxeo.routing.version>7.10-HF41</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>7.10-HF41</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>7.10-HF41</nuxeo.audio.version>
+    <nuxeo.video.version>7.10-HF41</nuxeo.video.version>
+    <nuxeo.categorization.version>7.10-HF41</nuxeo.categorization.version>
+    <nuxeo.replication.version>7.10-HF41</nuxeo.replication.version>
+    <nuxeo.activity.version>7.10-HF41</nuxeo.activity.version>
+    <nuxeo.suggestbox.version>7.10-HF41</nuxeo.suggestbox.version>
+    <nuxeo.dam.version>7.10-HF41</nuxeo.dam.version>
+    <nuxeo.quota.version>7.10-HF41</nuxeo.quota.version>
+    <nuxeo.binary.metadata.version>7.10-HF41</nuxeo.binary.metadata.version>
+    <nuxeo.web.mobile.version>7.10-HF41</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>7.10-HF41</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>7.10-HF41</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>7.10-HF41</nuxeo.user.registration.version>
+    <nuxeo.rating.version>7.10-HF41</nuxeo.rating.version>
+    <nuxeo.agenda.version>7.10-HF41</nuxeo.agenda.version>
+    <nuxeo.templates.version>7.10-HF41</nuxeo.templates.version>
+    <nuxeo.csv.version>7.10-HF41</nuxeo.csv.version>
+    <nuxeo.drive.version>7.10-HF41</nuxeo.drive.version>
+    <nuxeo.resources.compat.version>7.10-HF41</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>7.10-HF41</nuxeo.dmk.version>
+    <nuxeo.style.guide.version>7.10-HF41</nuxeo.style.guide.version>
+    <nuxeo.imaging.recompute.version>7.10-HF41</nuxeo.imaging.recompute.version>
+    <nuxeo.box.version>7.10-HF41</nuxeo.box.version>
+    <nuxeo.easyshare.version>7.10-HF41</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>7.10-HF41</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>7.10-HF41</nuxeo.spreadsheet.version>
+    <nuxeo.theme.compat.version>7.10-HF41</nuxeo.theme.compat.version>
+    <nuxeo.datadog.reporter.version>7.10-HF41</nuxeo.datadog.reporter.version>
+    <nuxeo.review.workflows.dashboards.version>7.10-HF41</nuxeo.review.workflows.dashboards.version>
+    <nuxeo.playground.version>7.10-HF41</nuxeo.playground.version>
+    <nuxeo.fsexporter.version>7.10-HF41</nuxeo.fsexporter.version>
+    <nuxeo.javaagent.version>7.10-HF41</nuxeo.javaagent.version>
+    <nuxeo.target.platforms.version>7.10-HF41</nuxeo.target.platforms.version>
 
     <!-- optional addons -->
-    <nuxeo.semantic.entities.version>7.10-HF41-SNAPSHOT</nuxeo.semantic.entities.version>
-    <nuxeo.sync.version>7.10-HF41-SNAPSHOT</nuxeo.sync.version>
+    <nuxeo.semantic.entities.version>7.10-HF41</nuxeo.semantic.entities.version>
+    <nuxeo.sync.version>7.10-HF41</nuxeo.sync.version>
     <!-- end of optional addons -->
   </properties>
 
