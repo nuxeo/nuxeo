@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>7.10-HF41-SNAPSHOT</version>
+    <version>7.10-HF41</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
