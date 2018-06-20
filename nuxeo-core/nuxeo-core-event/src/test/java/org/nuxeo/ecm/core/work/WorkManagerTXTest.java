@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,15 +53,12 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 public class WorkManagerTXTest {
 
-    protected static final String CATEGORY = "SleepWork";
-
-    protected static final String QUEUE = "SleepWork";
-
     @Inject
     protected WorkManager service;
 
     void assertMetrics(long scheduled, long running, long completed, long cancelled) {
-        assertEquals(new WorkQueueMetrics(QUEUE, scheduled, running, completed, cancelled), service.getMetrics(QUEUE));
+        assertEquals(new WorkQueueMetrics(SleepWork.CATEGORY, scheduled, running, completed, cancelled),
+                service.getMetrics(SleepWork.CATEGORY));
     }
 
     @Before
@@ -81,7 +78,7 @@ public class WorkManagerTXTest {
     @Test
     public void testWorkManagerPostCommit() throws Exception {
         int duration = 1000; // 1s
-        SleepWork work = new SleepWork(duration, false);
+        SleepWork work = new SleepWork(duration);
         service.schedule(work, true);
         assertMetrics(0, 0, 0, 0);
 
@@ -95,7 +92,7 @@ public class WorkManagerTXTest {
     public void testWorkManagerRollback() throws Exception {
         Assert.assertTrue(TransactionHelper.isTransactionActive());
         int duration = 1000; // 1s
-        SleepWork work = new SleepWork(duration, false);
+        SleepWork work = new SleepWork(duration);
         service.schedule(work, true);
         assertMetrics(0, 0, 0, 0);
 

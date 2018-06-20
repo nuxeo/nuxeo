@@ -54,11 +54,11 @@ public class WorkStateHelper {
     }
 
     protected static void setCanceled(String workId) {
-        setState(workId, CANCELED, 0);
+        getKeyValueStore().put(getStateKey(workId), CANCELED, 0);
     }
 
-    protected static void setState(String workId, String state, long ttl) {
-        getKeyValueStore().put(getStateKey(workId), state, ttl);
+    protected static void setState(String workId, Work.State state, long ttl) {
+        getKeyValueStore().put(getStateKey(workId), state.toString(), ttl);
     }
 
     private WorkStateHelper() {

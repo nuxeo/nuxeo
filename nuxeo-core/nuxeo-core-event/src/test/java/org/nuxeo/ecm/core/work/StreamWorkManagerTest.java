@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
@@ -49,6 +48,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
 public class StreamWorkManagerTest extends WorkManagerTest {
+
+    @Override
+    protected int getDurationMillis() {
+        return 1000;
+    }
 
     @Override
     protected void assertState(Work.State state, SleepWork work) {
@@ -89,22 +93,20 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Test
     public void testWorkIdempotent() throws InterruptedException {
         MetricsTracker tracker = new MetricsTracker();
-        SleepWork work = new SleepWork(1000, false);
+        SleepWork work = new SleepWork(getDurationMillis());
         assertTrue(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
-        // schedule again the exact same work 5 times
-        service.schedule(work);
-        service.schedule(work);
+        // schedule again the exact same work 3 times
         service.schedule(work);
         service.schedule(work);
         service.schedule(work);
 
         // works with the same id are skipped immediately and marked as completed, we don't have to wait 5s
-        assertTrue(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 6, 0);
+        assertTrue(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 4, 0);
     }
 
     /**
@@ -115,33 +117,31 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-disable-storestate.xml")
     public void testWorkNonIdempotent() throws InterruptedException {
         MetricsTracker tracker = new MetricsTracker();
-        SleepWork work = new SleepWork(1000, false);
+        SleepWork work = new SleepWork(getDurationMillis());
         work.setIdempotent(false);
         assertFalse(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
+        assertTrue(service.awaitCompletion(5000, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
-        // schedule again the exact same work 5 times
-        service.schedule(work);
-        service.schedule(work);
+        // schedule again the exact same work 3 times
         service.schedule(work);
         service.schedule(work);
         service.schedule(work);
 
         // works with the same id are not skipped we need to wait more
-        assertFalse(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
+        assertFalse(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
 
-        assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
-        tracker.assertDiff(0, 0, 6, 0);
+        assertTrue(service.awaitCompletion(getDurationMillis() * 3, TimeUnit.SECONDS));
+        tracker.assertDiff(0, 0, 4, 0);
     }
 
     @Test
     public void testWorkIdempotentConcurrent() throws InterruptedException {
         MetricsTracker tracker = new MetricsTracker();
         tracker.assertDiff(0, 0, 0, 0);
-        SleepWork work1 = new SleepWork(1000, false);
-        SleepWork work2 = new SleepWork(1000, false);
+        SleepWork work1 = new SleepWork(getDurationMillis());
+        SleepWork work2 = new SleepWork(getDurationMillis());
         service.schedule(work1);
         service.schedule(work1);
         service.schedule(work1);
@@ -150,7 +150,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         service.schedule(work2);
         // we don't know if work1 and work2 are executed on the same thread
         // but we assume that the max duration is work1 + work2 because there is only one invocation of each
-        assertTrue(service.awaitCompletion(2500, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 3 - 200, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 6, 0);
     }
 
@@ -162,6 +162,14 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
         // completed)
         super.testNoConcurrentJobsWithSameId();
+    }
+
+    @Override
+    @Ignore()
+    @Test
+    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
+        // since StreamWorkManager does not wait a fixed amount of time it cannot be tested as its parent is
+        throw new UnsupportedOperationException();
     }
 
 }

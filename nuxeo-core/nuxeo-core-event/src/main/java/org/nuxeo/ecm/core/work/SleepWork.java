@@ -18,12 +18,15 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Simple work that just sleeps, mostly used for tests.
  */
 public class SleepWork extends AbstractWork {
+
+    public static final String CATEGORY = "SleepWork";
 
     private static final long serialVersionUID = 1L;
 
@@ -41,9 +44,28 @@ public class SleepWork extends AbstractWork {
      * Creates a work instance that does nothing but sleep.
      *
      * @param durationMillis the sleep duration
+     * @since 10.2
+     */
+    public SleepWork(long durationMillis, String category, String id) {
+        super(id);
+        this.durationMillis = durationMillis;
+        this.category = category;
+        partitionKey = String.valueOf(count.incrementAndGet());
+        setProgress(Progress.PROGRESS_0_PC);
+    }
+
+    /**
+     * @since 10.2
+     */
+    public SleepWork(long durationMillis, String id) {
+        this(durationMillis, CATEGORY, id);
+    }
+
+    /**
+     * @since 10.2
      */
     public SleepWork(long durationMillis) {
-        this(durationMillis, "SleepWork", false);
+        this(durationMillis, CATEGORY, UUID.randomUUID().toString());
     }
 
     /**
@@ -52,30 +74,35 @@ public class SleepWork extends AbstractWork {
      *
      * @param durationMillis the sleep duration
      * @param debug {@code true} for debug
+     * @deprecated since 10.2 debug flag is unused
      */
+    @Deprecated
     public SleepWork(long durationMillis, boolean debug) {
-        this(durationMillis, "SleepWork", debug);
+        this(durationMillis, null, CATEGORY);
     }
 
+    /**
+     * @deprecated since 10.2 debug flag is unused
+     */
+    @Deprecated
     public SleepWork(long durationMillis, boolean debug, String id) {
-        this(durationMillis, "SleepWork", debug, id);
+        this(durationMillis, null, id);
     }
 
+    /**
+     * @deprecated since 10.2 debug flag is unused
+     */
+    @Deprecated
     public SleepWork(long durationMillis, String category, boolean debug) {
-        super();
-        init(durationMillis, category, debug);
+        this(durationMillis, category, CATEGORY);
     }
 
+    /**
+     * @deprecated since 10.2 debug flag is unused
+     */
+    @Deprecated
     public SleepWork(long durationMillis, String category, boolean debug, String id) {
-        super(id);
-        init(durationMillis, category, debug);
-    }
-
-    private void init(long durationMillis, String category, boolean debug) {
-        this.durationMillis = durationMillis;
-        this.category = category;
-        this.partitionKey = String.valueOf(count.incrementAndGet());
-        setProgress(Progress.PROGRESS_0_PC);
+        this(durationMillis, category, id);
     }
 
     @Override
@@ -138,7 +165,7 @@ public class SleepWork extends AbstractWork {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + (getId().length() > 10 ? "" : (getId() + ", ")) + durationMillis
+        return getClass().getSimpleName() + "(" + (getId().length() > 10 ? "" : getId() + ", ") + durationMillis
                 + "ms, " + getProgress() + ")";
     }
 
