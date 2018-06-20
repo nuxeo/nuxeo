@@ -458,6 +458,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return true;
     }
 
+    /**
+     * @deprecated since 10.2 because unused
+     */
+    @Deprecated
     protected long remainingMillis(long t0, long delay) {
         long d = System.currentTimeMillis() - t0;
         if (d > delay) {
@@ -466,6 +470,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return delay - d;
     }
 
+    /**
+     * @deprecated since 10.2 because unused
+     */
+    @Deprecated
     protected synchronized void removeExecutor(String queueId) {
         executors.remove(queueId);
     }
@@ -617,7 +625,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          *
          * @param work the work to execute
          * @see #execute(Runnable)
+         * @deprecated since 10.2 because unused
          */
+        @Deprecated
         public void execute(Work work) {
             scheduledCount.inc();
             submit(work);
@@ -681,18 +691,19 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 deactivateQueueMetrics(queueId);
                 queuing.setActive(queueId, false);
                 // suspend all running work
+                boolean hasRunningWork = false;
                 for (Work work : running) {
                     work.setWorkInstanceSuspending();
                     log.trace("suspending and rescheduling " + work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
+                    hasRunningWork = true;
                 }
-                long shutdownDelay = Long.parseLong(
-                        Framework.getService(ConfigurationService.class).getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
-                long shutdownTime = System.currentTimeMillis() + shutdownDelay;
-                while (!running.isEmpty() && shutdownTime < System.currentTimeMillis()) {
+                if (hasRunningWork) {
+                    long shutdownDelay = Long.parseLong(
+                            Framework.getService(ConfigurationService.class).getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
                     // sleep for a given amount of time for works to have time to persist their state and stop properly
-                    Thread.sleep(100);
+                    Thread.sleep(shutdownDelay);
                 }
                 shutdownNow();
             } finally {
