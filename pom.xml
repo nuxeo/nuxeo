@@ -3,7 +3,7 @@
  <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>7.10-HF41-SNAPSHOT</version>
+    <version>7.10-HF41</version>
   </parent>
  <groupId>org.nuxeo.ecm.platform</groupId>
  <artifactId>nuxeo-platform-signature-parent</artifactId>
