@@ -44,7 +44,7 @@ public class TestCountProcessor implements StreamProcessorTopology {
 
     protected static class CountComputation extends AbstractComputation {
 
-        protected int count = 1;
+        protected int count = 0;
 
         public CountComputation(String name) {
             super(name, 1, 1);
@@ -52,7 +52,8 @@ public class TestCountProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            context.produceRecord("o1", record.key, BigInteger.valueOf(count++).toByteArray());
+            count += record.getKey().split("/")[1].split("_").length;
+            context.produceRecord("o1", record.key, BigInteger.valueOf(count).toByteArray());
             context.askForCheckpoint();
         }
     }

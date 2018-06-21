@@ -73,10 +73,8 @@ public class TestBulkService {
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
-            for (int i = 1; i <= 10; i++) {
-                LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
-                assertEquals(i, new BigInteger(logRecord.message().getData()).intValue());
-            }
+            LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
+            assertEquals(10, new BigInteger(logRecord.message().getData()).intValue());
         }
 
         BulkStatus status = service.getStatus(bulkId);

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static java.lang.Integer.max;
+import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
@@ -62,9 +64,13 @@ public class StreamBulkScroller implements StreamProcessorTopology {
 
     public static final String SCROLL_KEEP_ALIVE_SECONDS_OPT = "scrollKeepAlive";
 
+    public static final String BUCKET_SIZE_OPT = "bucketSize";
+
     public static final int DEFAULT_SCROLL_BATCH_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEPALIVE_SECONDS = 60;
+
+    public static final int DEFAULT_BUCKET_SIZE = 50;
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -72,6 +78,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         int scrollBatchSize = getOptionAsInteger(options, SCROLL_BATCH_SIZE_OPT, DEFAULT_SCROLL_BATCH_SIZE);
         int scrollKeepAliveSeconds = getOptionAsInteger(options, SCROLL_KEEP_ALIVE_SECONDS_OPT,
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
+        int bucketSize = getOptionAsInteger(options, BUCKET_SIZE_OPT, DEFAULT_BUCKET_SIZE);
         // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         List<String> actions = service.getActions();
@@ -85,7 +92,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         return Topology.builder()
                        .addComputation( //
                                () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, actions.size(),
-                                       scrollBatchSize, scrollKeepAliveSeconds), //
+                                       scrollBatchSize, scrollKeepAliveSeconds, bucketSize), //
                                mapping)
                        .build();
     }
@@ -96,11 +103,24 @@ public class StreamBulkScroller implements StreamProcessorTopology {
 
         protected final int scrollKeepAliveSeconds;
 
+        protected final int bucketSize;
+
+        protected final List<String> documentIds;
+
+        /**
+         * @param name the computation name
+         * @param nbOutputStreams the number of registered bulk action streams
+         * @param scrollBatchSize the batch size to scroll
+         * @param scrollKeepAliveSeconds the scroll lifetime
+         * @param bucketSize the number of document to send per bucket
+         */
         public BulkDocumentScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize,
-                int scrollKeepAliveSeconds) {
+                int scrollKeepAliveSeconds, int bucketSize) {
             super(name, 1, nbOutputStreams);
             this.scrollBatchSize = scrollBatchSize;
             this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
+            this.bucketSize = bucketSize;
+            documentIds = new ArrayList<>(max(scrollBatchSize, bucketSize));
         }
 
         @Override
@@ -126,24 +146,43 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                     long documentCount = 0;
                     while (scroll.hasResults()) {
                         List<String> docIds = scroll.getResults();
-                        // send these ids as keys to the appropriate stream
-                        // key will be bulkId/docId
-                        // value/data is a BulkCommand serialized as JSON
-                        docIds.forEach(docId -> context.produceRecord(command.getAction(),
-                                bulkId + '/' + docId, record.getData()));
+                        documentIds.addAll(docIds);
+                        while (documentIds.size() >= bucketSize) {
+                            produceBucket(context, command.getAction(), bulkId, record.getData());
+                        }
+
                         documentCount += docIds.size();
-                        context.askForCheckpoint();
                         // next batch
                         scroll = session.scroll(scroll.getScrollId());
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
                     }
+
+                    // send remaining document ids
+                    // there's at most one record because we loop while scrolling
+                    if (!documentIds.isEmpty()) {
+                        produceBucket(context, command.getAction(), bulkId, record.getData());
+                    }
+
                     kvStore.put(bulkId + STATE, COMPLETED.toString());
                     kvStore.put(bulkId + SCROLLED_DOCUMENT_COUNT, documentCount);
                 }
             } catch (NuxeoException e) {
                 log.error("Discard invalid record: " + record, e);
             }
+        }
+
+        /**
+         * Produces a bucket as a record to appropriate bulk action stream.
+         */
+        protected void produceBucket(ComputationContext context, String action, String bulkActionId, byte[] data) {
+            List<String> docIds = documentIds.subList(0, min(bucketSize, documentIds.size()));
+            // send these ids as keys to the appropriate stream
+            // key will be bulkActionId/docIds
+            // value/data is a BulkCommand serialized as JSON
+            context.produceRecord(action, bulkActionId + "/" + String.join("_", docIds), data);
+            context.askForCheckpoint();
+            docIds.clear();
         }
     }
 
