@@ -26,7 +26,10 @@ import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
+@Features(CoreFeature.class)
 public class DocumentTypeJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentTypeJsonWriter, DocumentType> {
 
     public DocumentTypeJsonWriterTest() {

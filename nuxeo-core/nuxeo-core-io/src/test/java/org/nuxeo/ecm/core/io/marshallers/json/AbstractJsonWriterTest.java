@@ -28,10 +28,10 @@ import java.lang.reflect.Type;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,13 +62,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(CoreIOFeature.class)
 public abstract class AbstractJsonWriterTest<WriterClass extends Writer<MarshalledType>, MarshalledType> {
 
-    @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml")
-    @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/marshallers-contrib.xml")
-    public static abstract class Local<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
-            AbstractJsonWriterTest<WriterClass, MarshalledType> {
+    public static abstract class Local<WriterClass extends Writer<MarshalledType>, MarshalledType>
+            extends AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
         public Local(Class<WriterClass> writerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(writerClass, marshalledClass, marshalledGenericType);
@@ -81,9 +79,8 @@ public abstract class AbstractJsonWriterTest<WriterClass extends Writer<Marshall
     }
 
     @Deploy("org.nuxeo.runtime.stream")
-    @Deploy("org.nuxeo.ecm.core.io")
-    public static abstract class External<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
-            AbstractJsonWriterTest<WriterClass, MarshalledType> {
+    public static abstract class External<WriterClass extends Writer<MarshalledType>, MarshalledType>
+            extends AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
         public External(Class<WriterClass> writerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(writerClass, marshalledClass, marshalledGenericType);

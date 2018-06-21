@@ -43,10 +43,10 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.ThreadSafeRenderingContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RandomBug;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RandomBug.Feature.class)
+@Features(RuntimeFeature.class)
 public class TestContextInjection {
 
     private final RenderingContext ctx = RenderingContext.CtxBuilder.get();

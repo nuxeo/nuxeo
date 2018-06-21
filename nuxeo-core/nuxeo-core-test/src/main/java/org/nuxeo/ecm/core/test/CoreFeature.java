@@ -101,6 +101,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 public class CoreFeature extends SimpleFeature {
 
