@@ -130,7 +130,7 @@
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
-    <richfaces.version>4.5.0.Alpha3</richfaces.version>
+    <richfaces.version>4.5.0.Alpha3-NX2</richfaces.version>
     <seam.version>2.3.1.Final</seam.version>
     <nxseam.version>2.3.1.Final.NX03</nxseam.version>
     <nxseam.remoting.version>2.3.1.Final.NX02</nxseam.remoting.version>
