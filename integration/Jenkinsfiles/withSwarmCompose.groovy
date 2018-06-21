@@ -15,7 +15,7 @@ def call(String name, String file, Closure body) {
         return "docker-compose -f $file -f ${WORKSPACE}@tmp/docker-compose-swarm.yml"
     }.call()
 
-    withEnv(["COMPOSE_PROJECT_NAME=$name", "SWARM=${WORKSPACE}@tmp", "JENKINS_MASTER=$master"]) {
+    withEnv(["COMPOSE_PROJECT_NAME=$name", "JENKINS_MASTER=$master"]) {
         withCredentials([string(credentialsId: 'jenkins-api-token', variable: 'JENKINS_API_TOKEN')]) {
             try {
                 sh """#!/bin/bash -ex                                                                                                                                                                                                   $compose pull                                                                                                                                                                                                       $compose build --no-cache                                                                                                                                                                                           $compose up -d --no-color --no-build                                                                                                                                                                            """

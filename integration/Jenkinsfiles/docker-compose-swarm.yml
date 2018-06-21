@@ -3,13 +3,15 @@ version: '3'
 services:
 
   swarm:
-    build:
-       context: ${SWARM}/jenkins-slave-swarm
-       dockerfile: Dockerfile
+    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /opt/jenkins/workspace:/opt/jenkins/workspace
     environment:
       - JAVA_OPTS=-Xms512m -Xmx3g
-    command: /sbin/my_init -- su - jenkins -c "java -jar /opt/jenkins/bin/swarm-client.jar -master $JENKINS_MASTER -name $COMPOSE_PROJECT_NAME -deleteExistingClients  -disableClientsUniqueId -retry 3 -username jenkins -password $JENKINS_API_TOKEN -labels swarm"
+      - NAME=${COMPOSE_PROJECT_NAME}
+      - JENKINS_MASTER=$JENKINS_MASTER
+      - JENKINS_USER=$JENKINS_USER
+      - JENKINS_API_TOKEN=$JENKINS_API_TOKEN
+
 
