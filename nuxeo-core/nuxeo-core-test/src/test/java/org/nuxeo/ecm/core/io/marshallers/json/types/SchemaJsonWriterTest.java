@@ -29,7 +29,10 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
+@Features(CoreFeature.class)
 public class SchemaJsonWriterTest extends AbstractJsonWriterTest.Local<SchemaJsonWriter, Schema> {
 
     public SchemaJsonWriterTest() {

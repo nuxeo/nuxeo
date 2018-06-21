@@ -36,7 +36,10 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
+@Features(CoreFeature.class)
 public class DocumentValidationReportJsonWriterTest extends
         AbstractJsonWriterTest.Local<DocumentValidationReportJsonWriter, DocumentValidationReport> {
 

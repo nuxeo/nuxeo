@@ -85,11 +85,6 @@ public class CanRenameDuplicateTest {
     }
 
     @Test
-    public void duplicateAfterCopy() {
-
-    }
-
-    @Test
     public void profileUnderLoad() {
         Assume.assumeTrue(Boolean.parseBoolean(Framework.getProperty("profile", "false")));
         SimonManager.enable();

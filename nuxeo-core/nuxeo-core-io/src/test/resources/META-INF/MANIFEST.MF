@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Core IO - Test Jar
+Bundle-SymbolicName: org.nuxeo.ecm.core.io.test;singleton:=true
+Bundle-Version: 1.0.0
