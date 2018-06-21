@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 9.3
  */
-@Operation(id = BulkDownload.ID, category = Constants.CAT_BLOB, label = "Bulk Downlaod", description = "Prepare a Zip of a list of documents which is build asynchrously. Produced Zip will be available in the TransientStore with the key returned by the JSON.")
+@Operation(id = BulkDownload.ID, category = Constants.CAT_BLOB, label = "Bulk Download", description = "Prepare a Zip of a list of documents which is build asynchrously. Produced Zip will be available in the TransientStore with the key returned by the JSON.")
 public class BulkDownload {
 
     public static final String ID = "Blob.BulkDownload";
