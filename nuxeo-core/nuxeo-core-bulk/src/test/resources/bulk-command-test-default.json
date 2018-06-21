@@ -1,0 +1,11 @@
+{
+  "entity-type": "bulkCommand",
+  "username": "myUser",
+  "repository": "myRepository",
+  "query": "SELECT * FROM Document",
+  "action": "myAction",
+  "params": {
+    "actionParam": "mySpecificParameter",
+    "finisherParam": "myFinisher"
+  }
+}

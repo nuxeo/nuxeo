@@ -1,0 +1,13 @@
+{
+  "entity-type": "bulk",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "state": "SCHEDULED",
+  "submit": "2018-06-21T12:37:08.172Z",
+  "command": {
+    "entity-type": "bulkCommand",
+    "username": "myUser",
+    "repository": "myRepository",
+    "query": "SELECT * FROM Document",
+    "action": "myAction"
+  }
+}

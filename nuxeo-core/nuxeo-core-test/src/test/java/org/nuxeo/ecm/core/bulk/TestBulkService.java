@@ -46,10 +46,9 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.bulk")
+@Features({ CoreBulkFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-contrib-tests.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
 public class TestBulkService {
 

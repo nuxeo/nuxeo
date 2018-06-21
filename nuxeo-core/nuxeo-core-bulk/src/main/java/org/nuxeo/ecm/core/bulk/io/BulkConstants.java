@@ -41,7 +41,7 @@ public class BulkConstants {
 
     // BulkCommand part
 
-    public static final String COMMAND_ENTITY_TYPE = "command";
+    public static final String COMMAND_ENTITY_TYPE = "bulkCommand";
 
     public static final String COMMAND_USERNAME = "username";
 

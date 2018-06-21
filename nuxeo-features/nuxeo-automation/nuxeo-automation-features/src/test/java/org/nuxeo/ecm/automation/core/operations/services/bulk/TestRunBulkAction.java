@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -46,13 +47,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 10.2
  */
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, CoreBulkFeature.class })
 @RunWith(FeaturesRunner.class)
-@Deploy("org.nuxeo.ecm.core.bulk")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-contrib-tests.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
 public class TestRunBulkAction {
