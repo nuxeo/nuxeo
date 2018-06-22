@@ -60,7 +60,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -85,7 +85,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     // send the bulk indexing command when this size is reached, optimal is 5-10m
     private static final int DEFAULT_MAX_BULK_SIZE = 5 * 1024 * 1024;
-    public static final String CANNOT_GET_BLOB_INFO = "Cannot get blob info";
 
     private final ElasticSearchAdminImpl esa;
 
@@ -180,12 +179,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     bulkSize += idxRequest.source().length();
                     bulkRequest.add(idxRequest);
                 }
-            } catch (PropertyException pe) {
-                if (pe.getMessage().contains(CANNOT_GET_BLOB_INFO)) {
-                    log.info("Ignoring missing blob info for " + cmd);
-                } else {
-                    throw pe;
-                }
+            } catch (BlobNotFoundException be) {
+                log.info("Ignore indexing command in bulk, blob does not exists anymore: " + cmd);
             } catch (ConcurrentUpdateException e) {
                 throw e; // bubble up, usually until AbstractWork catches it and maybe retries
             } catch (DocumentNotFoundException e) {
@@ -281,13 +276,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         IndexRequest request;
         try {
             request = buildEsIndexingRequest(cmd);
-        } catch (PropertyException pe) {
-            if (pe.getMessage().contains(CANNOT_GET_BLOB_INFO)) {
-                log.info("Ignoring missing blob info for " + cmd);
-                request = null;
-            } else  {
-                throw pe;
-            }
+        } catch (BlobNotFoundException pe) {
+            request = null;
         } catch (DocumentNotFoundException e) {
             request = null;
         } catch (IllegalStateException e) {
