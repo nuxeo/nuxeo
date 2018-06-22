@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -481,7 +482,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         try {
             return blobManager.readBlob(blobInfo, getRepositoryName());
         } catch (IOException e) {
-            throw new PropertyException("Cannot get blob info for: " + blobInfo.key, e);
+            throw new BlobNotFoundException("Unable to find blob with key: " + blobInfo.key, e);
         }
     }
 
