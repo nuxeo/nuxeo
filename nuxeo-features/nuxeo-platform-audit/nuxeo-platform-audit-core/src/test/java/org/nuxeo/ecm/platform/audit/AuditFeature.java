@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -32,9 +31,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-
 
 @Features({ManagementFeature.class, PlatformFeature.class})
 @Deploy("org.nuxeo.runtime.datasource")

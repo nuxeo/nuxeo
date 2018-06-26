@@ -35,19 +35,21 @@ import org.nuxeo.runtime.datasource.TestValidateConnection.CaptureValidationErro
 import org.nuxeo.runtime.datasource.TestValidateConnection.ReportException.CaughtSite;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoValidationSupport;
-import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
+import org.nuxeo.runtime.test.runner.TransactionalConfig;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ ContainerFeature.class, LogCaptureFeature.class })
+@TransactionalConfig(autoStart = false)
+@Features({ TransactionalFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.runtime.datasource:sql-validate-datasource-contrib.xml")
 @LogCaptureFeature.FilterWith(CaptureValidationErrors.class)
 public class TestValidateConnection {

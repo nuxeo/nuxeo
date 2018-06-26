@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * Contributors:
  *     Stephane Lacoin
  */
-package org.nuxeo.ecm.core.test.annotations;
+package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -24,6 +24,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for {@link TransactionalFeature} configuration.
+ *
+ * @since 10.2
+ */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

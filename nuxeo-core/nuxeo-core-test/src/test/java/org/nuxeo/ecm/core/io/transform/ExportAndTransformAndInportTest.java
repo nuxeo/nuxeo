@@ -25,10 +25,10 @@ import org.nuxeo.ecm.core.io.impl.extensions.DocumentLockImporter;
 import org.nuxeo.ecm.core.io.impl.plugins.ExtensibleDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDirectoryReader;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
