@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>7.10-HF42-SNAPSHOT</version>
+    <version>7.10-HF42</version>
   </parent>
 
   <artifactId>nuxeo-webengine-jaxrs</artifactId>

@@ -502,7 +502,7 @@
         original context where expression was created (build time).
         This flag is only useful when resolving the expression twice (attribute
         resolveTwice set to true) and when value is not cached (attribute cache
-        set to false). Available since 7.10-HF42-SNAPSHOT.
+        set to false). Available since 7.10-HF42.
       </description>
     </attribute>
     <attribute>
