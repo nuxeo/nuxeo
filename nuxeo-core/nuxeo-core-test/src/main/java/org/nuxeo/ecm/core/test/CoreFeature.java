@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -124,14 +123,6 @@ public class CoreFeature extends SimpleFeature {
             for (String queueId : workManager.getWorkQueueIds()) {
                 sb.append(System.lineSeparator());
                 sb.append(workManager.getMetrics(queueId));
-                sb.append(",works=");
-                Iterator<String> works = workManager.listWorkIds(queueId, null).iterator();
-                while (works.hasNext()) {
-                    sb.append(works.next());
-                    if (works.hasNext()) {
-                        sb.append(",");
-                    }
-                }
             }
             log.error(sb.toString(), new Throwable("stack trace"));
         }

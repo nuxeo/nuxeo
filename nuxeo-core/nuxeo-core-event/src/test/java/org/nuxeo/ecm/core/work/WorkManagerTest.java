@@ -29,10 +29,7 @@ import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -161,11 +158,6 @@ public class WorkManagerTest {
         return 200;
     }
 
-    void assertWorkIdsEquals(List<String> expected, Work.State state) {
-        List<String> actual = service.listWorkIds(QUEUE, state);
-        assertEquals(new HashSet<>(expected), new HashSet<>(actual));
-    }
-
     void assertMetrics(long scheduled, long running, long completed, long cancelled) {
         assertEquals(new WorkQueueMetrics(QUEUE, scheduled, running, completed, cancelled), service.getMetrics(QUEUE));
     }
@@ -238,9 +230,6 @@ public class WorkManagerTest {
         assertState(RUNNING, work1);
         assertState(RUNNING, work2);
         assertState(SCHEDULED, work3);
-        assertWorkIdsEquals(Collections.singletonList(work3.getId()), SCHEDULED);
-        assertWorkIdsEquals(Arrays.asList(work1.getId(), work2.getId()), RUNNING);
-        assertWorkIdsEquals(Arrays.asList(work1.getId(), work2.getId(), work3.getId()), null);
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
@@ -264,9 +253,6 @@ public class WorkManagerTest {
         assertTrue(service.awaitCompletion(duration * 3, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 1);
 
-        assertWorkIdsEquals(Collections.emptyList(), SCHEDULED);
-        assertWorkIdsEquals(Collections.emptyList(), RUNNING);
-        assertWorkIdsEquals(Collections.emptyList(), null);
     }
 
     @Test

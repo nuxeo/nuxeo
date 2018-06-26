@@ -71,11 +71,6 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     }
 
     @Override
-    void assertWorkIdsEquals(List<String> expected, Work.State state) {
-        // we can not get a list of work id with the stream impl
-    }
-
-    @Override
     @Ignore
     @Test
     public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
