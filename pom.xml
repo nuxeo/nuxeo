@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>9.10-HF11-SNAPSHOT</version>
+  <version>9.10-HF12-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -111,16 +111,16 @@
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
     <!-- <license.missingFile>src/main/license/THIRD-PARTY.properties</license.missingFile> -->
 
-    <nuxeo.common.version>9.10-HF11-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>9.10-HF11-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>9.10-HF11-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>9.10-HF11-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>9.10-HF11-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.jsf.version>9.10-HF11-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>9.10-HF11-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.webengine.version>9.10-HF11-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.features.version>9.10-HF11-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.addons.core.version>9.10-HF11-SNAPSHOT</nuxeo.addons.core.version>
+    <nuxeo.common.version>9.10-HF12-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>9.10-HF12-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>9.10-HF12-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.services.version>9.10-HF12-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.theme.version>9.10-HF12-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.jsf.version>9.10-HF12-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>9.10-HF12-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.webengine.version>9.10-HF12-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.features.version>9.10-HF12-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.addons.core.version>9.10-HF12-SNAPSHOT</nuxeo.addons.core.version>
 
     <nuxeo.connect.client.version>1.6.1</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
@@ -195,7 +195,7 @@
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
-    <nuxeo.platform.version>9.10-HF11-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>9.10-HF12-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.21</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
