@@ -1,5 +1,5 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.10-HF32-SNAPSHOT/mp/">
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.10-HF32/mp/">
     <!-- Virtual Packages -->
     <package id="nuxeo-ui-virtual" label="User interface" color="#635959" textcolor="#FFF"
       shortlabel="UI" virtual="true" />
