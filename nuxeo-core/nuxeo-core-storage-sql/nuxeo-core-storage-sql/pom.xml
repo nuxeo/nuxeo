@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-storage-sql-parent</artifactId>
-    <version>8.10-HF32-SNAPSHOT</version>
+    <version>8.10-HF33-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-core-storage-sql</artifactId>
   <name>Nuxeo Core SQL Storage</name>
