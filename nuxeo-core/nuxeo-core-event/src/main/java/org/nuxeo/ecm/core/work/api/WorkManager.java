@@ -267,7 +267,9 @@ public interface WorkManager {
      *            RUNNING}, or {@code null} for non-completed
      * @return the found work instance, or {@code null} if not found
      * @since 7.3
+     * @deprecated since 10.2 not scalable
      */
+    @Deprecated
     Work find(String workId, State state);
 
     /**
@@ -277,7 +279,9 @@ public interface WorkManager {
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
      *            RUNNING}, or {@code null} for non-completed
      * @return the list of work instances in the given state
+     * @deprecated since 10.2 not scalable
      */
+    @Deprecated
     List<Work> listWork(String queueId, State state);
 
     /**
@@ -288,7 +292,9 @@ public interface WorkManager {
      *            RUNNING}, or {@code null} for non-completed
      * @return the list of work ids in the given state
      * @since 5.8
+     * @deprecated since 10.2 not scalable
      */
+    @Deprecated
     List<String> listWorkIds(String queueId, State state);
 
 }
