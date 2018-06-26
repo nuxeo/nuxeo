@@ -95,7 +95,7 @@ public class WorkComputation extends AbstractComputation {
                         context.askForCheckpoint();
                         return;
                     }
-                    WorkStateHelper.setState(work.getId(), Work.State.RUNNING.toString(), stateTTL);
+                    WorkStateHelper.setState(work.getId(), Work.State.RUNNING, stateTTL);
                 }
                 new WorkHolder(work).run();
                 if (storeState) {
