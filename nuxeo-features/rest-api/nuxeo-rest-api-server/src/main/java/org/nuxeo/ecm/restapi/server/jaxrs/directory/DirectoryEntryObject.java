@@ -77,10 +77,13 @@ public class DirectoryEntryObject extends DefaultObject {
 
             @Override
             DirectoryEntry run(Session session) {
-                DocumentModel docEntry = entry.getDocumentModel();
-                session.updateEntry(docEntry);
-                return new DirectoryEntry(directory.getName(), session.getEntry(docEntry.getId()));
-
+                try {
+                    DocumentModel docEntry = entry.getDocumentModel();
+                    session.updateEntry(docEntry);
+                    return new DirectoryEntry(directory.getName(), session.getEntry(docEntry.getId()));
+                } catch (DirectoryException e) {
+                    throw new NuxeoException(e.getMessage(), SC_BAD_REQUEST);
+                }
             }
         });
     }
