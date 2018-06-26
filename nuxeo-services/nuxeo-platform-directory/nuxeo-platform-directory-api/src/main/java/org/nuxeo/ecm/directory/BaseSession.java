@@ -395,6 +395,11 @@ public abstract class BaseSession implements Session, EntrySource {
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         checkPermission(SecurityConstants.WRITE);
 
+        String id = docModel.getId();
+        if (id == null) {
+            throw new DirectoryException("The document cannot be updated because its id is missing");
+        }
+
         // Retrieve the references to update in the document model, and update the rest
         List<String> referenceFieldList = updateEntryWithoutReferences(docModel);
 
