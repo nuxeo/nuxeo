@@ -170,7 +170,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         String key = work.getPartitionKey();
         appender.append(key, Record.of(key, WorkComputation.serialize(work)));
         if (storeState) {
-            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED.toString(), stateTTL);
+            WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
     }
 
