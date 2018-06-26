@@ -238,6 +238,17 @@ public class DirectoryTest extends BaseTest {
         nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry(docEntry.getId());
         assertEquals("another label", docEntry.getPropertyValue("vocabulary:label"));
+
+        // The document should not be updated if the id is missing at the root and in the properties
+        String missingIdEntry = "{\"entity-type\":\"directoryEntry\",\"directoryName\":\"testdir\",\"properties\":{\"label\":\"different label\"}}";
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), missingIdEntry)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        }
+
+        nextTransaction(); // see committed changes
+        docEntry = dirSession.getEntry(docEntry.getId());
+        assertEquals("another label", docEntry.getPropertyValue("vocabulary:label"));
     }
 
     @Test
