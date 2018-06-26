@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Stephane Lacoin
- *     Kevin Leturc <kleturc@nuxeo.com>
+ *       Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ecm.core.test;
+package org.nuxeo.runtime.test.runner;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,26 +24,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
-import org.nuxeo.runtime.test.runner.ContainerFeature;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Features(ContainerFeature.class)
+/**
+ * The transactional feature is responsible of transaction management.
+ * <p/>
+ * It brings some API to wait for transaction
+ *
+ * @since 10.2
+ */
+@Deploy("org.nuxeo.runtime.jtajca")
+@Deploy("org.nuxeo.runtime.datasource")
+@Features(RuntimeFeature.class)
 public class TransactionalFeature extends SimpleFeature {
 
-    protected TransactionalConfig config;
+    private static final Log log = LogFactory.getLog(TransactionalFeature.class);
+
+    protected boolean autoStartTransaction;
 
     protected boolean txStarted;
 
@@ -100,33 +101,31 @@ public class TransactionalFeature extends SimpleFeature {
         }
         try {
             File file = new ThreadDeadlocksDetector().dump(new long[0]);
-            LogFactory.getLog(TransactionalFeature.class)
-                      .warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
+            log.warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
         } catch (IOException cause) {
-            LogFactory.getLog(TransactionalFeature.class)
-                      .warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
+            log.warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
         }
         return false;
     }
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        config = runner.getConfig(TransactionalConfig.class);
+    public void initialize(FeaturesRunner runner) {
+        autoStartTransaction = runner.getConfig(TransactionalConfig.class).autoStart();
         runner.getFeature(RuntimeFeature.class).registerHandler(new TransactionalDeployer());
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         startTransactionBefore();
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         commitOrRollbackTransactionAfter();
     }
 
     protected void startTransactionBefore() {
-        if (config.autoStart()) {
+        if (autoStartTransaction) {
             txStarted = TransactionHelper.startTransaction();
         }
     }
@@ -140,8 +139,7 @@ public class TransactionalFeature extends SimpleFeature {
                     TransactionHelper.setTransactionRollbackOnly();
                     TransactionHelper.commitOrRollbackTransaction();
                 } finally {
-                    Logger.getLogger(TransactionalFeature.class)
-                          .warn("Committing a transaction for your, please do it yourself");
+                    log.warn("Committing a transaction for your, please do it yourself");
                 }
             }
         }
@@ -152,7 +150,7 @@ public class TransactionalFeature extends SimpleFeature {
      * {@link TransactionalConfig#autoStart()} is true. This is because framework is about to be reloaded, then a new
      * transaction manager will be installed.
      *
-     * @since 9.3
+     * @since 10.2
      */
     public class TransactionalDeployer extends ActionHandler {
 
@@ -164,5 +162,4 @@ public class TransactionalFeature extends SimpleFeature {
         }
 
     }
-
 }

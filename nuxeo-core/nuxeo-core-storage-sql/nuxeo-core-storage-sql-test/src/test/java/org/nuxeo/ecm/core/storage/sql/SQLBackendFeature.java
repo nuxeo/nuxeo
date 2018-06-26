@@ -24,7 +24,6 @@ import java.sql.SQLException;
 
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -32,12 +31,15 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.TransactionalConfig;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.osgi.framework.Bundle;
 
 /**
  * @since 10.1
  */
-@Features(ContainerFeature.class)
+@TransactionalConfig(autoStart = false)
+@Features(TransactionalFeature.class)
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.migration")
 @Deploy("org.nuxeo.ecm.core.api")

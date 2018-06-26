@@ -15,6 +15,10 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+/**
+ * @deprecated since 10.2, use {@link TransactionalFeature} instead
+ */
+@Deprecated
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.runtime.datasource")
 @Features(RuntimeFeature.class)

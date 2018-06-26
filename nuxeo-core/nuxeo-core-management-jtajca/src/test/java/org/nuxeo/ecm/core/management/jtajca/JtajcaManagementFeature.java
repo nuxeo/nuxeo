@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.management.ServerLocator;
-import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,7 +47,13 @@ import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-@Features({ ManagementFeature.class, ContainerFeature.class })
+// ideally this feature should deploy/use TransactionalFeature but we can't depend on it because features order is
+// important as feature is doing assertion. So we need to keep this order to ensure assertion is at good time:
+// - CoreFeature (close and clean session - need a transaction)
+// - TransactionalFeature (close the transaction)
+// - JtajcaManagementFeature (assert there's no remaining transactions)
+// we get this order by using features in tests like this @Features(JtajcaManagementFeature.class, CoreFeature.class)
+@Features(ManagementFeature.class)
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
 @Deploy("org.nuxeo.ecm.core.management.jtajca:login-config.xml")
 public class JtajcaManagementFeature extends SimpleFeature {

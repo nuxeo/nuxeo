@@ -19,15 +19,15 @@
  */
 package org.nuxeo.connect.update;
 
-import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 9.3
  */
-@Features(ContainerFeature.class)
+@Features(TransactionalFeature.class)
 @Deploy("org.nuxeo.connect.client")
 @Deploy("org.nuxeo.connect.client.wrapper")
 @Deploy("org.nuxeo.connect.update")

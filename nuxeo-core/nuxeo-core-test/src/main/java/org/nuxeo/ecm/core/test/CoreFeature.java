@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -64,6 +63,8 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
@@ -120,13 +121,11 @@ public class CoreFeature extends SimpleFeature {
 
         protected void logInfos(WorkManager workManager) {
             StringBuilder sb = new StringBuilder().append("Timed out while waiting for works").append(" ");
-            Iterator<String> queueids = workManager.getWorkQueueIds().iterator();
-            while (queueids.hasNext()) {
+            for (String queueId : workManager.getWorkQueueIds()) {
                 sb.append(System.lineSeparator());
-                String queueid = queueids.next();
-                sb.append(workManager.getMetrics(queueid));
+                sb.append(workManager.getMetrics(queueId));
                 sb.append(",works=");
-                Iterator<String> works = workManager.listWorkIds(queueid, null).iterator();
+                Iterator<String> works = workManager.listWorkIds(queueId, null).iterator();
                 while (works.hasNext()) {
                     sb.append(works.next());
                     if (works.hasNext()) {
