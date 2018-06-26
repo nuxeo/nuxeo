@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>7.10-HF42-SNAPSHOT</version>
+    <version>7.10-HF43-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-usermapper</artifactId>
   <name>nuxeo-usermapper</name>
-  <version>7.10-HF42-SNAPSHOT</version>
+  <version>7.10-HF43-SNAPSHOT</version>
   <description>
 
   </description>
