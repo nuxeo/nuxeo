@@ -23,8 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -35,6 +33,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 
 /**
  * Elasticsearch audit feature cleaning up audit log after each test.
