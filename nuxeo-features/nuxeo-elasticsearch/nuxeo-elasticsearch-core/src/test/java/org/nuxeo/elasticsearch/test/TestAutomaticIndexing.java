@@ -1050,4 +1050,26 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(0, ret.totalSize());
 
     }
+
+
+    @Test
+    public void pathLevelFieldMustBeSeenAsKeyword() throws Exception {
+        // Creates folders with names that can be taken as timestamp
+        DocumentModel folder = session.createDocumentModel("/", "1530083790734003", "Folder");
+        session.createDocument(folder);
+        folder = session.createDocumentModel("/1530083790734003", "1530083790734004", "Folder");
+        session.createDocument(folder);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+
+        startTransaction();
+        // Now creates folders with normal names to check that ecm:path@level# fields are typed as keyword and not as date
+        folder = session.createDocumentModel("/", "a-folder-name", "Folder");
+        session.createDocument(folder);
+        folder = session.createDocumentModel("/a-folder-name", "foo", "Folder");
+        session.createDocument(folder);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+    }
 }
