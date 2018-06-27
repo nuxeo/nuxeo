@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.test.runner;
 
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 
 /**
  * A dynamic component deployer which enable tests to deploy new contributions after the test was started (i.e. from
@@ -33,6 +34,8 @@ public class HotDeployer {
     public static final String RESTART_ACTION = "restart";
 
     public static final String RESET_ACTION = "reset";
+
+    public static final String RELOAD_ACTION = "reload";
 
     protected FeaturesRunner runner;
 
@@ -106,6 +109,17 @@ public class HotDeployer {
         reinject();
     }
 
+    /**
+     * Reloads the components and preserve the current registry state. This action performs a standby/resume on
+     * {@link ComponentManager}.
+     *
+     * @since 10.2
+     */
+    public void reload() throws Exception {
+        head.exec(RELOAD_ACTION);
+        reinject();
+    }
+
     public void reinject() {
         runner.getInjector().injectMembers(runner.getTargetTestInstance());
     }
@@ -143,6 +157,8 @@ public class HotDeployer {
                 restart();
             } else if (RESET_ACTION.equals(action)) {
                 reset();
+            } else if (RELOAD_ACTION.equals(action)) {
+                reload();
             }
         }
 
@@ -167,12 +183,18 @@ public class HotDeployer {
             Framework.getRuntime().getComponentManager().refresh(false);
         }
 
-        public void restart() throws Exception {
+        public void restart() {
             Framework.getRuntime().getComponentManager().restart(false);
         }
 
-        public void reset() throws Exception {
+        public void reset() {
             Framework.getRuntime().getComponentManager().restart(true);
+        }
+
+        public void reload() {
+            ComponentManager componentManager = Framework.getRuntime().getComponentManager();
+            componentManager.standby();
+            componentManager.resume();
         }
 
     }
