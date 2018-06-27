@@ -245,7 +245,8 @@ public interface ComponentManager {
      *
      * @since 9.2
      */
-    void standby();
+    void
+    standby();
 
     /**
      * Same as {@link #standby()} but log a warning if the timeout is reached while stopping components
