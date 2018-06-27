@@ -199,7 +199,7 @@ public class WorkManagerTest {
     public void testWorkManagerWork() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
         tracker.assertDiff(0, 0, 0, 0);
-        long duration = 3000;
+        int duration = getDurationMillis() * 3;
         SleepWork work = new SleepWork(duration);
         service.schedule(work);
 
@@ -225,7 +225,7 @@ public class WorkManagerTest {
     public void testWorkManagerScheduling() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
         tracker.assertDiff(0, 0, 0, 0);
-        int duration = getDurationMillis() * 2;
+        int duration = getDurationMillis() * 5;
         SleepWork work1 = new SleepWork(duration);
         SleepWork work2 = new SleepWork(duration);
         SleepWork work3 = new SleepWork(duration);
@@ -292,20 +292,21 @@ public class WorkManagerTest {
     @Test
     public void testWorkManagerCancelScheduling() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
-        SleepWork work1 = new SleepWork(getDurationMillis());
-        SleepWork work2 = new SleepWork(getDurationMillis());
-        SleepWork work3 = new SleepWork(getDurationMillis());
+        int duration = getDurationMillis() * 5;
+        SleepWork work1 = new SleepWork(duration);
+        SleepWork work2 = new SleepWork(duration);
+        SleepWork work3 = new SleepWork(duration);
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
-        Thread.sleep(getDurationMillis() / 2);
+        Thread.sleep(duration / 2);
         tracker.assertDiff(1, 2, 0, 0);
 
         // cancel the scheduled task
-        SleepWork work4 = new SleepWork(getDurationMillis(), work3.getId());
+        SleepWork work4 = new SleepWork(duration, work3.getId());
         service.schedule(work4, Scheduling.CANCEL_SCHEDULED);
         // wait
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
         // canceled are taken in account as completed and canceled
         tracker.assertDiff(0, 0, 3, 1);
     }
@@ -333,14 +334,15 @@ public class WorkManagerTest {
     @Test
     @Ignore
     public void testWorkManagerShutdown() throws Exception {
-        SleepWork work1 = new SleepWork(getDurationMillis());
-        SleepWork work2 = new SleepWork(getDurationMillis());
-        SleepWork work3 = new SleepWork(getDurationMillis());
+        int duration = getDurationMillis() * 2;
+        SleepWork work1 = new SleepWork(duration, false);
+        SleepWork work2 = new SleepWork(duration, false);
+        SleepWork work3 = new SleepWork(duration, false);
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
 
-        Thread.sleep(getDurationMillis() / 2);
+        Thread.sleep(duration / 2);
         assertState(RUNNING, work1);
         assertState(RUNNING, work2);
         assertState(SCHEDULED, work3);
@@ -352,7 +354,7 @@ public class WorkManagerTest {
         // or put in the suspended queue (persistent)
 
         dontClearCompletedWork = true;
-        boolean terminated = service.shutdown(getDurationMillis() * 2, TimeUnit.MILLISECONDS);
+        boolean terminated = service.shutdown(duration * 2, TimeUnit.MILLISECONDS);
         assertTrue(terminated);
 
         // check work state
@@ -362,9 +364,9 @@ public class WorkManagerTest {
         long remaining1 = work1.durationMillis;
         long remaining2 = work2.durationMillis;
         long remaining3 = work3.durationMillis;
-        assertTrue("remaining1 " + remaining1, remaining1 < getDurationMillis());
-        assertTrue("remaining2 " + remaining2, remaining2 < getDurationMillis());
-        assertEquals(getDurationMillis(), remaining3);
+        assertTrue("remaining1 " + remaining1, remaining1 < duration);
+        assertTrue("remaining2 " + remaining2, remaining2 < duration);
+        assertEquals(duration, remaining3);
     }
 
     @Test
@@ -493,47 +495,31 @@ public class WorkManagerTest {
         assertMetrics(0, 0, 1, 0);
 
         // Schedule a first work
-        SleepWork work = new SleepWork(getDurationMillis());
+        int duration = getDurationMillis() * 3;
+        SleepWork work = new SleepWork(duration);
         String workId = work.getId();
         service.schedule(work);
 
         // wait a bit to make sure it is running
-        Thread.sleep(getDurationMillis() / 3);
+        Thread.sleep(duration / 3);
         assertMetrics(0, 1, 1, 0);
 
         // schedule another work with the same workId
         // don't try to put a different duration, same work id means same work serializatoin
-        SleepWork workbis = new SleepWork(getDurationMillis(), workId);
+        SleepWork workbis = new SleepWork(duration, workId);
         service.schedule(workbis);
 
         // wait a bit, the first work is still running, the scheduled work should wait
         // because we don't want concurrent execution of work with the same workId
-        Thread.sleep(getDurationMillis() / 3);
+        Thread.sleep(duration / 3);
         assertMetrics(1, 1, 1, 0);
 
         // wait enough so the first work is done and the second should be running
-        Thread.sleep(getDurationMillis());
+        Thread.sleep(duration);
         assertMetrics(0, 1, 2, 0);
 
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
         assertMetrics(0, 0, 3, 0);
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.event.test:test-shutdown-delay.xml")
-    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
-        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        String shutdownDelayAsString = configuration.getProperty(WorkManagerImpl.SHUTDOWN_DELAY_MS_KEY, "0");
-        int shutdownDelay = Integer.parseInt(shutdownDelayAsString);
-        assertEquals(1000, shutdownDelay);
-        service.schedule(new SleepWork(100000));
-        // ensure the job is running
-        Thread.sleep(100);
-        long start = System.currentTimeMillis();
-        service.shutdown(0, TimeUnit.SECONDS);
-        long shutdownDuration = System.currentTimeMillis() - start;
-        assertTrue(shutdownDuration > shutdownDelay);
-        assertTrue(shutdownDuration < shutdownDelay + 1000);
     }
 
     @Test

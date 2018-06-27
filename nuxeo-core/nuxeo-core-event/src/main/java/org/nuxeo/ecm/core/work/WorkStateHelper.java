@@ -58,7 +58,7 @@ public class WorkStateHelper {
     }
 
     protected static void setState(String workId, Work.State state, long ttl) {
-        getKeyValueStore().put(getStateKey(workId), state.toString(), ttl);
+        getKeyValueStore().put(getStateKey(workId), state == null ? null : state.toString(), ttl);
     }
 
     private WorkStateHelper() {
