@@ -45,6 +45,10 @@
     <priority value="WARN" />
   </category>
 
+  <category name="org.nuxeo.lib.stream.tools">
+    <priority value="INFO" />
+  </category>
+
   <category name="org.nuxeo.lib.stream.log.kafka">
     <priority value="WARN" />
   </category>
@@ -55,6 +59,11 @@
 
   <category name="org.nuxeo.lib.stream.tests.computation">
     <priority value="WARN" />
+  </category>
+
+  <!-- Hide perf warnings -->
+  <category name="net.openhft.chronicle.queue.impl.single.SCQIndexing">
+    <priority value="ERROR" />
   </category>
 
   <root>

@@ -661,6 +661,20 @@ public abstract class TestLog {
     }
 
     @Test
+    public void testLagLeak() {
+        final int LOG_SIZE = 1;
+        final String GROUP = "defaultTest";
+        KeyValueMessage msg1 = KeyValueMessage.of("id1");
+        manager.createIfNotExists(logName, LOG_SIZE);
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+        assertEquals(LogLag.of(0), manager.getLag(logName, "unknown-group"));
+        appender.append(0, msg1);
+        for(int i=0; i<100; i++) {
+            assertEquals(LogLag.of(1), manager.getLag(logName, "unknown-group"));
+        }
+    }
+
+    @Test
     public void testListAll() {
         final int LOG_SIZES = 2;
 

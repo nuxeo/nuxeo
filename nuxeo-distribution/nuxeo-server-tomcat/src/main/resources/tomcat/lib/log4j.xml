@@ -435,6 +435,11 @@
     <priority value="WARN" />
   </category>
 
+  <!-- Hide perf warnings -->
+  <category name="net.openhft.chronicle.queue.impl.single.SCQIndexing">
+    <priority value="ERROR" />
+  </category>
+
   <!--
     Limit JBoss categories
     <category name="org.jboss">

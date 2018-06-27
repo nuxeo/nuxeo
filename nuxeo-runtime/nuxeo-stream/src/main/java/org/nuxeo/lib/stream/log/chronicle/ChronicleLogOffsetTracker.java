@@ -145,7 +145,9 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
 
     @Override
     public void close() {
-        offsetQueue.close();
+        if (! offsetQueue.isClosed()) {
+            offsetQueue.close();
+        }
     }
 
 }
