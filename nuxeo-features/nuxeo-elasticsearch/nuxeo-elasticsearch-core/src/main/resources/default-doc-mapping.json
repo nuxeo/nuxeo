@@ -20,6 +20,15 @@
       }
     },
     {
+      "paths": {
+        "mapping": {
+          "type": "keyword",
+          "ignore_above": 32
+        },
+        "path_match": "ecm:path@level*"
+      }
+    },
+    {
       "strings": {
         "mapping": {
           "type": "keyword",
@@ -57,6 +66,9 @@
         }
       },
       "type": "keyword"
+    },
+    "ecm:path@depth": {
+      "type": "integer"
     },
     "ecm:pos": {
       "type": "integer"
