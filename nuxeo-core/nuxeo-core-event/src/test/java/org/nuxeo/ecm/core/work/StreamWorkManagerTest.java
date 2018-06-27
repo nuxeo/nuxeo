@@ -48,6 +48,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
+@Ignore("NXP-24400")
 public class StreamWorkManagerTest extends WorkManagerTest {
 
     @Override
