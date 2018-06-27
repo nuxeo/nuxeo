@@ -87,8 +87,6 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     public static final Log log = LogFactory.getLog(ESAuditChangeFinder.class);
 
-    protected ESClient esClient = null;
-
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
             int limit) {
@@ -251,6 +249,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         SearchSourceBuilder source = new SearchSourceBuilder();
         source.sort("id", SortOrder.DESC).size(1);
         // scroll on previous days with a times 2 step up to 32
+        ESClient esClient = getClient();
         for (int i = 1; i <= 32; i = i * 2) {
             ZonedDateTime lowerLogDateTime = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(i);
             // set lower bound in query
@@ -259,7 +258,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             request.source(source);
             // run request
             logSearchRequest(request);
-            SearchResponse searchResponse = getClient().search(request);
+            SearchResponse searchResponse = esClient.search(request);
             logSearchResponse(searchResponse);
 
             // if results return the first hit id
@@ -279,7 +278,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             source.query(QueryBuilders.matchAllQuery()).size(0);
             request.source(source);
             logSearchRequest(request);
-            SearchResponse searchResponse = getClient().search(request);
+            SearchResponse searchResponse = esClient.search(request);
             logSearchResponse(searchResponse);
             if (searchResponse.getHits().getTotalHits() > 0) {
                 log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
@@ -318,11 +317,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected ESClient getClient() {
-        if (esClient == null) {
-            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-            esClient = esa.getClient();
-        }
-        return esClient;
+        return Framework.getService(ElasticSearchAdmin.class).getClient();
     }
 
     protected String getESIndexName() {
