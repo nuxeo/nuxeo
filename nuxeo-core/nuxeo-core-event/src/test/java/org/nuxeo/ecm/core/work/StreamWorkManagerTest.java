@@ -48,7 +48,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
-@Ignore("NXP-24400")
 public class StreamWorkManagerTest extends WorkManagerTest {
 
     @Override
@@ -77,7 +76,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     }
 
     @Override
-    @Ignore()
+    @Ignore
     @Test
     public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
         // for now processor can not be enable/disable once started
@@ -85,7 +84,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     }
 
     @Override
-    @Ignore()
+    @Ignore
     @Test
     public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
         // for now processor can not be enable/disable once started
@@ -98,7 +97,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         SleepWork work = new SleepWork(getDurationMillis());
         assertTrue(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 5, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work 3 times
@@ -123,7 +122,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         work.setIdempotent(false);
         assertFalse(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(5000, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work 3 times
@@ -134,7 +133,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         // works with the same id are not skipped we need to wait more
         assertFalse(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
 
-        assertTrue(service.awaitCompletion(getDurationMillis() * 3, TimeUnit.SECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
     }
 
@@ -152,26 +151,18 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         service.schedule(work2);
         // we don't know if work1 and work2 are executed on the same thread
         // but we assume that the max duration is work1 + work2 because there is only one invocation of each
-        assertTrue(service.awaitCompletion(getDurationMillis() * 3 - 200, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 3 - 500, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 6, 0);
     }
 
     @Override
-    @Ignore()
+    @Ignore
     @Test
     public void testNoConcurrentJobsWithSameId() throws Exception {
         // default workmanager guaranty that works with the same id can not be scheduled while another is running
         // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
         // completed)
         super.testNoConcurrentJobsWithSameId();
-    }
-
-    @Override
-    @Ignore()
-    @Test
-    public void testSleepDurationTakenIntoAccount() throws InterruptedException {
-        // since StreamWorkManager does not wait a fixed amount of time it cannot be tested as its parent is
-        throw new UnsupportedOperationException();
     }
 
 }
