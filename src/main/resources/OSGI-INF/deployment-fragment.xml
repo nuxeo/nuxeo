@@ -9,7 +9,6 @@
       <supported-locale>ca_ES</supported-locale><!-- Catalan - Spain -->
       <supported-locale>cs_CZ</supported-locale><!-- Czech - Czech Republic -->
       <supported-locale>el_GR</supported-locale><!-- Greek - Greece -->
-      <supported-locale>fil_PH</supported-locale><!-- Filipino - Philippines -->
       <supported-locale>fr_CA</supported-locale><!-- French - Canada -->
       <supported-locale>gl_ES</supported-locale><!-- Galician -->
       <supported-locale>hu_HU</supported-locale><!-- Hungarian - Hungary -->
@@ -22,7 +21,6 @@
       <supported-locale>ru</supported-locale><!-- Russian - Russia -->
       <supported-locale>ru_RU</supported-locale><!-- Russian - Russia -->
       <supported-locale>sr_SP</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
-      <supported-locale>tl_PH</supported-locale><!-- Tagalog - Philippines -->
       <supported-locale>tr_TR</supported-locale><!-- Turkish - Turkey -->
       <supported-locale>vi_VN</supported-locale><!-- Vietnamese - Vietnam -->
     </locale-config>

@@ -12,7 +12,6 @@
         <locale>cs_CZ</locale><!-- Czech - Czech Republic -->
         <locale>el_GR</locale><!-- Greek - Greece -->
         <locale>fr_CA</locale><!-- French - Canada -->
-        <locale>fil_PH</locale><!-- Filipino - Philippines -->
         <locale>gl_ES</locale><!-- Galician -->
         <locale>hu_HU</locale><!-- Hungarian - Hungary -->
         <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
@@ -25,7 +24,6 @@
         <locale>ru</locale><!-- Russian - Russia -->
         <locale>ru_RU</locale><!-- Russian - Russia -->
         <locale>sr_SP</locale><!-- Serbian(Cyrillic) - Serbia -->
-        <locale>tl_PH</locale><!-- Tagalog - Philippines -->
         <locale>tr_TR</locale><!-- Turkish - Turkey -->
         <locale>vi_VN</locale><!-- Vietnamese - Vietnam -->
       </supportedLocales>
