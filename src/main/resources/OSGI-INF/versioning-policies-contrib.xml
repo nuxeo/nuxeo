@@ -1,0 +1,16 @@
+<component name="org.nuxeo.wopi.versioning.policies">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="wopi" increment="MINOR" beforeUpdate="false" order="10">
+      <filter-id>wopi-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="wopi-filter">
+      <schema>file</schema>
+      <condition>#{currentDocument.contextData.source == "wopi"}</condition>
+    </filter>
+  </extension>
+
+</component>

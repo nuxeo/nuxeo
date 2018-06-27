@@ -1,0 +1,18 @@
+{
+  "BaseFileName": "test-file.txt",
+  "OwnerId": "john",
+  "Size": 25,
+  "UserId": "joe",
+  "Version": "0.0",
+  "SupportedShareUrlTypes": ["ReadOnly", "ReadWrite"],
+  "SupportsLocks": true,
+  "SupportsRename": true,
+  "SupportsUpdate": true,
+  "SupportsDeleteFile": true,
+  "IsAnonymousUser": false,
+  "UserFriendlyName": "Joe Jackson",
+  "ReadOnly": true,
+  "UserCanRename": false,
+  "UserCanWrite": false,
+  "UserCanNotWriteRelative": true
+}

@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: WOPI REST API
+Bundle-SymbolicName: org.nuxeo.wopi.rest.api;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-WebModule: org.nuxeo.wopi.jaxrs.WOPIModule;name=wopi
+Nuxeo-Component: OSGI-INF/stores-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/versioning-policies-contrib.xml,
+ OSGI-INF/request-controller-contrib.xml

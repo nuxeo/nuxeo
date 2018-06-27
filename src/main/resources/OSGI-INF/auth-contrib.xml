@@ -1,0 +1,38 @@
+<component name="org.nuxeo.wopi.auth">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="preFilter">
+
+    <preFilter name="wopi" order="0" class="org.nuxeo.ecm.platform.ui.web.auth.service.WOPIAuthFilter" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="specificChains">
+
+    <specificAuthenticationChain name="wopi" handlePrompt="false">
+      <urlPatterns>
+        <url>(.*)/wopi/files/(.*)</url>
+        <url>(.*)/wopi/containers/(.*)</url>
+      </urlPatterns>
+
+      <replacementChain>
+        <plugin>TOKEN_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>wopi.jsp</pattern>
+        <pattern>wopi/view/</pattern>
+        <pattern>wopi/edit/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>

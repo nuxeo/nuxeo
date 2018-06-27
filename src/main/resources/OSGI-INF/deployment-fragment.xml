@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo WOPI Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.wopi.WOPIServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo WOPI Servlet</servlet-name>
+      <url-pattern>/wopi/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/wopi.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/wopi/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+</fragment>

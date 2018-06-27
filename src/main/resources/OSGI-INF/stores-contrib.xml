@@ -1,0 +1,7 @@
+<component name="org.nuxeo.wopi.stores">
+
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="wopi-locks" class="org.nuxeo.runtime.kv.MemKeyValueStore"/>
+  </extension>
+
+</component>
