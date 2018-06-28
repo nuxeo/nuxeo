@@ -665,19 +665,21 @@ public class SQLSession extends BaseSession {
             if (rawId == null) {
                 throw new DirectoryException("Missing id");
             }
-            String id = String.valueOf(rawId);
-            if (hasEntry(id)) {
-                throw new DirectoryException(String.format("Entry with id %s already exists", id));
-            }
 
+            String id = String.valueOf(rawId);
             if (isMultiTenant()) {
                 String tenantId = getCurrentTenantId();
                 if (!StringUtils.isBlank(tenantId)) {
                     fieldMap.put(TENANT_ID_FIELD, tenantId);
                     if (computeMultiTenantId) {
-                        fieldMap.put(idFieldName, computeMultiTenantDirectoryId(tenantId, id));
+                        id = computeMultiTenantDirectoryId(tenantId, id);
+                        fieldMap.put(idFieldName, id);
                     }
                 }
+            }
+
+            if (hasEntry(id)) {
+                throw new DirectoryException(String.format("Entry with id %s already exists", id));
             }
         }
 
