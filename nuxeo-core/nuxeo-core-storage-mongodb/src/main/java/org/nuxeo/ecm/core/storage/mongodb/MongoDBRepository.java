@@ -578,7 +578,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
         coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
         coll.createIndex(new BasicDBObject("collectionMember:collectionIds", ONE));
-        if (!isFulltextDisabled()) {
+        if (!isFulltextSearchDisabled()) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
             indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
@@ -863,7 +863,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextDisabled()) {
+        if (builder.hasFulltext && isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         DBObject query = builder.getQuery();
@@ -937,7 +937,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextDisabled()) {
+        if (builder.hasFulltext && isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         DBObject query = builder.getQuery();

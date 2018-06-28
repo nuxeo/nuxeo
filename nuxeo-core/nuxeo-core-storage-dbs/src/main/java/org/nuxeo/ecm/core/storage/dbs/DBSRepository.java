@@ -57,12 +57,20 @@ public interface DBSRepository extends Repository, LockManager {
     FulltextConfiguration getFulltextConfiguration();
 
     /**
-     * Checks if fulltext indexing is disabled.
+     * Checks if fulltext indexing (and search) is disabled.
      *
      * @return {@code true} if fulltext indexing is disabled, {@code false} if it is enabled
      * @since 7.1, 6.0-HF02
      */
     boolean isFulltextDisabled();
+
+    /**
+     * Checks if fulltext search is disabled.
+     *
+     * @return {@code true} if fulltext search is disabled, {@code false} if it is enabled
+     * @since 10.2
+     */
+    boolean isFulltextSearchDisabled();
 
     /**
      * Gets the root id.

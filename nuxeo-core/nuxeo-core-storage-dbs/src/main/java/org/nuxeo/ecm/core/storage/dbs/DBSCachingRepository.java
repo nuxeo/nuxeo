@@ -322,6 +322,11 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
+    public boolean isFulltextSearchDisabled() {
+        return repository.isFulltextSearchDisabled();
+    }
+
+    @Override
     public String getRootId() {
         return repository.getRootId();
     }
