@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.restapi.server;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -45,7 +44,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 public class RoutingRestBaseTest extends BaseTest {
 
-    protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
+    protected String assertActorIsAdministrator(ClientResponse response) throws IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").elements();
@@ -58,81 +57,93 @@ public class RoutingRestBaseTest extends BaseTest {
         return taskId;
     }
 
-    protected String getBodyForStartReviewTaskCompletion(String taskId) throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, 1);
-        return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime());
+    protected String getBodyForStartReviewTaskCompletion(String taskId) {
+        return getBodyForStartReviewTaskCompletion(taskId, "user:Administrator");
     }
 
     /**
      * @since 9.1
      */
-    protected String getBodyForStartReviewTaskCompletion(String taskId, String assignee) throws IOException {
+    protected String getBodyForStartReviewTaskCompletion(String taskId, String assignee) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, 1);
         return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime(), assignee);
     }
 
-    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) throws IOException {
+    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) {
         return getBodyForStartReviewTaskCompletion(taskId, dueDate, "user:Administrator");
     }
 
     /**
      * @since 9.1
      */
-    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate, String assignee)
-            throws IOException {
-        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
-                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(dueDate) + "\"," + "\"participants\": [\"" + assignee + "\"],"
-                + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
-        return jsonBody;
+    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate, String assignee) {
+        return "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\"," + "\"entity-type\": \"task\","
+                + "\"variables\": {" + "\"end_date\": \"" + DateParser.formatW3CDateTime(dueDate) + "\","
+                + "\"participants\": [\"" + assignee + "\"]," + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
     }
 
-    protected String getBodyWithSecurityViolationForStartReviewTaskCompletion(String taskId) throws IOException {
+    protected String getBodyWithSecurityViolationForStartReviewTaskCompletion(String taskId) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, 1);
-        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
-                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
+        return "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\"," + "\"entity-type\": \"task\","
+                + "\"variables\": {" + "\"end_date\": \"" + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
                 + "\"participants\": [\"user:Administrator\"]," + "\"review_result\": \"blabablaa\"" + "}" + "}";
-        return jsonBody;
     }
 
-    protected String getBodyForTaskCompletion(String taskId) throws IOException {
-        return "{\"entity-type\": \"task\", " + "\"id\": \"" + taskId + "\"}";
+    protected String getBodyForTaskCompletion(String taskId) {
+        return "{\"entity-type\": \"task\", \"id\": \"" + taskId + "\"}";
     }
 
-    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
-        String result = "{\"entity-type\": \"workflow\", " + "\"workflowModelName\": \"" + workflowName + "\"";
+    protected String getCreateAndStartWorkflowBodyContent(String workflowName) {
+        return getCreateAndStartWorkflowBodyContent(workflowName, null);
+    }
+
+    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) {
+        StringBuilder result = new StringBuilder();
+        result.append("{\"entity-type\": \"workflow\", " + "\"workflowModelName\": \"").append(workflowName).append(
+                "\"");
         if (docIds != null && !docIds.isEmpty()) {
-            result += ", " + "\"attachedDocumentIds\": [";
-            for (int i = 0; i < docIds.size(); i++) {
-                result += "\"" + docIds.get(i) + "\"";
+            result.append(", \"attachedDocumentIds\": [");
+            for (String docId : docIds) {
+                result.append("\"").append(docId).append("\"");
             }
-            result += "]";
+            result.append("]");
         }
 
-        result += "}";
-        return result;
+        result.append("}");
+        return result.toString();
     }
 
-    protected String getCurrentTaskId(final String createdWorflowInstanceId)
-            throws IOException, JsonProcessingException {
-        String taskId = getCurrentTask(createdWorflowInstanceId, null, null).get("id").textValue();
-        return taskId;
+    protected String getCurrentTaskId(String createdWorkflowInstanceId) throws IOException {
+        return getCurrentTask(createdWorkflowInstanceId).get("id").textValue();
+    }
+
+    /**
+     * @since 10.2
+     */
+    protected JsonNode getCurrentTask(String createdWorkflowInstanceId) throws IOException {
+        return getCurrentTask(createdWorkflowInstanceId, null);
+    }
+
+    /**
+     * @since 10.2
+     */
+    protected JsonNode getCurrentTask(String createdWorkflowInstanceId, MultivaluedMap<String, String> queryParams)
+            throws IOException {
+        return getCurrentTask(createdWorkflowInstanceId, queryParams, null);
     }
 
     /**
      * @since 8.3
      */
-    protected JsonNode getCurrentTask(final String createdWorflowInstanceId, MultivaluedMap<String, String> queryParams,
-            Map<String, String> headers) throws IOException, JsonProcessingException {
+    protected JsonNode getCurrentTask(String createdWorkflowInstanceId, MultivaluedMap<String, String> queryParams,
+            Map<String, String> headers) throws IOException {
         JsonNode node;
         if (queryParams == null) {
             queryParams = new MultivaluedMapImpl();
         }
-        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
+        queryParams.put("workflowInstanceId", singletonList(createdWorkflowInstanceId));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null,
                 headers)) {
             node = mapper.readTree(response.getEntityInputStream());
