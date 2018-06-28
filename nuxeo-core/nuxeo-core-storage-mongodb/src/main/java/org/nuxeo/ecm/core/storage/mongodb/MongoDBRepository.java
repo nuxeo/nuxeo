@@ -221,7 +221,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // often used in user-generated queries
         coll.createIndex(Indexes.ascending(KEY_PRIMARY_TYPE));
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
-        coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
+        if(!isFulltextDisabled()) {
+            coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
+        }
         coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER));
         coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS));
         // TODO configure these from somewhere else
