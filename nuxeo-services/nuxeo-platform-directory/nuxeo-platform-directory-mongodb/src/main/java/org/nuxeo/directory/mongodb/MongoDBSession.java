@@ -134,7 +134,7 @@ public class MongoDBSession extends BaseSession {
                                                         HashMap::putAll);
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
-        String id;
+        String id = String.valueOf(fieldMap.get(idFieldName));
         if (autoincrementId) {
             Document filter = MongoDBSerializationHelper.fieldMapToBson(MONGODB_ID, directoryName);
             Bson update = Updates.inc(MONGODB_SEQ, 1L);
@@ -144,11 +144,6 @@ public class MongoDBSession extends BaseSession {
             fieldMap.put(idFieldName, longId);
             newDocMap.put(idFieldName, longId);
             id = String.valueOf(longId);
-        } else {
-            id = String.valueOf(fieldMap.get(idFieldName));
-            if (hasEntry(id)) {
-                throw new DirectoryException(String.format("Entry with id %s already exists", id));
-            }
         }
 
         if (isMultiTenant()) {
@@ -157,11 +152,16 @@ public class MongoDBSession extends BaseSession {
                 fieldMap.put(TENANT_ID_FIELD, tenantId);
                 newDocMap.put(TENANT_ID_FIELD, tenantId);
                 if (computeMultiTenantId) {
-                    String tenantDirectoryId = computeMultiTenantDirectoryId(tenantId, id);
-                    fieldMap.put(idFieldName, tenantDirectoryId);
-                    newDocMap.put(idFieldName, tenantDirectoryId);
+                    id = computeMultiTenantDirectoryId(tenantId, id);
+                    fieldMap.put(idFieldName, id);
+                    newDocMap.put(idFieldName, id);
                 }
             }
+        }
+
+        // Check if the entry already exists
+        if (hasEntry(String.valueOf(id))) {
+            throw new DirectoryException(String.format("Entry with id %s already exists", id));
         }
 
         try {
