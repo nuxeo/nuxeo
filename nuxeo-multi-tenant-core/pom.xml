@@ -136,7 +136,11 @@
       <artifactId>nuxeo-platform-default-config</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
