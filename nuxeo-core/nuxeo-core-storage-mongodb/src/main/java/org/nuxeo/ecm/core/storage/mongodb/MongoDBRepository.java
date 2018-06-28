@@ -570,7 +570,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // often used in user-generated queries
         coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
         coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
-        coll.createIndex(new BasicDBObject(KEY_FULLTEXT_JOBID, ONE));
+        if(!isFulltextDisabled()) {
+            coll.createIndex(new BasicDBObject(KEY_FULLTEXT_JOBID, ONE));
+        }
         coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER, ONE));
         coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS, ONE));
         // TODO configure these from somewhere else
