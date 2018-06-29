@@ -192,11 +192,14 @@ public abstract class TestPatternQueuing {
         // submit messages
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         LogOffset offset1 = appender.append(0, KeyValueMessage.of("id1"));
+        LogOffset offset2 = appender.append(1, KeyValueMessage.of("id2"));
         // may be processed but not committed because batch is not full
         assertFalse(appender.waitFor(offset1, consumers.getConsumerGroupName(), Duration.ofMillis(0)));
         // send a force batch
         appender.append(0, KeyValueMessage.ofForceBatch("batch now"));
+        appender.append(1, KeyValueMessage.ofForceBatch("batch now"));
         assertTrue(appender.waitFor(offset1, consumers.getConsumerGroupName(), Duration.ofSeconds(10)));
+        assertTrue(appender.waitFor(offset2, consumers.getConsumerGroupName(), Duration.ofSeconds(10)));
 
         // send 2 more messages
         appender.append(0, KeyValueMessage.of("foo"));

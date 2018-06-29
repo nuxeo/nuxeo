@@ -54,6 +54,11 @@
     <priority value="ERROR" />
   </category>
 
+  <!-- Hide perf warnings -->
+  <category name="net.openhft.chronicle.queue.impl.single.SCQIndexing">
+    <priority value="ERROR" />
+  </category>
+
   <root>
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
