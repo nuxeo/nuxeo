@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
@@ -65,6 +67,13 @@ public class PreviewActionBean implements Serializable {
     private static final Log log = LogFactory.getLog(PreviewActionBean.class);
 
     public static final String PREVIEW_POPUP_VIEW = "preview_popup";
+
+    public static final String PREVIEWURL_PREFIX = "restAPI/preview/";
+
+    /**
+     * @since 10.3
+     */
+    public static final String PREVIEWURL_DEFAULTXPATH = "default";
 
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
@@ -113,11 +122,38 @@ public class PreviewActionBean implements Serializable {
     }
 
     public String getPreviewURL(DocumentModel doc) {
-        return PreviewHelper.getPreviewURL(doc, fieldXPathValue);
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return cs.isBooleanPropertyTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
+                ? getOldPreviewURL(doc, fieldXPathValue)
+                : PreviewHelper.getPreviewURL(doc, fieldXPathValue);
     }
 
-    public String getPreviewURL(DocumentModel doc, String field) {
-        return PreviewHelper.getPreviewURL(doc, field);
+    public String getPreviewURL(DocumentModel doc, String xpath) {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return cs.isBooleanPropertyTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
+                ? getOldPreviewURL(doc, protectField(xpath))
+                : PreviewHelper.getPreviewURL(doc, xpath);
+    }
+
+    /**
+     * @since 10.3
+     */
+    public String getOldPreviewURL(DocumentModel doc, String xpath) {
+        if (xpath == null) {
+            xpath = PREVIEWURL_DEFAULTXPATH;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(PREVIEWURL_PREFIX);
+        sb.append(doc.getRepositoryName());
+        sb.append("/");
+        sb.append(doc.getId());
+        sb.append("/");
+        sb.append(xpath);
+        sb.append("/");
+
+        return sb.toString();
     }
 
     public String getPreviewWithBlobPostProcessingURL() {

@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.preview.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Category: web,stateless
 Nuxeo-Component: OSGI-INF/seamremotingjsbuilder-contrib.xml,
- OSGI-INF/widgets-contrib.xml
+ OSGI-INF/widgets-contrib.xml,
+ OSGI-INF/restAPI-contrib.xml

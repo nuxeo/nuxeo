@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.restAPI.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+    point="restlets">
+
+    <documentation>
+      GET /nuxeo/restAPI/preview/{repoId}/{docId}/{fieldPath}?subPath=(subPath)
+    </documentation>
+
+    <restletPlugin
+      name="preview"
+      class="org.nuxeo.ecm.platform.preview.restlet.PreviewRestlet"
+      enabled="true"
+      useSeam="true">
+      <urlPatterns>
+        <urlPattern>/preview/{repo}/{docid}/{fieldPath}/{subPath}</urlPattern>
+        <urlPattern>/preview/{repo}/{docid}/{fieldPath}/</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+  </extension>
+
+</component>

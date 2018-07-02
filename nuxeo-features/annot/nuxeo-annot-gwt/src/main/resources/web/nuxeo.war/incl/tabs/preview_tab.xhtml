@@ -5,7 +5,7 @@
 
   <!-- NXP-18755: disabled annotations to allow mimetype previewers -->
   <nxu:set var="annotationsEnabled"
-    value="false"
+    value="#{annotationsActions.isAnnotationsEnabled(currentDocument)}"
     cache="true">
 
     <h:panelGroup rendered="#{annotationsEnabled}">
