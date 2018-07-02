@@ -4020,7 +4020,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jasper</artifactId>
         <version>${tomcat.version}</version>
-        <scope>provided</scope> <!-- provided by Tomcat as jasper.jar -->
+        <!-- provided by Tomcat as jasper.jar, so will be excluded in final assembly -->
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
