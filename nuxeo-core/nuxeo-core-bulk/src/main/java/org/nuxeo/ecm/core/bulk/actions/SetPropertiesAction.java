@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
+import static org.nuxeo.ecm.core.bulk.BulkRecords.bulkIdFrom;
+import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +80,9 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         protected final List<String> documentIds;
 
-        protected byte[] commandAsBytes;
+        protected String currentBulkId;
+
+        protected BulkCommand currentCommand;
 
         public SetPropertyComputation(String name, int batchSize, int batchThresholdMs) {
             super(name, 1, 0);
@@ -102,17 +106,26 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            if (flushBatch(record)) {
+            String bulkId = bulkIdFrom(record);
+            if (currentBulkId == null) {
+                // first time we need to process something
+                loadCurrentBulkContext(bulkId);
+            } else if (!currentBulkId.equals(bulkId)) {
+                // new bulk id computation - send remaining elements
                 processBatch(context);
                 documentIds.clear();
-            } else {
-                String docIds = record.getKey().split("/")[1];
-                documentIds.addAll(Arrays.asList(docIds.split("_")));
-                if (documentIds.size() >= batchSize) {
-                    processBatch(context);
-                    documentIds.clear();
-                }
+                loadCurrentBulkContext(bulkId);
             }
+            // process record
+            documentIds.addAll(docIdsFrom(record));
+            if (documentIds.size() >= batchSize) {
+                processBatch(context);
+            }
+        }
+
+        protected void loadCurrentBulkContext(String bulkId) {
+            currentBulkId = bulkId;
+            currentCommand = BulkCommands.fromKVStore(bulkId);
         }
 
         @Override
@@ -121,24 +134,13 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                     documentIds.size()));
         }
 
-        protected boolean flushBatch(Record record) {
-            if (commandAsBytes == null) {
-                commandAsBytes = record.getData();
-            } else if (!Arrays.equals(commandAsBytes, record.getData())) {
-                commandAsBytes = record.getData();
-                return true;
-            }
-            return false;
-        }
-
         protected void processBatch(ComputationContext context) {
             if (!documentIds.isEmpty()) {
                 TransactionHelper.runInTransaction(() -> {
-                    BulkCommand command = BulkCommands.fromBytes(commandAsBytes);
                     // for setProperties, parameters are properties to set
-                    Map<String, String> properties = command.getParams();
-                    try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository(),
-                            command.getUsername())) {
+                    Map<String, String> properties = currentCommand.getParams();
+                    try (CloseableCoreSession session = CoreInstance.openCoreSession(currentCommand.getRepository(),
+                            currentCommand.getUsername())) {
                         for (String docId : documentIds) {
                             DocumentModel doc = session.getDocument(new IdRef(docId));
                             properties.forEach(doc::setPropertyValue);

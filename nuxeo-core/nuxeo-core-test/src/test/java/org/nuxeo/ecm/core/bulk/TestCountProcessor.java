@@ -52,8 +52,8 @@ public class TestCountProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            count += record.getKey().split("/")[1].split("_").length;
-            context.produceRecord("o1", record.key, BigInteger.valueOf(count).toByteArray());
+            count += BulkRecords.docIdsFrom(record).size();
+            context.produceRecord("o1", record.getKey(), BigInteger.valueOf(count).toByteArray());
             context.askForCheckpoint();
         }
     }
