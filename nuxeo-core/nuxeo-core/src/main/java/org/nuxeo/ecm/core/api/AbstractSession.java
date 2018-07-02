@@ -2436,13 +2436,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value) {
         Document doc = resolveReference(ref);
+        doc.setSystemProp(systemProperty, value);
         if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
             DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<>();
             options.put(systemProperty, value != null);
             notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
-        doc.setSystemProp(systemProperty, value);
     }
 
     @Override
