@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
@@ -97,8 +96,7 @@ public class BulkServiceImpl implements BulkService {
         Long submitTime = keyValueStore.getLong(bulkId + SUBMIT_TIME);
         status.setSubmitTime(Instant.ofEpochMilli(submitTime.longValue()));
 
-        String commandAsString = keyValueStore.getString(bulkId + COMMAND);
-        BulkCommand command = BulkCommands.fromBytes(commandAsString.getBytes(UTF_8));
+        BulkCommand command = BulkCommands.fromKVStore(keyValueStore, bulkId);
         status.setCommand(command);
 
         Long scrolledDocumentCount = keyValueStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT);

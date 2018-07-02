@@ -144,11 +144,16 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                     ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
                             scrollKeepAliveSeconds);
                     long documentCount = 0;
+                    long bucketNumber = 0;
                     while (scroll.hasResults()) {
                         List<String> docIds = scroll.getResults();
                         documentIds.addAll(docIds);
                         while (documentIds.size() >= bucketSize) {
-                            produceBucket(context, command.getAction(), bulkId, record.getData());
+                            // we use number of sent document to make record key unique
+                            // key are prefixed with bulkId:, suffix are:
+                            // bucketSize / 2 * bucketSize / ... / total document count
+                            bucketNumber++;
+                            produceBucket(context, command.getAction(), bulkId, bucketNumber * bucketSize);
                         }
 
                         documentCount += docIds.size();
@@ -161,7 +166,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                     // send remaining document ids
                     // there's at most one record because we loop while scrolling
                     if (!documentIds.isEmpty()) {
-                        produceBucket(context, command.getAction(), bulkId, record.getData());
+                        produceBucket(context, command.getAction(), bulkId, documentCount);
                     }
 
                     kvStore.put(bulkId + STATE, COMPLETED.toString());
@@ -175,12 +180,10 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         /**
          * Produces a bucket as a record to appropriate bulk action stream.
          */
-        protected void produceBucket(ComputationContext context, String action, String bulkActionId, byte[] data) {
+        protected void produceBucket(ComputationContext context, String action, String bulkActionId, long nbDocSent) {
             List<String> docIds = documentIds.subList(0, min(bucketSize, documentIds.size()));
             // send these ids as keys to the appropriate stream
-            // key will be bulkActionId/docIds
-            // value/data is a BulkCommand serialized as JSON
-            context.produceRecord(action, bulkActionId + "/" + String.join("_", docIds), data);
+            context.produceRecord(action, BulkRecords.of(bulkActionId, nbDocSent, docIds));
             context.askForCheckpoint();
             docIds.clear();
         }

@@ -20,12 +20,17 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
 
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
  * Helper class for bulk commands.
@@ -36,6 +41,16 @@ public class BulkCommands {
 
     private BulkCommands() {
         // utility class
+    }
+
+    public static BulkCommand fromKVStore(String bulkId) {
+        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
+        return fromKVStore(kvStore, bulkId);
+    }
+
+    protected static BulkCommand fromKVStore(KeyValueStore kvStore, String bulkId) {
+        byte[] data = kvStore.get(bulkId + COMMAND);
+        return fromBytes(data);
     }
 
     public static BulkCommand fromBytes(byte[] data) {
