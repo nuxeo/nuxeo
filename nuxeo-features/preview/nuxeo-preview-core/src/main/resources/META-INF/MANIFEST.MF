@@ -10,9 +10,9 @@ Require-Bundle: org.nuxeo.ecm.platform.ui,
 Nuxeo-Component: OSGI-INF/document-adapter-contrib.xml,
  OSGI-INF/preview-adapter-framework.xml,
  OSGI-INF/preview-adapter-contrib.xml,
- OSGI-INF/preview-adapter-properties.xml,
  OSGI-INF/actions-contrib.xml,
  OSGI-INF/docview-codec-contrib.xml,
  OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/marshallers-contrib.xml,
- OSGI-INF/auth-contrib.xml
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/properties-contrib.xml

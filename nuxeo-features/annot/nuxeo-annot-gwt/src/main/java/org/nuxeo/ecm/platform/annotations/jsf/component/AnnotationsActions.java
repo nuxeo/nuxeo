@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
+import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -84,6 +85,12 @@ public class AnnotationsActions implements Serializable {
     }
 
     public boolean isAnnotationsEnabled(DocumentModel doc) {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        if (cs.isBooleanPropertyFalse(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)) {
+            // cannot work without old preview
+            return false;
+        }
+
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
         Blob blob = blobHolder.getBlob();
         if (blob == null || blob.getMimeType() == null) {

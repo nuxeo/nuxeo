@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables the old JSF preview that allows annotations to be set.
+    </documentation>
+    <property name="nuxeo.old.jsf.preview">false</property>
+
+    <documentation>
+      Property that enables or disables zip files preview.
+    </documentation>
+    <property name="nuxeo.preview.zip.enabled">false</property>
+  </extension>
+
+</component>
