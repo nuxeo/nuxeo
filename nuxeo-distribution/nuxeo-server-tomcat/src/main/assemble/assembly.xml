@@ -143,6 +143,7 @@ install nuxeo-jsf-ui
         <include name="jsp-*" />
         <include name="juel-api-*" />
         <include name="tomcat-dbcp-*" />
+        <include name="tomcat-jasper-*" /> <!-- provided by Tomcat as jasper.jar -->
       </fileset>
       <!-- replaced by sl4j bridge -->
       <fileset dir="${distribution.dir}/nxserver/lib">
