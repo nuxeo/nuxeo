@@ -31,6 +31,18 @@ properties([
   ])
 
 node('SLAVE') {
+    def PARENT_BRANCH = params.PARENT_BRANCH
+    if (env.CHANGE_TARGET) {
+        println "Using CHANGE_TARGET parameter: $env.CHANGE_TARGET"
+        PARENT_BRANCH = env.CHANGE_TARGET
+    }
+    def BRANCH = params.BRANCH
+    if (env.BRANCH_NAME) {
+        println "Using BRANCH_NAME parameter: $env.BRANCH_NAME"
+        BRANCH = env.BRANCH_NAME
+    }
+    println "Testing branch '$BRANCH' with parent branch '$PARENT_BRANCH'"
+    currentBuild.setDescription("$BRANCH -> $PARENT_BRANCH")
     tool type: 'ant', name: 'ant-1.9'
     tool type: 'hudson.model.JDK', name: 'java-8-oracle'
     tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
