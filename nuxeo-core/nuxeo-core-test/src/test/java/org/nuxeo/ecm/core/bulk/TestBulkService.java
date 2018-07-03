@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -78,7 +78,8 @@ public class TestBulkService {
 
         BulkStatus status = service.getStatus(bulkId);
         assertNotNull(status);
-        assertEquals(COMPLETED, status.getState());
+        // TODO change RUNNING state when we'll be able to detect end
+        assertEquals(RUNNING, status.getState());
         assertNotNull(status.getCount());
         assertEquals(10, status.getCount().longValue());
     }
@@ -108,7 +109,8 @@ public class TestBulkService {
 
         BulkStatus status = service.getStatus(bulkId);
         assertNotNull(status);
-        assertEquals(COMPLETED, status.getState());
+        // TODO change RUNNING state when we'll be able to detect end
+        assertEquals(RUNNING, status.getState());
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());

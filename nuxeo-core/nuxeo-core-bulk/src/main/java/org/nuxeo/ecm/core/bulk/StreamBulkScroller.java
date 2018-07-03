@@ -24,9 +24,9 @@ import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATE;
-import static org.nuxeo.ecm.core.bulk.BulkStatus.State.BUILDING;
-import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCROLLING_RUNNING;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +133,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
             try {
                 String bulkId = record.getKey();
                 BulkCommand command = BulkCommands.fromBytes(record.getData());
-                if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), BUILDING.toString())) {
+                if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), SCROLLING_RUNNING.toString())) {
                     log.error("Discard record: " + record + " because it's already building");
                     context.askForCheckpoint();
                     return;
@@ -169,7 +169,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                         produceBucket(context, command.getAction(), bulkId, documentCount);
                     }
 
-                    kvStore.put(bulkId + STATE, COMPLETED.toString());
+                    kvStore.put(bulkId + STATE, RUNNING.toString());
                     kvStore.put(bulkId + SCROLLED_DOCUMENT_COUNT, documentCount);
                 }
             } catch (NuxeoException e) {

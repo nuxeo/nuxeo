@@ -40,8 +40,11 @@ public class BulkStatus implements Serializable {
         /** The {@link BulkCommand} has been submitted to the system. */
         SCHEDULED,
 
-        /** System is currently scrolling the database. */
-        BUILDING,
+        /** System is currently scrolling the database and computing the action. */
+        SCROLLING_RUNNING,
+
+        /** System is currently computing the action (scrolling is finished). */
+        RUNNING,
 
         /** System has finished to scroll. */
         COMPLETED
