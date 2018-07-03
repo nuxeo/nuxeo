@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-3d-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2-I20180703_0125</version>
   </parent>
 
   <artifactId>nuxeo-platform-3d-core</artifactId>
