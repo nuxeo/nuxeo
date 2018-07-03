@@ -377,7 +377,6 @@ public class DirectoryOperationsTest {
         List<Object> children = (List<Object>) entries.get(0).get("children");
         assertNotNull(children);
         assertEquals(2, children.size());
-
     }
 
 

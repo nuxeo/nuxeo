@@ -394,6 +394,9 @@ public class SuggestDirectoryEntries {
     @Param(name = "displayObsoleteEntries", required = false)
     protected boolean displayObsoleteEntries = false;
 
+    /**
+     * @since 10.2
+     */
     @Param(name = "filters", required = false)
     protected Properties filters = new Properties();
 
@@ -512,8 +515,8 @@ public class SuggestDirectoryEntries {
                 }
             }
 
-            for(Map.Entry<String,String> entry: filters.entrySet()) {
-                filter.put(entry.getKey(),entry.getValue());
+            for (Map.Entry<String,String> entry : filters.entrySet()) {
+                filter.put(entry.getKey(), entry.getValue());
             }
 
             // when post filtering we need to get all entries
