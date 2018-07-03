@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.jwt.JWTService.test.config">
+
+  <extension target="org.nuxeo.ecm.jwt.JWTService" point="configuration">
+    <configuration>
+      <maxTTL>60</maxTTL>
+      <secret>abracadabra</secret>
+    </configuration>
+  </extension>
+
+</component>

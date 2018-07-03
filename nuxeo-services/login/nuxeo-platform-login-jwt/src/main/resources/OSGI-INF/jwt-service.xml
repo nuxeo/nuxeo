@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.jwt.JWTService">
+
+  <documentation>
+    Service to manage generation and validation of JSON Web Tokens.
+    @since 10.3
+  </documentation>
+  <implementation class="org.nuxeo.ecm.jwt.JWTServiceImpl" />
+  <service>
+    <provide interface="org.nuxeo.ecm.jwt.JWTService" />
+  </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      Extension points to configure the JWTService.
+      <code>
+        <secret>something</secret>
+        <maxTTL>3600</maxTTL>
+      </code>
+      The secret is an arbitrary string that must be shared by all servers in the cluster.
+      The maxTTL is expressed in secondes, and defaults to 3600 (1 hour).
+    </documentation>
+    <object class="org.nuxeo.ecm.jwt.JWTServiceConfigurationDescriptor" />
+  </extension-point>
+
+</component>

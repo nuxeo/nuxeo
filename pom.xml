@@ -877,6 +877,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-jwt</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-kerberos</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -5002,6 +5007,11 @@
         <groupId>org.mp4parser</groupId>
         <artifactId>isoparser</artifactId>
         <version>1.9.27</version>
+      </dependency>
+      <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>3.4.0</version>
       </dependency>
 
     </dependencies>
