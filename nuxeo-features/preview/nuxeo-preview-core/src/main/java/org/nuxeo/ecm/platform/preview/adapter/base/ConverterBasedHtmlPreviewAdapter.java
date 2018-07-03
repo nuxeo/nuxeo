@@ -34,7 +34,12 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
+import org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
+import org.nuxeo.ecm.platform.preview.adapter.OfficePreviewer;
+import org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer;
+import org.nuxeo.ecm.platform.preview.adapter.PlainImagePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -49,6 +54,18 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
     private static final Log log = LogFactory.getLog(ConverterBasedHtmlPreviewAdapter.class);
+
+    /**
+     * @since 10.3
+     * @deprecated since 10.3
+     */
+    public static final String OLD_PREVIEW_PROPERTY = "nuxeo.old.jsf.preview";
+
+    /**
+     * @since 10.3
+     * @deprecated since 10.3
+     */
+    public static final String TEXT_ANNOTATIONS_PROPERTY = "nuxeo.text.annotations";
 
     protected String defaultFieldXPath;
 
@@ -137,7 +154,10 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         log.debug("Source type for HTML preview =" + srcMT);
         MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
         if (mtPreviewer != null) {
-            return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
+            List<Blob> result = getPreviewFromMimeTypePreviewer(mtPreviewer, blob2Preview);
+            if (result != null) {
+                return result;
+            }
         }
 
         String converterName = getConversionService().getConverterName(srcMT, "text/html");
@@ -155,6 +175,39 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Backward compatibility method to trigger the right previewers if 'nuxeo.old.jsf.preview' is set.
+     * <p>
+     * This allows old HTML preview to be used, to make annotations available.
+     * <p>
+     * To be removed with JSF UI.
+     *
+     * @since 10.3
+     * @deprecated since 10.3
+     */
+    protected List<Blob> getPreviewFromMimeTypePreviewer(MimeTypePreviewer mtPreviewer, Blob blob2Preview) {
+        // this context data comes from the PreviewRestlet
+        boolean oldPreview = Boolean.TRUE.equals(adaptedDoc.getContextData(OLD_PREVIEW_PROPERTY));
+        if (!oldPreview) {
+            return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
+        }
+
+        // when old preview is enabled
+        // - replace ImagePreviewer with PlainImagePreviewer
+        // - do nothing for "office" previewers if the text annotations are enabled to trigger the old preview behavior,
+        // otherwise keep the current preview behavior
+        if (mtPreviewer instanceof ImagePreviewer) {
+            return new PlainImagePreviewer().getPreview(blob2Preview, adaptedDoc);
+        }
+
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        if (cs.isBooleanPropertyTrue(TEXT_ANNOTATIONS_PROPERTY) && (mtPreviewer instanceof PdfPreviewer
+                || mtPreviewer instanceof MarkdownPreviewer || mtPreviewer instanceof OfficePreviewer)) {
+            return null;
+        }
+        return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
     }
 
     /**
