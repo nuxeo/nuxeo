@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.annot</groupId>
     <artifactId>nuxeo-annot-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2-I20180703_0125</version>
   </parent>
 
   <artifactId>nuxeo-annot-http</artifactId>

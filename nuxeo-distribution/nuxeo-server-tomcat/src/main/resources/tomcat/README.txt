@@ -1,6 +1,6 @@
-# Nuxeo platform 10.2-SNAPSHOT
+# Nuxeo platform 10.2-I20180703_0125
 
-Welcome to the Nuxeo Platform 10.2-SNAPSHOT.
+Welcome to the Nuxeo Platform 10.2-I20180703_0125.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [https://www.nuxeo.com/downloads/][1].
