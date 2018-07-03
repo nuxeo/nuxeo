@@ -45,6 +45,7 @@ import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirecto
 import org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -348,5 +349,36 @@ public class DirectoryOperationsTest {
         assertEquals("continent", entry.get("directoryName"));
         assertNotNull(entry.get("properties"));
     }
+
+    @Test
+    public void shouldFilterSuggestedEntries() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "countries");
+
+        Properties filters = new Properties();
+        filters.put("parent","europe");
+
+        params.put("filters",filters);
+
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("filterChain");
+        chain.add(oparams);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+        assertEquals(1, entries.size());
+
+        List<Object> children = (List<Object>) entries.get(0).get("children");
+        assertNotNull(children);
+        assertEquals(2, children.size());
+
+    }
+
 
 }

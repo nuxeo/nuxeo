@@ -20,6 +20,15 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="countries" extends="template-directory">
+      <schema>xvocabulary</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>testdirectorydata/countries.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <parentDirectory>countries</parentDirectory>
+    </directory>
+
     <directory name="continent_local" extends="template-directory">
       <schema>vocabulary</schema>
       <idField>id</idField>
