@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0" ?>
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
@@ -49,6 +50,10 @@
 
   <session-config>
     <session-timeout>${session.timeout}</session-timeout>
+<#if "${session.config.tracking.mode.cookie}" == "true">
+    <tracking-mode>COOKIE</tracking-mode>
+</#if>
   </session-config>
 
 </web-app>
+</#escape>
