@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo JWT Authentication Plugin
+Bundle-SymbolicName: org.nuxeo.ecm.jwt;singleton:=true
+Nuxeo-Component: OSGI-INF/jwt-service.xml,
+ OSGI-INF/jwt-auth-contrib.xml

@@ -29,6 +29,7 @@
     <module>nuxeo-platform-login-token</module>
     <module>nuxeo-platform-login-token-jsf</module>
     <module>nuxeo-platform-login-token-rest</module>
+    <module>nuxeo-platform-login-jwt</module>
   </modules>
 
 </project>

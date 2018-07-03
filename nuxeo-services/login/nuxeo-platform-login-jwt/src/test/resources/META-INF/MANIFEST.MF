@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo JWT Authentication Plugin tests
+Bundle-SymbolicName: org.nuxeo.ecm.jwt.tests
