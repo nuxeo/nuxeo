@@ -148,7 +148,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
-    // @since 10.2
+    /**
+     * Prefix added to the system property name in the event context for the
+     * {@link DocumentEventTypes#BINARYTEXT_UPDATED} event. The value is the actual fulltext.
+     * @since 10.2
+     * */
     public static final String BINARY_TEXT_PREFIX = "TEXT_";
 	
     private Boolean limitedResults;
