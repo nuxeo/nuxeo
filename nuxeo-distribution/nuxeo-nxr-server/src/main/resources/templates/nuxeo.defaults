@@ -81,7 +81,9 @@ repository.binary.store=
 nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
 
+# Tomcat
 session.timeout=60
+session.config.tracking.mode.cookie=true
 
 # Mobile Application
 nuxeo.mobile.application.protocol=nuxeo
