@@ -41,6 +41,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -393,6 +394,9 @@ public class SuggestDirectoryEntries {
     @Param(name = "displayObsoleteEntries", required = false)
     protected boolean displayObsoleteEntries = false;
 
+    @Param(name = "filters", required = false)
+    protected Properties filters = new Properties();
+
     /**
      * @since 8.2
      */
@@ -507,6 +511,11 @@ public class SuggestDirectoryEntries {
                     fullText.add(label);
                 }
             }
+
+            for(Map.Entry<String,String> entry: filters.entrySet()) {
+                filter.put(entry.getKey(),entry.getValue());
+            }
+
             // when post filtering we need to get all entries
             DocumentModelList entries = session.query(filter, fullText, Collections.emptyMap(), false,
                     postFilter ? -1 : limit, -1);
