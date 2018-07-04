@@ -15,5 +15,8 @@
     <binding name="Group.CreateOrUpdate">
       <administrator>true</administrator>
     </binding>
+    <binding name="Bulk.WaitForAction">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 </component>

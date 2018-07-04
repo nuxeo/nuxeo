@@ -21,10 +21,12 @@ package org.nuxeo.ecm.core.bulk;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,6 +105,19 @@ public class BulkServiceImpl implements BulkService {
         status.setCount(scrolledDocumentCount);
 
         return status;
+    }
+
+    @Override
+    public boolean await(String bulkId, long timeout, TimeUnit unit) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
+        KeyValueStore kvStore = getKvStore();
+        do {
+            if (COMPLETED.toString().equals(kvStore.getString(bulkId + STATE))) {
+                return true;
+            }
+            Thread.sleep(200);
+        } while (deadline > System.currentTimeMillis());
+        return false;
     }
 
     public KeyValueStore getKvStore() {
