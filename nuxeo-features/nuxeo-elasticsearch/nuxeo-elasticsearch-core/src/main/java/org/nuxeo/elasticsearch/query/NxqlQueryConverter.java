@@ -20,6 +20,7 @@
 package org.nuxeo.elasticsearch.query;
 
 import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 import java.io.ByteArrayOutputStream;
@@ -49,6 +50,7 @@ import org.elasticsearch.index.query.CommonTermsQueryBuilder;
 import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
 import org.elasticsearch.index.query.MatchPhraseQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -61,6 +63,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.trash.TrashService.Feature;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -85,6 +88,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -99,6 +103,10 @@ public final class NxqlQueryConverter {
     private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
 
     private static final String SIMPLE_QUERY_PREFIX = "es: ";
+
+    protected static final int MORE_LIKE_THIS_MIN_TERM_FREQ = 1;
+
+    protected static final int MORE_LIKE_THIS_MAX_QUERY_TERMS = 12;
 
     private NxqlQueryConverter() {
     }
@@ -515,8 +523,33 @@ public final class NxqlQueryConverter {
             }
             ret = querySimpleString;
             break;
+        case "more_like_this":
+            String[] fields = hint.getIndex() != null ? hint.getIndex() : new String[]{name};
+            MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, getItems(value));
+            moreLikeThisBuilder.minTermFreq(MORE_LIKE_THIS_MIN_TERM_FREQ);
+            moreLikeThisBuilder.maxQueryTerms(MORE_LIKE_THIS_MAX_QUERY_TERMS);
+            ret = moreLikeThisBuilder;
+            break;
         default:
             throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+        }
+        return ret;
+    }
+
+    protected static MoreLikeThisQueryBuilder.Item[] getItems(Object value) {
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        String repo = rm.getDefaultRepository().getName();
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        String esIndex = esa.getIndexNameForRepository(repo);
+        String[] values;
+        if (value != null && value.getClass().isArray()) {
+            values = (String[]) value;
+        } else {
+            values = new String[]{(String) value};
+        }
+        MoreLikeThisQueryBuilder.Item[] ret = new MoreLikeThisQueryBuilder.Item[values.length];
+        for (int i=0; i<values.length; i++) {
+            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, values[i]);
         }
         return ret;
     }

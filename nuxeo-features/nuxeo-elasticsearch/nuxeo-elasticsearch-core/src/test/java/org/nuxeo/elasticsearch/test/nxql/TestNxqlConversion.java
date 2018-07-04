@@ -1611,6 +1611,59 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
 
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(dc:title.fulltext,dc:description.fulltext) OPERATOR(more_like_this) */ ecm:uuid = '1234'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"more_like_this\" : {\n" +
+                "    \"like\" : [\n" +
+                "      \"dc:title.fulltext\",\n" +
+                "      \"dc:description.fulltext\",\n" +
+                "      {\n" +
+                "        \"_index\" : \"nxutest\",\n" +
+                "        \"_type\" : \"doc\",\n" +
+                "        \"_id\" : \"1234\"\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"max_query_terms\" : 12,\n" +
+                "    \"min_term_freq\" : 1,\n" +
+                "    \"min_doc_freq\" : 5,\n" +
+                "    \"max_doc_freq\" : 2147483647,\n" +
+                "    \"min_word_length\" : 0,\n" +
+                "    \"max_word_length\" : 0,\n" +
+                "    \"minimum_should_match\" : \"30%\",\n" +
+                "    \"boost_terms\" : 0.0,\n" +
+                "    \"include\" : false,\n" +
+                "    \"fail_on_unsupported_field\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(all_field) OPERATOR(more_like_this) */ ecm:uuid IN ('1234', '4567')").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"more_like_this\" : {\n" +
+                "    \"like\" : [\n" +
+                "      \"all_field\",\n" +
+                "      {\n" +
+                "        \"_index\" : \"nxutest\",\n" +
+                "        \"_type\" : \"doc\",\n" +
+                "        \"_id\" : \"'1234', '4567'\"\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"max_query_terms\" : 12,\n" +
+                "    \"min_term_freq\" : 1,\n" +
+                "    \"min_doc_freq\" : 5,\n" +
+                "    \"max_doc_freq\" : 2147483647,\n" +
+                "    \"min_word_length\" : 0,\n" +
+                "    \"max_word_length\" : 0,\n" +
+                "    \"minimum_should_match\" : \"30%\",\n" +
+                "    \"boost_terms\" : 0.0,\n" +
+                "    \"include\" : false,\n" +
+                "    \"fail_on_unsupported_field\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+
     }
 
     @Test
