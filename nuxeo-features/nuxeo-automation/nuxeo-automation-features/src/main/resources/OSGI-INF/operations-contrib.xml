@@ -144,6 +144,9 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.bulk.RunBulkAction" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.BulkWaitForAction" />
+
   </extension>
 
   <extension point="chains"
