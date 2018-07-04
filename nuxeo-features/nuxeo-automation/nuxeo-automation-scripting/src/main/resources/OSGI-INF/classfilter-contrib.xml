@@ -11,6 +11,7 @@
       <allow>org.nuxeo.ecm.core.api.Blobs</allow>
       <allow>org.nuxeo.ecm.core.api.impl.blob.StringBlob</allow>
       <allow>org.nuxeo.ecm.core.api.impl.blob.JSONBlob</allow>
+      <allow>org.nuxeo.ecm.core.api.NuxeoException</allow>
     </classFilter>
   </extension>
 
