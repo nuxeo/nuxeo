@@ -98,11 +98,15 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     @Deprecated
     public static final String SERVER_VERSION_PROP_KEY = Environment.PRODUCT_VERSION;
 
+    /**
+     * @deprecated since 10.2
+     */
+    @Deprecated
     public static final String DESKTOP_PACKAGE_URL_LATEST_SEGMENT = "latest";
 
     public static final String DESKTOP_PACKAGE_PREFIX = "nuxeo-drive.";
 
-    public static final String MSI_EXTENSION = "msi";
+    public static final String MSI_EXTENSION = "exe";
 
     public static final String DMG_EXTENSION = "dmg";
 
@@ -365,7 +369,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         // Debian / Ubuntu
         // TODO: remove when Debian package is available
         packages.add(new DesktopPackageDefinition(
-                "https://github.com/nuxeo/nuxeo-drive#ubuntudebian-and-other-linux-variants-client",
+                "https://github.com/nuxeo/nuxeo-drive#debian-based-distributions-and-other-gnulinux-variants-client",
                 "user.center.nuxeoDrive.platform.ubuntu.docLinkTitle", "ubuntu"));
         return packages;
     }
@@ -380,15 +384,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         if (!URL.endsWith("/")) {
             sb.append("/");
         }
-        sb.append(DESKTOP_PACKAGE_URL_LATEST_SEGMENT);
-        sb.append("/");
-        String platformVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
-        int indexOfHFSuffix = platformVersion.indexOf("-HF");
-        if (indexOfHFSuffix > -1) {
-            platformVersion = platformVersion.substring(0, indexOfHFSuffix);
-        }
-        sb.append(platformVersion);
-        sb.append("/");
         return sb.toString();
     }
 
