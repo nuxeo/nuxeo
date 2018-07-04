@@ -424,6 +424,22 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         return new S3FileStorage();
     }
 
+    /**
+     * Gets the AWSCredentialsProvider.
+     * @since 10.2
+     */
+    public AWSCredentialsProvider getAwsCredentialsProvider() {
+        return awsCredentialsProvider;
+    }
+
+    /**
+     * Gets AmazonS3.
+     * @since 10.2
+     */
+    public AmazonS3 getAmazonS3() {
+        return amazonS3;
+    }
+
     @Override
     public String writeBlob(Blob blob) throws IOException {
         // Attempt to do S3 Copy if the Source Blob provider is also S3
