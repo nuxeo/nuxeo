@@ -97,6 +97,8 @@ public class NxQueryBuilder {
 
     private List<String> highlightFields;
 
+    private EsFetcher.HitDocConsumer hitDocConsumer;
+
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
         repositories.add(coreSession.getRepositoryName());
@@ -169,6 +171,15 @@ public class NxQueryBuilder {
         return this;
     }
 
+    /**
+     * If search results are found, use this SearchHit and DocumentModel consumer on each hit.
+     * @since 10.2
+     */
+    public NxQueryBuilder hitDocConsumer(EsFetcher.HitDocConsumer consumer) {
+        hitDocConsumer = consumer;
+        return this;
+    }
+    
     /**
      * Fetch the documents using VCS (database) engine. This is done by default
      */
@@ -431,7 +442,7 @@ public class NxQueryBuilder {
      */
     public Fetcher getFetcher(SearchResponse response, Map<String, String> repoNames) {
         if (isFetchFromElasticsearch()) {
-            return new EsFetcher(session, response, repoNames);
+            return new EsFetcher(session, response, repoNames, hitDocConsumer);
         }
         return new VcsFetcher(session, response, repoNames);
     }
