@@ -21,9 +21,11 @@ package org.nuxeo.ecm.core.bulk.actions;
 
 import static org.nuxeo.ecm.core.bulk.BulkRecords.bulkIdFrom;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.AVRO_CODEC;
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_STREAM_NAME;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +37,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkCommands;
+import org.nuxeo.ecm.core.bulk.BulkCounter;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -68,7 +74,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
         return Topology.builder()
                        .addComputation(() -> new SetPropertyComputation(COMPUTATION_NAME, batchSize, batchThresholdMs),
-                               Collections.singletonList("i1:" + STREAM_NAME))
+                               Arrays.asList("i1:" + STREAM_NAME, "o1:" + COUNTER_STREAM_NAME))
                        .build();
     }
 
@@ -85,7 +91,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         protected BulkCommand currentCommand;
 
         public SetPropertyComputation(String name, int batchSize, int batchThresholdMs) {
-            super(name, 1, 0);
+            super(name, 1, 1);
             this.batchSize = batchSize;
             this.batchThresholdMs = batchThresholdMs;
             documentIds = new ArrayList<>(batchSize);
@@ -113,7 +119,6 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             } else if (!currentBulkId.equals(bulkId)) {
                 // new bulk id computation - send remaining elements
                 processBatch(context);
-                documentIds.clear();
                 loadCurrentBulkContext(bulkId);
             }
             // process record
@@ -148,6 +153,11 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                         }
                     }
                 });
+                BulkCounter counter = new BulkCounter(currentBulkId, (long) documentIds.size());
+                Codec<BulkCounter> counterCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                        BulkCounter.class);
+                context.produceRecord("o1", currentBulkId, counterCodec.encode(counter));
+                documentIds.clear();
                 context.askForCheckpoint();
             }
         }
