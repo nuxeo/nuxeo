@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -78,10 +79,9 @@ public class TestRunBulkAction {
         actionParams.put("dummyParam", "dummyValue");
         params.put("parameters", (Serializable) actionParams);
 
-        BulkStatus result = (BulkStatus) service.run(ctx, RunBulkAction.ID, params);
+        Blob result = (Blob) service.run(ctx, RunBulkAction.ID, params);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals("dummyValue", result.getCommand().getParams().get("dummyParam"));
 
     }
 

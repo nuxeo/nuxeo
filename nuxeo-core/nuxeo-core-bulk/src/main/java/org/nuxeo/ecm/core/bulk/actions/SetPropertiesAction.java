@@ -29,12 +29,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkCommands;
 import org.nuxeo.ecm.core.bulk.BulkCounter;
@@ -144,13 +148,22 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                 TransactionHelper.runInTransaction(() -> {
                     // for setProperties, parameters are properties to set
                     Map<String, String> properties = currentCommand.getParams();
-                    try (CloseableCoreSession session = CoreInstance.openCoreSession(currentCommand.getRepository(),
-                            currentCommand.getUsername())) {
-                        for (String docId : documentIds) {
-                            DocumentModel doc = session.getDocument(new IdRef(docId));
-                            properties.forEach(doc::setPropertyValue);
-                            session.saveDocument(doc);
+                    LoginContext loginContext;
+                    try {
+                        loginContext = Framework.loginAsUser(currentCommand.getUsername());
+
+                        try (CloseableCoreSession session = CoreInstance.openCoreSession(
+                                currentCommand.getRepository())) {
+                            for (String docId : documentIds) {
+                                DocumentModel doc = session.getDocument(new IdRef(docId));
+                                properties.forEach(doc::setPropertyValue);
+                                session.saveDocument(doc);
+                            }
+                        } finally {
+                            loginContext.logout();
                         }
+                    } catch (LoginException e) {
+                        throw new NuxeoException(e);
                     }
                 });
                 BulkCounter counter = new BulkCounter(currentBulkId, (long) documentIds.size());
