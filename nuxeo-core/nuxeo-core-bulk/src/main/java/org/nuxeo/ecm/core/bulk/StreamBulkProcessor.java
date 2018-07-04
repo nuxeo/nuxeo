@@ -21,14 +21,22 @@ package org.nuxeo.ecm.core.bulk;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.PROCESSED_DOCUMENTS;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLL_END_TIME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLL_START_TIME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATE;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCROLLING_RUNNING;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +46,13 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
@@ -54,11 +64,21 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 10.2
  */
-public class StreamBulkScroller implements StreamProcessorTopology {
+public class StreamBulkProcessor implements StreamProcessorTopology {
 
-    private static final Log log = LogFactory.getLog(StreamBulkScroller.class);
+    private static final Log log = LogFactory.getLog(StreamBulkProcessor.class);
 
-    public static final String COMPUTATION_NAME = "bulkDocumentScroller";
+    public static final String AVRO_CODEC = "avro";
+
+    public static final String SCROLLER_COMPUTATION_NAME = "bulkDocumentScroller";
+
+    public static final String COUNTER_COMPUTATION_NAME = "bulkCounter";
+
+    public static final String KVWRITER_COMPUTATION_NAME = "keyValueWriter";
+
+    public static final String COUNTER_STREAM_NAME = "counter";
+
+    public static final String KVWRITER_STREAM_NAME = "keyValueWriter";
 
     public static final String SCROLL_BATCH_SIZE_OPT = "scrollBatchSize";
 
@@ -66,11 +86,15 @@ public class StreamBulkScroller implements StreamProcessorTopology {
 
     public static final String BUCKET_SIZE_OPT = "bucketSize";
 
+    public static final String COUNTER_THRESHOLD_MS_OPT = "counterThresholdMs";
+
     public static final int DEFAULT_SCROLL_BATCH_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEPALIVE_SECONDS = 60;
 
     public static final int DEFAULT_BUCKET_SIZE = 50;
+
+    public static final int DEFAULT_COUNTER_THRESHOLD_MS = 30000;
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -79,6 +103,8 @@ public class StreamBulkScroller implements StreamProcessorTopology {
         int scrollKeepAliveSeconds = getOptionAsInteger(options, SCROLL_KEEP_ALIVE_SECONDS_OPT,
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
         int bucketSize = getOptionAsInteger(options, BUCKET_SIZE_OPT, DEFAULT_BUCKET_SIZE);
+        int counterThresholdMs = getOptionAsInteger(options, COUNTER_THRESHOLD_MS_OPT, DEFAULT_COUNTER_THRESHOLD_MS);
+
         // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         List<String> actions = service.getActions();
@@ -89,11 +115,17 @@ public class StreamBulkScroller implements StreamProcessorTopology {
             mapping.add(String.format("o%s:%s", i, action));
             i++;
         }
+        mapping.add(String.format("o%s:%s", i, KVWRITER_STREAM_NAME));
+
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkDocumentScrollerComputation(COMPUTATION_NAME, actions.size(),
+                               () -> new BulkDocumentScrollerComputation(SCROLLER_COMPUTATION_NAME, mapping.size(),
                                        scrollBatchSize, scrollKeepAliveSeconds, bucketSize), //
                                mapping)
+                       .addComputation(() -> new CounterComputation(COUNTER_COMPUTATION_NAME, counterThresholdMs),
+                               Arrays.asList("i1:" + COUNTER_STREAM_NAME, "o1:" + KVWRITER_STREAM_NAME))
+                       .addComputation(() -> new KeyValueWriterComputation(KVWRITER_COMPUTATION_NAME),
+                               Collections.singletonList("i1:" + KVWRITER_STREAM_NAME))
                        .build();
     }
 
@@ -141,6 +173,7 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository(),
                         command.getUsername())) {
                     // scroll documents
+                    Long scrollStartTime = Instant.now().toEpochMilli();
                     ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
                             scrollKeepAliveSeconds);
                     long documentCount = 0;
@@ -169,8 +202,16 @@ public class StreamBulkScroller implements StreamProcessorTopology {
                         produceBucket(context, command.getAction(), bulkId, documentCount);
                     }
 
-                    kvStore.put(bulkId + STATE, RUNNING.toString());
-                    kvStore.put(bulkId + SCROLLED_DOCUMENT_COUNT, documentCount);
+                    Long scrollEndTime = Instant.now().toEpochMilli();
+
+                    BulkUpdate updates = new BulkUpdate();
+                    updates.put(bulkId + SCROLL_START_TIME, scrollStartTime.toString());
+                    updates.put(bulkId + SCROLL_END_TIME, scrollEndTime.toString());
+                    updates.put(bulkId + STATE, RUNNING.toString());
+                    updates.put(bulkId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
+                    Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                            BulkUpdate.class);
+                    context.produceRecord(KVWRITER_STREAM_NAME, bulkId, updateCodec.encode(updates));
                 }
             } catch (NuxeoException e) {
                 log.error("Discard invalid record: " + record, e);
@@ -186,6 +227,78 @@ public class StreamBulkScroller implements StreamProcessorTopology {
             context.produceRecord(action, BulkRecords.of(bulkActionId, nbDocSent, docIds));
             context.askForCheckpoint();
             docIds.clear();
+        }
+    }
+
+    public static class CounterComputation extends AbstractComputation {
+
+        protected final int counterThresholdMs;
+
+        protected final Map<String, Long> counters;
+
+        public CounterComputation(String counterComputationName, int counterThresholdMs) {
+            super(counterComputationName, 1, 1);
+            this.counterThresholdMs = counterThresholdMs;
+            this.counters = new HashMap<>();
+        }
+
+        @Override
+        public void init(ComputationContext context) {
+            log.debug(String.format("Starting computation: %s reading on: %s, threshold: %dms",
+                    COUNTER_COMPUTATION_NAME, COUNTER_STREAM_NAME, counterThresholdMs));
+            context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
+        }
+
+        @Override
+        public void processTimer(ComputationContext context, String key, long timestamp) {
+            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
+            BulkUpdate updates = new BulkUpdate();
+            counters.forEach((bulkId, processedDocs) -> {
+                Long previousProcessedDocs = kvStore.getLong(bulkId + PROCESSED_DOCUMENTS);
+                if (previousProcessedDocs == null) {
+                    previousProcessedDocs = 0L;
+                }
+                Long currentProcessedDocs = previousProcessedDocs + processedDocs;
+                if (currentProcessedDocs.longValue() == kvStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT).longValue()) {
+                    updates.put(bulkId + STATE, COMPLETED.toString());
+                }
+                updates.put(bulkId + PROCESSED_DOCUMENTS, String.valueOf(currentProcessedDocs));
+            });
+            Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                    BulkUpdate.class);
+            context.produceRecord(KVWRITER_STREAM_NAME, key, updateCodec.encode(updates));
+            counters.clear();
+            context.askForCheckpoint();
+            context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
+        }
+
+        @Override
+        public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+            Codec<BulkCounter> counterCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                    BulkCounter.class);
+            BulkCounter counter = counterCodec.decode(record.getData());
+            String bulkId = counter.getBulkId();
+
+            counters.computeIfPresent(bulkId, (k, processedDocs) -> processedDocs + counter.getProcessedDocuments());
+            counters.putIfAbsent(bulkId, counter.getProcessedDocuments());
+        }
+    }
+
+    public static class KeyValueWriterComputation extends AbstractComputation {
+
+        public KeyValueWriterComputation(String name) {
+            super(name, 1, 0);
+        }
+
+        @Override
+        public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
+            Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                    BulkUpdate.class);
+
+            BulkUpdate updates = updateCodec.decode(record.getData());
+            updates.getValues().forEach(kvStore::put);
+            context.askForCheckpoint();
         }
     }
 

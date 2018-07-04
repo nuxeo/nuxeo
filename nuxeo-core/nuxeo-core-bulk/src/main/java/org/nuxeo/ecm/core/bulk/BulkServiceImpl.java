@@ -54,7 +54,13 @@ public class BulkServiceImpl implements BulkService {
 
     protected static final String SUBMIT_TIME = ":submitTime";
 
+    protected static final String SCROLL_START_TIME = ":scrollStartTime";
+
+    protected static final String SCROLL_END_TIME = ":scrollEndTime";
+
     protected static final String STATE = ":state";
+
+    protected static final String PROCESSED_DOCUMENTS = ":processedDocs";
 
     protected static final String SCROLLED_DOCUMENT_COUNT = ":count";
 
@@ -100,6 +106,18 @@ public class BulkServiceImpl implements BulkService {
 
         BulkCommand command = BulkCommands.fromKVStore(keyValueStore, bulkId);
         status.setCommand(command);
+
+        Long scrollStartTime = keyValueStore.getLong(bulkId + SCROLL_START_TIME);
+        if (scrollStartTime != null) {
+            status.setScrollStartTime(Instant.ofEpochMilli(scrollStartTime));
+        }
+        Long scrollEndTime = keyValueStore.getLong(bulkId + SCROLL_END_TIME);
+        if (scrollEndTime != null) {
+            status.setScrollEndTime(Instant.ofEpochMilli(scrollEndTime));
+        }
+
+        Long processedDocuments = keyValueStore.getLong(bulkId + PROCESSED_DOCUMENTS);
+        status.setProcessed(processedDocuments);
 
         Long scrolledDocumentCount = keyValueStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT);
         status.setCount(scrolledDocumentCount);

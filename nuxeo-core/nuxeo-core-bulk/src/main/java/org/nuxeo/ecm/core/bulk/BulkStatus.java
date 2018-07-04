@@ -58,6 +58,12 @@ public class BulkStatus implements Serializable {
 
     protected Instant submitTime;
 
+    protected Instant scrollStartTime;
+
+    protected Instant scrollEndTime;
+
+    protected Long processed;
+
     protected Long count;
 
     /**
@@ -130,6 +136,60 @@ public class BulkStatus implements Serializable {
      */
     public void setSubmitTime(Instant submitTime) {
         this.submitTime = submitTime;
+    }
+
+    /**
+     * Gets bulk action scroll start time.
+     *
+     * @return the scroll start time
+     */
+    public Instant getScrollStartTime() {
+        return scrollStartTime;
+    }
+
+    /**
+     * Sets bulk scroll start time.
+     *
+     * @param scrollStartTime the scroll start time
+     */
+    public void setScrollStartTime(Instant scrollStartTime) {
+        this.scrollStartTime = scrollStartTime;
+    }
+
+    /**
+     * Gets bulk action scroll end time.
+     *
+     * @return the scroll end time
+     */
+    public Instant getScrollEndTime() {
+        return scrollEndTime;
+    }
+
+    /**
+     * Sets bulk scroll end time.
+     *
+     * @param scrollEndTime the scroll end time
+     */
+    public void setScrollEndTime(Instant scrollEndTime) {
+        this.scrollEndTime = scrollEndTime;
+    }
+
+    /**
+     * Gets number of elements processed in this bulk.
+     *
+     * @return the number of processed elements
+     */
+    public Long getProcessed() {
+        return processed;
+    }
+
+    /**
+     * Sets number of elements processed in this bulk.
+     *
+     * @param processed the number of elements
+     */
+    public void setProcessed(Long processed) {
+        this.processed = processed;
     }
 
     /**

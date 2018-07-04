@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 
 import java.math.BigInteger;
@@ -71,6 +72,9 @@ public class TestBulkService {
         assertNotNull(bulkId);
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
+        try (LogTailer<Record> tailer = manager.createTailer("scroll", "documentSet")) {
+            tailer.read(Duration.ofSeconds(1));
+        }
         try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
             assertEquals(10, new BigInteger(logRecord.message().getData()).intValue());
@@ -101,16 +105,28 @@ public class TestBulkService {
                                                         .withParam("dc:description", description));
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
+        // TODO remove the use of tailers when we'll be able to detect end
         try (LogTailer<Record> tailer = manager.createTailer("setProperties", "setProperties")) {
             for (int i = 0; i <= 10; i++) {
                 tailer.read(Duration.ofSeconds(1));
             }
         }
 
+        try (LogTailer<Record> tailer = manager.createTailer("counter", "counter")) {
+            tailer.read(Duration.ofSeconds(1));
+        }
+
+        try (LogTailer<Record> tailer = manager.createTailer("kvwriter", "keyValueWriter")) {
+            tailer.read(Duration.ofSeconds(1));
+        }
+
         BulkStatus status = service.getStatus(bulkId);
         assertNotNull(status);
-        // TODO change RUNNING state when we'll be able to detect end
-        assertEquals(RUNNING, status.getState());
+
+        assertEquals(COMPLETED, status.getState());
+
+        assertNotNull(status.getProcessed());
+        assertEquals(10, status.getProcessed().longValue());
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());
