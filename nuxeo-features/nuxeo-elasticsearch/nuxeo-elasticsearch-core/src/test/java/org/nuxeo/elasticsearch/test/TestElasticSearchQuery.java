@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
@@ -67,6 +68,8 @@ public class TestElasticSearchQuery {
     private static final String IDX_NAME = "nxutest";
 
     private static final String TYPE_NAME = "doc";
+
+    private static final String SCORE = "score";
 
     @Inject
     protected CoreFeature coreFeature;
@@ -171,6 +174,45 @@ public class TestElasticSearchQuery {
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(1, ret.totalSize());
 
+    }
+
+    @Test
+    public void testMoreLikeThisQuery() throws Exception {
+
+        //Create test data
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        doc.setPropertyValue("dc:title", "very nice title");
+        doc = session.createDocument(doc);
+
+        for (int i = 1; i <= 5; i++) {
+            DocumentModel likeDoc = session.createDocumentModel("/", "myFile" + i, "File");
+            String title = i % 2 == 0 ? "nice title" : "nice";
+            likeDoc.setPropertyValue("dc:title", title + i);
+            session.createDocument(likeDoc);
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        //Query More Like This
+        MoreLikeThisQueryBuilder.Item item = new MoreLikeThisQueryBuilder.Item(null, null, doc.getId());
+        QueryBuilder elasticBuilder = QueryBuilders.moreLikeThisQuery(new String[] { "dc:title.fulltext" }, null,
+                new MoreLikeThisQueryBuilder.Item[] { item })
+                                                   .minTermFreq(1)
+                                                   .minWordLength(3)
+                                                   .maxQueryTerms(20)
+                                                   .minimumShouldMatch("45%");
+
+        NxQueryBuilder nxQuery = new NxQueryBuilder(session).esQuery(elasticBuilder)
+                                                            .fetchFromElasticsearch()
+                                                            .hitDocConsumer((searchHit, aDoc) -> {
+                                                                aDoc.putContextData(SCORE, searchHit.getScore());
+                                                            })
+                                                            .limit(20);
+        DocumentModelList ret = ess.query(nxQuery);
+        Assert.assertEquals(5, ret.totalSize());
+        Assert.assertNotNull(ret.get(0).getContextData(SCORE));
     }
 
     @Test

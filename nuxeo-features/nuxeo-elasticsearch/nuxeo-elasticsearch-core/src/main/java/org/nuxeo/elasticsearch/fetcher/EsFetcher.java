@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
@@ -39,8 +40,19 @@ import org.nuxeo.elasticsearch.io.DocumentModelReaders;
  */
 public class EsFetcher extends Fetcher {
 
+    protected final HitDocConsumer consumer;
+
     public EsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         super(session, response, repoNames);
+        this.consumer = null;
+    }
+
+    /**
+     * @since 10.2
+     */
+    public EsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames, HitDocConsumer consumer) {
+        super(session, response, repoNames);
+        this.consumer = consumer;
     }
 
     @Override
@@ -51,6 +63,11 @@ public class EsFetcher extends Fetcher {
         for (SearchHit hit : getResponse().getHits()) {
             // TODO: this does not work on multi repo
             doc = DocumentModelReaders.fromSource(hit.getSourceAsMap()).sid(sid).getDocumentModel();
+
+            if (doc != null && consumer != null) {
+                consumer.accept(hit, doc);
+            }
+
             // Add highlight if it exists
             Map<String, HighlightField> esHighlights = hit.getHighlightFields();
             if (!esHighlights.isEmpty()) {
@@ -68,5 +85,14 @@ public class EsFetcher extends Fetcher {
             ret.add(doc);
         }
         return ret;
+    }
+
+    /**
+     * Consumes both a SearchHit and DocumentModel.
+     * @since 10.2
+     */
+    @FunctionalInterface
+    public interface HitDocConsumer extends BiConsumer<SearchHit, DocumentModel> {
+
     }
 }
