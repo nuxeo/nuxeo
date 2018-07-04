@@ -35,7 +35,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
 
-    @Path("group/{groupName}")
+    // match everything until:
+    // - '/@' for web adapters
+    @Path("group/{groupName:((?:(?!(/@)).)*)}")
     public Object doGetUserToGroup(@PathParam("groupName") String groupName) {
         NuxeoGroup group = um.getGroup(groupName);
         if (group == null) {
