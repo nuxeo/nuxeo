@@ -466,13 +466,13 @@ public class UserGroupTest extends BaseUserTest {
 
     @Test
     public void itCanAddAGroupToAUser() {
-        checkCanAddAGroupToAUser("user1");
-        checkCanAddAGroupToAUser("foouser");
+        checkCanAddAGroupToAUser("user1", "group2");
+        checkCanAddAGroupToAUser("foouser", "group2");
     }
 
-    protected void checkCanAddAGroupToAUser(String username) {
+    protected void checkCanAddAGroupToAUser(String username, String groupname) {
         NuxeoPrincipal principal = um.getPrincipal(username);
-        NuxeoGroup group = um.getGroup("group2");
+        NuxeoGroup group = um.getGroup(groupname);
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
@@ -489,6 +489,16 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanAddAUserToAGroup() {
         checkCanAddAUserToAGroup("group2");
         checkCanAddAUserToAGroup("foogroup");
+    }
+
+    @Test
+    public void itCanAddAUserToAGroupWithSlash() {
+        NuxeoGroup group = new NuxeoGroupImpl("test/slash");
+        group.setLabel("a group with a slash in the name");
+        um.createGroup(group.getModel());
+        nextTransaction();
+        checkCanAddAGroupToAUser("user1", "test/slash");
+        um.deleteGroup(group.getModel());
     }
 
     protected void checkCanAddAUserToAGroup(String groupName) {
