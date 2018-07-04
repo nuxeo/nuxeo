@@ -125,6 +125,9 @@ This simulation requires a Nuxeo instance with nuxeo-platform-importer.
 
 Create the folder layout, using the rest API as listed in Redis `imp:folder`.
 
+## Sim15BulkUpdateDocuments: Run a bulk action on documents
+
+Perform a bulk action (setProperties) on all the documents.
 
 ## Sim20CreateDocuments: Create documents
 

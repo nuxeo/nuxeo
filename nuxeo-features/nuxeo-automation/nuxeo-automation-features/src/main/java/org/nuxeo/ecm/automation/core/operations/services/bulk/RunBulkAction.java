@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +28,11 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkService;
-import org.nuxeo.ecm.core.bulk.BulkStatus;
 
 /**
  * @since 10.2
@@ -55,18 +58,17 @@ public class RunBulkAction {
     protected Map<String, String> parameters = new HashMap<>();
 
     @OperationMethod
-    public BulkStatus run() {
+    public Blob run() throws IOException {
         String repositoryName = session.getRepositoryName();
         String userName = session.getPrincipal().getName();
+
         BulkCommand command = new BulkCommand().withRepository(repositoryName)
                                                .withAction(action)
                                                .withUsername(userName)
                                                .withQuery(query)
                                                .withParams(parameters);
-        String bulkId = service.submit(command);
-        BulkStatus bulkStatus = new BulkStatus();
-        bulkStatus.setId(bulkId);
-        return bulkStatus;
+        String commandId = service.submit(command);
+        return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
     }
 
 }

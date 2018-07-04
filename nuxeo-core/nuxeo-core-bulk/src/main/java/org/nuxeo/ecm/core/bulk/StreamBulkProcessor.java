@@ -40,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -170,48 +173,56 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                     context.askForCheckpoint();
                     return;
                 }
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository(),
-                        command.getUsername())) {
-                    // scroll documents
-                    Long scrollStartTime = Instant.now().toEpochMilli();
-                    ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
-                            scrollKeepAliveSeconds);
-                    long documentCount = 0;
-                    long bucketNumber = 0;
-                    while (scroll.hasResults()) {
-                        List<String> docIds = scroll.getResults();
-                        documentIds.addAll(docIds);
-                        while (documentIds.size() >= bucketSize) {
-                            // we use number of sent document to make record key unique
-                            // key are prefixed with bulkId:, suffix are:
-                            // bucketSize / 2 * bucketSize / ... / total document count
-                            bucketNumber++;
-                            produceBucket(context, command.getAction(), bulkId, bucketNumber * bucketSize);
+                LoginContext loginContext;
+                try {
+                    loginContext = Framework.loginAsUser(command.getUsername());
+                    try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
+                        // scroll documents
+                        Long scrollStartTime = Instant.now().toEpochMilli();
+                        ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
+                                scrollKeepAliveSeconds);
+                        long documentCount = 0;
+                        long bucketNumber = 0;
+                        while (scroll.hasResults()) {
+                            List<String> docIds = scroll.getResults();
+                            documentIds.addAll(docIds);
+                            while (documentIds.size() >= bucketSize) {
+                                // we use number of sent document to make record key unique
+                                // key are prefixed with bulkId:, suffix are:
+                                // bucketSize / 2 * bucketSize / ... / total document count
+                                bucketNumber++;
+                                produceBucket(context, command.getAction(), bulkId, bucketNumber * bucketSize);
+                            }
+
+                            documentCount += docIds.size();
+                            // next batch
+                            scroll = session.scroll(scroll.getScrollId());
+                            TransactionHelper.commitOrRollbackTransaction();
+                            TransactionHelper.startTransaction();
                         }
 
-                        documentCount += docIds.size();
-                        // next batch
-                        scroll = session.scroll(scroll.getScrollId());
-                        TransactionHelper.commitOrRollbackTransaction();
-                        TransactionHelper.startTransaction();
+                        // send remaining document ids
+                        // there's at most one record because we loop while scrolling
+                        if (!documentIds.isEmpty()) {
+                            produceBucket(context, command.getAction(), bulkId, documentCount);
+                        }
+
+                        Long scrollEndTime = Instant.now().toEpochMilli();
+
+                        BulkUpdate updates = new BulkUpdate();
+                        updates.put(bulkId + SCROLL_START_TIME, scrollStartTime.toString());
+                        updates.put(bulkId + SCROLL_END_TIME, scrollEndTime.toString());
+                        updates.put(bulkId + STATE, RUNNING.toString());
+                        updates.put(bulkId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
+                        Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                                BulkUpdate.class);
+                        context.produceRecord(KVWRITER_STREAM_NAME, bulkId, updateCodec.encode(updates));
+
+                    } finally {
+                        loginContext.logout();
                     }
-
-                    // send remaining document ids
-                    // there's at most one record because we loop while scrolling
-                    if (!documentIds.isEmpty()) {
-                        produceBucket(context, command.getAction(), bulkId, documentCount);
-                    }
-
-                    Long scrollEndTime = Instant.now().toEpochMilli();
-
-                    BulkUpdate updates = new BulkUpdate();
-                    updates.put(bulkId + SCROLL_START_TIME, scrollStartTime.toString());
-                    updates.put(bulkId + SCROLL_END_TIME, scrollEndTime.toString());
-                    updates.put(bulkId + STATE, RUNNING.toString());
-                    updates.put(bulkId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
-                    Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                            BulkUpdate.class);
-                    context.produceRecord(KVWRITER_STREAM_NAME, bulkId, updateCodec.encode(updates));
+                } catch (LoginException e) {
+                    throw new NuxeoException(e);
                 }
             } catch (NuxeoException e) {
                 log.error("Discard invalid record: " + record, e);
