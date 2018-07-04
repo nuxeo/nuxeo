@@ -25,21 +25,25 @@ properties([
     [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/nuxeo/nuxeo/'],
     [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
     [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
-        [$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'BRANCH'],
-        [$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'PARENT_BRANCH']]],
+        [$class: 'StringParameterDefinition', defaultValue: 'master', name: 'BRANCH',
+            description: 'Branch to build. It must exist on the root repository.'],
+        [$class: 'StringParameterDefinition', defaultValue: 'master', name: 'PARENT_BRANCH',
+            description: """Fallback branch (aka parent or target branch. It is the branch to use on repositories
+without BRANCH. That's the branch target for the final merge."""]
+    ]],
     pipelineTriggers([[$class: 'GitHubPushTrigger']])
   ])
 
 node('SLAVE') {
-    def PARENT_BRANCH = params.PARENT_BRANCH
-    if (env.CHANGE_TARGET) {
-        println "Using CHANGE_TARGET parameter: $env.CHANGE_TARGET"
-        PARENT_BRANCH = env.CHANGE_TARGET
-    }
     def BRANCH = params.BRANCH
     if (env.BRANCH_NAME) {
         println "Using BRANCH_NAME parameter: $env.BRANCH_NAME"
         BRANCH = env.BRANCH_NAME
+    }
+    def PARENT_BRANCH = params.PARENT_BRANCH
+    if (env.CHANGE_TARGET) {
+        println "Using CHANGE_TARGET parameter: $env.CHANGE_TARGET"
+        PARENT_BRANCH = env.CHANGE_TARGET
     }
     println "Testing branch '$BRANCH' with parent branch '$PARENT_BRANCH'"
     currentBuild.setDescription("$BRANCH -> $PARENT_BRANCH")
@@ -50,16 +54,21 @@ node('SLAVE') {
         timestamps {
             try {
                 stage('clone') {
+                    // Check remote branch existence and effective checkouted branch
+                    sh 'git ls-remote --exit-code git://github.com/nuxeo/nuxeo.git $BRANCH'
                     git branch: '$BRANCH', url: 'git://github.com/nuxeo/nuxeo.git'
                     sh """#!/bin/bash -xe
-                          ./clone.py $BRANCH -f $PARENT_BRANCH
+                        ./clone.py $BRANCH -f $PARENT_BRANCH
+                        source scripts/gitfunctions.sh
+                        shr -a git show -s --pretty=format:'%h%d'
+                        test `git rev-parse HEAD` = `git rev-parse $BRANCH`
                     """
                     sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 }
                 stage('analysis') {
                     withBuildStatus("mvn verify sonar", "https://github.com/nuxeo/nuxeo", sha, BUILD_URL) {
                         try {
-                            withEnv(['MAVEN_OPTS=-Xmx6g -server']) {
+                            withEnv(['MAVEN_OPTS=-Xms4g -Xmx8g -XX:-UseGCOverheadLimit -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$WORKSPACE/target/gcOoO.hprof']) {
                                 withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
                                     if (params.BRANCH != params.PARENT_BRANCH) {
                                         TARGET_OPTION="-Dsonar.branch.target=${params.PARENT_BRANCH}"
@@ -67,7 +76,7 @@ node('SLAVE') {
                                         TARGET_OPTION=""
                                     }
                                     sh """#!/bin/bash -ex
-                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH $TARGET_OPTION \
+                                        mvn -B -V clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH $TARGET_OPTION \
                                           -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
                                     """
                                 }
