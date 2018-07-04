@@ -21,15 +21,17 @@ package org.nuxeo.lib.stream.log;
 import java.io.Externalizable;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.Record;
 
 /**
  * An appender is used to append message into a Log. Implementations must be thread safe.
  *
  * @since 9.3
  */
-public interface LogAppender<M extends Externalizable> {
+public interface LogAppender<M extends Externalizable> extends Consumer<Record> {
 
     /**
      * Returns the Log's name.
@@ -60,6 +62,16 @@ public interface LogAppender<M extends Externalizable> {
         // and yes hashCode can be negative.
         int partition = (key.hashCode() & 0x7fffffff) % size();
         return append(partition, message);
+    }
+
+    /**
+     * A Record consumer using a LogAppender
+     * @since 10.2
+     */
+    default void accept(Record record) {
+        if (record != null) {
+            append(record.getKey(), (M) record);
+        }
     }
 
     /**
