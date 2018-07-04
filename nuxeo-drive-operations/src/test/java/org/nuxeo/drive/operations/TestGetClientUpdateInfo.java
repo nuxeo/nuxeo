@@ -62,7 +62,7 @@ public class TestGetClientUpdateInfo {
         // Set Framework properties required for the client update
         Framework.getProperties().put(Environment.DISTRIBUTION_VERSION, "5.9.3");
         Framework.getProperties().put(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY,
-                "http://community.nuxeo.com/static/drive/");
+                "https://community.nuxeo.com/static/drive-updates/");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class TestGetClientUpdateInfo {
                 NuxeoDriveClientUpdateInfo.class);
 
         assertEquals("5.9.3", clientUpdateInfo.getServerVersion());
-        assertEquals("http://community.nuxeo.com/static/drive/", clientUpdateInfo.getUpdateSiteURL());
+        assertEquals("https://community.nuxeo.com/static/drive-updates/", clientUpdateInfo.getUpdateSiteURL());
 
     }
 
