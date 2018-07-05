@@ -39,7 +39,7 @@ public class ESTestClientFactory implements ESClientFactory {
 
     public static final String REST_CLIENT = "RestClient";
 
-    public static final String DEFAULT_CLIENT = TRANSPORT_CLIENT;
+    public static final String DEFAULT_CLIENT = REST_CLIENT;
 
     public static final String CLIENT_PROPERTY = "nuxeo.test.elasticsearch.client";
 
