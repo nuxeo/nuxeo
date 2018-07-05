@@ -1,16 +1,15 @@
-<?xml version="1.0"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2-I20180705_0132</version>
   </parent>
   <artifactId>nuxeo-adobe-connector-parent</artifactId>
-  <version>10.2-SNAPSHOT</version>
+  <version>10.2-I20180705_0132</version>
   <name>Nuxeo adobe connector</name>
   <packaging>pom</packaging>
-  <description/>
+  <description></description>
  
   <modules>
    <module>nuxeo-adobe-connector-core</module>
