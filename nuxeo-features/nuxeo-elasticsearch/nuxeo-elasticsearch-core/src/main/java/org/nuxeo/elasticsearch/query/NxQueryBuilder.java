@@ -302,17 +302,16 @@ public class NxQueryBuilder {
             fieldType = schemaManager.getField(field).getType().getName();
         } catch (NullPointerException e) {
             // probably an internal field without schema
-            fieldType = "string";
+            fieldType = "keyword";
         }
         switch (fieldType) {
         case "integer":
         case "long":
         case "boolean":
         case "date":
-        case "string":
             return fieldType;
         }
-        return "string";
+        return "keyword";
     }
 
     protected QueryBuilder getAggregateFilter() {
