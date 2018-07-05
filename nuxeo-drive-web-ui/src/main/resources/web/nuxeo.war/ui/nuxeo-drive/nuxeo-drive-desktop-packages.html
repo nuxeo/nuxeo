@@ -123,11 +123,7 @@ Example:
           var pkgs = [];
 
           var prefix = 'nuxeo-drive';
-          var baseUrl = [
-            'http://community.nuxeo.com/static/drive', // XXX org.nuxeo.drive.update.site.url
-            'latest',
-            tp
-          ].join('/');
+          var baseUrl = 'https://community.nuxeo.com/static/drive-updates';
 
           var name = prefix + '.dmg';
           pkgs.push({
@@ -136,7 +132,7 @@ Example:
             url: baseUrl + '/' + name
           });
 
-          name = prefix + '.msi';
+          name = prefix + '.exe';
           pkgs.push({
             name: name,
             platform: 'windows',
@@ -147,7 +143,7 @@ Example:
             name: window.nuxeo.I18n.translate('driveDesktopPackages.ubuntu.name',
                                               'Read the documentation about the Linux client'),
             platform: 'ubuntu',
-            url: 'https://github.com/nuxeo/nuxeo-drive#ubuntudebian-and-other-linux-variants-client'
+            url: 'https://github.com/nuxeo/nuxeo-drive#debian-based-distributions-and-other-gnulinux-variants-client'
           });
           return pkgs;
         }
