@@ -36,20 +36,20 @@ public class TestBulkRecords {
 
     @Test
     public void testRecordCreation() {
-        Record record = BulkRecords.of("bulkId", 10L, asList("id1", "id2", "id3"));
+        Record record = BulkRecords.of("commandId", 10L, asList("id1", "id2", "id3"));
         String key = record.getKey();
         String value = new String(record.getData(), UTF_8);
 
-        assertEquals("bulkId:10", key);
-        assertEquals(value, "id1_id2_id3");
+        assertEquals("commandId:10", key);
+        assertEquals("id1_id2_id3", value);
     }
 
     @Test
     public void testInitialFormat() {
-        Record record = Record.of("bulkId:12345", "id1_id2_id3".getBytes(UTF_8));
+        Record record = Record.of("commandId:12345", "id1_id2_id3".getBytes(UTF_8));
 
-        String bulkId = BulkRecords.bulkIdFrom(record);
-        assertEquals("bulkId", bulkId);
+        String commandId = BulkRecords.commandIdFrom(record);
+        assertEquals("commandId", commandId);
 
         List<String> docIds = BulkRecords.docIdsFrom(record);
         assertEquals(3, docIds.size());

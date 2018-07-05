@@ -166,9 +166,9 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
         protected void processRecord(ComputationContext context, Record record) {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
             try {
-                String bulkId = record.getKey();
+                String commandId = record.getKey();
                 BulkCommand command = BulkCommands.fromBytes(record.getData());
-                if (!kvStore.compareAndSet(bulkId + STATE, SCHEDULED.toString(), SCROLLING_RUNNING.toString())) {
+                if (!kvStore.compareAndSet(commandId + STATE, SCHEDULED.toString(), SCROLLING_RUNNING.toString())) {
                     log.error("Discard record: " + record + " because it's already building");
                     context.askForCheckpoint();
                     return;
@@ -191,7 +191,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                                 // key are prefixed with bulkId:, suffix are:
                                 // bucketSize / 2 * bucketSize / ... / total document count
                                 bucketNumber++;
-                                produceBucket(context, command.getAction(), bulkId, bucketNumber * bucketSize);
+                                produceBucket(context, command.getAction(), commandId, bucketNumber * bucketSize);
                             }
 
                             documentCount += docIds.size();
@@ -204,19 +204,19 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                         // send remaining document ids
                         // there's at most one record because we loop while scrolling
                         if (!documentIds.isEmpty()) {
-                            produceBucket(context, command.getAction(), bulkId, documentCount);
+                            produceBucket(context, command.getAction(), commandId, documentCount);
                         }
 
                         Long scrollEndTime = Instant.now().toEpochMilli();
 
                         BulkUpdate updates = new BulkUpdate();
-                        updates.put(bulkId + SCROLL_START_TIME, scrollStartTime.toString());
-                        updates.put(bulkId + SCROLL_END_TIME, scrollEndTime.toString());
-                        updates.put(bulkId + STATE, RUNNING.toString());
-                        updates.put(bulkId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
+                        updates.put(commandId + SCROLL_START_TIME, scrollStartTime.toString());
+                        updates.put(commandId + SCROLL_END_TIME, scrollEndTime.toString());
+                        updates.put(commandId + STATE, RUNNING.toString());
+                        updates.put(commandId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
                         Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
                                 BulkUpdate.class);
-                        context.produceRecord(KVWRITER_STREAM_NAME, bulkId, updateCodec.encode(updates));
+                        context.produceRecord(KVWRITER_STREAM_NAME, commandId, updateCodec.encode(updates));
 
                     } finally {
                         loginContext.logout();
@@ -232,10 +232,10 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
         /**
          * Produces a bucket as a record to appropriate bulk action stream.
          */
-        protected void produceBucket(ComputationContext context, String action, String bulkActionId, long nbDocSent) {
+        protected void produceBucket(ComputationContext context, String action, String commandId, long nbDocSent) {
             List<String> docIds = documentIds.subList(0, min(bucketSize, documentIds.size()));
             // send these ids as keys to the appropriate stream
-            context.produceRecord(action, BulkRecords.of(bulkActionId, nbDocSent, docIds));
+            context.produceRecord(action, BulkRecords.of(commandId, nbDocSent, docIds));
             context.askForCheckpoint();
             docIds.clear();
         }

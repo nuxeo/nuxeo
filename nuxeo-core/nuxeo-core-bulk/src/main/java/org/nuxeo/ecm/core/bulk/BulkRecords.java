@@ -41,18 +41,18 @@ public class BulkRecords {
     }
 
     /**
-     * @return A new {@link Record} containing document ids respecting bulk format
+     * @return a new {@link Record} containing document ids respecting bulk format
      */
-    public static Record of(String bulkId, long currentCount, List<String> documentIds) {
-        String key = bulkId + KEY_SEPARATOR + currentCount;
+    public static Record of(String commandId, long currentCount, List<String> documentIds) {
+        String key = commandId + KEY_SEPARATOR + currentCount;
         String value = String.join(VALUE_SEPARATOR, documentIds);
         return Record.of(key, value.getBytes(UTF_8));
     }
 
     /**
-     * @return The bulk id extracted from {@link Record}
+     * @return the command id extracted from {@link Record}
      */
-    public static String bulkIdFrom(Record record) {
+    public static String commandIdFrom(Record record) {
         String key = record.getKey();
         return key.split(KEY_SEPARATOR)[0];
     }

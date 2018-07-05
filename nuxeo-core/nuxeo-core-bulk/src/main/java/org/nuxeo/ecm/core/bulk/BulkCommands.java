@@ -43,13 +43,13 @@ public class BulkCommands {
         // utility class
     }
 
-    public static BulkCommand fromKVStore(String bulkId) {
+    public static BulkCommand fromKVStore(String commandId) {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        return fromKVStore(kvStore, bulkId);
+        return fromKVStore(kvStore, commandId);
     }
 
-    protected static BulkCommand fromKVStore(KeyValueStore kvStore, String bulkId) {
-        byte[] data = kvStore.get(bulkId + COMMAND);
+    protected static BulkCommand fromKVStore(KeyValueStore kvStore, String commandId) {
+        byte[] data = kvStore.get(commandId + COMMAND);
         return fromBytes(data);
     }
 

@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * API to manage Bulk Computation.
@@ -38,14 +38,14 @@ public interface BulkService {
     /**
      * @return the command status corresponding to the command identifier.
      */
-    BulkStatus getStatus(String bulkId);
+    BulkStatus getStatus(String commandId);
 
     /**
-     * Waits for completion of given bulk.
+     * Waits for completion of given bulk command.
      *
-     * @param timeout the time to wait
-     * @param unit the timeout unit
-     * @return {@code true} if bulk completed, or {@code false} if computation has not finished after the timeout
+     * @param commandId the command to wait
+     * @param duration the duration to wait
+     * @return {@code true} if bulk command completed or {@code false} if computation has not finished after the timeout
      */
-    boolean await(String bulkId, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(String commandId, Duration duration) throws InterruptedException;
 }
