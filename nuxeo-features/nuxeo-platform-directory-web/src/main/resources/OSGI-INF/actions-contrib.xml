@@ -16,13 +16,6 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
-    <filter id="directoriesManagementAccess">
-      <rule grant="true">
-        <condition>currentUser.administrator</condition>
-        <condition>currentUser.isMemberOf('powerusers')</condition>
-      </rule>
-    </filter>
-
     <!--  This filter is designed to be evaluated via
           #{directoryUIActions.checkContextualDirectoryFilter('readOnlyDirectory')}
           the filter context contains the name of the current directory being displayed

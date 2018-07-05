@@ -1,0 +1,15 @@
+<component name="org.nuxeo.ecm.directory.actions.core">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="directoriesManagementAccess">
+      <rule grant="true">
+        <condition>currentUser.administrator</condition>
+        <condition>currentUser.isMemberOf('powerusers')</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
