@@ -39,12 +39,4 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-
-    <filter id="directoriesManagementAccess">
-      <rule grant="true"></rule>
-    </filter>
-
-  </extension>
-
 </component>
