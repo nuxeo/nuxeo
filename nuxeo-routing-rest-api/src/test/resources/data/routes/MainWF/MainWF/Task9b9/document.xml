@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task9b9">
+  <system>
+    <type>RouteNode</type>
+    <path>MainWF/Task9b9</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task9b9</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:title><![CDATA[ChildWF]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:subRouteModelExpr><![CDATA[ChildWF]]></rnode:subRouteModelExpr>
+    <rnode:transitions>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[20.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[20.0]]></x>
+            <y><![CDATA[150.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[150.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[270.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[WorkflowVariables["isVeto"]!=empty]]></condition>
+        <chain><![CDATA[MessageMe]]></chain>
+        <targetId><![CDATA[stop-node]]></targetId>
+        <name><![CDATA[transitionTask9b9]]></name>
+        <label><![CDATA[transition]]></label>
+      </transition>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[70.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[80.0]]></x>
+            <y><![CDATA[70.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[80.0]]></x>
+            <y><![CDATA[110.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[true]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task18b2]]></targetId>
+        <name><![CDATA[transition2Task9b9]]></name>
+        <label><![CDATA[transition2]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskY><![CDATA[160]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task9b9]]></rnode:variablesFacet>
+    <rnode:subRouteVariables/>
+    <rnode:taskX><![CDATA[220]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[true]]></rnode:executeOnlyFirstTransition>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:hasTask><![CDATA[false]]></rnode:hasTask>
+    <rnode:escalationRules/>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
+    <rnode:nodeId><![CDATA[Task9b9]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+  </schema>
+  <schema xmlns:var_Task9b9="http://www.nuxeo.org/ecm/project/schemas/pabgrall-sandbox-92-nuxe/var_Task9b9" name="var_Task9b9"></schema>
+</document>

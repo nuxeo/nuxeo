@@ -1112,6 +1112,97 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     /**
+     * NXP-25029
+     *
+     * @since 10.2
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server.routing.test:test-reject-task-in-sub-workflow.xml")
+    public void testRejectTaskInSubWorkflow() throws IOException {
+        final String createdMainWorkflowInstanceId;
+        final String createdChildWorkflowInstanceId;
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+        // create main workflow as Administrator
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("MainWF", singletonList(note.getId())))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdMainWorkflowInstanceId = node.get("id").textValue();
+        }
+
+        // check childWF has started GET /api/id/{documentId}/@workflow
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, node.get("entries").size());
+            JsonNode firstWF = node.get("entries").get(0);
+            JsonNode secondWF = node.get("entries").get(1);
+            if (createdMainWorkflowInstanceId.equals(firstWF.get("id").textValue())) {
+                assertEquals("MainWF", firstWF.get("workflowModelName").textValue());
+                assertEquals("ChildWF", secondWF.get("workflowModelName").textValue());
+                createdChildWorkflowInstanceId = secondWF.get("id").textValue();
+            } else {
+                assertEquals("MainWF", secondWF.get("workflowModelName").textValue());
+                assertEquals("ChildWF", firstWF.get("workflowModelName").textValue());
+                createdChildWorkflowInstanceId = firstWF.get("id").textValue();
+            }
+        }
+
+        // get tasks for child WF
+        final String taskUser1Id;
+        final String taskUser2Id;
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdChildWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, node.get("entries").size());
+            taskUser1Id = node.get("entries").get(0).get("id").textValue();
+            taskUser2Id = node.get("entries").get(1).get("id").textValue();
+        }
+
+        // login as user1
+        getServiceFor("user1", "user1");
+
+        // reject task for user1
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskUser1Id + "/reject",
+                getBodyForStartReviewTaskCompletion(taskUser1Id))) {
+            // Missing required variables
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // login as user2
+        getServiceFor("user2", "user2");
+
+        // reject task for user2
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskUser2Id + "/reject",
+                getBodyForStartReviewTaskCompletion(taskUser2Id))) {
+            // Missing required variables
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // login as Administrator
+        getServiceFor("Administrator", "Administrator");
+
+        // As both tasks have been rejected, administrator wouldn't have anything to do.
+        // get tasks for child WF
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdChildWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, node.get("entries").size());
+        }
+
+        // get tasks for main WF
+        // there should be no entries, both reject leads to no tasks for administrator
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdMainWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, node.get("entries").size());
+        }
+
+    }
+
+    /**
      * @since 9.1
      */
     protected void awaitCleanupWorks() throws InterruptedException {
