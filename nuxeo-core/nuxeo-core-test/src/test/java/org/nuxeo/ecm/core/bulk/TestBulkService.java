@@ -28,6 +28,8 @@ import java.math.BigInteger;
 import java.time.Duration;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginAs;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -50,8 +54,17 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ CoreBulkFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/dummy-bulk-login-config.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
 public class TestBulkService {
+
+    public static class DummyLogin implements LoginAs {
+
+        @Override
+        public LoginContext loginAs(String username) throws LoginException {
+            return Framework.login();
+        }
+    }
 
     @Inject
     public BulkService service;
@@ -72,8 +85,11 @@ public class TestBulkService {
         assertNotNull(commandId);
 
         LogManager manager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
+        // TODO remove the use of tailers when we'll be able to detect end
         try (LogTailer<Record> tailer = manager.createTailer("scroll", "documentSet")) {
-            tailer.read(Duration.ofSeconds(1));
+            for (int i = 0; i <= 10; i++) {
+                tailer.read(Duration.ofSeconds(1));
+            }
         }
         try (LogTailer<Record> tailer = manager.createTailer("counter", "output")) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
