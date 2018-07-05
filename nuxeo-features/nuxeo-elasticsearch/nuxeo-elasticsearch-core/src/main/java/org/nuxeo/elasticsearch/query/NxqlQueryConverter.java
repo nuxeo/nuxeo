@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 import java.io.ByteArrayOutputStream;
@@ -724,7 +725,7 @@ public final class NxqlQueryConverter {
             public void visitOrderByExpr(OrderByExpr node) {
                 String name = getFieldName(node.reference.name, null);
                 if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
-                    name = "_score";
+                    name = ES_SCORE_FIELD;
                 }
                 sortInfos.add(new SortInfo(name, !node.isDescending));
             }

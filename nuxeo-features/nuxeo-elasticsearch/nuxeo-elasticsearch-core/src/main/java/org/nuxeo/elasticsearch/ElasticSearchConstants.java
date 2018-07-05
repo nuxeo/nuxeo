@@ -118,6 +118,9 @@ public final class ElasticSearchConstants {
 
     public static final String EPOCH_MILLIS_FORMAT = "epoch_millis";
 
+    /** @since 10.2 */
+    public static final String ES_SCORE_FIELD = "_score";
+
     private ElasticSearchConstants() {
     }
 

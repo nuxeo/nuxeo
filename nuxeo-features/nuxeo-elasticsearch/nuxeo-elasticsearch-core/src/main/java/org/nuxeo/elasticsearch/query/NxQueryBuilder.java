@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 import java.security.Principal;
@@ -292,6 +293,10 @@ public class NxQueryBuilder {
 
     protected String guessFieldType(String field) {
         String fieldType;
+        if (ES_SCORE_FIELD.equals(field)) {
+            // this special field should not have an unmappedType
+            return null;
+        }
         try {
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             fieldType = schemaManager.getField(field).getType().getName();
