@@ -4,7 +4,7 @@
   <parent>
     <artifactId>nuxeo-services-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2-I20180705_0132</version>
   </parent>
 
   <artifactId>nuxeo-platform-test</artifactId>
