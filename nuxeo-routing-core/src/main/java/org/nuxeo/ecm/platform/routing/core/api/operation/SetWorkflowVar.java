@@ -63,16 +63,18 @@ public class SetWorkflowVar {
     @SuppressWarnings("unchecked")
     @OperationMethod
     public void run() {
+        // first fill context
         if (ctx.get(Constants.VAR_WORKFLOW) != null) {
             ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(name, (Serializable) value);
-            return;
         }
-        if (workflowInstanceId == null && ctx.get("workflowInstanceId") != null) {
+        // get workflow instance id from context if not in automation parameters
+        if (workflowInstanceId == null) {
             workflowInstanceId = (String) ctx.get("workflowInstanceId");
         }
         if (workflowInstanceId == null) {
             return;
         }
+        // finally save graph variables
         DocumentModel workflowInstance = session.getDocument(new IdRef(workflowInstanceId));
         GraphRoute graph = workflowInstance.getAdapter(GraphRoute.class);
         Map<String, Serializable> vars = graph.getVariables();

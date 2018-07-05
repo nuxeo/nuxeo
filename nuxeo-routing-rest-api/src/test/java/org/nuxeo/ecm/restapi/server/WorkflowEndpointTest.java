@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.restapi.server;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -201,13 +202,13 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Check GET /task?userId=Administrator i.e. pending tasks for Administrator
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("userId", Collections.singletonList("Administrator"));
+        queryParams.put("userId", singletonList("Administrator"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             assertActorIsAdministrator(response);
         }
 
         // Check GET /task?workflowInstanceId={workflowInstanceId} i.e. pending tasks for Administrator
-        queryParams.put("workflowInstanceId", Collections.singletonList(createdWorflowInstanceId));
+        queryParams.put("workflowInstanceId", singletonList(createdWorflowInstanceId));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             assertActorIsAdministrator(response);
         }
@@ -320,7 +321,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         // Start SerialDocumentReview on Note 0
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -387,7 +388,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -397,7 +398,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         // Complete first task
         String taskId;
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("workflowInstanceId", Collections.singletonList(createdWorflowInstanceId));
+        queryParams.put("workflowInstanceId", singletonList(createdWorflowInstanceId));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, node.get("entries").size());
@@ -449,7 +450,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Check GET /task?workflowModelName={workflowModelName} i.e. pending tasks for SerialDocumentReview
         String serialDocumentReviewTaskId;
-        queryParams.put("workflowModelName", Collections.singletonList("SerialDocumentReview"));
+        queryParams.put("workflowModelName", singletonList("SerialDocumentReview"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, node.get("entries").size());
@@ -459,7 +460,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         }
 
         // Check GET /task?workflowModelName={workflowModelName} i.e. pending tasks for ParallelDocumentReview
-        queryParams.put("workflowModelName", Collections.singletonList("ParallelDocumentReview"));
+        queryParams.put("workflowModelName", singletonList("ParallelDocumentReview"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, node.get("entries").size());
@@ -494,7 +495,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Check we have two pending tasks
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("workflowModelName", Collections.singletonList("SerialDocumentReview"));
+        queryParams.put("workflowModelName", singletonList("SerialDocumentReview"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(2, node.get("entries").size());
@@ -517,7 +518,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Check GET /workflow?workflowMnodelName=SerialDocumentReview
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("workflowModelName", Collections.singletonList("SerialDocumentReview"));
+        queryParams.put("workflowModelName", singletonList("SerialDocumentReview"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/workflow", null, queryParams, null,
                 null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -525,7 +526,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         }
 
         // Check GET /workflow?workflowMnodelName=ParallelDocumentReview
-        queryParams.put("workflowModelName", Collections.singletonList("ParallelDocumentReview"));
+        queryParams.put("workflowModelName", singletonList("ParallelDocumentReview"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/workflow", null, queryParams, null,
                 null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -540,7 +541,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -559,8 +560,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         // Delegate
         taskId = getCurrentTaskId(createdWorflowInstanceId);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("actors", Collections.singletonList("members"));
-        queryParams.put("comment", Collections.singletonList("A comment"));
+        queryParams.put("actors", singletonList("members"));
+        queryParams.put("comment", singletonList("A comment"));
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/delegate", null,
                 queryParams, null, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -577,7 +578,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -595,7 +596,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Check GET /task i.e. pending tasks for current user
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("userId", Collections.singletonList("Administrator"));
+        queryParams.put("userId", singletonList("Administrator"));
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null, null)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, node.get("entries").size());
@@ -609,7 +610,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -635,8 +636,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         }
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("actors", Collections.singletonList("members"));
-        queryParams.put("comment", Collections.singletonList("A comment"));
+        queryParams.put("actors", singletonList("members"));
+        queryParams.put("comment", singletonList("A comment"));
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/reassign", null,
                 queryParams, null, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -772,7 +773,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             mapper.readTree(response.getEntityInputStream());
         }
@@ -800,7 +801,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             mapper.readTree(response.getEntityInputStream());
         }
@@ -830,7 +831,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -869,7 +870,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -906,7 +907,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_ATTACHED_DOCUMENTS);
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Collections.singletonList(note.getId())),
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", singletonList(note.getId())),
                 queryParams, null, null)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
@@ -936,7 +937,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         // Start SerialDocumentReview on Note 0
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Collections.singletonList(note.getId())))) {
+                        singletonList(note.getId())))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -1012,7 +1013,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             final String createdWorflowInstanceId;
             try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                     getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                            Collections.singletonList(note.getId())))) {
+                            singletonList(note.getId())))) {
                 assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
                 JsonNode node = mapper.readTree(response.getEntityInputStream());
                 createdWorflowInstanceId = node.get("id").getTextValue();
@@ -1117,6 +1118,97 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals(1, groups.size());
             assertEquals("administrators", groups.get(0).getTextValue());
         }
+    }
+
+    /**
+     * NXP-25029
+     *
+     * @since 10.2
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server.routing.test:test-reject-task-in-sub-workflow.xml")
+    public void testRejectTaskInSubWorkflow() throws IOException {
+        final String createdMainWorkflowInstanceId;
+        final String createdChildWorkflowInstanceId;
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+        // create main workflow as Administrator
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("MainWF", singletonList(note.getId())))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdMainWorkflowInstanceId = node.get("id").getValueAsText();
+        }
+
+        // check childWF has started GET /api/id/{documentId}/@workflow
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, node.get("entries").size());
+            JsonNode firstWF = node.get("entries").get(0);
+            JsonNode secondWF = node.get("entries").get(1);
+            if (createdMainWorkflowInstanceId.equals(firstWF.get("id").getValueAsText())) {
+                assertEquals("MainWF", firstWF.get("workflowModelName").getValueAsText());
+                assertEquals("ChildWF", secondWF.get("workflowModelName").getValueAsText());
+                createdChildWorkflowInstanceId = secondWF.get("id").getValueAsText();
+            } else {
+                assertEquals("MainWF", secondWF.get("workflowModelName").getValueAsText());
+                assertEquals("ChildWF", firstWF.get("workflowModelName").getValueAsText());
+                createdChildWorkflowInstanceId = firstWF.get("id").getValueAsText();
+            }
+        }
+
+        // get tasks for child WF
+        final String taskUser1Id;
+        final String taskUser2Id;
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdChildWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, node.get("entries").size());
+            taskUser1Id = node.get("entries").get(0).get("id").getValueAsText();
+            taskUser2Id = node.get("entries").get(1).get("id").getValueAsText();
+        }
+
+        // login as user1
+        getServiceFor("user1", "user1");
+
+        // reject task for user1
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskUser1Id + "/reject",
+                getBodyForStartReviewTaskCompletion(taskUser1Id))) {
+            // Missing required variables
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // login as user2
+        getServiceFor("user2", "user2");
+
+        // reject task for user2
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskUser2Id + "/reject",
+                getBodyForStartReviewTaskCompletion(taskUser2Id))) {
+            // Missing required variables
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // login as Administrator
+        getServiceFor("Administrator", "Administrator");
+
+        // As both tasks have been rejected, administrator wouldn't have anything to do.
+        // get tasks for child WF
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdChildWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, node.get("entries").size());
+        }
+
+        // get tasks for main WF
+        // there should be no entries, both reject leads to no tasks for administrator
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdMainWorkflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, node.get("entries").size());
+        }
+
     }
 
     /**
