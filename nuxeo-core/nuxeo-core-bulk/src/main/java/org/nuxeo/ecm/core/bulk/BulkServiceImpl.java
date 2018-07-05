@@ -24,9 +24,9 @@ import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,68 +73,69 @@ public class BulkServiceImpl implements BulkService {
         if (isEmpty(command.getRepository()) || isEmpty(command.getQuery()) || isEmpty(command.getAction())) {
             throw new IllegalArgumentException("Missing mandatory values");
         }
-        // create the action id and status
-        String bulkId = UUID.randomUUID().toString();
+        // create the command id and status
+        String commandId = UUID.randomUUID().toString();
         byte[] commandAsBytes = BulkCommands.toBytes(command);
 
         // store the bulk command and status in the key/value store
         KeyValueStore keyValueStore = getKvStore();
-        keyValueStore.put(bulkId + STATE, SCHEDULED.toString());
-        keyValueStore.put(bulkId + SUBMIT_TIME, Instant.now().toEpochMilli());
-        keyValueStore.put(bulkId + COMMAND, commandAsBytes);
+        keyValueStore.put(commandId + STATE, SCHEDULED.toString());
+        keyValueStore.put(commandId + SUBMIT_TIME, Instant.now().toEpochMilli());
+        keyValueStore.put(commandId + COMMAND, commandAsBytes);
 
         // send it to nuxeo-stream
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(SET_STREAM_NAME);
-        logAppender.append(bulkId, Record.of(bulkId, commandAsBytes));
+        logAppender.append(commandId, Record.of(commandId, commandAsBytes));
 
-        return bulkId;
+        return commandId;
     }
 
     @Override
-    public BulkStatus getStatus(String bulkId) {
+    public BulkStatus getStatus(String commandId) {
         BulkStatus status = new BulkStatus();
-        status.setId(bulkId);
+        status.setId(commandId);
 
         // retrieve values from KeyValueStore
         KeyValueStore keyValueStore = getKvStore();
-        String state = keyValueStore.getString(bulkId + STATE);
+        String state = keyValueStore.getString(commandId + STATE);
         status.setState(State.valueOf(state));
 
-        Long submitTime = keyValueStore.getLong(bulkId + SUBMIT_TIME);
+        Long submitTime = keyValueStore.getLong(commandId + SUBMIT_TIME);
         status.setSubmitTime(Instant.ofEpochMilli(submitTime.longValue()));
 
-        BulkCommand command = BulkCommands.fromKVStore(keyValueStore, bulkId);
+        BulkCommand command = BulkCommands.fromKVStore(keyValueStore, commandId);
         status.setCommand(command);
 
-        Long scrollStartTime = keyValueStore.getLong(bulkId + SCROLL_START_TIME);
+        Long scrollStartTime = keyValueStore.getLong(commandId + SCROLL_START_TIME);
         if (scrollStartTime != null) {
             status.setScrollStartTime(Instant.ofEpochMilli(scrollStartTime));
         }
-        Long scrollEndTime = keyValueStore.getLong(bulkId + SCROLL_END_TIME);
+        Long scrollEndTime = keyValueStore.getLong(commandId + SCROLL_END_TIME);
         if (scrollEndTime != null) {
             status.setScrollEndTime(Instant.ofEpochMilli(scrollEndTime));
         }
 
-        Long processedDocuments = keyValueStore.getLong(bulkId + PROCESSED_DOCUMENTS);
+        Long processedDocuments = keyValueStore.getLong(commandId + PROCESSED_DOCUMENTS);
         status.setProcessed(processedDocuments);
 
-        Long scrolledDocumentCount = keyValueStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT);
+        Long scrolledDocumentCount = keyValueStore.getLong(commandId + SCROLLED_DOCUMENT_COUNT);
         status.setCount(scrolledDocumentCount);
 
         return status;
     }
 
     @Override
-    public boolean await(String bulkId, long timeout, TimeUnit unit) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
+    public boolean await(String commandId, Duration duration) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + duration.toMillis();
         KeyValueStore kvStore = getKvStore();
         do {
-            if (COMPLETED.toString().equals(kvStore.getString(bulkId + STATE))) {
+            if (COMPLETED.toString().equals(kvStore.getString(commandId + STATE))) {
                 return true;
             }
-            Thread.sleep(200);
+            Thread.sleep(500);
         } while (deadline > System.currentTimeMillis());
+        log.debug("await timeout for commandId(" + commandId + ") after " + duration.toMillis() + " ms");
         return false;
     }
 

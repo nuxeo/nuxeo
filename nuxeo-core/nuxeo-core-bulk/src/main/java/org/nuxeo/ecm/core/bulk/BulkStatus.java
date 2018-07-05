@@ -76,7 +76,7 @@ public class BulkStatus implements Serializable {
     }
 
     /**
-     * Sets bulk action id.
+     * Sets bulk command id.
      *
      * @param id the id
      */

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -38,9 +38,7 @@ import org.nuxeo.ecm.core.bulk.BulkService;
  *
  * @since 10.2
  */
-@Operation(id = BulkWaitForAction.ID, category = Constants.CAT_SERVICES, label = "Wait for Bulk computation",
-        since = "10.2",
-        description = "Wait until Bulk computation is done. This operation is meant to be used for tests. Its usage in production is not recommended.")
+@Operation(id = BulkWaitForAction.ID, category = Constants.CAT_SERVICES, label = "Wait for Bulk computation", since = "10.2", description = "Wait until Bulk computation is done. This operation is meant to be used for tests. Its usage in production is not recommended.")
 public class BulkWaitForAction {
 
     public static final String ID = "Bulk.WaitForAction";
@@ -51,8 +49,8 @@ public class BulkWaitForAction {
     @Context
     protected CoreSession repo;
 
-    @Param(name = "bulkId")
-    protected String bulkId;
+    @Param(name = "commandId")
+    protected String commandId;
 
     @Param(name = "timeoutSecond", required = false)
     protected long timeout = 60L;
@@ -60,7 +58,7 @@ public class BulkWaitForAction {
     @OperationMethod
     public Boolean run() {
         try {
-            if (!bulkService.await(bulkId, timeout, TimeUnit.SECONDS)) {
+            if (!bulkService.await(commandId, Duration.ofSeconds(timeout))) {
                 throw new TimeoutException();
             }
         } catch (InterruptedException | TimeoutException e) {

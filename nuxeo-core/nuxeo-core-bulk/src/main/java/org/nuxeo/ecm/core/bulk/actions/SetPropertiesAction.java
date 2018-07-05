@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.BulkRecords.bulkIdFrom;
+import static org.nuxeo.ecm.core.bulk.BulkRecords.commandIdFrom;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
 import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.AVRO_CODEC;
 import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_STREAM_NAME;
@@ -90,7 +90,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         protected final List<String> documentIds;
 
-        protected String currentBulkId;
+        protected String currentCommandId;
 
         protected BulkCommand currentCommand;
 
@@ -116,14 +116,15 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            String bulkId = bulkIdFrom(record);
-            if (currentBulkId == null) {
+            String commandId = commandIdFrom(record);
+            if (currentCommandId == null) {
                 // first time we need to process something
-                loadCurrentBulkContext(bulkId);
-            } else if (!currentBulkId.equals(bulkId)) {
+                loadCurrentBulkCommandContext(commandId);
+            } else if (!currentCommandId.equals(commandId)) {
                 // new bulk id computation - send remaining elements
                 processBatch(context);
-                loadCurrentBulkContext(bulkId);
+                documentIds.clear();
+                loadCurrentBulkCommandContext(commandId);
             }
             // process record
             documentIds.addAll(docIdsFrom(record));
@@ -132,9 +133,9 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             }
         }
 
-        protected void loadCurrentBulkContext(String bulkId) {
-            currentBulkId = bulkId;
-            currentCommand = BulkCommands.fromKVStore(bulkId);
+        protected void loadCurrentBulkCommandContext(String commandId) {
+            currentCommandId = commandId;
+            currentCommand = BulkCommands.fromKVStore(commandId);
         }
 
         @Override
@@ -166,10 +167,10 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                         throw new NuxeoException(e);
                     }
                 });
-                BulkCounter counter = new BulkCounter(currentBulkId, (long) documentIds.size());
+                BulkCounter counter = new BulkCounter(currentCommandId, (long) documentIds.size());
                 Codec<BulkCounter> counterCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
                         BulkCounter.class);
-                context.produceRecord("o1", currentBulkId, counterCodec.encode(counter));
+                context.produceRecord("o1", currentCommandId, counterCodec.encode(counter));
                 documentIds.clear();
                 context.askForCheckpoint();
             }
