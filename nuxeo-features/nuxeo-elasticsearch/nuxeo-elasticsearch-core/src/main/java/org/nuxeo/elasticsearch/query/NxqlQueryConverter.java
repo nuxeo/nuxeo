@@ -525,7 +525,7 @@ public final class NxqlQueryConverter {
             ret = querySimpleString;
             break;
         case "more_like_this":
-            String[] fields = hint.getIndex() != null ? hint.getIndex() : new String[]{name};
+            String[] fields = hint.getIndex() != null ? hint.getIndex() : new String[] { name };
             MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, getItems(value));
             moreLikeThisBuilder.minTermFreq(MORE_LIKE_THIS_MIN_TERM_FREQ);
             moreLikeThisBuilder.maxQueryTerms(MORE_LIKE_THIS_MAX_QUERY_TERMS);
@@ -543,13 +543,13 @@ public final class NxqlQueryConverter {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         String esIndex = esa.getIndexNameForRepository(repo);
         String[] values;
-        if (value != null && value.getClass().isArray()) {
+        if (value instanceof Object[]) {
             values = (String[]) value;
         } else {
-            values = new String[]{(String) value};
+            values = new String[] { (String) value };
         }
         MoreLikeThisQueryBuilder.Item[] ret = new MoreLikeThisQueryBuilder.Item[values.length];
-        for (int i=0; i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, values[i]);
         }
         return ret;
