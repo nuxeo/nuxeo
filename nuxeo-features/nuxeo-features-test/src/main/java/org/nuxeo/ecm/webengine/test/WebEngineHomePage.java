@@ -24,7 +24,9 @@ import org.openqa.selenium.WebElement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3
  */
+@Deprecated
 public class WebEngineHomePage extends WebPage {
 
     public LoginPage getLoginPage() {

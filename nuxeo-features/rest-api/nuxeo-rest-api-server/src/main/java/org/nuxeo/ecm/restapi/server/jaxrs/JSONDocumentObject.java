@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -39,14 +40,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
  * This object basically overrides the default DocumentObject that doesn't know how to produce/consume JSON
@@ -56,7 +58,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "Document")
 @Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
-public class JSONDocumentObject extends DocumentObject {
+public class JSONDocumentObject extends DefaultObject {
 
     private static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
 
@@ -64,7 +66,22 @@ public class JSONDocumentObject extends DocumentObject {
 
     private boolean isVersioning;
 
+    protected DocumentModel doc;
+
     @Override
+    public <A> A getAdapter(Class<A> adapter) {
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(doc);
+        }
+        return super.getAdapter(adapter);
+    }
+
+    @Override
+    public void initialize(Object... args) {
+        assert args != null && args.length == 1;
+        doc = (DocumentModel) args[0];
+    }
+
     @GET
     public DocumentModel doGet() {
         return doc;
@@ -109,32 +126,31 @@ public class JSONDocumentObject extends DocumentObject {
 
     @DELETE
     public Response doDelete() {
-        super.doDelete();
-        return Response.noContent().build();
+        try {
+            CoreSession session = ctx.getCoreSession();
+            session.removeDocument(doc.getRef());
+            session.save();
+            return Response.noContent().build();
+        } catch (NuxeoException e) {
+            e.addInfo("Failed to delete document " + doc.getPathAsString());
+            throw e;
+        }
     }
 
-    @Override
+    @Path("{path}")
+    public Resource traverse(@PathParam("path") String path) {
+        PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
+        DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+        return ctx.newObject("Document", doc);
+    }
+
     @Path("@search")
     public Object search() {
         return ctx.newAdapter(this, "search");
     }
 
-    @Override
-    public DocumentObject newDocument(String path) {
-        PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
-        DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
-        return (DocumentObject) ctx.newObject("Document", doc);
-    }
-
-    @Override
-    public DocumentObject newDocument(DocumentRef ref) {
-        DocumentModel doc = ctx.getCoreSession().getDocument(ref);
-        return (DocumentObject) ctx.newObject("Document", doc);
-    }
-
-    @Override
-    public DocumentObject newDocument(DocumentModel doc) {
-        return (DocumentObject) ctx.newObject("Document", doc);
+    public DocumentModel getDocument() {
+        return doc;
     }
 
     /**

@@ -24,7 +24,9 @@ import org.nuxeo.runtime.test.runner.web.WebPage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3
  */
+@Deprecated
 public class ModulePage extends WebPage {
 
     @Inject

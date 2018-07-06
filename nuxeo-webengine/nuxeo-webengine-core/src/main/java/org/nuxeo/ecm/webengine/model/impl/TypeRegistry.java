@@ -91,13 +91,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public ResourceType getType(String name) {
-        ResourceType type = types.get(name);
-        if (type == null) { // check for a non registered document type
-            if (registerDocumentTypeIfNeeded(name)) {
-                type = types.get(name);
-            }
-        }
-        return type;
+        return types.get(name);
     }
 
     public AdapterType getAdapter(String name) {
@@ -185,9 +179,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public synchronized void registerType(TypeDescriptor td) {
-        if (td.superType != null && !types.containsKey(td.superType)) {
-            registerDocumentTypeIfNeeded(td.superType);
-        }
         addFragment(td.type, td, td.superType);
     }
 
@@ -203,6 +194,10 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         removeFragment(td.type, td);
     }
 
+    /**
+     * @deprecated since 9.3. Should not be used.
+     */
+    @Deprecated
     protected boolean registerDocumentTypeIfNeeded(String typeName) {
         // we have a special case for document types.
         // If a web document type is not resolved then use a default web document type
