@@ -55,6 +55,7 @@ import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.rest.RestStatus;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
@@ -376,10 +377,9 @@ public class ESRestClient implements ESClient {
     public IndexResponse index(IndexRequest request) {
         try {
             return client.index(request);
-        } catch (ResponseException e) {
-            if (e.getMessage() != null && e.getMessage().contains("409 Conflict")) {
-                // when a more recent version already exists, throws the same exception than the transport client
-                throw new VersionConflictEngineException(null, e.getMessage(), e);
+        } catch (ElasticsearchStatusException e) {
+            if (RestStatus.CONFLICT.equals(e.status())) {
+                throw new ConcurrentUpdateException(e);
             }
             throw new NuxeoException(e);
         } catch (IOException e) {
