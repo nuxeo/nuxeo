@@ -21,7 +21,7 @@ package org.nuxeo.ecm.quota.count;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @author dmetzler
@@ -32,6 +32,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.quota.core")
 @Deploy("org.nuxeo.ecm.platform.content.template")
-public class QuotaFeature extends SimpleFeature {
+public class QuotaFeature implements RunnerFeature {
 
 }
