@@ -19,7 +19,7 @@ package org.nuxeo.drive.test;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Features({ PlatformFeature.class, SQLAuditFeature.class })
 @Deploy("org.nuxeo.drive.core")
@@ -37,6 +37,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml")
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml")
-public class NuxeoDriveFeature extends SimpleFeature {
+public class NuxeoDriveFeature implements RunnerFeature {
 
 }

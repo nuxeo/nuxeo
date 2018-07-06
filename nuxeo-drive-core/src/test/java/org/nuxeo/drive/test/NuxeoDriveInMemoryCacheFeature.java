@@ -20,12 +20,12 @@ package org.nuxeo.drive.test;
 
 import org.nuxeo.ecm.core.cache.InMemoryCacheFeature;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 8.4
  */
 @Features(InMemoryCacheFeature.class)
-public class NuxeoDriveInMemoryCacheFeature extends SimpleFeature {
+public class NuxeoDriveInMemoryCacheFeature implements RunnerFeature {
 
 }

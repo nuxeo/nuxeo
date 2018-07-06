@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 
@@ -51,10 +51,10 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 @Deploy("org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.drive.elasticsearch")
 @Deploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
-public class ESAuditFeature extends SimpleFeature {
+public class ESAuditFeature implements RunnerFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class).addWaiter(new Waiter() {
 
             @Override
@@ -84,7 +84,7 @@ public class ESAuditFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         cleanUpAuditLog();
     }
 
