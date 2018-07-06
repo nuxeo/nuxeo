@@ -16,9 +16,9 @@
 package org.nuxeo.runtime.test.runner.contribs;
 
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-public class ContributedFeature extends SimpleFeature {
+public class ContributedFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {

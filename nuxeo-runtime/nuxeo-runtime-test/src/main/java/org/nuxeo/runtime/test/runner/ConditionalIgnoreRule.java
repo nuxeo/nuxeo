@@ -45,7 +45,7 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
     @Inject
     private FeaturesRunner runner;
 
-    public static class Feature extends SimpleFeature {
+    public static class Feature implements RunnerFeature {
         protected static final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
         @Rule

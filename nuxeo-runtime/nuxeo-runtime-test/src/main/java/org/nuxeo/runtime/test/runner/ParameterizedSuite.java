@@ -64,8 +64,8 @@ import org.junit.runners.model.TestClass;
 public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     /**
-     * The <code>ParameterizedFeature</code> annotation specifies the class to be parameterized. That class must extend
-     * {@link SimpleFeature} or implement {@link RunnerFeature}.
+     * The <code>ParameterizedFeature</code> annotation specifies the class to be parameterized. That class must
+     * implement {@link RunnerFeature}.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -74,12 +74,12 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
         /**
          * @return the class to be parameterized
          */
-        public Class<?> value();
+        Class<?> value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public static @interface ParameterizedMethod {
+    public @interface ParameterizedMethod {
     }
 
     @SuppressWarnings("unchecked")
@@ -88,7 +88,7 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
     }
 
     @SuppressWarnings("unchecked")
-    private Class<? extends RunnerFeature> getParameterizedClass(Class<?> klass) throws Throwable {
+    private Class<? extends RunnerFeature> getParameterizedClass(Class<?> klass) {
         ParameterizedFeature annotation = klass.getAnnotation(ParameterizedFeature.class);
         return (Class<? extends RunnerFeature>) (annotation != null ? annotation.value() : null);
     }

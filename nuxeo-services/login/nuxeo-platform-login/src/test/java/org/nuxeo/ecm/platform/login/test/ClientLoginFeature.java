@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * That feature should not be installed in conjunction with the
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.login:dummy-client-login-config.xml")
-public class ClientLoginFeature extends SimpleFeature {
+public class ClientLoginFeature implements RunnerFeature {
 
     protected LoginContext logContext = null;
 
@@ -62,7 +62,6 @@ public class ClientLoginFeature extends SimpleFeature {
 
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
-        super.afterMethodRun(runner, method, test);
         logout();
     }
 

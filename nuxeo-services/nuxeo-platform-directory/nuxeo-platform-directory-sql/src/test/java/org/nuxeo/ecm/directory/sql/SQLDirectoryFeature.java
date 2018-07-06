@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 6.0
@@ -39,25 +39,25 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.directory.sql")
 @Deploy("org.nuxeo.ecm.directory.sql:nxdirectory-ds.xml")
-public class SQLDirectoryFeature extends SimpleFeature {
+public class SQLDirectoryFeature implements RunnerFeature {
 
     protected Granularity granularity;
 
     protected LoginStack loginStack;
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         granularity = runner.getFeature(CoreFeature.class).getGranularity();
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         loginStack = ClientLoginModule.getThreadLocalLogin();
         loginStack.push(new SystemPrincipal(null), null, null);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         loginStack.pop();
     }
 

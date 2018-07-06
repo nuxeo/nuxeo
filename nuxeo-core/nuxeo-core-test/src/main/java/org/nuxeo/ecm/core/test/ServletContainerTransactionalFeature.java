@@ -16,11 +16,11 @@
 package org.nuxeo.ecm.core.test;
 
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @Features({ TransactionalFeature.class, ServletContainerFeature.class })
-public class ServletContainerTransactionalFeature extends SimpleFeature {
+public class ServletContainerTransactionalFeature implements RunnerFeature {
 
 }

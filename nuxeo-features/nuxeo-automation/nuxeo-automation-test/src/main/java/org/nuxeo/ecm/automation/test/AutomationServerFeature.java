@@ -20,7 +20,7 @@ package org.nuxeo.ecm.automation.test;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Automation feature which deploys the automation bundles needed by a server.
@@ -31,6 +31,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")
 @Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.automation.server")
-public class AutomationServerFeature extends SimpleFeature {
+public class AutomationServerFeature implements RunnerFeature {
 
 }

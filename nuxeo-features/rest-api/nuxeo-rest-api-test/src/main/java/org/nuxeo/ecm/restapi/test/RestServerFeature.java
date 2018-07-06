@@ -21,7 +21,7 @@ package org.nuxeo.ecm.restapi.test;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 5.7.2
@@ -36,6 +36,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.restapi.test")
 @Deploy("org.nuxeo.ecm.platform.restapi.server")
 @Deploy("org.nuxeo.ecm.platform.tag")
-public class RestServerFeature extends SimpleFeature {
+public class RestServerFeature implements RunnerFeature {
 
 }

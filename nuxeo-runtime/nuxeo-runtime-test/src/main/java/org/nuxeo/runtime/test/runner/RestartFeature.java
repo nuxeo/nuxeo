@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 10.2
  */
-public class RestartFeature extends SimpleFeature {
+public class RestartFeature implements RunnerFeature {
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {

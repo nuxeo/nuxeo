@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Feature for multi directory unit tests
@@ -43,18 +43,18 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.directory.multi")
 @Deploy("org.nuxeo.ecm.directory.multi.tests:schemas-config.xml")
-public class MultiDirectoryFeature extends SimpleFeature {
+public class MultiDirectoryFeature implements RunnerFeature {
 
     protected LoginStack loginStack;
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         loginStack = ClientLoginModule.getThreadLocalLogin();
         loginStack.push(new SystemPrincipal(null), null, null);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         loginStack.pop();
     }
 }

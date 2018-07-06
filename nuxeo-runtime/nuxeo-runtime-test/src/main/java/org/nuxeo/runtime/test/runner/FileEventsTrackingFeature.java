@@ -34,7 +34,7 @@ import org.nuxeo.runtime.trackers.files.FileEventHandler;
 import org.nuxeo.runtime.trackers.files.FileEventListener;
 
 @Features(RuntimeFeature.class)
-public class FileEventsTrackingFeature extends SimpleFeature {
+public class FileEventsTrackingFeature implements RunnerFeature {
 
     protected class Tracker implements FileEventHandler {
 

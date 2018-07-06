@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.google.inject.Binder;
 
@@ -42,7 +42,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.automation.scripting:automation-scripting-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.scripting:core-types-contrib.xml")
-public class AutomationScriptingFeature extends SimpleFeature {
+public class AutomationScriptingFeature implements RunnerFeature {
 
     @Inject
     AutomationScriptingService scripting;

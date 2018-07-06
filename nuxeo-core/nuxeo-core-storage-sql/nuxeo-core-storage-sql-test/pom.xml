@@ -55,6 +55,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>

@@ -59,9 +59,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -103,7 +103,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
-public class CoreFeature extends SimpleFeature {
+public class CoreFeature implements RunnerFeature {
 
     protected ACP rootAcp;
 
@@ -195,7 +195,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws InterruptedException {
+    public void beforeRun(FeaturesRunner runner) {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
         txFeature.nextTransaction(10, TimeUnit.SECONDS);

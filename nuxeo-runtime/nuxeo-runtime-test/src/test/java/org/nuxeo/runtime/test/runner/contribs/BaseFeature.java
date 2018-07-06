@@ -17,9 +17,9 @@ package org.nuxeo.runtime.test.runner.contribs;
 
 import org.junit.Assume;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-public class BaseFeature extends SimpleFeature {
+public class BaseFeature implements RunnerFeature {
 
     public BaseFeature() {
         super();
@@ -32,7 +32,7 @@ public class BaseFeature extends SimpleFeature {
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(FeaturesRunner runner) {
         Assume.assumeTrue(enabled);
     }
 

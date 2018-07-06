@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.oauth.tests;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
 
 /**
@@ -30,5 +30,5 @@ import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
  */
 @Features(InMemoryTransientStoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/transientstore-test-config.xml")
-public class OAuth2InMemoryTransientStoreFeature extends SimpleFeature {
+public class OAuth2InMemoryTransientStoreFeature implements RunnerFeature {
 }

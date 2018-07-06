@@ -20,23 +20,20 @@
 
 package org.nuxeo.ecm.core.cache;
 
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
 @Deploy("org.nuxeo.ecm.core.cache")
 @Features(RuntimeFeature.class)
-public class CacheFeature extends SimpleFeature {
+public class CacheFeature implements RunnerFeature {
 
     public static final String DEFAULT_TEST_CACHE_NAME = "default-test-cache";
 
@@ -50,23 +47,18 @@ public class CacheFeature extends SimpleFeature {
     }
 
     protected void bindCache(Binder binder, final String name) {
-        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(new Provider<Cache>() {
-            @Override
-            public Cache get() {
-                return Framework.getService(CacheService.class).getCache(name);
-            }
-
-        });
+        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(
+                () -> Framework.getService(CacheService.class).getCache(name));
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         Cache cache = Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME);
         ((CacheManagement) cache).putLocal(KEY, VAL);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws IOException {
+    public void afterTeardown(FeaturesRunner runner) {
         clearCache(DEFAULT_TEST_CACHE_NAME);
     }
 

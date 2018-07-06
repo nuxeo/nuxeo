@@ -20,21 +20,20 @@
 package org.nuxeo.elasticsearch.test;
 
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-public class FulltextDisabledFeature extends SimpleFeature {
+public class FulltextDisabledFeature implements RunnerFeature {
     private static final String KEY = "nuxeo.test.fulltext.disabled";
 
     private String flag;
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         flag = System.setProperty(KEY, "true");
     }
 
     @Override
-    public void stop(FeaturesRunner runner) throws Exception {
-        super.stop(runner);
+    public void stop(FeaturesRunner runner) {
         if (flag == null) {
             System.clearProperty(KEY);
         } else {

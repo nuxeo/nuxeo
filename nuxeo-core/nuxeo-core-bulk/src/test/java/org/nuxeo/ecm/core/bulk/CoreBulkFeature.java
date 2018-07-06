@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.bulk;
 import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -35,6 +35,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.core.bulk")
 @Deploy("org.nuxeo.ecm.core.bulk.test")
 @Features({ RuntimeFeature.class, TransactionalFeature.class, CoreIOFeature.class })
-public class CoreBulkFeature extends SimpleFeature {
+public class CoreBulkFeature implements RunnerFeature {
 
 }

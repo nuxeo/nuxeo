@@ -21,11 +21,11 @@ package org.nuxeo.ecm.core.redis.transientstore;
 import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 @Features({ TransientStoreFeature.class, RedisFeature.class })
 @Deploy("org.nuxeo.ecm.core.redis.tests:test-redis-transientstore-contrib.xml")
-public class TransientStoreRedisFeature extends SimpleFeature {
+public class TransientStoreRedisFeature implements RunnerFeature {
 
 }

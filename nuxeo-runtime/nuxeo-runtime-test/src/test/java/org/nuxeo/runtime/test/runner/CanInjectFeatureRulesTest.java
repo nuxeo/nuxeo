@@ -85,7 +85,7 @@ public class CanInjectFeatureRulesTest {
         }
     }
 
-    public static class ThisFeature extends SimpleFeature {
+    public static class ThisFeature implements RunnerFeature {
 
         @ClassRule
         public static TestRule classRule() {

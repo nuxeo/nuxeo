@@ -262,7 +262,7 @@ public class RandomBugTest {
         runClassAndVerify(FailingMethod.class, "RELAX mode expects a success", 5, 0, 1);
     }
 
-    public static class ThisFeature extends SimpleFeature {
+    public static class ThisFeature implements RunnerFeature {
         public int repeated;
 
         @Override
@@ -339,7 +339,7 @@ public class RandomBugTest {
     }
 
     @RandomBug.Repeat(issue = "repeatedTest", onFailure = 5)
-    public static class ThisRandomFeature extends SimpleFeature {
+    public static class ThisRandomFeature implements RunnerFeature {
 
     }
 

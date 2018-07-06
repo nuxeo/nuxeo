@@ -33,10 +33,9 @@ import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 
 /**
  * Feature for Embedded LDAP directory unit tests
@@ -48,7 +47,7 @@ import com.google.inject.Provider;
 @Deploy("org.nuxeo.ecm.directory.ldap")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
-public class InternalLDAPDirectoryFeature extends SimpleFeature {
+public class InternalLDAPDirectoryFeature implements RunnerFeature {
 
     protected MockLdapServer server;
 
@@ -58,7 +57,7 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
     public static final boolean HAS_DYNGROUP_SCHEMA = false;
 
     public List<String> getLdifFiles() {
-        List<String> ldifFiles = new ArrayList<String>();
+        List<String> ldifFiles = new ArrayList<>();
         ldifFiles.add("sample-users.ldif");
         ldifFiles.add("sample-groups.ldif");
         if (HAS_DYNGROUP_SCHEMA) {
@@ -80,14 +79,7 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
     }
 
     protected void bindEmbeddedServer(Binder binder) {
-        binder.bind(MockLdapServer.class).toProvider(new Provider<MockLdapServer>() {
-
-            @Override
-            public MockLdapServer get() {
-                return getEmbeddedLDAP();
-            }
-
-        });
+        binder.bind(MockLdapServer.class).toProvider(this::getEmbeddedLDAP);
     }
 
     public void stopEmbeddedLDAP() {
@@ -101,7 +93,7 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
     }
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
-        List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
+        List<LdifLoadFilter> filters = new ArrayList<>();
         LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
                 Thread.currentThread().getContextClassLoader());
         loader.execute();

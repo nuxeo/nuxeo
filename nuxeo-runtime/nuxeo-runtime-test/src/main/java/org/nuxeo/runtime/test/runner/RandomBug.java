@@ -135,7 +135,7 @@ public class RandomBug {
         boolean bypass() default false;
     }
 
-    public static class Feature extends SimpleFeature {
+    public static class Feature implements RunnerFeature {
         @ClassRule
         public static TestRule onClass() {
             return self.onTest();

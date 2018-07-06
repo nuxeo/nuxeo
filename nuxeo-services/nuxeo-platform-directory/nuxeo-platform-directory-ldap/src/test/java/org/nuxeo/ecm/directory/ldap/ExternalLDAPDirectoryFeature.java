@@ -41,7 +41,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Feature for External LDAP directory unit tests
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.directory.ldap")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
-public class ExternalLDAPDirectoryFeature extends SimpleFeature {
+public class ExternalLDAPDirectoryFeature implements RunnerFeature {
 
     private static final Log log = LogFactory.getLog(ExternalLDAPDirectoryFeature.class);
 

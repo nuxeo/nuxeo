@@ -20,11 +20,11 @@ package org.nuxeo.ecm.core.blob;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.api:OSGI-INF/blobmanager-service.xml")
-public class BlobManagerFeature extends SimpleFeature {
+public class BlobManagerFeature implements RunnerFeature {
 
 }
