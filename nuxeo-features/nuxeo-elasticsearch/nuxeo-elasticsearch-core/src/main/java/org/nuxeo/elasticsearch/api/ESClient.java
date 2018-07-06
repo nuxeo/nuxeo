@@ -32,6 +32,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 
 /**
  * @since 9.3
@@ -89,6 +90,11 @@ public interface ESClient extends AutoCloseable {
 
     GetResponse get(GetRequest request);
 
+    /**
+     * Performs the indexing request.
+     *
+     * @throws ConcurrentUpdateException if a more recent version of the document exits.
+     */
     IndexResponse index(IndexRequest request);
 
     ClearScrollResponse clearScroll(ClearScrollRequest request);

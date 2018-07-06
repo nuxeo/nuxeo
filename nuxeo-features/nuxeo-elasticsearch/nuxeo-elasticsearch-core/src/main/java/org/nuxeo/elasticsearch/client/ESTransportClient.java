@@ -48,6 +48,8 @@ import org.elasticsearch.cluster.metadata.AliasMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.engine.VersionConflictEngineException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
@@ -213,7 +215,11 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public IndexResponse index(IndexRequest request) {
-        return client.index(request).actionGet();
+        try {
+            return client.index(request).actionGet();
+        } catch (VersionConflictEngineException e) {
+            throw new ConcurrentUpdateException(e);
+        }
     }
 
     @Override

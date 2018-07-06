@@ -31,6 +31,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -50,6 +51,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
@@ -367,6 +370,11 @@ public class ESRestClient implements ESClient {
     public IndexResponse index(IndexRequest request) {
         try {
             return client.index(request);
+        } catch (ElasticsearchStatusException e) {
+            if (RestStatus.CONFLICT.equals(e.status())) {
+                throw new ConcurrentUpdateException(e);
+            }
+            throw new NuxeoException(e);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

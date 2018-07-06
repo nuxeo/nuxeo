@@ -30,14 +30,24 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.client.ESRestClient;
 import org.nuxeo.elasticsearch.client.ESRestClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
+import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Basic test for ESRestClientFactory creation and config
+ * Test the ESClient based on Rest Client protocol
  */
-public class TestESRestClient {
+public class TestESRestClient extends TestESClient {
 
     protected ESRestClientFactory factory = new ESRestClientFactory();
+
+    @Override
+    public ESClient createClient(ElasticSearchEmbeddedNode embeddedNode) {
+        ElasticSearchEmbeddedServerConfig config = new ElasticSearchEmbeddedServerConfig();
+        config.setHttpEnabled(true);
+        ElasticSearchEmbeddedNode node = new ElasticSearchEmbeddedNode(config);
+        return factory.create(node, new ElasticSearchClientConfig());
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNoClientConfig() throws Exception {
@@ -129,4 +139,5 @@ public class TestESRestClient {
         }
         return keystoreFile;
     }
+
 }
