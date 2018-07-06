@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.routing.test;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Features(AutomationFeature.class)
 @Deploy("org.nuxeo.ecm.platform.content.template")
@@ -37,6 +37,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml")
-public class WorkflowFeature extends SimpleFeature {
+public class WorkflowFeature implements RunnerFeature {
 
 }

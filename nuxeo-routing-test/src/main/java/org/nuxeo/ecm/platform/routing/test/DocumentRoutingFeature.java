@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.routing.test;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * This feature provides the basic deployments needed to run a test that uses Document Routing.
@@ -41,6 +41,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.filemanager.core")
 @Deploy("org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml")
-public class DocumentRoutingFeature extends SimpleFeature {
+public class DocumentRoutingFeature implements RunnerFeature {
 
 }
