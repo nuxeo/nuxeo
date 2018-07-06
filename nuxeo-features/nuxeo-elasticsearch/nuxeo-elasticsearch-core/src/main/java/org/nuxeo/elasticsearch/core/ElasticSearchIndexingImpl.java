@@ -295,7 +295,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         try {
             esa.getClient().index(request);
-        } catch (VersionConflictEngineException e) {
+        } catch (ConcurrentUpdateException e) {
             SequenceTracer.addNote("Ignore indexing of doc " + cmd.getTargetDocumentId());
             log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
                     + " a more recent version has already been indexed: " + e.getMessage());
