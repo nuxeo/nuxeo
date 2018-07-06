@@ -18,15 +18,13 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import static org.junit.Assume.assumeTrue;
-
+import org.junit.AssumptionViolatedException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Feature for CMIS tests.
@@ -66,10 +64,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml")
-public class CmisFeature extends SimpleFeature {
+public class CmisFeature implements RunnerFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         for (RunnerFeature f : runner.getFeatures()) {
             if (f instanceof CmisFeatureConfiguration) {
                 // avoid running a base suite without
@@ -77,7 +75,7 @@ public class CmisFeature extends SimpleFeature {
                 return;
             }
         }
-        assumeTrue("No contributed CmisFeatureConfiguration", false);
+        throw new AssumptionViolatedException("No contributed CmisFeatureConfiguration");
     }
 
 }

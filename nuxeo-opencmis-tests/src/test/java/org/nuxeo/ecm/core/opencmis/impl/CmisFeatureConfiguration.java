@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Feature expressing that the {@link CmisFeature} is fully configured.
  */
-public class CmisFeatureConfiguration extends SimpleFeature {
+public class CmisFeatureConfiguration implements RunnerFeature {
 
 }
