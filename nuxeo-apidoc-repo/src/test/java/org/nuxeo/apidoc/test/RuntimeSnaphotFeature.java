@@ -23,11 +23,9 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
- *
- *
  * @since 8.3
  */
 @Features({ CoreFeature.class, RepositoryElasticSearchFeature.class, AutomationFeature.class })
@@ -36,6 +34,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.apidoc.repo")
 @Deploy("org.nuxeo.apidoc.repo:apidoc-works-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
-public class RuntimeSnaphotFeature extends SimpleFeature {
+public class RuntimeSnaphotFeature implements RunnerFeature {
 
 }
