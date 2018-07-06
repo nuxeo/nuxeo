@@ -22,8 +22,8 @@ import org.nuxeo.ecm.webengine.test.WebEngineHomePage;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.ServletContainer;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.web.Browser;
 import org.nuxeo.runtime.test.runner.web.BrowserFamily;
 import org.nuxeo.runtime.test.runner.web.HomePage;
@@ -33,12 +33,12 @@ import org.nuxeo.runtime.test.runner.web.HomePage;
 @Browser(type = BrowserFamily.HTML_UNIT_JS)
 @HomePage(type = WebEngineHomePage.class, url = "http://localhost:8082/")
 @ServletContainer(port = 8082)
-public class WebReportFeature extends SimpleFeature {
+public class WebReportFeature implements RunnerFeature {
 
     static FeaturesRunner runner;
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         WebReportFeature.runner = runner;
     }
 
