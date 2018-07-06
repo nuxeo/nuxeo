@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,23 +36,37 @@ import org.nuxeo.usermapper.service.UserMapperService;
 public class UserMapperBasedResolver implements UserResolver {
 
     protected static final String USER_RESOLVER_MAPPING = "userResolverMapping";
+    
+    protected static final String USER_RESOLVER_CREATE_IF_NEEDED = "userResolverCreateIfNeeded";
+    
+    protected static final String USER_RESOLVER_UPDATE = "userResolverUpdate";
 
     protected static final String DEFAULT_USER_MAPPER_CONFIG = "saml";
 
     protected String mapperName = DEFAULT_USER_MAPPER_CONFIG;
+    
+    protected boolean createIfNeeded = true;
+
+    protected boolean update = true;
 
     @Override
     public void init(Map<String, String> parameters) {
         if (parameters.containsKey(USER_RESOLVER_MAPPING)) {
             mapperName = parameters.get(USER_RESOLVER_MAPPING);
         }
+        if (parameters.containsKey(USER_RESOLVER_CREATE_IF_NEEDED)) {
+        	createIfNeeded = Boolean.getBoolean(parameters.get(USER_RESOLVER_CREATE_IF_NEEDED));
+        }
+        if (parameters.containsKey(USER_RESOLVER_UPDATE)) {
+        	update = Boolean.getBoolean(parameters.get(USER_RESOLVER_UPDATE));
+        }
     }
 
     @Override
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
         NuxeoPrincipal principal = Framework.getService(UserMapperService.class).getOrCreateAndUpdateNuxeoPrincipal(
-                mapperName, userInfo);
-
+                mapperName, userInfo, createIfNeeded, update, null);
+        
         if (principal != null) {
             return principal.getName();
         }
