@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.redis;
 
-import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,14 +29,14 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import redis.clients.jedis.Protocol;
 
 @Features({ RuntimeFeature.class })
-public class RedisFeature extends SimpleFeature {
+public class RedisFeature implements RunnerFeature {
 
     /**
      * This defines configuration that can be used to run Redis tests with a given Redis configured.
@@ -123,14 +122,14 @@ public class RedisFeature extends SimpleFeature {
         return desc;
     }
 
-    public static void clear() throws IOException {
+    public static void clear() {
         final RedisAdmin admin = Framework.getService(RedisAdmin.class);
         admin.clear("*");
     }
 
     public static boolean setup(RuntimeHarness harness) throws Exception {
         RedisFeature redisFeature = setUpFeature(harness);
-        return Mode.disabled.equals(redisFeature.getMode()) ? false : true;
+        return !Mode.disabled.equals(redisFeature.getMode());
     }
 
     public static RedisFeature setUpFeature(RuntimeHarness harness) throws Exception {
@@ -203,7 +202,7 @@ public class RedisFeature extends SimpleFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         config = runner.getConfig(Config.class);
     }
 
@@ -213,7 +212,7 @@ public class RedisFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         clear();
     }
 

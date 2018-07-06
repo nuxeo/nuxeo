@@ -23,7 +23,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.platform.url.core")
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.runtime.datasource:anno-ds.xml")
-public class AnnotationFeature extends SimpleFeature {
+public class AnnotationFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {

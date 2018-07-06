@@ -47,7 +47,9 @@ import com.google.inject.Binder;
  * </pre>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 10.3, implements directly {@link RunnerFeature}
  */
+@Deprecated
 public class SimpleFeature implements RunnerFeature {
 
     @Override

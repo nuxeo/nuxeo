@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.Scopes;
@@ -39,7 +39,7 @@ import com.google.inject.Scopes;
  */
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class, AutomationServerFeature.class })
 @DetectThreadDeadlocksFeature.Config(dumpAtTearDown = true)
-public class EmbeddedAutomationServerFeature extends SimpleFeature {
+public class EmbeddedAutomationServerFeature implements RunnerFeature {
 
     protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
 
@@ -48,18 +48,16 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
     protected Session session;
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         if (client != null) {
             client.shutdown();
             client = null;
             session = null;
         }
-        super.afterRun(runner);
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        super.configure(runner, binder);
         binder.bind(HttpAutomationClient.class).toProvider(() -> {
             if (client == null) {
                 client = getHttpAutomationClient();

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.collections.core.test;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
@@ -29,6 +29,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.web.common")
-public class CollectionFeature extends SimpleFeature {
+public class CollectionFeature implements RunnerFeature {
 
 }

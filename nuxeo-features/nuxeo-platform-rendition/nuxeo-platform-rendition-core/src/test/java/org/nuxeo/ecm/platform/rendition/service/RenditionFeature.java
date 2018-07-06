@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
@@ -49,5 +49,5 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-public class RenditionFeature extends SimpleFeature {
+public class RenditionFeature implements RunnerFeature {
 }

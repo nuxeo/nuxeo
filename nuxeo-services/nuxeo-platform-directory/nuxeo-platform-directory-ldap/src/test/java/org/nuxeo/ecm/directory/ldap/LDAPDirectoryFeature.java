@@ -34,9 +34,9 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * This feature deploy the required LDAP directory contributions and enable the user to configure LDAP tests through the
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.directory.ldap.tests")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml")
-public class LDAPDirectoryFeature extends SimpleFeature {
+public class LDAPDirectoryFeature implements RunnerFeature {
 
     /**
      * Can be used to change the the local server setup file. The default setup file is
@@ -113,7 +113,7 @@ public class LDAPDirectoryFeature extends SimpleFeature {
     protected LoginStack loginStack;
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         harness = runner.getFeature(RuntimeFeature.class).getHarness();
         externalServerConfig = runner.getTargetTestClass().getAnnotation(UseExternalServer.class);
         if (externalServerConfig == null) {
@@ -154,13 +154,13 @@ public class LDAPDirectoryFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         loginStack = ClientLoginModule.getThreadLocalLogin();
         loginStack.push(new SystemPrincipal(null), null, null);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         loginStack.pop();
     }
 

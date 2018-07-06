@@ -49,7 +49,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -76,10 +76,10 @@ public class TestCachedDirectoryClustered {
     protected static final String NODE2 = "456";
 
     /** Needed so that the cache service uses an invalidator. */
-    public static class ClusterFeature extends SimpleFeature {
+    public static class ClusterFeature implements RunnerFeature {
 
         @Override
-        public void start(FeaturesRunner runner) throws Exception {
+        public void start(FeaturesRunner runner) {
             Framework.addListener(new RuntimeServiceListener() {
 
                 @Override
@@ -137,12 +137,12 @@ public class TestCachedDirectoryClustered {
         invalidator.close();
     }
 
-    protected Session getSession() throws Exception {
+    protected Session getSession() {
         return directoryService.getDirectory(USER_DIR).getSession();
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         try (Session session = getSession()) {
             MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
             Counter hitsCounter = metrics.counter(
@@ -174,7 +174,7 @@ public class TestCachedDirectoryClustered {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void testUpdate() {
         try (Session session = getSession()) {
 
             // get entry

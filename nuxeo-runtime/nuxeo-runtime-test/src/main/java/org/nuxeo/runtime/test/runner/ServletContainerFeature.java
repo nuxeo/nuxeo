@@ -38,7 +38,7 @@ import sun.net.www.http.HttpClient;
  */
 @Deploy("org.nuxeo.runtime.server")
 @Features(RuntimeFeature.class)
-public class ServletContainerFeature extends SimpleFeature {
+public class ServletContainerFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {

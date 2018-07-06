@@ -23,6 +23,29 @@ import org.junit.runners.model.FrameworkMethod;
 import com.google.inject.Binder;
 
 /**
+ * These are the states the runner goes through when using runtime feature:
+ *
+ * <pre>
+ * CREATE FRAMEWORK
+ * new feature()        --> constructor
+ * COLLECT DEFINED DEPLOYMENTS
+ * feature.initialize() --> can be used to configure nuxeo home or register JNDI objects
+ * START FRAMEWORK
+ * feature.start()
+ * feature.beforeRun()
+ * feature.configure() --> can be used to add guice bindings and to dynamically deploy components using the harness
+ * for each test method:
+ *   feature.testCreated()
+ *   feature.beforeSetup
+ *   feature.beforeMethodRun()  --> test method interceptor
+ *   testMethod()
+ *   feature.afterMethodRun()   --> test method interceptor
+ *   feature.afterTeardown()
+ * feature.afterRun() --> cleanup that require framework to be started
+ * STOP FRAMEWORK
+ * feature.stop()  --> destructor
+ * </pre>
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RunnerFeature {
@@ -31,65 +54,69 @@ public interface RunnerFeature {
      * Called when preparing to run the test class. Framework is not started at this point. Here is time for the feature
      * to configure the runner from annotations on the test class.
      */
-    void initialize(FeaturesRunner runner) throws Exception;
+    default void initialize(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * Configures Guice bindings if any is required by the feature. This is called after the framework is started and
      * before Guice module is built. The tests are launched after guice module is built.
      */
-    void configure(FeaturesRunner runner, Binder binder);
+    default void configure(FeaturesRunner runner, Binder binder) {
+    }
 
     /**
      * Before running tests. At this point Guice modules are registered and injector created.
      */
-    void beforeRun(FeaturesRunner runner) throws Exception;
+    default void beforeRun(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * After tests were run.
      */
-    void afterRun(FeaturesRunner runner) throws Exception;
+    default void afterRun(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * Features are initialized. Runner is ready to create the injector.
      */
-    void start(FeaturesRunner runner) throws Exception;
+    default void start(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * Notification that a test instance was created. Can be used by features to make custom injection or other
      * preparation of the test instance.
-     *
-     * @param test
-     * @throws Exception
      */
-    void testCreated(Object test) throws Exception;
+    default void testCreated(Object test) throws Exception {
+    }
 
     /**
      * Before exiting the test.
      */
-    void stop(FeaturesRunner runner) throws Exception;
+    default void stop(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * Before entering in the @Before methods
-     *
-     * @param runner
      */
-    void beforeSetup(FeaturesRunner runner) throws Exception;
+    default void beforeSetup(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * After the call of the @After methods
-     *
-     * @param runner
      */
-    void afterTeardown(FeaturesRunner runner) throws Exception;
+    default void afterTeardown(FeaturesRunner runner) throws Exception {
+    }
 
     /**
      * Before a test method is invoked.
      */
-    void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
+    default void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    }
 
     /**
      * After a test method was ran.
      */
-    void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
+    default void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    }
 
 }

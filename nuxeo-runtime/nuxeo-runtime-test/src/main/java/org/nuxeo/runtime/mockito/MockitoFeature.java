@@ -24,20 +24,20 @@ import org.mockito.internal.configuration.GlobalConfiguration;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-public class MockitoFeature extends SimpleFeature {
+public class MockitoFeature implements RunnerFeature {
 
     protected final MockProvider provider = new MockProvider();
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(FeaturesRunner runner) {
         InlineURLFactory.install();
         provider.installSelf();
     }
 
     @Override
-    public void testCreated(Object test) throws Exception {
+    public void testCreated(Object test) {
         DefaultServiceProvider.setProvider(provider);
         initMocks(test);
     }
@@ -48,7 +48,7 @@ public class MockitoFeature extends SimpleFeature {
     }
 
     @Override
-    public void stop(FeaturesRunner runner) throws Exception {
+    public void stop(FeaturesRunner runner) {
         InlineURLFactory.uninstall();
         provider.uninstallSelf();
     }

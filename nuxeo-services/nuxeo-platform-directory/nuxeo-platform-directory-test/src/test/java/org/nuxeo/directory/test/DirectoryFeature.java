@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
@@ -63,7 +63,7 @@ import com.google.inject.name.Names;
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.directory.sql")
 @Deploy("org.nuxeo.directory.mongodb")
-public class DirectoryFeature extends SimpleFeature {
+public class DirectoryFeature implements RunnerFeature {
 
     public static final String USER_DIRECTORY_NAME = "userDirectory";
 
@@ -80,7 +80,7 @@ public class DirectoryFeature extends SimpleFeature {
     protected LoginStack loginStack;
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         granularity = runner.getFeature(CoreFeature.class).getGranularity();
     }
 
@@ -103,7 +103,7 @@ public class DirectoryFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         if (granularity != Granularity.METHOD) {
             return;
         }
@@ -140,7 +140,7 @@ public class DirectoryFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         if (granularity != Granularity.METHOD) {
             return;
         }

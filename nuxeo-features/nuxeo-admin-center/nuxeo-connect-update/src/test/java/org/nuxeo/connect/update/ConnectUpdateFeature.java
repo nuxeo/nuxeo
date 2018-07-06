@@ -21,7 +21,7 @@ package org.nuxeo.connect.update;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -32,6 +32,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.connect.client.wrapper")
 @Deploy("org.nuxeo.connect.update")
 @Deploy("org.nuxeo.runtime.reload")
-public class ConnectUpdateFeature extends SimpleFeature {
+public class ConnectUpdateFeature implements RunnerFeature {
 
 }

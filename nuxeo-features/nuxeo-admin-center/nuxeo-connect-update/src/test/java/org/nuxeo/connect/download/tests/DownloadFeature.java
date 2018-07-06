@@ -20,13 +20,13 @@ package org.nuxeo.connect.download.tests;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Deploy("org.nuxeo.connect.client.wrapper")
 @Deploy("org.nuxeo.connect.update")
 @Deploy("org.nuxeo.connect.update.tests:OSGI-INF/runtimeserver-contrib.xml")
 @Features({ ServletContainerFeature.class })
-public class DownloadFeature extends SimpleFeature {
+public class DownloadFeature implements RunnerFeature {
 
 }

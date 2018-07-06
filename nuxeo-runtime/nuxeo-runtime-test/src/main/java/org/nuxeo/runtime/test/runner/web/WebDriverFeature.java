@@ -24,13 +24,14 @@ import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.NoTestsRemainException;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.openqa.selenium.WebDriver;
+
 import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
-public class WebDriverFeature extends SimpleFeature {
+public class WebDriverFeature implements RunnerFeature {
 
     private static final Log log = LogFactory.getLog(WebDriverFeature.class);
 
@@ -99,24 +100,16 @@ public class WebDriverFeature extends SimpleFeature {
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
         binder.bind(Configuration.class).toInstance(config);
-        binder.bind(WebDriver.class).toProvider(new Provider<WebDriver>() {
-            @Override
-            public WebDriver get() {
-                return config.getDriver();
-            }
-        });
+        binder.bind(WebDriver.class).toProvider(() -> config.getDriver());
         if (config.getHomePageClass() != null) {
-            binder.bind(config.getHomePageClass()).toProvider(new Provider() {
-                @Override
-                public Object get() {
-                    return WebPage.getPage(runner, config, config.getHomePageClass());
-                }
-            }).in(Scopes.SINGLETON);
+            binder.bind(config.getHomePageClass())
+                  .toProvider((Provider) () -> WebPage.getPage(runner, config, config.getHomePageClass()))
+                  .in(Scopes.SINGLETON);
         }
     }
 
     @Override
-    public void stop(FeaturesRunner runner) throws Exception {
+    public void stop(FeaturesRunner runner) {
         config.resetDriver();
         WebPage.flushPageCache();
     }

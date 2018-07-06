@@ -28,9 +28,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.osgi.framework.Bundle;
@@ -50,7 +50,7 @@ import org.osgi.framework.Bundle;
 @Deploy("org.nuxeo.ecm.core.storage.sql")
 @Deploy("org.nuxeo.ecm.platform.el")
 @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests")
-public class SQLBackendFeature extends SimpleFeature {
+public class SQLBackendFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {

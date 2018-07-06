@@ -23,12 +23,12 @@ package org.nuxeo.ecm.platform.oauth.tests;
 import org.nuxeo.ecm.core.redis.transientstore.TransientStoreRedisFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 9.2
  */
 @Features(TransientStoreRedisFeature.class)
 @Deploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/transientstore-redis-test-config.xml")
-public class OAuth2RedisTransientStoreFeature extends SimpleFeature {
+public class OAuth2RedisTransientStoreFeature implements RunnerFeature {
 }

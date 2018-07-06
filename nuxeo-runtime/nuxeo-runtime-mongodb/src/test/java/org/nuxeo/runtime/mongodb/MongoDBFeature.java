@@ -27,9 +27,9 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.osgi.framework.Bundle;
 
 import com.mongodb.MongoClient;
@@ -41,7 +41,7 @@ import com.mongodb.MongoClient;
 @Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.runtime.mongodb.test")
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "Needs a MongoDB server!")
-public class MongoDBFeature extends SimpleFeature {
+public class MongoDBFeature implements RunnerFeature {
 
     public static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
 

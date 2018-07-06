@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.convert.tests;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @since 6.0
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.core.convert.api")
 @Deploy("org.nuxeo.ecm.core.convert")
 @Deploy("org.nuxeo.ecm.core.mimetype")
-public class ConvertFeature extends SimpleFeature {
+public class ConvertFeature implements RunnerFeature {
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {

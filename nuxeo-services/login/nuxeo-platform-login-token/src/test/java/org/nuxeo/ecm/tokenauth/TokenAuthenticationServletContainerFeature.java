@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.test.ServletContainerTransactionalFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.ServletContainer;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Feature to run tests needing the {@link TokenAuthenticationService} and a servlet container configured with a webapp
@@ -37,6 +37,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-runtime-server-contrib.xml")
-public class TokenAuthenticationServletContainerFeature extends SimpleFeature {
+public class TokenAuthenticationServletContainerFeature implements RunnerFeature {
 
 }

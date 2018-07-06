@@ -22,7 +22,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Feature to run tests needing the {@link TokenAuthenticationService}.
@@ -38,6 +38,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-directory-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-system-login-contrib.xml")
-public class TokenAuthenticationServiceFeature extends SimpleFeature {
+public class TokenAuthenticationServiceFeature implements RunnerFeature {
 
 }

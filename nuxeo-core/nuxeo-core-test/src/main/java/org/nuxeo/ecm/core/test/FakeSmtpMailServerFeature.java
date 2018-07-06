@@ -26,14 +26,14 @@ import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 
 /**
  * @since 5.7
  */
-public class FakeSmtpMailServerFeature extends SimpleFeature {
+public class FakeSmtpMailServerFeature implements RunnerFeature {
 
     public static final int SERVER_PORT = 2525;
 
@@ -57,7 +57,7 @@ public class FakeSmtpMailServerFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         if (server != null) {
             server.stop();
         }

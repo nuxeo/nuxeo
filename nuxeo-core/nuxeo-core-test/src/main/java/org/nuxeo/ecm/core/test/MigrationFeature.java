@@ -36,7 +36,7 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Feature for migration service.
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.migration")
-public class MigrationFeature extends SimpleFeature {
+public class MigrationFeature implements RunnerFeature {
 
     protected static final String[] KEYS = { STEP, START_TIME, PING_TIME, PROGRESS_MESSAGE, PROGRESS_NUM,
             PROGRESS_TOTAL };

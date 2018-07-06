@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -46,19 +46,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ CoreFeature.class, LogFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class RepositoryElasticSearchFeature extends SimpleFeature {
+public class RepositoryElasticSearchFeature implements RunnerFeature {
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
         // make sure there is an active Tx to do the cleanup, so we don't hide previous assertion
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
-        super.afterMethodRun(runner, method, test);
     }
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        super.initialize(runner);
+    public void initialize(FeaturesRunner runner) {
         // Uncomment to use Derby when h2 lucene lib is not aligned with ES
         // DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }

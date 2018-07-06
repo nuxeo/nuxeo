@@ -20,7 +20,7 @@ package org.nuxeo.ecm.webengine.test;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,6 +30,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.theme.fragments")
 @Deploy("org.nuxeo.theme.webengine")
 @Features(WebEngineFeature.class)
-public class NuxeoThemeFeature extends SimpleFeature {
+public class NuxeoThemeFeature implements RunnerFeature {
 
 }

@@ -47,7 +47,7 @@ import com.google.common.base.Strings;
  *
  * @since 5.7
  */
-public class LogCaptureFeature extends SimpleFeature {
+public class LogCaptureFeature implements RunnerFeature {
 
     public class NoLogCaptureFilterException extends Exception {
         private static final long serialVersionUID = 1L;
@@ -167,11 +167,10 @@ public class LogCaptureFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, com.google.inject.Binder binder) {
         binder.bind(Result.class).toInstance(myResult);
-    };
+    }
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        super.beforeSetup(runner);
         Filter filter;
         FilterWith filterProvider = runner.getConfig(FilterWith.class);
         if (filterProvider.value() == null) {
@@ -188,7 +187,7 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         disable();
     }
 
@@ -210,15 +209,14 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
         disable();
     }
 
     /**
-     * @param filter
      * @since 8.4
      */
-    protected void enable(Filter filter) throws InstantiationException, IllegalAccessException {
+    protected void enable(Filter filter) {
 
         if (logCaptureFilter != null) {
             setupCaptureFiler = logCaptureFilter;

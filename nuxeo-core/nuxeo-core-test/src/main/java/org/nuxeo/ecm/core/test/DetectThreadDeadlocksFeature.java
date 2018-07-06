@@ -33,17 +33,17 @@ import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-public class DetectThreadDeadlocksFeature extends SimpleFeature {
+public class DetectThreadDeadlocksFeature implements RunnerFeature {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Config {
 
-        public boolean dumpAtTearDown() default false;
+        boolean dumpAtTearDown() default false;
 
-        public boolean dumpOnFailure() default true;
+        boolean dumpOnFailure() default true;
     }
 
     @Inject
@@ -61,12 +61,12 @@ public class DetectThreadDeadlocksFeature extends SimpleFeature {
     };
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         config = runner.getConfig(Config.class);
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         runner.getInjector().injectMembers(this);
         if (config.dumpOnFailure()) {
             notifier.addListener(listener);

@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 9.1
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.mongodb.audit")
 @Deploy("org.nuxeo.mongodb.audit.test")
 @Features({ MongoDBFeature.class, CoreFeature.class })
-public class MongoDBAuditFeature extends SimpleFeature {
+public class MongoDBAuditFeature implements RunnerFeature {
 
     @Override
     public void testCreated(Object test) throws Exception {

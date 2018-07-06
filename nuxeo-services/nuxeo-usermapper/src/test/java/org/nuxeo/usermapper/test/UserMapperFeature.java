@@ -20,15 +20,13 @@ import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
- *
- *
  * @since 8.10
  */
 @Features({PlatformFeature.class, AutomationFeature.class})
 @Deploy("org.nuxeo.usermapper")
-public class UserMapperFeature extends SimpleFeature {
+public class UserMapperFeature implements RunnerFeature {
 
 }
