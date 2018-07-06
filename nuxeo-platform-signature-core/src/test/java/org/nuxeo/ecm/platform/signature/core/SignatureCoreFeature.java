@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.signature.core;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Minimal requirements to test nuxeo-platform-signature-core bundle.
@@ -33,6 +33,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.platform.signature.core")
 @Deploy("org.nuxeo.ecm.platform.signature.core.test")
-public class SignatureCoreFeature extends SimpleFeature {
+public class SignatureCoreFeature implements RunnerFeature {
 
 }
