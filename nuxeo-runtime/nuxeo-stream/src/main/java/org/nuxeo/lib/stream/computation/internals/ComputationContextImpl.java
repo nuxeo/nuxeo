@@ -102,6 +102,11 @@ public class ComputationContextImpl implements ComputationContext {
     }
 
     @Override
+    public void cancelAskForCheckpoint() {
+        checkpointFlag = false;
+    }
+
+    @Override
     public void askForTermination() {
         terminateFlag = true;
     }

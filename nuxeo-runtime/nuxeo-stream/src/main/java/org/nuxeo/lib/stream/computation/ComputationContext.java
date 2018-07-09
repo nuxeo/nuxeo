@@ -56,6 +56,11 @@ public interface ComputationContext {
     void askForCheckpoint();
 
     /**
+     * Finally cancel the request to checkpoint the positions.
+     */
+    void cancelAskForCheckpoint();
+
+    /**
      * Ask to terminate this computation.
      *
      * @since 10.1

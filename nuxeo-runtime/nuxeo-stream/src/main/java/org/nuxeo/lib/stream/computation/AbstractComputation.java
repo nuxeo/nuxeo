@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * An abstract {@link Computation} that manages the metadata init. The inputs streams are named i1, i2 ... The output
- * streams are named o1, o2 ...
+ * An abstract {@link Computation} that manages the metadata init.<br/>
+ * By convention the inputs streams are named internally: i1, i2 ...<br/>
+ * and the output streams are named: o1, o2 ...
  *
  * @since 9.3
  */
