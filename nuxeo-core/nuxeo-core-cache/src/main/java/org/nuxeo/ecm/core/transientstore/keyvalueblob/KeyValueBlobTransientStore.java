@@ -20,7 +20,10 @@ package org.nuxeo.ecm.core.transientstore.keyvalueblob;
 
 import static java.util.function.Function.identity;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -324,7 +327,12 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             return kvs.getString(k);
         } else {
             byte[] bytes = kvs.get(k);
-            return SerializationUtils.deserialize(bytes);
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                    ObjectInput in = new ObjectInputStream(bis)) {
+                return (Serializable) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                throw new NuxeoException(e);
+            }
         }
     }
 
