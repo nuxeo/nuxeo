@@ -96,15 +96,12 @@ public class SAMLAuthenticatorWithMapperTest {
     	
     	return resultMap;
     }
-    
-    @Before
-    public void doBefore() throws URISyntaxException {
-        initAuthProvider(null);
-    }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
-    public void testRetrieveIdentity() throws Exception {
+    public void testRetrieveIdentityDefaultSettings() throws Exception {
+        initAuthProvider(null);
+
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -117,7 +114,7 @@ public class SAMLAuthenticatorWithMapperTest {
     }
     
     @Test(expected = NullPointerException.class)
-    @Deploy({ "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml" })
+    @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
         initAuthProvider(getParamMap(false, false));
 
@@ -133,9 +130,10 @@ public class SAMLAuthenticatorWithMapperTest {
     }
 
     @Test
-    @Deploy({ "org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-readonly-contribs.xml" })
+    @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-readonly-contribs.xml")
     public void testUserExistsAndNoCreation() throws Exception {
         initAuthProvider(getParamMap(false, false));
+
         DocumentModel user = userManager.getUserModel("user");
         if (user == null) {
             user = userManager.getBareUserModel();
