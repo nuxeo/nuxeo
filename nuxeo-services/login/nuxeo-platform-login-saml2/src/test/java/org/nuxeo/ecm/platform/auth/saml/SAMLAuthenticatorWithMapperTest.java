@@ -95,15 +95,11 @@ public class SAMLAuthenticatorWithMapperTest {
     	
     	return resultMap;
     }
-    
-    @Before
-    public void doBefore() throws URISyntaxException {
-        initAuthProvider(null);
-    }
 
     @Test
     @LocalDeploy({ "org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml" })
-    public void testRetrieveIdentity() throws Exception {
+    public void testRetrieveIdentityDefaultSettings() throws Exception {
+    	initAuthProvider(null);
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
 
