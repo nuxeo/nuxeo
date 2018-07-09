@@ -57,7 +57,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
 
     public void start() {
         log.info("Starting embedded (in JVM) Elasticsearch");
-        if (!Framework.isTestModeSet()) {
+        if (Framework.isInitialized() && !Framework.isTestModeSet()) {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
