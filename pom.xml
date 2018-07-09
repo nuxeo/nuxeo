@@ -122,7 +122,7 @@
     <nuxeo.features.version>9.10-HF13-SNAPSHOT</nuxeo.features.version>
     <nuxeo.addons.core.version>9.10-HF13-SNAPSHOT</nuxeo.addons.core.version>
 
-    <nuxeo.connect.client.version>1.6.1</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.6.2</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
