@@ -11,4 +11,4 @@ When reusing code dual licensed under the GPL and another license, we choose
 NOT to use the GPL, but the other license.
 
 See online documentation for more details and all third-party licenses: 
-http://doc.nuxeo.com/x/gIK7
+https://doc.nuxeo.com/nxdoc/licenses/
