@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.3-SNAPSHOT</version>
     <relativePath>../addons/pom.xml</relativePath>
   </parent>
 
@@ -15,7 +15,7 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.distribution.version>10.2-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>10.3-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.webui.mp.version>2.3.2-SNAPSHOT</nuxeo.webui.mp.version>
   </properties>
 
