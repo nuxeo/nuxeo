@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.io;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Intermediate feature for nuxeo-core-io module.
@@ -34,6 +34,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.io")
 @Features(RuntimeFeature.class)
-public class CoreIOFeature extends SimpleFeature {
+public class CoreIOFeature implements RunnerFeature {
 
 }

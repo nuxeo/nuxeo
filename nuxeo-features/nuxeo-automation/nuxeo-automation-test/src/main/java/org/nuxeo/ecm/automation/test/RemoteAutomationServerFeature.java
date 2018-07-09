@@ -25,10 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
 /**
@@ -36,7 +35,7 @@ import com.google.inject.Scopes;
  *
  * @since 5.7
  */
-public class RemoteAutomationServerFeature extends SimpleFeature {
+public class RemoteAutomationServerFeature implements RunnerFeature {
 
     protected static final Log log = LogFactory.getLog(RemoteAutomationServerFeature.class);
 
@@ -59,42 +58,34 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         if (client != null) {
             client.shutdown();
             client = null;
             session = null;
         }
-        super.afterRun(runner);
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        super.configure(runner, binder);
-        binder.bind(HttpAutomationClient.class).toProvider(new Provider<HttpAutomationClient>() {
-            @Override
-            public HttpAutomationClient get() {
-                if (client == null) {
-                    client = new HttpAutomationClient(automationUrl);
-                }
-                return client;
+        binder.bind(HttpAutomationClient.class).toProvider(() -> {
+            if (client == null) {
+                client = new HttpAutomationClient(automationUrl);
             }
+            return client;
         }).in(Scopes.SINGLETON);
-        binder.bind(Session.class).toProvider(new Provider<Session>() {
-            @Override
-            public Session get() {
-                if (client == null) {
-                    client = new HttpAutomationClient(automationUrl);
-                }
-                if (session == null) {
-                    try {
-                        session = client.getSession("Administrator", "Administrator");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return session;
+        binder.bind(Session.class).toProvider(() -> {
+            if (client == null) {
+                client = new HttpAutomationClient(automationUrl);
             }
+            if (session == null) {
+                try {
+                    session = client.getSession("Administrator", "Administrator");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return session;
         }).in(Scopes.SINGLETON);
     }
 

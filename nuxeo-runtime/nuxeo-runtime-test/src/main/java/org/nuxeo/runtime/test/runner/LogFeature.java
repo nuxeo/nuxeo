@@ -28,7 +28,7 @@ import org.apache.log4j.Priority;
 /**
  * @since 9.3
  */
-public class LogFeature extends SimpleFeature {
+public class LogFeature implements RunnerFeature {
 
     protected static final String CONSOLE_APPENDER_NAME = "CONSOLE";
 

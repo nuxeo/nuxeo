@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.Provider;
@@ -48,7 +48,7 @@ import com.google.inject.Provider;
 @Deploy("org.nuxeo.ecm.automation.scripting")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.runtime.management")
-public class AutomationFeature extends SimpleFeature {
+public class AutomationFeature implements RunnerFeature {
 
     protected final OperationContextProvider contextProvider = new OperationContextProvider();
 
@@ -110,12 +110,12 @@ public class AutomationFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         AutomationScope.INSTANCE.enter();
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         AutomationScope.INSTANCE.exit();
         if (context != null) {
             context.close();

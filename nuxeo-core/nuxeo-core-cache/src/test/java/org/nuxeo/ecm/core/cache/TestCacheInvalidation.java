@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TestCacheInvalidation.ClusterFeature.class, CacheFeature.class })
@@ -54,10 +54,10 @@ public class TestCacheInvalidation {
     protected static final String NODE2 = "456";
 
     /** Needed so that the cache service uses an invalidator. */
-    public static class ClusterFeature extends SimpleFeature {
+    public static class ClusterFeature implements RunnerFeature {
 
         @Override
-        public void start(FeaturesRunner runner) throws Exception {
+        public void start(FeaturesRunner runner) {
             Framework.addListener(new RuntimeServiceListener() {
 
                 @Override
@@ -120,7 +120,7 @@ public class TestCacheInvalidation {
     }
 
     @Test
-    public void testInvalidationsSent() throws IOException {
+    public void testInvalidationsSent() {
         // write to the cache
         RECEIVED_INVALIDATIONS.clear();
         cache.put("key2", "val2");
@@ -154,7 +154,7 @@ public class TestCacheInvalidation {
     }
 
     @Test
-    public void testInvalidationsReceived() throws IOException {
+    public void testInvalidationsReceived() {
         // we have an entry in the cache
         assertEquals("val1", cache.get("key1"));
 

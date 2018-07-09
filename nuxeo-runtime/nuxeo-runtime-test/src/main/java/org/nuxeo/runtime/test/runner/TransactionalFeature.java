@@ -41,7 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.runtime.datasource")
 @Features(RuntimeFeature.class)
-public class TransactionalFeature extends SimpleFeature {
+public class TransactionalFeature implements RunnerFeature {
 
     private static final Log log = LogFactory.getLog(TransactionalFeature.class);
 

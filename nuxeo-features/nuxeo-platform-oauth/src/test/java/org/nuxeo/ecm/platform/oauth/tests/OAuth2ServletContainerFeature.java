@@ -33,9 +33,9 @@ import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @since 9.2
@@ -43,10 +43,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features(ServletContainerTransactionalFeature.class)
 @Deploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/servletcontainer-config.xml")
 @Deploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/test-oauth2-authentication-contrib.xml")
-public class OAuth2ServletContainerFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class OAuth2ServletContainerFeature implements RunnerFeature, WorkingDirectoryConfigurator {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 

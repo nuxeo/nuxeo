@@ -30,13 +30,13 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
 
 @Features(PlatformFeature.class)
-public class LauncherFeature extends SimpleFeature {
+public class LauncherFeature implements RunnerFeature {
 
     NuxeoLauncher launcher;
 

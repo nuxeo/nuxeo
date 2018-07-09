@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.platform.tag;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -50,10 +50,10 @@ public class TestBridgeTagService extends AbstractTestTagService {
 
     protected static final String TAGGING_TARGET_FIELD = "relation:target";
 
-    public static class BridgeTagServiceFeature extends SimpleFeature {
+    public static class BridgeTagServiceFeature implements RunnerFeature {
 
         @Override
-        public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
             TagService first = new RelationTagService();
             TagService second = new FacetedTagService();
             ((TestBridgeTagService) test).tagService = new BridgeTagService(first, second);
@@ -94,7 +94,7 @@ public class TestBridgeTagService extends AbstractTestTagService {
         Map<String, Serializable> map = new HashMap<>();
         map.put("label", "tag1");
         map.put("username", "Administrator");
-        file2.setPropertyValue("nxtag:tags", (Serializable) Arrays.asList(map));
+        file2.setPropertyValue("nxtag:tags", (Serializable) Collections.singletonList(map));
 
         session.saveDocument(file2);
 
@@ -107,7 +107,7 @@ public class TestBridgeTagService extends AbstractTestTagService {
     }
 
     @Override
-    protected void testQueriesOnTags() throws Exception {
+    protected void testQueriesOnTags() {
         throw new AssumptionViolatedException("NXQL queries cannot use the bridge");
     }
 

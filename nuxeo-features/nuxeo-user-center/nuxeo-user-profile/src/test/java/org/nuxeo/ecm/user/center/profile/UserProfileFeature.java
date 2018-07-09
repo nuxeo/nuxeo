@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 7.2
@@ -41,13 +41,12 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.user.center.profile")
-public class UserProfileFeature extends SimpleFeature {
+public class UserProfileFeature implements RunnerFeature {
 
     protected File dir;
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        super.start(runner);
         String dirPath = deployDataFiles();
         dir = new File(dirPath);
     }
@@ -58,7 +57,6 @@ public class UserProfileFeature extends SimpleFeature {
             FileUtils.deleteDirectory(dir);
         }
         dir = null;
-        super.stop(runner);
     }
 
     protected String deployDataFiles() throws IOException {

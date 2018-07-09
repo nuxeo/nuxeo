@@ -18,22 +18,15 @@
  */
 package org.nuxeo.ecm.webengine.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.test.ServletContainerTransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
 @Deploy("org.nuxeo.ecm.platform.login")
@@ -47,12 +40,12 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 @Deploy("org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml")
 @Features({ PlatformFeature.class, WebDriverFeature.class, ServletContainerTransactionalFeature.class,
         WebEngineFeatureCore.class })
-public class WebEngineFeature extends SimpleFeature {
+public class WebEngineFeature implements RunnerFeature {
 
     protected URL config;
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         SessionFactory.setDefaultRepository("test");
     }
 

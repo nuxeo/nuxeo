@@ -39,8 +39,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.Provider;
@@ -56,7 +56,7 @@ import com.google.inject.name.Names;
 @Features(ManagementFeature.class)
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
 @Deploy("org.nuxeo.ecm.core.management.jtajca:login-config.xml")
-public class JtajcaManagementFeature extends SimpleFeature {
+public class JtajcaManagementFeature implements RunnerFeature {
 
     protected static ObjectName nameOf(Class<?> itf) {
         try {
@@ -110,7 +110,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
     Class<?> target;
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(FeaturesRunner runner) {
         core = runner.getFeature(CoreFeature.class);
         target = runner.getTargetTestClass();
     }
@@ -158,7 +158,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
     TxChecker txChecker;
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         if (core == null) {
             return;
         }
@@ -166,7 +166,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         if (txChecker == null) {
             return;
         }

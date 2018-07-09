@@ -30,7 +30,7 @@ import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -40,10 +40,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.core.persistence")
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
-public class AuditFeature extends SimpleFeature {
+public class AuditFeature implements RunnerFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class).addWaiter(new BulkAuditWaiter());
     }
 
@@ -56,12 +56,12 @@ public class AuditFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         clear();
     }
 
     protected void clear() {
-        boolean started = TransactionHelper.isTransactionActive() == false && TransactionHelper.startTransaction();
+        boolean started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
         try {
             doClear();
         } finally {

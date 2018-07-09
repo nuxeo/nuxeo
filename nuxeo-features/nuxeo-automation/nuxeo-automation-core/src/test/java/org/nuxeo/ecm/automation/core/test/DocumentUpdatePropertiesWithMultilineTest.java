@@ -50,14 +50,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 public class DocumentUpdatePropertiesWithMultilineTest {
 
-    public static class InitFeature extends SimpleFeature {
+    public static class InitFeature implements RunnerFeature {
 
         @Override
         public void initialize(FeaturesRunner runner) {

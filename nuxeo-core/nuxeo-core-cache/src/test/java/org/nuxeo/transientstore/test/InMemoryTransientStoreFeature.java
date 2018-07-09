@@ -20,7 +20,7 @@ package org.nuxeo.transientstore.test;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -28,6 +28,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features({ TransientStoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.cache.test:test-in-memory-transientstore-contrib.xml")
-public class InMemoryTransientStoreFeature extends SimpleFeature {
+public class InMemoryTransientStoreFeature implements RunnerFeature {
 
 }

@@ -18,19 +18,19 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.junit.internal.AssumptionViolatedException;
+import org.junit.AssumptionViolatedException;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Allows to ignore all the tests from a class running this feature if the database configured for tests is not H2.
  *
  * @since 5.9.5
  */
-public class H2OnlyFeature extends SimpleFeature {
+public class H2OnlyFeature implements RunnerFeature {
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(FeaturesRunner runner) {
         if (DatabaseHelper.DATABASE instanceof DatabaseH2) {
             return;
         }
