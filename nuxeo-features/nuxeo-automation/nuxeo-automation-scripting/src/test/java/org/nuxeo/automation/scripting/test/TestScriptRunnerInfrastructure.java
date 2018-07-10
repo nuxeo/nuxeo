@@ -601,4 +601,19 @@ public class TestScriptRunnerInfrastructure {
                 (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
+    @Test
+    public void testChainWithScriptedOperationAndMVELParameter() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, String> map = new HashMap<>();
+        map.put("parentPath", "foo");
+        ctx.put("map", map);
+        Object result = automationService.run(ctx, "Scripting.ChainWithScriptedOperationAndMVELParameter");
+        assertEquals("foo", String.valueOf(result));
+        ctx = new OperationContext(session);
+        map.put("parentPath", "bar");
+        ctx.put("map", map);
+        result = automationService.run(ctx, "Scripting.ChainWithScriptedOperationAndMVELParameter");
+        assertEquals("bar", String.valueOf(result));
+    }
+
 }
