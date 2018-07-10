@@ -52,16 +52,15 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -382,14 +381,13 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
         params.put("doc", root);
         Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
-        assertEquals(
-                "Root input title:New Title" + System.lineSeparator() + "Root input title:New Title"
-                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
-                        + "Root ctx title:New Title" + System.lineSeparator() + "Root params title:New Title"
-                        + System.lineSeparator() + "Root params title:New Title" + System.lineSeparator()
-                        + "Root result title:New Title" + System.lineSeparator() + "Root result title:New Title"
-                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
-                        + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
+        assertEquals("Root input title:New Title" + System.lineSeparator() + "Root input title:New Title"
+                + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
+                + "Root ctx title:New Title" + System.lineSeparator() + "Root params title:New Title"
+                + System.lineSeparator() + "Root params title:New Title" + System.lineSeparator()
+                + "Root result title:New Title" + System.lineSeparator() + "Root result title:New Title"
+                + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
+                + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
         assertTrue(result instanceof DocumentModel);
         Object doc = ctx.get("doc");
         assertNotNull(doc);
@@ -524,7 +522,8 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
     /*
@@ -536,7 +535,8 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
     /*
@@ -597,7 +597,8 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
 }
