@@ -247,7 +247,7 @@ public class TextTemplate {
                 }
                 if (Crypto.isEncrypted(newVarsValue)) {
                     // newVarsValue == {$[...]$...}
-                    assert (keepEncryptedAsVar);
+                    assert keepEncryptedAsVar;
                     newVarsValue = "${" + newVarsKey + "}";
                     newVars.put(newVarsKey, newVarsValue);
                     continue;
@@ -261,7 +261,7 @@ public class TextTemplate {
             }
             recursionLevel++;
             // Avoid infinite replacement loops
-            if ((!doneProcessing) && (recursionLevel > MAX_RECURSION_LEVEL)) {
+            if (!doneProcessing && recursionLevel > MAX_RECURSION_LEVEL) {
                 log.warn("Detected potential infinite loop when processing the following properties\n" + newVars);
                 break;
             }
@@ -287,7 +287,7 @@ public class TextTemplate {
             }
             recursionLevel++;
             // Avoid infinite replacement loops
-            if ((!doneProcessing) && (recursionLevel > MAX_RECURSION_LEVEL)) {
+            if (!doneProcessing && recursionLevel > MAX_RECURSION_LEVEL) {
                 log.warn("Detected potential infinite loop when processing the following text\n" + text);
                 break;
             }
@@ -324,10 +324,14 @@ public class TextTemplate {
         String currentString;
         KEYS: for (String key : processedVars.stringPropertyNames()) {
             String value = processedVars.getProperty(key);
+            if (value.startsWith("${") && value.endsWith("}")) {
+                // crypted variables have to be decrypted in freemarker vars
+                value = vars.getProperty(key, false);
+            }
             String[] keyparts = key.split("\\.");
             currentMap = freemarkerVars;
             currentString = "";
-            for (int i = 0; i < (keyparts.length - 1); i++) {
+            for (int i = 0; i < keyparts.length - 1; i++) {
                 currentString = currentString + ("".equals(currentString) ? "" : ".") + keyparts[i];
                 if (!currentMap.containsKey(keyparts[i])) {
                     Map<String, Object> nextMap = new HashMap<>();
