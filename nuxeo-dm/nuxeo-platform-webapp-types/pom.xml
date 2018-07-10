@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-dm-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>9.10-HF12-SNAPSHOT</version>
+    <version>9.10-HF13-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-webapp-types</artifactId>
