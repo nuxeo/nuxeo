@@ -106,6 +106,18 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestScriptedOperationMVELParameter">
+      <inputType>void</inputType>
+      <outputType>string</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          return params.parentPath;
+        }
+      ]]></script>
+      <param name="parentPath" type="string"/>
+    </scriptedOperation>
+
     <scriptedOperation id="Scripting.TestBlob">
       <inputType>Blob</inputType>
       <outputType>Document</outputType>
@@ -456,7 +468,7 @@
         }
       ]]></script>
     </scriptedOperation>
-  
+
     <scriptedOperation id="Scripting.LogScript">
       <inputType>void</inputType>
       <outputType>void</outputType>
@@ -574,13 +586,19 @@
         <param type="string" name="mvel">expr:Foo @{myvar}</param>
       </operation>
     </chain>
-  
+
     <chain id="Scripting.ChainWithScripting">
       <operation id="Context.FetchDocument"/>
       <operation id="Scripting.LogScript"/>
       <operation id="Log">
         <param type="string" name="level">info</param>
         <param type="string" name="message">Success!</param>
+      </operation>
+    </chain>
+
+    <chain id="Scripting.ChainWithScriptedOperationAndMVELParameter">
+      <operation id="Scripting.TestScriptedOperationMVELParameter">
+        <param type="string" name="parentPath">expr:map.get('parentPath')</param>
       </operation>
     </chain>
 

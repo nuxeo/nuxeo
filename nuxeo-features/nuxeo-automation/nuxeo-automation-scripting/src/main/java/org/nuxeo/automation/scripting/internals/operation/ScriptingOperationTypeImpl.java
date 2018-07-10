@@ -21,6 +21,7 @@ package org.nuxeo.automation.scripting.internals.operation;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,9 +113,9 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         try {
-            resolveArguments(ctx, args);
+            Map<String, Object> clonedArgs = evalArguments(ctx, args);
             ScriptOperationContext sctx = new ScriptOperationContext(ctx);
-            return new ScriptingOperationImpl(desc.getScript(), sctx, args);
+            return new ScriptingOperationImpl(desc.getScript(), sctx, clonedArgs);
         } catch (ScriptException e) {
             throw new NuxeoException(e);
         }
@@ -129,7 +130,9 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
      * @since 8.3
      * @param ctx Automation Context
      * @param args Operation Parameters
+     * @deprecated since 8.10-HF33. Use {@link #evalArguments(OperationContext, Map)} instead.
      */
+    @Deprecated
     protected void resolveArguments(OperationContext ctx, Map<String, Object> args) {
         for (String key : args.keySet()) {
             if (args.get(key) instanceof Expression) {
@@ -140,6 +143,18 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
         if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
             args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> evalArguments(OperationContext ctx, Map<String, Object> args) {
+        Map<String, Object> clonedArgs = new HashMap<>(args);
+        clonedArgs.replaceAll((k, v) -> v instanceof Expression ? ((Expression) v).eval(ctx) : v);
+
+        if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
+            clonedArgs.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
+        }
+
+        return clonedArgs;
     }
 
     protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
