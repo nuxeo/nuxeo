@@ -107,6 +107,8 @@ public final class NxqlQueryConverter {
 
     protected static final int MORE_LIKE_THIS_MIN_TERM_FREQ = 1;
 
+    protected static final int MORE_LIKE_THIS_MIN_DOC_FREQ = 3;
+
     protected static final int MORE_LIKE_THIS_MAX_QUERY_TERMS = 12;
 
     private NxqlQueryConverter() {
@@ -526,7 +528,12 @@ public final class NxqlQueryConverter {
             break;
         case "more_like_this":
             String[] fields = hint.getIndex() != null ? hint.getIndex() : new String[] { name };
-            MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, getItems(value));
+            MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, null,
+                    getItems(value));
+            if (hint.analyzer != null) {
+                moreLikeThisBuilder.analyzer(hint.analyzer);
+            }
+            moreLikeThisBuilder.minDocFreq(MORE_LIKE_THIS_MIN_DOC_FREQ);
             moreLikeThisBuilder.minTermFreq(MORE_LIKE_THIS_MIN_TERM_FREQ);
             moreLikeThisBuilder.maxQueryTerms(MORE_LIKE_THIS_MAX_QUERY_TERMS);
             ret = moreLikeThisBuilder;

@@ -1615,9 +1615,11 @@ public class TestNxqlConversion {
                 "select * from Document where /*+ES: INDEX(dc:title.fulltext,dc:description.fulltext) OPERATOR(more_like_this) */ ecm:uuid = '1234'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"more_like_this\" : {\n" +
-                "    \"like\" : [\n" +
+                "    \"fields\" : [\n" +
                 "      \"dc:title.fulltext\",\n" +
-                "      \"dc:description.fulltext\",\n" +
+                "      \"dc:description.fulltext\"\n" +
+                "    ],\n" +
+                "    \"like\" : [\n" +
                 "      {\n" +
                 "        \"_index\" : \"nxutest\",\n" +
                 "        \"_type\" : \"doc\",\n" +
@@ -1626,7 +1628,7 @@ public class TestNxqlConversion {
                 "    ],\n" +
                 "    \"max_query_terms\" : 12,\n" +
                 "    \"min_term_freq\" : 1,\n" +
-                "    \"min_doc_freq\" : 5,\n" +
+                "    \"min_doc_freq\" : 3,\n" +
                 "    \"max_doc_freq\" : 2147483647,\n" +
                 "    \"min_word_length\" : 0,\n" +
                 "    \"max_word_length\" : 0,\n" +
@@ -1642,8 +1644,10 @@ public class TestNxqlConversion {
                 "select * from Document where /*+ES: INDEX(all_field) OPERATOR(more_like_this) */ ecm:uuid IN ('1234', '4567')").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"more_like_this\" : {\n" +
+                "    \"fields\" : [\n" +
+                "      \"all_field\"\n" +
+                "    ],\n" +
                 "    \"like\" : [\n" +
-                "      \"all_field\",\n" +
                 "      {\n" +
                 "        \"_index\" : \"nxutest\",\n" +
                 "        \"_type\" : \"doc\",\n" +
@@ -1652,7 +1656,7 @@ public class TestNxqlConversion {
                 "    ],\n" +
                 "    \"max_query_terms\" : 12,\n" +
                 "    \"min_term_freq\" : 1,\n" +
-                "    \"min_doc_freq\" : 5,\n" +
+                "    \"min_doc_freq\" : 3,\n" +
                 "    \"max_doc_freq\" : 2147483647,\n" +
                 "    \"min_word_length\" : 0,\n" +
                 "    \"max_word_length\" : 0,\n" +
