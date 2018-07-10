@@ -111,7 +111,7 @@ public class TestTextTemplate {
         tt.setKeepEncryptedAsVar(true);
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
-            assertEquals("Encrypted variables must not be replaced", templateText, reader.readLine());
+            assertEquals("Encrypted variables must be decrypted", processedText, reader.readLine());
             assertEquals("Encrypted #variables must be replaced", processedText2, reader.readLine());
         }
     }
