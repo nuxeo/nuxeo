@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-services-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>9.10-HF12-SNAPSHOT</version>
+    <version>9.10-HF12</version>
   </parent>
   <groupId>org.nuxeo.ecm.login</groupId>
   <artifactId>parent</artifactId>
