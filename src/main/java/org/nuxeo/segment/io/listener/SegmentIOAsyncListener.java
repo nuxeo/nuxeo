@@ -87,7 +87,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 Principal princ = event.getContext().getPrincipal();
                 SegmentIO service = Framework.getService(SegmentIO.class);
                 if (!service.mustTrackprincipal(princ.getName())) {
-                    return;
+                    break;
                 }
 
                 NuxeoPrincipal principal;
