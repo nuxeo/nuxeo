@@ -172,7 +172,10 @@ public class TestService {
         RequestFilterConfig config = requestControllerService.computeConfigForRequest(
                 "/nuxeo/nxfile/default/45ad4c71-f1f3-4e9d-97a1-61aa317ce105/file:content/IMG_20170910_110134.jpg");
         assertNotNull(config);
-        assertFalse(config.isCached());
+        // !!!WARN: Don't change this unit test without asking front end devs !!!
+        assertTrue(config.isCached());
+        assertEquals("0", config.getCacheTime());
+        // end of WARN !!!
         assertFalse(config.isPrivate());
         assertFalse(config.needTransaction());
         assertFalse(config.needSynchronization());
@@ -181,10 +184,28 @@ public class TestService {
         config = requestControllerService.computeConfigForRequest(
                 "/nuxeo/nxfile/default/45ad4c71-f1f3-4e9d-97a1-61aa317ce105/picture:views/3/content/FullHD_IMG_20170910_110134.jpg");
         assertNotNull(config);
-        assertFalse(config.isCached());
+        // !!!WARN: Don't change this unit test without asking front end devs !!!
+        assertTrue(config.isCached());
+        assertEquals("0", config.getCacheTime());
+        // end of WARN !!!
         assertFalse(config.isPrivate());
         assertFalse(config.needTransaction());
         assertFalse(config.needSynchronization());
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testThumbnailPatterns() {
+        RequestControllerService requestControllerService = (RequestControllerService) requestControllerManager;
+        RequestFilterConfig config = requestControllerService.computeConfigForRequest(
+                "/nuxeo/api/v1/repo/default/id/45ad4c71-f1f3-4e9d-97a1-61aa317ce105/@rendition/thumbnail");
+        assertNotNull(config);
+        // !!!WARN: Don't change this unit test without asking front end devs !!!
+        assertTrue(config.isCached());
+        assertEquals("0", config.getCacheTime());
+        // end of WARN !!!
     }
 
 }
