@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
 
-    <filterConfig name="nxfile" transactional="false" synchonize="false">
+    <filterConfig name="nxfile" transactional="false" synchonize="false" cached="true" cacheTime="0">
       <!-- transaction is manually handled in DownloadServlet -->
       <pattern>${org.nuxeo.ecm.contextPath}/nxfile/.*</pattern>
     </filterConfig>
@@ -37,6 +37,10 @@
 
     <filterConfig name="waitdialog" cached="true" cacheTime="3600">
       <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="renditionOrBlob" cached="true" cacheTime="0">
+      <pattern>${org.nuxeo.ecm.contextPath}/.*/@(rendition|blob).*</pattern>
     </filterConfig>
 
   </extension>
