@@ -1,5 +1,6 @@
 <#escape x as x?xml>
 org.nuxeo.runtime.trackers.files.threadstracking.config
+org.nuxeo.ecm.core.bulk.config
 <#if elasticsearch.enabled != "true" || audit.elasticsearch.enabled != "true">
 org.nuxeo.elasticsearch.audit.contrib
 org.nuxeo.elasticsearch.index.audit.contrib
