@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <template.rendering.studio.version>10.1.1</template.rendering.studio.version>
+    <template.rendering.studio.version>10.2.0-SNAP</template.rendering.studio.version>
   </properties>
 
   <modules>
