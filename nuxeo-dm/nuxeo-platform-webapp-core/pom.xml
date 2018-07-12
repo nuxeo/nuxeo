@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-dm-parent</artifactId>
-    <version>8.10-HF33-SNAPSHOT</version>
+    <version>8.10-HF34-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-platform-webapp-core</artifactId>
   <name>Nuxeo WebApp - Core</name>
