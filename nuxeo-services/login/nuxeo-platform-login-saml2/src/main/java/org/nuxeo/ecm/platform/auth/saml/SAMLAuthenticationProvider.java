@@ -455,6 +455,7 @@ public class SAMLAuthenticationProvider
             String sessionId = credential.getSessionIndexes().get(0);
             Cookie cookie = CookieHelper.createCookie(request, SAML_SESSION_KEY,
                     String.join("|", sessionId, nameValue, nameFormat));
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
         }
 
