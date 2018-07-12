@@ -1,6 +1,6 @@
-# Nuxeo platform 8.10-HF33-SNAPSHOT
+# Nuxeo platform 8.10-HF33
 
-Welcome to the Nuxeo Platform 8.10-HF33-SNAPSHOT.
+Welcome to the Nuxeo Platform 8.10-HF33.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [http://www.nuxeo.com/downloads/][1].
@@ -103,7 +103,7 @@ community of professional and individual contributors:
 
 ## Release Notes
 
-See [http://nuxeo.github.io/releasenotes/8.10-HF33-SNAPSHOT/][25].
+See [http://nuxeo.github.io/releasenotes/8.10-HF33/][25].
 
 ## Issues
 
@@ -184,7 +184,7 @@ licenses donated by YourKit), etc.
 [22]: http://www.nuxeo.com/en/products/document-management
 [23]: http://www.nuxeo.com/en/products/dam
 [24]: http://www.nuxeo.com/en/products/case-management
-[25]: http://nuxeo.github.io/releasenotes/8.10-HF33-SNAPSHOT
+[25]: http://nuxeo.github.io/releasenotes/8.10-HF33
 [26]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
 [27]: https://jira.nuxeo.org/browse/NXP/fixforversion/
 [28]: http://doc.nuxeo.com/
