@@ -223,7 +223,7 @@ public abstract class TestStreamProcessor {
                                     .build();
 
         Settings settings = new Settings(concurrency, partitions, codec).setPartitions("output", 1);
-        settings.setConcurrency("C4", 16).setPartitions("s3", 16).setConcurrency("COUNTER", 4).setPartitions("s5", 4);
+        settings.setConcurrency("C4", 4).setPartitions("s3", 4).setConcurrency("COUNTER", 4).setPartitions("s5", 4);
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
@@ -266,27 +266,27 @@ public abstract class TestStreamProcessor {
 
     @Test
     public void testComplexTopoOneRecord() throws Exception {
-        testComplexTopo(1, 8, 8);
+        testComplexTopo(1, 4, 4);
     }
 
     @Test
     public void testComplexTopoFewRecords() throws Exception {
-        testComplexTopo(17, 8, 8);
+        testComplexTopo(17, 4, 4);
     }
 
     @Test
     public void testComplexTopoManyRecords() throws Exception {
-        testComplexTopo(1003, 12, 32);
+        testComplexTopo(1003, 4, 8);
     }
 
     @Test
     public void testComplexTopoManyRecordsOnePartition() throws Exception {
-        testComplexTopo(101, 12, 1);
+        testComplexTopo(101, 8, 1);
     }
 
     @Test
     public void testComplexTopoManyRecordsOneThreadManyPartitions() throws Exception {
-        testComplexTopo(100, 12, 13);
+        testComplexTopo(100, 6, 8);
     }
 
     @Test

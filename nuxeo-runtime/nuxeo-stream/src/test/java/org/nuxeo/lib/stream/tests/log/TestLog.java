@@ -249,7 +249,7 @@ public abstract class TestLog {
 
     @Test
     public void basicAppendAndTail() throws Exception {
-        final int LOG_SIZE = 10;
+        final int LOG_SIZE = 5;
         final String GROUP = "defaultTest";
 
         manager.createIfNotExists(logName, LOG_SIZE);
@@ -293,7 +293,7 @@ public abstract class TestLog {
 
     @Test
     public void testCommitAndSeek() throws Exception {
-        final int LOG_SIZE = 10;
+        final int LOG_SIZE = 5;
         final String GROUP = "defaultTest";
 
         manager.createIfNotExists(logName, LOG_SIZE);
@@ -356,7 +356,7 @@ public abstract class TestLog {
 
     @Test
     public void testMoreCommit() throws Exception {
-        final int LOG_SIZE = 10;
+        final int LOG_SIZE = 5;
         final String GROUP = "defaultTest";
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -604,7 +604,7 @@ public abstract class TestLog {
 
     @Test
     public void testTailerOnMultiPartitionsUnbalanced() throws Exception {
-        final int LOG_SIZE = 10;
+        final int LOG_SIZE = 5;
         final int NB_MSG = 50;
         final String group = "defaultTest";
         final Collection<LogPartition> partitions = new ArrayList<>();
