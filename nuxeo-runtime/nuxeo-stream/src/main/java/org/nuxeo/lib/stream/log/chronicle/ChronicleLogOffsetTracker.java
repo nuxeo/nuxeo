@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.TailerDirection;
+import net.openhft.chronicle.queue.TailerState;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
@@ -122,6 +123,10 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
                     offsetQueue.file().getAbsolutePath(), e.getMessage()));
             offsetTailer = offsetQueue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
         }
+        if (offsetTailer.state() == TailerState.UNINITIALISED) {
+            // This is a new queue, we are not going to find anything
+            return 0;
+        }
         final long[] offset = { 0 };
         boolean hasNext;
         do {
@@ -145,7 +150,7 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
 
     @Override
     public void close() {
-        if (! offsetQueue.isClosed()) {
+        if (!offsetQueue.isClosed()) {
             offsetQueue.close();
         }
     }
