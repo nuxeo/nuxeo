@@ -80,6 +80,7 @@ public class TestLibChronicle implements StoreFileListener {
         SingleChronicleQueue ret = SingleChronicleQueueBuilder.binary(path)
                                                               .rollCycle(RollCycles.TEST_SECONDLY)
                                                               .storeFileListener(this)
+                                                              .blockSize(0) // reduce the cq4 sparse file to 1m instead 80m
                                                               .build();
         assertNotNull(ret);
         return ret;
