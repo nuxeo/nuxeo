@@ -42,6 +42,7 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.RollCycles;
+import net.openhft.chronicle.queue.TailerDirection;
 import net.openhft.chronicle.queue.TailerState;
 import net.openhft.chronicle.queue.impl.StoreFileListener;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
@@ -234,6 +235,42 @@ public class TestLibChronicle implements StoreFileListener {
             // here the queue has been closed the tailer is closed
         }
 
+    }
+
+    @Test
+    public void testReadBackward() throws Exception {
+        // the state of a tailer on an empty queue is uninitialised
+        File path;
+        try (ChronicleQueue queue = createQueue()) {
+            ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            assertEquals(TailerState.UNINITIALISED, tailer.state());
+            poll(tailer, 1, TimeUnit.MILLISECONDS);
+            assertEquals(TailerState.UNINITIALISED, tailer.state());
+            path = queue.file();
+        }
+        // reopening an empty queue is still uninitialised
+        try (ChronicleQueue queue = openQueue(path)) {
+            ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            assertEquals(TailerState.UNINITIALISED, tailer.state());
+            poll(tailer, 1, TimeUnit.MILLISECONDS);
+            ExcerptAppender app = queue.acquireAppender();
+            // now add something to the queue
+            put(app, KeyValueMessage.of("foo"));
+            assertEquals(TailerState.UNINITIALISED, tailer.state());
+        }
+        // a state of a tailer on a non empty queue is FOUND_CYCLE
+        try (ChronicleQueue queue = openQueue(path)) {
+            ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+            KeyValueMessage ret = poll(tailer, 1, TimeUnit.SECONDS);
+            assertNotNull(ret);
+        }
+        Thread.sleep(1500);
+        // even if we change cycle the queue is initilaized
+        try (ChronicleQueue queue = openQueue(path)) {
+            ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
+            assertEquals(TailerState.FOUND_CYCLE, tailer.state());
+        }
     }
 
     @Override
