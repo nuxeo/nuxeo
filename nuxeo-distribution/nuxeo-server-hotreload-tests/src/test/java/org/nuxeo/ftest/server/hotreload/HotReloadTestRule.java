@@ -26,6 +26,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -149,6 +151,13 @@ public class HotReloadTestRule implements TestRule {
      * java client, see {@link RestHelper#CLIENT}. Furthermore, test will fail if server returns an error.
      */
     public void updateDevBundles(String body) {
+        // we don't want any aync work to still be running during hot-reload as for now
+        // it may cause spurious exception in the logs (NXP-23286)
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("timeoutSecond", Integer.valueOf(110));
+        parameters.put("waitForAudit", Boolean.TRUE);
+        RestHelper.operation("Elasticsearch.WaitForIndexing", parameters);
+
         // POST new dev bundles to deploy
         if (!RestHelper.post(NUXEO_RELOAD_PATH, body)) {
             fail("Unable to reload dev bundles, for body=" + body);

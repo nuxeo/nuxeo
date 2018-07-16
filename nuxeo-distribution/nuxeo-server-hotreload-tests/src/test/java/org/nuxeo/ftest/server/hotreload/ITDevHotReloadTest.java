@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.client.NuxeoClient.Builder;
@@ -49,15 +48,6 @@ public class ITDevHotReloadTest {
 
     @Rule
     public final HotReloadTestRule hotReloadRule = new HotReloadTestRule();
-
-    @Before
-    public void setUp() {
-        // we don't want any aync work to still be running during hot-reload as for now
-        // it may cause spurious exception in the logs (NXP-23286)
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("waitForAudit", Boolean.TRUE);
-        RestHelper.operation("Elasticsearch.WaitForIndexing", parameters);
-    }
 
     @Test
     public void testEmptyHotReload() {
