@@ -524,10 +524,12 @@ DropZoneUIHandler.prototype.removeDropPanel = function (dropId, batchId) {
       // check if there is already a drop zone registered for the given id
       // if yes, replace the existing one with the new one
       // otherwise just add it
-      var existing = dropZones.find(function(d) {
-        return d.id === dropId;
+      var index = -1;
+      dropZones.forEach(function(d, i) {
+        if (d.id === dropId) {
+          index = i;
+        }
       });
-      var index = existing ? dropZones.indexOf(existing) : -1;
       if (index !== -1) {
         dropZones[index] = dropZone;
       } else {
