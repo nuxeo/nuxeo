@@ -6,6 +6,7 @@
     <authenticationChain>
       <plugins>
         <plugin>BASIC_AUTH</plugin>
+        <plugin>OAUTH2_AUTH</plugin>
       </plugins>
     </authenticationChain>
 
