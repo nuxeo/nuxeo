@@ -6,8 +6,14 @@
       point="preFilter">
 
       <preFilter name="OAuth" class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter"/>
-      <preFilter name="OAuth2" class="org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Filter"/>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="OAUTH2_AUTH" enabled="true" class="org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Authenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">

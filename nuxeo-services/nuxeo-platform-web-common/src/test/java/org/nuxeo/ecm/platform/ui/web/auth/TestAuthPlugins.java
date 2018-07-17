@@ -59,7 +59,7 @@ public class TestAuthPlugins {
         PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);
         // Rux NXP-1972: webservices plugin also
-        assertEquals(5, authService.getAuthChain().size());
+        assertEquals(6, authService.getAuthChain().size());
         assertEquals("BASIC_AUTH", authService.getAuthChain().get(0));
     }
 
