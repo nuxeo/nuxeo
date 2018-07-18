@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>10.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-oauth1</artifactId>
+  <name>Nuxeo OAuth 1 filters and services</name>
+  <description>
+    Provides infrastructure for OAuth 1 Consumers and Providers management as well as 2 legged/3 legged auth
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.oauth.core</groupId>
+      <artifactId>oauth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.oauth.core</groupId>
+      <artifactId>oauth-provider</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

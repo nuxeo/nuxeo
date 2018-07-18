@@ -81,6 +81,11 @@
       <artifactId>nuxeo-platform-oauth</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-oauth1</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

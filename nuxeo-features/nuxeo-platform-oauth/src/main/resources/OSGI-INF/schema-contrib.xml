@@ -2,9 +2,6 @@
 <component name="org.nuxeo.ecm.platform.oauth.schemaContribs">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="oauthConsumer" src="schemas/oauthconsumer.xsd"/>
-    <schema name="oauthServiceProvider" src="schemas/oauthserviceprovider.xsd"/>
-    <schema name="oauthToken" src="schemas/oauthtoken.xsd"/>
     <schema name="oauth2ServiceProvider" src="schemas/oauth2serviceprovider.xsd"/>
     <schema name="oauth2Token" src="schemas/oauth2token.xsd"/>
     <schema name="oauth2Client" src="schemas/oauth2client.xsd"/>

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.oauth1;singleton:=true
+Bundle-Name: Nuxeo OAuth1
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/oauthserverkey-framework.xml,
+ OSGI-INF/oauthserverkey-contrib.xml,
+ OSGI-INF/oauthconsumer-framework.xml,
+ OSGI-INF/oauthtoken-framework.xml,
+ OSGI-INF/oauthserviceprovider-framework.xml,
+ OSGI-INF/schema-contrib.xml,
+ OSGI-INF/directory-contrib.xml

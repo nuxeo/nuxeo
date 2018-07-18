@@ -7,11 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
- OSGI-INF/oauthserverkey-framework.xml,
- OSGI-INF/oauthserverkey-contrib.xml,
- OSGI-INF/oauthconsumer-framework.xml,
- OSGI-INF/oauthtoken-framework.xml,
- OSGI-INF/oauthserviceprovider-framework.xml,
  OSGI-INF/oauth2serviceprovider-framework.xml,
  OSGI-INF/schema-contrib.xml,
  OSGI-INF/directory-contrib.xml,
