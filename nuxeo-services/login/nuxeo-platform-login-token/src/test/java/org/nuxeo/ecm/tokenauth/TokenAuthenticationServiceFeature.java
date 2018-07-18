@@ -33,6 +33,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/authentication-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.oauth")
+@Deploy("org.nuxeo.ecm.jwt")
 @Deploy("org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml")
