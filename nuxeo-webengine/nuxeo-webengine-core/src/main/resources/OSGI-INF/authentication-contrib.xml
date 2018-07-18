@@ -48,6 +48,7 @@
         <plugin>BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
         <plugin>OAUTH2_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
         <plugin>FORM_AUTH</plugin>
         <plugin>WEBENGINE_FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>

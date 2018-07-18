@@ -33,6 +33,10 @@
       <artifactId>nuxeo-platform-oauth</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login-jwt</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
     </dependency>
