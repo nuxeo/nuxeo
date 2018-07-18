@@ -23,9 +23,10 @@ node('SLAVE') {
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
+
+    
     timeout(time: 3, unit: 'HOURS') {
         timestamps {
-            def shared
             def sha
             stage('clone') {
                 checkout(
@@ -44,24 +45,22 @@ node('SLAVE') {
                 sh """#!/bin/bash -xe
                       ./clone.py $BRANCH -f $PARENT_BRANCH
                 """
-                shared = load("$WORKSPACE/integration/Jenkinsfiles/shared.groovy")
                 sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             }
 
             try {
                 stage('tests') {
-                    shared.withBuildStatus("$DBPROFILE-$DBVERSION/utest", sha) {
-                        shared.withDockerCompose("$JOB_NAME-$BUILD_NUMBER", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
+                    withBuildStatus("$DBPROFILE-$DBVERSION/utest", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
+                       withDockerCompose("$JOB_NAME-$BUILD_NUMBER", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
                             archive '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
                             junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
                         }
                     }
                 }
             } finally {
-                shared.warningsPublisher()
-                shared.claimPublisher()
+                warningsPublisher()
+                claimPublisher()
             }
         }
     }
 }
-

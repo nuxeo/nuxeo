@@ -6694,6 +6694,44 @@
         <nuxeo.marklogic.port.default>8010</nuxeo.marklogic.port.default>
       </properties>
     </profile>
+    <profile>
+      <id>kafka</id>
+       <build>
+         <plugins>
+           <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>read-kafka-properties</id>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>read-project-properties</goal>
+                  </goals>
+                  <configuration>
+                    <files>
+                      <file>/etc/kafka.properties</file>
+                      <file>${user.home}/kafka.properties</file>
+                      <file>kafka.properties</file>
+                    </files>
+                    <quiet>true</quiet>
+                  </configuration>
+                </execution>
+             </executions>
+           </plugin>
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+             <configuration>
+               <systemPropertyVariables>
+                 <kafka>true</kafka>
+                 <kafka.bootstrap.servers>${kafka.bootstrap.servers}</kafka.bootstrap.servers>
+               </systemPropertyVariables>
+             </configuration>
+           </plugin>
+         </plugins>
+       </build>
+    </profile>
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->
     <profile>
       <id>addons</id>

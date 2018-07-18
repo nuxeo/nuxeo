@@ -95,11 +95,14 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public static boolean kafkaDetected() {
-        AdminClient client = AdminClient.create(getDefaultAdminProperties());
+        Properties p = getDefaultAdminProperties();
+        log.debug("KafkaUtils.kafkaDetected() " + p);
+        AdminClient client = AdminClient.create(p);
         try {
             client.findAllBrokers();
             return true;
         } catch (RuntimeException e) {
+            log.error(e);
             return false;
         } finally {
             if (client != null) {
@@ -233,7 +236,7 @@ public class KafkaUtils implements AutoCloseable {
 
     public List<String> listAllConsumers() {
         long now = System.currentTimeMillis();
-        if (allConsumers == null || (now - allConsumersTime) > ALL_CONSUMERS_CACHE_TIMEOUT_MS) {
+        if (allConsumers == null || now - allConsumersTime > ALL_CONSUMERS_CACHE_TIMEOUT_MS) {
             allConsumers = new ArrayList<>();
             // this returns only consumer group that use the subscribe API (known by coordinator)
             scala.collection.immutable.List<GroupOverview> groups = getAdminClient().listAllConsumerGroupsFlattened();
