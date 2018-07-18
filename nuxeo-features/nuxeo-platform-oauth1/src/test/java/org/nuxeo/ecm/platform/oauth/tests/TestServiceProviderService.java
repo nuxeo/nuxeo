@@ -36,20 +36,16 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.providers.NuxeoOAuthServiceProvider;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(OAuthFeature.class)
+@Features(OAuth1Feature.class)
 public class TestServiceProviderService {
 
     @Inject
     OAuthServiceProviderRegistry providerRegistry = Framework.getService(OAuthServiceProviderRegistry.class);
-
-    @Inject
-    OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getService(OAuth2ServiceProviderRegistry.class);
 
     @Test
     public void testServiceLookup2() throws Exception {

@@ -1,27 +1,11 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.oauth.directoryContrib">
+<component name="org.nuxeo.ecm.platform.oauth1.directoryContrib">
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="oauth2ServiceProviders" extends="template-directory">
-      <schema>oauth2ServiceProvider</schema>
-      <idField>id</idField>
-      <autoincrementIdField>true</autoincrementIdField>
-      <substringMatchType>subfinal</substringMatchType>
-      <types>
-        <type>system</type>
-      </types>
-      <permissions>
-        <permission name="Read">
-          <group>___Nobody___</group>
-        </permission>
-      </permissions>
-    </directory>
-
-    <directory name="oauth2Tokens" extends="template-directory">
-      <schema>oauth2Token</schema>
-      <idField>id</idField>
-      <autoincrementIdField>true</autoincrementIdField>
+    <directory name="oauthConsumers" extends="template-directory">
+      <schema>oauthConsumer</schema>
+      <idField>consumerKey</idField>
       <types>
         <type>system</type>
       </types>
@@ -32,11 +16,24 @@
       </permissions>
     </directory>
 
-    <directory name="oauth2Clients" extends="template-directory">
-      <schema>oauth2Client</schema>
+    <directory name="oauthServiceProviders" extends="template-directory">
+      <schema>oauthServiceProvider</schema>
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
-      <dataFile>directories/oauth2clients.csv</dataFile>
+      <substringMatchType>subfinal</substringMatchType>
+      <types>
+        <type>system</type>
+      </types>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="oauthTokens" extends="template-directory">
+      <schema>oauthToken</schema>
+      <idField>token</idField>
       <types>
         <type>system</type>
       </types>
@@ -48,6 +45,5 @@
     </directory>
 
   </extension>
-
 
 </component>

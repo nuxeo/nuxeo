@@ -43,6 +43,7 @@
     <module>nuxeo-platform-ui-select2</module>
     <module>nuxeo-thumbnail</module>
     <module>nuxeo-platform-oauth</module>
+    <module>nuxeo-platform-oauth1</module>
     <module>nuxeo-platform-collections</module>
     <module>rest-api</module>
     <module>nuxeo-search</module>

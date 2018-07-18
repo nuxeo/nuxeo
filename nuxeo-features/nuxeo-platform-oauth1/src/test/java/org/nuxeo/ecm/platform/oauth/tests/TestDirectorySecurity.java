@@ -49,7 +49,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(OAuthFeature.class)
+@Features(OAuth1Feature.class)
 public class TestDirectorySecurity {
 
     private LoginContext loginContext;
@@ -70,23 +70,23 @@ public class TestDirectorySecurity {
 
     @Before
     public void setUp() throws Exception {
-        setUp("oauth2ServiceProviders", "oauth2ServiceProvider", "id", Collections.singletonMap("serviceName", "foo"));
-        setUp("oauth2Tokens", "oauth2Token", "id", Collections.singletonMap("clientId", "123"));
-        setUp("oauth2Clients", "oauth2Client", "id", Collections.singletonMap("clientId", "123"));
+        setUp("oauthConsumers", "oauthConsumer", "consumerKey", Collections.singletonMap("consumerKey", "123"));
+        setUp("oauthServiceProviders", "oauthServiceProvider", "id", Collections.singletonMap("consumerKey", "123"));
+        setUp("oauthTokens", "oauthToken", "token", Collections.singletonMap("token", "123"));
     }
 
     @Test
     public void testDirectoryRead() throws Exception {
-        testDirectoryRead("oauth2ServiceProviders");
-        testDirectoryRead("oauth2Tokens");
-        testDirectoryRead("oauth2Clients");
+        testDirectoryRead("oauthConsumers");
+        testDirectoryRead("oauthServiceProviders");
+        testDirectoryRead("oauthTokens");
     }
 
     @Test
     public void testDirectoryQuery() throws Exception {
-        testDirectoryQuery("oauth2ServiceProviders", "id");
-        testDirectoryQuery("oauth2Tokens", "id");
-        testDirectoryQuery("oauth2Clients", "id");
+        testDirectoryQuery("oauthConsumers", "consumerKey");
+        testDirectoryQuery("oauthServiceProviders", "id");
+        testDirectoryQuery("oauthTokens", "token");
     }
 
     protected void setUp(String directoryName, String schemaName, String idField, Map<String, Object> entryMap)
