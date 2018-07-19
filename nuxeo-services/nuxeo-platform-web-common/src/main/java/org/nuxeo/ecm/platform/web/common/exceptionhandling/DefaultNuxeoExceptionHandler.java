@@ -49,6 +49,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -123,7 +124,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             PrintWriter pwriter = new PrintWriter(swriter);
             t.printStackTrace(pwriter);
             String stackTrace = swriter.getBuffer().toString();
-            if (status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
+            if (DownloadHelper.isClientAbortError(t)) {
+                DownloadHelper.logClientAbort(t);
+            } else if (status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
                 log.debug(t.getMessage(), t);
             } else {
                 log.error(stackTrace);
@@ -162,10 +165,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                             + " handler=" + handler);
                 }
                 parameters.getListener().responseComplete();
-            } else {
-                // do not throw an error, just log it: afterDispatch needs to
-                // be called, and sometimes the initial error is a
-                // ClientAbortException
+            } else if (!DownloadHelper.isClientAbortError(t)){
+                // do not throw an error, just log it: afterDispatch needs to be called
                 log.error("Cannot forward to error page: " + "response is already committed");
             }
             parameters.getListener().afterDispatch(unwrappedException, request, response);
