@@ -37,8 +37,6 @@
     <nuxeo.quota.version>10.3-SNAPSHOT</nuxeo.quota.version>
     <nuxeo.binary.metadata.version>10.3-SNAPSHOT</nuxeo.binary.metadata.version>
     <nuxeo.web.mobile.version>10.3-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>10.3-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>10.3-SNAPSHOT</nuxeo.exalead.connector.version>
     <nuxeo.user.registration.version>10.3-SNAPSHOT</nuxeo.user.registration.version>
     <nuxeo.rating.version>10.3-SNAPSHOT</nuxeo.rating.version>
     <nuxeo.agenda.version>10.3-SNAPSHOT</nuxeo.agenda.version>
@@ -90,8 +88,6 @@
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
     <module>nuxeo-quota</module>
-    <module>nuxeo-platform-indexing-gateway</module>
-    <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
     <module>nuxeo-multi-tenant</module>
@@ -432,20 +428,6 @@
         <groupId>org.nuxeo.binary.metadata</groupId>
         <artifactId>nuxeo-binary-metadata</artifactId>
         <version>${nuxeo.binary.metadata.version}</version>
-      </dependency>
-
-      <!-- External Indexer WS Gateway -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-indexing-gateway</artifactId>
-        <version>${nuxeo.indexing.gateway.version}</version>
-      </dependency>
-
-      <!-- Exalead Connector -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-exalead-connector</artifactId>
-        <version>${nuxeo.exalead.connector.version}</version>
       </dependency>
 
       <!-- Nuxeo Platform Signature -->
