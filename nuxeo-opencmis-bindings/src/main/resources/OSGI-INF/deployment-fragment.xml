@@ -103,10 +103,4 @@
     </filter-mapping>
   </extension>
 
-  <install>
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/WEB-INF/wsdl/**</include>
-    </unzip>
-  </install>
-
 </fragment>

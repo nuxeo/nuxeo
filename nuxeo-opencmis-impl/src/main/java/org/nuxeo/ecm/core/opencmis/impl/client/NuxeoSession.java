@@ -57,11 +57,9 @@ import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
-import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
-import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
@@ -708,34 +706,8 @@ public class NuxeoSession implements Session {
             versionSeriesId = ((Document) objectId).getVersionSeriesId();
         }
 
-        // third attempt (Web Services only): get the version series ID from the
-        // repository
         // (the AtomPub and Browser binding don't need the version series ID ->
         // avoid roundtrip)
-        if (versionSeriesId == null) {
-            BindingType bindingType = getBinding().getBindingType();
-            if (bindingType == BindingType.WEBSERVICES || bindingType == BindingType.CUSTOM) {
-
-                // get the document to find the version series ID
-                ObjectData sourceObjectData = binding.getObjectService().getObject(getRepositoryId(), objectId.getId(),
-                        PropertyIds.OBJECT_ID + "," + PropertyIds.VERSION_SERIES_ID, false, IncludeRelationships.NONE,
-                        "cmis:none", false, false, null);
-
-                if (sourceObjectData.getProperties() != null
-                        && sourceObjectData.getProperties().getProperties() != null) {
-                    PropertyData<?> verionsSeriesIdProp = sourceObjectData.getProperties().getProperties().get(
-                            PropertyIds.VERSION_SERIES_ID);
-                    if (verionsSeriesIdProp != null && verionsSeriesIdProp.getFirstValue() instanceof String) {
-                        versionSeriesId = (String) verionsSeriesIdProp.getFirstValue();
-                    }
-                }
-
-                // the Web Services binding needs the version series ID -> fail
-                if (versionSeriesId == null) {
-                    throw new IllegalArgumentException("Object is not a document or not versionable!");
-                }
-            }
-        }
 
         // get the object
         ObjectData objectData = binding.getVersioningService().getObjectOfLatestVersion(getRepositoryId(),

@@ -7,9 +7,7 @@ Export-Package: org.nuxeo.ecm.core.opencmis.bindings
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
 Nuxeo-Component: OSGI-INF/atom-contrib.xml,
- OSGI-INF/soap-contrib.xml,
  OSGI-INF/json-contrib.xml,
- OSGI-INF/ws-contrib.xml,
  OSGI-INF/servicefactorymanager-service.xml,
  OSGI-INF/servicefactorymanager-contrib.xml
 Bundle-Version: 5.4.2.qualifier
@@ -20,7 +18,6 @@ Import-Package: com.sun.xml.ws.api.handler;resolution:=optional,
  org.apache.chemistry.opencmis.commons.server,
  org.apache.chemistry.opencmis.server.impl,
  org.apache.chemistry.opencmis.server.impl.atompub,
- org.apache.chemistry.opencmis.server.impl.webservices,
  org.apache.chemistry.opencmis.server.shared,
  org.apache.chemistry.opencmis.server.support,
  org.apache.commons.logging,

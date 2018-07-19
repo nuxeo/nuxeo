@@ -2069,18 +2069,13 @@ public class NuxeoCmisService extends AbstractCmisService
     @Override
     public List<ObjectData> getAllVersions(String repositoryId, String objectId, String versionSeriesId, String filter,
             Boolean includeAllowableActions, ExtensionsData extension) {
-        DocumentModel doc;
-        if (objectId != null) {
-            // atompub passes object id
-            doc = getDocumentModel(objectId);
-        } else if (versionSeriesId != null) {
-            // soap passes version series id
-            // version series id is (for now) id of live document
-            // TODO deal with removal of live doc
-            doc = getDocumentModel(versionSeriesId);
-        } else {
-            throw new CmisInvalidArgumentException("Missing object ID or version series ID");
+        if (objectId == null) {
+            // soap passes version series id but we don't support it anymore
+            throw new CmisInvalidArgumentException("Missing object ID");
         }
+        // atompub/browser pass object id
+        DocumentModel doc = getDocumentModel(objectId);
+
         List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
         List<ObjectData> list = new ArrayList<>(versions.size());
         for (DocumentRef verRef : versions) {

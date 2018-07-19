@@ -88,10 +88,4 @@ public abstract class CmisFeatureSession extends CmisFeatureConfiguration {
         isBrowser = true;
     }
 
-    public void setWebServices() {
-        isHttp = true;
-        isAtomPub = false;
-        isBrowser = false;
-    }
-
 }

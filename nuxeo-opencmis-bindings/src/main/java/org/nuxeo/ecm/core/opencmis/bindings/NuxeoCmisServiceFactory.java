@@ -40,8 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * Factory for a wrapped {@link NuxeoCmisService}.
  * <p>
  * Called for each method dispatch by {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet} or
- * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisBrowserBindingServlet} or
- * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService}.
+ * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisBrowserBindingServlet}.
  */
 public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
 

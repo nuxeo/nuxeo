@@ -31,8 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Servlet context listener that sets up the CMIS service factory in the servlet context as expected by
  * {@link org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet} or
- * {@link org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet} or
- * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService} .
+ * {@link org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet}.
  *
  * @see CmisRepositoryContextListener
  */

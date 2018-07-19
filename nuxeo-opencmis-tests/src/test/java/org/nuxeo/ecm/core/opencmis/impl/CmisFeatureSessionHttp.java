@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 /**
  * Feature that starts an embedded server configured for CMIS.
  * <p>
- * This is abstract, so subclasses can specify if AtomPub, Browser Bindings or Web Services are used
+ * This is abstract, so subclasses can specify if AtomPub or Browser Bindings are used
  */
 @Features(ServletContainerFeature.class)
 @ServletContainer(port = CmisFeatureSessionHttp.PORT)

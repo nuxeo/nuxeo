@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.directory.sql")
 @Deploy("org.nuxeo.ecm.core.query")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.platform.ws")
 @Deploy("org.nuxeo.ecm.core.io")
 // deployed for fulltext indexing
 @Deploy("org.nuxeo.ecm.platform.convert")
