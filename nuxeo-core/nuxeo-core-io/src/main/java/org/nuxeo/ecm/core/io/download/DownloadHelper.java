@@ -151,8 +151,8 @@ public class DownloadHelper {
         return false;
     }
 
-    public static void logClientAbort(Exception e) {
-        log.debug("Client disconnected: " + unwrapException(e).getMessage());
+    public static void logClientAbort(Throwable t) {
+        log.debug("Client disconnected: " + unwrapException(t).getMessage());
     }
 
     private static Throwable unwrapException(Throwable t) {
