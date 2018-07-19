@@ -89,7 +89,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy("org.nuxeo.ecm.platform.tag")
-@Deploy("org.nuxeo.ecm.platform.ws")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 public class TestAutomaticIndexing {

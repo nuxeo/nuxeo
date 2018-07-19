@@ -15,7 +15,6 @@
     <module>nuxeo-platform-audit-core</module>
     <module>nuxeo-platform-audit-client</module>
     <module>nuxeo-platform-audit-io</module>
-    <module>nuxeo-platform-audit-ws</module>
     <module>nuxeo-platform-audit-mongodb</module>
   </modules>
 
