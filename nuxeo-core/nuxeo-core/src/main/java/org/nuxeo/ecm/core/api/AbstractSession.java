@@ -148,6 +148,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
+    /**
+     * Prefix added to the system property name in the event context for the
+     * {@link DocumentEventTypes#BINARYTEXT_UPDATED} event. The value is the actual fulltext.
+     * @since 10.2
+     * */
+    public static final String BINARY_TEXT_PREFIX = "TEXT_";
+	
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -2440,6 +2447,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<>();
             options.put(systemProperty, value != null);
+            options.put(BINARY_TEXT_PREFIX + systemProperty, value);
             notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
         doc.setSystemProp(systemProperty, value);
