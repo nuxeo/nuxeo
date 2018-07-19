@@ -85,7 +85,8 @@ public class TrashedStateLifeCycleToPropertyMigrator implements Migrator {
 
     protected void migrateSession(CoreSession session) {
         // query all 'deleted' documents
-        String deletedQuery = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
+        String deletedQuery = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted' "
+                + "AND ecm:isVersion = 0";
         List<Map<String, Serializable>> deletedMaps = session.queryProjection(deletedQuery, -1, 0);
 
         checkShutdownRequested();
