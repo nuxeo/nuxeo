@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -64,14 +63,11 @@ import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
-import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -85,7 +81,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.platform.ws")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.tag:login-config.xml")
 @Deploy("org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml")
@@ -168,37 +163,6 @@ public abstract class AbstractTestTagService {
         assertEquals(mytag, suggestions);
         suggestions = tagService.getSuggestions(session, "%tag");
         assertEquals(twotags, suggestions);
-
-        maybeSleep();
-
-        // ws loader
-
-        NuxeoRemotingBean remoting = new NuxeoRemotingBean();
-        String sid = remoting.connect("Administrator", "Administrator");
-        DocumentSnapshot snapshot = remoting.getDocumentSnapshot(sid, file1Id);
-        DocumentProperty[] props = snapshot.getNoBlobProperties();
-        Comparator<DocumentProperty> propsComparator = Comparator.comparing(DocumentProperty::getName);
-        Arrays.sort(props, propsComparator);
-        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null), propsComparator);
-        assertTrue(ti > 0);
-        String expected = "tags:othertag,mytag";
-        String prop = props[ti].toString();
-        if (!expected.equals(prop)) {
-            // order depends on database
-            expected = "tags:mytag,othertag";
-        }
-        assertEquals(expected, prop);
-        // remove explicit tagging
-        tagService.untag(session, file2Id, "mytag");
-        tags = tagService.getTags(session, file2Id);
-        assertTrue(tags.isEmpty());
-        // remove all taggings on doc
-        tagService.untag(session, file1Id, null);
-        tags = tagService.getTags(session, file1Id);
-        assertTrue(tags.isEmpty());
-
-        // close remote session
-        remoting.disconnect(sid);
     }
 
     @Test

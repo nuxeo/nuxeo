@@ -159,10 +159,6 @@
       <artifactId>nuxeo-platform-audit-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-ws</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.localconf</groupId>
       <artifactId>nuxeo-localconf-simple</artifactId>
     </dependency>
@@ -354,10 +350,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-scripting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ws</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.binary.metadata</groupId>

@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.audit.ws">
-  <extension target="org.nuxeo.ecm.platform.ws.WSEndpointManager" point="endpoint">
-    <endpoint name="nuxeoaudit" address="/nuxeoaudit" implementor="org.nuxeo.ecm.platform.audit.ws.WSAuditBean" />
-  </extension>
-</component>

@@ -1,8 +1,0 @@
-<component name="test:tags-contrib">
-
- <extension target="org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl"
-      point="loaders">
-    <loader name="tags" class="org.nuxeo.ecm.platform.tag.ws.TagsLoader"/>
- </extension>
-
-</component>

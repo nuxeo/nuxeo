@@ -41,9 +41,6 @@
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-uidgen-core</module>
-    <module>nuxeo-platform-ws</module>
-    <module>nuxeo-platform-ws-sun-jaxws</module>
-    <module>nuxeo-platform-ws-jbossws</module>
     <module>nuxeo-platform-htmlsanitizer</module>
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-query-api</module>

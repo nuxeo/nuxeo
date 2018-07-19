@@ -136,8 +136,6 @@
     <servlet-api.version>3.1.0</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
     <jaxb.version>2.2.11</jaxb.version>
-    <jaxws-api.version>2.2.9</jaxws-api.version>
-    <jaxws.version>2.2.8</jaxws.version>
     <tomcat.version>8.5.23</tomcat.version>
     <lucene.version>7.3.1</lucene.version>
     <elasticsearch.version>6.3.0</elasticsearch.version>
@@ -167,8 +165,6 @@
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>1.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <cxf.version>3.1.3</cxf.version>
-    <cxf.nx.version>3.1.3-NX2</cxf.nx.version>
     <pdfbox.version>1.8.9</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.11.325</aws.version>
@@ -994,21 +990,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ws</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ws-jbossws</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ws-sun-jaxws</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-invite</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -1328,11 +1309,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-io</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-ws</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -2846,23 +2822,6 @@
         <groupId>com.sun.xml</groupId>
         <artifactId>relaxngDatatype</artifactId>
         <version>1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.ws</groupId>
-        <artifactId>jaxws-api</artifactId>
-        <version>${jaxws-api.version}</version>
-        <exclusions>
-          <!-- classes conflict with javax.annotation:jsr250-api -->
-          <exclusion>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.annotation</artifactId>
-          </exclusion>
-          <!-- classes conflict with javax.jws:jsr181 -->
-          <exclusion>
-            <groupId>javax.jws</groupId>
-            <artifactId>jsr181-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <!-- also a jboss-seam-pdf dependency -->
@@ -4417,6 +4376,19 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
           </exclusion>
+          <!-- jaxws not needed -->
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-policy</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -4424,9 +4396,18 @@
         <artifactId>chemistry-opencmis-server-bindings</artifactId>
         <version>${chemistry.opencmis.version}</version>
         <exclusions>
+          <!-- jaxws not needed -->
           <exclusion>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4434,6 +4415,17 @@
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-bindings</artifactId>
         <version>${chemistry.opencmis.version}</version>
+        <exclusions>
+          <!-- jaxws not needed -->
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -4752,64 +4744,6 @@
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
         <version>2.9.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>${cxf.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-javamail_1.4_spec</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- we use org.ow2.asm:asm instead, which CXF seems to accept -->
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-transports-http</artifactId>
-        <version>${cxf.nx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-ws-policy</artifactId>
-        <version>${cxf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.ws</groupId>
-        <artifactId>jaxws-rt</artifactId>
-        <version>${jaxws.version}</version>
-        <exclusions>
-          <!-- bad classes pulled by dependency com.sun.xml.ws:policy -->
-          <exclusion>
-            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
-            <groupId>com.sun.xml.txw2</groupId>
-            <artifactId>txw2</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
-            <groupId>com.sun.istack</groupId>
-            <artifactId>istack-commons-runtime</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- classes conflict with org.codehaus.woodstox:stax2-api -->
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-asl</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
