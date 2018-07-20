@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.trash;
 
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE_TO_PROPERTY;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -38,20 +40,29 @@ import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Migrator of trashed state from lifecycle to property.
+ * Migrator of trashed state.
  *
  * @since 10.2
  */
-public class TrashedStateLifeCycleToPropertyMigrator implements Migrator {
+public class TrashedStateMigrator implements Migrator {
 
-    private static final Log log = LogFactory.getLog(TrashedStateLifeCycleToPropertyMigrator.class);
+    private static final Log log = LogFactory.getLog(TrashedStateMigrator.class);
 
     protected static final int BATCH_SIZE = 50;
 
     protected MigrationContext migrationContext;
 
     @Override
-    public void run(MigrationContext migrationContext) {
+    public void notifyStatusChange() {
+        TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime().getComponent(TrashServiceImpl.NAME);
+        trashService.invalidateTrashServiceImplementation();
+    }
+
+    @Override
+    public void run(String step, MigrationContext migrationContext) {
+        if (!MIGRATION_STEP_LIFECYCLE_TO_PROPERTY.equals(step)) {
+            throw new NuxeoException("Unknown migration step: " + step);
+        }
         this.migrationContext = migrationContext;
         reportProgress("Initializing", 0, -1); // unknown
         List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();

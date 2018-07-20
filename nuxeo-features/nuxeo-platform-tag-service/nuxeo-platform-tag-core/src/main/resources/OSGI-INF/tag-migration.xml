@@ -5,8 +5,7 @@
 
     <migration id="tag-storage">
       <description label="migration.tag-storage">Migration of the tags storage model</description>
-      <statusChangeNotifier>org.nuxeo.ecm.platform.tag.TagServiceImpl$TagServiceStatusChangeNotifier
-      </statusChangeNotifier>
+      <class>org.nuxeo.ecm.platform.tag.TagsMigrator</class>
       <defaultState>facets</defaultState>
       <state id="relations">
         <description label="migration.tag-storage.relations">Tags stored as relations</description>
@@ -17,7 +16,6 @@
 
       <step id="relations-to-facets" fromState="relations" toState="facets">
         <description label="migration.tag-storage.relations-to-facets">Migrate tags from relations to facets</description>
-        <class>org.nuxeo.ecm.platform.tag.TagsRelationsToFacetsMigrator</class>
       </step>
     </migration>
 

@@ -61,7 +61,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.tag")
-public class TestTagsRelationsToFacetsMigrator {
+public class TestTagsMigrator {
 
     protected static final int NDOCS = 100;
 
@@ -84,7 +84,7 @@ public class TestTagsRelationsToFacetsMigrator {
 
     @Test
     public void testMigrationImpl() throws Exception {
-        Migrator migrator = new TagsRelationsToFacetsMigrator();
+        Migrator migrator = new TagsMigrator();
         List<String> progressLines = new ArrayList<>();
         MigrationContext migrationContext = new MigrationContext() {
             @Override
@@ -103,7 +103,7 @@ public class TestTagsRelationsToFacetsMigrator {
             }
         };
 
-        testMigration(() -> migrator.run(migrationContext));
+        testMigration(() -> migrator.run(MIGRATION_STEP_RELATIONS_TO_FACETS, migrationContext));
 
         List<String> expectedLines = Arrays.asList( //
                 "Initializing: 0/-1", //

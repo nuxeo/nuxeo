@@ -76,9 +76,6 @@ public class MigrationDescriptor {
         @XNode("description")
         public String description;
 
-        @XNode("class")
-        public Class<?> klass;
-
         public String getId() {
             return id;
         }
@@ -98,10 +95,6 @@ public class MigrationDescriptor {
         public String getDescription() {
             return description;
         }
-
-        public Class<?> getKlass() {
-            return klass;
-        }
     }
 
     @XNode("@id")
@@ -113,8 +106,8 @@ public class MigrationDescriptor {
     @XNode("description")
     public String description;
 
-    @XNode("statusChangeNotifier")
-    public Class<?> statusChangeNotifierClass;
+    @XNode("class")
+    public Class<?> klass;
 
     @XNode("defaultState")
     public String defaultState;
@@ -137,8 +130,8 @@ public class MigrationDescriptor {
         return description;
     }
 
-    public Class<?> getStatusChangeNotifierClass() {
-        return statusChangeNotifierClass;
+    public Class<?> getKlass() {
+        return klass;
     }
 
     public String getDefaultState() {
@@ -161,7 +154,7 @@ public class MigrationDescriptor {
     public MigrationDescriptor(MigrationDescriptor other) {
         id = other.id;
         descriptionLabel = other.descriptionLabel;
-        statusChangeNotifierClass = other.statusChangeNotifierClass;
+        klass = other.klass;
         description = other.description;
         defaultState = other.defaultState;
         states = new LinkedHashMap<>(other.states);
@@ -176,8 +169,8 @@ public class MigrationDescriptor {
         if (other.description != null) {
             description = other.description;
         }
-        if (other.statusChangeNotifierClass != null) {
-            statusChangeNotifierClass = other.statusChangeNotifierClass;
+        if (other.klass != null) {
+            klass = other.klass;
         }
         if (other.defaultState != null) {
             defaultState = other.defaultState;

@@ -47,7 +47,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.LifeCycleTrashService;
 import org.nuxeo.ecm.core.trash.PropertyTrashService;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.core.trash.TrashedStateLifeCycleToPropertyMigrator;
+import org.nuxeo.ecm.core.trash.TrashedStateMigrator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -61,7 +61,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestTrashedStateLifeCycleToPropertyMigrator {
+public class TestTrashedStateMigrator {
 
     protected static final int NDOCS = 100;
 
@@ -85,7 +85,7 @@ public class TestTrashedStateLifeCycleToPropertyMigrator {
 
     @Test
     public void testMigrationImpl() {
-        Migrator migrator = new TrashedStateLifeCycleToPropertyMigrator();
+        Migrator migrator = new TrashedStateMigrator();
         List<String> progressLines = new ArrayList<>();
         MigrationContext migrationContext = new MigrationContext() {
             @Override
@@ -104,7 +104,7 @@ public class TestTrashedStateLifeCycleToPropertyMigrator {
             }
         };
 
-        testMigration(() -> migrator.run(migrationContext));
+        testMigration(() -> migrator.run(MIGRATION_STEP_LIFECYCLE_TO_PROPERTY, migrationContext));
 
         List<String> expectedLines = Arrays.asList( //
                 "Initializing: 0/-1", //
