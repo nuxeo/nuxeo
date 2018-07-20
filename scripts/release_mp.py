@@ -157,7 +157,7 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
             if prepared and not upgrade_only:
-                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun)
+                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(owner, None))
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -279,25 +279,27 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
             if performed and not upgrade_only:
-                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun)
+                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(owner, None))
         os.chdir(cwd)
 
-    def upload(self, url, marketplace, dryrun=False):
+    def upload(self, url, marketplace, dryrun=False, owner=None):
         """ Upload the given Marketplace package and update the config file."""
         uploaded = [url + ":"]
         mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
         for pkg in glob.glob(mp_to_upload):
             if os.path.isfile(pkg):
-                retcode = self.upload_file(url, pkg, dryrun=dryrun)
+                retcode = self.upload_file(url, pkg, dryrun=dryrun, owner=owner)
                 if retcode == 0:
                     uploaded.append(os.path.realpath(pkg))
         if len(uploaded) > 1:
             self.mp_config.set(marketplace, "uploaded", " ".join(uploaded))
             self.repo.save_mp_config(self.mp_config)
 
-    def upload_file(self, url, mp_file, dryrun=False):
+    def upload_file(self, url, mp_file, dryrun=False, owner=None):
         """ Upload the given mp_file on the given Connect URL."""
         cmd = "curl -i -n -F package=@%s %s%s" % (mp_file, url, "/site/marketplace/upload?batch=true")
+        if owner is not None:
+            cmd += "&owner=%s" % (owner,)
         return system(cmd, failonerror=False, run=(not dryrun))
 
     def test(self):
