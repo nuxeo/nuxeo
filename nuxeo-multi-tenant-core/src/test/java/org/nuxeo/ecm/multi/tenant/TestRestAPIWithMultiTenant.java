@@ -45,7 +45,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deploy("org.nuxeo.ecm.multi.tenant")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.core.cache")
-@Deploy("org.nuxeo.ecm.platform.ws")
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml")
