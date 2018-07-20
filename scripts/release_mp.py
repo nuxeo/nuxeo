@@ -157,7 +157,7 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
             if prepared and not upgrade_only:
-                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(owner, None))
+                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(marketplace, "owner"))
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -279,7 +279,7 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
             if performed and not upgrade_only:
-                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(owner, None))
+                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(marketplace, "owner"))
         os.chdir(cwd)
 
     def upload(self, url, marketplace, dryrun=False, owner=None):
@@ -298,7 +298,7 @@ class ReleaseMP(object):
     def upload_file(self, url, mp_file, dryrun=False, owner=None):
         """ Upload the given mp_file on the given Connect URL."""
         cmd = "curl -i -n -F package=@%s %s%s" % (mp_file, url, "/site/marketplace/upload?batch=true")
-        if owner is not None:
+        if owner:
             cmd += "&owner=%s" % (owner,)
         return system(cmd, failonerror=False, run=(not dryrun))
 
