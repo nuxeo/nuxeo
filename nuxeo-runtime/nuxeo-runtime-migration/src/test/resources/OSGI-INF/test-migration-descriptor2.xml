@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <migration id="my_migration">
   <description label="newLabel">New Descr</description>
+  <class>java.lang.Boolean</class>
   <defaultState>v4</defaultState>
   <state id="v4">
     <description label="my_migration.state.v4">New State</description>
   </state>
   <step id="third" fromState="v3" toState="v4">
     <description label="my_migration.step.third">Third step of the migration, from v3 to v4</description>
-    <class>java.lang.Boolean</class>
   </step>
 </migration>

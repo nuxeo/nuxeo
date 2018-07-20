@@ -26,34 +26,29 @@ package org.nuxeo.runtime.migration;
 public interface MigrationService {
 
     /**
-     * Interface for the implementation of status change notification.
-     *
-     * @since 9.3
-     */
-    interface StatusChangeNotifier {
-
-        /**
-         * Allows notification of running step or new state.
-         */
-        void notifyStatusChange();
-    }
-
-    /**
-     * Interface for the implementation of a migration step.
+     * Interface for the implementation of a migrator.
      *
      * @since 9.3
      */
     interface Migrator {
 
         /**
-         * Runs the migration.
+         * Runs a migration step.
          * <p>
          * This method should periodically check for {@link MigrationContext#isShutdownRequested} and
          * {@link Thread#isInterrupted} and return if {@code true}.
          *
+         * @param step the migration step to run
          * @param migrationContext the migration context.
          */
-        void run(MigrationContext migrationContext);
+        void run(String step, MigrationContext migrationContext);
+
+        /**
+         * Allows notification of status change for a running step or new state.
+         *
+         * @since 10.3
+         */
+        void notifyStatusChange();
     }
 
     /**

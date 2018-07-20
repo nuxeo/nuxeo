@@ -176,12 +176,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         @Override
         public void receivedMessage(MigrationInvalidation message) {
             String id = message.id;
-            StatusChangeNotifier notifier = getStatusChangeNotifier(id);
-            if (notifier == null) {
+            Migrator migrator = getMigrator(id);
+            if (migrator == null) {
                 log.error("Unknown migration id received in invalidation: " + id);
                 return;
             }
-            notifier.notifyStatusChange();
+            migrator.notifyStatusChange();
         }
     }
 
@@ -423,26 +423,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public void runStep(String id, String step) {
+        Migrator migrator = getMigrator(id);
         MigrationDescriptor descr = registry.getMigrationDescriptor(id);
-        if (descr == null) {
-            throw new IllegalArgumentException("Unknown migration: " + id);
-        }
         MigrationStepDescriptor stepDescr = descr.getSteps().get(step);
         if (stepDescr == null) {
             throw new IllegalArgumentException("Unknown step: " + step + " for migration: " + id);
         }
-        Class<?> klass = stepDescr.getKlass();
-        if (!Migrator.class.isAssignableFrom(klass)) {
-            throw new RuntimeException("Invalid class not implementing Migrator: " + klass.getName() + " for step: "
-                    + step + " for migration: " + id);
-        }
-        Migrator migrator;
-        try {
-            migrator = (Migrator) klass.getConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-        StatusChangeNotifier notifier = getStatusChangeNotifier(descr);
 
         ProgressReporter progressReporter = new ProgressReporter(id);
 
@@ -473,11 +459,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         });
 
         // allow notification of running step
-        notifier.notifyStatusChange();
+        migrator.notifyStatusChange();
 
         Consumer<MigrationContext> migration = migrationContext -> {
             Thread.currentThread().setName("Nuxeo-Migrator-" + id);
-            migrator.run(migrationContext);
+            migrator.run(step, migrationContext);
         };
 
         BiConsumer<MigrationContext, Throwable> afterMigration = (migrationContext, t) -> {
@@ -494,33 +480,27 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 progressReporter.reportProgress(null, -2, -2, false);
             });
             // allow notification of new state
-            notifier.notifyStatusChange();
+            migrator.notifyStatusChange();
         };
 
         executor.execute(new MigratorWithContext(migration, progressReporter, afterMigration));
     }
 
-    protected StatusChangeNotifier getStatusChangeNotifier(String id) {
+    protected Migrator getMigrator(String id) {
         MigrationDescriptor descr = registry.getMigrationDescriptor(id);
-        return descr == null ? null : getStatusChangeNotifier(descr);
-    }
-
-    protected StatusChangeNotifier getStatusChangeNotifier(MigrationDescriptor descr) {
-        Class<?> klass = descr.getStatusChangeNotifierClass();
-        if (klass == null) {
-            throw new RuntimeException("Missing statusChangeNotifier for migration: " + descr.getId());
+        if (descr == null) {
+            throw new IllegalArgumentException("Unknown migration: " + id);
         }
-        if (!StatusChangeNotifier.class.isAssignableFrom(klass)) {
-            throw new RuntimeException("Invalid class not implementing StatusChangeNotifier: " + klass.getName()
-                    + " for migration: " + descr.getId());
+        Class<?> klass = descr.getKlass();
+        if (!Migrator.class.isAssignableFrom(klass)) {
+            throw new RuntimeException(
+                    "Invalid class not implementing Migrator: " + klass.getName() + " for migration: " + id);
         }
-        StatusChangeNotifier notifier;
         try {
-            notifier = (StatusChangeNotifier) klass.getConstructor().newInstance();
+            return (Migrator) klass.getConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        return notifier;
     }
 
     /**

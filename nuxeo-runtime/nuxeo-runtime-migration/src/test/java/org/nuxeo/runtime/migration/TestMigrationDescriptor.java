@@ -51,7 +51,7 @@ public class TestMigrationDescriptor {
         assertEquals("my_migration", desc.id);
         assertEquals("my_migration", desc.descriptionLabel);
         assertEquals("My Migration", desc.description);
-        assertEquals(java.lang.Float.class, desc.statusChangeNotifierClass);
+        assertEquals(java.lang.String.class, desc.klass);
         assertEquals("v2", desc.defaultState);
 
         assertEquals(Arrays.asList("v1", "v2", "v3"), new ArrayList<>(desc.states.keySet()));
@@ -77,14 +77,12 @@ public class TestMigrationDescriptor {
         assertEquals("v2", step.toState);
         assertEquals("my_migration.step.first", step.descriptionLabel);
         assertEquals("First step of the migration, from v1 to v2", step.description);
-        assertEquals(java.lang.String.class, step.klass);
         step = desc.steps.get("second");
         assertEquals("second", step.id);
         assertEquals("v2", step.fromState);
         assertEquals("v3", step.toState);
         assertEquals("my_migration.step.second", step.descriptionLabel);
         assertEquals("Second step of the migration, from v2 to v3", step.description);
-        assertEquals(java.lang.Integer.class, step.klass);
     }
 
     @Test
@@ -100,7 +98,7 @@ public class TestMigrationDescriptor {
         assertEquals("my_migration", desc.id);
         assertEquals("newLabel", desc.descriptionLabel);
         assertEquals("New Descr", desc.description);
-        assertEquals(java.lang.Float.class, desc.statusChangeNotifierClass);
+        assertEquals(java.lang.Boolean.class, desc.klass);
         assertEquals("v4", desc.defaultState);
 
         assertEquals(Arrays.asList("v1", "v2", "v3", "v4"), new ArrayList<>(desc.states.keySet()));
@@ -118,6 +116,5 @@ public class TestMigrationDescriptor {
         assertEquals("v4", step.toState);
         assertEquals("my_migration.step.third", step.descriptionLabel);
         assertEquals("Third step of the migration, from v3 to v4", step.description);
-        assertEquals(java.lang.Boolean.class, step.klass);
     }
 }

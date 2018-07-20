@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.trash;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
-import org.nuxeo.runtime.migration.MigrationService.StatusChangeNotifier;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -83,21 +82,6 @@ public class TrashServiceImpl extends DefaultComponent {
             }
         }
         return (T) trashService;
-    }
-
-    /**
-     * Callback class to notify of migration status changes.
-     *
-     * @since 10.2
-     */
-    public static class TrashServiceStatusChangeNotifier implements StatusChangeNotifier {
-
-        @Override
-        public void notifyStatusChange() {
-            TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime()
-                                                                        .getComponent(TrashServiceImpl.NAME);
-            trashService.invalidateTrashServiceImplementation();
-        }
     }
 
     /**

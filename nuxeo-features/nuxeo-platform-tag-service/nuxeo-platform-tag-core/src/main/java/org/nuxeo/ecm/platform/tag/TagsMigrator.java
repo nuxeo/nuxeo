@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.LABEL_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.USERNAME_PROPERTY;
+import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAGGING_SOURCE_FIELD;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -52,13 +54,13 @@ import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Migrator of tags from relations to facets
+ * Migrator of tags.
  *
  * @since 9.3
  */
-public class TagsRelationsToFacetsMigrator implements Migrator {
+public class TagsMigrator implements Migrator {
 
-    private static final Log log = LogFactory.getLog(TagsRelationsToFacetsMigrator.class);
+    private static final Log log = LogFactory.getLog(TagsMigrator.class);
 
     /**
      * A label + username.
@@ -135,7 +137,16 @@ public class TagsRelationsToFacetsMigrator implements Migrator {
     }
 
     @Override
-    public void run(MigrationContext migrationContext) {
+    public void notifyStatusChange() {
+        TagServiceImpl tagService = (TagServiceImpl) Framework.getRuntime().getComponent(TagServiceImpl.NAME);
+        tagService.invalidateTagServiceImplementation();
+    }
+
+    @Override
+    public void run(String step, MigrationContext migrationContext) {
+        if (!MIGRATION_STEP_RELATIONS_TO_FACETS.equals(step)) {
+            throw new NuxeoException("Unknown migration step: " + step);
+        }
         this.migrationContext = migrationContext;
         reportProgress("Initializing", 0, -1); // unknown
         List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
