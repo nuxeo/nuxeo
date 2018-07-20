@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.annot</groupId>
     <artifactId>nuxeo-annot-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>10.2</version>
   </parent>
   <artifactId>nuxeo-annot-core</artifactId>
   <name>Nuxeo Platform Annotation Core</name>
