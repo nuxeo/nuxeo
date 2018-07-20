@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -263,16 +262,15 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         String workId = work.getId();
         boolean scheduleWork = false;
         if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
-            Work existingWork = workManager.find(workId, null);
-            if (existingWork == null) {
+            Work.State workState = workManager.getWorkState(workId);
+            if (workState == null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Found no existing work with id %s.", workId));
                 }
                 scheduleWork = true;
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Found an existing work with id %s in sate %s.", workId,
-                            existingWork.getWorkInstanceState()));
+                    log.debug(String.format("Found an existing work with id %s in sate %s.", workId, workState));
                 }
             }
         } else {
