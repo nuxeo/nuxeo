@@ -250,7 +250,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
         public CounterComputation(String counterComputationName, int counterThresholdMs) {
             super(counterComputationName, 1, 1);
             this.counterThresholdMs = counterThresholdMs;
-            this.counters = new HashMap<>();
+            counters = new HashMap<>();
         }
 
         @Override
@@ -262,24 +262,28 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
         @Override
         public void processTimer(ComputationContext context, String key, long timestamp) {
-            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-            BulkUpdate updates = new BulkUpdate();
-            counters.forEach((bulkId, processedDocs) -> {
-                Long previousProcessedDocs = kvStore.getLong(bulkId + PROCESSED_DOCUMENTS);
-                if (previousProcessedDocs == null) {
-                    previousProcessedDocs = 0L;
-                }
-                Long currentProcessedDocs = previousProcessedDocs + processedDocs;
-                if (currentProcessedDocs.longValue() == kvStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT).longValue()) {
-                    updates.put(bulkId + STATE, COMPLETED.toString());
-                }
-                updates.put(bulkId + PROCESSED_DOCUMENTS, String.valueOf(currentProcessedDocs));
-            });
-            Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                    BulkUpdate.class);
-            context.produceRecord(KVWRITER_STREAM_NAME, key, updateCodec.encode(updates));
-            counters.clear();
-            context.askForCheckpoint();
+            if (!counters.isEmpty()) {
+                KeyValueStore kvStore = Framework.getService(KeyValueService.class)
+                                                 .getKeyValueStore(BULK_KV_STORE_NAME);
+                BulkUpdate updates = new BulkUpdate();
+                counters.forEach((bulkId, processedDocs) -> {
+                    Long previousProcessedDocs = kvStore.getLong(bulkId + PROCESSED_DOCUMENTS);
+                    if (previousProcessedDocs == null) {
+                        previousProcessedDocs = 0L;
+                    }
+                    Long currentProcessedDocs = previousProcessedDocs + processedDocs;
+                    if (currentProcessedDocs.longValue() == kvStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT)
+                                                                   .longValue()) {
+                        updates.put(bulkId + STATE, COMPLETED.toString());
+                    }
+                    updates.put(bulkId + PROCESSED_DOCUMENTS, String.valueOf(currentProcessedDocs));
+                });
+                Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
+                        BulkUpdate.class);
+                context.produceRecord(KVWRITER_STREAM_NAME, key, updateCodec.encode(updates));
+                counters.clear();
+                context.askForCheckpoint();
+            }
             context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
         }
 
