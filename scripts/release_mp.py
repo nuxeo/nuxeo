@@ -157,7 +157,10 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
             if prepared and not upgrade_only:
-                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(marketplace, "owner"))
+                owner = None
+                if self.mp_config.has_option(marketplace, "owner"):
+                    owner = self.mp_config.get(marketplace, "owner")
+                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -279,7 +282,10 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
             if performed and not upgrade_only:
-                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=self.mp_config.get(marketplace, "owner"))
+                owner = None
+                if self.mp_config.has_option(marketplace, "owner"):
+                    owner = self.mp_config.get(marketplace, "owner")
+                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
     def upload(self, url, marketplace, dryrun=False, owner=None):
