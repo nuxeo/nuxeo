@@ -33,6 +33,20 @@ public interface MigrationService {
     interface Migrator {
 
         /**
+         * Probes the current state of a migration by analyzing persistent data.
+         * <p>
+         * Assumes no migration step is currently running.
+         * <p>
+         * THIS METHOD MAY TAKE A WHILE as it needs to get information from persistent storage.
+         *
+         * @return the probed state, or {@code null} if it cannot be determined
+         * @since 10.3
+         */
+        default String probeState() {
+            return null;
+        }
+
+        /**
          * Runs a migration step.
          * <p>
          * This method should periodically check for {@link MigrationContext#isShutdownRequested} and
@@ -198,6 +212,17 @@ public interface MigrationService {
      * @return the status, or {@code null} if the migration is unknown
      */
     MigrationStatus getStatus(String id);
+
+    /**
+     * Probes the current state of a migration by analyzing persistent data, and sets it as the new current state.
+     * <p>
+     * THIS METHOD MAY TAKE A WHILE as it needs to get information from persistent storage.
+     *
+     * @param id the migration id
+     * @return the new state, or {@code null} if it cannot be determined
+     * @since 10.3
+     */
+    String probeAndSetState(String id);
 
     /**
      * Runs a migration step for a migration.

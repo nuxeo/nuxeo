@@ -37,6 +37,14 @@
               render="migrationInfos" styleClass="button" />
           </p>
         </ui:repeat>
+        <ui:fragment>
+          <p>Detect actual state:
+            <a4j:commandButton value="Detect"
+              action="#{migrationAdmin.probeAndSetState(descr.id)}"
+              styleClass="button" />
+            (may be slow, to be used if state is incorrect after upgrade)
+          </p>
+        </ui:fragment>
       </ui:fragment>
     </nxu:set>
     </nxu:set>

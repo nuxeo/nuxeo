@@ -217,4 +217,33 @@ public class TestTagsMigrator {
         }
     }
 
+    @Test
+    public void testProbe() throws Exception {
+        @SuppressWarnings("deprecation")
+        TagService relationTagService = new RelationTagService();
+        TagService facetedTagService = new FacetedTagService();
+
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        session.save();
+
+        // no tags, detected as already migrated
+        Migrator migrator = new TagsMigrator();
+        assertEquals(MIGRATION_STATE_FACETS, migrator.probeState());
+
+        // just a relation-based tag, detected as not migrated
+        relationTagService.tag(session, doc1.getId(), "foo");
+        assertEquals(MIGRATION_STATE_RELATIONS, migrator.probeState());
+
+        // both a relation-based tag and a facet-based tag, detected as not migrated
+        facetedTagService.tag(session, doc2.getId(), "bar");
+        assertEquals(MIGRATION_STATE_RELATIONS, migrator.probeState());
+
+        // just a faceted-based tag, detected as migrated
+        relationTagService.untag(session, doc1.getId(), "foo");
+        assertEquals(MIGRATION_STATE_FACETS, migrator.probeState());
+    }
+
 }
