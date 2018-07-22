@@ -422,6 +422,36 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     }
 
     @Override
+    public String probeAndSetState(String id) {
+        Migrator migrator = getMigrator(id);
+        String state = migrator.probeState();
+        if (state != null) {
+            ProgressReporter progressReporter = new ProgressReporter(id);
+            setState(id, state, migrator, progressReporter);
+        }
+        return state;
+    }
+
+    protected void setState(String id, String state, Migrator migrator, ProgressReporter progressReporter) {
+        atomic(id, kv -> {
+            String currentState = kv.getString(id);
+            String currentStep = kv.getString(id + STEP);
+            if (currentState == null && currentStep != null) {
+                throw new IllegalArgumentException("Migration: " + id + " already running step: " + currentStep);
+            }
+            setState(id, state, progressReporter, kv);
+        });
+        migrator.notifyStatusChange();
+    }
+
+    protected void setState(String id, String state, ProgressReporter progressReporter, KeyValueStore kv) {
+        kv.put(id, state);
+        kv.put(id + STEP, (String) null);
+        kv.put(id + START_TIME, (String) null);
+        progressReporter.reportProgress(null, -2, -2, false);
+    }
+
+    @Override
     public void runStep(String id, String step) {
         Migrator migrator = getMigrator(id);
         MigrationDescriptor descr = registry.getMigrationDescriptor(id);
@@ -473,12 +503,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             // after the migrator is finished, change state, except if shutdown is requested or exception
             String state = (t != null || migrationContext.isShutdownRequested()) ? stepDescr.getFromState()
                     : stepDescr.getToState();
-            atomic(id, kv -> {
-                kv.put(id, state);
-                kv.put(id + STEP, (String) null);
-                kv.put(id + START_TIME, (String) null);
-                progressReporter.reportProgress(null, -2, -2, false);
-            });
+            atomic(id, kv -> setState(id, state, progressReporter, kv));
             // allow notification of new state
             migrator.notifyStatusChange();
         };

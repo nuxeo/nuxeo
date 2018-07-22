@@ -18,8 +18,11 @@
  */
 package org.nuxeo.ecm.core.trash;
 
+import static java.util.function.Predicate.isEqual;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STATE_LIFECYCLE;
+import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE_TO_PROPERTY;
 
 import java.io.Serializable;
@@ -48,6 +51,8 @@ public class TrashedStateMigrator implements Migrator {
 
     private static final Log log = LogFactory.getLog(TrashedStateMigrator.class);
 
+    protected static final String QUERY_DELETED = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted' AND ecm:isVersion = 0";
+
     protected static final int BATCH_SIZE = 50;
 
     protected MigrationContext migrationContext;
@@ -56,6 +61,29 @@ public class TrashedStateMigrator implements Migrator {
     public void notifyStatusChange() {
         TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime().getComponent(TrashServiceImpl.NAME);
         trashService.invalidateTrashServiceImplementation();
+    }
+
+    @Override
+    public String probeState() {
+        List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
+        if (repositoryNames.stream().map(this::probeRepository).anyMatch(isEqual(MIGRATION_STATE_LIFECYCLE))) {
+            return MIGRATION_STATE_LIFECYCLE;
+        }
+        return MIGRATION_STATE_PROPERTY;
+    }
+
+    protected String probeRepository(String repositoryName) {
+        return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
+    }
+
+    protected String probeSession(CoreSession session) {
+        // finds if there are documents in 'deleted' lifecycle state
+        List<Map<String, Serializable>> deletedMaps = session.queryProjection(QUERY_DELETED, 1, 0); // limit 1
+        if (!deletedMaps.isEmpty()) {
+            return MIGRATION_STATE_LIFECYCLE;
+        } else {
+            return MIGRATION_STATE_PROPERTY;
+        }
     }
 
     @Override
@@ -96,9 +124,7 @@ public class TrashedStateMigrator implements Migrator {
 
     protected void migrateSession(CoreSession session) {
         // query all 'deleted' documents
-        String deletedQuery = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted' "
-                + "AND ecm:isVersion = 0";
-        List<Map<String, Serializable>> deletedMaps = session.queryProjection(deletedQuery, -1, 0);
+        List<Map<String, Serializable>> deletedMaps = session.queryProjection(QUERY_DELETED, -1, 0);
 
         checkShutdownRequested();
 

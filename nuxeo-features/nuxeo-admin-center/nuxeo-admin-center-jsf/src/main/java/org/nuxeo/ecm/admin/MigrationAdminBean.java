@@ -77,6 +77,11 @@ public class MigrationAdminBean implements Serializable {
         return migrationInfos;
     }
 
+    public void probeAndSetState(String id) {
+        MigrationService migrationService = Framework.getService(MigrationService.class);
+        migrationService.probeAndSetState(id);
+    }
+
     public void runStep(String id, String step) {
         MigrationService migrationService = Framework.getService(MigrationService.class);
         migrationService.runStep(id, step);

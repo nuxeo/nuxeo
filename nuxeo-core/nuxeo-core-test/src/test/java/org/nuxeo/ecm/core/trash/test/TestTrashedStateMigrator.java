@@ -175,4 +175,33 @@ public class TestTrashedStateMigrator {
                 propertyService.isTrashed(session, doc.getRef())));
     }
 
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testProbe() throws Exception {
+        TrashService lifeCycleService = new LifeCycleTrashService();
+        TrashService propertyService = new PropertyTrashService();
+
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        session.save();
+
+        // no documents in lifecycle state deleted, detected as already migrated
+        Migrator migrator = new TrashedStateMigrator();
+        assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
+
+        // doc in lifecycle state deleted, detected as not migrated
+        lifeCycleService.trashDocument(doc1);
+        assertEquals(MIGRATION_STATE_LIFECYCLE, migrator.probeState());
+
+        // doc in lifecycle state deleted and doc with trashed property, detected as not migrated
+        propertyService.trashDocument(doc2);
+        assertEquals(MIGRATION_STATE_LIFECYCLE, migrator.probeState());
+
+        // only doc with trashed property, detected as already migrated
+        lifeCycleService.untrashDocument(doc1);
+        assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
+    }
+
 }

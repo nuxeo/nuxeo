@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.platform.tag;
 
 import static java.lang.Boolean.TRUE;
+import static java.util.function.Predicate.isEqual;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.LABEL_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.USERNAME_PROPERTY;
+import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
+import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAGGING_SOURCE_FIELD;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
@@ -61,6 +64,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TagsMigrator implements Migrator {
 
     private static final Log log = LogFactory.getLog(TagsMigrator.class);
+
+    protected static final String QUERY_TAGGING = "SELECT ecm:uuid, relation:source, ecm:name, dc:creator FROM Tagging WHERE ecm:isProxy = 0";
 
     /**
      * A label + username.
@@ -143,6 +148,29 @@ public class TagsMigrator implements Migrator {
     }
 
     @Override
+    public String probeState() {
+        List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
+        if (repositoryNames.stream().map(this::probeRepository).anyMatch(isEqual(MIGRATION_STATE_RELATIONS))) {
+            return MIGRATION_STATE_RELATIONS;
+        }
+        return MIGRATION_STATE_FACETS;
+    }
+
+    protected String probeRepository(String repositoryName) {
+        return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
+    }
+
+    protected String probeSession(CoreSession session) {
+        // finds if there are any taggings
+        List<Map<String, Serializable>> taggingMaps = session.queryProjection(QUERY_TAGGING, 1, 0); // limit 1
+        if (!taggingMaps.isEmpty()) {
+            return MIGRATION_STATE_RELATIONS;
+        } else {
+            return MIGRATION_STATE_FACETS;
+        }
+    }
+
+    @Override
     public void run(String step, MigrationContext migrationContext) {
         if (!MIGRATION_STEP_RELATIONS_TO_FACETS.equals(step)) {
             throw new NuxeoException("Unknown migration step: " + step);
@@ -174,8 +202,7 @@ public class TagsMigrator implements Migrator {
 
     protected void migrateSession(CoreSession session) {
         // query all tagging
-        String taggingSql = "SELECT ecm:uuid, relation:source, ecm:name, dc:creator FROM Tagging WHERE ecm:isProxy = 0";
-        List<Map<String, Serializable>> taggingMaps = session.queryProjection(taggingSql, -1, 0);
+        List<Map<String, Serializable>> taggingMaps = session.queryProjection(QUERY_TAGGING, -1, 0);
 
         checkShutdownRequested();
 
