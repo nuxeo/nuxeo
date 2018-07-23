@@ -32,13 +32,17 @@ public class BulkCounter implements Serializable {
 
     protected String bulkId;
 
-    protected Long processedDocuments;
+    protected long processedDocuments;
 
-    public BulkCounter(){
+    public BulkCounter() {
         // Empty constructor for Avro decoder
     }
 
-    public BulkCounter(String bulkId, Long processedDocuments) {
+    public BulkCounter(String bulkId, int processedDocuments) {
+        this(bulkId, (long) processedDocuments);
+    }
+
+    public BulkCounter(String bulkId, long processedDocuments) {
         this.bulkId = bulkId;
         this.processedDocuments = processedDocuments;
     }
@@ -47,16 +51,8 @@ public class BulkCounter implements Serializable {
         return bulkId;
     }
 
-    public void setBulkId(String bulkId) {
-        this.bulkId = bulkId;
-    }
-
-    public Long getProcessedDocuments() {
+    public long getProcessedDocuments() {
         return processedDocuments;
-    }
-
-    public void setProcessedDocuments(Long processedDocuments) {
-        this.processedDocuments = processedDocuments;
     }
 
 }

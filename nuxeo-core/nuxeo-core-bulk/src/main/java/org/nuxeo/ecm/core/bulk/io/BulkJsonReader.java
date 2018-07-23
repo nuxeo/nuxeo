@@ -19,19 +19,17 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COMMAND;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.IOException;
 import java.time.Instant;
 
-import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
@@ -50,7 +48,7 @@ public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
     }
 
     @Override
-    public BulkStatus readEntity(JsonNode jn) throws IOException {
+    public BulkStatus readEntity(JsonNode jn) {
         BulkStatus status = new BulkStatus();
 
         String id = jn.get(BULK_ID).asText();
@@ -67,14 +65,15 @@ public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
             status.setSubmitTime(Instant.parse(creation));
         }
 
-        JsonNode jnCommand = jn.get(BULK_COMMAND);
-        if (jnCommand != null && !jnCommand.isNull()) {
-            BulkCommand command = readEntity(BulkCommand.class, BulkCommand.class, jnCommand);
-            status.setCommand(command);
+        Long count = getLongField(jn, BULK_COUNT);
+        if (count != null) {
+            status.setCount(count.longValue());
         }
 
-        Long count = getLongField(jn, BULK_COUNT);
-        status.setCount(count);
+        Long processed = getLongField(jn, BULK_PROCESSED);
+        if (processed != null) {
+            status.setProcessed(processed.longValue());
+        }
 
         return status;
     }

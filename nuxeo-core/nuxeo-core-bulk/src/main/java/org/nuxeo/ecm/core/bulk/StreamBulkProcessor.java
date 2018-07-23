@@ -21,12 +21,8 @@ package org.nuxeo.ecm.core.bulk;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.PROCESSED_DOCUMENTS;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLLED_DOCUMENT_COUNT;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLL_END_TIME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SCROLL_START_TIME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATE;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
@@ -49,13 +45,11 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
@@ -70,8 +64,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class StreamBulkProcessor implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(StreamBulkProcessor.class);
-
-    public static final String AVRO_CODEC = "avro";
 
     public static final String SCROLLER_COMPUTATION_NAME = "bulkDocumentScroller";
 
@@ -167,18 +159,23 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
             try {
                 String commandId = record.getKey();
-                BulkCommand command = BulkCommands.fromBytes(record.getData());
-                if (!kvStore.compareAndSet(commandId + STATE, SCHEDULED.toString(), SCROLLING_RUNNING.toString())) {
+                BulkCommand command = BulkCodecs.getBulkCommandCodec().decode(record.getData());
+                BulkStatus currentStatus = BulkCodecs.getBulkStatusCodec().decode(kvStore.get(commandId + STATUS));
+                if (!SCHEDULED.equals(currentStatus.getState())) {
                     log.error("Discard record: " + record + " because it's already building");
                     context.askForCheckpoint();
                     return;
                 }
+                currentStatus.setState(SCROLLING_RUNNING);
+                context.produceRecord(KVWRITER_STREAM_NAME, commandId,
+                        BulkCodecs.getBulkStatusCodec().encode(currentStatus));
+
                 LoginContext loginContext;
                 try {
                     loginContext = Framework.loginAsUser(command.getUsername());
                     try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
                         // scroll documents
-                        Long scrollStartTime = Instant.now().toEpochMilli();
+                        Instant scrollStartTime = Instant.now();
                         ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
                                 scrollKeepAliveSeconds);
                         long documentCount = 0;
@@ -207,16 +204,14 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                             produceBucket(context, command.getAction(), commandId, documentCount);
                         }
 
-                        Long scrollEndTime = Instant.now().toEpochMilli();
+                        Instant scrollEndTime = Instant.now();
 
-                        BulkUpdate updates = new BulkUpdate();
-                        updates.put(commandId + SCROLL_START_TIME, scrollStartTime.toString());
-                        updates.put(commandId + SCROLL_END_TIME, scrollEndTime.toString());
-                        updates.put(commandId + STATE, RUNNING.toString());
-                        updates.put(commandId + SCROLLED_DOCUMENT_COUNT, String.valueOf(documentCount));
-                        Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                                BulkUpdate.class);
-                        context.produceRecord(KVWRITER_STREAM_NAME, commandId, updateCodec.encode(updates));
+                        currentStatus.setScrollStartTime(scrollStartTime);
+                        currentStatus.setScrollEndTime(scrollEndTime);
+                        currentStatus.setState(RUNNING);
+                        currentStatus.setCount(documentCount);
+                        context.produceRecord(KVWRITER_STREAM_NAME, commandId,
+                                BulkCodecs.getBulkStatusCodec().encode(currentStatus));
 
                     } finally {
                         loginContext.logout();
@@ -265,22 +260,11 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
             if (!counters.isEmpty()) {
                 KeyValueStore kvStore = Framework.getService(KeyValueService.class)
                                                  .getKeyValueStore(BULK_KV_STORE_NAME);
-                BulkUpdate updates = new BulkUpdate();
-                counters.forEach((bulkId, processedDocs) -> {
-                    Long previousProcessedDocs = kvStore.getLong(bulkId + PROCESSED_DOCUMENTS);
-                    if (previousProcessedDocs == null) {
-                        previousProcessedDocs = 0L;
-                    }
-                    Long currentProcessedDocs = previousProcessedDocs + processedDocs;
-                    if (currentProcessedDocs.longValue() == kvStore.getLong(bulkId + SCROLLED_DOCUMENT_COUNT)
-                                                                   .longValue()) {
-                        updates.put(bulkId + STATE, COMPLETED.toString());
-                    }
-                    updates.put(bulkId + PROCESSED_DOCUMENTS, String.valueOf(currentProcessedDocs));
-                });
-                Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                        BulkUpdate.class);
-                context.produceRecord(KVWRITER_STREAM_NAME, key, updateCodec.encode(updates));
+                counters.entrySet()
+                        .stream()
+                        .map(entry -> getStatusAndUpdate(kvStore, entry.getKey(), entry.getValue()))
+                        .map(BulkCodecs.getBulkStatusCodec()::encode)
+                        .forEach(status -> context.produceRecord(KVWRITER_STREAM_NAME, key, status));
                 counters.clear();
                 context.askForCheckpoint();
             }
@@ -289,13 +273,22 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            Codec<BulkCounter> counterCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                    BulkCounter.class);
-            BulkCounter counter = counterCodec.decode(record.getData());
+            BulkCounter counter = BulkCodecs.getBulkCounterCodec().decode(record.getData());
             String bulkId = counter.getBulkId();
 
             counters.computeIfPresent(bulkId, (k, processedDocs) -> processedDocs + counter.getProcessedDocuments());
             counters.putIfAbsent(bulkId, counter.getProcessedDocuments());
+        }
+
+        protected BulkStatus getStatusAndUpdate(KeyValueStore kvStore, String commandId, long processedDocs) {
+            BulkStatus status = BulkCodecs.getBulkStatusCodec().decode(kvStore.get(commandId + STATUS));
+            long previousProcessedDocs = status.getProcessed();
+            long currentProcessedDocs = previousProcessedDocs + processedDocs;
+            if (currentProcessedDocs == status.getCount()) {
+                status.setState(COMPLETED);
+            }
+            status.setProcessed(currentProcessedDocs);
+            return status;
         }
     }
 
@@ -308,11 +301,8 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-            Codec<BulkUpdate> updateCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                    BulkUpdate.class);
-
-            BulkUpdate updates = updateCodec.decode(record.getData());
-            updates.getValues().forEach(kvStore::put);
+            BulkStatus status = BulkCodecs.getBulkStatusCodec().decode(record.getData());
+            kvStore.put(status.getId() + STATUS, record.getData());
             context.askForCheckpoint();
         }
     }

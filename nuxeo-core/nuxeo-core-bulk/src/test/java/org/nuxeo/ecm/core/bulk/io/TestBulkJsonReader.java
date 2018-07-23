@@ -19,15 +19,12 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.time.Instant;
-import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
@@ -51,14 +48,5 @@ public class TestBulkJsonReader extends AbstractJsonReaderTest.Local<BulkJsonRea
         assertEquals("00000000-0000-0000-0000-000000000000", status.getId());
         assertEquals(State.SCHEDULED, status.getState());
         assertEquals(Instant.parse("2018-06-21T12:37:08.172Z"), status.getSubmitTime());
-
-        BulkCommand command = status.getCommand();
-        assertEquals("myUser", command.getUsername());
-        assertEquals("myRepository", command.getRepository());
-        assertEquals("SELECT * FROM Document", command.getQuery());
-        assertEquals("myAction", command.getAction());
-
-        Map<String, String> params = command.getParams();
-        assertTrue(params.isEmpty());
     }
 }

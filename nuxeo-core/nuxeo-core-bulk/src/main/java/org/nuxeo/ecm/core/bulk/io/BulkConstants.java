@@ -35,9 +35,12 @@ public class BulkConstants {
 
     public static final String BULK_SUBMIT = "submit";
 
-    public static final String BULK_COMMAND = "command";
-
     public static final String BULK_COUNT = "count";
+
+    /**
+     * @since 10.3
+     */
+    public static final String BULK_PROCESSED = "processed";
 
     // BulkCommand part
 

@@ -6,7 +6,7 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
-    <param name="Threshold" value="WARN" />
+    <param name="Threshold" value="DEBUG" />
 
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
@@ -22,6 +22,14 @@
     </layout>
   </appender>
 
+  <!-- Use to display "Nuxeo Platform Started" message -->
+  <logger name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
+    <level value="INFO" />
+  </logger>
+
+  <logger name="org.nuxeo.ecm.core.bulk">
+    <level value="INFO" />
+  </logger>
 
   <root>
     <priority value="WARN" />

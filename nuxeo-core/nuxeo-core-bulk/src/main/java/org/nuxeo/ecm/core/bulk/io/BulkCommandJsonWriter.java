@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
@@ -28,7 +28,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.BulkCommand;

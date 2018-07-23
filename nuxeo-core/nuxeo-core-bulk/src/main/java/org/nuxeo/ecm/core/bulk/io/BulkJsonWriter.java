@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COMMAND;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
@@ -50,10 +50,8 @@ public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
         jg.writeStringField(BULK_ID, entity.getId());
         jg.writeStringField(BULK_STATE, entity.getState().toString());
         jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime().toString());
-        writeEntityField(BULK_COMMAND, entity.getCommand(), jg);
-        if (entity.getCount() != null) {
-            jg.writeNumberField(BULK_COUNT, entity.getCount().longValue());
-        }
+        jg.writeNumberField(BULK_COUNT, entity.getCount());
+        jg.writeNumberField(BULK_PROCESSED, entity.getProcessed());
     }
 
 }

@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -50,19 +49,9 @@ public class BulkServiceImpl implements BulkService {
 
     protected static final String SET_STREAM_NAME = "documentSet";
 
-    protected static final String COMMAND = ":command";
+    public static final String COMMAND = ":command";
 
-    protected static final String SUBMIT_TIME = ":submitTime";
-
-    protected static final String SCROLL_START_TIME = ":scrollStartTime";
-
-    protected static final String SCROLL_END_TIME = ":scrollEndTime";
-
-    protected static final String STATE = ":state";
-
-    protected static final String PROCESSED_DOCUMENTS = ":processedDocs";
-
-    protected static final String SCROLLED_DOCUMENT_COUNT = ":count";
+    public static final String STATUS = ":status";
 
     @Override
     public String submit(BulkCommand command) {
@@ -75,13 +64,21 @@ public class BulkServiceImpl implements BulkService {
         }
         // create the command id and status
         String commandId = UUID.randomUUID().toString();
-        byte[] commandAsBytes = BulkCommands.toBytes(command);
+
+        byte[] commandAsBytes = BulkCodecs.getBulkCommandCodec().encode(command);
 
         // store the bulk command and status in the key/value store
         KeyValueStore keyValueStore = getKvStore();
-        keyValueStore.put(commandId + STATE, SCHEDULED.toString());
-        keyValueStore.put(commandId + SUBMIT_TIME, Instant.now().toEpochMilli());
+
+        BulkStatus status = new BulkStatus();
+        status.setId(commandId);
+        status.setState(SCHEDULED);
+        status.setSubmitTime(Instant.now());
+
+        byte[] statusAsBytes = BulkCodecs.getBulkStatusCodec().encode(status);
+
         keyValueStore.put(commandId + COMMAND, commandAsBytes);
+        keyValueStore.put(commandId + STATUS, statusAsBytes);
 
         // send it to nuxeo-stream
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
@@ -93,36 +90,10 @@ public class BulkServiceImpl implements BulkService {
 
     @Override
     public BulkStatus getStatus(String commandId) {
-        BulkStatus status = new BulkStatus();
-        status.setId(commandId);
-
         // retrieve values from KeyValueStore
         KeyValueStore keyValueStore = getKvStore();
-        String state = keyValueStore.getString(commandId + STATE);
-        status.setState(State.valueOf(state));
-
-        Long submitTime = keyValueStore.getLong(commandId + SUBMIT_TIME);
-        status.setSubmitTime(Instant.ofEpochMilli(submitTime.longValue()));
-
-        BulkCommand command = BulkCommands.fromKVStore(keyValueStore, commandId);
-        status.setCommand(command);
-
-        Long scrollStartTime = keyValueStore.getLong(commandId + SCROLL_START_TIME);
-        if (scrollStartTime != null) {
-            status.setScrollStartTime(Instant.ofEpochMilli(scrollStartTime));
-        }
-        Long scrollEndTime = keyValueStore.getLong(commandId + SCROLL_END_TIME);
-        if (scrollEndTime != null) {
-            status.setScrollEndTime(Instant.ofEpochMilli(scrollEndTime));
-        }
-
-        Long processedDocuments = keyValueStore.getLong(commandId + PROCESSED_DOCUMENTS);
-        status.setProcessed(processedDocuments);
-
-        Long scrolledDocumentCount = keyValueStore.getLong(commandId + SCROLLED_DOCUMENT_COUNT);
-        status.setCount(scrolledDocumentCount);
-
-        return status;
+        byte[] statusAsBytes = keyValueStore.get(commandId + STATUS);
+        return BulkCodecs.getBulkStatusCodec().decode(statusAsBytes);
     }
 
     @Override
@@ -130,7 +101,7 @@ public class BulkServiceImpl implements BulkService {
         long deadline = System.currentTimeMillis() + duration.toMillis();
         KeyValueStore kvStore = getKvStore();
         do {
-            if (COMPLETED.toString().equals(kvStore.getString(commandId + STATE))) {
+            if (COMPLETED.equals(BulkCodecs.getBulkStatusCodec().decode(kvStore.get(commandId + STATUS)).getState())) {
                 return true;
             }
             Thread.sleep(500);
