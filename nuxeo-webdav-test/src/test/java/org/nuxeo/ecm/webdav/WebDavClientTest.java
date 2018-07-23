@@ -322,6 +322,21 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testMoveFolder() throws Exception {
+        // create a folder
+        String name = "myfolder";
+        HttpMethod method = new MkColMethod(ROOT_URI + name);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        // rename it
+        String newName = "myfolderRenamed";
+        method = new MoveMethod(ROOT_URI + name, ROOT_URI + newName, false);
+        status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_CREATED, status);
+    }
+
+    @Test
     public void testDeleteFile() throws Exception {
         String name = "test.txt";
 
