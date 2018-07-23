@@ -23,9 +23,11 @@
 
 <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
+  <a4j:jsFunction name="#{widget.id}_closeFancybox" render="#{widget.id}_tree_panel" />
+
   <h:outputScript target="#{pageJsTarget}">
-    jQuery(document).ready(function() {
-      var config = {
+    function #{widget.id}_showTree() {
+      openFancyBox('##{widget.id}_tree', {
         'width'              : '50%',
         'height'             : '75%',
         'autoScale'          : true,
@@ -35,38 +37,13 @@
         'type'               : 'inline',
         'enableEscapeButton' : true,
         'centerOnScroll'     : true,
-        'padding'            : 0
-      };
-      jQuery("##{widget.id}_openPopup").fancybox(config);
-
-      if (jQuery('.#{widget.id}_inputHidden').val()) {
-        jQuery("##{widget.id}_openPopup").hide();
-      } else {
-        jQuery(".#{widget.id}_deleteSingleValueLink").hide();
-      }
-    });
-
-    function set#{widget.id}SingleValue(label, path) {
-      jQuery('##{widget.id}_openPopup').hide();
-      jQuery('.#{widget.id}_outputText').text(label);
-      jQuery('.#{widget.id}_inputHidden').val(path);
-      jQuery('.#{widget.id}_deleteSingleValueLink').show();
-      jQuery.fancybox.close();
-      return false;
+        'padding'            : 0,
+        'onClosed': #{widget.id}_closeFancybox
+      });
     }
-
-    function remove#{widget.id}SingleValue() {
-      jQuery('##{widget.id}_openPopup').show();
-      jQuery('.#{widget.id}_outputText').text('');
-      jQuery('.#{widget.id}_inputHidden').val('');
-      jQuery('.#{widget.id}_deleteSingleValueLink').hide();
-      return false;
-    }
-
   </h:outputScript>
 
-  <a4j:outputPanel id="#{widget.id}_listRegion" ajaxRendered="true"
-    layout="block">
+  <a4j:outputPanel id="#{widget.id}_listRegion" layout="block" ajaxRendered="true">
     <div class="clear">
       <nxu:inputList id="#{widget.id}_list" value="#{field_0}"
         model="model" required="#{widgetProperty_required}">
@@ -74,10 +51,8 @@
           <label>
             <h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(model.rowData))}" />
           </label>
-          <h:commandLink immediate="true"
-            actionListener="#{editableListBean.performAction}"
-            id="#{widget.id}_delete" render="#{widget.id}_listRegion"
-            bypassUpdates="true">
+          <h:commandLink id="#{widget.id}_delete" immediate="true"
+          actionListener="#{editableListBean.performAction}" bypassUpdates="true">
             <img src="#{contextPath}/icons/delete.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
@@ -91,53 +66,55 @@
     </div>
   </a4j:outputPanel>
 
-  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree" class="button smallButton">#{messages['command.add']}</a>
+  <a id="#{widget.id}_openPopup" href="#" onclick="#{widget.id}_showTree();return false;" class="button smallButton">#{messages['command.add']}</a>
   <div style="clear: both;"></div>
 
+  <a4j:outputPanel id="#{widget.id}_tree_panel" layout="block">
   <div style="display:none">
     <div id="#{widget.id}_tree">
-      <h3>
-        <h:outputText value="#{messages['label.search.popup.title']}"/>
-      </h3>
-      <div class="content">
-        <rich:tree preserveModel="none"
-          ajaxChildActivationEncodeBehavior="none"
-          ajaxNodeSelectionEncodeBehavior="none"
-          id="#{widget.id}_treeId"
-          adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
-          changeExpandListener="#{reducedTreeActions.changeExpandListener}"
-          iconLeaf="#{nxd:iconPath(node.document)}"
-          iconExpanded="#{nxd:iconPath(node.document)}"
-          iconCollapsed="#{nxd:iconPath(node.document)}"
-          rowKeyVar="rowKey"
-          styleClass="labelTool"
-          stateVar="nodeState"
-          var="node">
-          <rich:treeModelRecursiveAdaptor
-            id="#{widget.id}_recursiveTreeNodesAdaptorId"
-            roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
-            nodes="#{node.children}"
-            leaf="#{node.children == null or node.children.size == 0}"
-            styleClass="labelTool">
-            <rich:treeNode
-              id="#{widget.id}_treeNodeId"
-              highlightedClass="treeNodeHighlightedClass"
-              selectedClass="treeNodeSelectedClass">
-              <a4j:commandLink immediate="true"
-                id="#{widget.id}_linkId"
-                actionListener="#{treeWidgetActions.addSelectionToList}"
-                styleClass="treeLink" render="#{widget.id}_listRegion">
-                <f:param name="selectionListId" value="#{widget.id}_list" />
-                <f:param name="selectedPath" value="#{node.path}" />
-                <h:outputText value="#{nxd:titleOrId(node.document)}" />
-                <f:ajax event="click" execute="@this" render="#{widget.id}_listRegion" />
-              </a4j:commandLink>
-            </rich:treeNode>
-          </rich:treeModelRecursiveAdaptor>
-        </rich:tree>
-      </div>
+        <h3>
+          <h:outputText value="#{messages['label.search.popup.title']}"/>
+        </h3>
+        <div class="content">
+          <rich:tree preserveModel="none"
+            ajaxChildActivationEncodeBehavior="none"
+            ajaxNodeSelectionEncodeBehavior="none"
+            id="#{widget.id}_treeId"
+            adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
+            changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+            iconLeaf="#{nxd:iconPath(node.document)}"
+            iconExpanded="#{nxd:iconPath(node.document)}"
+            iconCollapsed="#{nxd:iconPath(node.document)}"
+            rowKeyVar="rowKey"
+            styleClass="labelTool"
+            stateVar="nodeState"
+            var="node">
+            <rich:treeModelRecursiveAdaptor
+              id="#{widget.id}_recursiveTreeNodesAdaptorId"
+              roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
+              nodes="#{node.children}"
+              leaf="#{node.children == null or node.children.size == 0}"
+              styleClass="labelTool">
+              <rich:treeNode
+                id="#{widget.id}_treeNodeId"
+                highlightedClass="treeNodeHighlightedClass"
+                selectedClass="treeNodeSelectedClass">
+                <a4j:commandLink immediate="true"
+                  id="#{widget.id}_linkId"
+                  actionListener="#{treeWidgetActions.addSelectionToList}"
+                  styleClass="treeLink" render="#{widget.id}_listRegion">
+                  <f:param name="selectionListId" value="#{widget.id}_list" />
+                  <f:param name="selectedPath" value="#{node.path}" />
+                  <h:outputText value="#{nxd:titleOrId(node.document)}" />
+                  <f:ajax event="click" execute="@this" render="#{widget.id}_listRegion" />
+                </a4j:commandLink>
+              </rich:treeNode>
+            </rich:treeModelRecursiveAdaptor>
+          </rich:tree>
+        </div>
     </div>
   </div>
+  </a4j:outputPanel>
 
 </c:if>
 
