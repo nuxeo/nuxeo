@@ -29,7 +29,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -78,19 +77,19 @@ public class ReplacePermission {
     String comment;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         replacePermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws ClientException {
+    public DocumentModel run(DocumentRef docRef) {
         DocumentModel doc = session.getDocument(docRef);
         replacePermission(doc);
         return doc;
     }
 
-    protected void replacePermission(DocumentModel doc) throws ClientException {
+    protected void replacePermission(DocumentModel doc) {
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(NOTIFY_KEY, notify);
         contextData.put(COMMENT_KEY, comment);

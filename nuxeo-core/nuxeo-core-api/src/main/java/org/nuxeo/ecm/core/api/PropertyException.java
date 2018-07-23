@@ -22,9 +22,7 @@ package org.nuxeo.ecm.core.api;
 /**
  * Base exception thrown when there is a problem accessing a property.
  */
-//inherits from a deprecated base PropertyException so that old code catching the old one still works
-@SuppressWarnings("deprecation")
-public class PropertyException extends org.nuxeo.ecm.core.api.model.PropertyException {
+public class PropertyException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

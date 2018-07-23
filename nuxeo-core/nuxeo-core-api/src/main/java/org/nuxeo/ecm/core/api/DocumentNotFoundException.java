@@ -24,9 +24,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 /**
  * Exception thrown when a document is not found.
  */
-// inherits from a deprecated base NoSuchDocumentException so that old code catching the old one still works
-@SuppressWarnings("deprecation")
-public class DocumentNotFoundException extends org.nuxeo.ecm.core.model.NoSuchDocumentException {
+public class DocumentNotFoundException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

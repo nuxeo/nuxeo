@@ -25,9 +25,7 @@ package org.nuxeo.ecm.core.api;
  *
  * @see CoreSession#followTransition
  */
-// inherits from a deprecated base LifeCycleException so that old code catching the old one still works
-@SuppressWarnings("deprecation")
-public class LifeCycleException extends org.nuxeo.ecm.core.lifecycle.LifeCycleException {
+public class LifeCycleException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

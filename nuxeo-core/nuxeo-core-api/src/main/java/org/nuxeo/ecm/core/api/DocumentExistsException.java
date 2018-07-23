@@ -31,9 +31,7 @@ import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
  * @see CoreSession#removeDocuments
  * @see CoreSession#removeChildren
  */
-// inherits from a deprecated base DocumentExistsException so that old code catching the old one still works
-@SuppressWarnings("deprecation")
-public class DocumentExistsException extends org.nuxeo.ecm.core.model.DocumentExistsException {
+public class DocumentExistsException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
