@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -142,12 +143,13 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         String doctype = sourceDocument.getType();
         String renditionMimeType = renditionBlob.getMimeType();
         BlobHolder blobHolder = sourceDocument.getAdapter(BlobHolder.class);
-        if (blobHolder == null || (blobHolder instanceof DocumentStringBlobHolder
+        if (sourceDocument.hasFacet(FacetNames.FOLDERISH)
+                || blobHolder == null || (blobHolder instanceof DocumentStringBlobHolder
                 && !(renditionMimeType.startsWith("text/") || renditionMimeType.startsWith("application/xhtml")))) {
-            // We have a document type unable to hold blobs, or
-            // We have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
+            // We have a source document that is Folderish or is unable to hold blobs, or
+            // we have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
             // MIME type.
-            // In either case, we'll have to create a File to hold it.
+            // In each case, we'll create a File to hold it.
             doctype = FILE;
         }
 
