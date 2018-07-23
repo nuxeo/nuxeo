@@ -22,7 +22,6 @@ package org.nuxeo.scim.server.tests;
 
 import java.util.Arrays;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -50,7 +49,7 @@ public class ScimServerInit implements RepositoryInit {
     public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen", "Greyjoy" };
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
 
         UserManager um = Framework.getService(UserManager.class);
         // Create some users
@@ -59,7 +58,7 @@ public class ScimServerInit implements RepositoryInit {
         }
     }
 
-    private void createUsersAndGroups(UserManager um) throws ClientException, UserAlreadyExistsException,
+    private void createUsersAndGroups(UserManager um) throws UserAlreadyExistsException,
             GroupAlreadyExistsException {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
@@ -97,8 +96,7 @@ public class ScimServerInit implements RepositoryInit {
         um.updateUser(principal.getModel());
     }
 
-    private void createGroup(UserManager um, String groupId, String groupLabel) throws ClientException,
-            GroupAlreadyExistsException {
+    private void createGroup(UserManager um, String groupId, String groupLabel) throws GroupAlreadyExistsException {
         NuxeoGroup group = um.getGroup(groupId);
         if (group != null) {
             um.deleteGroup(groupId);
@@ -111,7 +109,7 @@ public class ScimServerInit implements RepositoryInit {
         groupModel = um.createGroup(groupModel);
     }
 
-    public static NuxeoPrincipal getPowerUser() throws ClientException {
+    public static NuxeoPrincipal getPowerUser() {
         UserManager um = Framework.getService(UserManager.class);
         return um.getPrincipal(POWER_USER_LOGIN);
     }
