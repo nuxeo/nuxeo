@@ -341,6 +341,26 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testMoveFolder() throws Exception {
+        // create a folder
+        String name = "myfolder";
+        HttpMkcol mkcol = new HttpMkcol(ROOT_URI + name);
+        int status;
+        try (CloseableHttpResponse response = client.execute(mkcol, context)) {
+            status = response.getStatusLine().getStatusCode();
+        }
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        // rename it
+        String newName = "myfolderRenamed";
+        HttpMove move = new HttpMove(ROOT_URI + name, ROOT_URI + newName, false);
+        try (CloseableHttpResponse response = client.execute(move, context)) {
+            status = response.getStatusLine().getStatusCode();
+        }
+        assertEquals(HttpStatus.SC_CREATED, status);
+    }
+
+    @Test
     public void testDeleteFile() throws Exception {
         String name = "test.txt";
 
