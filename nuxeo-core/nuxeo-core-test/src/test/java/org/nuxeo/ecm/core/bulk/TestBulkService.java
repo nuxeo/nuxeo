@@ -44,7 +44,6 @@ import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
-import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -100,8 +99,7 @@ public class TestBulkService {
         assertNotNull(status);
         // TODO change RUNNING state when we'll be able to detect end
         assertEquals(RUNNING, status.getState());
-        assertNotNull(status.getCount());
-        assertEquals(10, status.getCount().longValue());
+        assertEquals(10, status.getCount());
     }
 
     @Test
@@ -141,8 +139,7 @@ public class TestBulkService {
 
         assertEquals(COMPLETED, status.getState());
 
-        assertNotNull(status.getProcessed());
-        assertEquals(10, status.getProcessed().longValue());
+        assertEquals(10, status.getProcessed());
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());

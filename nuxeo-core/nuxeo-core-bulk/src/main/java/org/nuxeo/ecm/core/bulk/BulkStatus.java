@@ -22,6 +22,9 @@ package org.nuxeo.ecm.core.bulk;
 import java.io.Serializable;
 import java.time.Instant;
 
+import org.apache.avro.reflect.AvroEncode;
+import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
+
 /**
  * This object holds the current bulk command execution status.
  * <p/>
@@ -47,24 +50,26 @@ public class BulkStatus implements Serializable {
         RUNNING,
 
         /** System has finished to scroll. */
-        COMPLETED
+        COMPLETED;
+
     }
 
     protected String id;
 
-    protected BulkCommand command;
-
     protected State state;
 
+    @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant submitTime;
 
+    @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant scrollStartTime;
 
+    @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant scrollEndTime;
 
-    protected Long processed;
+    protected long processed = 0L;
 
-    protected Long count;
+    protected long count = 0L;
 
     /**
      * Gets bulk id.
@@ -82,24 +87,6 @@ public class BulkStatus implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
-    }
-
-    /**
-     * Gets bulk command.
-     *
-     * @return the bulk command.
-     */
-    public BulkCommand getCommand() {
-        return command;
-    }
-
-    /**
-     * Sets bulk command.
-     *
-     * @param command the bulk command
-     */
-    public void setCommand(BulkCommand command) {
-        this.command = command;
     }
 
     /**
@@ -179,7 +166,7 @@ public class BulkStatus implements Serializable {
      *
      * @return the number of processed elements
      */
-    public Long getProcessed() {
+    public long getProcessed() {
         return processed;
     }
 
@@ -188,7 +175,7 @@ public class BulkStatus implements Serializable {
      *
      * @param processed the number of elements
      */
-    public void setProcessed(Long processed) {
+    public void setProcessed(long processed) {
         this.processed = processed;
     }
 
@@ -197,7 +184,7 @@ public class BulkStatus implements Serializable {
      *
      * @return the number of element
      */
-    public Long getCount() {
+    public long getCount() {
         return count;
     }
 
@@ -206,7 +193,8 @@ public class BulkStatus implements Serializable {
      *
      * @param count the number of element
      */
-    public void setCount(Long count) {
+    public void setCount(long count) {
         this.count = count;
     }
+
 }

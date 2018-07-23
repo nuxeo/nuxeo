@@ -19,9 +19,10 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.commandIdFrom;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
-import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.AVRO_CODEC;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
 import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_STREAM_NAME;
 
 import java.util.ArrayList;
@@ -39,16 +40,16 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
-import org.nuxeo.ecm.core.bulk.BulkCommands;
 import org.nuxeo.ecm.core.bulk.BulkCounter;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.CodecService;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -135,7 +136,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         protected void loadCurrentBulkCommandContext(String commandId) {
             currentCommandId = commandId;
-            currentCommand = BulkCommands.fromKVStore(commandId);
+            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
+            currentCommand = BulkCodecs.getBulkCommandCodec().decode(kvStore.get(commandId + COMMAND));
         }
 
         @Override
@@ -167,10 +169,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                         throw new NuxeoException(e);
                     }
                 });
-                BulkCounter counter = new BulkCounter(currentCommandId, (long) documentIds.size());
-                Codec<BulkCounter> counterCodec = Framework.getService(CodecService.class).getCodec(AVRO_CODEC,
-                        BulkCounter.class);
-                context.produceRecord("o1", currentCommandId, counterCodec.encode(counter));
+                BulkCounter counter = new BulkCounter(currentCommandId, documentIds.size());
+                context.produceRecord("o1", currentCommandId, BulkCodecs.getBulkCounterCodec().encode(counter));
                 documentIds.clear();
                 context.askForCheckpoint();
             }
