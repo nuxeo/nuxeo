@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <nxu:set var="contentView"
-  value="#{contentViewActions.getContentViewWithProvider(currentDocument.cvd.contentViewName, currentDocument, null, 1, -1, -1)}"
+  value="#{contentViewActions.getContentViewWithProvider(currentDocument.cvd.contentViewName, currentDocument, null, -1, -1, -1)}"
   cache="true">
 
 <h:form enctype="multipart/form-data" id="document_edit" styleClass="safeEditEnabled" >
