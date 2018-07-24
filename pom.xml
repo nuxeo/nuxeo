@@ -2004,9 +2004,10 @@
         <artifactId>commons-logging</artifactId>
         <version>1.2</version>
         <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>servlet-api</artifactId> <!-- without javax. -->
           </exclusion>
           <exclusion>
             <groupId>log4j</groupId>
@@ -3582,6 +3583,13 @@
         <groupId>com.noelios.restlet</groupId>
         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
         <version>1.0.7</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId> <!-- without javax. -->
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.noelios.restlet</groupId>
@@ -3872,6 +3880,11 @@
             <groupId>bouncycastle</groupId> <!-- without org. -->
             <artifactId>bcprov-jdk15</artifactId>
           </exclusion>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId> <!-- without javax. -->
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -4070,8 +4083,8 @@
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
-            <artifactId>org.mortbay.jetty</artifactId>
-            <groupId>servlet-api</groupId>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4100,6 +4113,13 @@
         <version>0.1</version>
         <classifier>classes</classifier>
         <scope>test</scope>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -5587,6 +5607,18 @@
                   <exclude>org.mortbay.jetty:servlet-api-2.5</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
                 </excludes>
                 <message>org.mortbay.jetty:servlet-api-2.5 must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.mortbay.jetty:servlet-api</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>org.mortbay.jetty:servlet-api must not be used, use javax.servlet:javax.servlet-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javax.servet:servlet-api</exclude> <!-- use official javax.servlet:javax.servlet-api instead -->
+                </excludes>
+                <message>javax.servlet:servlet-api must not be used, use javax.servlet:javax.servlet-api instead</message>
               </bannedDependencies>
               <bannedDependencies>
                 <excludes>
