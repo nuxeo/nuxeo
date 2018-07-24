@@ -39,6 +39,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Indexes;
 
 /**
  * MongoDB implementation of a {@link Directory}
@@ -124,6 +125,9 @@ public class MongoDBDirectory extends AbstractDirectory {
         }
         if (dropCollection) {
             collection.drop();
+        }
+        if (isMultiTenant()) {
+            collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
         if (loadData) {
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
