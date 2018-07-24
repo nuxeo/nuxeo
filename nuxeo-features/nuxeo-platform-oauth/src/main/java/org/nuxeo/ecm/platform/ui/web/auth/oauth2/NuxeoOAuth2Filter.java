@@ -180,6 +180,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
     protected void processAuthorization(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException {
+
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         String error = authRequest.checkError();
         if (isNotBlank(error)) {
@@ -189,7 +190,9 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
         // Redirect to grant form
         if (request.getMethod().equals("GET")) {
-            request.getSession().setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
+            request.getSession().setAttribute("response_type", "code");
+            request.getSession().setAttribute("client_id", authRequest.getClientId());
+            request.getSession().setAttribute("redirect_uri", authRequest.getRedirectUri());
             request.getSession().setAttribute("state", authRequest.getState());
             request.getSession().setAttribute(CLIENTNAME_KEY,
                     getClientRegistry().getClient(authRequest.getClientId()).getName());
@@ -198,24 +201,23 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             return;
         }
 
-        // Ensure that authorization key is the correct one
-        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
-        if (!authRequest.getAuthorizationKey().equals(authKeyForm)) {
-            handleError(ERRORS.access_denied, request, response);
-            return;
-        }
-
-        // Save username in request object
-        authRequest.setUsername((String) request.getSession().getAttribute(USERNAME_KEY));
-
+        // now store the authorization request according to its code
+        // to be able to retrieve it in the "/oauth2/token" endpoint
+        String authorizationCode = storeAuthorizationRequest(authRequest);
         Map<String, String> params = new HashMap<>();
-        params.put("code", authRequest.getAuthorizationCode());
+        params.put("code", authorizationCode);
         if (isNotBlank(authRequest.getState())) {
             params.put("state", authRequest.getState());
         }
 
         request.getSession().invalidate();
         sendRedirect(response, authRequest.getRedirectUri(), params);
+    }
+
+    protected String storeAuthorizationRequest(AuthorizationRequest authRequest) {
+        String authorizationCode = authRequest.getAuthorizationCode();
+        AuthorizationRequest.store(authorizationCode, authRequest);
+        return authorizationCode;
     }
 
     ClientRegistry getClientRegistry() {
@@ -227,7 +229,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         TokenRequest tokRequest = new TokenRequest(request);
         // Process Authorization code
         if ("authorization_code".equals(tokRequest.getGrantType())) {
-            AuthorizationRequest authRequest = AuthorizationRequest.fromCode(tokRequest.getCode());
+            String authorizationCode = tokRequest.getCode();
+            AuthorizationRequest authRequest = AuthorizationRequest.fromCode(authorizationCode);
             ERRORS error = null;
             if (authRequest == null) {
                 error = ERRORS.access_denied;
@@ -247,6 +250,10 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                 if (!(isBlank(authRequest.getRedirectUri()) || sameRedirectUri)) {
                     error = ERRORS.invalid_request;
                 }
+            }
+
+            if (authRequest != null) {
+                AuthorizationRequest.remove(authorizationCode);
             }
 
             if (error != null) {
