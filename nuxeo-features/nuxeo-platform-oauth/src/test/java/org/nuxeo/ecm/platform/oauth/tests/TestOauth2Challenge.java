@@ -1,9 +1,13 @@
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +19,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
@@ -49,7 +55,12 @@ public class TestOauth2Challenge {
     @Inject
     protected ClientRegistry clientRegistry;
 
+    @Inject
+    protected TransientStoreService transientStoreService;
+
     protected Client client;
+
+    protected TransientStore store;
 
     @Before
     public void initOAuthClient() {
@@ -71,7 +82,8 @@ public class TestOauth2Challenge {
         client.setReadTimeout(TIMEOUT);
         client.setFollowRedirects(Boolean.FALSE);
 
-        TestAuthorizationRequest.getRequests().clear();
+        store = transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
+        store.removeAll();
     }
 
     @Test
@@ -105,8 +117,14 @@ public class TestOauth2Challenge {
 
     @Test
     public void tokenShouldCreateAndRefreshWithDummyAuthorization() throws IOException {
-        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID, "code", null, "Dummy", new Date());
-        TestAuthorizationRequest.getRequests().put("fake", request);
+        Map<String, Serializable> map = new HashMap<>();
+        map.put("clientId", CLIENT_ID);
+        map.put("responseType", "code");
+        map.put("state", null);
+        map.put("redirectUri", "Dummy");
+        map.put("creationDate", new Date());
+        AuthorizationRequest request = AuthorizationRequest.fromMap(map);
+        store.putParameters(request.getAuthorizationCode(), request.toMap());
 
         // Request a token
         Map<String, String> params = new HashMap<>();

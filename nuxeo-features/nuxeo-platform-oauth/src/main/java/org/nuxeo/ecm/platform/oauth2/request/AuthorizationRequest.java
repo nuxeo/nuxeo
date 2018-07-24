@@ -6,9 +6,10 @@ import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unauthorized_client;
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unsupported_response_type;
 
-import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -26,9 +29,19 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.2
  */
 public class AuthorizationRequest extends Oauth2Request {
+
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
 
+    /**
+     * @deprecated since 7.10-HF44
+     */
+    @Deprecated
     protected static Map<String, AuthorizationRequest> requests = new ConcurrentHashMap<>();
+
+    /**
+     * @since 7.10-HF44
+     */
+    public static final String STORE_NAME = "authorizationRequestStore";
 
     protected String responseType;
 
@@ -36,6 +49,10 @@ public class AuthorizationRequest extends Oauth2Request {
 
     protected String state;
 
+    /**
+     * @deprecated since 7.10-HF44
+     */
+    @Deprecated
     protected String sessionId;
 
     protected Date creationDate;
@@ -52,6 +69,46 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public static final String STATE = "state";
 
+    public static AuthorizationRequest from(HttpServletRequest request) {
+        return new AuthorizationRequest(request);
+    }
+
+    /**
+     * @since 7.10-HF44
+     */
+    public static AuthorizationRequest fromMap(Map<String, Serializable> map) {
+        return new AuthorizationRequest(map);
+    }
+
+    /**
+     * @since 7.10-HF44
+     */
+    public static void store(String key, AuthorizationRequest authorizationRequest) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        store.putParameters(key, authorizationRequest.toMap());
+    }
+
+    public static AuthorizationRequest fromCode(String key) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        Map<String, Serializable> parameters = store.getParameters(key);
+        if (parameters != null) {
+            AuthorizationRequest authorizationRequest = AuthorizationRequest.fromMap(parameters);
+            return authorizationRequest.isExpired() ? null : authorizationRequest;
+        }
+        return null;
+    }
+
+    /**
+     * @since 7.10-HF44
+     */
+    public static void remove(String key) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        store.remove(key);
+    }
+
     public AuthorizationRequest() {
     }
 
@@ -61,10 +118,29 @@ public class AuthorizationRequest extends Oauth2Request {
 
         scope = request.getParameter(SCOPE);
         state = request.getParameter(STATE);
-        sessionId = request.getSession(true).getId();
+
+        Principal principal = request.getUserPrincipal();
+        if (principal != null) {
+            username = principal.getName();
+        }
 
         creationDate = new Date();
         authorizationKey = RandomStringUtils.random(6, true, false);
+    }
+
+    /**
+     * @since 7.10-HF44
+     */
+    protected AuthorizationRequest(Map<String, Serializable> map) {
+        clientId = (String) map.get("clientId");
+        redirectUri = (String) map.get("redirectUri");
+        responseType = (String) map.get("responseType");
+        scope = (String) map.get("scope");
+        state = (String) map.get("state");
+        creationDate = (Date) map.get("creationDate");
+        authorizationCode = (String) map.get("authorizationCode");
+        authorizationKey = (String) map.get("authorizationKey");
+        username = (String) map.get("username");
     }
 
     public String checkError() {
@@ -91,6 +167,14 @@ public class AuthorizationRequest extends Oauth2Request {
         return null;
     }
 
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
     public boolean isExpired() {
         // RFC 4.1.2, Authorization code lifetime is 10
         return new Date().getTime() - creationDate.getTime() > 10 * 60 * 1000;
@@ -102,14 +186,6 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getResponseType() {
-        return responseType;
-    }
-
-    public String getScope() {
-        return scope;
     }
 
     public String getState() {
@@ -127,45 +203,43 @@ public class AuthorizationRequest extends Oauth2Request {
         return authorizationKey;
     }
 
-    private static void deleteExpiredRequests() {
-        Iterator<AuthorizationRequest> iterator = requests.values().iterator();
-        AuthorizationRequest req;
-        while (iterator.hasNext() && (req = iterator.next()) != null) {
-            if (req.isExpired()) {
-                requests.remove(req.sessionId);
-            }
+    /**
+     * @since 7.10-HF44
+     */
+    public Map<String, Serializable> toMap() {
+        Map<String, Serializable> map = new HashMap<>();
+        if (clientId != null) {
+            map.put("clientId", clientId);
         }
-    }
-
-    public static AuthorizationRequest from(HttpServletRequest request) throws UnsupportedEncodingException {
-        deleteExpiredRequests();
-
-        String sessionId = request.getSession(true).getId();
-        if (requests.containsKey(sessionId)) {
-            AuthorizationRequest authRequest = requests.get(sessionId);
-            if (!authRequest.isExpired() && authRequest.isValidState(request)) {
-                return authRequest;
-            }
+        if (redirectUri != null) {
+            map.put("redirectUri", redirectUri);
         }
-
-        AuthorizationRequest authRequest = new AuthorizationRequest(request);
-        requests.put(sessionId, authRequest);
-        return authRequest;
-    }
-
-    public static AuthorizationRequest fromCode(String authorizationCode) {
-        for (AuthorizationRequest auth : requests.values()) {
-            if (auth.authorizationCode != null && auth.authorizationCode.equals(authorizationCode)) {
-                if (auth.sessionId != null) {
-                    requests.remove(auth.sessionId);
-                }
-                return auth.isExpired() ? null : auth;
-            }
+        if (responseType != null) {
+            map.put("responseType", responseType);
         }
-        return null;
+        if (scope != null) {
+            map.put("scope", scope);
+        }
+        if (state != null) {
+            map.put("state", state);
+        }
+        if (creationDate != null) {
+            map.put("creationDate", creationDate);
+        }
+        if (authorizationCode != null) {
+            map.put("authorizationCode", authorizationCode);
+        }
+        if (authorizationKey != null) {
+            map.put("authorizationKey", authorizationKey);
+        }
+        if (username != null) {
+            map.put("username", username);
+        }
+        return map;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
+
 }

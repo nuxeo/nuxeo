@@ -111,8 +111,12 @@
         </h2>
 
         <br/>
-        <input name="authorization_key" type="hidden"
-            value="<%= request.getSession().getAttribute("authorization_key")%>"/>
+        <input name="response_type" type="hidden"
+            value="<%= request.getSession().getAttribute("response_type")%>"/>
+        <input name="client_id" type="hidden"
+          value="<%= request.getSession().getAttribute("client_id")%>"/>
+        <input name="redirect_uri" type="hidden"
+          value="<%= request.getSession().getAttribute("redirect_uri")%>"/>
         <input name="state" type="hidden" value="<%= request.getSession().getAttribute("state") %>"/>
         <input type="button" value="no"/>
         <input type="submit" value="yes"/>
