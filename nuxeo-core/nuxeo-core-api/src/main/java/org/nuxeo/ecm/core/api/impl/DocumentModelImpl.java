@@ -1118,7 +1118,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void copyContent(DocumentModel sourceDoc) {
         if (sourceDoc instanceof DocumentModelImpl) {
-            computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets);
+            computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets, false);
         }
         Map<String, DataModel> newDataModels = new HashMap<>();
         for (String key : schemas) {
@@ -1570,7 +1570,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         if ((refreshFlags & (REFRESH_CONTENT | REFRESH_CONTENT_LAZY)) != 0) {
             dataModels.clear();
-            computeFacetsAndSchemas(refresh.instanceFacets);
+            computeFacetsAndSchemas(refresh.instanceFacets, true);
         }
         if ((refreshFlags & REFRESH_CONTENT) != 0) {
             DocumentPart[] parts = refresh.documentParts;
@@ -1588,20 +1588,23 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      *
      * @since 7.1
      */
-    protected void computeFacetsAndSchemas(Set<String> instanceFacets) {
+    protected void computeFacetsAndSchemas(Set<String> instanceFacets, boolean setOrig) {
         if (getDocumentType() == null) {
             return;
         }
 
         this.instanceFacets = instanceFacets;
-        instanceFacetsOrig = new HashSet<>(instanceFacets);
         facets = new HashSet<>(instanceFacets);
         facets.addAll(getDocumentType().getFacets());
         if (isImmutable()) {
             facets.add(FacetNames.IMMUTABLE);
         }
         schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy());
-        schemasOrig = new HashSet<>(schemas);
+        if (setOrig) {
+            // if the data was just read, set it as original data
+            instanceFacetsOrig = new HashSet<>(instanceFacets);
+            schemasOrig = new HashSet<>(schemas);
+        }
     }
 
     @Override
