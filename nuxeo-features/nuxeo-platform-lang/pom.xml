@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>9.10-HF13-SNAPSHOT</version>
+    <version>9.10-HF14-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-lang</artifactId>
