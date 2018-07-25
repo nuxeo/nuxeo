@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.SET_STREAM_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DOCUMENTSET_ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
@@ -65,15 +65,9 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(StreamBulkProcessor.class);
 
-    public static final String SCROLLER_COMPUTATION_NAME = "bulkDocumentScroller";
+    public static final String COUNTER_ACTION_NAME = "counter";
 
-    public static final String COUNTER_COMPUTATION_NAME = "bulkCounter";
-
-    public static final String KVWRITER_COMPUTATION_NAME = "keyValueWriter";
-
-    public static final String COUNTER_STREAM_NAME = "counter";
-
-    public static final String KVWRITER_STREAM_NAME = "keyValueWriter";
+    public static final String KVWRITER_ACTION_NAME = "keyValueWriter";
 
     public static final String SCROLL_BATCH_SIZE_OPT = "scrollBatchSize";
 
@@ -104,23 +98,23 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         List<String> actions = service.getActions();
         List<String> mapping = new ArrayList<>();
-        mapping.add("i1:" + SET_STREAM_NAME);
+        mapping.add("i1:" + DOCUMENTSET_ACTION_NAME);
         int i = 1;
         for (String action : actions) {
             mapping.add(String.format("o%s:%s", i, action));
             i++;
         }
-        mapping.add(String.format("o%s:%s", i, KVWRITER_STREAM_NAME));
+        mapping.add(String.format("o%s:%s", i, KVWRITER_ACTION_NAME));
 
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkDocumentScrollerComputation(SCROLLER_COMPUTATION_NAME, mapping.size(),
+                               () -> new BulkDocumentScrollerComputation(DOCUMENTSET_ACTION_NAME, mapping.size(),
                                        scrollBatchSize, scrollKeepAliveSeconds, bucketSize), //
                                mapping)
-                       .addComputation(() -> new CounterComputation(COUNTER_COMPUTATION_NAME, counterThresholdMs),
-                               Arrays.asList("i1:" + COUNTER_STREAM_NAME, "o1:" + KVWRITER_STREAM_NAME))
-                       .addComputation(() -> new KeyValueWriterComputation(KVWRITER_COMPUTATION_NAME),
-                               Collections.singletonList("i1:" + KVWRITER_STREAM_NAME))
+                       .addComputation(() -> new CounterComputation(COUNTER_ACTION_NAME, counterThresholdMs),
+                               Arrays.asList("i1:" + COUNTER_ACTION_NAME, "o1:" + KVWRITER_ACTION_NAME))
+                       .addComputation(() -> new KeyValueWriterComputation(KVWRITER_ACTION_NAME),
+                               Collections.singletonList("i1:" + KVWRITER_ACTION_NAME))
                        .build();
     }
 
@@ -167,7 +161,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                     return;
                 }
                 currentStatus.setState(SCROLLING_RUNNING);
-                context.produceRecord(KVWRITER_STREAM_NAME, commandId,
+                context.produceRecord(KVWRITER_ACTION_NAME, commandId,
                         BulkCodecs.getBulkStatusCodec().encode(currentStatus));
 
                 LoginContext loginContext;
@@ -210,7 +204,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                         currentStatus.setScrollEndTime(scrollEndTime);
                         currentStatus.setState(RUNNING);
                         currentStatus.setCount(documentCount);
-                        context.produceRecord(KVWRITER_STREAM_NAME, commandId,
+                        context.produceRecord(KVWRITER_ACTION_NAME, commandId,
                                 BulkCodecs.getBulkStatusCodec().encode(currentStatus));
 
                     } finally {
@@ -250,8 +244,8 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            log.debug(String.format("Starting computation: %s reading on: %s, threshold: %dms",
-                    COUNTER_COMPUTATION_NAME, COUNTER_STREAM_NAME, counterThresholdMs));
+            log.debug(String.format("Starting computation: %s, threshold: %dms",
+                    COUNTER_ACTION_NAME, counterThresholdMs));
             context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
         }
 
@@ -264,7 +258,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                         .stream()
                         .map(entry -> getStatusAndUpdate(kvStore, entry.getKey(), entry.getValue()))
                         .map(BulkCodecs.getBulkStatusCodec()::encode)
-                        .forEach(status -> context.produceRecord(KVWRITER_STREAM_NAME, key, status));
+                        .forEach(status -> context.produceRecord(KVWRITER_ACTION_NAME, key, status));
                 counters.clear();
                 context.askForCheckpoint();
             }

@@ -48,4 +48,15 @@ public interface BulkService {
      * @return {@code true} if bulk command completed or {@code false} if computation has not finished after the timeout
      */
     boolean await(String commandId, Duration duration) throws InterruptedException;
+
+    /**
+     * Waits for completion of all bulk commands.
+     *
+     * @param duration the duration to wait
+     * @return {@code true} if all bulk commands completed or {@code false} if one or more has not finished after the
+     *         timeout
+     * @since 10.3
+     */
+    boolean await(Duration duration) throws InterruptedException;
+
 }

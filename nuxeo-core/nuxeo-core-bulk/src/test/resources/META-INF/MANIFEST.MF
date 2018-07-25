@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Core Bulk - Test Jar
 Bundle-SymbolicName: org.nuxeo.ecm.core.bulk.test;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/bulk-stream-configuration-tests.xml
+Nuxeo-Component: OSGI-INF/bulk-stream-configuration-tests.xml,
+ OSGI-INF/dummy-bulk-login-config.xml
