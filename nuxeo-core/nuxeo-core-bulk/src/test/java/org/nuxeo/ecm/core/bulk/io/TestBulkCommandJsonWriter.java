@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
+import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
@@ -25,6 +26,8 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
+
+import java.util.HashMap;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
@@ -50,7 +53,9 @@ public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<Bulk
                                                .withQuery("SELECT * FROM Document")
                                                .withAction("myAction")
                                                .withParam("actionParam", "mySpecificParameter")
-                                               .withParam("finisherParam", "myFinisher");
+                                               .withParam("boolean", false)
+                                               .withParam("long", 1200)
+                                               .withParam("complex", new HashMap<>(singletonMap("key", "value")));
         JsonAssert json = jsonAssert(command);
         json.properties(6);
         json.has(ENTITY_FIELD_NAME).isEquals(COMMAND_ENTITY_TYPE);
@@ -58,8 +63,11 @@ public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<Bulk
         json.has(COMMAND_REPOSITORY).isEquals("myRepository");
         json.has(COMMAND_QUERY).isEquals("SELECT * FROM Document");
         json.has(COMMAND_ACTION).isEquals("myAction");
-        JsonAssert params = json.has(COMMAND_PARAMS).properties(2);
+        JsonAssert params = json.has(COMMAND_PARAMS).properties(4);
         params.has("actionParam").isEquals("mySpecificParameter");
-        params.has("finisherParam").isEquals("myFinisher");
+        params.has("boolean").isEquals(false);
+        params.has("long").isEquals(1200);
+        JsonAssert complex = params.has("complex").properties(1);
+        complex.has("key").isEquals("value");
     }
 }

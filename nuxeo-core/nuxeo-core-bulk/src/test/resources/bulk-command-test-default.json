@@ -6,6 +6,10 @@
   "action": "myAction",
   "params": {
     "actionParam": "mySpecificParameter",
-    "finisherParam": "myFinisher"
+    "boolean": true,
+    "long": 1200,
+    "complex": {
+      "key": "value"
+    }
   }
 }
