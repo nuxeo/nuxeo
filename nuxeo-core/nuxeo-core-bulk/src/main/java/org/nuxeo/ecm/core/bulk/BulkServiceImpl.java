@@ -23,9 +23,13 @@ import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.SCHEDULED;
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.KVWRITER_ACTION_NAME;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -47,7 +51,7 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
 
-    protected static final String SET_STREAM_NAME = "documentSet";
+    protected static final String DOCUMENTSET_ACTION_NAME = "documentSet";
 
     public static final String COMMAND = ":command";
 
@@ -82,7 +86,7 @@ public class BulkServiceImpl implements BulkService {
 
         // send it to nuxeo-stream
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
-        LogAppender<Record> logAppender = logManager.getAppender(SET_STREAM_NAME);
+        LogAppender<Record> logAppender = logManager.getAppender(DOCUMENTSET_ACTION_NAME);
         logAppender.append(commandId, Record.of(commandId, commandAsBytes));
 
         return commandId;
@@ -114,4 +118,29 @@ public class BulkServiceImpl implements BulkService {
         return Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
     }
 
+    @Override
+    public boolean await(Duration duration) throws InterruptedException {
+        StreamService service = Framework.getService(StreamService.class);
+        LogManager logManager = service.getLogManager(BULK_LOG_MANAGER_NAME);
+        BulkAdminService admin = Framework.getService(BulkAdminService.class);
+        Collection<String> actions = admin.getActions();
+        Collection<String> streams = new ArrayList<>(actions.size() + 3);
+        streams.add(DOCUMENTSET_ACTION_NAME);
+        streams.addAll(actions);
+        streams.add(COUNTER_ACTION_NAME);
+        streams.add(KVWRITER_ACTION_NAME);
+        long deadline = System.currentTimeMillis() + duration.toMillis();
+        for (String stream : streams) {
+            // when there is no lag between producer and consumer we are done
+            while (logManager.getLag(stream, stream).lag() > 0) {
+                if (System.currentTimeMillis() > deadline) {
+                    return false;
+                }
+                Thread.sleep(50);
+            }
+            // we wait for records to be actually passed to next stream
+            Thread.sleep(100);
+        }
+        return true;
+    }
 }

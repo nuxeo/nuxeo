@@ -29,13 +29,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,8 +58,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/dummy-bulk-login-config.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
 public class TestRunBulkAction {
 
@@ -71,28 +66,6 @@ public class TestRunBulkAction {
 
     @Inject
     protected AutomationService service;
-
-    @Test
-    @Ignore
-    public void test() throws OperationException {
-
-        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
-
-        OperationContext ctx = new OperationContext(session);
-        // username and repository are retrieved from CoreSession
-        Map<String, Serializable> params = new HashMap<>();
-        params.put("action", "count");
-        params.put("query", nxql);
-        Map<String, Object> actionParams = new HashMap<>();
-        actionParams.put("dummyParam", "dummyValue");
-        params.put("parameters", (Serializable) actionParams);
-
-        Blob result = (Blob) service.run(ctx, RunBulkAction.ID, params);
-
-        Assert.assertNotNull(result);
-
-    }
 
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
@@ -112,7 +85,7 @@ public class TestRunBulkAction {
         OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
-        params.put("action", SetPropertiesAction.STREAM_NAME);
+        params.put("action", SetPropertiesAction.SETPROPERTIES_ACTION_NAME);
         params.put("query", nxql);
         HashMap<String, Serializable> actionParams = new HashMap<>();
         actionParams.put("dc:title", title);

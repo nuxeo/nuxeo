@@ -23,7 +23,7 @@ import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.commandIdFrom;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
-import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_STREAM_NAME;
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -62,9 +62,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(SetPropertiesAction.class);
 
-    public static final String COMPUTATION_NAME = "SetProperties";
-
-    public static final String STREAM_NAME = "setProperties";
+    public static final String SETPROPERTIES_ACTION_NAME = "setProperties";
 
     public static final String BATCH_SIZE_OPT = "batchSize";
 
@@ -79,8 +77,9 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         int batchSize = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
         int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
         return Topology.builder()
-                       .addComputation(() -> new SetPropertyComputation(COMPUTATION_NAME, batchSize, batchThresholdMs),
-                               Arrays.asList("i1:" + STREAM_NAME, "o1:" + COUNTER_STREAM_NAME))
+                       .addComputation(
+                               () -> new SetPropertyComputation(SETPROPERTIES_ACTION_NAME, batchSize, batchThresholdMs),
+                               Arrays.asList("i1:" + SETPROPERTIES_ACTION_NAME, "o1:" + COUNTER_ACTION_NAME))
                        .build();
     }
 
@@ -105,8 +104,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            log.debug(String.format("Starting computation: %s reading on: %s, batch size: %d, threshold: %dms",
-                    COMPUTATION_NAME, STREAM_NAME, batchSize, batchThresholdMs));
+            log.debug(String.format("Starting computation: %s, batch size: %d, threshold: %dms",
+                    SETPROPERTIES_ACTION_NAME, batchSize, batchThresholdMs));
             context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
         }
 
@@ -143,7 +142,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         public void destroy() {
-            log.debug(String.format("Destroy computation: %s, pending entries: %d", COMPUTATION_NAME,
+            log.debug(String.format("Destroy computation: %s, pending entries: %d", SETPROPERTIES_ACTION_NAME,
                     documentIds.size()));
         }
 
