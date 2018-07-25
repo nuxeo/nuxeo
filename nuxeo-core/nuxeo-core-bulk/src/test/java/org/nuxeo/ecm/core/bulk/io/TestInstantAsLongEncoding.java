@@ -23,14 +23,11 @@ import static org.junit.Assert.assertNull;
 
 import java.time.Instant;
 
-import javax.inject.Inject;
-
 import org.apache.avro.reflect.AvroEncode;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.lib.stream.codec.Codec;
-import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -41,36 +38,41 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreBulkFeature.class)
 public class TestInstantAsLongEncoding {
 
-    @Inject
-    private CodecService codecService;
+    @Rule
+    public final CodecTestRule<BeanWithInstant> codecRule = new CodecTestRule<>("avro", BeanWithInstant.class);
 
     @Test
-    public void testInstantSerializationWithAvro() {
-        BeanWithInstant bean = new BeanWithInstant();
+    public void testNullInstant() {
+        BeanWithInstant bean = new BeanWithInstant(null);
+        BeanWithInstant actualBean = codecRule.encodeDecode(bean);
 
-        Codec<BeanWithInstant> codec = codecService.getCodec("avro", BeanWithInstant.class);
-        byte[] bytes = codec.encode(bean);
-        BeanWithInstant actualBean = codec.decode(bytes);
+        assertNull(actualBean.getInstant());
+    }
 
-        assertNull(actualBean.getNullInstant());
+    @Test
+    public void testNowInstant() {
+        BeanWithInstant bean = new BeanWithInstant(Instant.now());
+        BeanWithInstant actualBean = codecRule.encodeDecode(bean);
+
         // assert milliseconds as we don't serialize nanoseconds
-        assertEquals(bean.getNowInstant().toEpochMilli(), actualBean.getNowInstant().toEpochMilli());
+        assertEquals(bean.getInstant().toEpochMilli(), actualBean.getInstant().toEpochMilli());
     }
 
     public static class BeanWithInstant {
 
         @AvroEncode(using = InstantAsLongEncoding.class)
-        protected final Instant nullInstant = null;
+        protected Instant instant;
 
-        @AvroEncode(using = InstantAsLongEncoding.class)
-        protected final Instant nowInstant = Instant.now();
-
-        public Instant getNullInstant() {
-            return nullInstant;
+        public BeanWithInstant() {
+            // for Avro
         }
 
-        public Instant getNowInstant() {
-            return nowInstant;
+        public BeanWithInstant(Instant instant) {
+            this.instant = instant;
+        }
+
+        public Instant getInstant() {
+            return instant;
         }
     }
 

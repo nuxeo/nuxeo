@@ -67,9 +67,9 @@ public class BulkStatus implements Serializable {
     @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant scrollEndTime;
 
-    protected long processed = 0L;
+    protected long processed;
 
-    protected long count = 0L;
+    protected long count;
 
     /**
      * Gets bulk id.

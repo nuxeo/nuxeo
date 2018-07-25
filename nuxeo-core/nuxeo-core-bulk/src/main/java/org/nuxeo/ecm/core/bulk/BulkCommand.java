@@ -23,7 +23,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.avro.reflect.AvroEncode;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.nuxeo.ecm.core.bulk.io.MapAsJsonAsStringEncoding;
 
 /**
  * A command to execute by {@link BulkService}.
@@ -44,7 +48,8 @@ public class BulkCommand implements Serializable {
     /** The bulk action to execute. */
     protected String action;
 
-    protected Map<String, String> params;
+    @AvroEncode(using = MapAsJsonAsStringEncoding.class)
+    protected Map<String, Serializable> params;
 
     public BulkCommand() {
         params = new HashMap<>();
@@ -89,22 +94,33 @@ public class BulkCommand implements Serializable {
         return action;
     }
 
-    public BulkCommand withParams(Map<String, String> params) {
+    public BulkCommand withParams(Map<String, Serializable> params) {
         this.params.putAll(params);
         return this;
     }
 
-    public Map<String, String> getParams() {
+    public Map<String, Serializable> getParams() {
         return Collections.unmodifiableMap(params);
     }
 
-    public BulkCommand withParam(String key, String value) {
+    public BulkCommand withParam(String key, Serializable value) {
         params.put(key, value);
         return this;
     }
 
-    public String getParam(String key) {
-        return params.get(key);
+    @SuppressWarnings("unchecked")
+    public <T> T getParam(String key) {
+        return (T) params.get(key);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override

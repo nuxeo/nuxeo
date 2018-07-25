@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.BulkCommand;
@@ -54,7 +55,7 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
         jg.writeStringField(COMMAND_QUERY, command.getQuery());
         jg.writeStringField(COMMAND_ACTION, command.getAction());
 
-        Map<String, String> params = command.getParams();
+        Map<String, Serializable> params = command.getParams();
         if (!params.isEmpty()) {
             jg.writeObjectField(COMMAND_PARAMS, params);
         }

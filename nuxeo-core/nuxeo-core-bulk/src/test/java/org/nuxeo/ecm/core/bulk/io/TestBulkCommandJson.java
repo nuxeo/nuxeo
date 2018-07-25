@@ -34,9 +34,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreBulkFeature.class)
-public class TestBulkCommand extends AbstractJsonBijectionTest<BulkCommand> {
+public class TestBulkCommandJson extends AbstractJsonBijectionTest<BulkCommand> {
 
-    public TestBulkCommand() {
+    public TestBulkCommandJson() {
         super(BulkCommand.class);
     }
 

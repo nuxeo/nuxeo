@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
+import static java.util.Collections.emptyMap;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
@@ -27,10 +28,13 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
@@ -54,10 +58,9 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         // everything is mandatory except parameters
         Function<String, String> getter = fieldName -> jn.get(fieldName).asText();
 
-        Map<String, String> params = new HashMap<>();
-        JsonNode commandNode = jn.get(COMMAND_PARAMS);
-        if (commandNode != null) {
-            fillParams(jn.get(COMMAND_PARAMS), params);
+        Map<String, Serializable> params = emptyMap();
+        if (jn.has(COMMAND_PARAMS)) {
+            params = toMap(jn.get(COMMAND_PARAMS));
         }
 
         return new BulkCommand().withUsername(getter.apply(COMMAND_USERNAME))
@@ -67,22 +70,46 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
                                 .withParams(params);
     }
 
-    protected void fillParams(JsonNode node, Map<String, String> params) {
-        for (Iterator<Map.Entry<String, JsonNode>> paramsNode = node.fields(); paramsNode.hasNext();) {
-            Map.Entry<String, JsonNode> paramNode = paramsNode.next();
-            switch (paramNode.getValue().getNodeType()) {
-            case STRING:
-            case BOOLEAN:
-            case NUMBER:
-            case BINARY: // binary will be converted to base64
-                params.put(paramNode.getKey(), paramNode.getValue().asText());
-                break;
-            case ARRAY:
-            case OBJECT:
-            default:
-                throw new NuxeoException("Node type=" + paramNode.getValue().getNodeType() + " is not supported");
-            }
+    protected HashMap<String, Serializable> toMap(JsonNode node) {
+        // we declare variable and method return type as HashMap to be compliant with Serializable in params map
+        HashMap<String, Serializable> params = new HashMap<>();
+        Iterable<Map.Entry<String, JsonNode>> paramNodes = node::fields;
+        for (Map.Entry<String, JsonNode> paramNode : paramNodes) {
+            params.put(paramNode.getKey(), toSerializable(paramNode.getValue()));
         }
+        return params;
+    }
+
+    protected ArrayList<Serializable> toList(JsonNode value) {
+        // we declare method return type as ArrayList to be compliant with Serializable in params map
+        // spliterator calls iterator which is a bridge method of JsonNode#elements
+        return StreamSupport.stream(value.spliterator(), false).map(this::toSerializable).collect(
+                Collectors.toCollection(ArrayList::new));
+    }
+
+    protected Serializable toSerializable(JsonNode value) {
+        Serializable serializableValue;
+        switch (value.getNodeType()) {
+        case STRING:
+        case BINARY: // binary will be converted to base64
+            serializableValue = value.asText();
+            break;
+        case BOOLEAN:
+            serializableValue = value.asBoolean();
+            break;
+        case NUMBER:
+            serializableValue = value.asLong();
+            break;
+        case ARRAY:
+            serializableValue = toList(value);
+            break;
+        case OBJECT:
+            serializableValue = toMap(value);
+            break;
+        default:
+            throw new NuxeoException("Node type=" + value.getNodeType() + " is not supported");
+        }
+        return serializableValue;
     }
 
 }

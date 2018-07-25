@@ -19,8 +19,11 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Map;
 
 import org.junit.Test;
@@ -49,9 +52,12 @@ public class TestBulkCommandJsonReader extends AbstractJsonReaderTest.Local<Bulk
         assertEquals("SELECT * FROM Document", command.getQuery());
         assertEquals("myAction", command.getAction());
 
-        Map<String, String> params = command.getParams();
-        assertEquals(2, params.size());
-        assertEquals("mySpecificParameter", params.get("actionParam"));
-        assertEquals("myFinisher", params.get("finisherParam"));
+        assertEquals(4, command.getParams().size());
+        assertEquals("mySpecificParameter", command.getParam("actionParam"));
+        assertTrue(command.getParam("boolean"));
+        assertEquals(1200, command.<Long>getParam("long").longValue());
+        Map<String, Serializable> complex = command.getParam("complex");
+        assertFalse(complex.isEmpty());
+        assertEquals("value", complex.get("key"));
     }
 }
