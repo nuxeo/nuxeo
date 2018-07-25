@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -31,19 +32,6 @@ import org.nuxeo.ecm.core.storage.sql.Node;
 public class SQLDocumentVersion extends SQLDocumentLive {
 
     private final Node versionableNode;
-
-    public static class VersionNotModifiableException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public VersionNotModifiableException() {
-            super();
-        }
-
-        public VersionNotModifiableException(String message) {
-            super(message);
-        }
-
-    }
 
     protected SQLDocumentVersion(Node node, ComplexType type, SQLSession session, boolean readonly) {
         super(node, type, session, readonly);
