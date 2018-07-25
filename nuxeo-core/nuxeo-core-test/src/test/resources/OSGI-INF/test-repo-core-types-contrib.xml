@@ -48,6 +48,7 @@
     <doctype name="ComplexDoc" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
+      <schema name="complex" />
       <schema name="complexschema" />
     </doctype>
     <doctype name="TestDocument" extends="Document">

@@ -16,6 +16,29 @@
       "logicalType" : "schema"
     }
   }, {
+    "name" : "complex",
+    "type" : {
+      "type" : "record",
+      "name" : "complex",
+      "namespace" : "cpx",
+      "fields" : [ {
+        "name" : "complex",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "complex",
+          "namespace" : "",
+          "fields" : [ {
+            "name" : "bar",
+            "type" : [ "null", "string" ]
+          }, {
+            "name" : "foo",
+            "type" : [ "null", "string" ]
+          } ]
+        } ]
+      } ],
+      "logicalType" : "schema"
+    }
+  }, {
     "name" : "complexschema",
     "type" : {
       "type" : "record",

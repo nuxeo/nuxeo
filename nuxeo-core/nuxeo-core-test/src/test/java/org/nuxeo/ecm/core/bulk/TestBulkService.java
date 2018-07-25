@@ -20,12 +20,15 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.RUNNING;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.Duration;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.security.auth.login.LoginContext;
@@ -110,41 +113,33 @@ public class TestBulkService {
 
         String title = "test title";
         String description = "test description";
+        String foo = "test foo";
+        String bar = "test bar";
+
+        HashMap<String, Serializable> complex = new HashMap<>();
+        complex.put("foo", foo);
+        complex.put("bar", bar);
 
         String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
                                                            .withUsername(session.getPrincipal().getName())
                                                            .withQuery(nxql)
                                                            .withAction("setProperties")
                                                            .withParam("dc:title", title)
-                                                           .withParam("dc:description", description));
+                                                           .withParam("dc:description", description)
+                                                           .withParam("cpx:complex", complex));
 
-        LogManager manager = Framework.getService(StreamService.class).getLogManager("bulk");
-        // TODO remove the use of tailers when we'll be able to detect end
-        try (LogTailer<Record> tailer = manager.createTailer("setProperties", "setProperties")) {
-            for (int i = 0; i <= 10; i++) {
-                tailer.read(Duration.ofSeconds(1));
-            }
-        }
-
-        try (LogTailer<Record> tailer = manager.createTailer("counter", "counter")) {
-            tailer.read(Duration.ofSeconds(1));
-        }
-
-        try (LogTailer<Record> tailer = manager.createTailer("kvwriter", "keyValueWriter")) {
-            tailer.read(Duration.ofSeconds(1));
-        }
+        assertTrue("Bulk action didn't finish", service.await(commandId, Duration.ofSeconds(10)));
 
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
-
         assertEquals(COMPLETED, status.getState());
-
         assertEquals(10, status.getProcessed());
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());
             assertEquals(description, child.getPropertyValue("dc:description"));
+            assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));
+            assertEquals(bar, child.getPropertyValue("cpx:complex/bar"));
         }
-
     }
 }

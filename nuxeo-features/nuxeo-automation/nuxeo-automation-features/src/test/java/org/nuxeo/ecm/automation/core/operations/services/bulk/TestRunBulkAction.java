@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,15 +40,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.bulk.BulkStatus;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit;
+import org.nuxeo.ecm.core.bulk.actions.SetPropertiesAction;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.2
@@ -53,8 +60,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-count-action-tests.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/dummy-bulk-login-config.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
 public class TestRunBulkAction {
 
@@ -72,6 +80,7 @@ public class TestRunBulkAction {
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
 
         OperationContext ctx = new OperationContext(session);
+        // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
         params.put("action", "count");
         params.put("query", nxql);
@@ -82,6 +91,50 @@ public class TestRunBulkAction {
         Blob result = (Blob) service.run(ctx, RunBulkAction.ID, params);
 
         Assert.assertNotNull(result);
+
+    }
+
+    @Test
+    public void testSetPropertyActionFromAutomation() throws Exception {
+
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+
+        String title = "test title";
+        String description = "test description";
+        String foo = "test foo";
+        String bar = "test bar";
+
+        HashMap<String, Serializable> complex = new HashMap<>();
+        complex.put("foo", foo);
+        complex.put("bar", bar);
+
+        OperationContext ctx = new OperationContext(session);
+        // username and repository are retrieved from CoreSession
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("action", SetPropertiesAction.STREAM_NAME);
+        params.put("query", nxql);
+        HashMap<String, Serializable> actionParams = new HashMap<>();
+        actionParams.put("dc:title", title);
+        actionParams.put("dc:description", description);
+        actionParams.put("cpx:complex", complex);
+        params.put("parameters", actionParams);
+
+        Blob runResult = (Blob) service.run(ctx, RunBulkAction.ID, params);
+
+        assertNotNull(runResult);
+        // runResult is a json containing commandId
+        String commandId = new ObjectMapper().readTree(runResult.getString()).get("commandId").asText();
+
+        boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
+        assertTrue("Bulk action didn't finish", waitResult);
+
+        for (DocumentModel child : session.getChildren(model.getRef())) {
+            assertEquals(title, child.getTitle());
+            assertEquals(description, child.getPropertyValue("dc:description"));
+            assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));
+            assertEquals(bar, child.getPropertyValue("cpx:complex/bar"));
+        }
 
     }
 
