@@ -66,7 +66,11 @@
 
       Document types may also specify subtypes, which are sets of other
       document types that can be created inside the this document type
-      being defined. This can be achieved as follows:
+      being defined.
+      <p/>
+      This configuration only applies in the UI and will not affect
+      documents created through the REST API.
+      This can be achieved as follows:
 
       <code>
         <doctype name="SomeFolder" extends="Document">
@@ -77,7 +81,10 @@
       </code>
 
       When extending a doctype, forbidden subtypes can also be specified
-      to prevent a specific type from being created:
+      to prevent a specific type from being created.
+      <p/>
+      This configuration only applies in the UI and will not affect
+      documents created through the REST API.
 
       <code>
         <doctype name="SomeFolder" append="true">
