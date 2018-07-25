@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
 import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_STREAM_NAME;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -150,7 +151,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             if (!documentIds.isEmpty()) {
                 TransactionHelper.runInTransaction(() -> {
                     // for setProperties, parameters are properties to set
-                    Map<String, String> properties = currentCommand.getParams();
+                    Map<String, Serializable> properties = currentCommand.getParams();
                     LoginContext loginContext;
                     try {
                         loginContext = Framework.loginAsUser(currentCommand.getUsername());
