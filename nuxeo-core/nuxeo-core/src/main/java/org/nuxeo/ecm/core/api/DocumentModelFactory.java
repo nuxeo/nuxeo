@@ -212,6 +212,7 @@ public class DocumentModelFactory {
         Set<String> instanceFacetsOrig = ((DocumentModelImpl) docModel).instanceFacetsOrig;
         Set<String> addedFacets = new HashSet<>(instanceFacets);
         addedFacets.removeAll(instanceFacetsOrig);
+        addedFacets.remove(FacetNames.IMMUTABLE);
         for (String facet : addedFacets) {
             changed = doc.addFacet(facet) || changed;
         }

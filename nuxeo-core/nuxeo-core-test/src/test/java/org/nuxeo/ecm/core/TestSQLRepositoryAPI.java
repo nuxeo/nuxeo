@@ -3038,6 +3038,23 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testCopyContentWithDynamicFacetOnExistingDocument() throws Exception {
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1.addFacet("Aged");
+        file1.setPropertyValue("age:age", "123");
+        file1 = session.createDocument(file1);
+
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2 = session.createDocument(file2);
+
+        file2.copyContent(file1);
+        file2 = session.saveDocument(file2);
+
+        assertTrue(file2.hasFacet("Aged"));
+        assertEquals("123", file2.getPropertyValue("age:age"));
+    }
+
+    @Test
     public void testCopyContentFromSimpleDocumentModel() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new SimpleDocumentModel("dublincore");
