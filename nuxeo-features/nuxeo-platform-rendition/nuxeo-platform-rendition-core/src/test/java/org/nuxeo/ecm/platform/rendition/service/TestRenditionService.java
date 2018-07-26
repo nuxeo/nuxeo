@@ -40,6 +40,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -70,6 +72,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -702,7 +707,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void shouldNotRenderADocumentWithoutBlobHolder() {
+    public void shouldNotRenderANonFolderishDocumentWithoutBlobHolder() {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
         try {
@@ -710,6 +715,28 @@ public class TestRenditionService {
             fail();
         } catch (NuxeoException e) {
             assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition pdf not available"));
+        }
+    }
+
+    @Test
+    public void shouldRenderFolderishDocumentAsAFile() {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Set<String> docTypeNames = schemaManager.getDocumentTypeNamesForFacet(FacetNames.FOLDERISH);
+        for (String docTypeName : docTypeNames) {
+            DocumentModel folder = session.createDocumentModel("/", "dummy-folder-" + docTypeName, docTypeName);
+            folder = session.createDocument(folder);
+            DocumentRef renditionDocRef;
+            try {
+                renditionDocRef = renditionService.storeRendition(folder, ZIP_TREE_EXPORT_RENDITION_DEFINITION);
+            } catch (LifeCycleException ignored) {
+                log.debug("Could not create stored rendition for doc type '" + docTypeName + "'");
+                continue;
+            }
+            DocumentModel renditionDocModel = session.getDocument(renditionDocRef);
+            String renditionDocTypeName = renditionDocModel.getType();
+            assertEquals(String.format(
+                    "Folderish with docType '%s' rendered as '%s' instead of 'File'", docTypeName, renditionDocTypeName),
+                    "File", renditionDocTypeName);
         }
     }
 
