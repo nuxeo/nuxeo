@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.annot</groupId>
     <artifactId>parent</artifactId>
-    <version>8.10-HF34-SNAPSHOT</version>
+    <version>8.10-HF35-SNAPSHOT</version>
   </parent>
   <groupId>org.nuxeo.ecm.annot</groupId>
   <artifactId>nuxeo-annot-contrib</artifactId>

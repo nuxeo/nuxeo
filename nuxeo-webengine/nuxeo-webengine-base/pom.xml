@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>8.10-HF34-SNAPSHOT</version>
+    <version>8.10-HF35-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-webengine-base</artifactId>
