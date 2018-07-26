@@ -69,7 +69,7 @@
       being defined.
       <p/>
       This configuration only applies in the UI and will not affect
-      documents created through the REST API.
+      documents created through APIs (e.g. REST, Java)
       This can be achieved as follows:
 
       <code>
@@ -84,7 +84,7 @@
       to prevent a specific type from being created.
       <p/>
       This configuration only applies in the UI and will not affect
-      documents created through the REST API.
+      documents created through APIs (e.g. REST, Java)
 
       <code>
         <doctype name="SomeFolder" append="true">
