@@ -1040,7 +1040,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         } catch (RemoteException e) {
             String expectedMsg = String.format("Failed to invoke operation: Document.AddPermission, "
                     + "Failed to invoke operation Document.AddPermission with aliases [Document.AddACL], "
-                    + "User or group name '%s' does not exist. Please provide a valid name.", username);
+                    + "The following set of User or Group names do not exist: [%s]. Please provide valid ones.", username);
             assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
     }

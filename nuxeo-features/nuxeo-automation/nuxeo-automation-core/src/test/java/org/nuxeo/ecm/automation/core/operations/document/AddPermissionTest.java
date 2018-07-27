@@ -19,20 +19,24 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -50,6 +54,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -68,11 +73,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class AddPermissionTest {
 
+    protected final String USER = "user";
+
+    protected final String GROUP = "group";
+
+    protected final String UNKNOWN = "unknown";
+
     @Inject
     protected AutomationService automationService;
 
     @Inject
     protected CoreSession session;
+
+    @Mock
+    @RuntimeService
+    protected AdministratorGroupsProvider administratorGroupsProvider;
 
     @Mock
     @RuntimeService
@@ -95,6 +110,8 @@ public class AddPermissionTest {
     @Test
     public void shouldFailWhenNoUsersOrEmailAreProvided() throws OperationException {
         DocumentModel doc = session.getDocument(new PathRef("/src"));
+        assertNotNull(doc.getACP());
+        assertNull(doc.getACP().getACL("local"));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
@@ -107,12 +124,15 @@ public class AddPermissionTest {
         } catch (IllegalParameterException e) {
             String expectedMsg = "'users' or 'email' parameters must be set";
             assertEquals(expectedMsg, e.getOriginalMessage());
+            verifyZeroInteractions(userManager);
         }
     }
 
     @Test
     public void shouldFailWhenEmailIsProvidedButNotEndDate() throws OperationException {
         DocumentModel doc = session.getDocument(new PathRef("/src"));
+        assertNotNull(doc.getACP());
+        assertNull(doc.getACP().getACL("local"));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
@@ -125,74 +145,88 @@ public class AddPermissionTest {
         } catch (IllegalParameterException e) {
             String expectedMsg = "'end' parameter must be set when adding a permission for an 'email'";
             assertEquals(expectedMsg, e.getOriginalMessage());
+            verifyZeroInteractions(userManager);
         }
     }
 
     @Test
     public void shouldFailWhenSomeUserDoesNotExist() throws OperationException {
+        DocumentModel doc = session.createDocumentModel("/", "src", "File");
+        assertNotNull(doc.getACP());
+        assertNull(doc.getACP().getACL("local"));
+
+        List<String> users = Arrays.asList("existingGroup", "unexistingUser", "existingUser", "unexistingUser2");
         when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
         when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
         when(userManager.getUserModel("unexistingUser")).thenReturn(null);
-
-        DocumentModel doc = session.createDocumentModel("/", "src", "File");
+        when(userManager.getUserModel("unexistingUser2")).thenReturn(null);
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
-        Map<String, Object> params = getParametersForAddOperation(null,
-                Arrays.asList("existingGroup", "unexistingUser", "existingUser"), null, "Write", null, null, null,
-                false, false, null);
+        Map<String, Object> params = getParametersForAddOperation(null, users, null, "Write", null, null, null, false,
+                false, null);
 
         try {
             automationService.run(ctx, AddPermission.ID, params);
             fail();
         } catch (IllegalParameterException e) {
-            String expectedMsg = String.format("User or group name '%s' does not exist. Please provide a valid name.",
-                    "unexistingUser");
+            String expectedMsg = "The following set of User or Group names do not exist: [unexistingUser,unexistingUser2]. Please provide valid ones.";
             assertEquals(expectedMsg, e.getOriginalMessage());
+
+            verifyUserOrGroup("existingGroup", GROUP);
+            verifyUserOrGroup("unexistingUser", UNKNOWN);
+            verifyUserOrGroup("existingUser", USER);
+            verifyUserOrGroup("unexistingUser2", UNKNOWN);
+            verifyNoMoreInteractions(userManager);
         }
     }
 
     @Test
     public void shouldFailWhenSomeGroupDoesNotExist() throws OperationException {
+        DocumentModel doc = session.createDocumentModel("/", "src", "File");
+        assertNotNull(doc.getACP());
+        assertNull(doc.getACP().getACL("local"));
+
+        List<String> users = Arrays.asList("existingGroup", "unexistingGroup", "existingUser");
         when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
         when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
         when(userManager.getGroupModel("unexistingGroup")).thenReturn(null);
 
-        DocumentModel doc = session.createDocumentModel("/", "src", "File");
-
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
-        Map<String, Object> params = getParametersForAddOperation(null,
-                Arrays.asList("existingGroup", "unexistingGroup", "existingUser"), null, "Write", null, null, null,
-                false, false, null);
+        Map<String, Object> params = getParametersForAddOperation(null, users, null, "Write", null, null, null, false,
+                false, null);
 
         try {
             automationService.run(ctx, AddPermission.ID, params);
             fail();
         } catch (IllegalParameterException e) {
-            String expectedMsg = String.format("User or group name '%s' does not exist. Please provide a valid name.",
-                    "unexistingGroup");
+            String expectedMsg = "The following set of User or Group names do not exist: [unexistingGroup]. Please provide valid ones.";
             assertEquals(expectedMsg, e.getOriginalMessage());
+
+            verifyUserOrGroup("existingGroup", GROUP);
+            verifyUserOrGroup("unexistingGroup", UNKNOWN);
+            verifyUserOrGroup("existingUser", USER);
+            verifyNoMoreInteractions(userManager);
         }
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
     public void shouldAddPermissionForUnexistingUserWhenAllowVirtualUserFlagIsTrue() throws OperationException {
-        when(userManager.getUserModel("unexistingUser")).thenReturn(null);
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
+        when(userManager.getUserModel("unexistingUser")).thenReturn(null);
+
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
-        Map<String, Object> params = getParametersForAddOperation(null, Collections.singletonList("unexistingUser"),
-                null, "Write", "", null, null, false, false, null);
+        Map<String, Object> params = getParametersForAddOperation(null, singletonList("unexistingUser"), null, "Write",
+                "", null, null, false, false, null);
 
         automationService.run(ctx, AddPermission.ID, params);
-
-        assertNotNull(doc.getACP());
+        verifyZeroInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -204,12 +238,12 @@ public class AddPermissionTest {
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
     public void shouldAddPermissionForUnexistingGroupsWhenAllowVirtualUserFlagIsTrue() throws OperationException {
-        List<String> groups = Arrays.asList("unexistingGroup1", "unexistingGroup2");
-        groups.forEach(group -> when(userManager.getGroupModel(group)).thenReturn(null));
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
+
+        List<String> groups = Arrays.asList("unexistingGroup1", "unexistingGroup2");
+        groups.forEach(group -> when(userManager.getGroupModel(group)).thenReturn(null));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
@@ -217,8 +251,7 @@ public class AddPermissionTest {
                 new GregorianCalendar(2018, 8, 2), new GregorianCalendar(2018, 8, 8), false, true, "Permission Given");
 
         automationService.run(ctx, AddPermission.ID, params);
-
-        assertNotNull(doc.getACP());
+        verifyZeroInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -230,11 +263,11 @@ public class AddPermissionTest {
 
     @Test
     public void shouldAddPermissionWhenUsingDeprecatedParameterUser() throws OperationException {
-        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
+
+        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
@@ -243,7 +276,8 @@ public class AddPermissionTest {
 
         automationService.run(ctx, AddPermission.ID, params);
 
-        assertNotNull(doc.getACP());
+        verifyUserOrGroup("existingUser", USER);
+        verifyNoMoreInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -265,7 +299,7 @@ public class AddPermissionTest {
 
         automationService.run(ctx, AddPermission.ID, params);
 
-        assertNotNull(doc.getACP());
+        verifyZeroInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -276,22 +310,26 @@ public class AddPermissionTest {
 
     @Test
     public void shouldAddPermissionWhenUsingDeprecatedUserAndUsersParametersCombined() throws OperationException {
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser3")).thenReturn(new SimpleDocumentModel("user"));
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
+        List<String> users = Arrays.asList("existingUser2", "existingUser3");
+        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser3")).thenReturn(new SimpleDocumentModel("user"));
+
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
-        Map<String, Object> params = getParametersForAddOperation("existingUser1",
-                Arrays.asList("existingUser2", "existingUser3"), null, "Write", null, null, null, false, false, null);
+        Map<String, Object> params = getParametersForAddOperation("existingUser1", users, null, "Write", null, null,
+                null, false, false, null);
 
         automationService.run(ctx, AddPermission.ID, params);
 
-        assertNotNull(doc.getACP());
+        verifyUserOrGroup("existingUser1", USER);
+        verifyUserOrGroup("existingUser2", USER);
+        verifyUserOrGroup("existingUser3", USER);
+        verifyNoMoreInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -304,21 +342,24 @@ public class AddPermissionTest {
 
     @Test
     public void shouldAddPermissionForUsersOnlyWhenUsingEmailAndUsersParametersCombined() throws OperationException {
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
+        List<String> users = Arrays.asList("existingUser1", "existingUser2");
+        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
+
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
-        Map<String, Object> params = getParametersForAddOperation(null, Arrays.asList("existingUser1", "existingUser2"),
-                "user@nuxeo.com", "Write", null, null, new GregorianCalendar(2018, 8, 8), false, false, null);
+        Map<String, Object> params = getParametersForAddOperation(null, users, "user@nuxeo.com", "Write", null, null,
+                new GregorianCalendar(2018, 8, 8), false, false, null);
 
         automationService.run(ctx, AddPermission.ID, params);
 
-        assertNotNull(doc.getACP());
+        verifyUserOrGroup("existingUser1", USER);
+        verifyUserOrGroup("existingUser2", USER);
+        verifyNoMoreInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -330,11 +371,11 @@ public class AddPermissionTest {
 
     @Test
     public void shouldAddPermissionForUserOnlyWhenUsingEmailAndUserParametersCombined() throws OperationException {
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
-
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
+
+        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
@@ -343,7 +384,8 @@ public class AddPermissionTest {
 
         automationService.run(ctx, AddPermission.ID, params);
 
-        assertNotNull(doc.getACP());
+        verifyUserOrGroup("existingUser1", USER);
+        verifyNoMoreInteractions(userManager);
 
         ACL acl = doc.getACP().getACL("local");
         assertNotNull(acl);
@@ -352,10 +394,37 @@ public class AddPermissionTest {
         assertExpectedPermissions(acl, params, "existingUser1");
     }
 
+    @Test
+    public void shouldAddPermissionForUserWhenBlockingInheritance() throws OperationException {
+        DocumentModel doc = session.getDocument(new PathRef("/src"));
+        assertNotNull(doc.getACP());
+        assertNull(doc.getACP().getACL("local"));
+
+        when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(singletonList("administrators"));
+
+        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        Map<String, Object> params = getParametersForAddOperation(null, singletonList("existingUser1"), null, "Write",
+                null, null, new GregorianCalendar(2018, 8, 8), true, false, null);
+
+        automationService.run(ctx, AddPermission.ID, params);
+
+        verifyUserOrGroup("existingUser1", USER);
+        verifyNoMoreInteractions(userManager);
+
+        ACL acl = doc.getACP().getACL("local");
+        assertNotNull(acl);
+        assertThat(acl.size(), greaterThan(1));
+
+        assertExpectedPermissions(acl, params, "existingUser1");
+    }
+
     protected void assertExpectedPermissions(ACL acl, Map<String, Object> params, String userOrGroup) {
         ACE ace = acl.stream().filter(el -> {
             String email = (String) params.get("email");
-            if (Objects.nonNull(email) && email.equals(userOrGroup)) {
+            if (email != null && email.equals(userOrGroup)) {
                 return el.getUsername().contains(email);
             }
             return el.getUsername().equals(userOrGroup);
@@ -365,6 +434,17 @@ public class AddPermissionTest {
         assertEquals(params.get("begin"), ace.getBegin());
         assertEquals(params.get("end"), ace.getEnd());
         // None of the others are stored on the database, neither the context data
+    }
+
+    protected void verifyUserOrGroup(String userOrGroup, String expectedToBeFindAs) {
+        switch (expectedToBeFindAs) {
+        case USER:
+            verify(userManager).getUserModel(userOrGroup);
+            break;
+        default:
+            verify(userManager).getUserModel(userOrGroup);
+            verify(userManager).getGroupModel(userOrGroup);
+        }
     }
 
     protected Map<String, Object> getParametersForAddOperation(String user, List<String> users, String email,
