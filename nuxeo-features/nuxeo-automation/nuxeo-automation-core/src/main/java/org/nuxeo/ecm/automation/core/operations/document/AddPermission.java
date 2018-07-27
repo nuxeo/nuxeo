@@ -22,6 +22,10 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.api.NuxeoPrincipal.computeTransientUsername;
+import static org.nuxeo.ecm.core.api.NuxeoPrincipal.isTransientUsername;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,7 +42,6 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -95,59 +98,42 @@ public class AddPermission {
     protected String email;
 
     @Param(name = "permission", description = "ACE permission.")
-    String permission;
+    protected String permission;
 
     @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL }, description = "ACL name.")
-    String aclName = ACL.LOCAL_ACL;
+    protected String aclName = ACL.LOCAL_ACL;
 
     @Param(name = "begin", required = false, description = "ACE begin date.")
-    Calendar begin;
+    protected Calendar begin;
 
     @Param(name = "end", required = false, description = "ACE end date.")
-    Calendar end;
+    protected Calendar end;
 
     @Param(name = "blockInheritance", required = false, description = "Block inheritance or not.")
-    boolean blockInheritance = false;
+    protected boolean blockInheritance = false;
 
     @Param(name = "notify", required = false, description = "Notify the user or not")
-    boolean notify = false;
+    protected boolean notify = false;
 
     @Param(name = "comment", required = false, description = "Comment")
-    String comment;
+    protected String comment;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
+        validateParameters();
         addPermission(doc);
-        return session.getDocument(doc.getRef());
+        return doc;
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef docRef) {
         DocumentModel doc = session.getDocument(docRef);
+        validateParameters();
         addPermission(doc);
         return doc;
     }
 
     protected void addPermission(DocumentModel doc) {
-        if (user == null && (users == null || users.isEmpty()) && email == null) {
-            throw new IllegalParameterException("'users' or 'email' parameters must be set");
-        } else if (email != null && end == null) {
-            throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
-        }
-
-        ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
-            if (user != null) {
-                checkUserExistence(user);
-            }
-            if (users != null) {
-                for (String username : users) {
-                    checkUserExistence(username);
-                }
-            }
-        }
-        ensureUserListIsUsed();
-
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(NOTIFY_KEY, notify);
@@ -174,11 +160,31 @@ public class AddPermission {
         }
     }
 
-    protected void checkUserExistence(String username) {
-        UserManager userManager = Framework.getService(UserManager.class);
-        if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
-            String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
-            throw new IllegalParameterException(errorMsg);
+    protected void validateParameters() {
+        if (user == null && (users == null || users.isEmpty()) && email == null) {
+            throw new IllegalParameterException("'users' or 'email' parameters must be set");
+        } else if (email != null && end == null) {
+            throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
+        }
+
+        ensureUserListIsUsed();
+
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
+            UserManager userManager = Framework.getService(UserManager.class);
+
+            List<String> unknownNames = users.stream()
+                                             .filter(userOrGroupName -> !isTransientUsername(userOrGroupName)
+                                                     && userManager.getUserModel(userOrGroupName) == null
+                                                     && userManager.getGroupModel(userOrGroupName) == null)
+                                             .collect(toList());
+
+            if (!unknownNames.isEmpty()) {
+                String errorMsg = String.format(
+                        "The following set of User or Group names do not exist: [%s]. Please provide valid ones.",
+                        String.join(",", unknownNames));
+                throw new IllegalParameterException(errorMsg);
+            }
         }
     }
 
@@ -192,7 +198,7 @@ public class AddPermission {
             users.add(user);
         } else if (email != null && users.isEmpty()) {
             // share a document with someone not registered in Nuxeo, by using only an email
-            users.add(NuxeoPrincipal.computeTransientUsername(email));
+            users.add(computeTransientUsername(email));
         }
     }
 

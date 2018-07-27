@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,21 +63,21 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class PermissionAutomationTest {
 
+    protected DocumentModel src;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected AutomationService automationService;
+
     @Mock
     @RuntimeService
     protected AdministratorGroupsProvider administratorGroupsProvider;
 
-    protected DocumentModel src;
-
-    @Inject
-    CoreSession session;
-
-    @Inject
-    AutomationService automationService;
-
     @Mock
     @RuntimeService
-    private UserManager userManager;
+    protected UserManager userManager;
 
     @Before
     public void initRepo() throws Exception {
