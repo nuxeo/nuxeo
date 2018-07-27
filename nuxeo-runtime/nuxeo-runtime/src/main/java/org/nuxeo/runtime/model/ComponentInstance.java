@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id$
  */
 
 package org.nuxeo.runtime.model;
@@ -94,5 +93,13 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
      * @return an array containing the service class names or null if no service is provided
      */
     String[] getProvidedServiceNames();
+
+    /**
+     * Gets the Registration Info
+     *
+     * @return the registration info
+     * @since 10.3
+     */
+    RegistrationInfo getRegistrationInfo();
 
 }

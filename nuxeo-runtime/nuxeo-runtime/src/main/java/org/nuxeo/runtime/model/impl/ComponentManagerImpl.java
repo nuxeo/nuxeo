@@ -54,6 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.DescriptorRegistry;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.util.Watch;
@@ -121,6 +122,11 @@ public class ComponentManagerImpl implements ComponentManager {
     protected volatile ComponentRegistry snapshot;
 
     /**
+     * @since 10.3
+     */
+    protected volatile DescriptorRegistry descriptors;
+
+    /**
      * @since 9.2
      */
     protected volatile boolean isFlushingStash = false;
@@ -138,6 +144,14 @@ public class ComponentManagerImpl implements ComponentManager {
         services = new ConcurrentHashMap<>();
         blacklist = new HashSet<>();
         stash = new Stash();
+        descriptors = new DescriptorRegistry();
+    }
+
+    /**
+     * @since 10.3
+     */
+    public DescriptorRegistry getDescriptors() {
+        return descriptors;
     }
 
     /**
