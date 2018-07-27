@@ -19,16 +19,10 @@
 package org.nuxeo.ecm.automation.core.operations.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,11 +46,8 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -88,10 +79,6 @@ public class PermissionAutomationTest {
     @RuntimeService
     private UserManager userManager;
 
-    private final GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
-
-    private final GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Folder");
@@ -104,85 +91,6 @@ public class PermissionAutomationTest {
         when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
-    }
-
-    @Test
-    public void canAddPermissionForExistingUser() throws OperationException {
-        canAddPermissionFor("existingUser");
-    }
-
-    @Test
-    public void canAddPermissionForExistingGroup() throws OperationException {
-        canAddPermissionFor("existingGroup");
-    }
-
-    @Test
-    public void cannotAddPermissionForNonExistentUser() throws OperationException {
-        cannotAddPermissionFor("nonExistentUser");
-    }
-
-    @Test
-    public void cannotAddPermissionForNonExistentGroup() throws OperationException {
-        cannotAddPermissionFor("nonExistentGroup");
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
-    public void canAddPermissionForNonExistentUser() throws OperationException {
-        ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
-        canAddPermissionFor("nonExistentUser");
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
-    public void canAddPermissionForNonExistentGroup() throws OperationException {
-        ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
-        canAddPermissionFor("nonExistentGroup");
-    }
-
-    private void canAddPermissionFor(String existingGroupOrUser) throws OperationException {
-        try {
-            OperationContext ctx = new OperationContext(session);
-            ctx.setInput(src);
-            Map<String, Object> params = new HashMap<>();
-            params.put("user", existingGroupOrUser);
-            params.put("permission", "Write");
-            params.put("begin", begin);
-            params.put("end", end);
-
-            assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
-            automationService.run(ctx, AddPermission.ID, params);
-            assertNotNull(src.getACP().getACL(ACL.LOCAL_ACL));
-            assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
-        } finally {
-            // Tear down
-            src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, existingGroupOrUser);
-        }
-    }
-
-    private void cannotAddPermissionFor(String nonExistentGroupOrUser) throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-        Map<String, Object> params = new HashMap<>();
-        params.put("user", nonExistentGroupOrUser);
-        params.put("permission", "Write");
-        params.put("begin", begin);
-        params.put("end", end);
-
-        assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
-        try {
-            automationService.run(ctx, AddPermission.ID, params);
-            fail();
-        } catch (IllegalParameterException e) {
-            String expectedMsg = String.format(
-                    "Failed to invoke operation Document.AddPermission with aliases [Document.AddACL], "
-                            + "User or group name '%s' does not exist. Please provide a valid name.",
-                    nonExistentGroupOrUser);
-            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
-        }
-        assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
     }
 
     @Test

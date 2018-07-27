@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@
  *     dmetzler
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *     Mincong Huang <mhuang@nuxeo.com>
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
+
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.Constants;
@@ -71,6 +75,16 @@ public class AddPermission {
     @Context
     protected CoreSession session;
 
+    /**
+     * @since 10.3
+     */
+    @Param(name = "users", required = false, alias = "users", description = "ACE target set of users and/or groups.")
+    protected List<String> users;
+
+    /**
+     * @deprecated since 10.3, use {@link #users} instead.
+     */
+    @Deprecated
     @Param(name = "username", required = false, alias = "user", description = "ACE target user/group.")
     protected String user;
 
@@ -115,25 +129,24 @@ public class AddPermission {
     }
 
     protected void addPermission(DocumentModel doc) {
-        if (user == null && email == null) {
-            throw new IllegalParameterException("'username' or 'email' parameter must be set");
-        }
-
-        if (user == null && end == null) {
+        if (user == null && (users == null || users.isEmpty()) && email == null) {
+            throw new IllegalParameterException("'users' or 'email' parameters must be set");
+        } else if (email != null && end == null) {
             throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
         }
 
-        String username;
-        if (user == null) {
-            // share a document with someone not registered in Nuxeo, by using only an email
-            username = NuxeoPrincipal.computeTransientUsername(email);
-        } else {
-            username = user;
-            ConfigurationService configService = Framework.getService(ConfigurationService.class);
-            if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
-                checkUserExistence(username);
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
+            if (user != null) {
+                checkUserExistence(user);
+            }
+            if (users != null) {
+                for (String username : users) {
+                    checkUserExistence(username);
+                }
             }
         }
+        ensureUserListIsUsed();
 
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         Map<String, Serializable> contextData = new HashMap<>();
@@ -141,17 +154,21 @@ public class AddPermission {
         contextData.put(COMMENT_KEY, comment);
 
         String creator = session.getPrincipal().getName();
-        ACE ace = ACE.builder(username, permission)
-                     .creator(creator)
-                     .begin(begin)
-                     .end(end)
-                     .contextData(contextData)
-                     .build();
         boolean permissionChanged = false;
         if (blockInheritance) {
             permissionChanged = acp.blockInheritance(aclName, creator);
         }
-        permissionChanged = acp.addACE(aclName, ace) || permissionChanged;
+
+        for (String username : users) {
+            ACE ace = ACE.builder(username, permission)
+                         .creator(creator)
+                         .begin(begin)
+                         .end(end)
+                         .contextData(contextData)
+                         .build();
+            permissionChanged = acp.addACE(aclName, ace) || permissionChanged;
+        }
+
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
@@ -162,6 +179,20 @@ public class AddPermission {
         if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
             String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
             throw new IllegalParameterException(errorMsg);
+        }
+    }
+
+    /**
+     * Method to help deprecating {@link #user} parameter.
+     */
+    protected void ensureUserListIsUsed() {
+        users = users == null ? new ArrayList<>() : new ArrayList<>(users);
+
+        if (user != null && !users.contains(user)) {
+            users.add(user);
+        } else if (email != null && users.isEmpty()) {
+            // share a document with someone not registered in Nuxeo, by using only an email
+            users.add(NuxeoPrincipal.computeTransientUsername(email));
         }
     }
 
