@@ -89,7 +89,7 @@ public class WebEngineFilter implements Filter {
         private UnitOfWork(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             pathInfo = StringUtils.isEmpty(req.getPathInfo()) ? "/" :  req.getPathInfo();
             isStatic = req.getServletPath().contains("/skin") || pathInfo.contains("/skin/");
-            txStarted = !isStatic && !TransactionHelper.isTransactionActive()
+            txStarted = !isStatic && !TransactionHelper.isTransactionActiveOrMarkedRollback()
                     && ServletHelper.startTransaction(req);
             context = new DefaultContext(req, txStarted ? new BufferingHttpServletResponse(resp) : resp);
             req.setAttribute(WebContext.class.getName(), context);
