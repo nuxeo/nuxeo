@@ -251,29 +251,6 @@
       <url-pattern>/js/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-      <servlet-name>Nuxeo Ajax Proxy</servlet-name>
-      <servlet-class>
-        org.nuxeo.ecm.platform.web.common.ajax.AjaxProxyServlet
-      </servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>Nuxeo Ajax Proxy</servlet-name>
-      <url-pattern>/ajaxProxy/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-      <servlet-name>Nuxeo Ajax Proxy</servlet-name>
-      <url-pattern>/proxy/ajaxProxy.php</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-      <servlet-name>Nuxeo Ajax Proxy</servlet-name>
-      <url-pattern>/proxy/xmlProxy.php</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-      <servlet-name>Nuxeo Ajax Proxy</servlet-name>
-      <url-pattern>/proxy/feedProxy.php</url-pattern>
-    </servlet-mapping>
-
   </extension>
 
   <extension target="web#ERROR-PAGE">
