@@ -116,7 +116,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             // source not known by CORS config: be safe and disallow
             log.debug("URL not covered by CORS config: disallow cross-site request");
             allow = false;
-        } else if (!corsConfig.isAllowedOrigin(new Origin(sourceURI.toString()))) {
+        } else if (!corsConfig.isAllowedOrigin(originFromURI(sourceURI))) {
             // not in allowed CORS origins
             log.debug("Origin not allowed by CORS config: disallow cross-site request");
             allow = false;
@@ -195,6 +195,19 @@ public class NuxeoCorsCsrfFilter implements Filter {
         return Objects.equals(sourceURI.getScheme(), targetURI.getScheme()) //
                 && Objects.equals(sourceURI.getHost(), targetURI.getHost()) //
                 && sourceURI.getPort() == targetURI.getPort();
+    }
+
+    /**
+     * Gets an Origin from a URI. Strips the path and query (which may be present in Referer headers).
+     */
+    protected Origin originFromURI(URI uri) {
+        // remove path, query and fragment
+        try {
+            uri = new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), null, null, null);
+        } catch (URISyntaxException e) {
+            // keep passed-in URI
+        }
+        return new Origin(uri.toString());
     }
 
     protected HttpServletRequest maybeIgnoreWhitelistedOrigin(HttpServletRequest request) {
