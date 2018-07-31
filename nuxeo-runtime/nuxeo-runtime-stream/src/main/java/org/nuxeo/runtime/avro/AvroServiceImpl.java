@@ -21,7 +21,7 @@ package org.nuxeo.runtime.avro;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -62,7 +62,7 @@ public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
             Map<Class<?>, Class<AvroSchemaFactory<?>>> factories) {
         this.replacements = new ArrayList<>(replacements);
         this.factories = new HashMap<>(factories);
-        this.replacements.sort(Comparator.naturalOrder());
+        Collections.sort(this.replacements);
         // assert at creation that factories are valid
         createContext();
     }
@@ -77,8 +77,8 @@ public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
         String output = input;
         ListIterator<AvroReplacementDescriptor> it = replacements.listIterator(replacements.size());
         while (it.hasPrevious()) {
-            AvroReplacementDescriptor replacement = it.previous();
-            output = output.replaceAll(replacement.getReplacement(), replacement.getForbidden());
+            AvroReplacementDescriptor descriptor = it.previous();
+            output = output.replaceAll(descriptor.replacement, descriptor.forbidden);
         }
         return output;
     }
@@ -86,8 +86,8 @@ public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
     @Override
     public String encodeName(String input) {
         String output = input;
-        for (AvroReplacementDescriptor replacement : replacements) {
-            output = output.replaceAll(replacement.getForbidden(), replacement.getReplacement());
+        for (AvroReplacementDescriptor descriptor : replacements) {
+            output = output.replaceAll(descriptor.forbidden, descriptor.replacement);
         }
         return output;
     }

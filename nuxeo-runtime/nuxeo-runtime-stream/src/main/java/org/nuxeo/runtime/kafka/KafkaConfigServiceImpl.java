@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,38 +19,32 @@
  */
 package org.nuxeo.runtime.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Descriptor;
 
 public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaConfigService {
-    public static final String KAFKA_CONFIG_XP = "kafkaConfig";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.stream.kafka.service";
+
+    public static final String XP_KAFKA_CONFIG = "kafkaConfig";
 
     public static final int APPLICATION_STARTED_ORDER = -600;
 
-    private static final Log log = LogFactory.getLog(KafkaConfigServiceImpl.class);
-
     protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
 
-    protected final Map<String, KafkaConfigDescriptor> configs = new HashMap<>();
-
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(KAFKA_CONFIG_XP)) {
-            KafkaConfigDescriptor descriptor = (KafkaConfigDescriptor) contribution;
-            configs.put(descriptor.name, descriptor);
-            log.info(String.format("Register Kafka contribution: %s", descriptor.name));
-        }
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
@@ -60,39 +54,21 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        log.debug("Deactivating service");
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        log.debug("Activating service");
-    }
-
-    @Override
     public Set<String> listConfigNames() {
-        return configs.keySet();
+        return getDescriptors(XP_KAFKA_CONFIG).stream()
+                                              .map(Descriptor::getId)
+                                              .collect(Collectors.toSet());
     }
 
     @Deprecated
     @Override
     public String getZkServers(String configName) {
-        checkConfigName(configName);
-        return configs.get(configName).zkServers;
-    }
-
-    protected void checkConfigName(String configName) {
-        if (!configs.containsKey(configName)) {
-            throw new IllegalArgumentException("Unknown configuration name: " + configName);
-        }
+        return getDescriptor(configName).zkServers;
     }
 
     @Override
     public Properties getProducerProperties(String configName) {
-        checkConfigName(configName);
-        Properties ret = configs.get(configName).getProducerProperties();
+        Properties ret = getDescriptor(configName).producerProperties.properties;
         if (DEFAULT_BOOTSTRAP_SERVERS.equals(ret.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG))) {
             ret.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         }
@@ -101,8 +77,7 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
 
     @Override
     public Properties getConsumerProperties(String configName) {
-        checkConfigName(configName);
-        Properties ret = configs.get(configName).getConsumerProperties();
+        Properties ret = getDescriptor(configName).consumerProperties.properties;
         if (DEFAULT_BOOTSTRAP_SERVERS.equals(ret.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))) {
             ret.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         }
@@ -111,7 +86,20 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
 
     @Override
     public String getTopicPrefix(String configName) {
-        checkConfigName(configName);
-        return configs.get(configName).getTopicPrefix();
+        KafkaConfigDescriptor config = getDescriptor(configName);
+        String ret = config.topicPrefix == null ? "" : config.topicPrefix;
+        if (config.randomPrefix) {
+            ret += System.currentTimeMillis() + "-";
+        }
+        return ret;
     }
+
+    protected KafkaConfigDescriptor getDescriptor(String configName) {
+        KafkaConfigDescriptor descriptor = getDescriptor(XP_KAFKA_CONFIG, configName);
+        if (descriptor == null) {
+            throw new IllegalArgumentException("Unknown configuration name: " + configName);
+        }
+        return descriptor;
+    }
+
 }

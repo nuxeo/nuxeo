@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,13 @@
  */
 package org.nuxeo.runtime.mongodb;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentStartOrders;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry.FragmentList;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
@@ -43,67 +37,40 @@ import com.mongodb.client.MongoDatabase;
  */
 public class MongoDBComponent extends DefaultComponent implements MongoDBConnectionService {
 
-    private static final Log log = LogFactory.getLog(MongoDBComponent.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.mongodb.MongoDBComponent";
 
-    public static final String NAME = "org.nuxeo.runtime.mongodb.MongoDBComponent";
-
-    private static final String EP_CONNECTION = "connection";
+    private static final String XP_CONNECTION = "connection";
 
     private static final String DEFAULT_CONNECTION_ID = "default";
-
-    private final MongoDBConnectionConfigRegistry registry = new MongoDBConnectionConfigRegistry();
 
     private final Map<String, MongoClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case EP_CONNECTION:
-            registry.addContribution((MongoDBConnectionConfig) contribution);
-            log.info(
-                    "Registering connection configuration: " + contribution + ", loaded from " + contributor.getName());
-            break;
-        default:
-            throw new IllegalStateException("Invalid EP: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case EP_CONNECTION:
-            MongoDBConnectionConfig config = (MongoDBConnectionConfig) contribution;
-            log.info("Unregistering connection configuration: " + config);
-            clients.remove(config.getId()).close();
-            registry.removeContribution(config);
-            break;
-        default:
-            throw new IllegalStateException("Invalid EP: " + extensionPoint);
-        }
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
     public void start(ComponentContext context) {
-        log.info("Activate MongoDB component");
-        for (FragmentList<MongoDBConnectionConfig> fragment : registry.getFragments()) {
-            MongoDBConnectionConfig conf = fragment.object;
-            log.debug("Initializing MongoClient with id=" + conf.getId());
-            @SuppressWarnings("resource")
-            MongoClient client = MongoDBConnectionHelper.newMongoClient(conf.getServer());
-            clients.put(conf.getId(), client);
-        }
+        super.start(context);
+        Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);
+        confs.forEach(c -> {
+            getLog().debug("Initializing MongoClient with id=" + c.getId());
+            clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c.server));
+        });
     }
 
     @Override
-    public void stop(ComponentContext context) {
-        Iterator<Entry<String, MongoClient>> it = clients.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, MongoClient> entry = it.next();
-            log.debug("Closing MongoClient with id=" + entry.getKey());
-            MongoClient client = entry.getValue();
-            client.close();
-            it.remove();
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        clients.entrySet().forEach(e -> {
+            getLog().debug("Closing MongoClient with id=" + e.getKey());
+            e.getValue().close();
+        });
+        clients.clear();
     }
 
     @Override
@@ -119,13 +86,13 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
      */
     @Override
     public MongoDatabase getDatabase(String id) {
-        MongoDBConnectionConfig config = registry.getCurrentContribution(id);
+        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
         MongoClient client = clients.get(id);
         if (client == null) {
-            config = registry.getCurrentContribution(DEFAULT_CONNECTION_ID);
+            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
             client = clients.get(DEFAULT_CONNECTION_ID);
         }
-        return MongoDBConnectionHelper.getDatabase(client, config.getDbname());
+        return MongoDBConnectionHelper.getDatabase(client, config.dbname);
     }
 
     /**
@@ -135,23 +102,11 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     public Iterable<MongoDatabase> getDatabases() {
         return () -> clients.entrySet()
                             .stream()
-                            .map(e -> MongoDBConnectionHelper.getDatabase(e.getValue(),
-                                    registry.getCurrentContribution(e.getKey()).getDbname()))
+                            .map(e -> {
+                                MongoDBConnectionConfig c = getDescriptor(XP_CONNECTION, e.getKey());
+                                return MongoDBConnectionHelper.getDatabase(e.getValue(), c.dbname);
+                            })
                             .iterator();
-    }
-
-    protected static class MongoDBConnectionConfigRegistry extends SimpleContributionRegistry<MongoDBConnectionConfig> {
-
-        @Override
-        public String getContributionId(MongoDBConnectionConfig contrib) {
-            return contrib.getId();
-        }
-
-        @Override
-        public MongoDBConnectionConfig getCurrentContribution(String id) {
-            return super.getCurrentContribution(id);
-        }
-
     }
 
 }

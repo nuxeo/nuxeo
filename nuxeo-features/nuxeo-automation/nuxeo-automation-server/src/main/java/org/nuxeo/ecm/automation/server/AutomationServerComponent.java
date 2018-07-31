@@ -22,20 +22,15 @@ package org.nuxeo.ecm.automation.server;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.io.services.IOComponent;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -43,59 +38,45 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class AutomationServerComponent extends DefaultComponent implements AutomationServer {
 
-    protected static final String XP_BINDINGS = "bindings";
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.server.AutomationServer";
 
-    protected static final String IOCOMPONENT_NAME = "org.nuxeo.ecm.automation.io.services.IOComponent";
+    /**
+     * @since 10.3
+     */
+    public static final String XP_BINDINGS = "bindings";
 
-    protected IOComponent ioComponent;
+    /**
+     * @since 10.3
+     */
+    public static final String XP_MARSHALLER = "marshallers";
 
-    private static final String XP_MARSHALLER = "marshallers";
+    protected List<Class<? extends MessageBodyWriter<?>>> writers = new ArrayList<>();
 
-    protected Map<String, RestBinding> bindings;
-
-    protected static final String XP_CODECS = "codecs";
-
-    protected volatile Map<String, RestBinding> lookup;
-
-    protected List<Class<? extends MessageBodyWriter<?>>> writers;
-
-    protected List<Class<? extends MessageBodyReader<?>>> readers;
+    protected List<Class<? extends MessageBodyReader<?>>> readers = new ArrayList<>();
 
     @Override
-    public void activate(ComponentContext context) {
-        bindings = new HashMap<>();
-        writers = new ArrayList<>();
-        readers = new ArrayList<>();
-        ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(IOCOMPONENT_NAME).getInstance());
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        bindings = null;
+    public void start(ComponentContext context) {
+        super.start(context);
+        List<MarshallerDescriptor> marshallers = getDescriptors(XP_MARSHALLER);
+        marshallers.forEach(m -> {
+            writers.addAll(m.writers);
+            readers.addAll(m.readers);
+        });
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_BINDINGS.equals(extensionPoint)) {
-            RestBinding binding = (RestBinding) contribution;
-            addBinding(binding);
-        } else if (XP_MARSHALLER.equals(extensionPoint)) {
-            MarshallerDescriptor marshaller = (MarshallerDescriptor) contribution;
-            writers.addAll(marshaller.getWriters());
-            readers.addAll(marshaller.getReaders());
-        } else if (XP_CODECS.equals(extensionPoint)) {
-            ioComponent.registerContribution(contribution, extensionPoint, contributor);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_BINDINGS.equals(extensionPoint)) {
-            RestBinding binding = (RestBinding) contribution;
-            removeBinding(binding);
-        } else if (XP_CODECS.equals(extensionPoint)) {
-            ioComponent.unregisterContribution(contribution, extensionPoint, contributor);
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        writers.clear();
+        readers.clear();
     }
 
     @Override
@@ -108,36 +89,28 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
 
     @Override
     public RestBinding getOperationBinding(String name) {
-        return lookup().get(name);
+        return getDescriptor(XP_BINDINGS, name);
     }
 
     @Override
     public RestBinding getChainBinding(String name) {
-        return lookup().get(Constants.CHAIN_ID_PREFIX + name);
+        return getDescriptor(XP_BINDINGS, Constants.CHAIN_ID_PREFIX + name);
     }
 
     @Override
     public RestBinding[] getBindings() {
-        Map<String, RestBinding> map = lookup();
-        return map.values().toArray(new RestBinding[map.size()]);
-    }
-
-    protected String getBindingKey(RestBinding binding) {
-        return binding.isChain() ? Constants.CHAIN_ID_PREFIX + binding.getName() : binding.getName();
+        List<RestBinding> descriptors = getDescriptors(XP_BINDINGS);
+        return descriptors.toArray(new RestBinding[0]);
     }
 
     @Override
     public synchronized void addBinding(RestBinding binding) {
-        String key = getBindingKey(binding);
-        bindings.put(key, binding);
-        lookup = null;
+        register(XP_BINDINGS, binding);
     }
 
     @Override
     public synchronized RestBinding removeBinding(RestBinding binding) {
-        RestBinding result = bindings.remove(getBindingKey(binding));
-        lookup = null;
-        return result;
+        return unregister(XP_BINDINGS, binding) ? binding : null;
     }
 
     @Override
@@ -145,26 +118,24 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
         if (isChain) {
             name = Constants.CHAIN_ID_PREFIX + name;
         }
-        RestBinding binding = lookup().get(name);
+        RestBinding binding = getDescriptor(XP_BINDINGS, name);
         if (binding != null) {
-            if (binding.isDisabled()) {
+            if (binding.isDisabled) {
                 return false;
             }
-            if (binding.isSecure()) {
-                if (!req.isSecure()) {
-                    return false;
-                }
+            if (binding.isSecure && !req.isSecure()) {
+                return false;
             }
             Principal principal = req.getUserPrincipal();
 
-            if (binding.isAdministrator() || binding.hasGroups()) {
+            if (binding.isAdministrator || binding.hasGroups()) {
                 if (principal instanceof NuxeoPrincipal) {
                     NuxeoPrincipal np = (NuxeoPrincipal) principal;
-                    if (binding.isAdministrator() && np.isAdministrator()) {
+                    if (binding.isAdministrator && np.isAdministrator()) {
                         return true;
                     }
                     if (binding.hasGroups()) {
-                        for (String group : binding.getGroups()) {
+                        for (String group : binding.groups) {
                             if (np.isMemberOf(group)) {
                                 return true;
                             }
@@ -175,17 +146,6 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
             }
         }
         return true;
-    }
-
-    private Map<String, RestBinding> lookup() {
-        Map<String, RestBinding> _lookup = lookup;
-        if (_lookup == null) {
-            synchronized (this) {
-                lookup = new HashMap<>(bindings);
-                _lookup = lookup;
-            }
-        }
-        return _lookup;
     }
 
     @Override

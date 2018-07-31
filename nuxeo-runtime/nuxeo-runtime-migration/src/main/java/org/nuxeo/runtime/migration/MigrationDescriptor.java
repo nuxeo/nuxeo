@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor of a Migration, consisting of States and Steps.
@@ -31,10 +32,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 9.3
  */
 @XObject("migration")
-public class MigrationDescriptor {
+public class MigrationDescriptor implements Descriptor {
 
     @XObject("state")
-    public static class MigrationStateDescriptor {
+    public static class MigrationStateDescriptor implements Descriptor {
 
         @XNode("@id")
         public String id;
@@ -45,21 +46,15 @@ public class MigrationDescriptor {
         @XNode("description")
         public String description;
 
+        @Override
         public String getId() {
             return id;
         }
 
-        public String getDescriptionLabel() {
-            return descriptionLabel;
-        }
-
-        public String getDescription() {
-            return description;
-        }
     }
 
     @XObject("step")
-    public static class MigrationStepDescriptor {
+    public static class MigrationStepDescriptor implements Descriptor {
 
         @XNode("@id")
         public String id;
@@ -76,24 +71,9 @@ public class MigrationDescriptor {
         @XNode("description")
         public String description;
 
+        @Override
         public String getId() {
             return id;
-        }
-
-        public String getFromState() {
-            return fromState;
-        }
-
-        public String getToState() {
-            return toState;
-        }
-
-        public String getDescriptionLabel() {
-            return descriptionLabel;
-        }
-
-        public String getDescription() {
-            return description;
         }
     }
 
@@ -118,65 +98,25 @@ public class MigrationDescriptor {
     @XNodeMap(value = "step", key = "@id", type = LinkedHashMap.class, componentType = MigrationStepDescriptor.class)
     public Map<String, MigrationStepDescriptor> steps = new LinkedHashMap<>();
 
+    @Override
     public String getId() {
         return id;
     }
 
-    public String getDescriptionLabel() {
-        return descriptionLabel;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Class<?> getKlass() {
-        return klass;
-    }
-
-    public String getDefaultState() {
-        return defaultState;
-    }
-
-    public Map<String, MigrationStateDescriptor> getStates() {
-        return states;
-    }
-
-    public Map<String, MigrationStepDescriptor> getSteps() {
-        return steps;
-    }
-
-    /** Default constructor. */
-    public MigrationDescriptor() {
-    }
-
-    /** Copy constructor. */
-    public MigrationDescriptor(MigrationDescriptor other) {
-        id = other.id;
-        descriptionLabel = other.descriptionLabel;
-        klass = other.klass;
-        description = other.description;
-        defaultState = other.defaultState;
-        states = new LinkedHashMap<>(other.states);
-        steps = new LinkedHashMap<>(other.steps);
-    }
-
-    /** Merge. */
-    public void merge(MigrationDescriptor other) {
-        if (other.descriptionLabel != null) {
-            descriptionLabel = other.descriptionLabel;
-        }
-        if (other.description != null) {
-            description = other.description;
-        }
-        if (other.klass != null) {
-            klass = other.klass;
-        }
-        if (other.defaultState != null) {
-            defaultState = other.defaultState;
-        }
-        states.putAll(other.states);
-        steps.putAll(other.steps);
+    @Override
+    public Descriptor merge(Descriptor o) {
+        MigrationDescriptor other = (MigrationDescriptor) o;
+        MigrationDescriptor merged = new MigrationDescriptor();
+        merged.id = other.id != null ? other.id : id;
+        merged.klass = other.klass != null ? other.klass : klass;
+        merged.description = other.description != null ? other.description : description;
+        merged.defaultState = other.defaultState != null ? other.defaultState : defaultState;
+        merged.descriptionLabel = other.descriptionLabel != null ? other.descriptionLabel : descriptionLabel;
+        merged.steps.putAll(steps);
+        merged.steps.putAll(other.steps);
+        merged.states.putAll(states);
+        merged.states.putAll(other.states);
+        return merged;
     }
 
 }

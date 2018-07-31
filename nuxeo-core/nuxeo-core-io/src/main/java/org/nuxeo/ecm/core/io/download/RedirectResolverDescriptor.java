@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.io.download;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for Core Service versionRemovalPolicy extension point configuration.
@@ -27,20 +28,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Remi Cattiau
  */
 @XObject("redirectResolver")
-public class RedirectResolverDescriptor {
+public class RedirectResolverDescriptor implements Descriptor {
 
     @XNode("@class")
-    protected Class<? extends RedirectResolver> clazz;
+    protected Class<? extends RedirectResolver> klass;
 
-    public Class<? extends RedirectResolver> getClazz() {
-        return clazz;
-    }
-
-    public RedirectResolver getObject() {
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public String getId() {
+        return klass.getName();
     }
 }

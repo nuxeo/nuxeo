@@ -18,15 +18,12 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * The bulk component.
@@ -35,15 +32,23 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BulkComponent extends DefaultComponent implements BulkAdminService {
 
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.bulk";
+
     public static final String BULK_LOG_MANAGER_NAME = "bulk";
 
     public static final String BULK_KV_STORE_NAME = "bulk";
 
-    public static final String ACTIONS_XP = "actions";
-
-    protected Queue<BulkActionDescriptor> actionsRegistry = new LinkedList<>();
+    public static final String XP_ACTIONS = "actions";
 
     protected BulkService bulkService;
+
+    @Override
+    protected String getName() {
+        return COMPONENT_NAME;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -61,40 +66,21 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (ACTIONS_XP.equals(extensionPoint)) {
-            actionsRegistry.add((BulkActionDescriptor) contribution);
-        } else {
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
     public void start(ComponentContext context) {
+        super.start(context);
         bulkService = new BulkServiceImpl();
     }
 
     @Override
-    public void stop(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
         bulkService = null;
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (ACTIONS_XP.equals(extensionPoint)) {
-            actionsRegistry.remove(contribution);
-        } else {
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    // ---------------------
-    // BulkAdminService part
-    // ---------------------
-
     @Override
     public List<String> getActions() {
-        return actionsRegistry.stream().map(BulkActionDescriptor::getName).collect(Collectors.toList());
+        return getDescriptors(XP_ACTIONS).stream()
+                                         .map(Descriptor::getId)
+                                         .collect(Collectors.toList());
     }
 }

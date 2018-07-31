@@ -20,6 +20,7 @@ package org.nuxeo.runtime.avro;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * The Avro schema descriptor.
@@ -27,12 +28,17 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 10.2
  */
 @XObject("schema")
-public class AvroSchemaDescriptor {
+public class AvroSchemaDescriptor implements Descriptor {
 
     @XNode("@name")
     public String name;
 
     @XNode("@file")
     public String file;
+
+    @Override
+    public String getId() {
+        return name;
+    }
 
 }

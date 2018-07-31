@@ -62,17 +62,17 @@ public class ContributionTest {
         assertEquals(DEFAULT_BINDINGS + 2, server.getBindings().length);
         RestBinding binding = server.getChainBinding("principals");
 
-        assertTrue(binding.isDisabled());
-        assertFalse(binding.isSecure());
-        assertFalse(binding.isAdministrator());
-        assertNull(binding.getGroups());
+        assertTrue(binding.isDisabled);
+        assertFalse(binding.isSecure);
+        assertFalse(binding.isAdministrator);
+        assertNull(binding.groups);
 
         binding = server.getChainBinding("audit");
-        assertFalse(binding.isDisabled());
-        assertTrue(binding.isSecure());
-        assertTrue(binding.isAdministrator());
-        assertEquals(1, binding.getGroups().length);
-        assertEquals("members", binding.getGroups()[0]);
+        assertFalse(binding.isDisabled);
+        assertTrue(binding.isSecure);
+        assertTrue(binding.isAdministrator);
+        assertEquals(1, binding.groups.length);
+        assertEquals("members", binding.groups[0]);
     }
 
 }

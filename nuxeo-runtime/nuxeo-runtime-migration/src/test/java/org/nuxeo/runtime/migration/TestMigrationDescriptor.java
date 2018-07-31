@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@ import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
 
 public class TestMigrationDescriptor {
 
-    protected XMap xmap;
-
     protected static URL getResource(String resource) {
         return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
+
+    protected XMap xmap;
 
     @Before
     public void setUp() throws Exception {
@@ -93,7 +93,7 @@ public class TestMigrationDescriptor {
                 getResource("OSGI-INF/test-migration-descriptor2.xml"));
 
         assertEquals(desc.id, desc2.id);
-        desc.merge(desc2);
+        desc = (MigrationDescriptor) desc.merge(desc2);
 
         assertEquals("my_migration", desc.id);
         assertEquals("newLabel", desc.descriptionLabel);

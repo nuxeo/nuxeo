@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * BatchHandler Descriptor
@@ -35,47 +35,20 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 10.1
  */
 @XObject("batchHandler")
-public class BatchHandlerDescriptor {
+public class BatchHandlerDescriptor implements Descriptor {
 
     @XNode("name")
-    protected String name;
+    public String name;
 
     @XNode("class")
-    protected Class<? extends BatchHandler> klass;
+    public Class<? extends BatchHandler> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties;
+    public Map<String, String> properties = new HashMap<>();
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setKlass(Class<? extends BatchHandler> klass) {
-        this.klass = klass;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
-    }
-
-    public Class<? extends BatchHandler> getKlass() {
-        return klass;
-    }
-
-    public BatchHandler newInstance() {
-        try {
-            return klass.getConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
     }
 
 }

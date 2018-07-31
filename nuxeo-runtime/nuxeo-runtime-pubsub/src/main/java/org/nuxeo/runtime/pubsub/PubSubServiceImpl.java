@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -36,16 +35,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PubSubServiceImpl extends DefaultComponent implements PubSubService {
 
-    public static final String CONFIG_XP = "configuration";
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.pubsub.PubSubService";
 
-    /** All the registered descriptors. */
-    protected List<PubSubProviderDescriptor> providerDescriptors = new CopyOnWriteArrayList<>();
+    public static final String XP_CONFIG = "configuration";
 
     /** The currently-configured provider. */
     protected PubSubProvider provider;
-
-    /** The descriptor for the currently-configured provider, or {@code null} if it's the default. */
-    protected PubSubProviderDescriptor providerDescriptor;
 
     /** List of subscribers for each topic. */
     protected Map<String, List<BiConsumer<String, byte[]>>> subscribers = new ConcurrentHashMap<>();
@@ -53,8 +51,8 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     protected Map<String, String> options;
 
     @Override
-    public void activate(ComponentContext context) {
-        providerDescriptorChanged();
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
@@ -62,18 +60,39 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
         subscribers.clear();
         provider.close();
         provider = null;
+        super.deactivate(context);
     }
 
     @Override
     public void start(ComponentContext context) {
-        if (provider == null) {
-            return;
+        super.start(context);
+        if (provider != null) {
+            provider.close();
+        }
+        List<PubSubProviderDescriptor> descs = getDescriptors(XP_CONFIG);
+        PubSubProviderDescriptor providerDescriptor = descs.isEmpty() ? null : descs.get(descs.size() - 1);
+        if (providerDescriptor == null) {
+            provider = new MemPubSubProvider(); // default implementation
+            options = Collections.emptyMap();
+        } else {
+            Class<? extends PubSubProvider> klass = providerDescriptor.klass;
+            // dynamic class check, the generics aren't enough
+            if (!PubSubProvider.class.isAssignableFrom(klass)) {
+                throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
+            }
+            try {
+                provider = klass.getDeclaredConstructor().newInstance();
+                options = providerDescriptor.options;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
         provider.initialize(options, subscribers);
     }
 
     @Override
-    public void stop(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
         if (provider == null) {
             return;
         }
@@ -84,53 +103,6 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     public int getApplicationStartedOrder() {
         // let RedisComponent start before us (Redis starts before WorkManager that starts before events)
         return -500 + 10;
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIG_XP.equals(extensionPoint)) {
-            registerProvider((PubSubProviderDescriptor) contribution);
-        } else {
-            throw new RuntimeException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIG_XP.equals(extensionPoint)) {
-            unregisterProvider((PubSubProviderDescriptor) contribution);
-        }
-    }
-
-    protected void registerProvider(PubSubProviderDescriptor descriptor) {
-        providerDescriptors.add(descriptor);
-        providerDescriptor = descriptor;
-        providerDescriptorChanged();
-    }
-
-    protected void unregisterProvider(PubSubProviderDescriptor descriptor) {
-        providerDescriptors.remove(descriptor);
-        if (descriptor == providerDescriptor) {
-            // we removed the current provider, find a new one
-            int size = providerDescriptors.size();
-            providerDescriptor = size == 0 ? null : providerDescriptors.get(size - 1);
-            providerDescriptorChanged();
-        }
-    }
-
-    protected void providerDescriptorChanged() {
-        if (provider != null) {
-            provider.close();
-        }
-        if (providerDescriptor == null) {
-            provider = new MemPubSubProvider(); // default implementation
-            options = Collections.emptyMap();
-        } else {
-            provider = providerDescriptor.getInstance();
-            options = providerDescriptor.getOptions();
-        }
-        // initialize later, in applicationStarted
-        // provider.initialize(subscribers);
     }
 
     // ===== delegation to actual implementation =====

@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-
 /**
  * Abstract class to be extended to provide new cache implementation
  *

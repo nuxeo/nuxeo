@@ -42,31 +42,19 @@ public class MongoDBRepositoryService extends DefaultComponent {
     @Override
     public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
-            addContribution((MongoDBRepositoryDescriptor) contrib);
-            handleConnectionContribution((MongoDBRepositoryDescriptor) contrib,
-                    (c, d) -> c.registerContribution(d, "connection", contributor));
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
+            MongoDBRepositoryDescriptor desc = (MongoDBRepositoryDescriptor) contrib;
+            Framework.getService(DBSRepositoryService.class).addContribution(desc, MongoDBRepositoryFactory.class);
+            handleConnectionContribution(desc, (c, d) -> c.registerContribution(d, "connection", contributor));
         }
     }
 
     @Override
     public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
-            removeContribution((MongoDBRepositoryDescriptor) contrib);
-            handleConnectionContribution((MongoDBRepositoryDescriptor) contrib,
-                    (c, d) -> c.unregisterContribution(d, "connection", contributor));
-        } else {
-            throw new RuntimeException("Unknown extension point: " + xpoint);
+            MongoDBRepositoryDescriptor desc = (MongoDBRepositoryDescriptor) contrib;
+            Framework.getService(DBSRepositoryService.class).removeContribution(desc, MongoDBRepositoryFactory.class);
+            handleConnectionContribution(desc, (c, d) -> c.unregisterContribution(d, "connection", contributor));
         }
-    }
-
-    protected void addContribution(MongoDBRepositoryDescriptor descriptor) {
-        Framework.getService(DBSRepositoryService.class).addContribution(descriptor, MongoDBRepositoryFactory.class);
-    }
-
-    protected void removeContribution(MongoDBRepositoryDescriptor descriptor) {
-        Framework.getService(DBSRepositoryService.class).removeContribution(descriptor, MongoDBRepositoryFactory.class);
     }
 
     /**
@@ -83,9 +71,13 @@ public class MongoDBRepositoryService extends DefaultComponent {
             String id = "repository/" + descriptor.name;
             String server = descriptor.server;
             String dbName = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
-            MongoDBConnectionConfig connection = new MongoDBConnectionConfig(id, server, dbName);
+            MongoDBConnectionConfig connection = new MongoDBConnectionConfig();
+            connection.server = server;
+            connection.dbname = dbName;
+            connection.id = id;
 
-            DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(MongoDBComponent.NAME);
+            DefaultComponent component = (DefaultComponent) Framework.getRuntime()
+                                                                     .getComponent(MongoDBComponent.COMPONENT_NAME);
             consumer.accept(component, connection);
         }
     }

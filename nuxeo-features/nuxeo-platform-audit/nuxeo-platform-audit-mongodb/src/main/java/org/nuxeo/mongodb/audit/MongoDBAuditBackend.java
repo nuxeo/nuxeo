@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,8 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
 
     @Override
     public int getApplicationStartedOrder() {
-        DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(MongoDBComponent.NAME);
+        DefaultComponent component = (DefaultComponent) Framework.getRuntime()
+                                                                 .getComponent(MongoDBComponent.COMPONENT_NAME);
         return component.getApplicationStartedOrder() + 1;
     }
 
@@ -187,7 +188,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         // cast parameters
         // current implementation only support a MultiExpression with AND operator
         @SuppressWarnings("unchecked")
-        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
+        List<Predicate> predicates = (List<Predicate>) (List<?>) ((MultiExpression) andPredicate).values;
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
         getFieldName = getFieldName.andThen(this::getMongoDBKey);

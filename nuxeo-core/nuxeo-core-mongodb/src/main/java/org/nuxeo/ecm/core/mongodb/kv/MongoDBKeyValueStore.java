@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.mongodb.Block;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +48,7 @@ import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
+import com.mongodb.Block;
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoWriteException;
@@ -96,7 +96,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
         name = descriptor.name;
-        Map<String, String> properties = descriptor.getProperties();
+        Map<String, String> properties = descriptor.properties;
         // find which collection prefix to use
         String collectionName = properties.get(COLLECTION_PROP);
         if (StringUtils.isBlank(collectionName)) {

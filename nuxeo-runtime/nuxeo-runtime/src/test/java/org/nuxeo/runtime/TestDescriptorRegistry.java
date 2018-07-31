@@ -54,15 +54,12 @@ public class TestDescriptorRegistry {
         }
 
         @Override
-        public Descriptor merge(Descriptor other) {
-            if (other == null || !(other instanceof TestDescriptor)) {
-                return null;
-            }
-            TestDescriptor casted = (TestDescriptor) other;
+        public Descriptor merge(Descriptor o) {
+            TestDescriptor other = (TestDescriptor) o;
             TestDescriptor merged = new TestDescriptor();
-            merged.id = casted.id != null ? casted.id : id;
-            merged.name = casted.name != null ? casted.name : name;
-            merged.desc = casted.desc != null ? casted.desc : desc;
+            merged.id = other.id != null ? other.id : id;
+            merged.name = other.name != null ? other.name : name;
+            merged.desc = other.desc != null ? other.desc : desc;
             return merged;
         }
 

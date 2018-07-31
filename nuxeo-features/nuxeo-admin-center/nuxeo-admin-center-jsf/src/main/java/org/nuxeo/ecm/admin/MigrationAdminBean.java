@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +50,8 @@ public class MigrationAdminBean implements Serializable {
         MigrationService migrationService = Framework.getService(MigrationService.class);
         List<Map<String, Object>> migrationInfos = new ArrayList<>();
 
-        Map<String, MigrationDescriptor> descriptors = ((MigrationServiceImpl) migrationService).getMigrationDescriptors();
-        descriptors.values().forEach(descr -> {
+        Collection<MigrationDescriptor> descriptors = ((MigrationServiceImpl) migrationService).getMigrationDescriptors();
+        descriptors.forEach(descr -> {
             MigrationStatus status = migrationService.getStatus(descr.getId());
             Map<String, Object> migrationInfo = new HashMap<>();
             migrationInfo.put("id", descr.getId());
@@ -60,8 +61,8 @@ public class MigrationAdminBean implements Serializable {
                 // compute available steps
                 String state = status.getState();
                 List<MigrationStepDescriptor> steps = new ArrayList<>();
-                for (MigrationStepDescriptor step : descr.getSteps().values()) {
-                    if (step.getFromState().equals(state)) {
+                for (MigrationStepDescriptor step : descr.steps.values()) {
+                    if (step.fromState.equals(state)) {
                         steps.add(step);
                     }
                 }

@@ -18,15 +18,43 @@ package org.nuxeo.ecm.core.redis;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.util.Pool;
 
 @XObject("sentinel")
 public class RedisSentinelDescriptor extends RedisPoolDescriptor {
+
+    @XObject("host")
+    public static class RedisHostDescriptor implements Descriptor {
+
+        @XNode("@name")
+        public String name;
+
+        @XNode("@port")
+        public int port;
+
+        /** Empty constructor. */
+        public RedisHostDescriptor() {
+        }
+
+        protected RedisHostDescriptor(String name, int port) {
+            this.name = name;
+            this.port = port;
+        }
+
+        @Override
+        public String getId() {
+            return name;
+        }
+    }
 
     @XNodeList(value = "host", type = RedisHostDescriptor[].class, componentType = RedisHostDescriptor.class)
     public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
@@ -39,16 +67,14 @@ public class RedisSentinelDescriptor extends RedisPoolDescriptor {
 
     @Override
     public RedisExecutor newExecutor() throws RuntimeException {
-        RedisExecutor base = new RedisPoolExecutor(new JedisSentinelPool(master, toSentinels(hosts),
-                new JedisPoolConfig(), timeout, password, database));
-        return new RedisFailoverExecutor(failoverTimeout, base);
-    }
-
-    protected Set<String> toSentinels(RedisHostDescriptor[] hosts) {
-        Set<String> sentinels = new HashSet<String>();
+        Set<String> sentinels = new HashSet<>();
         for (RedisHostDescriptor host : hosts) {
             sentinels.add(host.name + ":" + host.port);
         }
-        return sentinels;
+        GenericObjectPoolConfig cfg = new JedisPoolConfig();
+        Pool<Jedis> sentinel = new JedisSentinelPool(master, sentinels, cfg, timeout, password, database);
+        RedisExecutor base = new RedisPoolExecutor(sentinel);
+        return new RedisFailoverExecutor(failoverTimeout, base);
     }
+
 }

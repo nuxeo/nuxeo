@@ -42,7 +42,6 @@
       </code>
     </documentation>
 
-    <object class="org.nuxeo.ecm.core.redis.RedisHostDescriptor" />
     <object class="org.nuxeo.ecm.core.redis.RedisServerDescriptor" />
     <object class="org.nuxeo.ecm.core.redis.RedisSentinelDescriptor" />
   </extension-point>

@@ -33,8 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -63,7 +60,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BatchManagerComponent extends DefaultComponent implements BatchManager {
 
-    protected static final Log log = LogFactory.getLog(BatchManagerComponent.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.server.BatchManager";
 
     protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
 
@@ -77,9 +77,9 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     public static final String DEFAULT_BATCH_HANDLER = "default";
 
     /** @since 10.1 */
-    public static final String EP_BATCH_HANDLER = "handlers";
+    public static final String XP_BATCH_HANDLER = "handlers";
 
-    protected Map<String, BatchHandler> handlers;
+    protected Map<String, BatchHandler> handlers = new HashMap<>();
 
     protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
 
@@ -88,43 +88,29 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        handlers = new HashMap<>();
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        handlers = null;
-        super.deactivate(context);
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_BATCH_HANDLER.equals(extensionPoint)) {
-            if (contribution instanceof BatchHandlerDescriptor) {
-                BatchHandlerDescriptor contributionDescriptor = (BatchHandlerDescriptor) contribution;
-                String name = contributionDescriptor.getName();
-                BatchHandler batchHandler = contributionDescriptor.newInstance();
-                batchHandler.initialize(name, contributionDescriptor.getProperties());
-                handlers.put(name, batchHandler);
-            } else {
-                throw new NuxeoException("Invalid class: " + contribution.getClass().getName());
+    public void start(ComponentContext context) {
+        super.start(context);
+        List<BatchHandlerDescriptor> descriptors = getDescriptors(XP_BATCH_HANDLER);
+        descriptors.forEach(d -> {
+            try {
+                BatchHandler handler = d.klass.newInstance();
+                handler.initialize(d.name, d.properties);
+                handlers.put(d.name, handler);
+            } catch (ReflectiveOperationException e) {
+                getLog().error(e,e);
             }
-        } else {
-            throw new NuxeoException("Invalid extension point: " + extensionPoint);
-        }
+        });
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_BATCH_HANDLER.equals(extensionPoint)) {
-            if (BatchHandlerDescriptor.class.isAssignableFrom(contribution.getClass())) {
-                BatchHandlerDescriptor contributionDescriptor = (BatchHandlerDescriptor) contribution;
-                String name = contributionDescriptor.getName();
-                handlers.remove(name);
-            }
-        }
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        handlers.clear();
     }
 
     @Override
@@ -198,7 +184,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                 batch = initBatchInternal(batchId);
             }
             batch.addFile(index, blob, name, mime);
-            log.debug(String.format("Added file %s [%s] to batch %s", index, name, batch.getKey()));
+            getLog().debug(String.format("Added file %s [%s] to batch %s", index, name, batch.getKey()));
         } finally {
             uploadInProgress.decrementAndGet();
         }
@@ -221,7 +207,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                 batch = initBatchInternal(batchId);
             }
             batch.addChunk(index, blob, chunkCount, chunkIndex, name, mime, fileSize);
-            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIndex, index, name,
+            getLog().debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIndex, index, name,
                     batch.getKey()));
         } finally {
             uploadInProgress.decrementAndGet();
@@ -254,7 +240,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
         Batch batch = getBatch(batchId);
         if (batch == null) {
-            log.error("Unable to find batch with id " + batchId);
+            getLog().error("Unable to find batch with id " + batchId);
             return Collections.emptyList();
         }
         return batch.getBlobs();
@@ -282,7 +268,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             }
         }
         if (!hasBatch(batchId)) {
-            log.error("Unable to find batch with id " + batchId);
+            getLog().error("Unable to find batch with id " + batchId);
             return null;
         }
         return blob;
@@ -329,7 +315,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         List<Blob> blobs = getBlobs(batchId, getUploadWaitTimeout());
         if (blobs == null) {
             String message = String.format("Unable to find batch associated with id '%s'", batchId);
-            log.error(message);
+            getLog().error(message);
             throw new NuxeoException(message);
         }
         return execute(new BlobList(blobs), chainOrOperationId, session, contextParams, operationParams);
@@ -343,7 +329,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             String message = String.format(
                     "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId,
                     fileIndex);
-            log.error(message);
+            getLog().error(message);
             throw new NuxeoException(message);
         }
         return execute(blob, chainOrOperationId, session, contextParams, operationParams);
@@ -363,11 +349,11 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             AutomationServer server = Framework.getService(AutomationServer.class);
             RestBinding binding = server.getOperationBinding(chainOrOperationId);
 
-            if (binding != null && binding.isAdministrator()) {
+            if (binding != null && binding.isAdministrator) {
                 Principal principal = ctx.getPrincipal();
                 if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
                     String message = "Not allowed. You must be administrator to use this operation";
-                    log.error(message);
+                    getLog().error(message);
                     throw new WebSecurityException(message);
                 }
             }
@@ -379,7 +365,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             // Drag and Drop action category is accessible from the chain sub context as chain parameters
             return as.run(ctx, chainOrOperationId, operationParams);
         } catch (OperationException e) {
-            log.error("Error while executing automation batch ", e);
+            getLog().error("Error while executing automation batch ", e);
             throw new NuxeoException(e);
         }
     }
@@ -389,7 +375,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         try {
             return Integer.parseInt(t);
         } catch (NumberFormatException e) {
-            log.error("Wrong number format for upload wait timeout property", e);
+            getLog().error("Wrong number format for upload wait timeout property", e);
             return 5;
         }
     }

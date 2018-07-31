@@ -1,20 +1,16 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService"
-  version="1.0.0">
+<component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" version="1.0.0">
 
-  <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService
-  </require>
+  <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService</require>
 
   <documentation>
     Manages MongoDB repositories.
   </documentation>
 
-  <implementation
-    class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" />
+  <implementation class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" />
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" />
+    <provide interface="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" />
   </service>
 
   <extension-point name="repository">
@@ -25,7 +21,7 @@
       Example:
       <code>
         <repository name="default" label="MongoDB Repository" isDefault="true">
-          <fulltext disabled="false"/>
+          <fulltext disabled="false" />
         </repository>
       </code>
     </documentation>

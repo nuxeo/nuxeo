@@ -22,16 +22,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Avro component.
@@ -40,71 +39,25 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class AvroComponent extends DefaultComponent {
 
-    public static final int APPLICATION_START_ORDER = -600;
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.avro";
 
-    protected static class AvroMapperDescriptorRegistry extends SimpleContributionRegistry<AvroMapperDescriptor> {
-        @Override
-        public String getContributionId(AvroMapperDescriptor contrib) {
-            return contrib.type;
-        }
+    public static final String XP_SCHEMA = "schema";
 
-        public Collection<AvroMapperDescriptor> getDescriptors() {
-            return currentContribs.values();
-        }
-    }
+    public static final String XP_MAPPER = "mapper";
 
-    protected static class AvroReplacementDescriptorRegistry
-            extends SimpleContributionRegistry<AvroReplacementDescriptor> {
-        @Override
-        public String getContributionId(AvroReplacementDescriptor contrib) {
-            return contrib.forbidden;
-        }
+    public static final String XP_FACTORY = "factory";
 
-        public Collection<AvroReplacementDescriptor> getDescriptors() {
-            return currentContribs.values();
-        }
-    }
-
-    protected static class AvroSchemaDescriptorRegistry extends SimpleContributionRegistry<AvroSchemaDescriptor> {
-        @Override
-        public String getContributionId(AvroSchemaDescriptor contrib) {
-            return contrib.name;
-        }
-
-        public Collection<AvroSchemaDescriptor> getDescriptors() {
-            return currentContribs.values();
-        }
-    }
-
-    protected static class AvroSchemaFactoryDescriptorRegistry
-            extends SimpleContributionRegistry<AvroSchemaFactoryDescriptor> {
-        @Override
-        public String getContributionId(AvroSchemaFactoryDescriptor contrib) {
-            return contrib.type;
-        }
-
-        public Collection<AvroSchemaFactoryDescriptor> getDescriptors() {
-            return currentContribs.values();
-        }
-    }
-
-    public static final String SCHEMA_XP = "schema";
-
-    public static final String MAPPER_XP = "mapper";
-
-    public static final String FACTORY_XP = "factory";
-
-    public static final String REPLACEMENT_XP = "replacement";
-
-    protected final AvroMapperDescriptorRegistry avroMapperDescriptors = new AvroMapperDescriptorRegistry();
-
-    protected final AvroSchemaDescriptorRegistry schemaDescriptors = new AvroSchemaDescriptorRegistry();
-
-    protected final AvroSchemaFactoryDescriptorRegistry avroSchemaFactoryDescriptors = new AvroSchemaFactoryDescriptorRegistry();
-
-    protected final AvroReplacementDescriptorRegistry replacementDescriptors = new AvroReplacementDescriptorRegistry();
+    public static final String XP_REPLACEMENT = "replacement";
 
     protected AvroService avroService;
+
+    @Override
+    protected String getName() {
+        return COMPONENT_NAME;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -116,53 +69,35 @@ public class AvroComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case SCHEMA_XP:
-            schemaDescriptors.addContribution((AvroSchemaDescriptor) contribution);
-            break;
-        case MAPPER_XP:
-            avroMapperDescriptors.addContribution((AvroMapperDescriptor) contribution);
-            break;
-        case FACTORY_XP:
-            avroSchemaFactoryDescriptors.addContribution((AvroSchemaFactoryDescriptor) contribution);
-            break;
-        case REPLACEMENT_XP:
-            replacementDescriptors.addContribution((AvroReplacementDescriptor) contribution);
-            break;
-        default:
-            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
     public int getApplicationStartedOrder() {
-        return APPLICATION_START_ORDER;
+        return KafkaConfigServiceImpl.APPLICATION_STARTED_ORDER;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void start(ComponentContext context) {
+        super.start(context);
         // schema factories can be give to the constructor since they don't need a service instance
-        Collection<AvroSchemaFactoryDescriptor> factoryDescriptors = avroSchemaFactoryDescriptors.getDescriptors();
-        Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(factoryDescriptors.size());
-        for (AvroSchemaFactoryDescriptor descriptor : factoryDescriptors) {
+        List<AvroSchemaFactoryDescriptor> factoryDescs = getDescriptors(XP_FACTORY);
+        Map<Class<?>, Class<AvroSchemaFactory<?>>> factories = new HashMap<>(factoryDescs.size());
+        for (AvroSchemaFactoryDescriptor descriptor : factoryDescs) {
             try {
                 Class<Object> type = (Class<Object>) Class.forName(descriptor.type);
-                factories.put(type, (Class<AvroSchemaFactory<?>>) Class.forName(descriptor.clazz));
+                factories.put(type, (Class<AvroSchemaFactory<?>>) Class.forName(descriptor.klass));
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeServiceException(e);
             }
         }
         // as well as replacements
-        AvroServiceImpl impl = new AvroServiceImpl(replacementDescriptors.getDescriptors(), factories);
+        List<AvroReplacementDescriptor> replacementDescs = getDescriptors(XP_REPLACEMENT);
+        AvroServiceImpl impl = new AvroServiceImpl(replacementDescs, factories);
         // mappers are instantiated with an instance of the service
-        Collection<AvroMapperDescriptor> mapperDescriptors = avroMapperDescriptors.getDescriptors();
-        Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDescriptors.size());
-        for (AvroMapperDescriptor descriptor : mapperDescriptors) {
+        List<AvroMapperDescriptor> mapperDescs = getDescriptors(XP_MAPPER);
+        Map<Class<?>, AvroMapper<?, ?>> mappers = new HashMap<>(mapperDescs.size());
+        for (AvroMapperDescriptor descriptor : mapperDescs) {
             try {
                 Class<Object> type = (Class<Object>) Class.forName(descriptor.type);
-                Class<AvroMapper<?, ?>> clazz = (Class<AvroMapper<?, ?>>) Class.forName(descriptor.clazz);
+                Class<AvroMapper<?, ?>> clazz = (Class<AvroMapper<?, ?>>) Class.forName(descriptor.klass);
                 Constructor<AvroMapper<?, ?>> constructor = clazz.getConstructor(AvroService.class);
                 mappers.put(type, constructor.newInstance(impl));
             } catch (ReflectiveOperationException e) {
@@ -171,8 +106,9 @@ public class AvroComponent extends DefaultComponent {
         }
         // and are added to the service implementation
         impl.setMappers(mappers);
+        List<AvroSchemaDescriptor> schemaDescs = getDescriptors(XP_SCHEMA);
         // schemas are registered through the SchemaService interface
-        for (AvroSchemaDescriptor descriptor : schemaDescriptors.getDescriptors()) {
+        for (AvroSchemaDescriptor descriptor : schemaDescs) {
             URL url = context.getRuntimeContext().getResource(descriptor.file);
             try (InputStream stream = url == null ? null : url.openStream()) {
                 if (stream == null) {
@@ -187,28 +123,9 @@ public class AvroComponent extends DefaultComponent {
     }
 
     @Override
-    public void stop(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
         avroService = null;
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case SCHEMA_XP:
-            schemaDescriptors.removeContribution((AvroSchemaDescriptor) contribution);
-            break;
-        case MAPPER_XP:
-            avroMapperDescriptors.removeContribution((AvroMapperDescriptor) contribution);
-            break;
-        case FACTORY_XP:
-            avroSchemaFactoryDescriptors.removeContribution((AvroSchemaFactoryDescriptor) contribution);
-            break;
-        case REPLACEMENT_XP:
-            replacementDescriptors.removeContribution((AvroReplacementDescriptor) contribution);
-            break;
-        default:
-            throw new RuntimeServiceException("Unknown extension point: " + extensionPoint);
-        }
     }
 
 }

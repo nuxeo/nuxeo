@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * The Avro forbidden character replacement descriptor.<br>
@@ -37,7 +38,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 10.2
  */
 @XObject("replacement")
-public class AvroReplacementDescriptor implements Comparable<AvroReplacementDescriptor> {
+public class AvroReplacementDescriptor implements Descriptor, Comparable<AvroReplacementDescriptor> {
 
     @XNode("@forbidden")
     protected String forbidden;
@@ -48,14 +49,9 @@ public class AvroReplacementDescriptor implements Comparable<AvroReplacementDesc
     @XNode("@priority")
     protected int priority;
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(AvroReplacementDescriptor o) {
-        if (priority != o.priority) {
-            return Integer.compare(priority, o.priority);
-        } else {
-            return Objects.compare(forbidden, o.forbidden, String::compareTo);
-        }
+        return Integer.compare(priority, o.priority);
     }
 
     @Override
@@ -73,12 +69,9 @@ public class AvroReplacementDescriptor implements Comparable<AvroReplacementDesc
         return Objects.equals(forbidden, other.forbidden);
     }
 
-    public String getForbidden() {
+    @Override
+    public String getId() {
         return forbidden;
-    }
-
-    public String getReplacement() {
-        return replacement;
     }
 
     @Override
@@ -87,12 +80,6 @@ public class AvroReplacementDescriptor implements Comparable<AvroReplacementDesc
         int result = 1;
         result = prime * result + (forbidden == null ? 0 : forbidden.hashCode());
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "AvroReplacementDescriptor [forbidden=" + forbidden + ", " + "replacement=" + replacement + ","
-                + " priority=" + priority + "]";
     }
 
 }

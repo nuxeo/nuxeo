@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.io.registry;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,12 +31,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.MarshallerInspector;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -49,37 +47,44 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class MarshallerRegistryImpl extends DefaultComponent implements MarshallerRegistry {
 
-    private final Log log = LogFactory.getLog(MarshallerRegistryImpl.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.io.MarshallerRegistry";
+
+    /**
+     * @since 10.3
+     */
+    public static final String XP_MARSHALLERS = "marshallers";
 
     /**
      * All {@link Writer}'s {@link MarshallerInspector} ordered by their priority.
      */
-    private static final Set<MarshallerInspector> writers = new ConcurrentSkipListSet<MarshallerInspector>();
+    private static final Set<MarshallerInspector> writers = new ConcurrentSkipListSet<>();
 
     /**
      * {@link Writer}'s {@link MarshallerInspector} organized by their managed {@link MediaType}.
      */
-    private static final Map<MediaType, Set<MarshallerInspector>> writersByMediaType = new ConcurrentHashMap<MediaType, Set<MarshallerInspector>>();
+    private static final Map<MediaType, Set<MarshallerInspector>> writersByMediaType = new ConcurrentHashMap<>();
 
     /**
      * All {@link Reader}'s {@link MarshallerInspector} ordered by their priority.
      */
-    private static final Set<MarshallerInspector> readers = new ConcurrentSkipListSet<MarshallerInspector>();
+    private static final Set<MarshallerInspector> readers = new ConcurrentSkipListSet<>();
 
     /**
      * {@link Reader}'s {@link MarshallerInspector} organized by their managed {@link MediaType}.
      */
-    private static final Map<MediaType, Set<MarshallerInspector>> readersByMediaType = new ConcurrentHashMap<MediaType, Set<MarshallerInspector>>();
+    private static final Map<MediaType, Set<MarshallerInspector>> readersByMediaType = new ConcurrentHashMap<>();
 
     /**
      * {@link MarshallerInspector} organized by their managed {@link Marshaller} class.
      */
-    private static final Map<Class<?>, MarshallerInspector> marshallersByType = new ConcurrentHashMap<Class<?>, MarshallerInspector>();
+    private static final Map<Class<?>, MarshallerInspector> marshallersByType = new ConcurrentHashMap<>();
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        clear();
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
@@ -89,27 +94,16 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("marshallers")) {
-            MarshallerRegistryDescriptor mrd = (MarshallerRegistryDescriptor) contribution;
-            if (mrd.isEnable()) {
-                register(mrd.getClazz());
+    public void start(ComponentContext context) {
+        super.start(context);
+        List<MarshallerRegistryDescriptor> descriptors = getDescriptors(XP_MARSHALLERS);
+        descriptors.forEach(m -> {
+            if (m.enable) {
+                register(m.klass);
             } else {
-                deregister(mrd.getClazz());
+                deregister(m.klass);
             }
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals("marshallers")) {
-            MarshallerRegistryDescriptor mrd = (MarshallerRegistryDescriptor) contribution;
-            if (mrd.isEnable()) {
-                deregister(mrd.getClazz());
-            } else {
-                register(mrd.getClazz());
-            }
-        }
+        });
     }
 
     @Override
@@ -124,7 +118,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
                             + Writer.class.getName() + " or " + Reader.class.getName());
         }
         if (marshallersByType.get(marshaller) != null) {
-            log.warn("The marshaller " + marshaller.getName() + " is already registered.");
+            getLog().warn("The marshaller " + marshaller.getName() + " is already registered.");
             return;
         } else {
             marshallersByType.put(marshaller, inspector);
@@ -134,7 +128,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
             for (MediaType mediaType : inspector.getSupports()) {
                 Set<MarshallerInspector> inspectors = writersByMediaType.get(mediaType);
                 if (inspectors == null) {
-                    inspectors = new ConcurrentSkipListSet<MarshallerInspector>();
+                    inspectors = new ConcurrentSkipListSet<>();
                     writersByMediaType.put(mediaType, inspectors);
                 }
                 inspectors.add(inspector);
@@ -145,7 +139,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
             for (MediaType mediaType : inspector.getSupports()) {
                 Set<MarshallerInspector> inspectors = readersByMediaType.get(mediaType);
                 if (inspectors == null) {
-                    inspectors = new ConcurrentSkipListSet<MarshallerInspector>();
+                    inspectors = new ConcurrentSkipListSet<>();
                     readersByMediaType.put(mediaType, inspectors);
                 }
                 inspectors.add(inspector);
@@ -154,9 +148,9 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     }
 
     @Override
-    public void deregister(Class<?> marshaller) throws MarshallingException {
+    public void deregister(Class<?> marshaller) {
         if (marshaller == null) {
-            log.warn("Cannot register null marshaller");
+            getLog().warn("Cannot deregister null marshaller");
             return;
         }
         MarshallerInspector inspector = new MarshallerInspector(marshaller);
@@ -187,7 +181,8 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     }
 
     @Override
-    public <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype) {
+    public <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+            MediaType mediatype) {
         Set<MarshallerInspector> candidates = writersByMediaType.get(mediatype);
         return (Writer<T>) getMarshaller(ctx, marshalledClazz, genericType, mediatype, candidates, writers, false);
     }
@@ -215,7 +210,8 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     }
 
     @Override
-    public <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype) {
+    public <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+            MediaType mediatype) {
         Set<MarshallerInspector> candidates = readersByMediaType.get(mediatype);
         return (Reader<T>) getMarshaller(ctx, marshalledClazz, genericType, mediatype, candidates, readers, false);
     }
@@ -256,8 +252,9 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     }
 
     public <T> Collection<Marshaller<T>> getAllMarshallers(RenderingContext ctx, Class<T> marshalledClazz,
-            Type genericType, MediaType mediatype, Set<MarshallerInspector> customs, Set<MarshallerInspector> wildcards) {
-        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<MarshallerInspector, Marshaller<T>>();
+            Type genericType, MediaType mediatype, Set<MarshallerInspector> customs,
+            Set<MarshallerInspector> wildcards) {
+        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<>();
         if (customs != null) {
             result.putAll(searchAllCandidates(ctx, marshalledClazz, genericType, mediatype, customs));
         }
@@ -292,7 +289,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
 
     private <T> Map<MarshallerInspector, Marshaller<T>> searchAllCandidates(RenderingContext ctx,
             Class<T> marshalledClazz, Type genericType, MediaType mediatype, Set<MarshallerInspector> candidates) {
-        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<MarshallerInspector, Marshaller<T>>();
+        Map<MarshallerInspector, Marshaller<T>> result = new HashMap<>();
         for (MarshallerInspector inspector : candidates) {
             // checks the managed class is compatible
             if (inspector.getMarshalledType().isAssignableFrom(marshalledClazz)) {
@@ -334,8 +331,8 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     public void clear() {
         marshallersByType.clear();
         writersByMediaType.clear();
-        writers.clear();
         readersByMediaType.clear();
+        writers.clear();
         readers.clear();
     }
 

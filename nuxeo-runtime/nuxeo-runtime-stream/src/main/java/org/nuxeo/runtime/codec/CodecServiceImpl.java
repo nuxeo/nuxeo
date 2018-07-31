@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,51 +20,55 @@
 package org.nuxeo.runtime.codec;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class CodecServiceImpl extends DefaultComponent implements CodecService {
-    private static final Log log = LogFactory.getLog(CodecServiceImpl.class);
 
-    public static final String CODEC_XP = "codec";
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.codec.service";
 
-    public static final int APPLICATION_STARTED_ORDER = -600;
-
-    protected final Map<String, CodecDescriptor> configs = new HashMap<>();
+    public static final String XP_CODEC = "codec";
 
     protected final Map<String, CodecFactory> codecFactories = new HashMap<>();
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(CODEC_XP)) {
-            CodecDescriptor descriptor = (CodecDescriptor) contribution;
-            configs.put(descriptor.getName(), descriptor);
-            log.debug(String.format("Register Codec contribution: %s", descriptor));
-            codecFactories.put(descriptor.getName(), descriptor.getInstance());
+    protected String getName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        super.start(context);
+        List<CodecDescriptor> descriptors = getDescriptors(XP_CODEC);
+        for (CodecDescriptor descriptor : descriptors) {
+            getLog().debug(String.format("Creating CodecFactory : %s", descriptor.klass.getSimpleName()));
+            try {
+                CodecFactory factory = descriptor.klass.getDeclaredConstructor().newInstance();
+                factory.init(descriptor.options);
+                codecFactories.put(descriptor.getId(), factory);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalArgumentException("Invalid class: " + getClass(), e);
+            }
         }
     }
 
     @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        codecFactories.clear();
+    }
+
+    @Override
     public int getApplicationStartedOrder() {
-        return APPLICATION_STARTED_ORDER;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        log.debug("Deactivating service");
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
-        log.debug("Activating service");
+        return KafkaConfigServiceImpl.APPLICATION_STARTED_ORDER;
     }
 
     @Override

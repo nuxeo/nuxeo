@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,27 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
-@SuppressWarnings("CanBeFinal")
 @XObject("logConfig")
-public class LogConfigDescriptor {
+public class LogConfigDescriptor implements Descriptor {
+
+    @XObject(value = "log")
+    public static class StreamDescriptor implements Descriptor {
+
+        public static final Integer DEFAULT_PARTITIONS = 4;
+
+        @XNode("@name")
+        public String name;
+
+        @XNode("@size")
+        public Integer size = DEFAULT_PARTITIONS;
+
+        @Override
+        public String getId() {
+            return name;
+        }
+    }
 
     @XNode("@name")
     public String name;
@@ -43,39 +60,11 @@ public class LogConfigDescriptor {
     public Map<String, String> options = new HashMap<>();
 
     @XNodeList(value = "log", type = ArrayList.class, componentType = StreamDescriptor.class)
-    public List<StreamDescriptor> logs = new ArrayList<>(0);
+    public List<StreamDescriptor> logs = new ArrayList<>();
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
-    }
-
-    public boolean isKafkaLog() {
-        return "kafka".equalsIgnoreCase(type);
-    }
-
-    public String getOption(String key, String defaultValue) {
-        return options.getOrDefault(key, defaultValue);
-    }
-
-    public Map<String, Integer> getLogsToCreate() {
-        Map<String, Integer> ret = new HashMap<>();
-        logs.forEach(d -> ret.put(d.name, d.size));
-        return ret;
-    }
-
-    @XObject(value = "log")
-    public static class StreamDescriptor {
-        public static final Integer DEFAULT_PARTITIONS = 4;
-
-        @XNode("@name")
-        public String name;
-
-        @XNode("@size")
-        public Integer size = DEFAULT_PARTITIONS;
-
-        public StreamDescriptor() {
-            // empty constructor
-        }
     }
 
 }

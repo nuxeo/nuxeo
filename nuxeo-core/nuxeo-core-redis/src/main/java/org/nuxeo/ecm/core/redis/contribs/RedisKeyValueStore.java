@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
         log.debug("Initializing");
-        name = descriptor.name;
-        Map<String, String> properties = descriptor.getProperties();
+        this.name = descriptor.name;
+        Map<String, String> properties = descriptor.properties;
         String name = properties.get(NAMESPACE_PROP);
         RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
         namespace = redisAdmin.namespace(name == null ? new String[0] : new String[] { name });
