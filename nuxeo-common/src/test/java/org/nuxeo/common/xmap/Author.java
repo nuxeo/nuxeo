@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.common.xmap;
 
 import java.util.ArrayList;
@@ -41,7 +39,7 @@ import org.w3c.dom.DocumentFragment;
 public class Author {
 
     public enum Gender {
-        MALE, FEMALE;
+        MALE, FEMALE
     }
 
     @XNode("metadata/title")
@@ -156,10 +154,10 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author {\n" + "  title: " + title + '\n' + "  description: " + description + '\n' + "  id: " + id
-                + '\n' + "  nameType: " + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age + '\n'
-                + "  items: " + items + '\n' + "  itemIds: " + itemIds + '\n' + "  content: <" + content + '>' + '\n'
-                + "  friends: " + friends + '\n' + "  properties: " + properties + '\n' + '}';
+        return "Author {\n" + "  title: " + title + '\n' + "  description: " + description + '\n' + "  id: " + id + '\n'
+                + "  nameType: " + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age + '\n' + "  items: "
+                + items + '\n' + "  itemIds: " + itemIds + '\n' + "  content: <" + content + '>' + '\n' + "  friends: "
+                + friends + '\n' + "  properties: " + properties + '\n' + '}';
     }
 
     // getter used to reverse xmap

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.common.xmap;
 
 import java.io.File;
@@ -30,22 +27,19 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
 
 /**
  * Value factories are used to decode values from XML strings.
  * <p>
- * To register a new factory for a given XMap instance use the method {@link XMap#setValueFactory(Class, XValueFactory)}.
+ * To register a new factory for a given XMap instance use the method
+ * {@link XMap#setValueFactory(Class, XValueFactory)}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class XValueFactory {
 
-    private static final Log log = LogFactory.getLog(XValueFactory.class);
-
-    static final Map<Class<?>, XValueFactory> defaultFactories = new Hashtable<Class<?>, XValueFactory>();
+    static final Map<Class<?>, XValueFactory> defaultFactories = new Hashtable<>();
 
     public abstract Object deserialize(Context context, String value);
 

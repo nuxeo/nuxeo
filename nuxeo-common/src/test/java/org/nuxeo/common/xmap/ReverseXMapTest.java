@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.common.xmap;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -30,7 +28,6 @@ import java.io.File;
 import java.net.URL;
 
 import org.junit.Test;
-
 import org.nuxeo.common.xmap.Author.Gender;
 
 public class ReverseXMapTest {
@@ -42,7 +39,7 @@ public class ReverseXMapTest {
         URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
         Author author = (Author) xmap.load(url);
         try {
-            xmap.toXML(new String());
+            xmap.toXML("");
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();
@@ -79,7 +76,7 @@ public class ReverseXMapTest {
         String t = author.testContent2.getFirstChild().getTextContent().trim();
         assertEquals("Test", t);
 
-        assertFalse(author.content.equals(author.content.trim()));
+        assertNotEquals(author.content, author.content.trim());
 
         assertNull(author.testNullByDefaultForList);
         assertNull(author.testNullByDefaultForMap);
