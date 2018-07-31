@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webdav.backend;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webdav.service.WIRequestFilter;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
@@ -33,20 +32,16 @@ public abstract class AbstractBackendFactory implements BackendFactory {
         if (request == null) {
             throw new NullPointerException("null request");
         }
-        Backend backend = (Backend) request.getAttribute(WIRequestFilter.BACKEND_KEY);
-        if (backend == null) {
-            // create backend from WebEngine session
-            WebContext webContext = WebEngine.getActiveContext();
-            if (webContext == null) {
-                throw new NullPointerException("null WebContext");
-            }
-            CoreSession session = webContext.getCoreSession();
-            if (session == null) {
-                throw new NullPointerException("null CoreSession");
-            }
-            backend = createRootBackend(session);
-            request.setAttribute(WIRequestFilter.BACKEND_KEY, backend);
+        // create backend from WebEngine session
+        WebContext webContext = WebEngine.getActiveContext();
+        if (webContext == null) {
+            throw new NullPointerException("null WebContext");
         }
+        CoreSession session = webContext.getCoreSession();
+        if (session == null) {
+            throw new NullPointerException("null CoreSession");
+        }
+        Backend backend = createRootBackend(session);
         return backend.getBackend(path);
     }
 
