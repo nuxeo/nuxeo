@@ -171,7 +171,7 @@ def dump(licenses, versions, descriptions, gas, out):
         info = descriptions.get(ga, ' ')
         if ga in gas:
             gas_left.remove(ga)
-            lines.append('| ' + jar + ' | ' + info + ' | ' + version + ' | ' + ', '.join(license_list) + ' |')
+            lines.append('| ' + group + ':' + artifact + ':' + version + ' | ' + jar + ' | ' + info + ' | ' + version + ' | ' + ', '.join(license_list) + ' |')
     for line in sorted(lines, key=str.lower):
         out.write(line + '\n')
     for ga in gas_left:
