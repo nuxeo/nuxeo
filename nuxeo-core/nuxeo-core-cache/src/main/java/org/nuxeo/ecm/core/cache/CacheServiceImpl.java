@@ -21,28 +21,22 @@ package org.nuxeo.ecm.core.cache;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_MAX_SIZE;
-import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_TTL;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
@@ -54,9 +48,15 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
-    private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.cache.CacheService";
 
-    public static final ComponentName NAME = new ComponentName(CacheServiceImpl.class.getName());
+    /**
+     * @since 10.3
+     */
+    public static final String XP_CACHES = "caches";
 
     protected static final Random RANDOM = new Random();
 
@@ -82,70 +82,10 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      */
     public static final String NODE_ID_PROP = "repository.clustering.id";
 
-    protected final CacheDescriptorRegistry registry = new CacheDescriptorRegistry();
-
     /** Currently registered caches. */
     protected final Map<String, CacheManagement> caches = new ConcurrentHashMap<>();
 
     protected CachePubSubInvalidator invalidator;
-
-    // SimpleContributionRegistry is overkill and does not deal well with a "remove" feature
-    protected static class CacheDescriptorRegistry {
-
-        protected Map<String, List<CacheDescriptor>> allDescriptors = new ConcurrentHashMap<>();
-
-        protected Map<String, CacheDescriptor> effectiveDescriptors = new ConcurrentHashMap<>();
-
-        public void addContribution(CacheDescriptor descriptor) {
-            String name = descriptor.name;
-            allDescriptors.computeIfAbsent(name, n -> new CopyOnWriteArrayList<>()).add(descriptor);
-            recompute(name);
-        }
-
-        public void removeContribution(CacheDescriptor descriptor) {
-            String name = descriptor.name;
-            allDescriptors.getOrDefault(name, Collections.emptyList()).remove(descriptor);
-            recompute(name);
-        }
-
-        protected void recompute(String name) {
-            CacheDescriptor desc = null;
-            for (CacheDescriptor d : allDescriptors.getOrDefault(name, Collections.emptyList())) {
-                if (d.remove) {
-                    desc = null;
-                } else {
-                    if (desc == null) {
-                        desc = d.clone();
-                    } else {
-                        desc.merge(d);
-                    }
-                }
-            }
-            if (desc == null) {
-                effectiveDescriptors.remove(name);
-            } else {
-                effectiveDescriptors.put(name, desc);
-            }
-        }
-
-        public CacheDescriptor getCacheDescriptor(String name) {
-            return effectiveDescriptors.get(name);
-        }
-
-        public Collection<CacheDescriptor> getCacheDescriptors() {
-            return effectiveDescriptors.values();
-        }
-
-        public CacheDescriptor getDefaultDescriptor() {
-            CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
-            if (defaultDescriptor == null) {
-                defaultDescriptor = new CacheDescriptor();
-                defaultDescriptor.ttl = DEFAULT_TTL;
-                defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
-            }
-            return defaultDescriptor;
-        }
-    }
 
     public static class CacheInvalidation implements SerializableMessage {
 
@@ -228,8 +168,8 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    public void registerContribution(Object contrib, String extensionPoint, ComponentInstance contributor) {
-        registerCacheDescriptor((CacheDescriptor) contrib);
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
@@ -240,27 +180,18 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void registerCache(String name) {
-        CacheDescriptor defaultDescriptor = registry.getDefaultDescriptor().clone();
-        defaultDescriptor.name = name;
+        CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
+        if (defaultDescriptor == null) {
+            defaultDescriptor = new CacheDescriptor();
+            defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
+            register(XP_CACHES, defaultDescriptor);
+        }
+        CacheDescriptor newDescriptor = (CacheDescriptor) new CacheDescriptor().merge(defaultDescriptor);
+        newDescriptor.name = name;
         // add to registry (merging if needed)
-        registerCacheDescriptor(defaultDescriptor);
+        register(XP_CACHES, newDescriptor);
         // start if needed
         maybeStart(name);
-    }
-
-    public void registerCacheDescriptor(CacheDescriptor descriptor) {
-        registry.addContribution(descriptor);
-        log.info("Cache registered: " + descriptor.name);
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        unregisterCacheDescriptor((CacheDescriptor) contribution);
-    }
-
-    public void unregisterCacheDescriptor(CacheDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-        log.info("Cache unregistered: " + descriptor.name);
     }
 
     @Override
@@ -275,12 +206,13 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void start(ComponentContext context) {
+        super.start(context);
         if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
             // register cache invalidator
             String nodeId = Framework.getProperty(NODE_ID_PROP);
             if (StringUtils.isBlank(nodeId)) {
                 nodeId = String.valueOf(RANDOM.nextLong());
-                log.warn("Missing cluster node id configuration, please define it explicitly "
+                getLog().warn("Missing cluster node id configuration, please define it explicitly "
                         + "(usually through repository.clustering.id). Using random cluster node id instead: "
                         + nodeId);
             } else {
@@ -288,23 +220,40 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             }
             invalidator = new CachePubSubInvalidator();
             invalidator.initialize(CACHE_INVAL_PUBSUB_TOPIC, nodeId);
-            log.info("Registered cache invalidator for node: " + nodeId);
+            getLog().info("Registered cache invalidator for node: " + nodeId);
         } else {
-            log.info("Not registering a cache invalidator because clustering is not enabled");
+            getLog().info("Not registering a cache invalidator because clustering is not enabled");
         }
         // create and starts caches
-        registry.getCacheDescriptors().forEach(this::startCacheDescriptor);
+        Collection<CacheDescriptor> descriptors = getDescriptors(XP_CACHES);
+        descriptors.forEach(this::startCacheDescriptor);
     }
 
     /** Creates and starts the cache. */
     protected void startCacheDescriptor(CacheDescriptor desc) {
-        CacheManagement cache = desc.newInstance(invalidator);
+        CacheManagement cache;
+        if (desc.klass == null) {
+            cache = new InMemoryCacheImpl(desc); // default cache implementation
+        } else {
+            try {
+                cache = desc.klass.getConstructor(CacheDescriptor.class).newInstance(desc);
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException("Failed to instantiate class: " + desc.klass + " for cache: " + desc.name, e);
+            }
+        }
+        // wrap with checker, metrics and invalidator
+        cache = new CacheAttributesChecker(cache);
+        cache = new CacheMetrics(cache);
+        if (invalidator != null) {
+            cache = new CacheInvalidator(cache, invalidator);
+        }
         cache.start();
         caches.put(desc.name, cache);
     }
 
     @Override
-    public void stop(ComponentContext context) {
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
         if (invalidator != null) {
             invalidator.close();
             invalidator = null;
@@ -325,7 +274,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             cache.stop();
         }
         // start new one
-        startCacheDescriptor(registry.getCacheDescriptor(name));
+        startCacheDescriptor(getCacheDescriptor(name));
     }
 
     // --------------- API ---------------
@@ -339,7 +288,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      * @since 9.3
      */
     public CacheDescriptor getCacheDescriptor(String descriptor) {
-        return registry.getCacheDescriptor(descriptor);
+        return getDescriptor(XP_CACHES, descriptor);
     }
 
 }

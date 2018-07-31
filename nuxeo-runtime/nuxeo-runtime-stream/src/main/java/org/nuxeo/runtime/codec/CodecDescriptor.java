@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
-@SuppressWarnings("CanBeFinal")
 @XObject("codec")
-public class CodecDescriptor {
+public class CodecDescriptor implements Descriptor {
 
     @XNode("@name")
     protected String name;
@@ -39,26 +39,9 @@ public class CodecDescriptor {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
     }
 
-    public Class<CodecFactory> getKlass() {
-        return klass;
-    }
-
-    @Override
-    public String toString() {
-        return "CodecDescriptor{" + "klass=" + klass + ", options=" + options + '}';
-    }
-
-    public CodecFactory getInstance() {
-        try {
-            CodecFactory ret = getKlass().getDeclaredConstructor().newInstance();
-            ret.init(options);
-            return ret;
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalArgumentException("Invalid class: " + getClass(), e);
-        }
-    }
 }

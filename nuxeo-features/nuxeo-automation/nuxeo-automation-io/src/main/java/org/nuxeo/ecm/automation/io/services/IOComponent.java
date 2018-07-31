@@ -18,12 +18,13 @@
  */
 package org.nuxeo.ecm.automation.io.services;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -31,32 +32,23 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class IOComponent extends DefaultComponent {
 
-    protected static final String XP_CODECS = "codecs";
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.io.services.IOComponent";
+
+    /**
+     * @since 10.3
+     */
+    public static final String XP_CODECS = "codecs";
 
     private JsonFactoryManager jsonFactoryManager;
 
     private ObjectCodecService codecs;
 
     @Override
-    public void activate(ComponentContext context) {
-        jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
-        codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_CODECS.equals(extensionPoint)) {
-            CodecDescriptor codec = (CodecDescriptor) contribution;
-            codecs.addCodec(codec.newInstance());
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP_CODECS.equals(extensionPoint)) {
-            CodecDescriptor codec = (CodecDescriptor) contribution;
-            codecs.removeCodec(codec.newInstance().getJavaType());
-        }
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
@@ -66,12 +58,29 @@ public class IOComponent extends DefaultComponent {
         } else if (JsonFactoryManager.class.isAssignableFrom(adapter)) {
             return adapter.cast(jsonFactoryManager);
         }
-        return null;
+        return super.getAdapter(adapter);
     }
 
     @Override
     public void start(ComponentContext context) {
+        super.start(context);
+        jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
+        codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
+        List<CodecDescriptor> descriptors = getDescriptors(XP_CODECS);
+        descriptors.forEach(d -> {
+            try {
+                codecs.addCodec(d.klass.getDeclaredConstructor().newInstance());
+            } catch (ReflectiveOperationException e) {
+                getLog().error(e,e);
+            }
+        });
         codecs.postInit();
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        codecs = null;
     }
 
 }

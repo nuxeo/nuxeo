@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@
  */
 package org.nuxeo.runtime.mongodb;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor to retrieve connection information to MongoDB.
@@ -29,42 +28,20 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 9.1
  */
 @XObject("connection")
-public class MongoDBConnectionConfig implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MongoDBConnectionConfig implements Descriptor {
 
     @XNode("@id")
-    private String id;
+    public String id;
 
     @XNode("server")
-    private String server;
+    public String server;
 
     @XNode("dbname")
-    private String dbname;
+    public String dbname;
 
-    /**
-     * For deserialization
-     */
-    protected MongoDBConnectionConfig() {
-        //nothing
-    }
-
-    public MongoDBConnectionConfig(String id, String server, String dbname) {
-        this.id = id;
-        this.server = server;
-        this.dbname = dbname;
-    }
-
+    @Override
     public String getId() {
         return id;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public String getDbname() {
-        return dbname;
     }
 
 }

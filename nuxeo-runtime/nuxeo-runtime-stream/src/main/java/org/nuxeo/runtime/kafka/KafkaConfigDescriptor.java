@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,22 @@ import java.util.Properties;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
-@SuppressWarnings("CanBeFinal")
 @XObject("kafkaConfig")
-public class KafkaConfigDescriptor {
+public class KafkaConfigDescriptor implements Descriptor {
+
+    @XObject("consumer")
+    public static class ConsumerProperties {
+        @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
+        protected Properties properties = new Properties();
+    }
+
+    @XObject("producer")
+    public static class ProducerProperties {
+        @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
+        protected Properties properties = new Properties();
+    }
 
     @XNode("@name")
     public String name;
@@ -42,42 +54,14 @@ public class KafkaConfigDescriptor {
     public Boolean randomPrefix = Boolean.FALSE;
 
     @XNode("producer")
-    protected ProducerProperties producerProperties;
+    public ProducerProperties producerProperties = new ProducerProperties();
 
     @XNode("consumer")
-    protected ConsumerProperties consumerProperties;
+    public ConsumerProperties consumerProperties = new ConsumerProperties();
 
-    public Properties getProducerProperties() {
-        if (producerProperties == null) {
-            return new Properties();
-        }
-        return producerProperties.properties;
+    @Override
+    public String getId() {
+        return name;
     }
 
-    public Properties getConsumerProperties() {
-        if (consumerProperties == null) {
-            return new Properties();
-        }
-        return consumerProperties.properties;
-    }
-
-    public String getTopicPrefix() {
-        String ret = (topicPrefix == null) ? "" : topicPrefix;
-        if (randomPrefix) {
-            ret += System.currentTimeMillis() + "-";
-        }
-        return ret;
-    }
-
-    @XObject("producer")
-    public static class ProducerProperties {
-        @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
-        protected Properties properties = new Properties();
-    }
-
-    @XObject("consumer")
-    public static class ConsumerProperties {
-        @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
-        protected Properties properties = new Properties();
-    }
 }

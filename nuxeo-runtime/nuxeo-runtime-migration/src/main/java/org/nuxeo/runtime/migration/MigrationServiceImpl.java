@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -37,18 +37,14 @@ import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueServiceImpl;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
 
@@ -72,12 +68,14 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  */
 public class MigrationServiceImpl extends DefaultComponent implements MigrationService {
 
-    // package-private to avoid synthetic accessor for access from nested class
-    static final Log log = LogFactory.getLog(MigrationServiceImpl.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.migration.MigrationService";
 
     public static final String KEYVALUE_STORE_NAME = "migration";
 
-    public static final String CONFIG_XP = "configuration";
+    public static final String XP_CONFIG = "configuration";
 
     public static final String LOCK = ":lock";
 
@@ -103,42 +101,9 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     protected static final Random RANDOM = new Random();
 
-    protected final MigrationRegistry registry = new MigrationRegistry();
-
     protected MigrationThreadPoolExecutor executor;
 
     protected MigrationInvalidator invalidator;
-
-    public static class MigrationRegistry extends SimpleContributionRegistry<MigrationDescriptor> {
-
-        @Override
-        public String getContributionId(MigrationDescriptor contrib) {
-            return contrib.id;
-        }
-
-        public MigrationDescriptor getMigrationDescriptor(String id) {
-            return getCurrentContribution(id);
-        }
-
-        public Map<String, MigrationDescriptor> getMigrationDescriptors() {
-            return currentContribs;
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        @Override
-        public MigrationDescriptor clone(MigrationDescriptor orig) {
-            return new MigrationDescriptor(orig);
-        }
-
-        @Override
-        public void merge(MigrationDescriptor src, MigrationDescriptor dst) {
-            dst.merge(src);
-        }
-    }
 
     public static class MigrationInvalidation implements SerializableMessage {
 
@@ -178,7 +143,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             String id = message.id;
             Migrator migrator = getMigrator(id);
             if (migrator == null) {
-                log.error("Unknown migration id received in invalidation: " + id);
+                getLog().error("Unknown migration id received in invalidation: " + id);
                 return;
             }
             migrator.notifyStatusChange();
@@ -192,37 +157,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case CONFIG_XP:
-            registerMigrationDescriptor((MigrationDescriptor) contribution);
-            break;
-        default:
-            throw new RuntimeException("Unknown extension point: " + extensionPoint);
-        }
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case CONFIG_XP:
-            unregisterMigrationDescriptor((MigrationDescriptor) contribution);
-            break;
-        }
-    }
-
-    public void registerMigrationDescriptor(MigrationDescriptor descriptor) {
-        registry.addContribution(descriptor);
-        log.info("Registered migration: " + descriptor.id);
-    }
-
-    public void unregisterMigrationDescriptor(MigrationDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-        log.info("Unregistered migration: " + descriptor.id);
-    }
-
-    public Map<String, MigrationDescriptor> getMigrationDescriptors() {
-        return registry.getMigrationDescriptors();
+    public Collection<MigrationDescriptor> getMigrationDescriptors() {
+        return getDescriptors(XP_CONFIG);
     }
 
     @Override
@@ -346,18 +286,19 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
 
         public void requestShutdown() {
-            runnables.forEach(migratorWithContext -> migratorWithContext.requestShutdown());
+            runnables.forEach(MigratorWithContext::requestShutdown);
         }
     }
 
     @Override
     public void start(ComponentContext context) {
+        super.start(context);
         if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
             // register migration invalidator
             String nodeId = Framework.getProperty(NODE_ID_PROP);
             if (StringUtils.isBlank(nodeId)) {
                 nodeId = String.valueOf(RANDOM.nextLong());
-                log.warn("Missing cluster node id configuration, please define it explicitly "
+                getLog().warn("Missing cluster node id configuration, please define it explicitly "
                         + "(usually through repository.clustering.id). Using random cluster node id instead: "
                         + nodeId);
             } else {
@@ -365,9 +306,9 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             }
             invalidator = new MigrationInvalidator();
             invalidator.initialize(MIGRATION_INVAL_PUBSUB_TOPIC, nodeId);
-            log.info("Registered migration invalidator for node: " + nodeId);
+            getLog().info("Registered migration invalidator for node: " + nodeId);
         } else {
-            log.info("Not registering a migration invalidator because clustering is not enabled");
+            getLog().info("Not registering a migration invalidator because clustering is not enabled");
         }
 
         executor = new MigrationThreadPoolExecutor();
@@ -392,11 +333,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         executor.shutdownNow();
         executor.awaitTermination(10, TimeUnit.SECONDS); // wait 10s for termination
         executor = null;
+        super.stop(context);
     }
 
     @Override
     public MigrationStatus getStatus(String id) {
-        MigrationDescriptor descr = registry.getMigrationDescriptor(id);
+        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
         if (descr == null) {
             return null; // migration unknown
         }
@@ -407,7 +349,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
         String step = kv.getString(id + STEP);
         if (step == null) {
-            state = descr.getDefaultState();
+            state = descr.defaultState;
             return new MigrationStatus(state);
         }
         long startTime = Long.parseLong(kv.getString(id + START_TIME));
@@ -454,8 +396,8 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     @Override
     public void runStep(String id, String step) {
         Migrator migrator = getMigrator(id);
-        MigrationDescriptor descr = registry.getMigrationDescriptor(id);
-        MigrationStepDescriptor stepDescr = descr.getSteps().get(step);
+        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
+        MigrationStepDescriptor stepDescr = descr.steps.get(step);
         if (stepDescr == null) {
             throw new IllegalArgumentException("Unknown step: " + step + " for migration: " + id);
         }
@@ -467,17 +409,17 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             String state = kv.getString(id);
             String currentStep = kv.getString(id + STEP);
             if (state == null && currentStep == null) {
-                state = descr.getDefaultState();
-                if (!descr.getStates().containsKey(state)) {
-                    throw new RuntimeException("Invalid default state: " + state + " for migration: " + id);
+                state = descr.defaultState;
+                if (!descr.states.containsKey(state)) {
+                    throw new IllegalArgumentException("Invalid default state: " + state + " for migration: " + id);
                 }
             } else if (state == null) {
                 throw new IllegalArgumentException("Migration: " + id + " already running step: " + currentStep);
             }
-            if (!descr.getStates().containsKey(state)) {
-                throw new RuntimeException("Invalid current state: " + state + " for migration: " + id);
+            if (!descr.states.containsKey(state)) {
+                throw new IllegalArgumentException("Invalid current state: " + state + " for migration: " + id);
             }
-            if (!stepDescr.getFromState().equals(state)) {
+            if (!stepDescr.fromState.equals(state)) {
                 throw new IllegalArgumentException(
                         "Invalid step: " + step + " for migration: " + id + " in state: " + state);
             }
@@ -498,11 +440,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
         BiConsumer<MigrationContext, Throwable> afterMigration = (migrationContext, t) -> {
             if (t != null) {
-                log.error("Exception during execution of step: " + step + " for migration: " + id, t);
+                getLog().error("Exception during execution of step: " + step + " for migration: " + id, t);
             }
             // after the migrator is finished, change state, except if shutdown is requested or exception
-            String state = (t != null || migrationContext.isShutdownRequested()) ? stepDescr.getFromState()
-                    : stepDescr.getToState();
+            String state = t != null || migrationContext.isShutdownRequested()
+                    ? stepDescr.fromState
+                    : stepDescr.toState;
             atomic(id, kv -> setState(id, state, progressReporter, kv));
             // allow notification of new state
             migrator.notifyStatusChange();
@@ -512,11 +455,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     }
 
     protected Migrator getMigrator(String id) {
-        MigrationDescriptor descr = registry.getMigrationDescriptor(id);
+        MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
         if (descr == null) {
             throw new IllegalArgumentException("Unknown migration: " + id);
         }
-        Class<?> klass = descr.getKlass();
+        Class<?> klass = descr.klass;
         if (!Migrator.class.isAssignableFrom(klass)) {
             throw new RuntimeException(
                     "Invalid class not implementing Migrator: " + klass.getName() + " for migration: " + id);
@@ -533,7 +476,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
      */
     protected void atomic(String id, Consumer<KeyValueStore> consumer) {
         KeyValueStore kv = getKeyValueStore();
-        String nodeid = Framework.getProperty("repository.clustering.id");
+        String nodeid = Framework.getProperty(NODE_ID_PROP);
         for (int i = 0; i < 5; i++) {
             // the value of the lock is useful for debugging
             String value = Instant.now() + " node=" + nodeid;

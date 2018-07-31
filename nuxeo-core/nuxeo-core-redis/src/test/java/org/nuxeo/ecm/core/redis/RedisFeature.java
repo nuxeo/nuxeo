@@ -118,7 +118,8 @@ public class RedisFeature implements RunnerFeature {
     protected RedisSentinelDescriptor newRedisSentinelDescriptor() {
         RedisSentinelDescriptor desc = new RedisSentinelDescriptor();
         desc.master = "mymaster";
-        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(getHost(), getPort()) };
+        desc.hosts = new RedisSentinelDescriptor.RedisHostDescriptor[] {
+                new RedisSentinelDescriptor.RedisHostDescriptor(getHost(), getPort()) };
         return desc;
     }
 
@@ -170,7 +171,7 @@ public class RedisFeature implements RunnerFeature {
         if (Mode.disabled.equals(mode)) {
             return false;
         }
-        component.registerRedisPoolDescriptor(getDescriptor(mode));
+        component.registerContribution(getDescriptor(mode), RedisComponent.XP_CONFIG, null);
         return true;
     }
 

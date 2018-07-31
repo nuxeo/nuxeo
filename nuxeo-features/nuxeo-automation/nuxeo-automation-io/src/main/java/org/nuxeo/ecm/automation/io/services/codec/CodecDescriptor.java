@@ -20,22 +20,20 @@ package org.nuxeo.ecm.automation.io.services.codec;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("codec")
-public class CodecDescriptor {
+public class CodecDescriptor implements Descriptor {
 
     @XNode("@class")
-    public Class<?> clazz;
+    public Class<ObjectCodec<?>> klass;
 
-    public ObjectCodec<?> newInstance() {
-        try {
-            return (ObjectCodec<?>) clazz.newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public String getId() {
+        return klass.getName();
     }
 
 }

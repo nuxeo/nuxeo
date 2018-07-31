@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor of Key/Value store contribution.
@@ -31,7 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 9.1
  */
 @XObject("store")
-public class KeyValueStoreDescriptor {
+public class KeyValueStoreDescriptor implements Descriptor {
 
     @XNode("@name")
     public String name;
@@ -40,17 +41,14 @@ public class KeyValueStoreDescriptor {
     public boolean remove;
 
     @XNode("@class")
-    protected Class<? extends KeyValueStoreProvider> klass;
+    public Class<? extends KeyValueStoreProvider> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties = new HashMap<String, String>();
+    public Map<String, String> properties = new HashMap<>();
 
-    public Class<? extends KeyValueStoreProvider> getKlass() {
-        return klass;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
+    @Override
+    public String getId() {
+        return name;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ package org.nuxeo.runtime.kv;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -33,55 +31,35 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class KeyValueServiceImpl extends DefaultComponent implements KeyValueService {
 
-    private static final Log log = LogFactory.getLog(KeyValueServiceImpl.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.kv.KeyValueService";
 
-    public static final int APPLICATION_STARTED_ORDER = -500;
-
-    public static final String CONFIG_XP = "configuration";
+    public static final String XP_CONFIG = "configuration";
 
     public static final String DEFAULT_STORE_ID = "default";
 
-    protected final KeyValueStoreRegistry registry = new KeyValueStoreRegistry();
+    public static final int APPLICATION_STARTED_ORDER = -500;
 
     protected Map<String, KeyValueStoreProvider> providers = new ConcurrentHashMap<>();
 
     protected KeyValueStore defaultStore = new MemKeyValueStore();
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case CONFIG_XP:
-            registerKeyValueStore((KeyValueStoreDescriptor) contribution);
-            break;
-        default:
-            throw new RuntimeException("Unknown extension point: " + extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        switch (extensionPoint) {
-        case CONFIG_XP:
-            unregisterKeyValueStore((KeyValueStoreDescriptor) contribution);
-            break;
-        }
-    }
-
-    public void registerKeyValueStore(KeyValueStoreDescriptor descriptor) {
-        registry.addContribution(descriptor);
-        descriptorChanged(descriptor.name);
-        log.info("Registered key/value store: " + descriptor.name);
-    }
-
-    public void unregisterKeyValueStore(KeyValueStoreDescriptor descriptor) {
-        registry.removeContribution(descriptor);
-        descriptorChanged(descriptor.name);
-        log.info("Unregistered key/value store: " + descriptor.name);
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
     public int getApplicationStartedOrder() {
         return APPLICATION_STARTED_ORDER;
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        providers.values().forEach(KeyValueStoreProvider::close);
+        super.stop(context);
     }
 
     // ===== KeyValueService =====
@@ -90,15 +68,15 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
     public synchronized KeyValueStore getKeyValueStore(String name) {
         KeyValueStoreProvider provider = providers.get(name);
         if (provider == null) {
-            KeyValueStoreDescriptor descriptor = registry.getKeyValueStoreDescriptor(name);
+            KeyValueStoreDescriptor descriptor = getDescriptor(XP_CONFIG, name);
             if (descriptor == null) {
-                descriptor = registry.getKeyValueStoreDescriptor(DEFAULT_STORE_ID);
+                descriptor = getDescriptor(XP_CONFIG, DEFAULT_STORE_ID);
                 if (descriptor == null) {
                     return defaultStore;
                 }
             }
             try {
-                provider = descriptor.getKlass().newInstance();
+                provider = descriptor.klass.getDeclaredConstructor().newInstance();
                 provider.initialize(descriptor);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
@@ -106,14 +84,6 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
             providers.put(name, provider);
         }
         return provider;
-    }
-
-    /* Close previous provider if we're overwriting it. */
-    protected synchronized void descriptorChanged(String name) {
-        KeyValueStoreProvider provider = providers.remove(name);
-        if (provider != null) {
-            provider.close();
-        }
     }
 
 }

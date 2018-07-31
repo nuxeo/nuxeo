@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@
  */
 package org.nuxeo.runtime.pubsub;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for a {@link PubSubProvider} implementation.
@@ -31,7 +32,7 @@ import java.util.Map;
  * @since 9.1
  */
 @XObject("provider")
-public class PubSubProviderDescriptor {
+public class PubSubProviderDescriptor implements Descriptor {
 
     @XNode("@class")
     public Class<? extends PubSubProvider> klass;
@@ -39,19 +40,8 @@ public class PubSubProviderDescriptor {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();
 
-    public PubSubProvider getInstance() {
-        // dynamic class check, the generics aren't enough
-        if (!PubSubProvider.class.isAssignableFrom(klass)) {
-            throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
-        }
-        try {
-            return klass.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Map<String, String> getOptions() {
-        return options;
+    @Override
+    public String getId() {
+        return klass.getName();
     }
 }

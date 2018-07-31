@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.io.registry;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * POJO used to handle "register" {@link MarshallerRegistry} extension point.
@@ -28,42 +29,17 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.2
  */
 @XObject("register")
-public class MarshallerRegistryDescriptor {
+public class MarshallerRegistryDescriptor implements Descriptor {
 
     @XNode("@class")
-    private Class<?> clazz;
+    public Class<?> klass;
 
     @XNode("@enable")
-    private boolean enable;
-
-    public MarshallerRegistryDescriptor() {
-    }
-
-    public MarshallerRegistryDescriptor(Class<?> clazz, boolean enable) {
-        super();
-        this.clazz = clazz;
-        this.enable = enable;
-    }
-
-    public Class<?> getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class<?> clazz) {
-        this.clazz = clazz;
-    }
-
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
+    public boolean enable;
 
     @Override
-    public String toString() {
-        return clazz.getName() + ":" + Boolean.toString(enable);
+    public String getId() {
+        return klass.getName();
     }
 
 }

@@ -25,8 +25,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.cache.CacheServiceImpl.CachePubSubInvalidator;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor of cache contrib
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.core.cache.CacheServiceImpl.CachePubSubInvalidator;
  * @since 6.0
  */
 @XObject("cache")
-public class CacheDescriptor {
+public class CacheDescriptor implements Descriptor {
 
     /** Default TTL in minutes. */
     public static final long DEFAULT_TTL = 1;
@@ -66,73 +65,40 @@ public class CacheDescriptor {
     protected Class<? extends CacheManagement> klass;
 
     @XNode("ttl")
-    public Long ttl;
+    private Long ttl;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> options = new HashMap<String, String>();
-
-    public CacheDescriptor() {
-    }
-
-    /**
-     * Copy constructor.
-     */
-    public CacheDescriptor(CacheDescriptor other) {
-        name = other.name;
-        ttl = other.ttl;
-        klass = other.klass;
-        options = new HashMap<String, String>(other.options);
-    }
+    public Map<String, String> options = new HashMap<>();
 
     @Override
-    public CacheDescriptor clone() {
-        return new CacheDescriptor(this);
-    }
-
-    public void merge(CacheDescriptor other) {
-        remove = other.remove;
-        if (other.ttl != null) {
-            ttl = other.ttl;
-        }
-        if (other.klass != null) {
-            klass = other.klass;
-        }
-        if (other.options != null) {
-            if (options == null) {
-                options = new HashMap<>(other.options);
-            } else {
-                options.putAll(other.options);
-            }
-        }
+    public String getId() {
+        return name;
     }
 
     public long getTTL() {
         return ttl == null ? DEFAULT_TTL : ttl.longValue();
     }
 
-    @Override
-    public String toString() {
-        return name + ": " + klass + ": " + ttl + ": " + options;
+    public void setTTL(Long value) {
+        ttl = value;
     }
 
-    protected CacheManagement newInstance(CachePubSubInvalidator invalidator) {
-        CacheManagement cache;
-        if (klass == null) {
-            cache = new InMemoryCacheImpl(this); // default cache implementation
-        } else {
-            try {
-                cache = klass.getConstructor(CacheDescriptor.class).newInstance(this);
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException("Failed to instantiate class: " + klass + " for cache: " + name, e);
-            }
-        }
-        // wrap with checker, metrics and invalidator
-        cache = new CacheAttributesChecker(cache);
-        cache = new CacheMetrics(cache);
-        if (invalidator != null) {
-            cache = new CacheInvalidator(cache, invalidator);
-        }
-        return cache;
+    @Override
+    public Descriptor merge(Descriptor o) {
+        CacheDescriptor other = (CacheDescriptor) o;
+        CacheDescriptor merged = new CacheDescriptor();
+        merged.remove = other.remove;
+        merged.ttl = other.ttl != null ? other.ttl : ttl;
+        merged.name = other.name != null ? other.name : name;
+        merged.klass = other.klass != null ? other.klass : klass;
+        merged.options.putAll(options);
+        merged.options.putAll(other.options);
+        return merged;
+    }
+
+    @Override
+    public boolean doesRemove() {
+        return remove;
     }
 
 }

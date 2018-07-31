@@ -19,21 +19,21 @@
 
 package org.nuxeo.ecm.core.bulk;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 10.2
  */
 @XObject("action")
-public class BulkActionDescriptor implements Serializable {
+public class BulkActionDescriptor implements Descriptor {
 
     @XNode("@name")
-    protected String name;
+    public String name;
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
     }
 

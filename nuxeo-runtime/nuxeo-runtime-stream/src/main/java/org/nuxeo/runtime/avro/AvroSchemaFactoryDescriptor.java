@@ -20,6 +20,7 @@ package org.nuxeo.runtime.avro;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * The Avro schema factory descriptor.
@@ -27,12 +28,17 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 10.2
  */
 @XObject("factory")
-public class AvroSchemaFactoryDescriptor {
+public class AvroSchemaFactoryDescriptor implements Descriptor {
 
     @XNode("@type")
     public String type;
 
     @XNode("@class")
-    public String clazz;
+    public String klass;
+
+    @Override
+    public String getId() {
+        return type;
+    }
 
 }

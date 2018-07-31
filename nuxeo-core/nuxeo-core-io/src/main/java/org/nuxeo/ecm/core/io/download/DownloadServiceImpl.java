@@ -27,7 +27,6 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +49,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -78,9 +75,8 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -90,7 +86,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DownloadServiceImpl extends DefaultComponent implements DownloadService {
 
-    private static final Log log = LogFactory.getLog(DownloadServiceImpl.class);
+    /**
+     * @since 10.3
+     */
+    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.io.download.DownloadService";
+
+    public static final String XP_PERMISSIONS = "permissions";
+
+    public static final String XP_REDIRECT_RESOLVER = "redirectResolver";
 
     protected static final int DOWNLOAD_BUFFER_SIZE = 1024 * 512;
 
@@ -100,96 +103,44 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
-    private static final String XP = "permissions";
-
-    private static final String REDIRECT_RESOLVER = "redirectResolver";
-
     private static final String RUN_FUNCTION = "run";
 
     private static final Pattern FILENAME_SANITIZATION_REGEX = Pattern.compile(";\\w+=.*");
 
     protected enum Action {
         DOWNLOAD, DOWNLOAD_FROM_DOC, INFO, BLOBSTATUS
-    };
-
-    private DownloadPermissionRegistry registry = new DownloadPermissionRegistry();
-
-    private ScriptEngineManager scriptEngineManager;
-
-    protected RedirectResolver redirectResolver = new DefaultRedirectResolver();
-
-    protected List<RedirectResolverDescriptor> redirectResolverContributions = new ArrayList<>();
-
-    public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
-
-        @Override
-        public String getContributionId(DownloadPermissionDescriptor contrib) {
-            return contrib.getName();
-        }
-
-        @Override
-        public boolean isSupportingMerge() {
-            return true;
-        }
-
-        @Override
-        public DownloadPermissionDescriptor clone(DownloadPermissionDescriptor orig) {
-            return new DownloadPermissionDescriptor(orig);
-        }
-
-        @Override
-        public void merge(DownloadPermissionDescriptor src, DownloadPermissionDescriptor dst) {
-            dst.merge(src);
-        }
-
-        public DownloadPermissionDescriptor getDownloadPermissionDescriptor(String id) {
-            return getCurrentContribution(id);
-        }
-
-        /** Returns descriptors sorted by name. */
-        public List<DownloadPermissionDescriptor> getDownloadPermissionDescriptors() {
-            List<DownloadPermissionDescriptor> descriptors = new ArrayList<>(currentContribs.values());
-            Collections.sort(descriptors);
-            return descriptors;
-        }
     }
 
-    public DownloadServiceImpl() {
-        scriptEngineManager = new ScriptEngineManager();
+    protected ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+
+    protected RedirectResolver redirectResolver;
+
+    @Override
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP.equals(extensionPoint)) {
-            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-            registry.addContribution(descriptor);
-        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            redirectResolver = ((RedirectResolverDescriptor) contribution).getObject();
-            // Save contribution
-            redirectResolverContributions.add((RedirectResolverDescriptor) contribution);
-        } else {
-            throw new UnsupportedOperationException(extensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (XP.equals(extensionPoint)) {
-            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-            registry.removeContribution(descriptor);
-        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            redirectResolverContributions.remove(contribution);
-            if (redirectResolverContributions.size() == 0) {
-                // If no more custom contribution go back to the default one
-                redirectResolver = new DefaultRedirectResolver();
-            } else {
-                // Go back to the last contribution added
-                redirectResolver = redirectResolverContributions.get(redirectResolverContributions.size() - 1)
-                                                                .getObject();
+    public void start(ComponentContext context) {
+        super.start(context);
+        List<RedirectResolverDescriptor> descriptors = getDescriptors(XP_REDIRECT_RESOLVER);
+        if (!descriptors.isEmpty()) {
+            RedirectResolverDescriptor descriptor = descriptors.get(descriptors.size() - 1);
+            try {
+                redirectResolver = descriptor.klass.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
+                getLog().error(e,e);
             }
-        } else {
-            throw new UnsupportedOperationException(extensionPoint);
         }
+        if (redirectResolver == null) {
+            redirectResolver = new DefaultRedirectResolver();
+        }
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        redirectResolver = null;
     }
 
     /**
@@ -466,7 +417,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
-                    throws IOException {
+            throws IOException {
         if (blob == null) {
             if (doc == null) {
                 throw new NuxeoException("No doc specified");
@@ -569,7 +520,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             } else {
                 byteRange = DownloadHelper.parseRange(range, length);
                 if (byteRange == null) {
-                    log.error("Invalid byte range received: " + range);
+                    getLog().error("Invalid byte range received: " + range);
                 } else {
                     response.setHeader("Content-Range",
                             "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
@@ -590,8 +541,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
     }
 
-    protected void transferBlobWithByteRange(Blob blob, ByteRange byteRange, HttpServletResponse response)
-            throws UncheckedIOException {
+    protected void transferBlobWithByteRange(Blob blob, ByteRange byteRange, HttpServletResponse response) {
         transferBlobWithByteRange(blob, byteRange, () -> {
             try {
                 return response.getOutputStream();
@@ -607,8 +557,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
-    public void transferBlobWithByteRange(Blob blob, ByteRange byteRange, Supplier<OutputStream> outputStreamSupplier)
-            throws UncheckedIOException {
+    public void transferBlobWithByteRange(Blob blob, ByteRange byteRange, Supplier<OutputStream> outputStreamSupplier) {
         try (InputStream in = blob.getStream()) {
             @SuppressWarnings("resource")
             OutputStream out = outputStreamSupplier.get(); // not ours to close
@@ -645,7 +594,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (xpath.startsWith(BLOBHOLDER_PREFIX)) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh == null) {
-                log.debug("Not a BlobHolder");
+                getLog().debug("Not a BlobHolder");
                 return null;
             }
             String suffix = xpath.substring(BLOBHOLDER_PREFIX.length());
@@ -653,13 +602,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             try {
                 index = Integer.parseInt(suffix);
             } catch (NumberFormatException e) {
-                log.debug(e.getMessage());
+                getLog().debug(e.getMessage());
                 return null;
             }
             if (!suffix.equals(Integer.toString(index))) {
                 // attempt to use a non-canonical integer, could be used to bypass
                 // a permission function checking just "blobholder:1" and receiving "blobholder:01"
-                log.debug("Non-canonical index: " + suffix);
+                getLog().debug("Non-canonical index: " + suffix);
                 return null;
             }
             if (index == 0) {
@@ -671,13 +620,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             if (!xpath.contains(":")) {
                 // attempt to use a xpath not prefix-qualified, could be used to bypass
                 // a permission function checking just "file:content" and receiving "content"
-                log.debug("Non-canonical xpath: " + xpath);
+                getLog().debug("Non-canonical xpath: " + xpath);
                 return null;
             }
             try {
                 blob = (Blob) doc.getPropertyValue(xpath);
             } catch (PropertyNotFoundException e) {
-                log.debug(e.getMessage());
+                getLog().debug(e.getMessage());
                 return null;
             }
         }
@@ -687,7 +636,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public boolean checkPermission(DocumentModel doc, String xpath, Blob blob, String reason,
             Map<String, Serializable> extendedInfos) {
-        List<DownloadPermissionDescriptor> descriptors = registry.getDownloadPermissionDescriptors();
+        List<DownloadPermissionDescriptor> descriptors = getDescriptors(XP_PERMISSIONS);
         if (descriptors.isEmpty()) {
             return true;
         }
@@ -706,27 +655,27 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             ScriptEngine engine = scriptEngineManager.getEngineByName(descriptor.getScriptLanguage());
             if (engine == null) {
                 throw new NuxeoException("Engine not found for language: " + descriptor.getScriptLanguage()
-                        + " in permission: " + descriptor.getName());
+                        + " in permission: " + descriptor.name);
             }
             if (!(engine instanceof Invocable)) {
                 throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
-                        + descriptor.getScriptLanguage() + " in permission: " + descriptor.getName());
+                        + descriptor.getScriptLanguage() + " in permission: " + descriptor.name);
             }
             Object result;
             try {
-                engine.eval(descriptor.getScript());
+                engine.eval(descriptor.script);
                 engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
                 result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
             } catch (NoSuchMethodException e) {
                 throw new NuxeoException("Script does not contain function: " + RUN_FUNCTION + "() in permission: "
-                        + descriptor.getName(), e);
+                        + descriptor.name, e);
             } catch (ScriptException e) {
-                log.error("Failed to evaluate script: " + descriptor.getName(), e);
+                getLog().error("Failed to evaluate script: " + descriptor.name, e);
                 continue;
             }
             if (!(result instanceof Boolean)) {
-                log.error(
-                        "Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
+                getLog().error(
+                        "Failed to get boolean result from permission: " + descriptor.name + " (" + result + ")");
                 continue;
             }
             boolean allow = ((Boolean) result).booleanValue();
@@ -759,7 +708,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             String cacheControl = "max-age=15, must-revalidate";
-            log.debug("Setting Cache-Control: " + cacheControl);
+            getLog().debug("Setting Cache-Control: " + cacheControl);
             response.setHeader("Cache-Control", cacheControl);
         }
     }

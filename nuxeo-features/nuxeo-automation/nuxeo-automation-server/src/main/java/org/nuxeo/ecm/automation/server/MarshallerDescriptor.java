@@ -26,24 +26,23 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 5.8
  */
 @XObject("marshaller")
-public class MarshallerDescriptor {
+public class MarshallerDescriptor implements Descriptor {
 
     @XNodeList(value = "writer", componentType = Class.class, type = ArrayList.class)
-    private List<Class<? extends MessageBodyWriter<?>>> writers;
+    public List<Class<? extends MessageBodyWriter<?>>> writers = new ArrayList<>();
 
     @XNodeList(value = "reader", componentType = Class.class, type = ArrayList.class)
-    private List<Class<? extends MessageBodyReader<?>>> readers;
+    public List<Class<? extends MessageBodyReader<?>>> readers = new ArrayList<>();
 
-    public List<Class<? extends MessageBodyWriter<?>>> getWriters() {
-        return writers;
+    @Override
+    public String getId() {
+        return toString();
     }
 
-    public List<Class<? extends MessageBodyReader<?>>> getReaders() {
-        return readers;
-    }
 }

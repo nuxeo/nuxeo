@@ -21,59 +21,39 @@ package org.nuxeo.ecm.automation.server;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("binding")
-public class RestBinding {
+public class RestBinding implements Descriptor {
 
-    /**
-     * The operation (chain) name
-     */
     @XNode("@name")
-    protected String name;
+    public String name;
 
     @XNode("@chain")
-    protected boolean chain;
+    public boolean chain;
 
     @XNode("@disabled")
-    protected boolean isDisabled;
+    public boolean isDisabled;
 
     @XNode("secure")
-    protected boolean isSecure;
+    public boolean isSecure;
 
     @XNode("administrator")
-    protected boolean isAdministrator;
+    public boolean isAdministrator;
 
-    protected String[] groups;
+    public String[] groups;
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public String getId() {
+        return chain ? Constants.CHAIN_ID_PREFIX + name : name;
     }
 
-    public void setDisabled(boolean isDisabled) {
-        this.isDisabled = isDisabled;
-    }
-
-    public void setSecure(boolean isHttps) {
-        this.isSecure = isHttps;
-    }
-
-    public void setAdministrator(boolean isAdministrator) {
-        this.isAdministrator = isAdministrator;
-    }
-
-    public void setGroups(String[] groups) {
-        this.groups = groups;
-    }
-
-    public void setChain(boolean chain) {
-        this.chain = chain;
-    }
-
-    public boolean isChain() {
-        return chain;
+    public boolean hasGroups() {
+        return groups != null && groups.length > 0;
     }
 
     @XNode("groups")
@@ -82,30 +62,6 @@ public class RestBinding {
         if (list != null && list.length() > 0) {
             this.groups = StringUtils.split(list, ',', true);
         }
-    }
-
-    public boolean isDisabled() {
-        return isDisabled;
-    }
-
-    public boolean isAdministrator() {
-        return isAdministrator;
-    }
-
-    public boolean isSecure() {
-        return isSecure;
-    }
-
-    public String[] getGroups() {
-        return groups;
-    }
-
-    public boolean hasGroups() {
-        return groups != null && groups.length > 0;
-    }
-
-    public String getName() {
-        return name;
     }
 
 }

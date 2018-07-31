@@ -57,7 +57,9 @@ public interface AutomationServer {
      * Registers a new operation binding.
      *
      * @param binding the new binding to register
+     * @deprecated since 10.3 unused
      */
+    @Deprecated
     void addBinding(RestBinding binding);
 
     /**
@@ -65,7 +67,9 @@ public interface AutomationServer {
      *
      * @param binding the binding to remove
      * @return the removed binding if any, otherwise null
+     * @deprecated since 10.3 unused
      */
+    @Deprecated
     RestBinding removeBinding(RestBinding binding);
 
     /**
