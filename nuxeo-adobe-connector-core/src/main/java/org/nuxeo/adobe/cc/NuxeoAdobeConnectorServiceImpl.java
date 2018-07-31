@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @since 10.2
+ * @since 9.10
  */
 public class NuxeoAdobeConnectorServiceImpl extends DefaultComponent implements NuxeoAdobeConnectorService {
 

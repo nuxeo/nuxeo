@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * @since 10.2
+ * @since 9.10
  */
 @Operation(id = CompoundAttach.ID, category = Constants.CAT_DOCUMENT, label = "Attach compound docs", description = "Attach compund documents.")
 public class CompoundAttach {
