@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,13 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.common.xmap;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
@@ -101,13 +98,13 @@ public class XMapTest {
 
         assertEquals("SELECT * FROM Document WHERE dc:created < DATE '2013-08-19'", author.textToUnescape);
 
-        assertFalse(author.content.equals(author.content.trim()));
+        assertNotEquals(author.content, author.content.trim());
 
         assertNull(author.testNullByDefaultForList);
         assertNull(author.testNullByDefaultForMap);
         assertNull(author.testNullByDefaultForListHashSet);
         assertNotNull(author.itemsHashSet);
-        assertTrue(author.itemsHashSet.size() == 2);
+        assertEquals(2, author.itemsHashSet.size());
 
         assertEquals(1, author.aliases.length);
         assertEquals("test2", author.aliases[0].name);
