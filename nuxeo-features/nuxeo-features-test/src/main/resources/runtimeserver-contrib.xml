@@ -62,6 +62,14 @@
     </filter>
 
     <filter context="/">
+      <filter-name>NuxeoRequestController</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+
+    <filter context="/">
       <filter-name>WebEngineFilter</filter-name>
       <filter-class>org.nuxeo.ecm.webengine.app.WebEngineFilter</filter-class>
       <display-name>WebEngineFilter</display-name>
@@ -88,6 +96,13 @@
       </filter-mapping>
     </filter>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="test" transactional="true">
+      <pattern>.*</pattern>
+    </filterConfig>
   </extension>
 
 </component>
