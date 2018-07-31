@@ -329,6 +329,24 @@ public class TestNuxeoCorsCsrfFilter {
     }
 
     /**
+     * Buggy browser (Edge/IE11) not sending a Origin header but just a Referer header (which can include path and query
+     * parts) when redirecting to a POST on the site (SAML login use case).
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
+    public void testMismatchPostFromBuggyBrowser() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(eq(REFERER))).thenReturn("http://friendly.com/myapp/login?key=123"); // SSO
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+
+        filter.doFilter(request, response, chain);
+        assertTrue(chain.called);
+    }
+
+    /**
      * Browser sending the Origin header from an attacker page, must fail.
      */
     @SuppressWarnings("boxing")
