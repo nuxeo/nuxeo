@@ -181,20 +181,6 @@
     </filter-mapping>
   </extension>
 
-  <extension target="web#FILTER">
-    <filter>
-      <display-name>Nuxeo Simple Cache Filter</display-name>
-      <filter-name>simpleCacheFilter</filter-name>
-      <filter-class>
-        org.nuxeo.ecm.platform.ui.web.cache.SimpleCacheFilter
-      </filter-class>
-      <init-param>
-        <param-name>cacheTime</param-name>
-        <param-value>3600</param-value>
-      </init-param>
-    </filter>
-  </extension>
-
   <extension target="web#SERVLET">
     <servlet>
       <servlet-name>Nuxeo Startup Page</servlet-name>
