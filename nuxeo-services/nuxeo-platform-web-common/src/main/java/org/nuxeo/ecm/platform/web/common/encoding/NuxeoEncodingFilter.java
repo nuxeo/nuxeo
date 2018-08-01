@@ -27,12 +27,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Filter that sets encoding to UTF-8, before any other filter tries to parse the request. Also set the X-UA-Compatible
@@ -60,14 +57,6 @@ public class NuxeoEncodingFilter implements Filter {
                     request.setCharacterEncoding("UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     log.error(e, e);
-                }
-            }
-
-            RequestControllerManager rcm = Framework.getService(RequestControllerManager.class);
-            for (String headerName : rcm.getResponseHeaders().keySet()) {
-                if (response instanceof HttpServletResponse
-                        && !((HttpServletResponse) response).containsHeader(headerName)) {
-                    ((HttpServletResponse) response).addHeader(headerName, rcm.getResponseHeaders().get(headerName));
                 }
             }
         }

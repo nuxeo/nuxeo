@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Date;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -109,13 +109,12 @@ public class NuxeoRequestControllerFilter implements Filter {
             log.debug(doFormatLogMessage(request,
                     "Handling request with tx=" + useTx + " and sync=" + useSync + " and buffer=" + useBuffer));
         }
+        addHeaders(request, response, config);
 
         boolean sessionSynched = false;
         boolean txStarted = false;
         boolean buffered = false;
         try {
-            addCacheHeader(request, response, config);
-
             ServletHelper.setServletContext(request.getServletContext());
             if (useSync) {
                 sessionSynched = simpleSyncOnSession(request);
@@ -261,29 +260,29 @@ public class NuxeoRequestControllerFilter implements Filter {
         }
     }
 
-    protected void addCacheHeader(HttpServletRequest request, HttpServletResponse response,
+    protected void addHeaders(HttpServletRequest request, HttpServletResponse response,
             RequestFilterConfig config) {
+        addConfiguredHeaders(response);
         if (request.getMethod().equals("GET") && config.isCached()) {
-            addCacheHeader(response, config.isPrivate(), config.getCacheTime());
+            addCacheHeaders(response, config.isPrivate(), config.getCacheTime());
         }
     }
 
-    /**
-     * Set cache parameters to httpResponse.
-     */
-    public static void addCacheHeader(HttpServletResponse response, boolean isPrivate, String cacheTime) {
-        if (isPrivate) {
-            response.setHeader("Cache-Control", "private, max-age=" + cacheTime);
-        } else {
-            response.setHeader("Cache-Control", "public, max-age=" + cacheTime);
+    protected void addConfiguredHeaders(HttpServletResponse response) {
+        RequestControllerManager rcm = Framework.getService(RequestControllerManager.class);
+        for (Entry<String, String> en : rcm.getResponseHeaders().entrySet()) {
+            String headerName = en.getKey();
+            if (!response.containsHeader(headerName)) {
+                response.addHeader(headerName, en.getValue());
+            }
         }
-        // Generating expires using current date and adding cache time.
-        // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        Date date = new Date();
-        long newDate = date.getTime() + Long.parseLong(cacheTime) * 1000;
-        date.setTime(newDate);
+    }
 
-        response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
+    protected void addCacheHeaders(HttpServletResponse response, boolean isPrivate, String cacheTime) {
+        String privateOrPublic = isPrivate ? "private" : "public";
+        response.setHeader("Cache-Control", privateOrPublic + ", max-age=" + cacheTime);
+        long expires = System.currentTimeMillis() + Long.parseLong(cacheTime) * 1000;
+        response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(expires));
     }
 
 }
