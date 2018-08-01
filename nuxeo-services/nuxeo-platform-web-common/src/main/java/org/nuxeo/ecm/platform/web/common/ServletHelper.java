@@ -18,20 +18,13 @@
  */
 package org.nuxeo.ecm.platform.web.common;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Helpers for servlets.
@@ -96,67 +89,6 @@ public class ServletHelper {
      */
     public static void removeServletContext() {
         SERVLET_CONTEXT.remove();
-    }
-
-    /**
-     * Invokes a filter chain, possibly in a transaction and with buffered output.
-     *
-     * @since 10.3
-     */
-    public static void doFilter(FilterChain chain, HttpServletRequest request, HttpServletResponse response,
-            boolean useTx, boolean useBuffer) throws IOException, ServletException {
-        boolean txStarted = false;
-        boolean buffered = false;
-
-        setServletContext(request.getServletContext());
-        try {
-            if (useTx) {
-                if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                    txStarted = startTransaction(request);
-                    if (!txStarted) {
-                        throw new ServletException("Failed to start transaction");
-                    }
-                }
-                if (useBuffer) {
-                    response = new BufferingHttpServletResponse(response);
-                    buffered = true;
-                }
-            }
-            chain.doFilter(request, response);
-        } catch (IOException | ServletException | RuntimeException e) {
-            // Don't call response.sendError, because it commits the response
-            // which prevents NuxeoExceptionFilter from returning a custom error page.
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            if (TransactionHelper.isTransactionActive()) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-            if (DownloadHelper.isClientAbortError(e)) {
-                DownloadHelper.logClientAbort(e);
-            } else if (e instanceof RuntimeException) { //NOSONAR
-                throw new ServletException(e);
-            } else {
-                throw e; // IOException | ServletException
-            }
-        } finally {
-            removeServletContext();
-            try {
-                if (txStarted) {
-                    try {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    } catch (TransactionRuntimeException e) {
-                        // commit failed, report this to the client before stopping buffering
-                        // Don't call response.sendError, because it commits the response
-                        // which prevents NuxeoExceptionFilter from returning a custom error page.
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        log.error(e); // don't rethrow inside finally
-                    }
-                }
-            } finally {
-                if (buffered) {
-                    ((BufferingHttpServletResponse) response).stopBuffering();
-                }
-            }
-        }
     }
 
 }
