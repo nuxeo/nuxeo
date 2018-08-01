@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -55,17 +56,22 @@ public class TestSetCompoundDocs {
     protected AutomationService automationService;
 
     @Test
+    @Ignore
+    // Ignore in 9.10 because of NXP-24924
     public void shouldsetCompoundDocs() throws OperationException {
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "folder", "Folder");
         doc = session.createDocument(doc);
+        doc = session.saveDocument(doc);
         List<String> compoundDocs = new ArrayList<>();
 
         DocumentModel file = session.createDocumentModel("/default-domain/workspaces/folder/", "file", "File");
-        file = session.createDocument(doc);
+        file = session.createDocument(file);
+        file = session.saveDocument(file);
         compoundDocs.add(file.getId());
 
         doc = session.createDocumentModel("/default-domain/workspaces/folder/", "compoundDoc", "File");
         doc = session.createDocument(doc);
+        doc = session.saveDocument(doc);
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
