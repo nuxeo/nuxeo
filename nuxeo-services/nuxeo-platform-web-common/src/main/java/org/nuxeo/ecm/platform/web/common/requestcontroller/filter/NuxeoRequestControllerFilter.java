@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
@@ -44,14 +42,16 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
- * Filter to handle Transactions and Requests synchronization. This filter is useful when accessing web resources that
- * are not protected by Seam Filter. This is the case for specific Servlets, WebEngine, XML-RPC connector ...
+ * Filter to handle transactions, response buffering, and request synchronization.
  *
  * @author tiry
  */
@@ -105,22 +105,69 @@ public class NuxeoRequestControllerFilter implements Filter {
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
         boolean useBuffer = config.needTransactionBuffered();
-
         if (log.isDebugEnabled()) {
             log.debug(doFormatLogMessage(request,
                     "Handling request with tx=" + useTx + " and sync=" + useSync + " and buffer=" + useBuffer));
         }
 
         boolean sessionSynched = false;
-        if (useSync) {
-            sessionSynched = simpleSyncOnSession(request);
-        }
+        boolean txStarted = false;
+        boolean buffered = false;
         try {
             addCacheHeader(request, response, config);
-            ServletHelper.doFilter(chain, request, response, useTx, useBuffer);
+
+            ServletHelper.setServletContext(request.getServletContext());
+            if (useSync) {
+                sessionSynched = simpleSyncOnSession(request);
+            }
+            if (useTx) {
+                if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                    txStarted = ServletHelper.startTransaction(request);
+                    if (!txStarted) {
+                        throw new ServletException("Failed to start transaction");
+                    }
+                }
+                if (useBuffer) {
+                    response = new BufferingHttpServletResponse(response);
+                    buffered = true;
+                }
+            }
+            chain.doFilter(request, response);
+        } catch (IOException | ServletException | RuntimeException e) {
+            // Don't call response.sendError, because it commits the response
+            // which prevents NuxeoExceptionFilter from returning a custom error page.
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            if (TransactionHelper.isTransactionActive()) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            if (DownloadHelper.isClientAbortError(e)) {
+                DownloadHelper.logClientAbort(e);
+            } else if (e instanceof RuntimeException) { // NOSONAR
+                throw new ServletException(e);
+            } else {
+                throw e; // IOException | ServletException
+            }
         } finally {
-            if (sessionSynched) {
-                simpleReleaseSyncOnSession(request);
+            try {
+                if (txStarted) {
+                    try {
+                        TransactionHelper.commitOrRollbackTransaction();
+                    } catch (TransactionRuntimeException e) {
+                        // commit failed, report this to the client before stopping buffering
+                        // Don't call response.sendError, because it commits the response
+                        // which prevents NuxeoExceptionFilter from returning a custom error page.
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        log.error(e, e); // don't rethrow inside finally
+                    }
+                }
+            } finally {
+                if (buffered) {
+                    ((BufferingHttpServletResponse) response).stopBuffering();
+                }
+                if (sessionSynched) {
+                    simpleReleaseSyncOnSession(request);
+                }
+                ServletHelper.removeServletContext();
             }
         }
 
