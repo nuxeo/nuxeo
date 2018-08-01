@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 /**
  * This filter sets up the {@link WebContext}, made available through {@link WebEngine#getActiveContext}.
  */
-public class WebEngineFilter implements Filter {
+public class WebContextFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
