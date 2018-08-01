@@ -70,9 +70,9 @@
     </filter>
 
     <filter context="/">
-      <filter-name>WebEngineFilter</filter-name>
-      <filter-class>org.nuxeo.ecm.webengine.app.WebEngineFilter</filter-class>
-      <display-name>WebEngineFilter</display-name>
+      <filter-name>WebContextFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.webengine.app.WebContextFilter</filter-class>
+      <display-name>WebContextFilter</display-name>
       <filter-mapping>
         <url-pattern>/*</url-pattern>
       </filter-mapping>

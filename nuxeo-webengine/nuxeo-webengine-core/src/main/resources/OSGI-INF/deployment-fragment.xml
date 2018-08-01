@@ -9,7 +9,7 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    
+
     <filter-mapping>
        <filter-name>NuxeoRequestController</filter-name>
        <url-pattern>/site/*</url-pattern>
@@ -84,12 +84,12 @@
     </filter-mapping>
 
     <filter>
-      <display-name>WebEngineFilter</display-name>
-      <filter-name>WebEngineFilter</filter-name>
-      <filter-class>org.nuxeo.ecm.webengine.app.WebEngineFilter</filter-class>
+      <display-name>WebContextFilter</display-name>
+      <filter-name>WebContextFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.webengine.app.WebContextFilter</filter-class>
     </filter>
     <filter-mapping>
-      <filter-name>WebEngineFilter</filter-name>
+      <filter-name>WebContextFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>

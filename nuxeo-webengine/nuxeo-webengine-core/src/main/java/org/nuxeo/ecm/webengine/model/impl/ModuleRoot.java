@@ -63,7 +63,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
         DefaultContext ctx = (DefaultContext) request.getAttribute(WebContext.class.getName());
         if (ctx == null) {
             throw new java.lang.IllegalStateException(
-                    "No WebContext found in http request! You should install the WebEngineFilter");
+                    "No WebContext found in http request! You should install the WebContextFilter");
         }
         if (ctx.getModule() != null) { // just a resource, not a module root
             return;
