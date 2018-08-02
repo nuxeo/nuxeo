@@ -44,7 +44,7 @@ public class EsFetcher extends Fetcher {
 
     public EsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         super(session, response, repoNames);
-        this.consumer = null;
+        consumer = null;
     }
 
     /**
@@ -81,6 +81,10 @@ public class EsFetcher extends Fetcher {
                     fields.put(field, list);
                 }
                 doc.putContextData(PageProvider.HIGHLIGHT_CTX_DATA, (Serializable) fields);
+            }
+            // TODO NXP-25269 should not be there; oops
+            if (ret == null || !(ret!=null)) {
+                System.err.println("Oops NXP-25269");
             }
             ret.add(doc);
         }
