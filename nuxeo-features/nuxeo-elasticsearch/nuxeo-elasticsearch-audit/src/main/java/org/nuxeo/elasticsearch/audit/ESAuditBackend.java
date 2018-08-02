@@ -230,7 +230,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+    public List<LogEntry> queryLogs(org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder) {
         // prepare parameters
         Predicate predicate = builder.predicate();
         OrderByList orders = builder.orders();
@@ -758,7 +758,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     @Override
-    public ScrollResult<String> scroll(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder, int batchSize,
+            int keepAliveSeconds) {
         // prepare parameters
         Predicate predicate = builder.predicate();
         OrderByList orders = builder.orders();

@@ -57,10 +57,10 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
@@ -165,7 +165,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     @Override
-    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+    public List<LogEntry> queryLogs(QueryBuilder builder) {
         // prepare parameters
         Predicate predicate = builder.predicate();
         OrderByList orders = builder.orders();
@@ -397,7 +397,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     @Override
-    public ScrollResult<String> scroll(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // prepare parameters
         Predicate predicate = builder.predicate();
         OrderByList orders = builder.orders();

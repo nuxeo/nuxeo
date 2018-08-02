@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -266,7 +266,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
-    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+    public List<LogEntry> queryLogs(QueryBuilder builder) {
         if (log.isDebugEnabled()) {
             log.debug("queryLogs() builder=" + builder);
         }
