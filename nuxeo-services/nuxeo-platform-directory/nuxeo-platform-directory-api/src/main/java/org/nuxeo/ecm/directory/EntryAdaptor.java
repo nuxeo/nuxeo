@@ -40,8 +40,7 @@ public interface EntryAdaptor {
      * @param directory the directory instance the entry is fetched from
      * @param entry the entry to transform
      * @return the adapted entry
-     * @throws DirectoryException if the adapting process fails unexpectedly
      */
-    DocumentModel adapt(Directory directory, DocumentModel entry) throws DirectoryException;
+    DocumentModel adapt(Directory directory, DocumentModel entry);
 
 }

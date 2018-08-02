@@ -140,7 +140,7 @@ public abstract class AbstractDirectory implements Directory {
     }
 
     @Override
-    public void invalidateCaches() throws DirectoryException {
+    public void invalidateCaches() {
         cache.invalidateAll();
         for (Reference ref : getReferences()) {
             Directory targetDir = ref.getTargetDirectory();
@@ -232,7 +232,7 @@ public abstract class AbstractDirectory implements Directory {
      * @param entries the list of entries.
      * @param orderBy an ordered map of field name -> "asc" or "desc".
      */
-    public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) throws DirectoryException {
+    public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) {
         entries.sort(new DocumentModelComparator(getSchema(), orderBy));
     }
 
@@ -253,7 +253,7 @@ public abstract class AbstractDirectory implements Directory {
     }
 
     @Override
-    public void invalidateDirectoryCache() throws DirectoryException {
+    public void invalidateDirectoryCache() {
         getCache().invalidateAll();
     }
 

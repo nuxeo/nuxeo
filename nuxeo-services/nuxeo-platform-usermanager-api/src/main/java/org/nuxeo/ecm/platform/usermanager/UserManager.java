@@ -102,7 +102,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Deletes user represented by given model.
      *
      * @since 5.2M4
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteUser(DocumentModel userModel);
 
@@ -110,7 +109,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Deletes user with given id.
      *
      * @since 5.2M4
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteUser(String userId);
 
@@ -184,7 +182,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Updates group represented by given model.
      *
      * @since 5.2M4
-     * @throws DirectoryException if given entry does not exist
      */
     void updateGroup(DocumentModel groupModel);
 
@@ -192,7 +189,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Deletes group represented by given model.
      *
      * @since 5.2M4
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteGroup(DocumentModel groupModel);
 
@@ -200,7 +196,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Deletes group with given id.
      *
      * @since 5.2M4
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteGroup(String groupId);
 

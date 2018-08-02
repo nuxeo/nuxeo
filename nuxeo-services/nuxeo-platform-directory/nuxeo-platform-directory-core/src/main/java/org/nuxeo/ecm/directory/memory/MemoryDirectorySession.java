@@ -62,7 +62,7 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    public boolean authenticate(String username, String password) throws DirectoryException {
+    public boolean authenticate(String username, String password) {
         Map<String, Object> map = data.get(username);
         if (map == null) {
             return false;
@@ -81,12 +81,12 @@ public class MemoryDirectorySession extends BaseSession {
     public void commit() {
     }
 
-    public void rollback() throws DirectoryException {
+    public void rollback() {
         throw new RuntimeException("Not implemented");
     }
 
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
         // find id
         Object rawId = fieldMap.get(getIdField());
         if (rawId == null) {
@@ -111,7 +111,7 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         String id = docModel.getId();
         DataModel dataModel = docModel.getDataModel(directory.getSchema());
 
@@ -136,31 +136,31 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    protected void deleteEntryWithoutReferences(String id) throws DirectoryException {
+    protected void deleteEntryWithoutReferences(String id) {
         checkDeleteConstraints(id);
         data.remove(id);
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
         checkPermission(SecurityConstants.WRITE);
         return createEntryWithoutReferences(fieldMap);
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+    public void updateEntry(DocumentModel docModel) {
         checkPermission(SecurityConstants.WRITE);
         updateEntryWithoutReferences(docModel);
     }
 
     @Override
-    public void deleteEntry(String id) throws DirectoryException {
+    public void deleteEntry(String id) {
         checkPermission(SecurityConstants.WRITE);
         deleteEntryWithoutReferences(id);
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) {
         // XXX no references here
         Map<String, Object> map = data.get(id);
         if (map == null) {
@@ -174,7 +174,7 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList getEntries() throws DirectoryException {
+    public DocumentModelList getEntries() {
         DocumentModelList list = new DocumentModelListImpl();
         for (String id : data.keySet()) {
             list.add(getEntry(id));
@@ -185,18 +185,18 @@ public class MemoryDirectorySession extends BaseSession {
     // given our storage model this doesn't even make sense, as id field is
     // unique
     @Override
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) {
         throw new DirectoryException("Not implemented");
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
+    public void deleteEntry(DocumentModel docModel) {
         deleteEntry(docModel.getId());
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<>();

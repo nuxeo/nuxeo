@@ -91,7 +91,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     }
 
     @XNode("@scope")
-    public void setScope(String scope) throws DirectoryException {
+    public void setScope(String scope) {
         if (scope == null) {
             // default value: onelevel
             this.scope = SearchControls.ONELEVEL_SCOPE;
@@ -107,7 +107,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public Directory getSourceDirectory() throws DirectoryException {
+    public Directory getSourceDirectory() {
 
         Directory sourceDir = super.getSourceDirectory();
         if (sourceDir instanceof LDAPDirectory) {
@@ -119,7 +119,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public Directory getTargetDirectory() throws DirectoryException {
+    public Directory getTargetDirectory() {
         Directory targetDir = super.getTargetDirectory();
         if (targetDir instanceof LDAPDirectory) {
             return targetDir;
@@ -129,15 +129,15 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         }
     }
 
-    protected LDAPDirectory getTargetLDAPDirectory() throws DirectoryException {
+    protected LDAPDirectory getTargetLDAPDirectory() {
         return (LDAPDirectory) getTargetDirectory();
     }
 
-    protected LDAPDirectory getSourceLDAPDirectory() throws DirectoryException {
+    protected LDAPDirectory getSourceLDAPDirectory() {
         return (LDAPDirectory) getSourceDirectory();
     }
 
-    protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() throws DirectoryException {
+    protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() {
         if (targetDirectoryDescriptor == null) {
             targetDirectoryDescriptor = getTargetLDAPDirectory().getDescriptor();
         }
@@ -150,7 +150,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
     @Override
-    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) {
         // TODO: not yet implemented
     }
 
@@ -160,12 +160,12 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List, Session)
      */
     @Override
-    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, Session session) {
         // TODO: not yet implemented
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, Session session) {
         // TODO: not yet implemented
     }
 
@@ -175,7 +175,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
     @Override
-    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) {
         // TODO: not yet implemented
     }
 
@@ -185,7 +185,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     @Override
-    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) {
         Set<String> sourceIds = new TreeSet<>();
         String targetDn;
 
@@ -258,7 +258,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     // TODO: optimize reusing the same ldap session (see LdapReference optim
     // method)
     @Override
-    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) {
         Set<String> targetIds = new TreeSet<>();
         String sourceDn;
 
@@ -364,7 +364,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
     @Override
-    public void removeLinksForSource(String sourceId) throws DirectoryException {
+    public void removeLinksForSource(String sourceId) {
         // TODO: not yet implemented
     }
 
@@ -374,7 +374,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
     @Override
-    public void removeLinksForTarget(String targetId) throws DirectoryException {
+    public void removeLinksForTarget(String targetId) {
         // TODO: not yet implemented
     }
 
@@ -384,13 +384,12 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String, List)
      */
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) {
         // TODO: not yet implemented
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         // TODO: not yet implemented
     }
 
@@ -400,23 +399,22 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String, List)
      */
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) {
         // TODO: not yet implemented
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         // TODO: not yet implemented
     }
 
     @Override
-    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+    public void removeLinksForTarget(String targetId, Session session) {
         // TODO: not yet implemented
     }
 
     @Override
-    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+    public void removeLinksForSource(String sourceId, Session session) {
         // TODO: not yet implemented
     }
 

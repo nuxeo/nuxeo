@@ -52,7 +52,6 @@ import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -167,7 +166,7 @@ public abstract class LDAPDirectoryTestCase {
         ctx.destroySubcontext(dn);
     }
 
-    public static LDAPDirectory getLDAPDirectory(String name) throws DirectoryException {
+    public static LDAPDirectory getLDAPDirectory(String name) {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         return (LDAPDirectory) directoryService.getDirectory(name);
     }

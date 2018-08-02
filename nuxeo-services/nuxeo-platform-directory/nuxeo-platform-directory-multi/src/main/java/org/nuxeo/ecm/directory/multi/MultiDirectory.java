@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -50,7 +49,7 @@ public class MultiDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public Session getSession() {
         MultiDirectorySession session = new MultiDirectorySession(this);
         initializeIfNeeded();
         addSession(session);
@@ -75,7 +74,7 @@ public class MultiDirectory extends AbstractDirectory {
     }
 
     @Override
-    public void invalidateDirectoryCache() throws DirectoryException {
+    public void invalidateDirectoryCache() {
         DirectoryService dirService = Framework.getService(DirectoryService.class);
         getCache().invalidateAll();
         // and also invalidates the cache from the source directories

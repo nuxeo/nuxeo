@@ -72,7 +72,7 @@ public class DirectoryCSVLoader {
      * @since 8.4
      */
     public static void loadData(String dataFileName, char delimiter, Schema schema,
-            Consumer<Map<String, Object>> loader) throws DirectoryException {
+            Consumer<Map<String, Object>> loader) {
         try (InputStream in = getResource(dataFileName); //
                 CSVParser csvParser = new CSVParser(new InputStreamReader(in, "UTF-8"),
                         CSVFormat.DEFAULT.withDelimiter(delimiter).withHeader())) {

@@ -214,7 +214,7 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    public Connection getConnection() throws DirectoryException {
+    public Connection getConnection() {
         SQLDirectoryDescriptor descriptor = getDescriptor();
         if (StringUtils.isBlank(descriptor.dataSourceName)) {
             throw new DirectoryException("Missing dataSource for SQL directory: " + getName());
@@ -227,7 +227,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public Session getSession() {
         boolean loadData = initConnectionIfNeeded();
         SQLSession session = new SQLSession(this, getDescriptor());
         addSession(session);
@@ -239,12 +239,12 @@ public class SQLDirectory extends AbstractDirectory {
         return session;
     }
 
-    protected void addSession(final SQLSession session) throws DirectoryException {
+    protected void addSession(final SQLSession session) {
         super.addSession(session);
         registerInTx(session);
     }
 
-    protected void registerInTx(final SQLSession session) throws DirectoryException {
+    protected void registerInTx(final SQLSession session) {
         if (!TransactionHelper.isTransactionActive()) {
             return;
         }

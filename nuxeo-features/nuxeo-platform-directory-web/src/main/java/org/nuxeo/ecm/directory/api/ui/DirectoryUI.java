@@ -24,7 +24,6 @@ package org.nuxeo.ecm.directory.api.ui;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
@@ -66,6 +65,6 @@ public interface DirectoryUI extends Serializable {
      * @see DirectoryDeleteConstraint
      * @since 5.2.1
      */
-    List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException;
+    List<DirectoryDeleteConstraint> getDeleteConstraints();
 
 }

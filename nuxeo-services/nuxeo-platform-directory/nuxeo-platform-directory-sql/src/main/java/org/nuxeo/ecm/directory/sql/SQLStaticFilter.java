@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.directory.DirectoryException;
 
 @XObject(value = "staticFilter")
 public class SQLStaticFilter implements Serializable {
@@ -60,7 +59,7 @@ public class SQLStaticFilter implements Serializable {
         return value;
     }
 
-    public Column getDirectoryColumn(Table table, boolean nativeCase) throws DirectoryException {
+    public Column getDirectoryColumn(Table table, boolean nativeCase) {
         return table.getColumn(column);
     }
 

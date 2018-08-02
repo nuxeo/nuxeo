@@ -111,7 +111,7 @@ public class MultiDirectorySession extends BaseSession {
             this.isOptional = isOptional;
         }
 
-        Session getSession() throws DirectoryException {
+        Session getSession() {
             if (session == null) {
                 session = directoryService.open(dirName);
             }
@@ -157,7 +157,7 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-    private void init() throws DirectoryException {
+    private void init() {
         if (sourceInfos == null) {
             recomputeSourceInfos();
         }
@@ -166,7 +166,7 @@ public class MultiDirectorySession extends BaseSession {
     /**
      * Recomputes all the info needed for efficient access.
      */
-    private void recomputeSourceInfos() throws DirectoryException {
+    private void recomputeSourceInfos() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         final Schema schema = schemaManager.getSchema(schemaName);
         if (schema == null) {
@@ -273,7 +273,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public void close() throws DirectoryException {
+    public void close() {
         try {
             if (sourceInfos == null) {
                 return;
@@ -336,7 +336,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
@@ -491,7 +491,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
         init();
         final Object rawid = fieldMap.get(schemaIdField);
         if (rawid == null) {
@@ -516,11 +516,11 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         throw new UnsupportedOperationException();
     }
 
-    @Override protected void deleteEntryWithoutReferences(String id) throws DirectoryException {
+    @Override protected void deleteEntryWithoutReferences(String id) {
         throw new UnsupportedOperationException();
     }
 
@@ -560,7 +560,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) {
         log.warn("Calling deleteEntry extended on multi directory");
         deleteEntry(id);
     }

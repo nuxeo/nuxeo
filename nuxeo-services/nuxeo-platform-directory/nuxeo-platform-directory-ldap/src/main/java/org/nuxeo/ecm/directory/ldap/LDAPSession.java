@@ -230,7 +230,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         List<String> updateList = new ArrayList<>();
         List<String> referenceFieldList = new LinkedList<>();
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
@@ -324,7 +324,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public boolean hasEntry(String id) throws DirectoryException {
+    public boolean hasEntry(String id) {
         try {
             // TODO: check directory cache first
             return getLdapEntry(id) != null;
@@ -333,7 +333,7 @@ public class LDAPSession extends BaseSession {
         }
     }
 
-    protected SearchResult getLdapEntry(String id) throws NamingException, DirectoryException {
+    protected SearchResult getLdapEntry(String id) throws NamingException {
         return getLdapEntry(id, false);
     }
 
@@ -421,7 +421,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         try {
             SearchResult result = getLdapEntry(id, false);
             if (result == null) {
@@ -435,7 +435,7 @@ public class LDAPSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -538,7 +538,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public void close() throws DirectoryException {
+    public void close() {
         try {
             getContext().close();
         } catch (NamingException e) {
@@ -548,7 +548,7 @@ public class LDAPSession extends BaseSession {
         }
     }
 
-    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) throws DirectoryException {
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
@@ -564,8 +564,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @SuppressWarnings("unchecked")
-    protected Object getFieldValue(Attribute attribute, String fieldName, String entryId, boolean fetchReferences)
-            throws DirectoryException {
+    protected Object getFieldValue(Attribute attribute, String fieldName, String entryId, boolean fetchReferences) {
 
         Field field = directory.getSchemaFieldMap().get(fieldName);
         Type type = field.getType();
@@ -650,7 +649,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @SuppressWarnings("unchecked")
-    protected Attribute getAttributeValue(String fieldName, Object value) throws DirectoryException {
+    protected Attribute getAttributeValue(String fieldName, Object value) {
         Attribute attribute = new BasicAttribute(getDirectory().getFieldMapper().getBackendField(fieldName));
         Field field = directory.getSchemaFieldMap().get(fieldName);
         if (field == null) {
@@ -702,7 +701,7 @@ public class LDAPSession extends BaseSession {
     }
 
     protected DocumentModelList ldapResultsToDocumentModels(NamingEnumeration<SearchResult> results,
-            boolean fetchReferences) throws DirectoryException, NamingException {
+            boolean fetchReferences) throws NamingException {
         DocumentModelListImpl list = new DocumentModelListImpl();
         try {
             while (results.hasMore()) {
@@ -731,7 +730,7 @@ public class LDAPSession extends BaseSession {
     }
 
     protected DocumentModel ldapResultToDocumentModel(SearchResult result, String entryId, boolean fetchReferences)
-            throws DirectoryException, NamingException {
+            throws NamingException {
         Attributes attributes = result.getAttributes();
         String passwordFieldId = getPasswordField();
         Map<String, Object> fieldMap = new HashMap<>();
@@ -830,7 +829,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public boolean authenticate(String username, String password) throws DirectoryException {
+    public boolean authenticate(String username, String password) {
 
         if (password == null || "".equals(password.trim())) {
             // never use anonymous bind as a way to authenticate a user in
@@ -881,7 +880,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public boolean isAuthenticating() throws DirectoryException {
+    public boolean isAuthenticating() {
         return directory.getSchemaFieldMap().containsKey(getPasswordField());
     }
 
@@ -890,7 +889,7 @@ public class LDAPSession extends BaseSession {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getMandatoryAttributes(Attribute objectClassesAttribute) throws DirectoryException {
+    protected List<String> getMandatoryAttributes(Attribute objectClassesAttribute) {
         try {
             List<String> mandatoryAttributes = new ArrayList<>();
 
@@ -938,7 +937,7 @@ public class LDAPSession extends BaseSession {
         }
     }
 
-    protected List<String> getMandatoryAttributes() throws DirectoryException {
+    protected List<String> getMandatoryAttributes() {
         return getMandatoryAttributes(null);
     }
 

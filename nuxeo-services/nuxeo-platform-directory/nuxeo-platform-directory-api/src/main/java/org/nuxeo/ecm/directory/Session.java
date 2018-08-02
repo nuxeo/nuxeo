@@ -47,9 +47,8 @@ public interface Session extends AutoCloseable {
      *
      * @param id the entry id
      * @return a DocumentModel representing the entry
-     * @throws DirectoryException
      */
-    DocumentModel getEntry(String id) throws DirectoryException;
+    DocumentModel getEntry(String id);
 
     /**
      * Retrieves a directory entry using its id.
@@ -57,9 +56,8 @@ public interface Session extends AutoCloseable {
      * @param id the entry id
      * @param fetchReferences boolean stating if references have to be fetched
      * @return a DocumentModel representing the entry
-     * @throws DirectoryException
      */
-    DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException;
+    DocumentModel getEntry(String id, boolean fetchReferences);
 
     /**
      * Retrieves all the entries in the directory. If the remote server issues a size limit exceeded error while sending
@@ -68,12 +66,11 @@ public interface Session extends AutoCloseable {
      *
      * @deprecated since 6.0 Use query method instead with parameters
      * @return a collection with all the entries in the directory
-     * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
     @Deprecated
-    DocumentModelList getEntries() throws DirectoryException;
+    DocumentModelList getEntries();
 
     /**
      * Creates an entry in a directory.
@@ -83,36 +80,32 @@ public interface Session extends AutoCloseable {
      *            Note: The values in the map should be of type String
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the creation of new entries
-     * @throws DirectoryException if a communication exception occurs or if an entry with the same id already exists.
      */
-    DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException;
+    DocumentModel createEntry(Map<String, Object> fieldMap);
 
     /**
      * Updates a directory entry.
      *
      * @param docModel The entry to update
      * @throws UnsupportedOperationException if the directory does not support entry updating
-     * @throws DirectoryException if a communication error occurs
      */
-    void updateEntry(DocumentModel docModel) throws DirectoryException;
+    void updateEntry(DocumentModel docModel);
 
     /**
      * Deletes a directory entry.
      *
      * @param docModel The entry to delete
      * @throws UnsupportedOperationException if the directory does not support entry deleting
-     * @throws DirectoryException if a communication error occurs
      */
-    void deleteEntry(DocumentModel docModel) throws DirectoryException;
+    void deleteEntry(DocumentModel docModel);
 
     /**
      * Deletes a directory entry by id.
      *
      * @param id the id of the entry to delete
      * @throws UnsupportedOperationException if the directory does not support entry deleting
-     * @throws DirectoryException if a communication error occurs
      */
-    void deleteEntry(String id) throws DirectoryException;
+    void deleteEntry(String id);
 
     /**
      * Deletes a directory entry by id and secondary ids.
@@ -121,11 +114,10 @@ public interface Session extends AutoCloseable {
      *
      * @param id the id of the entry to delete.
      * @param map a map of secondary key values.
-     * @throws DirectoryException if a communication error occurs.
      * @deprecated since 9.2 (unused), use {@link #deleteEntry(String)} instead.
      */
     @Deprecated
-    void deleteEntry(String id, Map<String, String> map) throws DirectoryException;
+    void deleteEntry(String id, Map<String, String> map);
 
     /*
      * FIXME: Parses a query string and create a query object for this directory.
@@ -144,11 +136,10 @@ public interface Session extends AutoCloseable {
      *
      * @param filter a filter to apply to entries in directory
      * @return a list of document models containing the entries matched by the query
-     * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter);
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed.
@@ -162,12 +153,10 @@ public interface Session extends AutoCloseable {
      * @param filter a filter to apply to entries in directory
      * @param fulltext a set of field that should be treated as a fulltext search
      * @return a list of document models containing the entries matched by the query
-     * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws
-            DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext);
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed and the result will be sorted by the orderBy criteria
@@ -184,12 +173,10 @@ public interface Session extends AutoCloseable {
      *            column name and the value of the same entry represent the column order,which may be 'asc' or 'desc'.
      * @param fulltext a set of field that should be treated as a fulltext search
      * @return a list of document models containing the entries matched by the query
-     * @throws DirectoryException if a communication error occurs
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy);
 
     /**
      * Executes a query with the possibility to fetch references
@@ -197,7 +184,7 @@ public interface Session extends AutoCloseable {
      * @see #query(Map, Set, Map)
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException;
+            boolean fetchReferences);
 
     /**
      * Executes a query with the possibility to fetch a subset of the results. org.nuxeo.ecm.directory.BaseSession
@@ -209,11 +196,10 @@ public interface Session extends AutoCloseable {
      * @since 5.7
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException;
+            boolean fetchReferences, int limit, int offset);
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
-    // public DocumentModelList query(Criteria criteria ) throws
-    // DirectoryException;
+    // public DocumentModelList query(Criteria criteria )
 
     /**
      * Closes the session and all open result sets obtained from this session.
@@ -221,11 +207,9 @@ public interface Session extends AutoCloseable {
      * Releases this Connection object's resources immediately instead of waiting for them to be automatically released.
      * <p>
      * TODO: should this operation auto-commit pending changes?
-     *
-     * @throws DirectoryException if a communication error occurs
      */
     @Override
-    void close() throws DirectoryException;
+    void close();
 
     /**
      * Executes a query using filter and return only the column <b>columnName</b>.
@@ -233,23 +217,19 @@ public interface Session extends AutoCloseable {
      * @param filter the filter for the query
      * @param columnName the column whose content should be returned
      * @return the list with the values of <b>columnName</b> for the entries matching <b>filter</b>
-     * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      */
-    List<String> getProjection(Map<String, Serializable> filter, String columnName) throws
-            DirectoryException;
+    List<String> getProjection(Map<String, Serializable> filter, String columnName);
 
-    List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws DirectoryException;
+    List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName);
 
     /**
      * Tells whether the directory implementation can be used as an authenticating backend for the UserManager (based on
      * login / password check).
      *
      * @return true is the directory is authentication aware
-     * @throws DirectoryException
      */
-    boolean isAuthenticating() throws DirectoryException;
+    boolean isAuthenticating();
 
     /**
      * Checks that the credentials provided by the UserManager match those registered in the directory. If username is
@@ -259,7 +239,7 @@ public interface Session extends AutoCloseable {
      * @param password
      * @return true is the credentials match those stored in the directory
      */
-    boolean authenticate(String username, String password) throws DirectoryException;
+    boolean authenticate(String username, String password);
 
     /**
      * The Id field is the name of the field that is used a primary key: unique and not null value in the whole
@@ -290,7 +270,6 @@ public interface Session extends AutoCloseable {
      * @param entry the document model representing the entry to create
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the creation of new entries
-     * @throws DirectoryException if a communication exception occurs or if an entry with the same id already exists.
      */
     DocumentModel createEntry(DocumentModel entry);
 

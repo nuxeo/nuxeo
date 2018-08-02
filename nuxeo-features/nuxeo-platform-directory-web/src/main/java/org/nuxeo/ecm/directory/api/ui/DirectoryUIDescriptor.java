@@ -27,7 +27,6 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryDeleteConstraintDescriptor;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
@@ -86,7 +85,7 @@ public class DirectoryUIDescriptor implements DirectoryUI {
         return readOnly;
     }
 
-    public List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException {
+    public List<DirectoryDeleteConstraint> getDeleteConstraints() {
         List<DirectoryDeleteConstraint> res = new ArrayList<DirectoryDeleteConstraint>();
         if (deleteConstraints != null) {
             for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {

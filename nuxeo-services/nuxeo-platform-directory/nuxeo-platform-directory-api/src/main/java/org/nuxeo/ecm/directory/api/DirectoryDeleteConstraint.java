@@ -21,8 +21,6 @@ package org.nuxeo.ecm.directory.api;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.nuxeo.ecm.directory.DirectoryException;
-
 /**
  * Interface for delete constraint on a directory, dependent to another directory.
  *
@@ -33,15 +31,14 @@ public interface DirectoryDeleteConstraint extends Serializable {
     /**
      * Sets properties that may depend on the directory configuration.
      */
-    void setProperties(Map<String, String> properties) throws DirectoryException;
+    void setProperties(Map<String, String> properties);
 
     /**
      * Returns true if given entry can be deleted from the directory where constraint is declared.
      *
      * @param dirService the directory service
      * @param entryId the entry to delete id
-     * @throws DirectoryException
      */
-    boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException;
+    boolean canDelete(DirectoryService dirService, String entryId);
 
 }

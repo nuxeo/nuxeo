@@ -55,7 +55,7 @@ public abstract class AbstractReference implements Reference {
     }
 
     @Override
-    public Directory getSourceDirectory() throws DirectoryException {
+    public Directory getSourceDirectory() {
         if (sourceDirectory == null) {
             sourceDirectory = Framework.getService(DirectoryService.class).getDirectory(sourceDirectoryName);
         }
@@ -69,7 +69,7 @@ public abstract class AbstractReference implements Reference {
     }
 
     @Override
-    public Directory getTargetDirectory() throws DirectoryException {
+    public Directory getTargetDirectory() {
         if (targetDirectory == null) {
             targetDirectory = Framework.getService(DirectoryService.class).getDirectory(targetDirectoryName);
         }

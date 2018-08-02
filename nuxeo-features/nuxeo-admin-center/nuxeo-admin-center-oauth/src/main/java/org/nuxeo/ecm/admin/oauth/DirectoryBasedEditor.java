@@ -76,7 +76,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         entries = null;
     }
 
-    public void createEntry() throws DirectoryException {
+    public void createEntry() {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = ds.open(getDirectoryName())) {
@@ -110,7 +110,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         return Collections.emptySet();
     }
 
-    public DocumentModelList getEntries() throws DirectoryException {
+    public DocumentModelList getEntries() {
         if (entries == null) {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             Framework.doPrivileged(() -> {
@@ -124,7 +124,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         return entries;
     }
 
-    public void editEntry(String entryId) throws DirectoryException {
+    public void editEntry(String entryId) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = ds.open(getDirectoryName())) {
@@ -133,7 +133,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         });
     }
 
-    public void saveEntry() throws DirectoryException {
+    public void saveEntry() {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session directorySession = ds.open(getDirectoryName())) {
@@ -150,7 +150,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         });
     }
 
-    public void deleteEntry(String entryId) throws DirectoryException {
+    public void deleteEntry(String entryId) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session directorySession = ds.open(getDirectoryName())) {

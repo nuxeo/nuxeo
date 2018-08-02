@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
@@ -71,7 +70,7 @@ public class MongoDBDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public Session getSession() {
         MongoDBSession session = new MongoDBSession(this);
         addSession(session);
         initializeIfNeeded(session);

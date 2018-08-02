@@ -100,7 +100,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         DocumentModelList result = doQuery(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
                 Collections.emptyMap(), true, 1, 0, false);
@@ -209,7 +209,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         Map<String, Object> fieldMap = new HashMap<>();
         List<String> referenceFieldList = new LinkedList<>();
 
@@ -276,7 +276,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntryWithoutReferences(String id) throws DirectoryException {
+    public void deleteEntryWithoutReferences(String id) {
         try {
             String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
             DeleteResult result = getCollection().deleteOne(
@@ -292,13 +292,12 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) {
         return doQuery(filter, fulltext, orderBy, fetchReferences, limit, offset, true);
     }
 
     protected DocumentModelList doQuery(Map<String, Serializable> filter, Set<String> fulltext,
-            Map<String, String> orderBy, boolean fetchReferences, int limit, int offset, boolean checkTenantId)
-            throws DirectoryException {
+            Map<String, String> orderBy, boolean fetchReferences, int limit, int offset, boolean checkTenantId) {
 
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
@@ -417,12 +416,12 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
-    public void close() throws DirectoryException {
+    public void close() {
         getDirectory().removeSession(this);
     }
 
     @Override
-    public boolean authenticate(String username, String password) throws DirectoryException {
+    public boolean authenticate(String username, String password) {
         Document user = getCollection().find(MongoDBSerializationHelper.fieldMapToBson(getIdField(), username)).first();
         if (user == null) {
             return false;

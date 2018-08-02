@@ -69,7 +69,7 @@ public class SQLHelper {
      *
      * @return {@code true} if CSV data should be loaded
      */
-    public boolean setupTable() throws DirectoryException {
+    public boolean setupTable() {
         log.debug(String.format("setting up table '%s', policy='%s'", tableName, policy));
         if (policy.equals(CREATE_TABLE_POLICY_NEVER)) {
             log.debug("policy='" + CREATE_TABLE_POLICY_NEVER + "', skipping setup");
@@ -94,7 +94,7 @@ public class SQLHelper {
         }
     }
 
-    private void addMissingColumns() throws DirectoryException {
+    private void addMissingColumns() {
         try (Statement stmt = connection.createStatement()) {
 
             for (Column column : getMissingColumns(false)) {
@@ -109,7 +109,7 @@ public class SQLHelper {
         }
     }
 
-    private void createTable(boolean drop) throws DirectoryException {
+    private void createTable(boolean drop) {
         try (Statement stmt = connection.createStatement()) {
             if (drop) {
                 // drop table
@@ -201,7 +201,7 @@ public class SQLHelper {
         return columnNames;
     }
 
-    private boolean tableExists() throws DirectoryException {
+    private boolean tableExists() {
         try {
             // Check if table exists using metadata
             DatabaseMetaData metaData = connection.getMetaData();

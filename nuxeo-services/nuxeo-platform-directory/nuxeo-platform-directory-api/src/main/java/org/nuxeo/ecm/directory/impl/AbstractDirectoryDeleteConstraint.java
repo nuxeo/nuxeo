@@ -20,7 +20,6 @@ package org.nuxeo.ecm.directory.impl;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
@@ -36,7 +35,7 @@ public abstract class AbstractDirectoryDeleteConstraint implements DirectoryDele
 
     protected Map<String, String> properties;
 
-    public void setProperties(Map<String, String> properties) throws DirectoryException {
+    public void setProperties(Map<String, String> properties) {
         if (properties != null) {
             this.properties = properties;
         }

@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -901,11 +900,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param directoryName the directory name
      * @param id the label id
      * @return the label.
-     * @throws DirectoryException
      * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
     @Deprecated
-    public static String getLabelFromId(String directoryName, String id) throws DirectoryException {
+    public static String getLabelFromId(String directoryName, String id) {
         if (id == null) {
             return "";
         }

@@ -150,7 +150,7 @@ public class TestLDAPDescriptors {
     }
 
     @Test
-    public void testGetSearchScope() throws DirectoryException {
+    public void testGetSearchScope() {
         // testing the value provided in the directory.xml resource
         assertEquals(SearchControls.ONELEVEL_SCOPE, descriptor.getSearchScope());
 

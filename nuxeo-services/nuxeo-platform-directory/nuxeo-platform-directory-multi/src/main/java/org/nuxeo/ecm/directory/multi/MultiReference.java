@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryEntryNotFoundException;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -49,30 +48,30 @@ public class MultiReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, Session session) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, Session session) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) {
         throw new UnsupportedOperationException();
     }
 
     protected interface Collector {
-        List<String> collect(List<Reference> dir) throws DirectoryException;
+        List<String> collect(List<Reference> dir);
     }
 
-    protected List<String> doCollect(Collector extractor) throws DirectoryException {
+    protected List<String> doCollect(Collector extractor) {
         DirectoryService dirService = Framework.getService(DirectoryService.class);
         Set<String> ids = new HashSet<>();
         for (SourceDescriptor src : dir.getDescriptor().sources) {
@@ -98,7 +97,7 @@ public class MultiReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public List<String> getSourceIdsForTarget(final String targetId) throws DirectoryException {
+    public List<String> getSourceIdsForTarget(final String targetId) {
         return doCollect(refs -> {
             List<String> sourceIds = new ArrayList<>(1);
             for (Reference ref : refs) {
@@ -109,7 +108,7 @@ public class MultiReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public List<String> getTargetIdsForSource(final String sourceId) throws DirectoryException {
+    public List<String> getTargetIdsForSource(final String sourceId) {
         return doCollect(refs -> {
             List<String> targetIds = new ArrayList<>(1);
             for (Reference ref : refs) {
@@ -120,44 +119,42 @@ public class MultiReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public void removeLinksForSource(String sourceId) throws DirectoryException {
+    public void removeLinksForSource(String sourceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+    public void removeLinksForSource(String sourceId, Session session) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeLinksForTarget(String targetId) throws DirectoryException {
+    public void removeLinksForTarget(String targetId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+    public void removeLinksForTarget(String targetId, Session session) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         throw new UnsupportedOperationException();
     }
 

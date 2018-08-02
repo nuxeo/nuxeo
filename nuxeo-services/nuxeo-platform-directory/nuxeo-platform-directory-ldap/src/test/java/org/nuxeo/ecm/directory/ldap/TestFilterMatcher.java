@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.directory.shared.ldap.message.AttributesImpl;
 import org.junit.Test;
-import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 public class TestFilterMatcher {
 
     @Test
-    public void testEmptyFilterMatching() throws DirectoryException {
+    public void testEmptyFilterMatching() {
         LDAPFilterMatcher matcher = new LDAPFilterMatcher();
         assertTrue(matcher.match(null, null));
         assertTrue(matcher.match(null, ""));
