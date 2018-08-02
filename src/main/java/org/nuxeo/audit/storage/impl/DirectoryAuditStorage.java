@@ -38,17 +38,17 @@ import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audit storage implementation for an Audit directory.
- * 
+ *
  * @since 9.10
  */
 public class DirectoryAuditStorage implements AuditStorage {
@@ -93,7 +93,7 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Scroll log entries in the Audit directory, given an audit query builder.
      */
     @Override
-    public ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+    public ScrollResult<String> scroll(QueryBuilder queryBuilder, int batchSize, int keepAlive) {
         cursorService.checkForTimedOutScroll();
         List<String> logEntries = queryLogs(queryBuilder);
         String scrollId = cursorService.registerCursor(logEntries.iterator(), batchSize, keepAlive);
@@ -104,7 +104,7 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Query log entries in the Audit directory, given an audit query builder. Does not support literals other than
      * StringLiteral: see {@link Session#query(Map, Set, Map, boolean, int, int)}.
      */
-    protected List<String> queryLogs(AuditQueryBuilder queryBuilder) {
+    protected List<String> queryLogs(QueryBuilder queryBuilder) {
         // Get the predicates filter map from the query builder.
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = null;

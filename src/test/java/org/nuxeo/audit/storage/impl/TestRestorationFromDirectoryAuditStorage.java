@@ -31,10 +31,11 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.mongodb.audit.MongoDBAuditFeature;
@@ -60,7 +61,7 @@ public class TestRestorationFromDirectoryAuditStorage {
         String testEventId = "testEventId";
         int nbEntries = 5000;
 
-        AuditQueryBuilder queryBuilder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, testEventId));
+        QueryBuilder queryBuilder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, testEventId));
 
         ObjectMapper mapper = new ObjectMapper();
         List<String> jsonEntries = new ArrayList<>();

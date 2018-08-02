@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.storage.impl.DirectoryAuditStorage;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -55,7 +56,7 @@ public class TestStreamAuditStorageWriter {
                                                                      .getComponent(NXAuditEventsService.NAME);
         DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
 
-        AuditQueryBuilder queryBuilder = new AuditQueryBuilder();
+        QueryBuilder queryBuilder = new AuditQueryBuilder();
         ScrollResult<String> scrollResult = storage.scroll(queryBuilder, 20, 1);
         assertNotNull(scrollResult.getScrollId());
         List<String> results = scrollResult.getResults();

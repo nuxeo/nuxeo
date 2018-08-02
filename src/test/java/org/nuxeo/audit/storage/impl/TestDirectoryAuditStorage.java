@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -159,7 +160,7 @@ public class TestDirectoryAuditStorage {
         storage.append(jsonEntries);
 
         // Empty query builder.
-        AuditQueryBuilder queryBuilder = new AuditQueryBuilder();
+        QueryBuilder queryBuilder = new AuditQueryBuilder();
         List<LogEntry> logEntries = queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
 
@@ -192,7 +193,7 @@ public class TestDirectoryAuditStorage {
     @Test
     public void testScroll() {
         storage.append(jsonEntries);
-        AuditQueryBuilder queryBuilder = new AuditQueryBuilder();
+        QueryBuilder queryBuilder = new AuditQueryBuilder();
         ScrollResult<String> scrollResult = storage.scroll(queryBuilder, 10, 1);
         assertNotNull(scrollResult.getScrollId());
         List<String> results = scrollResult.getResults();
@@ -201,7 +202,7 @@ public class TestDirectoryAuditStorage {
         results.forEach(this::getLogEntryFromJson);
     }
 
-    protected List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+    protected List<LogEntry> queryLogs(QueryBuilder builder) {
         return storage.queryLogs(builder).stream().map(this::getLogEntryFromJson).collect(Collectors.toList());
     }
 
