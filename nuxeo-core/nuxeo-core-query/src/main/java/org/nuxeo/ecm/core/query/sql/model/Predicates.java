@@ -17,20 +17,14 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  *
  */
-package org.nuxeo.ecm.platform.audit.api;
+package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.nuxeo.ecm.core.query.sql.model.LiteralList;
-import org.nuxeo.ecm.core.query.sql.model.Literals;
-import org.nuxeo.ecm.core.query.sql.model.Operator;
-import org.nuxeo.ecm.core.query.sql.model.Predicate;
-import org.nuxeo.ecm.core.query.sql.model.Reference;
-
 /**
- * Predicate builders for audit
+ * Predicate builders.
  *
  * @since 9.3
  */

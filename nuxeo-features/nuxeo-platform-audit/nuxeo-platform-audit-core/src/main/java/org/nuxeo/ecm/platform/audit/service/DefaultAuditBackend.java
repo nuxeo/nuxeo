@@ -40,11 +40,11 @@ import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
@@ -187,7 +187,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+    public List<LogEntry> queryLogs(QueryBuilder builder) {
         return apply(false, provider -> provider.queryLogs(builder));
     }
 
@@ -284,7 +284,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public ScrollResult<String> scroll(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // as we're using pages to scroll audit, we need to add an order to make results across pages deterministic
         builder.orders(OrderByExprs.asc(LOG_ID), builder.orders().toArray(new OrderByExpr[0]));
         String scrollId = cursorService.registerCursorResult(
@@ -299,13 +299,13 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     public class SQLAuditCursorResult extends CursorResult<Iterator<LogEntry>, LogEntry> {
 
-        protected final AuditQueryBuilder builder;
+        protected final QueryBuilder builder;
 
         protected long pageNb;
 
         protected boolean end;
 
-        public SQLAuditCursorResult(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+        public SQLAuditCursorResult(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
             super(Collections.emptyIterator(), batchSize, keepAliveSeconds);
             this.builder = builder;
             this.pageNb = 0;

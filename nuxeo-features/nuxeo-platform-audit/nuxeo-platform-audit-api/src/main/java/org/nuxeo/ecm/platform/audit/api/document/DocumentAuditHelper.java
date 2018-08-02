@@ -32,11 +32,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,9 +68,9 @@ public class DocumentAuditHelper {
         String targetUUID = resolver.sourceDocument.getId();
         // now get from Audit Logs the creation date of
         // the version / proxy
-        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid))
-                                                           .addAndPredicate(Predicates.eq(LOG_EVENT_ID,
-                                                                   DocumentEventTypes.DOCUMENT_CREATED));
+        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid))
+                                                      .addAndPredicate(Predicates.eq(LOG_EVENT_ID,
+                                                              DocumentEventTypes.DOCUMENT_CREATED));
         AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = reader.queryLogs(builder);
         AdditionalDocumentAuditParams result;
@@ -98,7 +99,7 @@ public class DocumentAuditHelper {
             }
             estimatedDate.add(Calendar.MILLISECOND, -500);
 
-            AuditQueryBuilder dateBuilder = new AuditQueryBuilder();
+            QueryBuilder dateBuilder = new AuditQueryBuilder();
             dateBuilder.predicates( //
                     Predicates.in(LOG_DOC_UUID, ids), //
                     Predicates.in(LOG_EVENT_ID, DocumentEventTypes.DOCUMENT_CREATED,

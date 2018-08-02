@@ -36,9 +36,10 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
@@ -66,7 +67,7 @@ public abstract class AbstractAuditStorageTest {
     public void setUpTestData() throws Exception {
 
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         List<LogEntry> logs = backend.queryLogs(builder);
 
@@ -92,7 +93,7 @@ public abstract class AbstractAuditStorageTest {
     public void testSaveAndScroll() throws Exception {
         setUpTestData();
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         checkNumberOfLoggedEvents(backend, builder);
 
@@ -128,7 +129,7 @@ public abstract class AbstractAuditStorageTest {
     /**
      *  Checks the logged events match.  Will debug the result if they don't.
      */
-    public void checkNumberOfLoggedEvents(AbstractAuditBackend backend, AuditQueryBuilder builder) {
+    public void checkNumberOfLoggedEvents(AbstractAuditBackend backend, QueryBuilder builder) {
         List<LogEntry> logs = backend.queryLogs(builder);
         assertEquals("Incorrect log entries: "+ Arrays.toString(logs.toArray()), NUM_OF_EVENTS, logs.size());
     }
@@ -137,7 +138,7 @@ public abstract class AbstractAuditStorageTest {
     public void testStartsWith() throws Exception {
         setUpTestData();
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicates(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         checkNumberOfLoggedEvents(backend, builder);
 

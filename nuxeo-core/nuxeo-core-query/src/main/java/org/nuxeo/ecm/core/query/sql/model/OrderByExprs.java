@@ -17,10 +17,7 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  *
  */
-package org.nuxeo.ecm.platform.audit.api;
-
-import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.Reference;
+package org.nuxeo.ecm.core.query.sql.model;
 
 /**
  * Helper to instantiate {@link OrderByExpr}s compatible with the search service inside Audit.

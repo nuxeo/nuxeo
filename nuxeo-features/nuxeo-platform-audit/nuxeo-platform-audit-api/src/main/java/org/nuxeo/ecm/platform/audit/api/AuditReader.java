@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 
@@ -74,7 +76,7 @@ public interface AuditReader {
      * @param doDefaultSort the default sort to set (eventDate desc)
      * @return a list of log entries
      * @deprecated since 9.3, this method doesn't take into account the document repository, use
-     *             {@link #queryLogs(AuditQueryBuilder)} instead.
+     *             {@link #queryLogs(QueryBuilder)} instead.
      */
     @Deprecated
     List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
@@ -94,7 +96,7 @@ public interface AuditReader {
      * @return a list of log entries
      * @since 9.3
      */
-    List<LogEntry> queryLogs(AuditQueryBuilder builder);
+    List<LogEntry> queryLogs(QueryBuilder builder);
 
     /**
      * Returns the list of log entries.

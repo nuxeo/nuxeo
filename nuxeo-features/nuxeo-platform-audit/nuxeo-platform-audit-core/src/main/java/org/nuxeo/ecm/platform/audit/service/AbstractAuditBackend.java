@@ -70,14 +70,15 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
@@ -428,7 +429,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     @Deprecated
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         // create builder
-        AuditQueryBuilder builder = new AuditQueryBuilder();
+        QueryBuilder builder = new AuditQueryBuilder();
         // create predicates
         builder.addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid));
         filterMap.values().stream().map(this::convert).forEach(builder::addAndPredicate);
@@ -461,7 +462,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
             int pageSize) {
-        AuditQueryBuilder builder = new AuditQueryBuilder();
+        QueryBuilder builder = new AuditQueryBuilder();
         if (ArrayUtils.isNotEmpty(eventIds)) {
             if (eventIds.length == 1) {
                 builder.addAndPredicate(Predicates.eq(LOG_EVENT_ID, eventIds[0]));
@@ -488,7 +489,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     @Override
     public long getLatestLogId(String repositoryId, String... eventIds) {
-        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
+        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
                 Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
                                                            .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
                                                            .order(OrderByExprs.desc(LOG_ID))
@@ -498,7 +499,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     @Override
     public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds) {
-        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
+        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
                 Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
                                                            .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
                                                            .addAndPredicate(Predicates.gte(LOG_ID, logIdOffset))
@@ -510,7 +511,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     @Override
     public void restore(AuditStorage auditStorage, int batchSize, int keepAlive) {
 
-        AuditQueryBuilder builder = new AuditQueryBuilder();
+        QueryBuilder builder = new AuditQueryBuilder();
         ScrollResult<String> scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
         long t0 = System.currentTimeMillis();
         int total = 0;

@@ -23,18 +23,19 @@ package org.nuxeo.ecm.platform.audit.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 
 /**
  * Audit storage interface to append and scroll {@link LogEntry} represented as JSON. The {@link LogEntry} has to be
  * serialized to JSON with {@link BuiltinLogEntryData} field names.
- * 
+ *
  * @since 9.3
  */
 public interface AuditStorage {
 
     void append(List<String> jsonEntries);
 
-    ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAliveSeconds);
+    ScrollResult<String> scroll(QueryBuilder queryBuilder, int batchSize, int keepAliveSeconds);
 
     ScrollResult<String> scroll(String scrollId);
 
