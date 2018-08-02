@@ -31,7 +31,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 /**
  * Simple class to provide a complex filter that handles right side part and operator to use while querying
  * org.nuxeo.ecm.directory.sql.SQLDirectory Warning, when using a complex filter fulltext is ignored on the field.
- * 
+ *
  * @since 5.7
  * @see org.nuxeo.ecm.directory.sql.SQLSession#query(java.util.Map, java.util.Set, java.util.Map, boolean, int, int)
  */
@@ -45,7 +45,7 @@ public abstract class SQLComplexFilter implements Serializable {
         this.operator = operator;
     }
 
-    public int setFieldValue(PreparedStatement ps, int index, Column column) throws DirectoryException {
+    public int setFieldValue(PreparedStatement ps, int index, Column column) {
         try {
             return doSetFieldValue(ps, index, column);
         } catch (SQLException e) {

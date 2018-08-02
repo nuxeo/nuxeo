@@ -52,7 +52,7 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * MongoDB implementation of a {@link Reference}
- * 
+ *
  * @since 9.1
  */
 public class MongoDBReference extends AbstractReference {
@@ -96,14 +96,14 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) {
         try (MongoDBSession session = getMongoDBSession()) {
             addLinks(sourceId, targetIds, session);
         }
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, Session session) {
         MongoDBSession mongoSession = (MongoDBSession) session;
         if (!initialized) {
             if (dataFileName != null) {
@@ -129,7 +129,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, Session session) {
         MongoDBSession mongodbSession = (MongoDBSession) session;
         MongoCollection<Document> coll = mongodbSession.getCollection(collection);
         List<Document> newDocs = sourceIds.stream()
@@ -142,7 +142,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) {
         if (sourceIds == null || sourceIds.isEmpty()) {
             return;
         }
@@ -154,7 +154,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForSource(String sourceId) throws DirectoryException {
+    public void removeLinksForSource(String sourceId) {
         try (MongoDBSession session = getMongoDBSession()) {
             removeLinksForSource(sourceId, session);
         }
@@ -166,14 +166,14 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForTarget(String targetId) throws DirectoryException {
+    public void removeLinksForTarget(String targetId) {
         try (MongoDBSession session = getMongoDBSession()) {
             removeLinksFor(targetField, targetId, session);
         }
     }
 
     @Override
-    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+    public void removeLinksForTarget(String targetId, Session session) {
         removeLinksFor(targetField, targetId, (MongoDBSession) session);
     }
 
@@ -191,7 +191,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) {
         try (MongoDBSession session = getMongoDBSession()) {
             return getIdsFor(sourceField, sourceId, targetField, session);
         }
@@ -199,18 +199,17 @@ public class MongoDBReference extends AbstractReference {
 
     /**
      * Retrieves all target ids associated to the given source id
-     * 
+     *
      * @param sourceId the source id
      * @param session the mongoDB session
      * @return the list of target ids
-     * @throws DirectoryException
      */
-    public List<String> getTargetIdsForSource(String sourceId, MongoDBSession session) throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId, MongoDBSession session) {
         return getIdsFor(sourceField, sourceId, targetField, session);
     }
 
     @Override
-    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) {
         try (MongoDBSession session = getMongoDBSession()) {
             return getIdsFor(targetField, targetId, sourceField, session);
         }
@@ -225,28 +224,26 @@ public class MongoDBReference extends AbstractReference {
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) {
         try (MongoDBSession session = getMongoDBSession()) {
             setTargetIdsForSource(sourceId, targetIds, session);
         }
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         setIdsFor(sourceField, sourceId, targetField, targetIds, (MongoDBSession) session);
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) {
         try (MongoDBSession session = getMongoDBSession()) {
             setIdsFor(targetField, targetId, sourceField, sourceIds, session);
         }
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         setIdsFor(targetField, targetId, sourceField, sourceIds, (MongoDBSession) session);
     }
 
@@ -310,7 +307,7 @@ public class MongoDBReference extends AbstractReference {
                 loader);
     }
 
-    protected MongoDBSession getMongoDBSession() throws DirectoryException {
+    protected MongoDBSession getMongoDBSession() {
         if (!initialized) {
             if (dataFileName != null) {
                 try (MongoDBSession session = (MongoDBSession) getSourceDirectory().getSession()) {

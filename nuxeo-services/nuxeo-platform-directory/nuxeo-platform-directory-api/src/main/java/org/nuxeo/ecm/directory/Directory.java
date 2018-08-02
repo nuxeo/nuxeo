@@ -42,40 +42,36 @@ public interface Directory {
      * Gets the unique name of the directory, used for registering.
      *
      * @return the unique directory name
-     * @throws DirectoryException
      */
-    String getName() throws DirectoryException;
+    String getName();
 
     /**
      * Gets the schema name used by this directory.
      *
      * @return the schema name
-     * @throws DirectoryException
      */
-    String getSchema() throws DirectoryException;
+    String getSchema();
 
     /**
      * Gets the name of the parent directory. This is used for hierarchical vocabularies.
      *
      * @return the name of the parent directory, or null.
      */
-    String getParentDirectory() throws DirectoryException;
+    String getParentDirectory();
 
     /**
      * Gets the id field of the schema for this directory.
      *
      * @return the id field.
-     * @throws DirectoryException
      */
-    String getIdField() throws DirectoryException;
+    String getIdField();
 
     /**
      * Gets the password field of the schema for this directory.
      *
      * @return the password field.
-     * @throws DirectoryException
      */
-    String getPasswordField() throws DirectoryException;
+    String getPasswordField();
 
     /**
      * Checks if this directory is read-only.
@@ -86,66 +82,57 @@ public interface Directory {
 
     /**
      * Shuts down the directory.
-     *
-     * @throws DirectoryException
      */
-    void shutdown() throws DirectoryException;
+    void shutdown();
 
     /**
      * Creates a session for accessing entries in this directory.
      *
      * @return a Session object
-     * @throws DirectoryException if a session cannot be created
      */
-    Session getSession() throws DirectoryException;
+    Session getSession();
 
     /**
      * Lookup a Reference by field name.
      *
      * @return the matching reference implementation or null
-     * @throws DirectoryException
      * @deprecated since 7.4, kept for compatibility with old code, use {@link #getReferences(String)} instead
      */
     @Deprecated
-    Reference getReference(String referenceFieldName) throws DirectoryException;
+    Reference getReference(String referenceFieldName);
 
     /**
      * Lookup the References by field name.
      *
      * @return the matching references implementation or null
-     * @throws DirectoryException
      */
-    List<Reference> getReferences(String referenceFieldName) throws DirectoryException;
+    List<Reference> getReferences(String referenceFieldName);
 
     /**
      * Lookup all References defined on the directory.
      *
      * @return all registered references
-     * @throws DirectoryException
      */
-    Collection<Reference> getReferences() throws DirectoryException;
+    Collection<Reference> getReferences();
 
     /**
      * Gets the cache instance of the directory
      *
      * @return the cache of the directory
-     * @throws DirectoryException
      */
-    DirectoryCache getCache() throws DirectoryException;
+    DirectoryCache getCache();
 
     /**
      * Invalidates the cache instance of the directory
-     *
-     * @throws DirectoryException
      */
-    void invalidateDirectoryCache() throws DirectoryException;
+    void invalidateDirectoryCache();
 
     /**
      * Returns {@code true} if this directory is a multi tenant directory, {@code false} otherwise.
      *
      * @since 5.6
      */
-    boolean isMultiTenant() throws DirectoryException;
+    boolean isMultiTenant();
 
     /**
      * @since 8.4
@@ -162,7 +149,7 @@ public interface Directory {
      *
      * @since 9.2
      */
-    void invalidateCaches() throws DirectoryException;
+    void invalidateCaches();
 
     /**
      * Get schema field map

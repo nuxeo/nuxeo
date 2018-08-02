@@ -27,7 +27,6 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionPropertiesDescriptor;
 
@@ -100,7 +99,7 @@ public class DirectoryTreeDescriptor {
     protected String[] directories;
 
     @XNodeList(value = "directory", componentType = String.class, type = String[].class)
-    public void setDirectories(String[] directories) throws DirectoryException {
+    public void setDirectories(String[] directories) {
         this.directories = directories;
     }
 

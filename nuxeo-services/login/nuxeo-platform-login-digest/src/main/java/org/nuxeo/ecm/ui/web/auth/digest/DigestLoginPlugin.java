@@ -114,7 +114,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
         return DigestUtils.md5Hex(a1);
     }
 
-    protected String getStoredHA1(String username) throws DirectoryException {
+    protected String getStoredHA1(String username) {
         UserManager userManager = Framework.getService(UserManager.class);
         String dirName = userManager.getDigestAuthDirectory();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);

@@ -66,9 +66,8 @@ public class LDAPFilterMatcher {
      * @param attributes the ldap entry to match
      * @param filter a raw string filter expression (eg. <tt>(!(&(attr1=*)(attr2=value2)(attr3=val*)))</tt> )
      * @return true if the ldap entry matches the filter
-     * @throws DirectoryException if the filter is not a valid LDAP filter
      */
-    public boolean match(Attributes attributes, String filter) throws DirectoryException {
+    public boolean match(Attributes attributes, String filter) {
         if (filter == null || "".equals(filter)) {
             return true;
         }
@@ -80,7 +79,7 @@ public class LDAPFilterMatcher {
         }
     }
 
-    private boolean recursiveMatch(Attributes attributes, ExprNode filterElement) throws DirectoryException {
+    private boolean recursiveMatch(Attributes attributes, ExprNode filterElement) {
         if (filterElement instanceof PresenceNode) {
             return presenceMatch(attributes, (PresenceNode) filterElement);
         } else if (filterElement instanceof SimpleNode) {
@@ -106,7 +105,7 @@ public class LDAPFilterMatcher {
      *
      * @return true if the equality holds
      */
-    protected static boolean simpleMatch(Attributes attributes, SimpleNode simpleElement) throws DirectoryException {
+    protected static boolean simpleMatch(Attributes attributes, SimpleNode simpleElement) {
         Attribute attribute = attributes.get(simpleElement.getAttribute());
         if (attribute == null) {
             // null attribute cannot match any equality statement
@@ -160,7 +159,7 @@ public class LDAPFilterMatcher {
      *
      * @return the result of the regex evaluation
      */
-    protected boolean substringMatch(Attributes attributes, SubstringNode substringElement) throws DirectoryException {
+    protected boolean substringMatch(Attributes attributes, SubstringNode substringElement) {
         try {
 
             Attribute attribute = attributes.get(substringElement.getAttribute());
@@ -225,7 +224,7 @@ public class LDAPFilterMatcher {
      *
      * @return the boolean value of the evaluation of the sub expression
      */
-    private boolean branchMatch(Attributes attributes, BranchNode branchElement) throws DirectoryException {
+    private boolean branchMatch(Attributes attributes, BranchNode branchElement) {
         if (branchElement.isConjunction()) {
             for (ExprNode child : branchElement.getChildren()) {
                 if (!recursiveMatch(attributes, child)) {

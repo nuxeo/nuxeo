@@ -87,7 +87,7 @@ public class SQLSession extends BaseSession {
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
-    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) throws DirectoryException {
+    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) {
         super(directory, TableReference.class);
         table = directory.getTable();
         dialect = directory.getDialect();
@@ -102,7 +102,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
         // tableName, idField);
@@ -213,7 +213,7 @@ public class SQLSession extends BaseSession {
         }
     }
 
-    private void acquireConnection() throws DirectoryException {
+    private void acquireConnection() {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
                 sqlConnection = getDirectory().getConnection();
@@ -236,7 +236,7 @@ public class SQLSession extends BaseSession {
         }
     }
 
-    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
+    protected String addFilterWhereClause(String whereClause) {
         if (staticFilters.length == 0) {
             return whereClause;
         }
@@ -258,7 +258,7 @@ public class SQLSession extends BaseSession {
         return whereClause;
     }
 
-    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
+    protected void addFilterValues(PreparedStatement ps, int startIdx) {
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
             setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, getDirectory().useNativeCase()),
@@ -343,7 +343,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) {
         checkPermission(SecurityConstants.WRITE);
         acquireConnection();
 
@@ -400,7 +400,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -788,7 +788,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         acquireConnection();
         List<Column> storedColumnList = new LinkedList<>();
         List<String> referenceFieldList = new LinkedList<>();
@@ -877,7 +877,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntryWithoutReferences(String id) throws DirectoryException {
+    public void deleteEntryWithoutReferences(String id) {
         // second step: clean stored fields
         Delete delete = new Delete(table);
         String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
@@ -896,7 +896,7 @@ public class SQLSession extends BaseSession {
     }
 
     protected void fillPreparedStatementFields(Map<String, Object> filterMap, List<Column> orderedColumns,
-            PreparedStatement ps) throws DirectoryException {
+            PreparedStatement ps) {
         int index = 1;
         for (Column column : orderedColumns) {
             Object value = filterMap.get(column.getKey());
@@ -911,7 +911,7 @@ public class SQLSession extends BaseSession {
         addFilterValues(ps, index);
     }
 
-    private Object getFieldValue(ResultSet rs, Column column) throws DirectoryException {
+    private Object getFieldValue(ResultSet rs, Column column) {
         try {
             int index = rs.findColumn(column.getPhysicalName());
             return column.getFromResultSet(rs, index);
@@ -920,7 +920,7 @@ public class SQLSession extends BaseSession {
         }
     }
 
-    private void setFieldValue(PreparedStatement ps, int index, Column column, Object value) throws DirectoryException {
+    private void setFieldValue(PreparedStatement ps, int index, Column column, Object value) {
         try {
             column.setToPreparedStatement(ps, index, fieldValueForWrite(value, column));
         } catch (SQLException e) {
@@ -958,7 +958,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public void close() throws DirectoryException {
+    public void close() {
         try {
             if (!sqlConnection.isClosed()) {
                 sqlConnection.close();
@@ -975,7 +975,7 @@ public class SQLSession extends BaseSession {
      *
      * @since 5.7.2
      */
-    public boolean isLive() throws DirectoryException {
+    public boolean isLive() {
         try {
             return !sqlConnection.isClosed();
         } catch (SQLException e) {

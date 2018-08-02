@@ -89,7 +89,6 @@ public interface MultiTenantUserManager extends Serializable {
      * into the tenant.
      *
      * @since 5.5
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteUser(DocumentModel userModel, DocumentModel context);
 
@@ -98,7 +97,6 @@ public interface MultiTenantUserManager extends Serializable {
      * tenant.
      *
      * @since 5.5
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteUser(String userId, DocumentModel context);
 
@@ -169,7 +167,6 @@ public interface MultiTenantUserManager extends Serializable {
      * configuration of the context document.
      *
      * @since 5.5
-     * @throws DirectoryException if given entry does not exist
      */
     void updateGroup(DocumentModel groupModel, DocumentModel context);
 
@@ -180,7 +177,6 @@ public interface MultiTenantUserManager extends Serializable {
      *
      * @param groupModel
      * @since 5.5
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteGroup(DocumentModel groupModel, DocumentModel context);
 
@@ -191,7 +187,6 @@ public interface MultiTenantUserManager extends Serializable {
      *
      * @param groupId
      * @since 5.5
-     * @throws DirectoryException if given entry does not exist
      */
     void deleteGroup(String groupId, DocumentModel context);
 

@@ -84,7 +84,7 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) {
         if (UUID_FIELD.equals(getIdField())) {
             IdRef ref = new IdRef(id);
             if (coreSession.exists(ref)) {
@@ -123,7 +123,7 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList getEntries() throws DirectoryException {
+    public DocumentModelList getEntries() {
         throw new UnsupportedOperationException();
     }
 
@@ -136,25 +136,25 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void deleteEntryWithoutReferences(String id) throws DirectoryException {
+    protected void deleteEntryWithoutReferences(String id) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
         if (isReadOnly()) {
             log.warn(String.format("The directory '%s' is in read-only mode, could not create entry.",
                     directory.getName()));
@@ -192,7 +192,7 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+    public void updateEntry(DocumentModel docModel) {
         if (isReadOnly()) {
             log.warn(String.format("The directory '%s' is in read-only mode, could not update entry.",
                     directory.getName()));
@@ -245,13 +245,13 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
+    public void deleteEntry(DocumentModel docModel) {
         String id = (String) docModel.getProperty(schemaName, schemaIdField);
         deleteEntry(id);
     }
 
     @Override
-    public void deleteEntry(String id) throws DirectoryException {
+    public void deleteEntry(String id) {
         if (isReadOnly()) {
             log.warn(String.format("The directory '%s' is in read-only mode, could not delete entry.",
                     directory.getName()));
@@ -269,7 +269,7 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) {
         if (isReadOnly()) {
             log.warn(String.format("The directory '%s' is in read-only mode, could not delete entry.",
                     directory.getName()));
@@ -298,7 +298,7 @@ public class CoreDirectorySession extends BaseSession {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws DirectoryException {
+            boolean fetchReferences, int limit, int offset) {
         StringBuilder sbQuery = new StringBuilder("SELECT * FROM ");
         sbQuery.append(docType);
         // TODO deal with fetch ref
@@ -365,19 +365,18 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public void close() throws DirectoryException {
+    public void close() {
         ((CloseableCoreSession) coreSession).close();
         getDirectory().removeSession(this);
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName) {
         throw new UnsupportedOperationException();
     }
 

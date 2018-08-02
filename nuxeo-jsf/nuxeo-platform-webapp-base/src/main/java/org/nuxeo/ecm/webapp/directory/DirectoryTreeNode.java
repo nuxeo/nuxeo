@@ -351,7 +351,7 @@ public class DirectoryTreeNode {
         return config.getDirectories().length == level;
     }
 
-    public void pathProcessing() throws DirectoryException {
+    public void pathProcessing() {
         if (config.isMultiselect()) {
             // no breadcrumbs management with multiselect
             return;

@@ -151,7 +151,7 @@ public class LDAPServerDescriptor {
     }
 
     @XNodeList(value = "ldapUrl", componentType = LDAPUrlDescriptor.class, type = LDAPUrlDescriptor[].class)
-    public void setLdapUrls(LDAPUrlDescriptor[] ldapUrls) throws DirectoryException {
+    public void setLdapUrls(LDAPUrlDescriptor[] ldapUrls) {
         if (ldapUrls == null) {
             throw new DirectoryException("At least one <ldapUrl/> server declaration is required");
         }
@@ -278,9 +278,8 @@ public class LDAPServerDescriptor {
      *
      * @param dn base DN of the domain
      * @return the FQDN or null is DN is not matching the expected structure
-     * @throws DirectoryException is the DN is invalid
      */
-    protected String convertDNtoFQDN(String dn) throws DirectoryException {
+    protected String convertDNtoFQDN(String dn) {
         try {
             LdapDN ldapDN = new LdapDN(dn);
             Enumeration<String> components = ldapDN.getAll();

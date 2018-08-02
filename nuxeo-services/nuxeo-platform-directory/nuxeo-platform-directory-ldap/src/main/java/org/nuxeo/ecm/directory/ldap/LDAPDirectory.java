@@ -136,7 +136,7 @@ public class LDAPDirectory extends AbstractDirectory {
     /**
      * @return connection parameters to use for all LDAP queries
      */
-    protected Properties computeContextProperties() throws DirectoryException {
+    protected Properties computeContextProperties() {
         LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
         // Initialization of LDAP connection parameters from parameters
         // registered in the LDAP "server" extension point
@@ -221,7 +221,7 @@ public class LDAPDirectory extends AbstractDirectory {
      *
      * @return common search controls to use for all LDAP search queries
      */
-    protected SearchControls computeSearchControls() throws DirectoryException {
+    protected SearchControls computeSearchControls() {
         LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
         SearchControls scts = new SearchControls();
         // respect the scope of the configuration
@@ -282,7 +282,7 @@ public class LDAPDirectory extends AbstractDirectory {
         }
     }
 
-    protected DirContext createContext() throws DirectoryException {
+    protected DirContext createContext() {
         try {
             /*
              * Dynamic server list requires re-computation on each access
@@ -311,7 +311,7 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public Session getSession() {
         initLDAPConfigIfNeeded();
         Session session = new LDAPSession(this);
         addSession(session);

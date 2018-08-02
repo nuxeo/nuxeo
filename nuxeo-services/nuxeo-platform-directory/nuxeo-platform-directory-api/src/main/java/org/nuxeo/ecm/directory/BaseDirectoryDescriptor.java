@@ -366,7 +366,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
     /**
      * @since 8.4
      */
-    public List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException {
+    public List<DirectoryDeleteConstraint> getDeleteConstraints() {
         List<DirectoryDeleteConstraint> res = new ArrayList<>();
         if (deleteConstraints != null) {
             for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {

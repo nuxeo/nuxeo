@@ -162,11 +162,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return dir;
     }
 
-    protected Directory getDirectoryOrFail(String name) throws DirectoryException {
+    protected Directory getDirectoryOrFail(String name) {
         return getDirectoryOrFail(name, null);
     }
 
-    protected Directory getDirectoryOrFail(String id, DocumentModel documentContext) throws DirectoryException {
+    protected Directory getDirectoryOrFail(String id, DocumentModel documentContext) {
         Directory dir = getDirectory(id, documentContext);
         if (dir == null) {
             throw new DirectoryException("No directory registered with name: " + id);
@@ -185,32 +185,32 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     }
 
     @Override
-    public String getDirectorySchema(String directoryName) throws DirectoryException {
+    public String getDirectorySchema(String directoryName) {
         return getDirectoryOrFail(directoryName).getSchema();
     }
 
     @Override
-    public String getDirectoryIdField(String directoryName) throws DirectoryException {
+    public String getDirectoryIdField(String directoryName) {
         return getDirectoryOrFail(directoryName).getIdField();
     }
 
     @Override
-    public String getDirectoryPasswordField(String directoryName) throws DirectoryException {
+    public String getDirectoryPasswordField(String directoryName) {
         return getDirectoryOrFail(directoryName).getPasswordField();
     }
 
     @Override
-    public String getParentDirectoryName(String directoryName) throws DirectoryException {
+    public String getParentDirectoryName(String directoryName) {
         return getDirectoryOrFail(directoryName).getParentDirectory();
     }
 
     @Override
-    public Session open(String directoryName) throws DirectoryException {
+    public Session open(String directoryName) {
         return getDirectoryOrFail(directoryName).getSession();
     }
 
     @Override
-    public Session open(String directoryName, DocumentModel documentContext) throws DirectoryException {
+    public Session open(String directoryName, DocumentModel documentContext) {
         return getDirectoryOrFail(directoryName, documentContext).getSession();
     }
 

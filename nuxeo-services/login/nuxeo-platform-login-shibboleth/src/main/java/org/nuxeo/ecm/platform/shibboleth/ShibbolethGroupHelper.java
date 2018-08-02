@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -72,7 +71,7 @@ public class ShibbolethGroupHelper {
         }
     }
 
-    public static DocumentModel getGroup(String groupName) throws DirectoryException {
+    public static DocumentModel getGroup(String groupName) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             return session.getEntry(groupName);
         }

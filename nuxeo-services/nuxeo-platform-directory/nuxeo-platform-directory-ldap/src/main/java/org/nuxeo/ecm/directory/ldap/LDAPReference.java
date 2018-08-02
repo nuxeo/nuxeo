@@ -127,15 +127,15 @@ public class LDAPReference extends AbstractReference implements Cloneable {
     /**
      * @return true if the reference should resolve statically refereed entries (identified by dn-valued attribute)
      */
-    public boolean isStatic() throws DirectoryException {
+    public boolean isStatic() {
         return getStaticAttributeId() != null;
     }
 
-    public String getStaticAttributeId() throws DirectoryException {
+    public String getStaticAttributeId() {
         return getStaticAttributeId(null);
     }
 
-    public String getStaticAttributeId(DirectoryFieldMapper sourceFM) throws DirectoryException {
+    public String getStaticAttributeId(DirectoryFieldMapper sourceFM) {
         if (staticAttributeId != null) {
             // explicitly provided attributeId
             return staticAttributeId;
@@ -186,7 +186,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public Directory getSourceDirectory() throws DirectoryException {
+    public Directory getSourceDirectory() {
 
         Directory sourceDir = super.getSourceDirectory();
         if (sourceDir instanceof LDAPDirectory) {
@@ -198,7 +198,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public Directory getTargetDirectory() throws DirectoryException {
+    public Directory getTargetDirectory() {
         Directory targetDir = super.getTargetDirectory();
         if (targetDir instanceof LDAPDirectory) {
             return targetDir;
@@ -208,15 +208,15 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         }
     }
 
-    protected LDAPDirectory getTargetLDAPDirectory() throws DirectoryException {
+    protected LDAPDirectory getTargetLDAPDirectory() {
         return (LDAPDirectory) getTargetDirectory();
     }
 
-    protected LDAPDirectory getSourceLDAPDirectory() throws DirectoryException {
+    protected LDAPDirectory getSourceLDAPDirectory() {
         return (LDAPDirectory) getSourceDirectory();
     }
 
-    protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() throws DirectoryException {
+    protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() {
         if (targetDirectoryDescriptor == null) {
             targetDirectoryDescriptor = getTargetLDAPDirectory().getDescriptor();
         }
@@ -229,7 +229,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
     @Override
-    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) {
 
         if (targetIds.isEmpty()) {
             // optim: nothing to do, return silently without further creating
@@ -336,7 +336,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
     @Override
-    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) {
         String attributeId = getStaticAttributeId();
         if (attributeId == null && !sourceIds.isEmpty()) {
             log.warn("trying to edit a non-static reference: ignoring");
@@ -438,7 +438,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     @Override
-    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) {
 
         // container to hold merged references
         Set<String> sourceIds = new TreeSet<>();
@@ -637,7 +637,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
     @Override
     // XXX: broken, use getLdapTargetIds for a proper implementation
     @SuppressWarnings("unchecked")
-    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) {
         String schemaName = getSourceDirectory().getSchema();
         try (Session session = getSourceDirectory().getSession()) {
             try {
@@ -675,7 +675,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      *
      * @return target reference ids
      */
-    public List<String> getLdapTargetIds(Attributes attributes) throws DirectoryException {
+    public List<String> getLdapTargetIds(Attributes attributes) {
 
         Set<String> targetIds = new TreeSet<>();
 
@@ -914,7 +914,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @return The list of the referenced elements.
      */
     private Set<String> getReferencedElements(Attributes attributes, String directoryDn, String linkDn, String filter,
-            int scope) throws DirectoryException, NamingException {
+            int scope) throws NamingException {
 
         Set<String> targetIds = new TreeSet<>();
 
@@ -979,7 +979,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
     @Override
-    public void removeLinksForSource(String sourceId) throws DirectoryException {
+    public void removeLinksForSource(String sourceId) {
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory ldapSourceDirectory = (LDAPDirectory) getSourceDirectory();
         String attributeId = getStaticAttributeId();
@@ -1080,7 +1080,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
     @Override
-    public void removeLinksForTarget(String targetId) throws DirectoryException {
+    public void removeLinksForTarget(String targetId) {
         if (!isStatic()) {
             // nothing to do: dynamic references cannot be updated
             return;
@@ -1206,14 +1206,13 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String, List)
      */
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) {
         removeLinksForTarget(targetId);
         addLinks(sourceIds, targetId);
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         setSourceIdsForTarget(targetId, sourceIds);
     }
 
@@ -1223,24 +1222,23 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String, List)
      */
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) {
         removeLinksForSource(sourceId);
         addLinks(sourceId, targetIds);
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         setTargetIdsForSource(sourceId, targetIds);
     }
 
     @Override
-    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+    public void removeLinksForTarget(String targetId, Session session) {
         removeLinksForTarget(targetId);
     }
 
     @Override
-    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+    public void removeLinksForSource(String sourceId, Session session) {
         removeLinksForSource(sourceId);
     }
 
@@ -1267,13 +1265,13 @@ public class LDAPReference extends AbstractReference implements Cloneable {
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, Session session) {
         // TODO to use for optimization
         addLinks(sourceId, targetIds);
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, Session session) {
         // TODO to use for optimization
         addLinks(sourceIds, targetId);
     }

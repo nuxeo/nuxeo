@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.webengine.ui.tree.directory;
 
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
@@ -44,7 +43,7 @@ public abstract class DirectoryTree extends JSonTree {
         this.dir = dir;
     }
 
-    protected DirectoryTree(String directory) throws DirectoryException {
+    protected DirectoryTree(String directory) {
         this(Framework.getService(DirectoryService.class).getDirectory(directory));
     }
 

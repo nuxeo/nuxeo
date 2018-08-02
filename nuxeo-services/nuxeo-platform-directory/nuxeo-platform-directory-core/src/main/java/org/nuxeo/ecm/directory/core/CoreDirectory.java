@@ -141,7 +141,7 @@ public class CoreDirectory extends AbstractDirectory {
         return rootFolder.getCoreSession().saveDocument(rootFolder);
     }
 
-    public Field getField(String name) throws DirectoryException {
+    public Field getField(String name) {
         Field field = schema.getField(name);
         if (field == null) {
             throw new DirectoryException(
@@ -151,7 +151,7 @@ public class CoreDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public Session getSession() {
         CoreDirectorySession session = new CoreDirectorySession(this);
         addSession(session);
         return session;

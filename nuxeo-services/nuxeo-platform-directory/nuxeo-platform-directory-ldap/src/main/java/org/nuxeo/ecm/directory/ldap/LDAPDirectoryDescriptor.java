@@ -222,7 +222,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     @XNode("searchScope")
-    public void setSearchScope(String searchScope) throws DirectoryException {
+    public void setSearchScope(String searchScope) {
         if (searchScope == null) {
             // restore default search scope
             this.searchScope = null;

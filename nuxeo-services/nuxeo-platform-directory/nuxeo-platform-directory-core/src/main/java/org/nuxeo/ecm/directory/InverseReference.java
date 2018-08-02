@@ -55,7 +55,7 @@ public class InverseReference extends AbstractReference {
         return readOnly;
     }
 
-    protected void checkDualReference() throws DirectoryException {
+    protected void checkDualReference() {
         if (dualReference == null) {
             List<Reference> references = getTargetDirectory().getReferences(dualReferenceName);
             if (references.size() == 0) {
@@ -88,7 +88,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds) {
         if (readOnly) {
             return;
         }
@@ -97,7 +97,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId) {
         if (readOnly) {
             return;
         }
@@ -106,7 +106,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForTarget(String targetId) throws DirectoryException {
+    public void removeLinksForTarget(String targetId) {
         if (readOnly) {
             return;
         }
@@ -115,7 +115,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+    public void removeLinksForTarget(String targetId, Session session) {
         if (readOnly) {
             return;
         }
@@ -124,7 +124,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForSource(String sourceId) throws DirectoryException {
+    public void removeLinksForSource(String sourceId) {
         if (readOnly) {
             return;
         }
@@ -133,7 +133,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+    public void removeLinksForSource(String sourceId, Session session) {
         if (readOnly) {
             return;
         }
@@ -142,19 +142,19 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
+    public List<String> getSourceIdsForTarget(String targetId) {
         checkDualReference();
         return dualReference.getTargetIdsForSource(targetId);
     }
 
     @Override
-    public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
+    public List<String> getTargetIdsForSource(String sourceId) {
         checkDualReference();
         return dualReference.getSourceIdsForTarget(sourceId);
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds) {
         if (readOnly) {
             return;
         }
@@ -163,8 +163,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
-            throws DirectoryException {
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         if (readOnly) {
             return;
         }
@@ -173,7 +172,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds) {
         if (readOnly) {
             return;
         }
@@ -182,8 +181,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
-            throws DirectoryException {
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         if (readOnly) {
             return;
         }
@@ -192,7 +190,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+    public void addLinks(String sourceId, List<String> targetIds, Session session) {
         if (readOnly) {
             return;
         }
@@ -201,7 +199,7 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+    public void addLinks(List<String> sourceIds, String targetId, Session session) {
         if (readOnly) {
             return;
         }

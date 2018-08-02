@@ -26,7 +26,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -88,9 +87,8 @@ public interface DirectoryService {
      *
      * @param directoryName
      * @return the session
-     * @throws DirectoryException in case the session cannot be created
      */
-    Session open(String directoryName) throws DirectoryException;
+    Session open(String directoryName);
 
     /**
      * Opens a session on the directory for the specified context. The context is given by the document. The document
@@ -103,45 +101,40 @@ public interface DirectoryService {
      * @param directoryName
      * @param documentContext
      * @return the session
-     * @throws DirectoryException in case the session cannot be created
      */
-    Session open(String directoryName, DocumentModel documentContext) throws DirectoryException;
+    Session open(String directoryName, DocumentModel documentContext);
 
     /**
      * Gets the schema for a directory.
      *
      * @param id the directory id
      * @return the schema for the directory
-     * @throws DirectoryException if the directory does not exist
      */
-    String getDirectorySchema(String id) throws DirectoryException;
+    String getDirectorySchema(String id);
 
     /**
      * Gets the id field for a directory.
      *
      * @param id the directory id
      * @return the id field for the directory
-     * @throws DirectoryException if the directory does not exist
      */
-    String getDirectoryIdField(String id) throws DirectoryException;
+    String getDirectoryIdField(String id);
 
     /**
      * Gets the password field for a directory.
      *
      * @param id the directory id
      * @return the password field for the directory
-     * @throws DirectoryException if the directory does not exist
      */
-    String getDirectoryPasswordField(String directoryName) throws DirectoryException;
+    String getDirectoryPasswordField(String directoryName);
 
     /**
      * Gets the parent directory id a directory.
      *
      * @param id the directory id
      * @return the parent directory id, which may be {@code null}
-     * @throws DirectoryException if the directory does not exist
      */
-    String getParentDirectoryName(String id) throws DirectoryException;
+    String getParentDirectoryName(String id);
 
     /**
      * INTERNAL registers a directory descriptor.

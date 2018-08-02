@@ -86,12 +86,11 @@ public class DirectoryCache {
         return (entryCacheName != null && entryCacheWithoutReferencesName != null);
     }
 
-    public DocumentModel getEntry(String entryId, EntrySource source) throws DirectoryException {
+    public DocumentModel getEntry(String entryId, EntrySource source) {
         return getEntry(entryId, source, true);
     }
 
-    public DocumentModel getEntry(String entryId, EntrySource source, boolean fetchReferences)
-            throws DirectoryException {
+    public DocumentModel getEntry(String entryId, EntrySource source, boolean fetchReferences) {
         if (!isCacheEnabled()) {
             return source.getEntryFromSource(entryId, fetchReferences);
         } else if (isCacheEnabled() && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {

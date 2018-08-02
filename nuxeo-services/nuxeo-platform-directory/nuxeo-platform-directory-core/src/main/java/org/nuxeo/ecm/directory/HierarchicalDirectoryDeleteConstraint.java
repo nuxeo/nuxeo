@@ -48,7 +48,7 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
     protected String targetDirectoryField;
 
     @Override
-    public void setProperties(Map<String, String> properties) throws DirectoryException {
+    public void setProperties(Map<String, String> properties) {
         String targetDirKey = "targetDirectory";
         String targetDirFieldKey = "targetDirectoryField";
         if (properties == null) {
@@ -66,7 +66,7 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
         targetDirectoryField = properties.get(targetDirFieldKey);
     }
 
-    public boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException {
+    public boolean canDelete(DirectoryService dirService, String entryId) {
         try (Session dirSession = dirService.open(targetDirectory)) {
             // search for given entry id usage in this directory
             Map<String, Serializable> filter = new HashMap<String, Serializable>();

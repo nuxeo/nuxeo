@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -70,13 +69,13 @@ public class TestSessionsAreClosedAutomatically {
     protected @Inject LogCaptureFeature.Result caughtEvents;
 
     @Before
-    public void fetchUserDirectory() throws DirectoryException {
+    public void fetchUserDirectory() {
         userDirectory = Framework.getService(DirectoryService.class).getDirectory("userDirectory");
         Assert.assertNotNull(userDirectory);
     }
 
     @Test
-    public void hasNoWarns() throws DirectoryException, NoLogCaptureFilterException {
+    public void hasNoWarns() throws NoLogCaptureFilterException {
         try (Session session = userDirectory.getSession()) {
             // do nothing
         }
@@ -86,7 +85,7 @@ public class TestSessionsAreClosedAutomatically {
     }
 
     @Test
-    public void hasWarnsOnCommit() throws DirectoryException, NoLogCaptureFilterException {
+    public void hasWarnsOnCommit() throws NoLogCaptureFilterException {
         userDirectory.getSession();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -94,7 +93,7 @@ public class TestSessionsAreClosedAutomatically {
     }
 
     @Test
-    public void hasWarnsOnRollback() throws DirectoryException, NoLogCaptureFilterException {
+    public void hasWarnsOnRollback() throws NoLogCaptureFilterException {
         userDirectory.getSession();
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();

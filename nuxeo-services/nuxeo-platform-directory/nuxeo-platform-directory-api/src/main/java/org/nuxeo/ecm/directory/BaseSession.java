@@ -321,12 +321,12 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModel getEntry(String id) throws DirectoryException {
+    public DocumentModel getEntry(String id) {
         return getEntry(id, true);
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences) {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
@@ -338,7 +338,7 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModelList getEntries() throws DirectoryException {
+    public DocumentModelList getEntries() {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -346,7 +346,7 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         DocumentModelList result = query(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
                 Collections.emptyMap(), true);
@@ -359,7 +359,7 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
         checkPermission(SecurityConstants.WRITE);
         DocumentModel docModel = createEntryWithoutReferences(fieldMap);
 
@@ -392,7 +392,7 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+    public void updateEntry(DocumentModel docModel) {
         checkPermission(SecurityConstants.WRITE);
 
         String id = docModel.getId();
@@ -428,18 +428,18 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
+    public void deleteEntry(DocumentModel docModel) {
         deleteEntry(docModel.getId());
     }
 
     @Override
     @Deprecated
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+    public void deleteEntry(String id, Map<String, String> map) {
         deleteEntry(id);
     }
 
     @Override
-    public void deleteEntry(String id) throws DirectoryException {
+    public void deleteEntry(String id) {
 
         if (!canDeleteMultiTenantEntry(id)) {
             throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
@@ -460,7 +460,7 @@ public abstract class BaseSession implements Session, EntrySource {
         getDirectory().invalidateCaches();
     }
 
-    protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
+    protected boolean canDeleteMultiTenantEntry(String entryId) {
         if (isMultiTenant()) {
             // can only delete entry from the current tenant
             String tenantId = getCurrentTenantId();
@@ -496,35 +496,34 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter) {
         return query(filter, Collections.emptySet());
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) {
         return query(filter, fulltext, new HashMap<>());
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy) {
         return query(filter, fulltext, orderBy, false);
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException {
+            boolean fetchReferences) {
         return query(filter, fulltext, orderBy, fetchReferences, -1, 0);
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
         return getProjection(filter, Collections.emptySet(), columnName);
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws DirectoryException {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName) {
         DocumentModelList docList = query(filter, fulltext);
         List<String> result = new ArrayList<>();
         for (DocumentModel docModel : docList) {
@@ -554,9 +553,9 @@ public abstract class BaseSession implements Session, EntrySource {
     protected abstract DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap);
 
     /** To be implemented for specific update. */
-    protected abstract List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException;
+    protected abstract List<String> updateEntryWithoutReferences(DocumentModel docModel);
 
     /** To be implemented for specific deletion. */
-    protected abstract void deleteEntryWithoutReferences(String id) throws DirectoryException;
+    protected abstract void deleteEntryWithoutReferences(String id);
 
 }
