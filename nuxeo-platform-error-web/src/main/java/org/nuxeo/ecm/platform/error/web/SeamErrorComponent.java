@@ -181,7 +181,7 @@ public class SeamErrorComponent implements Serializable {
         }
     }
 
-    protected void clearDummyUser() throws DirectoryException {
+    protected void clearDummyUser() {
         DirectoryService directories = Framework.getService(DirectoryService.class);
         try (Session userDir = directories.open("userDirectory")) {
             userDir.deleteEntry("dummy");
@@ -192,7 +192,7 @@ public class SeamErrorComponent implements Serializable {
      * @since 5.9.5
      */
     @Factory(scope = ScopeType.EVENT)
-    public boolean isDummyUserExists() throws DirectoryException {
+    public boolean isDummyUserExists() {
         DirectoryService directories = Framework.getService(DirectoryService.class);
         try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
             DocumentModel user = userDir.getEntry("dummy");
