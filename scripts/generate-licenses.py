@@ -163,18 +163,17 @@ def read_deps():
 
 def dump(licenses, versions, descriptions, gas, out):
     lines = []
-    gas_left = gas.copy()
     for ga, license_list in licenses.iteritems():
         group, artifact = ga.split(':')
         version = versions[ga]
         jar = artifact + '-' + version + '.jar'
         info = descriptions.get(ga, ' ')
         if ga in gas:
-            gas_left.remove(ga)
+            gas.remove(ga)
             lines.append('| ' + group + ':' + artifact + ':' + version + ' | ' + jar + ' | ' + info + ' | ' + version + ' | ' + ', '.join(license_list) + ' |')
     for line in sorted(lines, key=str.lower):
         out.write(line + '\n')
-    for ga in gas_left:
+    for ga in gas:
         if ga.startswith('org.nuxeo'):
             continue
         if ga.startswith('nuxeo-studio'):
