@@ -35,18 +35,20 @@ without BRANCH. That's the branch target for the final merge."""]
   ])
 
 node('SLAVE') {
-    def BRANCH = params.BRANCH
+    // Consolidate parameters
+    def BRANCH_TO_TEST = params.BRANCH
+    def BRANCH_TO_TARGET = params.PARENT_BRANCH
+
     if (env.BRANCH_NAME) {
         println "Using BRANCH_NAME parameter: $env.BRANCH_NAME"
-        BRANCH = env.BRANCH_NAME
+        BRANCH_TO_TEST = env.BRANCH_NAME
     }
-    def PARENT_BRANCH = params.PARENT_BRANCH
     if (env.CHANGE_TARGET) {
         println "Using CHANGE_TARGET parameter: $env.CHANGE_TARGET"
-        PARENT_BRANCH = env.CHANGE_TARGET
+        BRANCH_TO_TARGET = env.CHANGE_TARGET
     }
-    println "Testing branch '$BRANCH' with parent branch '$PARENT_BRANCH'"
-    currentBuild.setDescription("$BRANCH -> $PARENT_BRANCH")
+    println "Testing branch '$BRANCH_TO_TEST' with parent branch '$BRANCH_TO_TARGET'"
+    currentBuild.setDescription("$BRANCH_TO_TEST -> $BRANCH_TO_TARGET")
     tool type: 'ant', name: 'ant-1.9'
     tool type: 'hudson.model.JDK', name: 'java-8-oracle'
     tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
@@ -55,13 +57,15 @@ node('SLAVE') {
             try {
                 stage('clone') {
                     // Check remote branch existence and effective checkouted branch
-                    sh "git ls-remote --exit-code git://github.com/nuxeo/nuxeo.git $BRANCH"
-                    git branch: "$BRANCH", url: 'git://github.com/nuxeo/nuxeo.git'
+                    sh "git ls-remote --exit-code git://github.com/nuxeo/nuxeo.git $BRANCH_TO_TEST"
+                    git branch: BRANCH_TO_TEST, url: 'git://github.com/nuxeo/nuxeo.git'
                     sh """#!/bin/bash -xe
-                        ./clone.py $BRANCH -f $PARENT_BRANCH
+                        ./clone.py $BRANCH_TO_TEST -f $BRANCH_TO_TARGET
                         source scripts/gitfunctions.sh
-                        shr -a git show -s --pretty=format:'%h%d'
-                        test `git rev-parse HEAD` = `git rev-parse $BRANCH`
+                        set +x
+                        shr -aq git show -s --pretty=format:'%h%d'
+                        set -x
+                        test `git rev-parse HEAD` = `git rev-parse $BRANCH_TO_TEST`
                     """
                     sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 }
@@ -70,13 +74,13 @@ node('SLAVE') {
                         try {
                             withEnv(['MAVEN_OPTS=-Xms4g -Xmx8g -XX:-UseGCOverheadLimit -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$WORKSPACE/target/gcOoO.hprof']) {
                                 withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
-                                    if (BRANCH != PARENT_BRANCH) {
-                                        TARGET_OPTION="-Dsonar.branch.target=${PARENT_BRANCH}"
+                                    if (BRANCH_TO_TEST != BRANCH_TO_TARGET) {
+                                        TARGET_OPTION="-Dsonar.branch.target=${BRANCH_TO_TARGET}"
                                     } else {
                                         TARGET_OPTION=""
                                     }
                                     sh """#!/bin/bash -ex
-                                        mvn -B -V clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH $TARGET_OPTION \
+                                        mvn -B -V clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD -Paddons,distrib,qa,sonar -Dsonar.branch.name=$BRANCH_TO_TEST $TARGET_OPTION \
                                           -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
                                     """
                                 }
