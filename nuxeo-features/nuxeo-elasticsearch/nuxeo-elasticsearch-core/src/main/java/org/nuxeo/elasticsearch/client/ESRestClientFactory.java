@@ -89,7 +89,7 @@ public class ESRestClientFactory implements ESClientFactory {
         }
         RestClientBuilder lowLevelRestClientBuilder = RestClient.builder(
                 new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort())));
-        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClientBuilder);
+        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClientBuilder); // NOSONAR (factory)
         // checkConnection(client);
         return new ESRestClient(client.getLowLevelClient(), client);
     }
@@ -115,7 +115,7 @@ public class ESRestClientFactory implements ESClientFactory {
                 || StringUtils.isNotBlank(config.getOption(KEYSTORE_PATH_OPT))) {
             addClientCallback(config, builder);
         }
-        RestHighLevelClient client = new RestHighLevelClient(builder);
+        RestHighLevelClient client = new RestHighLevelClient(builder);  // NOSONAR (factory)
         // checkConnection(client);
         return new ESRestClient(client.getLowLevelClient(), client);
     }
