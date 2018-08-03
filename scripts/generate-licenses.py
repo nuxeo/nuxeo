@@ -47,8 +47,10 @@ import re
 UNKNOWN = 'licenses-unknown.txt'
 DESCRIPTIONS = 'licenses-descriptions.txt'
 DEPS_ADDED = 'dependencies-added.txt'
+WHITELIST = 'licenses-whitelist.txt'
 TP = '../target/generated-sources/license/THIRD-PARTY.txt'
-TP_MD = '../target/generated-sources/license/THIRD-PARTY.md'
+TP_MD_WHITE = '../target/generated-sources/license/THIRD-PARTY.md'
+TP_MD_BLACK = '../target/generated-sources/license/THIRD-PARTY-BLACK.md'
 DEPTREE = '../target/generated-sources/dependency-tree.log'
 
 ARTIFACT_GROUP = {}
@@ -87,7 +89,6 @@ def parse_licenses(filename):
             licenses[ga] = license_list
             versions[ga] = version
             ARTIFACT_GROUP[artifact] = group
-            # print('XXX', license_list, name, group, artifact, version)
     return licenses, versions
 
 def fix_unknown(licenses, add_licenses, versions, add_versions):
@@ -101,6 +102,16 @@ def fix_unknown(licenses, add_licenses, versions, add_versions):
         if ga not in licenses:
             licenses[ga] = add_licenses[ga]
             versions[ga] = add_versions[ga]
+
+def read_whitelist():
+     whitelist = set()
+     with open(WHITELIST) as f:
+         for line in f:
+            line = line.strip('\n|') 
+            if line.startswith('#'):
+                continue
+            whitelist.add(line)
+     return whitelist
 
 def read_descriptions():
     descriptions = {}
@@ -161,25 +172,38 @@ def read_deps():
             # print('XXX dep', ga)
     return gas
 
-def dump(licenses, versions, descriptions, gas, out):
-    lines = []
-    for ga, license_list in licenses.iteritems():
-        group, artifact = ga.split(':')
-        version = versions[ga]
-        jar = artifact + '-' + version + '.jar'
-        info = descriptions.get(ga, ' ')
+def dump(licenses, versions, descriptions, gas, whitelist):
+    whites = []
+    blacks = []
+
+    for ga, galist in licenses.iteritems():
         if ga in gas:
             gas.remove(ga)
-            lines.append('| ' + group + ':' + artifact + ':' + version + ' | ' + jar + ' | ' + info + ' | ' + version + ' | ' + ', '.join(license_list) + ' |')
-    for line in sorted(lines, key=str.lower):
-        out.write(line + '\n')
+            out = blacks
+            if (set(galist).intersection(whitelist)):
+                out = whites
+            out.append(format_line(ga, licenses, versions, descriptions))
+
     for ga in gas:
         if ga.startswith('org.nuxeo'):
             continue
         if ga.startswith('nuxeo-studio'):
             continue
-        print('XXX dependency with no license', ga)
+        blacks.append(format_line(ga, licenses, versions, descriptions))
 
+    with open(TP_MD_WHITE, 'w') as out:
+        for line in sorted(whites, key=str.lower):
+            out.write(line + '\n')
+    with open(TP_MD_BLACK, 'w') as out:
+        for line in sorted(blacks, key=str.lower):
+            out.write(line + '\n')
+
+def format_line(ga, licences, versions, descriptions):
+    group, artifact = ga.split(':')
+    galist = licences[ga]
+    version = versions[ga]
+    info = descriptions.get(ga, ' ')
+    return '| ' + group + ':' + artifact + ':' + version + ' | ' + artifact + '-' + version + '.jar' + ' | ' + info + ' | ' + version + ' | ' + ', '.join(galist) + ' |'
 
 def main():
     chdir_scripts()
@@ -187,11 +211,11 @@ def main():
     add_licenses, add_versions = parse_licenses(UNKNOWN)
     fix_unknown(licenses, add_licenses, versions, add_versions)
     descriptions = read_descriptions()
+    whitelist = read_whitelist()
     deps_added = read_deps_added()
     gas = read_deps()
     gas.update(deps_added)
-    with open(TP_MD, 'w') as out:
-        dump(licenses, versions, descriptions, gas, out)
+    dump(licenses, versions, descriptions, gas, whitelist)
 
 if __name__ == '__main__':
     main()
