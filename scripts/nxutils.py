@@ -153,13 +153,14 @@ class Repository(object):
             modules = sorted(set(modules))
         return modules
 
-    def git_pull(self, module, version, fallback_branch=None):
-        """Git clone or fetch, then update.
+    def git_pull(self, module, version, fallback_branch=None, rebase=False):
+        """Git clone or fetch, then update and rebase.
 
         'module': the Git module to run on.
         'version': the version to checkout.
         'fallback_branch': the branch to fallback on when 'version' is not
-        found locally or remotely."""
+        found locally or remotely.
+        'rebase': rebase onto fallback_branch"""
         repo_url = self.url_pattern.replace("module", module)
         cwd = os.getcwd()
         log("[%s]" % module)
@@ -169,7 +170,7 @@ class Repository(object):
         else:
             system_with_retries("git clone %s --origin %s" % (repo_url, self.alias))
             os.chdir(module)
-        self.git_update(version, fallback_branch)
+        self.git_update(version, fallback_branch, rebase)
         os.chdir(cwd)
 
     def system_recurse(self, command, with_optionals=False):
@@ -259,12 +260,13 @@ class Repository(object):
         system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         os.chdir(cwd)
 
-    def git_update(self, version, fallback_branch=None):
+    def git_update(self, version, fallback_branch=None, rebase=False):
         """Git update using checkout, stash (if needed) and rebase.
 
         'version': the version to checkout.
         'fallback_branch': the branch to fallback on when 'version' is not
-        found locally or remotely."""
+        found locally or remotely.
+        'rebase': rebase onto fallback branch"""
         is_tag = version in check_output("git tag --list %s" % version).split()
         is_local_branch = version in check_output("git branch --list %s" % version).split()
         is_remote_branch = "%s/%s" % (self.alias, version) in check_output(
@@ -280,8 +282,11 @@ class Repository(object):
         elif fallback_branch:
             log("Branch %s not found, fallback on %s" % (version, fallback_branch))
             self.git_update(fallback_branch)
+            return
         else:
             log("Branch %s not found" % version)
+        if fallback_branch != None and rebase:
+            system("git rebase -q --autostash %s/%s" % (self.alias, fallback_branch))
         log("")
 
     def get_mp_config(self, marketplace_conf, user_defaults = {}):
@@ -333,11 +338,12 @@ class Repository(object):
             self.git_pull(marketplace, mp_config.get(marketplace, "branch"), fallback_branch=fallback_branch)
         return mp_config
 
-    def clone(self, version=None, fallback_branch=None, with_optionals=False,
+    def clone(self, version=None, fallback_branch=None, rebase=False, with_optionals=False,
               marketplace_conf=None):
         """Clone or update whole Nuxeo repository.
 
         'version': the version to checkout; defaults to current version.
+        'rebase': rebase onto the fallback; defaults to false
         'fallback_branch': the branch to fallback on when 'version' is not
         found locally or remotely.
         If 'with_optionals', also clone/update "optional" addons.
@@ -349,16 +355,16 @@ class Repository(object):
         system_with_retries("git fetch %s" % (self.alias))
         if version is None:
             version = self.get_current_version()
-        self.git_update(version, fallback_branch)
+        self.git_update(version, fallback_branch, rebase)
         if self.is_nuxeoecm:
-            self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch), with_optionals)
+            self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch, rebase), with_optionals)
             self.clone_mp(marketplace_conf, fallback_branch)
         os.chdir(cwd)
 
-    def clone_module(self, module, version, fallback_branch):
+    def clone_module(self, module, version, fallback_branch, rebase):
         # Ignore modules which are not Git sub-repositories
         if not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git")):
-            self.git_pull(module, version, fallback_branch)
+            self.git_pull(module, version, fallback_branch, rebase)
 
     @staticmethod
     def get_current_version():
