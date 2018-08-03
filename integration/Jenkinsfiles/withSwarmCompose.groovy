@@ -4,16 +4,7 @@
 def call(String name, String file, Closure body) {
     def config = JenkinsLocationConfiguration.get()
     def master = config.getUrl()
-    def compose = {
-        dir("${WORKSPACE}@tmp") {
-            writeFile(file:'docker-compose-swarm.yml', text:libraryResource('docker-compose-swarm.yml'))
-            dir('jenkins-slave-swarm') {
-                writeFile(file:'Dockerfile', text:libraryResource('jenkins-slave-swarm/Dockerfile'))
-                writeFile(file:'myinit-setup-workspace.sh', text:libraryResource('jenkins-slave-swarm/myinit-setup-workspace.sh'))
-            }
-        }
-        return "docker-compose -f $file -f ${WORKSPACE}@tmp/docker-compose-swarm.yml"
-    }.call()
+    def compose = "docker-compose -f $file -f ${WORKSPACE}/nuxeo/integration/Jenkinsfiles/docker-compose-swarm.yml"
 
     withEnv(["COMPOSE_PROJECT_NAME=$name", "JENKINS_MASTER=$master"]) {
         withCredentials([string(credentialsId: 'jenkins-api-token', variable: 'JENKINS_API_TOKEN')]) {
