@@ -32,7 +32,7 @@ temporary credentials from the instance role (if any).
 
 - nuxeo.s3storage.cachesize : size of the local cache (default is 100MB).
 - nuxeo.s3storage.bucket_prefix : bucket prefix
-- nuxeo.s3storage.pathstyleaccess.enabled : configures the client to use path-style access for all requests (default `false`)
+- nuxeo.s3storage.pathstyleaccess : if `true`, configures the client to use path-style access for all requests (default is `false`)
 
 # Crypto parameters
 

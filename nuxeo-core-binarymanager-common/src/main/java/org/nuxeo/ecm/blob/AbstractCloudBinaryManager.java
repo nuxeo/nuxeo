@@ -214,6 +214,15 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         return value;
     }
 
+    /**
+     * Gets a boolean property.
+     *
+     * @since 10.3
+     */
+    protected boolean getBooleanProperty(String key) {
+        return Boolean.parseBoolean(getProperty(key));
+    }
+
     public String getSystemPropertyName(String propertyName) {
         return getSystemPropertyPrefix() + "." + propertyName;
     }
