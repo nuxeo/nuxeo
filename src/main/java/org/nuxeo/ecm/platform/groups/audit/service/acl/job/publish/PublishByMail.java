@@ -91,10 +91,9 @@ public class PublishByMail implements IResultPublisher {
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
         AutomationService automation = Framework.getService(AutomationService.class);
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(docToSend);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(docToSend);
 
-        try {
             OperationChain chain = new OperationChain(PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
             OperationParameters params = chain.add(SendMail.ID);
             if (params == null) {
