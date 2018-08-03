@@ -1,0 +1,24 @@
+AL 1.1
+AL 2.0
+BSD
+BSD 2
+BSD 3
+BSD 4
+CC0
+CC BY 2.5
+CC BY-SA 3.0
+CDDL 1.0
+CDDL 1.1
+Eclipse Public License
+EPL 1.0
+GPL 2
+GPL 2 CPE
+HPND
+LGPL 2.1
+LGPL 3
+MIT
+MPL 1.1
+MPL 2.0
+PD
+Unicode
+W3C
