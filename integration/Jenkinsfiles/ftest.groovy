@@ -17,6 +17,21 @@
  *     jcarsique
  */
 
+properties([
+    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']],
+    disableConcurrentBuilds(),
+    [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/nuxeo/nuxeo/'],
+    [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
+    [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
+        [$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'BRANCH'],
+        [$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'PARENT_BRANCH']],
+        [$class: 'BooleanParameterDefinition', defaultValue: 'true', description: '', name: 'REBASE'],
+        [$class: 'BooleanParameterDefinition', defaultValue: 'true', description: '', name: 'CLEAN'],
+        [$class: 'StringParameterDefinition', defaultValue: 'SLAVE', description: '', name: 'NODELABEL'],
+        [$class: 'StringParameterDefinition', defaultValue: 'nuxeo-server-tomcat-*.zip', description: '', name: 'ZIPFILTER']
+    ]
+  ])
+
 def nodelabel = getBinding().hasVariable("NODELABEL")?NODELABEL:'SLAVE'
 def zipfilter = getBinding().hasVariable("ZIPFILTER")?ZIPFILTER:'nuxeo-server-tomcat-*.zip'
 
@@ -29,6 +44,9 @@ node(nodelabel) {
 
     timestamps {
         def sha = stage('clone') {
+            if (params.CLEAN) {
+                deleteDir()
+            }
             checkout(
                 [$class: 'GitSCM',
                  branches: [[name: '*/${BRANCH}']],
@@ -38,7 +56,6 @@ node(nodelabel) {
                         [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''nuxeo-distribution/.*
 integration/.*'''],
                         [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'pom.xml'], [path: 'nuxeo-distribution'], [path: 'integration']]],
-                        [$class: 'WipeWorkspace'],
                         [$class: 'CleanBeforeCheckout'],
                         [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
                     ],

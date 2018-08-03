@@ -22,14 +22,10 @@ services:
   db:
     image: mongo:3.4
 
-  tests:
-    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave
-    volumes:
-      - $WORKSPACE:$WORKSPACE
-      - /var/run/docker.sock:/var/run/docker.sock:rw
+  swarm:
     links:
       - db
     environment:
       - JAVA_OPTS=-Xms512m -Xmx3g
       - NX_MONGODB_SERVER=db:27017
-    command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"
+

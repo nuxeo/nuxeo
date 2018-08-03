@@ -16,13 +16,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  tests:
+  swarm:
     build:
        context: jenkins-slave-kafka
        dockerfile: Dockerfile
-    volumes:
-      - $WORKSPACE:$WORKSPACE
-      - /var/run/docker.sock:/var/run/docker.sock:rw
     links:
       - kafka
       - zookeeper
@@ -30,4 +27,4 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"
+
