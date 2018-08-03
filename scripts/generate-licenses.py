@@ -38,6 +38,9 @@ It also uses a list of detailed project name + home page for some projects, in f
 It also uses a list of group + artifact for projects not found from maven dependencies:
 - scripts/dependencies-added.txt
 
+Note: only jar dependencies not in test scope are taken in account, that explains the huge diff in cardinalities 
+from the maven output
+
 Usage:
 $ ./scripts/generate-licenses.py
 """
