@@ -89,9 +89,10 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
                     Collections.singleton(LogPartition.of(logName, 0)));
             fetcher = new RandomLogBlobInfoFetcher(tailer);
         }
-        return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher).withBlob(blobSizeKb, false)
-                                                                                        .countFolderAsDocument(
-                                                                                                countFolderAsDocument);
+        return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher) // NOSONAR (factory)
+                                                                                         .withBlob(blobSizeKb, false)
+                                                                                         .countFolderAsDocument(
+                                                                                                 countFolderAsDocument);
     }
 
     protected String getGroupName(int producerId) {
