@@ -65,9 +65,9 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Builder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -152,6 +152,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String ENDPOINT_PROPERTY = "endpoint";
 
+    /**
+     * @since 10.3
+     */
+    public static final String PATHSTYLEACCESS_PROPERTY = "pathstyleaccess";
+
     public static final String DIRECTDOWNLOAD_PROPERTY_COMPAT = "downloadfroms3";
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
@@ -232,6 +237,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String privkeyAlias = getProperty(PRIVKEY_ALIAS_PROPERTY);
         String privkeyPass = getProperty(PRIVKEY_PASS_PROPERTY);
         String endpoint = getProperty(ENDPOINT_PROPERTY);
+        boolean pathStyleAccessEnabled = getBooleanProperty(PATHSTYLEACCESS_PROPERTY);
         String sseprop = getProperty(SERVERSIDE_ENCRYPTION_PROPERTY);
         if (isNotBlank(sseprop)) {
             useServerSideEncryption = Boolean.parseBoolean(sseprop);
@@ -329,8 +335,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         isEncrypted = encryptionMaterials != null;
 
-        @SuppressWarnings("rawtypes")
-        AwsClientBuilder s3Builder;
+        AmazonS3Builder<?, ?> s3Builder;
         // Try to create bucket if it doesn't exist
         if (!isEncrypted) {
             s3Builder = AmazonS3ClientBuilder.standard()
@@ -344,6 +349,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                                                        .withCredentials(awsCredentialsProvider)
                                                        .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(
                                                                encryptionMaterials));
+        }
+        if (pathStyleAccessEnabled) {
+            log.debug("Path-style access enabled");
+            s3Builder.enablePathStyleAccess();
         }
         if (isNotBlank(endpoint)) {
             s3Builder = s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
