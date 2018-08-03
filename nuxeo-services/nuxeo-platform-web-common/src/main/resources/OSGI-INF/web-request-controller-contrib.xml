@@ -39,7 +39,7 @@
       <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
     </filterConfig>
 
-    <filterConfig name="renditionOrBlob" cached="true" cacheTime="0">
+    <filterConfig name="renditionOrBlob" cached="true" cacheTime="0" transactional="true">
       <pattern>${org.nuxeo.ecm.contextPath}/.*/@(rendition|blob).*</pattern>
     </filterConfig>
 
