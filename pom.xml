@@ -133,10 +133,10 @@
     <nxseam.version>2.3.1.Final.NX03</nxseam.version>
     <nxseam.remoting.version>2.3.1.Final.NX02</nxseam.remoting.version>
 
-    <servlet-api.version>3.1.0</servlet-api.version>
+    <servlet-api.version>4.0.1</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
     <jaxb.version>2.2.11</jaxb.version>
-    <tomcat.version>8.5.23</tomcat.version>
+    <tomcat.version>9.0.10</tomcat.version>
     <lucene.version>7.3.1</lucene.version>
     <elasticsearch.version>6.3.0</elasticsearch.version>
     <apacheds.version>1.5.1</apacheds.version>
