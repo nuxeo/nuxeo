@@ -18,6 +18,8 @@
  */
 package org.nuxeo.template.processors.xslt;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements Template
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer;
         try {
+            tFactory.setFeature(FEATURE_SECURE_PROCESSING, true);
             transformer = tFactory.newTransformer(new StreamSource(sourceTemplateBlob.getStream()));
         } catch (TransformerConfigurationException | IOException e) {
             throw new NuxeoException(e);
