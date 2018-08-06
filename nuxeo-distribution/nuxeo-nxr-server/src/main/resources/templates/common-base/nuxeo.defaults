@@ -6,6 +6,7 @@ nuxeo.server.sdkInstallReloadTimer=false
 nuxeo.server.http.port=8080
 nuxeo.server.http.maxThreads=20
 nuxeo.server.http.acceptCount=1000
+nuxeo.server.http.connectionUploadTimeout=60000
 nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=0
 nuxeo.server.tomcat_admin.host=localhost
