@@ -21,6 +21,8 @@
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -358,7 +360,9 @@ public class PackWar {
                 Document doc = parser.parse(in);
                 doc.setStrictErrorChecking(false);
                 process(doc);
-                Transformer trans = TransformerFactory.newInstance().newTransformer();
+                TransformerFactory factory = TransformerFactory.newInstance();
+                factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+                Transformer trans = factory.newTransformer();
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
                 trans.setOutputProperty(OutputKeys.INDENT, "yes");
                 trans.transform(new DOMSource(doc), new StreamResult(out));
@@ -463,7 +467,9 @@ public class PackWar {
                     }
                     n = next;
                 }
-                Transformer trans = TransformerFactory.newInstance().newTransformer();
+                TransformerFactory factory = TransformerFactory.newInstance();
+                factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+                Transformer trans = factory.newTransformer();
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                 trans.setOutputProperty(OutputKeys.INDENT, "no");
                 trans.transform(new DOMSource(resourceElement), // only resource
