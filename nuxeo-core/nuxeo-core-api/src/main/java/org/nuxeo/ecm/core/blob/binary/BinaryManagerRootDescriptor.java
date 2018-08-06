@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.blob.binary;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -84,7 +86,9 @@ public class BinaryManagerRootDescriptor {
         root.appendChild(doc.createElement(DEPTH)).appendChild(doc.createTextNode(String.valueOf(depth)));
 
         try {
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            Transformer trans = factory.newTransformer();
             trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
             // don't use StreamResult(out) as it fails on paths with spaces
