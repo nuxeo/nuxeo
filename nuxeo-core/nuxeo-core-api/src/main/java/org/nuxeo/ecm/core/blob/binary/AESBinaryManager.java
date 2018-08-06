@@ -35,6 +35,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
@@ -43,6 +44,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -103,7 +105,10 @@ public class AESBinaryManager extends LocalBinaryManager {
 
     protected static final String AES = "AES";
 
+    // insecure, see https://find-sec-bugs.github.io/bugs.htm#PADDING_ORACLE
     protected static final String AES_CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding";
+
+    protected static final String AES_GCM_NOPADDING = "AES/GCM/NoPadding";
 
     protected static final String PBKDF2_WITH_HMAC_SHA1 = "PBKDF2WithHmacSHA1";
 
@@ -123,6 +128,14 @@ public class AESBinaryManager extends LocalBinaryManager {
     protected static final String PARAM_KEY_ALIAS = "keyAlias";
 
     protected static final String PARAM_KEY_PASSWORD = "keyPassword";
+
+    /**
+     * If {@code true}, use the insecure AES/CBC/PKCS5Padding for encryption. The default is {@code false}, to use
+     * AES/GCM/NoPadding.
+     *
+     * @since 10.3
+     */
+    protected static final String PARAM_KEY_USE_INSECURE_CIPHER = "useInsecureCipher";
 
     // for sanity check during reads
     private static final int MAX_SALT_LEN = 1024;
@@ -149,6 +162,8 @@ public class AESBinaryManager extends LocalBinaryManager {
     protected String keyAlias;
 
     protected String keyPassword;
+
+    protected boolean useInsecureCipher;
 
     public AESBinaryManager() {
         setUnlimitedJCEPolicy();
@@ -214,6 +229,9 @@ public class AESBinaryManager extends LocalBinaryManager {
                 break;
             case PARAM_KEY_PASSWORD:
                 keyPassword = value;
+                break;
+            case PARAM_KEY_USE_INSECURE_CIPHER:
+                useInsecureCipher = Boolean.parseBoolean(value);
                 break;
             default:
                 throw new NuxeoException("Unrecognized option: " + option);
@@ -425,7 +443,7 @@ public class AESBinaryManager extends LocalBinaryManager {
             }
 
             // cipher
-            Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
+            Cipher cipher = getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, secret);
 
             // write IV
@@ -498,9 +516,8 @@ public class AESBinaryManager extends LocalBinaryManager {
             data.read(iv, 0, ivLen);
 
             // cipher
-            Cipher cipher;
-            cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
-            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+            Cipher cipher = getCipher();
+            cipher.init(Cipher.DECRYPT_MODE, secret, getParameterSpec(iv));
 
             // read the encrypted data
             try (InputStream cipherIn = new CipherInputStream(in, cipher)) {
@@ -513,6 +530,22 @@ public class AESBinaryManager extends LocalBinaryManager {
             }
         } catch (GeneralSecurityException e) {
             throw new NuxeoException(e);
+        }
+    }
+
+    protected Cipher getCipher() throws GeneralSecurityException {
+        if (useInsecureCipher) {
+            return Cipher.getInstance(AES_CBC_PKCS5_PADDING); // NOSONAR
+        } else {
+            return Cipher.getInstance(AES_GCM_NOPADDING);
+        }
+    }
+
+    protected AlgorithmParameterSpec getParameterSpec(byte[] iv) {
+        if (useInsecureCipher) {
+            return new IvParameterSpec(iv);
+        } else {
+            return new GCMParameterSpec(128, iv);
         }
     }
 

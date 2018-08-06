@@ -108,7 +108,8 @@ public class TestAESBinaryManager {
             assertFalse(CONTENT.equals(new String(out.toByteArray(), UTF8)));
         } catch (NuxeoException e) {
             String message = e.getMessage();
-            assertTrue(message, message.contains("Given final block not properly padded"));
+            assertTrue(message,
+                    message.contains("Given final block not properly padded") || message.contains("Tag mismatch"));
         }
 
         binaryManager.close();
