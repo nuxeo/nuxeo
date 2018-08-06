@@ -35,6 +35,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.Contexts;
@@ -97,7 +98,7 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
             String localUrl = BaseURL.getServerURL(httpRequest, true);
             String baseUrl = BaseURL.getServerURL(httpRequest, false);
             if (localUrl != null && !localUrl.equals(baseUrl)) {
-                url = url.replaceFirst(localUrl, baseUrl);
+                url = StringUtils.replaceOnce(url, localUrl, baseUrl);
             }
             if (Contexts.isEventContextActive()) {
                 // strip any jsession id before redirect
