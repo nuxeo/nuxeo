@@ -54,6 +54,8 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+
 /**
  * @since 8.2
  */
@@ -68,6 +70,9 @@ public class PreviewAdapter extends DefaultAdapter {
             @Context HttpServletResponse response) {
 
         DocumentBlobHolder bh = getBlobHolderToPreview();
+        if (bh == null) {
+            return Response.status(NOT_FOUND).build();
+        }
 
         // if it's a managed blob try to use the embed uri for preview
         BlobManager blobManager = Framework.getService(BlobManager.class);
@@ -104,6 +109,9 @@ public class PreviewAdapter extends DefaultAdapter {
             @Context HttpServletResponse response) {
 
         DocumentBlobHolder bh = getBlobHolderToPreview();
+        if (bh == null) {
+            return Response.status(NOT_FOUND).build();
+        }
 
         List<Blob> previewBlobs = getPreviewBlobs(bh, postProcessing);
         if (previewBlobs == null || previewBlobs.isEmpty()) {
