@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.diff.content.adapter;
 
+import static javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -95,7 +97,9 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             List<Blob> blobResults = new ArrayList<>();
             StringWriter sw = new StringWriter();
 
-            SAXTransformerFactory stf = (SAXTransformerFactory) TransformerFactory.newInstance();
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setFeature(FEATURE_SECURE_PROCESSING, true);
+            SAXTransformerFactory stf = (SAXTransformerFactory) factory;
             TransformerHandler transformHandler = stf.newTransformerHandler();
             transformHandler.setResult(new StreamResult(sw));
 
