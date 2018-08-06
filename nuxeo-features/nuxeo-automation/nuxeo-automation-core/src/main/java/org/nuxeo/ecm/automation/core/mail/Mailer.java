@@ -130,6 +130,7 @@ public class Mailer {
                 port = "465";
             }
             config.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            config.put("mail.smtp.ssl.checkserveridentity", "true");
             config.put("mail.smtp.socketFactory.fallback", "false");
             config.put("mail.smtp.socketFactory.port", port);
 
