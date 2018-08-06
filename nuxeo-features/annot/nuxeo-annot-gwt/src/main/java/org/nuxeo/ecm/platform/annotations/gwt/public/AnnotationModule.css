@@ -84,7 +84,7 @@ font-family:Verdana,Arial,sans-serif;
 font-size:11px;
 }
 
-.gwt-TextArea gwt-TextArea-readonly {
+.gwt-TextArea .gwt-TextArea-readonly {
 padding:5px 0 5px 5px !important;
 margin:2px 0px 5px;
 background-color: #f4f9ff;

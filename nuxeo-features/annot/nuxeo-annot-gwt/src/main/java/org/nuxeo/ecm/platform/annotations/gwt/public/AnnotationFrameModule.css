@@ -63,7 +63,7 @@ margin:10px 0px;
 padding:5px;
 }
 
-.gwt-TextArea gwt-TextArea-readonly {
+.gwt-TextArea .gwt-TextArea-readonly {
 margin:5px 0px;
 padding:5px 0 5px 5px;
 background-color:#f4f9ff;
