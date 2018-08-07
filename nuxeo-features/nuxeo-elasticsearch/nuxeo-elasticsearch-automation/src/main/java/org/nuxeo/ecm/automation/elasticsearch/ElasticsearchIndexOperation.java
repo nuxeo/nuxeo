@@ -34,6 +34,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Run Elasticsearch indexing operation
@@ -85,7 +86,16 @@ public class ElasticsearchIndexOperation {
         // 1. delete existing index
         IndexingCommand cmd = new IndexingCommand(doc, IndexingCommand.Type.DELETE, false, true);
         esi.runIndexingWorker(Arrays.asList(cmd));
-        // 2. index recursive from path
+        // 2. wait for the deletion to be completed
+        try {
+            esa.prepareWaitForIndexing().get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException("Interrupted");
+        } catch (ExecutionException e) {
+            throw new NuxeoException(e);
+        }
+        // 3. index recursive from path
         cmd = new IndexingCommand(doc, IndexingCommand.Type.INSERT, false, true);
         esi.runIndexingWorker(Arrays.asList(cmd));
     }
