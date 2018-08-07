@@ -19,16 +19,19 @@ package org.nuxeo.ecm.platform.preview.tests.helper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Tests url generation/resolution via the static helper
@@ -36,15 +39,20 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @author tiry
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
 public class TestHelper {
+
+    @Inject
+    protected CoreSession session;
 
     private static final String uuid = "f53fc32e-21b3-4640-9917-05e873aa1e53";
 
     private static final String targetURL1 = "site/api/v1/repo/default/id/f53fc32e-21b3-4640-9917-05e873aa1e53/@preview/";
 
     private static final String targetURL2 = "site/api/v1/repo/default/id/f53fc32e-21b3-4640-9917-05e873aa1e53/@blob/file:content/@preview/";
+
+    private static final String targetURL3 = "site/api/v1/repo/test/id/%s/@blob/file:content/@preview/?changeToken=0-0";
 
     @Test
     public void testPreviewURLDefault() {
@@ -64,6 +72,20 @@ public class TestHelper {
         String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
         assertNotNull(previewURL);
         assertEquals(targetURL2, previewURL);
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testPreviewURLWithChangeToken() {
+        DocumentModel doc = session.createDocumentModel("/", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
+        assertNotNull(previewURL);
+        assertEquals(String.format(targetURL3, doc.getId()), previewURL);
     }
 
 }
