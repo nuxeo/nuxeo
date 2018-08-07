@@ -118,6 +118,22 @@ public class TestElasticsearchAutomation {
     }
 
     @Test
+    public void testIndexingFromPath() throws Exception {
+        // first index all
+        OperationContext ctx = new OperationContext(coreSession);
+        automationService.run(ctx, INDEX_CHAIN);
+        waitForIndexing();
+
+        // then reindex from path, so we have a 2 commands: delete + insert
+        ctx.setInput(rootRef);
+        automationService.run(ctx, INDEX_CHAIN);
+        waitForIndexing();
+
+        assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
+    }
+
+
+    @Test
     public void testIndexingFromNxql() throws Exception {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput("SELECT ecm:uuid FROM Document WHERE ecm:primaryType = 'File'");
