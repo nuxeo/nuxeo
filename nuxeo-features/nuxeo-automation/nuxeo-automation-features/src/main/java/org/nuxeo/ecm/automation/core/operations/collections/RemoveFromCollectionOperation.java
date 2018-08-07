@@ -16,7 +16,7 @@
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -26,17 +26,17 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Class for the operation to create a Collection.
+ * Class for the operation to remove a list of documents in a Collection.
  *
  * @since 5.9.4
  */
-@Operation(id = CreateCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Create a collection", description = "Create a new collection. "
-        + "This is returning the document serialization of the created collection.", aliases = { "Collection.CreateCollection" })
-public class CreateCollectionOperation {
-
-    public static final String ID = "Collection.Create";
+@Operation(id = RemoveFromCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Remove from collection", description = "Remove a list of documents from a collection. "
+        + "No value is returned.")
+public class RemoveFromCollectionOperation {
+    public static final String ID = "Collection.RemoveFromCollection";
 
     @Context
     protected CoreSession session;
@@ -44,19 +44,22 @@ public class CreateCollectionOperation {
     @Context
     protected CollectionManager collectionManager;
 
-    @Param(name = "name")
-    protected String name;
-
-    @Param(name = "description", required = false)
-    protected String description;
+    @Param(name = "collection")
+    protected DocumentModel collection;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) {
-        return collectionManager.createCollection(session, name, description, doc.getPathAsString());
+    public DocumentModelList run(DocumentModelList docs) {
+        for (DocumentModel doc : docs) {
+            collectionManager.removeFromCollection(collection, doc, session);
+        }
+
+        return docs;
     }
 
     @OperationMethod
-    public DocumentModel run() {
-        return collectionManager.createCollection(session, name, description, null);
+    public DocumentModel run(DocumentModel doc) {
+        collectionManager.removeFromCollection(collection, doc, session);
+
+        return doc;
     }
 }

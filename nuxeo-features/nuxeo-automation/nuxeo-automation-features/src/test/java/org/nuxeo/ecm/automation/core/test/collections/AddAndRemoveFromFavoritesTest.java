@@ -16,7 +16,7 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-package org.nuxeo.ecm.collections.core.test.operations;
+package org.nuxeo.ecm.automation.core.test.collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -28,10 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.collections.AddToFavoritesOperation;
+import org.nuxeo.ecm.automation.core.operations.collections.RemoveFromFavoritesOperation;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
-import org.nuxeo.ecm.collections.core.automation.AddToFavoritesOperation;
-import org.nuxeo.ecm.collections.core.automation.RemoveFromFavoritesOperation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;

@@ -16,7 +16,7 @@
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,25 +30,21 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Class for the operation to get the collections matching the searching terms.
+ * Class for the operation to get the list of documents from a Collection.
  *
  * @since 5.9.4
  */
-@Operation(id = GetCollectionsOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get collections", description = "Get the list of all the collections visible by the currentUser. "
-        + "This is returning a list of collections.", aliases = { "Collection.GetCollections" })
-public class GetCollectionsOperation {
+@Operation(id = GetDocumentsFromCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Get documents from collection", description = "Get the list "
+        + "of documents visible by the currentUser in a collection. This is returning a list of documents.")
+public class GetDocumentsFromCollectionOperation {
 
-    public static final String ID = "User.GetCollections";
-
-    @Param(name = "searchTerm")
-    protected String searchTerm;
+    public static final String ID = "Collection.GetDocumentsFromCollection";
 
     @Context
     protected OperationContext ctx;
@@ -57,14 +53,11 @@ public class GetCollectionsOperation {
     protected AutomationService service;
 
     @OperationMethod
-    public PaginableDocumentModelListImpl run() throws OperationException {
-        StringList sl = new StringList();
-        sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
-        sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+    public PaginableDocumentModelListImpl run(DocumentModel collection) throws OperationException {
         OperationChain chain = new OperationChain("operation");
         Map<String, Object> vars = new HashMap<>();
-        vars.put("queryParams", sl);
-        vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
+        vars.put("searchTerm", collection.getId());
+        vars.put("providerName", CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         return (PaginableDocumentModelListImpl) service.run(ctx, chain);

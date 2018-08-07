@@ -57,6 +57,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.collections.core:OSGI-INF/collection-core-types-contrib.xml")
 public class CreatePictureTest {
 
     @Inject

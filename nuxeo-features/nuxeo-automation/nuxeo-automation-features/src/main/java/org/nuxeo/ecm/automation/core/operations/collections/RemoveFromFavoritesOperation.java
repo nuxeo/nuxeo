@@ -14,11 +14,10 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -26,16 +25,17 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Fetch the favorites document root collection.
+ * Class for the operation to remove a list of documents from the Favorites.
  *
- * @since 8.3
+ * @since 8.1
  */
-@Operation(id = FetchFavorites.ID, category = Constants.CAT_DOCUMENT, label = "Fetch favorites root collection", description = "Fetch the favorites document root collection.")
-public class FetchFavorites {
-
-    public static final String ID = "Favorite.Fetch";
+@Operation(id = RemoveFromFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Remove from favorites", description = "Remove a list of documents from the favorites. "
+        + "No value is returned.", aliases = { "Collection.RemoveFromFavorites" })
+public class RemoveFromFavoritesOperation {
+    public static final String ID = "Document.RemoveFromFavorites";
 
     @Context
     protected CoreSession session;
@@ -44,7 +44,18 @@ public class FetchFavorites {
     protected FavoritesManager favoritesManager;
 
     @OperationMethod
-    public DocumentModel run() throws OperationException {
-        return favoritesManager.getFavorites(session.getRootDocument(), session);
+    public DocumentModelList run(DocumentModelList docs) {
+        for (DocumentModel doc : docs) {
+            favoritesManager.removeFromFavorites(doc, session);
+        }
+
+        return docs;
+    }
+
+    @OperationMethod
+    public DocumentModel run(DocumentModel doc) {
+        favoritesManager.removeFromFavorites(doc, session);
+
+        return doc;
     }
 }

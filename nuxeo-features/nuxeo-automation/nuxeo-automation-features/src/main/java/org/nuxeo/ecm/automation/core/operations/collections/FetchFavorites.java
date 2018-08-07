@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -25,18 +26,16 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Class for the operation to add a list of documents in the Favorites.
+ * Fetch the favorites document root collection.
  *
- * @since 8.1
+ * @since 8.3
  */
-@Operation(id = AddToFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add document to favorites", description = "Add a list of documents in the favorites. "
-        + "No value is returned.", aliases = { "Collection.AddToFavorites" })
-public class AddToFavoritesOperation {
+@Operation(id = FetchFavorites.ID, category = Constants.CAT_DOCUMENT, label = "Fetch favorites root collection", description = "Fetch the favorites document root collection.")
+public class FetchFavorites {
 
-    public static final String ID = "Document.AddToFavorites";
+    public static final String ID = "Favorite.Fetch";
 
     @Context
     protected CoreSession session;
@@ -45,18 +44,7 @@ public class AddToFavoritesOperation {
     protected FavoritesManager favoritesManager;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) {
-        for (DocumentModel doc : docs) {
-            favoritesManager.addToFavorites(doc, session);
-        }
-
-        return docs;
-    }
-
-    @OperationMethod()
-    public DocumentModel run(DocumentModel doc) {
-        favoritesManager.addToFavorites(doc, session);
-
-        return doc;
+    public DocumentModel run() throws OperationException {
+        return favoritesManager.getFavorites(session.getRootDocument(), session);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,47 +14,52 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.collections.api.FavoritesManager;
+import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Class for the operation to remove a list of documents from the Favorites.
+ * Class for the operation to add a list of documents in a Collection.
  *
- * @since 8.1
+ * @since 5.9.4
  */
-@Operation(id = RemoveFromFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Remove from favorites", description = "Remove a list of documents from the favorites. "
-        + "No value is returned.", aliases = { "Collection.RemoveFromFavorites" })
-public class RemoveFromFavoritesOperation {
-    public static final String ID = "Document.RemoveFromFavorites";
+@Operation(id = AddToCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add document to collection", description = "Add a list of documents in a collection. "
+        + "No value is returned.", aliases = { "Collection.AddToCollection" })
+public class AddToCollectionOperation {
+
+    public static final String ID = "Document.AddToCollection";
 
     @Context
     protected CoreSession session;
 
     @Context
-    protected FavoritesManager favoritesManager;
+    protected CollectionManager collectionManager;
+
+    @Param(name = "collection")
+    protected DocumentModel collection;
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
         for (DocumentModel doc : docs) {
-            favoritesManager.removeFromFavorites(doc, session);
+            collectionManager.addToCollection(collection, doc, session);
         }
 
         return docs;
     }
 
-    @OperationMethod
+    @OperationMethod()
     public DocumentModel run(DocumentModel doc) {
-        favoritesManager.removeFromFavorites(doc, session);
+        collectionManager.addToCollection(collection, doc, session);
 
         return doc;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,40 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
-package org.nuxeo.ecm.collections.core.automation;
+package org.nuxeo.ecm.automation.core.operations.collections;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Class for the operation to add a list of documents in a Collection.
+ * Class for the operation to add a list of documents in the Favorites.
  *
- * @since 5.9.4
+ * @since 8.1
  */
-@Operation(id = AddToCollectionOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add document to collection", description = "Add a list of documents in a collection. "
-        + "No value is returned.", aliases = { "Collection.AddToCollection" })
-public class AddToCollectionOperation {
+@Operation(id = AddToFavoritesOperation.ID, category = Constants.CAT_DOCUMENT, label = "Add document to favorites", description = "Add a list of documents in the favorites. "
+        + "No value is returned.", aliases = { "Collection.AddToFavorites" })
+public class AddToFavoritesOperation {
 
-    public static final String ID = "Document.AddToCollection";
+    public static final String ID = "Document.AddToFavorites";
 
     @Context
     protected CoreSession session;
 
     @Context
-    protected CollectionManager collectionManager;
-
-    @Param(name = "collection")
-    protected DocumentModel collection;
+    protected FavoritesManager favoritesManager;
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
         for (DocumentModel doc : docs) {
-            collectionManager.addToCollection(collection, doc, session);
+            favoritesManager.addToFavorites(doc, session);
         }
 
         return docs;
@@ -59,7 +55,7 @@ public class AddToCollectionOperation {
 
     @OperationMethod()
     public DocumentModel run(DocumentModel doc) {
-        collectionManager.addToCollection(collection, doc, session);
+        favoritesManager.addToFavorites(doc, session);
 
         return doc;
     }

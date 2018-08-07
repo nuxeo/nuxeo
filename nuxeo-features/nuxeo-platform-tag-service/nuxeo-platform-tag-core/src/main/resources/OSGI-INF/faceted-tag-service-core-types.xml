@@ -3,6 +3,7 @@
 <component name="org.nuxeo.ecm.tags.schemas">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.collections.schemas</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
 
@@ -25,6 +26,10 @@
     </doctype>
 
     <doctype name="Note" append="true">
+      <facet name="NXTag" />
+    </doctype>
+
+    <doctype name="Collection" append="true">
       <facet name="NXTag" />
     </doctype>
 

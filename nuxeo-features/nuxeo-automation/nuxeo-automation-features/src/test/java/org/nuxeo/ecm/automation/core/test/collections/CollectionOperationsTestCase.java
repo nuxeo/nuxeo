@@ -16,7 +16,7 @@
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.ecm.collections.core.test.operations;
+package org.nuxeo.ecm.automation.core.test.collections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.ecm.platform.tag")
 public class CollectionOperationsTestCase {
 
     protected static final String TEST_FILE_NAME = "testFile";

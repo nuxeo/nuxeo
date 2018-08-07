@@ -16,10 +16,11 @@
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
  */
-package org.nuxeo.ecm.collections.core.test.operations;
+package org.nuxeo.ecm.automation.core.test.collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -29,22 +30,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.operations.collections.FetchFavorites;
+import org.nuxeo.ecm.automation.core.operations.collections.GetDocumentsFromFavoritesOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.collections.core.automation.GetDocumentsFromCollectionOperation;
+import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Class testing the operation "Collection.GetDocumentFromCollection".
+ * Class testing the operation "Collection.GetDocumentFromFavorites".
  *
- * @since 5.9.4
+ * @since 6.0
  */
-public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase {
+public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase {
 
     @Inject
-    CollectionManager collectionManager;
-
-    private DocumentModel collection;
+    FavoritesManager favoritesManager;
 
     private List<DocumentModel> listDocuments;
 
@@ -52,54 +53,63 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
     public void setUp() {
         testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        // Create a new collection
-        collection = collectionManager.createCollection(session, COLLECTION_NAME, COLLECTION_DESCRIPTION,
-                testWorkspace.getPathAsString());
         // Create a list of test documents
         listDocuments = createTestFiles(session, 5);
-        // Add them in the collection
-        collectionManager.addToCollection(collection, listDocuments, session);
+        // Add them in the favorites
+        for (DocumentModel doc : listDocuments) {
+            favoritesManager.addToFavorites(doc, session);
+        }
         session.save();
     }
 
     @Test
     public void testGetDocumentsFromCollection() throws Exception {
         chain = new OperationChain("test-chain");
-        chain.add(GetDocumentsFromCollectionOperation.ID);
+        chain.add(GetDocumentsFromFavoritesOperation.ID);
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        ctx.setInput(listDocuments.get(0));
         PaginableDocumentModelListImpl documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(listDocuments.size(), documentsList.size());
 
-        // Remove a document from the collection and check the result of the operation
-        collectionManager.removeFromCollection(collection, listDocuments.get(0), session);
-        session.save();
+        // Remove a document from the favorites and check the result of the operation
+        favoritesManager.removeFromFavorites(listDocuments.get(0), session);
         listDocuments.remove(0);
         chain = new OperationChain("test-chain-2");
-        chain.add(GetDocumentsFromCollectionOperation.ID);
+        chain.add(GetDocumentsFromFavoritesOperation.ID);
+        session.save();
 
         ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        ctx.setInput(listDocuments.get(0));
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(listDocuments.size(), documentsList.size());
 
-        // Remove all documents from the collection and check the result of the operation
-        collectionManager.removeAllFromCollection(collection, listDocuments, session);
-        session.save();
+        // Remove all documents from the favorites and check the result of the operation
+        for (DocumentModel doc : listDocuments) {
+            favoritesManager.removeFromFavorites(doc, session);
+        }
         chain = new OperationChain("test-chain-3");
-        chain.add(GetDocumentsFromCollectionOperation.ID);
+        chain.add(GetDocumentsFromFavoritesOperation.ID);
+        session.save();
 
         ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        ctx.setInput(listDocuments.get(0));
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
-
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(0, documentsList.size());
+    }
+
+    @Test
+    public void canFetchFavorites() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel favoritesRoot = (DocumentModel) service.run(ctx, FetchFavorites.ID);
+        assertNotNull(favoritesRoot);
+        assertTrue(favoritesRoot.hasFacet("Collection"));
     }
 }
