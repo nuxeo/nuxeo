@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
 
-    <filterConfig name="nxfile" transactional="false" synchonize="false" cached="true" cacheTime="0">
+    <filterConfig name="nxfile" transactional="false" synchonize="false" cached="true" private="true" cacheTime="0">
       <!-- transaction is manually handled in DownloadServlet -->
       <pattern>${org.nuxeo.ecm.contextPath}/nxfile/.*</pattern>
     </filterConfig>
@@ -39,8 +39,13 @@
       <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
     </filterConfig>
 
-    <filterConfig name="renditionOrBlob" cached="true" cacheTime="0" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/.*/@(rendition|blob).*</pattern>
+    <filterConfig name="cachedBPR" cached="true" private="true" cacheTime="31536000" transactional="true">
+      <!-- if url contains doc changeToken: approximately one year -->
+      <pattern>${org.nuxeo.ecm.contextPath}/.*/@(blob|preview|rendition).*\\?.*changeToken=.+</pattern>
+    </filterConfig>
+
+    <filterConfig name="BPR" cached="true" private="true" cacheTime="0" transactional="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/.*/@(blob|preview|rendition).*</pattern>
     </filterConfig>
 
   </extension>

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.thumbnail.io.ThumbnailJsonEnricher;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,7 +65,7 @@ public class ThumbnailJsonEnricherTest extends AbstractJsonWriterTest.Local<Docu
         json.properties(1);
         json = json.has("thumbnail").isObject();
         json = json.has("url").isText();
-        json.isEquals(String.format("http://fake-url.nuxeo.com/api/v1/repo/%s/id/%s/@rendition/thumbnail",
-                root.getRepositoryName(), root.getId()));
+        json.isEquals(String.format(ThumbnailJsonEnricher.THUMBNAIL_URL_PATTERN, "http://fake-url.nuxeo.com",
+                root.getRepositoryName(), root.getId(), root.getChangeToken()));
     }
 }

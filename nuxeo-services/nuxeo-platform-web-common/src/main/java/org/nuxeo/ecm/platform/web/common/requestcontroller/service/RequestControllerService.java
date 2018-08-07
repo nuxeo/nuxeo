@@ -125,6 +125,10 @@ public class RequestControllerService extends DefaultComponent implements Reques
     @Override
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            uri += '?' + queryString;
+        }
         RequestFilterConfig config = null;
 
         synchronized (configCache) {

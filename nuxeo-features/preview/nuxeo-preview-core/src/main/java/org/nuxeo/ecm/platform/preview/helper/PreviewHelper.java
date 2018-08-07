@@ -17,16 +17,20 @@
 
 package org.nuxeo.ecm.platform.preview.helper;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
-
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PreviewHelper {
 
@@ -49,7 +53,16 @@ public class PreviewHelper {
         if (xpath != null) {
             sj.add("@blob").add(xpath);
         }
-        return sj.add("@preview").toString();
+        String result = sj.add("@preview").toString();
+        String ct = doc.getChangeToken();
+        if (StringUtils.isNotBlank(ct)) {
+            try {
+                result += "?" + CoreSession.CHANGE_TOKEN + "=" + URLEncoder.encode(ct, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new PreviewException(e);
+            }
+        }
+        return result;
     }
 
     public static boolean typeSupportsPreview(DocumentModel doc) {

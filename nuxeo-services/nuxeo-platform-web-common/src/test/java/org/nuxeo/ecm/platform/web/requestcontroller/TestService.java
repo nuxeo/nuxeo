@@ -176,7 +176,7 @@ public class TestService {
         assertTrue(config.isCached());
         assertEquals("0", config.getCacheTime());
         // end of WARN !!!
-        assertFalse(config.isPrivate());
+        assertTrue(config.isPrivate());
         assertFalse(config.needTransaction());
         assertFalse(config.needSynchronization());
 
@@ -188,7 +188,7 @@ public class TestService {
         assertTrue(config.isCached());
         assertEquals("0", config.getCacheTime());
         // end of WARN !!!
-        assertFalse(config.isPrivate());
+        assertTrue(config.isPrivate());
         assertFalse(config.needTransaction());
         assertFalse(config.needSynchronization());
     }
@@ -206,6 +206,17 @@ public class TestService {
         assertTrue(config.isCached());
         assertEquals("0", config.getCacheTime());
         // end of WARN !!!
+        assertTrue(config.isPrivate());
+        assertTrue(config.needTransaction());
+        config = requestControllerService.computeConfigForRequest(
+                "/nuxeo/api/v1/repo/default/id/45ad4c71-f1f3-4e9d-97a1-61aa317ce105/@rendition/thumbnail?changeToken=5-1");
+        assertNotNull(config);
+        // !!!WARN: Don't change this unit test without asking front end devs !!!
+        assertTrue(config.isCached());
+        assertEquals("31536000", config.getCacheTime());
+        // end of WARN !!!
+        assertTrue(config.isPrivate());
+        assertTrue(config.needTransaction());
     }
 
 }

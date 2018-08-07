@@ -50,7 +50,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
-    public static final String PREVIEW_FILE_REGEX = ".*openFancyBox\\('.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/'.*\\).*";
+    public static final String PREVIEW_FILE_REGEX = ".*openFancyBox\\('.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/\\?changeToken=.+'.*\\).*";
 
     @Before
     public void before() {
