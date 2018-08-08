@@ -22,11 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 
 import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,7 +44,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ CoreBulkFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
-public class TestBulkService {
+public class TestSetPropertiesAction {
 
     @Inject
     public BulkService service;
@@ -51,7 +53,7 @@ public class TestBulkService {
     public CoreSession session;
 
     @Test
-    public void testSetPropertyBulkOperation() throws Exception {
+    public void testSetProperties() throws Exception {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());

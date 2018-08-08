@@ -19,14 +19,9 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkRecords.commandIdFrom;
-import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
 import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,35 +29,27 @@ import java.util.Map;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
-import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkCounter;
-import org.nuxeo.lib.stream.computation.AbstractComputation;
+import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
-import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 10.2
  */
-// TODO refactor this computation when the batch policy is introduced
 public class SetPropertiesAction implements StreamProcessorTopology {
 
-    private static final Log log = LogFactory.getLog(SetPropertiesAction.class);
-
-    public static final String SETPROPERTIES_ACTION_NAME = "setProperties";
+    public static final String ACTION_NAME = "setProperties";
 
     public static final String BATCH_SIZE_OPT = "batchSize";
 
@@ -76,92 +63,41 @@ public class SetPropertiesAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         int batchSize = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
         int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
-        return Topology.builder()
-                       .addComputation(
-                               () -> new SetPropertyComputation(SETPROPERTIES_ACTION_NAME, batchSize, batchThresholdMs),
-                               Arrays.asList("i1:" + SETPROPERTIES_ACTION_NAME, "o1:" + COUNTER_ACTION_NAME))
-                       .build();
+        Computation computation = createComputation(batchSize, batchThresholdMs);
+        List<String> ios = Arrays.asList("i1:" + getActionName(), "o1:" + COUNTER_ACTION_NAME);
+        return Topology.builder().addComputation(() -> computation, ios).build();
     }
 
-    public static class SetPropertyComputation extends AbstractComputation {
+    protected String getActionName() {
+        return ACTION_NAME;
+    }
 
-        protected final int batchSize;
+    protected Computation createComputation(int batchSize, int batchThresholdMs) {
+        return new SetPropertyComputation(getActionName(), batchSize, batchThresholdMs);
+    }
 
-        protected final int batchThresholdMs;
+    protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
+        String value = options.get(option);
+        return value == null ? defaultValue : Integer.parseInt(value);
+    }
 
-        protected final List<String> documentIds;
-
-        protected String currentCommandId;
-
-        protected BulkCommand currentCommand;
+    public static class SetPropertyComputation extends AbstractBulkComputation {
 
         public SetPropertyComputation(String name, int batchSize, int batchThresholdMs) {
-            super(name, 1, 1);
-            this.batchSize = batchSize;
-            this.batchThresholdMs = batchThresholdMs;
-            documentIds = new ArrayList<>(batchSize);
+            super(name, 1, 1, batchSize, batchThresholdMs);
         }
 
         @Override
-        public void init(ComputationContext context) {
-            log.debug(String.format("Starting computation: %s, batch size: %d, threshold: %dms",
-                    SETPROPERTIES_ACTION_NAME, batchSize, batchThresholdMs));
-            context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
-        }
-
-        @Override
-        public void processTimer(ComputationContext context, String key, long timestamp) {
-            processBatch(context);
-            context.setTimer("batch", System.currentTimeMillis() + batchThresholdMs);
-        }
-
-        @Override
-        public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            String commandId = commandIdFrom(record);
-            if (currentCommandId == null) {
-                // first time we need to process something
-                loadCurrentBulkCommandContext(commandId);
-            } else if (!currentCommandId.equals(commandId)) {
-                // new bulk id computation - send remaining elements
-                processBatch(context);
-                documentIds.clear();
-                loadCurrentBulkCommandContext(commandId);
-            }
-            // process record
-            documentIds.addAll(docIdsFrom(record));
-            if (documentIds.size() >= batchSize) {
-                processBatch(context);
-            }
-        }
-
-        protected void loadCurrentBulkCommandContext(String commandId) {
-            currentCommandId = commandId;
-            KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-            currentCommand = BulkCodecs.getBulkCommandCodec().decode(kvStore.get(commandId + COMMAND));
-        }
-
-        @Override
-        public void destroy() {
-            log.debug(String.format("Destroy computation: %s, pending entries: %d", SETPROPERTIES_ACTION_NAME,
-                    documentIds.size()));
-        }
-
         protected void processBatch(ComputationContext context) {
             if (!documentIds.isEmpty()) {
                 TransactionHelper.runInTransaction(() -> {
-                    // for setProperties, parameters are properties to set
-                    Map<String, Serializable> properties = currentCommand.getParams();
-                    LoginContext loginContext;
                     try {
-                        loginContext = Framework.loginAsUser(currentCommand.getUsername());
-
-                        try (CloseableCoreSession session = CoreInstance.openCoreSession(
-                                currentCommand.getRepository())) {
-                            for (String docId : documentIds) {
-                                DocumentModel doc = session.getDocument(new IdRef(docId));
-                                properties.forEach(doc::setPropertyValue);
-                                session.saveDocument(doc);
-                            }
+                        LoginContext loginContext = Framework.loginAsUser(currentCommand.getUsername());
+                        String repository = currentCommand.getRepository();
+                        // for setProperties, parameters are properties to set
+                        Map<String, Serializable> properties = currentCommand.getParams();
+                        try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
+                            doProcessBatch(session, documentIds, properties);
                         } finally {
                             loginContext.logout();
                         }
@@ -175,10 +111,14 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                 context.askForCheckpoint();
             }
         }
+
+        public void doProcessBatch(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+            ids.forEach(id -> {
+                DocumentModel doc = session.getDocument(new IdRef(id));
+                properties.forEach(doc::setPropertyValue);
+                session.saveDocument(doc);
+            });
+        }
     }
 
-    protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
-        String value = options.get(option);
-        return value == null ? defaultValue : Integer.parseInt(value);
-    }
 }

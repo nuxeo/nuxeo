@@ -57,6 +57,9 @@ public class BulkRecords {
         return key.split(KEY_SEPARATOR)[0];
     }
 
+    /**
+     * @return the document ids extracted from {@link Record}
+     */
     public static List<String> docIdsFrom(Record record) {
         String value = new String(record.getData(), UTF_8);
         return Arrays.asList(value.split(VALUE_SEPARATOR));
