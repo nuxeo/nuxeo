@@ -24,40 +24,36 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.lib.stream.computation.Computation;
 
 /**
- * @since 10.2
+ * @since 10.3
  */
-public class SetPropertiesAction extends AbstractBulkAction {
+public class SetSystemPropertiesAction extends AbstractBulkAction {
 
-    public static final String ACTION_NAME = "setProperties";
+    public static final String ACTION_NAME = "setSystemProperties";
 
-    public SetPropertiesAction() {
+    public SetSystemPropertiesAction() {
         super(ACTION_NAME);
     }
 
     @Override
     protected Computation createComputation(int batchSize, int batchThresholdMs) {
-        return new SetPropertyComputation(getActionName(), batchSize, batchThresholdMs);
+        return new SetSystemPropertyComputation(getActionName(), batchSize, batchThresholdMs);
     }
 
-    public static class SetPropertyComputation extends AbstractBulkComputation {
+    public static class SetSystemPropertyComputation extends AbstractBulkComputation {
 
-        public SetPropertyComputation(String name, int batchSize, int batchThresholdMs) {
+        public SetSystemPropertyComputation(String name, int batchSize, int batchThresholdMs) {
             super(name, 1, 1, batchSize, batchThresholdMs);
         }
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            ids.forEach(id -> {
-                DocumentModel doc = session.getDocument(new IdRef(id));
-                properties.forEach(doc::setPropertyValue);
-                session.saveDocument(doc);
-            });
+            ids.forEach(id -> properties.forEach((k, v) -> session.setDocumentSystemProp(new IdRef(id), k, v)));
+            session.save();
         }
-    }
 
+    }
 }
