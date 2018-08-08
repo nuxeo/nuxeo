@@ -1,6 +1,6 @@
-# Nuxeo platform 9.10-HF14-SNAPSHOT
+# Nuxeo platform 9.10-HF14
 
-Welcome to the Nuxeo Platform 9.10-HF14-SNAPSHOT.
+Welcome to the Nuxeo Platform 9.10-HF14.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [https://www.nuxeo.com/downloads/][1].

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-core-parent</artifactId>
     <groupId>org.nuxeo.ecm.core</groupId>
-    <version>9.10-HF14-SNAPSHOT</version>
+    <version>9.10-HF14</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>

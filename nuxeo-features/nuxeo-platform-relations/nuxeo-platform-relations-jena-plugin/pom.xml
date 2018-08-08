@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-relations-parent</artifactId>
-    <version>9.10-HF14-SNAPSHOT</version>
+    <version>9.10-HF14</version>
   </parent>
 
   <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
