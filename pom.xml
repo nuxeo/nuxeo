@@ -154,7 +154,7 @@
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
-    <librepdf.version>1.0.5</librepdf.version>
+    <librepdf.version>1.2.0</librepdf.version>
     <jclouds.version>1.9.2</jclouds.version>
     <guava.version>18.0</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
@@ -171,7 +171,7 @@
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.9.5</jackson.version>
-    <bouncycastle.version>1.59</bouncycastle.version>
+    <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
 
     <!-- JBoss properties -->
