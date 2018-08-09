@@ -109,7 +109,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     protected RenditionDefinitionProviderRegistry renditionDefinitionProviderRegistry;
 
-    protected List<DefaultRenditionDescriptor> defaultRenditionDescriptors = new ArrayList<>();;
+    protected List<DefaultRenditionDescriptor> defaultRenditionDescriptors = new ArrayList<>();
 
     protected DefaultRenditionDescriptor defaultRenditionDescriptor;
 
@@ -227,9 +227,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
 
         RenditionDefinition renditionDefinition = getRenditionDefinition(rendition.getName());
-        StoredRendition storedRendition = getStoredRenditionManager().createStoredRendition(sourceDocument, version,
-                renderedBlob, renditionDefinition);
-        return storedRendition;
+        return getStoredRenditionManager().createStoredRendition(sourceDocument, version, renderedBlob,
+                renditionDefinition);
     }
 
     protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
@@ -343,7 +342,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             storedRenditionManagerDescriptors.remove((contribution));
         } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
             defaultRenditionDescriptors.remove(contribution);
-            if (defaultRenditionDescriptors.size() == 0) {
+            if (defaultRenditionDescriptors.isEmpty()) {
                 // We don't have any default rendition descriptor
                 defaultRenditionDescriptor = null;
             } else {
@@ -448,7 +447,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         List<RenditionDefinition> defs = getAvailableRenditionDefinitions(doc);
         if (defs != null) {
             for (RenditionDefinition def : defs) {
-                if (!onlyVisible || onlyVisible && def.isVisible()) {
+                if (!onlyVisible || def.isVisible()) {
                     Rendition rendition = getRendition(doc, def.getName(), false);
                     if (rendition != null) {
                         renditions.add(rendition);
