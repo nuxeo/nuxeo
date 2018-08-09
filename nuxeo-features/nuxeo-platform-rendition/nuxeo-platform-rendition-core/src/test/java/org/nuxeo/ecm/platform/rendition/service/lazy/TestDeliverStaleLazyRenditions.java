@@ -64,8 +64,6 @@ public class TestDeliverStaleLazyRenditions {
 
     protected static int STALE_RENDITION_COUNT = 5;
 
-    protected static int STORED_STALE_RENDITION_COUNT = 2;
-
     @Inject
     protected CoreSession session;
 
@@ -86,19 +84,59 @@ public class TestDeliverStaleLazyRenditions {
 
     @Test
     public void testLazyRenditions() throws Exception {
+        // never ask to store a rendition
         checkInitialRendition(false);
-        checkStaleRenditions();
+        checkStaleRenditions(false);
         checkUpToDateRendition(false);
-    }
 
-    @Test
-    public void testStoredLazyRenditions() throws Exception {
+        // ask to store the final up-to-date rendition
+        checkInitialRendition(false);
+        checkStaleRenditions(false);
+        checkUpToDateRendition(true);
+
+        // ask to store the intermediate stale renditions, for test purpose as they will actually never get stored
+        checkInitialRendition(false);
+        checkStaleRenditions(true);
+        checkUpToDateRendition(false);
+
+        // ask to store the intermediate stale renditions, for test purpose as they will actually never get stored
+        // ask to store the final up-to-date rendition
+        checkInitialRendition(false);
+        checkStaleRenditions(true);
+        checkUpToDateRendition(true);
+
+        // ask to store the initial up-to-date rendition
         checkInitialRendition(true);
-        checkStoredStaleRenditions();
-        // If a stored stale rendition exists, asking for a stored rendition will never return an up-to-date rendition
-        // as shown by the previous call, so not calling checkUpToDateRendition
+        checkStaleRenditions(false);
+        checkUpToDateRendition(false);
+
+        // ask to store the initial up-to-date rendition
+        // ask to store the final up-to-date rendition
+        checkInitialRendition(true);
+        checkStaleRenditions(false);
+        checkUpToDateRendition(true);
+
+        // ask to store the initial up-to-date rendition
+        // ask to store the intermediate stale renditions, for test purpose as they will actually never get stored
+        checkInitialRendition(true);
+        checkStaleRenditions(true);
+        checkUpToDateRendition(false);
+
+        // ask to store the initial up-to-date rendition
+        // ask to store the intermediate stale renditions, for test purpose as they will actually never get stored
+        // ask to store the final up-to-date rendition
+        checkInitialRendition(true);
+        checkStaleRenditions(true);
+        checkUpToDateRendition(true);
     }
 
+    /**
+     * Creates a test document and asks for a "lazyAutomation" rendition, expecting it to be empty.
+     * <p>
+     * Waits for asynchronous completion then asks again for the same rendition, expecting it to be up-to-date.
+     *
+     * @param store whether to ask to store the up-to-date rendition
+     */
     protected void checkInitialRendition(boolean store) throws IOException {
         log.debug("Create test document");
         doc = session.createDocumentModel("/", "testDoc", "File");
@@ -107,41 +145,47 @@ public class TestDeliverStaleLazyRenditions {
         txFeature.nextTransaction();
 
         log.debug("Ask immediately for a lazy rendition, expecting an empty rendition");
-        checkEmptyRendition(doc, "lazyAutomation", store);
+        checkEmptyRendition(doc, "lazyAutomation");
 
         log.debug("Wait for async completion");
         waitForAsyncCompletion();
 
         log.debug("Ask again for a lazy rendition, should be rendered, expecting an up-to-date rendition");
-        checkUpToDateRendition(doc, "lazyAutomation", store, "testDoc.txt", DummyDocToTxt.getDigest(doc));
+        checkUpToDateRendition(store);
     }
 
-    protected void checkStaleRenditions() {
-        IntStream.rangeClosed(1, STALE_RENDITION_COUNT).forEach(this::checkStaleRendition);
+    /**
+     * Iterates {@link #STALE_RENDITION_COUNT} times over {@link #checkStaleRendition(boolean)}.
+     *
+     * @param store whether to ask to store the stale rendition, for test purpose as it will actually never get stored
+     */
+    protected void checkStaleRenditions(boolean store) {
+        IntStream.rangeClosed(1, STALE_RENDITION_COUNT).forEach((index) -> {
+            log.debug(String.format("Check stale rendition #%d", index));
+            checkStaleRendition(store);
+        });
     }
 
-    protected void checkStoredStaleRenditions() {
-        String latestRenditionDigest = DummyDocToTxt.getDigest(doc);
-        log.debug(String.format("Computed latest rendition digest: %s", latestRenditionDigest));
-        IntStream.rangeClosed(1, STORED_STALE_RENDITION_COUNT)
-                 .forEach((index) -> checkStoredStaleRendition(index, latestRenditionDigest));
-    }
-
-    protected void checkStaleRendition(int count) {
+    /**
+     * Updates the test document and asks for a "lazyAutomation" rendition, expecting it to be stale.
+     * <p>
+     * Waits for asynchronous completion.
+     *
+     * @param store whether to ask to store the stale rendition, for test purpose as it will actually never get stored
+     */
+    protected void checkStaleRendition(boolean store) {
         try {
-            log.debug(String.format("Check stale rendition #%d", count));
-
             String latestRenditionDigest = DummyDocToTxt.getDigest(doc);
             log.debug(String.format("Saved latest rendition digest: %s", latestRenditionDigest));
 
             log.debug("Update dc:issued on test document");
             Thread.sleep(1000);
             doc.setPropertyValue("dc:issued", new GregorianCalendar());
-            session.saveDocument(doc);
+            doc = session.saveDocument(doc);
             txFeature.nextTransaction();
 
             log.debug("Ask immediately for a lazy rendition, expecting a stale rendition");
-            checkStaleRendition(doc, "lazyAutomation", false, "testDoc.txt", latestRenditionDigest);
+            checkStaleRendition(doc, "lazyAutomation", store, "testDoc.txt", latestRenditionDigest);
 
             log.debug("Wait for async completion");
             waitForAsyncCompletion();
@@ -151,34 +195,19 @@ public class TestDeliverStaleLazyRenditions {
         }
     }
 
-    protected void checkStoredStaleRendition(int count, String latestRenditionDigest) {
-        try {
-            log.debug(String.format("Check stale rendition #%d", count));
-
-            log.debug("Update dc:issued on test document");
-            Thread.sleep(1000);
-            doc.setPropertyValue("dc:issued", new GregorianCalendar());
-            session.saveDocument(doc);
-            txFeature.nextTransaction();
-
-            log.debug("Ask immediately for a lazy rendition, expecting always the same stored stale rendition");
-            checkStaleRendition(doc, "lazyAutomation", true, "testDoc.txt", latestRenditionDigest);
-
-            log.debug("Wait for async completion");
-            waitForAsyncCompletion();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new NuxeoException(e);
-        }
-    }
-
+    /**
+     * Asks for a "lazyAutomation" rendition, expecting it to be up-to-date.
+     *
+     * @param store whether to ask to store the up-to-date rendition
+     */
     protected void checkUpToDateRendition(boolean store) {
         log.debug("Ask for a lazy rendition, should be rendered, expecting an up-to-date rendition");
-        checkUpToDateRendition(doc, "lazyAutomation", store, "testDoc.txt", DummyDocToTxt.getDigest(doc));
+        // An up-to-date stored rendition, ie. not stale, is necessarily stored if asked to be processed and stored
+        checkRenderedRendition(doc, "lazyAutomation", store, store, false, "testDoc.txt", DummyDocToTxt.getDigest(doc));
     }
 
-    protected void checkEmptyRendition(DocumentModel doc, String renditionName, boolean store) {
-        Rendition rendition = rs.getRendition(doc, renditionName, store);
+    protected void checkEmptyRendition(DocumentModel doc, String renditionName) {
+        Rendition rendition = rs.getRendition(doc, renditionName);
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
         Blob renditionBlob = rendition.getBlob();
@@ -189,28 +218,24 @@ public class TestDeliverStaleLazyRenditions {
 
     protected void checkStaleRendition(DocumentModel doc, String renditionName, boolean store, String expectedFilename,
             String expectedDigest) {
-        checkRenderedRendition(doc, renditionName, store, true, expectedFilename, expectedDigest);
+        // A stale rendition is never stored even if asked to be processed and stored
+        checkRenderedRendition(doc, renditionName, store, false, true, expectedFilename, expectedDigest);
     }
 
-    protected void checkUpToDateRendition(DocumentModel doc, String renditionName, boolean store,
-            String expectedFilename, String expectedDigest) {
-        checkRenderedRendition(doc, renditionName, store, false, expectedFilename, expectedDigest);
-    }
-
-    protected void checkRenderedRendition(DocumentModel doc, String renditionName, boolean store, boolean stale,
-            String expectedFilename, String expectedDigest) {
+    protected void checkRenderedRendition(DocumentModel doc, String renditionName, boolean store, boolean isStored,
+            boolean isStale, String expectedFilename, String expectedDigest) {
         Rendition rendition = rs.getRendition(doc, renditionName, store);
         assertNotNull(rendition);
-        assertTrue(rendition.isStored() == store);
+        assertTrue(rendition.isStored() == isStored);
         Blob blob = rendition.getBlob();
         String mimeType = blob.getMimeType();
         assertFalse(blob.getMimeType().contains(LazyRendition.EMPTY_MARKER));
-        assertTrue(stale == mimeType.contains(LazyRendition.STALE_MARKER));
+        assertTrue(isStale == mimeType.contains(LazyRendition.STALE_MARKER));
         assertEquals(expectedFilename, blob.getFilename());
         assertTrue(blob.getLength() > 0);
         String digest = blob.getDigest();
         log.debug(String.format("Comparing expected digest %s and %s rendition blob digest %s", expectedDigest,
-                stale ? "stale" : "up-to-date", digest));
+                isStale ? "stale" : "up-to-date", digest));
         assertEquals(expectedDigest, digest);
     }
 
