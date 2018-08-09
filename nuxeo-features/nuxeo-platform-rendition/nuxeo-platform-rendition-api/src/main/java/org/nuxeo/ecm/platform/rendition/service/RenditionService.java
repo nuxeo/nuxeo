@@ -97,9 +97,9 @@ public interface RenditionService {
     /**
      * Return the {@link Rendition} object for the given {@link DocumentModel} and a rendition definition name.
      * <p>
-     * A stored rendition is returned if found and up to date, a new (live) Rendition is created otherwise.
+     * A stored rendition is returned if found and up to date, a new (live) Rendition is created and returned otherwise.
      * <p>
-     * If store parameter is true, the new created rendition is stored too and returned
+     * If store parameter is true, the new created rendition is stored too unless it is marked as stale.
      *
      * @param doc the document to render
      * @param renditionName the name of the rendition definition
