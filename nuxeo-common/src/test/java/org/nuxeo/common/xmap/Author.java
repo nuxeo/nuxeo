@@ -18,6 +18,7 @@
  */
 package org.nuxeo.common.xmap;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -197,5 +198,26 @@ public class Author {
 
     @XNode("@class")
     Class<?> klass;
+
+    @XNode("durationDay")
+    Duration durationDay;
+
+    @XNode("durationHour")
+    Duration durationHour;
+
+    @XNode("durationMinute")
+    Duration durationMinute;
+
+    @XNode("durationSecond")
+    Duration durationSecond;
+
+    @XNode("durationMillis")
+    Duration durationMillis;
+
+    @XNode("durationAll")
+    Duration durationAll;
+
+    @XNode("durationJdk")
+    Duration durationJdk;
 
 }

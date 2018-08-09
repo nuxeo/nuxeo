@@ -85,6 +85,14 @@
       <description>text to be &lt; unescaped</description>
     </alias>
 
+    <durationDay>1d</durationDay>
+    <durationHour>1h</durationHour>
+    <durationMinute>1m</durationMinute>
+    <durationSecond>1s</durationSecond>
+    <durationMillis>1ms</durationMillis>
+    <durationAll>1d2h3m4s5ms</durationAll>
+    <durationJdk>PT1S</durationJdk>
+
     <notInherited>dummyContent</notInherited>
 
   </inheritedAuthor>

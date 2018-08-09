@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 
 import org.junit.Test;
 import org.nuxeo.common.xmap.Author.Gender;
@@ -87,6 +88,14 @@ public class ReverseXMapTest {
         assertEquals("friend1_fn", author.persons.get("friend1_fn").firstName);
         assertEquals("friend2_ln", author.persons.get("friend2_fn").lastName);
         assertEquals("friend2_fn", author.persons.get("friend2_fn").firstName);
+
+        assertEquals(Duration.ofDays(1), author.durationDay);
+        assertEquals(Duration.ofHours(1), author.durationHour);
+        assertEquals(Duration.ofMinutes(1), author.durationMinute);
+        assertEquals(Duration.ofSeconds(1), author.durationSecond);
+        assertEquals(Duration.ofMillis(1), author.durationMillis);
+        assertEquals(Duration.ofDays(1).plusHours(2).plusMinutes(3).plusSeconds(4).plusMillis(5), author.durationAll);
+        assertEquals(Duration.ofSeconds(1), author.durationJdk);
     }
 
 }
