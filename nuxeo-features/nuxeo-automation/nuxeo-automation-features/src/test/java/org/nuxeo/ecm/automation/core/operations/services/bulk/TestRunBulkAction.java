@@ -85,7 +85,7 @@ public class TestRunBulkAction {
         OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
-        params.put("action", SetPropertiesAction.SETPROPERTIES_ACTION_NAME);
+        params.put("action", SetPropertiesAction.ACTION_NAME);
         params.put("query", nxql);
         HashMap<String, Serializable> actionParams = new HashMap<>();
         actionParams.put("dc:title", title);
