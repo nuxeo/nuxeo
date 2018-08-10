@@ -44,6 +44,7 @@ import com.google.inject.Provider;
  */
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.automation.scripting")
 @Deploy("org.nuxeo.ecm.platform.query.api")
