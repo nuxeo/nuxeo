@@ -26,7 +26,7 @@ object ScnMassImport {
     scenario("NuxeoImporter")
       .feed(Feeders.admins)
       .exec(NuxeoImporter.massImport(nbThreads, nbNodes))
-      .exec(NuxeoImporter.waitForAsyncJobs())
+      .exec(NuxeoRest.waitForAsyncJobs())
   }
 
 
