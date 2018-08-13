@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -138,4 +139,17 @@ public class TestKeyValueStoreUIDSequencer {
         assertEquals(n + 1, seq.getNextLong(key));
     }
 
+    @Test
+    public void testBlockOfSequences() {
+        UIDSequencer seq = service.getSequencer();
+        String key = "block";
+        int size = 10;
+        seq.initSequence(key, 0L);
+        List<Long> block = seq.getNextBlock(key, size);
+        assertNotNull(block);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) < block.get(1));
+        assertTrue(block.get(size - 2) < block.get(size - 1));
+        assertTrue(block.get(size - 1) < seq.getNextLong(key));
+    }
 }
