@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -130,6 +131,24 @@ public class TestSequenceGeneratorWithMongoDB {
         assertTrue("timeout", finish);
 
         assertEquals(nbCalls + 1, seq.getNext(seqName));
+    }
+
+    @Test
+    public void testBlockOfSequences() {
+        UIDSequencer seq = uidGeneratorService.getSequencer();
+        String key = "blockKey";
+        int size = 100;
+        seq.initSequence(key, 0L);
+        List<Long> block = seq.getNextBlock(key, size);
+        assertNotNull(block);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) < block.get(1));
+        assertTrue(block.get(size - 2) < block.get(size - 1));
+        assertTrue(block.get(size - 1) < seq.getNextLong(key));
+
+        block = seq.getNextBlock(key, size);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) > size);
     }
 
 }

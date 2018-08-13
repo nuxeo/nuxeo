@@ -143,7 +143,7 @@ public class TestKeyValueStoreUIDSequencer {
     public void testBlockOfSequences() {
         UIDSequencer seq = service.getSequencer();
         String key = "block";
-        int size = 10;
+        int size = 1000;
         seq.initSequence(key, 0L);
         List<Long> block = seq.getNextBlock(key, size);
         assertNotNull(block);
@@ -151,5 +151,9 @@ public class TestKeyValueStoreUIDSequencer {
         assertTrue(block.get(0) < block.get(1));
         assertTrue(block.get(size - 2) < block.get(size - 1));
         assertTrue(block.get(size - 1) < seq.getNextLong(key));
+
+        block = seq.getNextBlock(key, size);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) > size);
     }
 }

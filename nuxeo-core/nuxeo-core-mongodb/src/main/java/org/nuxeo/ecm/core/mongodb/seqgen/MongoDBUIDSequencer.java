@@ -43,6 +43,9 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MongoDB implementation of {@link UIDSequencer}.
  * <p>
@@ -59,8 +62,6 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
     public static final String COLLECTION_NAME_PROPERTY = "nuxeo.mongodb.seqgen.collection.name";
 
     public static final String DEFAULT_COLLECTION_NAME = "sequence";
-
-    public static final Long ONE = Long.valueOf(1L);
 
     public static final String SEQUENCE_VALUE_FIELD = "sequence";
 
@@ -101,16 +102,30 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
 
     @Override
     public long getNextLong(String key) {
+        return incrementBy(key, 1);
+    }
+
+    @Override
+    public List<Long> getNextBlock(String key, int blockSize) {
+        List<Long> ret = new ArrayList<>(blockSize);
+        long last = incrementBy(key, blockSize);
+        for (int i = blockSize - 1; i >= 0; i--) {
+            ret.add(last - i);
+        }
+        return ret;
+    }
+
+    protected long incrementBy(String key, int value) {
         FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER);
         Bson filter = eq(MongoDBSerializationHelper.MONGODB_ID, key);
-        Bson update = Updates.inc(SEQUENCE_VALUE_FIELD, ONE);
+        Bson update = Updates.inc(SEQUENCE_VALUE_FIELD, Long.valueOf(value));
         Document sequence = getSequencerCollection().findOneAndUpdate(filter, update, options);
         // If sequence is null, we need to create it
         if (sequence == null) {
             try {
                 sequence = new Document();
                 sequence.put(MongoDBSerializationHelper.MONGODB_ID, key);
-                sequence.put(SEQUENCE_VALUE_FIELD, ONE);
+                sequence.put(SEQUENCE_VALUE_FIELD, Long.valueOf(value));
                 getSequencerCollection().insertOne(sequence);
             } catch (MongoWriteException e) {
                 // There was a race condition - just re-run getNextLong
