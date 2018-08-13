@@ -333,10 +333,12 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         UIDSequencer seq = uidGeneratorService.getSequencer();
 
         List<Document> documents = new ArrayList<>(entries.size());
-        for (LogEntry entry : entries) {
-            entry.setId(seq.getNextLong(SEQ_NAME));
+        List<Long> block = seq.getNextBlock(SEQ_NAME, entries.size());
+        for (int i = 0; i < entries.size(); i++) {
+            LogEntry entry = entries.get(i);
+            entry.setId(block.get(i));
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Indexing log enry Id: %s, with logDate : %s, for docUUID: %s ",
+                log.debug(String.format("Indexing log entry Id: %s, with logDate : %s, for docUUID: %s ",
                         Long.valueOf(entry.getId()), entry.getLogDate(), entry.getDocUUID()));
             }
             documents.add(MongoDBAuditEntryWriter.asDocument(entry));
