@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -60,4 +62,17 @@ public class TestRedisUIDSequencer {
         assertEquals(100001L, sequencer.getNextLong("A"));
     }
 
+    @Test
+    public void testBlockOfSequences() {
+        UIDSequencer seq = service.getSequencer();
+        String key = "blockKey";
+        int size = 1000;
+        seq.initSequence(key, 0L);
+        List<Long> block = seq.getNextBlock(key, size);
+        assertNotNull(block);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) < block.get(1));
+        assertTrue(block.get(size - 2) < block.get(size - 1));
+        assertTrue(block.get(size - 1) < seq.getNextLong(key));
+    }
 }

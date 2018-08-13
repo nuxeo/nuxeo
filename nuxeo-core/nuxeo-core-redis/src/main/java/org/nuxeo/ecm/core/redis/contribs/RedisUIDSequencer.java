@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.core.redis.contribs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -70,4 +73,23 @@ public class RedisUIDSequencer extends AbstractUIDSequencer {
         }
     }
 
+    @Override
+    public List<Long> getNextBlock(String key, int blockSize) {
+        List<Long> ret = new ArrayList<>(blockSize);
+        if (blockSize == 1) {
+            ret.add(getNextLong(key));
+            return ret;
+        }
+        RedisExecutor executor = Framework.getService(RedisExecutor.class);
+        long last;
+        try {
+            last = executor.execute(jedis -> jedis.incrBy(namespace + key, blockSize));
+        } catch (JedisException e) {
+            throw new NuxeoException(e);
+        }
+        for (int i = blockSize - 1; i >= 0; i--) {
+            ret.add(last - i);
+        }
+        return ret;
+    }
 }

@@ -26,6 +26,9 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * UID Sequencer based on a key/value store. The store is the same for all sequencers, but they are using different
  * keys, prefixed by the sequencer name.
@@ -80,4 +83,13 @@ public class KeyValueStoreUIDSequencer extends AbstractUIDSequencer {
         return getStore().addAndGet(getKey(key), 1);
     }
 
+    @Override
+    public List<Long> getNextBlock(String key, int blockSize) {
+        List<Long> ret = new ArrayList<>(blockSize);
+        long last = getStore().addAndGet(getKey(key), blockSize);
+        for (int i = blockSize - 1; i >= 0; i--) {
+            ret.add(last - i);
+        }
+        return ret;
+    }
 }

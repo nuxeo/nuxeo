@@ -18,12 +18,17 @@
  */
 package org.nuxeo.elasticsearch.seqgen;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.google.common.collect.Lists;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
@@ -43,6 +48,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 public class ESUIDSequencer extends AbstractUIDSequencer {
+
+    protected static final int MAX_RETRY = 3;
 
     protected ESClient esClient = null;
 
@@ -91,9 +98,37 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     public long getNextLong(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
         IndexResponse res = esClient.index(
-                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName)
-                        .source(source, XContentType.JSON));
+                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).source(source,
+                        XContentType.JSON));
         return res.getVersion();
     }
 
+    @Override
+    public List<Long> getNextBlock(String key, int blockSize) {
+        if (blockSize == 1) {
+            return Collections.singletonList(getNextLong(key));
+        }
+        List<Long> ret = new ArrayList<>(blockSize);
+        long first = getNextBlockWithRetry(key, blockSize);
+        for (long i = 0; i < blockSize; i++) {
+            ret.add(first + i);
+        }
+        return ret;
+    }
+
+    protected long getNextBlockWithRetry(String key, int blockSize) {
+        long ret;
+        for (int i = 0; i < MAX_RETRY; i++) {
+            ret = getNextLong(key);
+            try {
+                initSequence(key, ret + blockSize - 1);
+                return ret;
+            } catch (ConcurrentUpdateException e) {
+                if (i == MAX_RETRY - 1) {
+                    throw e;
+                }
+            }
+        }
+        throw new NuxeoException("Unable to get a block of sequence");
+    }
 }

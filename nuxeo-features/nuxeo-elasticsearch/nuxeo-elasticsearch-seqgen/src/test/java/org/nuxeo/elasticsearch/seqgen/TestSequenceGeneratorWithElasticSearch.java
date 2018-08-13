@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,6 @@ public class TestSequenceGeneratorWithElasticSearch {
         seq.initSequence("mySequence", 1_000_000L);
         assertEquals(1_000_001L, seq.getNextLong("mySequence"));
         assertEquals(1_000_002L, seq.getNextLong("mySequence"));
-
         seq.initSequence("another", 3_147_483_647L);
         assertTrue("Sequence should be a long",seq.getNextLong("another") > 3_147_483_647L);
 
@@ -107,4 +107,17 @@ public class TestSequenceGeneratorWithElasticSearch {
         assertEquals(nbCalls + 1, seq.getNext(seqName));
     }
 
+    @Test
+    public void testBlockOfSequences() {
+        UIDSequencer seq = uidGeneratorService.getSequencer();
+        String key = "blockKey";
+        int size = 1000;
+        seq.initSequence(key, 0L);
+        List<Long> block = seq.getNextBlock(key, size);
+        assertNotNull(block);
+        assertEquals(size, block.size());
+        assertTrue(block.get(0) < block.get(1));
+        assertTrue(block.get(size - 2) < block.get(size - 1));
+        assertTrue(block.get(size - 1) < seq.getNextLong(key));
+    }
 }
