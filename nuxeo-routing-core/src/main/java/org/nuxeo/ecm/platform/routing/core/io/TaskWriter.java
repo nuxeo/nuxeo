@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *     <a href="mailto:ncunha@nuxeo.com">Nuno Cunha</a>
  *
  */
 
@@ -27,6 +28,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -62,7 +64,6 @@ import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
@@ -86,10 +87,10 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     protected static final String SEPARATOR = ":";
 
     @Inject
-    private SchemaManager schemaManager;
+    protected SchemaManager schemaManager;
 
     @Inject
-    UserManager userManager;
+    protected UserManager userManager;
 
     public TaskWriter() {
         super(ENTITY_TYPE, Task.class);
@@ -147,42 +148,13 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             }
             jg.writeEndArray();
 
-            jg.writeArrayFieldStart("actors");
             final boolean isFetchActors = ctx.getFetched(ENTITY_TYPE).contains(FETCH_ACTORS);
-            for (String actorId : item.getActors()) {
-                if (isFetchActors) {
-                    if (actorId.startsWith(USER_PREFIX + SEPARATOR)) {
-                        actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
-                        NuxeoPrincipal user = userManager.getPrincipal(actorId);
-                        if (user != null) {
-                            writeEntity(user, jg);
-                            continue;
-                        }
-                    } else if (actorId.startsWith(GROUP_PREFIX + SEPARATOR)) {
-                        actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
-                        NuxeoGroup group = userManager.getGroup(actorId);
-                        if (group != null) {
-                            writeEntity(group, jg);
-                            continue;
-                        }
-                    } else {
-                        NuxeoPrincipal user = userManager.getPrincipal(actorId);
-                        if (user != null) {
-                            writeEntity(user, jg);
-                            continue;
-                        } else {
-                            NuxeoGroup group = userManager.getGroup(actorId);
-                            if (group != null) {
-                                writeEntity(group, jg);
-                                continue;
-                            }
-                        }
-                    }
-                }
-                jg.writeStartObject();
-                jg.writeStringField("id", actorId);
-                jg.writeEndObject();
-            }
+            jg.writeArrayFieldStart("actors");
+            writeActors(item.getActors(), isFetchActors, jg);
+            jg.writeEndArray();
+
+            jg.writeArrayFieldStart("delegatedActors");
+            writeActors(item.getDelegatedActors(), isFetchActors, jg);
             jg.writeEndArray();
 
             jg.writeArrayFieldStart("comments");
@@ -210,6 +182,8 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             if (node != null) {
                 jg.writeFieldName("taskInfo");
                 jg.writeStartObject();
+                jg.writeBooleanField("allowTaskReassignment", node.allowTaskReassignment());
+
                 final ActionManager actionManager = Framework.getService(ActionManager.class);
                 jg.writeArrayFieldStart("taskActions");
                 for (Button button : node.getTaskButtons()) {
@@ -245,7 +219,43 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
                 jg.writeEndObject();
             }
         }
+    }
 
+    protected void writeActors(List<String> actors, boolean isFetchActors, JsonGenerator jg) throws IOException {
+        for (String actorId : actors) {
+            if (isFetchActors) {
+                if (actorId.startsWith(USER_PREFIX + SEPARATOR)) {
+                    actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
+                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
+                    if (user != null) {
+                        writeEntity(user, jg);
+                        continue;
+                    }
+                } else if (actorId.startsWith(GROUP_PREFIX + SEPARATOR)) {
+                    actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
+                    NuxeoGroup group = userManager.getGroup(actorId);
+                    if (group != null) {
+                        writeEntity(group, jg);
+                        continue;
+                    }
+                } else {
+                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
+                    if (user != null) {
+                        writeEntity(user, jg);
+                        continue;
+                    } else {
+                        NuxeoGroup group = userManager.getGroup(actorId);
+                        if (group != null) {
+                            writeEntity(group, jg);
+                            continue;
+                        }
+                    }
+                }
+            }
+            jg.writeStartObject();
+            jg.writeStringField("id", actorId);
+            jg.writeEndObject();
+        }
     }
 
     protected void writeWorkflowInitiator(JsonGenerator jg, String workflowInitiator) throws IOException {
@@ -270,7 +280,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
      * @since 8.3
      */
     public static void writeTaskVariables(GraphNode node, JsonGenerator jg, MarshallerRegistry registry,
-            RenderingContext ctx, SchemaManager schemaManager) throws IOException, JsonGenerationException {
+            RenderingContext ctx, SchemaManager schemaManager) throws IOException {
         if (node == null || node.getDocument() == null) {
             return;
         }
@@ -302,8 +312,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
      * @since 8.3
      */
     public static void writeWorkflowVariables(DocumentRoute route, GraphNode node, JsonGenerator jg,
-            MarshallerRegistry registry, RenderingContext ctx, SchemaManager schemaManager)
-            throws IOException, JsonGenerationException {
+            MarshallerRegistry registry, RenderingContext ctx, SchemaManager schemaManager) throws IOException {
         String facet = (String) route.getDocument().getPropertyValue(GraphRoute.PROP_VARIABLES_FACET);
         if (StringUtils.isNotBlank(facet)) {
 
