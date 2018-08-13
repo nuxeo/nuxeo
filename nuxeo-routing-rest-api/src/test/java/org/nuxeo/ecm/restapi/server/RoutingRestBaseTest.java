@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     "Guillaume Renard"
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *     <a href="mailto:ncunha@nuxeo.com">Nuno Cunha</a>
  */
 
 package org.nuxeo.ecm.restapi.server;
@@ -29,8 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -39,6 +38,8 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @since 8.3
@@ -56,6 +57,11 @@ public class RoutingRestBaseTest extends BaseTest {
         String actor = actors.getElements().next().get("id").getTextValue();
         assertEquals("Administrator", actor);
         return taskId;
+    }
+
+    protected String getBodyForChooseParticipantsTaskCompletion(String taskId) {
+        return "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\"," + "\"entity-type\": \"task\","
+                + "\"variables\": {\"participants\": [\"Administrator\"], \"validationOrReview\": \"validation\"} }";
     }
 
     protected String getBodyForStartReviewTaskCompletion(String taskId) throws IOException {
