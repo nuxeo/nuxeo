@@ -88,7 +88,6 @@ import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -478,9 +477,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         UIDSequencer seq = uidGeneratorService.getSequencer();
 
         try {
-
-            for (LogEntry entry : entries) {
-                entry.setId(seq.getNextLong(SEQ_NAME));
+            List<Long> block = seq.getNextBlock(SEQ_NAME, entries.size());
+            for (int i = 0; i < entries.size(); i++) {
+                LogEntry entry = entries.get(i);
+                entry.setId(block.get(i));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Indexing log entry: %s", entry));
                 }
