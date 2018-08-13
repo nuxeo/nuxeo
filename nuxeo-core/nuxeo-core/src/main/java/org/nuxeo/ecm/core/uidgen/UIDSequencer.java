@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * UID Sequencer interface defines a method to retrieve next ids based on a given key.
  */
@@ -78,6 +81,19 @@ public interface UIDSequencer {
      * @since 8.3
      */
     long getNextLong(String key);
+
+    /**
+     * Returns a block containing {@code blockSize} sequences.
+     *
+     * @since 10.3
+     */
+    default List<Long> getNextBlock(String key, int blockSize) {
+        List<Long> ret = new ArrayList<>(blockSize);
+        for (int i = 0; i < blockSize; i++) {
+            ret.add(getNextLong(key));
+        }
+        return ret;
+    }
 
     /**
      * Cleanup callback
