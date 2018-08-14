@@ -10,6 +10,7 @@
       <settings>
         {
         "number_of_shards" : 1,
+        "index.translog.durability": "${elasticsearch.index.translog.durability}",
         "auto_expand_replicas" : "0-all"
         }
       </settings>
