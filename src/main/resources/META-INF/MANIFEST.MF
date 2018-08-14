@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.nuxeo.wopi.rest.api;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-WebModule: org.nuxeo.wopi.jaxrs.WOPIModule;name=wopi
-Nuxeo-Component: OSGI-INF/stores-contrib.xml,
- OSGI-INF/auth-contrib.xml,
- OSGI-INF/versioning-policies-contrib.xml,
- OSGI-INF/request-controller-contrib.xml
+Nuxeo-Component: OSGI-INF/auth-contrib.xml,
+ OSGI-INF/directories-contrib.xml,
+ OSGI-INF/request-controller-contrib.xml,
+ OSGI-INF/schedulers-contrib.xml,
+ OSGI-INF/versioning-policies-contrib.xml

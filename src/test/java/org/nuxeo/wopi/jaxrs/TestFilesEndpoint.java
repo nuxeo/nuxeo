@@ -79,16 +79,14 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.wopi.Constants;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Operation;
+import org.nuxeo.wopi.lock.LockHelper;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -121,9 +119,6 @@ public class TestFilesEndpoint {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected KeyValueService keyValueService;
 
     @Inject
     protected TokenAuthenticationService tokenAuthenticationService;
@@ -554,8 +549,8 @@ public class TestFilesEndpoint {
         try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
             assertEquals(200, response.getStatus());
             assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
-            KeyValueStore store = keyValueService.getKeyValueStore(Constants.WOPI_LOCKS_STORE_NAME);
-            assertEquals("bar", store.getString(blobDoc.getId()));
+            String lock = LockHelper.getLock(blobDocFileId);
+            assertEquals("bar", lock);
         }
 
         // fail - 409 - locked by another client
@@ -807,7 +802,7 @@ public class TestFilesEndpoint {
             assertTrue(node.has(URL));
             assertTrue(node.has(HOST_VIEW_URL));
             assertTrue(node.has(HOST_EDIT_URL));
-            String hostViewUrl = node.get(Constants.HOST_VIEW_URL).asText();
+            String hostViewUrl = node.get(HOST_VIEW_URL).asText();
             String[] split = hostViewUrl.split("/");
             String docId = split[split.length - 1];
             DocumentModel newDoc = session.getDocument(new IdRef(docId));

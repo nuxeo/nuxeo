@@ -28,8 +28,6 @@ public class Constants {
         // constants class
     }
 
-    public static final String WOPI_LOCKS_STORE_NAME = "wopi-locks";
-
     public static final String WOPI_SOURCE = "wopi";
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
@@ -40,7 +38,27 @@ public class Constants {
 
     public static final String WOPI_SRC = "WOPISrc";
 
-    public static final long LOCK_TTL = 30 * 60 * 1000; // 30 minutes
+    // -------- WOPI locks directory ---------------
+
+    public static final String LOCK_DIRECTORY_NAME = "wopiLocks";
+
+    public static final String LOCK_DIRECTORY_SCHEMA_NAME = "wopiLocks"; // NOSONAR
+
+    public static final String LOCK_DIRECTORY_FILE_ID = "fileId";
+
+    public static final String LOCK_DIRECTORY_REPOSITORY = "repository";
+
+    public static final String LOCK_DIRECTORY_DOC_ID = "docId";
+
+    public static final String LOCK_DIRECTORY_LOCK = "lock";
+
+    public static final String LOCK_DIRECTORY_TIMESTAMP = "timestamp";
+
+    public static final long LOCK_TTL = 30L * 60 * 1000; // 30 minutes
+
+    public static final String LOCK_EXPIRATION_EVENT = "wopiLocksExpiration";
+
+    // -------- End WOPI locks directory ---------------
 
     // -------- CheckFileInfo ---------------
 

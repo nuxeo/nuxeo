@@ -26,7 +26,6 @@ import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
-import static org.nuxeo.wopi.Constants.LOCK_TTL;
 import static org.nuxeo.wopi.Constants.NAME;
 import static org.nuxeo.wopi.Constants.OWNER_ID;
 import static org.nuxeo.wopi.Constants.READ_ONLY;
@@ -46,7 +45,6 @@ import static org.nuxeo.wopi.Constants.USER_CAN_WRITE;
 import static org.nuxeo.wopi.Constants.USER_FRIENDLY_NAME;
 import static org.nuxeo.wopi.Constants.USER_ID;
 import static org.nuxeo.wopi.Constants.VERSION;
-import static org.nuxeo.wopi.Constants.WOPI_LOCKS_STORE_NAME;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
@@ -92,15 +90,14 @@ import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
-import org.nuxeo.wopi.Constants;
+import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Helpers;
 import org.nuxeo.wopi.Operation;
 import org.nuxeo.wopi.exception.BadRequestException;
 import org.nuxeo.wopi.exception.ConflictException;
 import org.nuxeo.wopi.exception.NotImplementedException;
 import org.nuxeo.wopi.exception.PreConditionFailedException;
+import org.nuxeo.wopi.lock.LockHelper;
 
 /**
  * Implementation of the Files endpoint.
@@ -129,7 +126,7 @@ public class FilesEndpoint extends DefaultObject {
 
     protected String xpath;
 
-    protected KeyValueStore store;
+    protected String fileId;
 
     @Override
     public void initialize(Object... args) {
@@ -138,7 +135,7 @@ public class FilesEndpoint extends DefaultObject {
         doc = (DocumentModel) args[1];
         blob = (Blob) args[2];
         xpath = (String) args[3];
-        store = Framework.getService(KeyValueService.class).getKeyValueStore(WOPI_LOCKS_STORE_NAME);
+        fileId = FileInfo.computeFileId(doc, xpath);
     }
 
     /**
@@ -213,7 +210,8 @@ public class FilesEndpoint extends DefaultObject {
             checkWritePropertiesPermission();
             // lock
             doc.setLock();
-            store.put(doc.getId(), lock, LOCK_TTL); // TODO multi repository - compute a key?
+            LockHelper.addLock(fileId, lock);
+
             response.addHeader(ITEM_VERSION, doc.getVersionLabel());
             return Response.ok().build();
         }
@@ -222,13 +220,14 @@ public class FilesEndpoint extends DefaultObject {
         if (StringUtils.isEmpty(oldLock)) {
             if (lock.equals(currentLock)) {
                 // refresh lock
-                store.setTTL(doc.getId(), LOCK_TTL);
+                LockHelper.refreshLock(fileId);
                 response.addHeader(ITEM_VERSION, doc.getVersionLabel());
                 return Response.ok().build();
             }
         } else {
             if (oldLock.equals(currentLock)) {
-                store.put(doc.getId(), lock, LOCK_TTL);
+                // unlock and relock
+                LockHelper.updateLock(fileId, lock);
                 return Response.ok().build();
             }
         }
@@ -242,7 +241,7 @@ public class FilesEndpoint extends DefaultObject {
      * Must be called to check that a locked document is not locked by Nuxeo.
      */
     protected String getCurrentLock() {
-        String currentLock = store.getString(doc.getId());
+        String currentLock = LockHelper.getLock(fileId);
         if (currentLock == null) {
             // locked by Nuxeo
             throw new ConflictException();
@@ -291,11 +290,11 @@ public class FilesEndpoint extends DefaultObject {
             if (unlock) {
                 // unlock
                 doc.removeLock();
-                store.put(doc.getId(), (String) null);
+                LockHelper.removeLock(fileId);
                 response.addHeader(ITEM_VERSION, doc.getVersionLabel());
             } else {
                 // refresh lock
-                store.setTTL(doc.getId(), LOCK_TTL);
+                LockHelper.refreshLock(fileId);
             }
             return Response.ok().build();
         }
@@ -335,8 +334,7 @@ public class FilesEndpoint extends DefaultObject {
         String newFileName = relativeTarget;
         if (StringUtils.isNotEmpty(suggestedTarget)) {
             newFileName = suggestedTarget.startsWith(".")
-                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget
-                    : suggestedTarget;
+                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget : suggestedTarget;
         }
 
         DocumentModel parent = session.getDocument(parentRef);
