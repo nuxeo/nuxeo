@@ -12,6 +12,7 @@
   "IsAnonymousUser": false,
   "UserFriendlyName": "John Doe",
   "ReadOnly": false,
+  "SupportsExtendedLockLength": true,
   "UserCanRename": true,
   "UserCanWrite": true,
   "UserCanNotWriteRelative": false

@@ -12,6 +12,7 @@
   "IsAnonymousUser": false,
   "UserFriendlyName": "Joe Jackson",
   "ReadOnly": true,
+  "SupportsExtendedLockLength": true,
   "UserCanRename": false,
   "UserCanWrite": false,
   "UserCanNotWriteRelative": true
