@@ -100,7 +100,6 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.storage.mongodb")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
-@Deploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 public class CoreFeature implements RunnerFeature {
@@ -133,6 +132,8 @@ public class CoreFeature implements RunnerFeature {
 
     protected StorageConfiguration storageConfiguration;
 
+    protected WorkManagerConfiguration workManagerConfiguration;
+
     protected RepositoryInit repositoryInit;
 
     protected Granularity granularity;
@@ -146,6 +147,10 @@ public class CoreFeature implements RunnerFeature {
 
     public StorageConfiguration getStorageConfiguration() {
         return storageConfiguration;
+    }
+
+    public WorkManagerConfiguration getWorkManagerConfiguration() {
+        return workManagerConfiguration;
     }
 
     @Override
@@ -167,6 +172,7 @@ public class CoreFeature implements RunnerFeature {
         }
         Granularity cleanup = repositoryConfig.cleanup();
         granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
+        workManagerConfiguration = new WorkManagerConfiguration(this);
     }
 
     public Granularity getGranularity() {
@@ -189,6 +195,11 @@ public class CoreFeature implements RunnerFeature {
             harness.getContext().deploy(new URLStreamRef(blobContribUrl));
             URL repoContribUrl = storageConfiguration.getRepositoryContrib(runner);
             harness.getContext().deploy(new URLStreamRef(repoContribUrl));
+
+            workManagerConfiguration.init();
+            for (URL contribURL : workManagerConfiguration.getDeploymentContribURLs(runner)) {
+                harness.getContext().deploy(contribURL);
+            }
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

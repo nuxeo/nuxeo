@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.kafka.stream.config">
+
+  <require>org.nuxeo.runtime.stream.kafka.service</require>
+
+  <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
+    <kafkaConfig name="default" randomPrefix="true" topicPrefix="nuxeo-test-">
+      <producer>
+        <property name="bootstrap.servers">DEFAULT_TEST</property>
+      </producer>
+      <consumer>
+        <property name="bootstrap.servers">DEFAULT_TEST</property>
+        <property name="request.timeout.ms">30000</property>
+        <property name="max.poll.interval.ms">20000</property>
+        <property name="session.timeout.ms">10000</property>
+        <property name="heartbeat.interval.ms">400</property>
+        <property name="max.poll.records">25</property>
+      </consumer>
+    </kafkaConfig>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+    <logConfig name="work" type="kafka">
+      <option name="kafkaConfig">default</option>
+    </logConfig>
+  </extension>
+
+</component>
