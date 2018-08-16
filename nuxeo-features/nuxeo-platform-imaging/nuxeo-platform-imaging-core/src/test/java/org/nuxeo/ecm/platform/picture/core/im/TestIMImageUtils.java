@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
@@ -40,7 +41,15 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/commandline-imagemagick-convert-contrib.xml")
 public class TestIMImageUtils {
+
+    protected ImageMagickCaller imc = new ImageMagickCaller() {
+        @Override
+        public void callImageMagick() {
+            return;
+        }
+    };
 
     protected String checkFileBlob(String filename, boolean usefilename, String targetExt) throws Exception {
         File file = FileUtils.getResourceFileFromContext(filename);
@@ -63,12 +72,6 @@ public class TestIMImageUtils {
 
     protected String check(Blob blob, String targetExt) throws Exception {
         assertNotNull(blob);
-        ImageMagickCaller imc = new ImageMagickCaller() {
-            @Override
-            public void callImageMagick() {
-                return;
-            }
-        };
         imc.makeFiles(blob, targetExt);
         return "src=" + FilenameUtils.getExtension(imc.sourceFile.getName()) + " dst="
                 + FilenameUtils.getExtension(imc.targetFile.getName()) + " tmp="
@@ -89,6 +92,14 @@ public class TestIMImageUtils {
         assertEquals("src=JPEG dst=JPEG tmp=JPEG", checkStringBlob(filename, false, null));
         assertEquals("src=jpg dst=png tmp=jpg", checkStringBlob(filename, true, "png"));
         assertEquals("src=JPEG dst=png tmp=JPEG", checkStringBlob(filename, false, "png"));
+    }
+
+    @Test
+    public void testImageMagickCaller_CallSetsFilename() throws IOException {
+        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
+        Blob blob = Blobs.createBlob(file);
+        Blob result = imc.call(blob, "pdf", "converter");
+        assertEquals("test.pdf", result.getFilename());
     }
 
 }

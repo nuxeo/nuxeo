@@ -67,6 +67,7 @@ public class IMImageUtils implements ImageUtils {
                 callImageMagick();
 
                 Blob targetBlob = Blobs.createBlob(targetFile);
+                targetBlob.setFilename(getFilename(blob, targetExt));
                 Framework.trackFile(targetFile, targetBlob);
                 return targetBlob;
             } catch (CommandNotAvailable | CommandException | IOException e) {
@@ -128,6 +129,11 @@ public class IMImageUtils implements ImageUtils {
             tmpFile = Framework.createTempFile("nuxeoImageSource", "." + ext);
             blob.transferTo(tmpFile);
             return tmpFile;
+        }
+
+        protected String getFilename(Blob blob, String targetExt) {
+            String baseName = FilenameUtils.getBaseName(blob.getFilename());
+            return baseName + "." + targetExt;
         }
 
         public abstract void callImageMagick() throws CommandNotAvailable, CommandException;
