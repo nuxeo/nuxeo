@@ -43,12 +43,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Anahide Tchertchian
  */
-@Operation(id = DownloadFile.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Download file", description = "Download a file", aliases = { "Seam.DownloadFile" })
+@Operation(id = DownloadFile.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Download file", description = "Download a file", aliases = {
+        "WebUI.DownloadFile" })
 public class DownloadFile {
 
     protected static Log log = LogFactory.getLog(DownloadFile.class);
 
-    public static final String ID = "WebUI.DownloadFile";
+    public static final String ID = "Seam.DownloadFile";
 
     @Context
     protected OperationContext ctx;
@@ -60,7 +61,7 @@ public class DownloadFile {
         }
         DownloadService downloadService = Framework.getService(DownloadService.class);
         String key = downloadService.storeBlobs(Collections.singletonList(blob));
-        String url = BaseURL.getBaseURL()  + downloadService.getDownloadUrl(key);
+        String url = BaseURL.getBaseURL() + downloadService.getDownloadUrl(key);
 
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();

@@ -42,10 +42,11 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput", aliases = { "Seam.Refresh" })
+@Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput", aliases = {
+        "WebUI.Refresh" })
 public class RefreshUI {
 
-    public static final String ID = "WebUI.Refresh";
+    public static final String ID = "Seam.Refresh";
 
     protected static final Log log = LogFactory.getLog(RefreshUI.class);
 

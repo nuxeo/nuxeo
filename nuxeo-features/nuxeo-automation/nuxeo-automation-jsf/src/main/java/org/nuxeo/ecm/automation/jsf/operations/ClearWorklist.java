@@ -30,10 +30,11 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 /**
  * @author Anahide Tchertchian
  */
-@Operation(id = ClearWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Worklist", description = "Clear the worklist content.", aliases = { "Seam.ClearWorklist" })
+@Operation(id = ClearWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Worklist", description = "Clear the worklist content.", aliases = {
+        "WebUI.ClearWorklist" })
 public class ClearWorklist {
 
-    public static final String ID = "WebUI.ClearWorklist";
+    public static final String ID = "Seam.ClearWorklist";
 
     @Context
     protected OperationContext ctx;

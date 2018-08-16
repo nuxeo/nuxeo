@@ -31,10 +31,11 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = PushToClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Clipboard", description = "Add a input document(s) to clipboard. Returns back the document(s)", aliases = { "Seam.AddToClipboard" })
+@Operation(id = PushToClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Clipboard", description = "Add a input document(s) to clipboard. Returns back the document(s)", aliases = {
+        "WebUI.AddToClipboard" })
 public class PushToClipboard {
 
-    public static final String ID = "WebUI.AddToClipboard";
+    public static final String ID = "Seam.AddToClipboard";
 
     @Context
     protected OperationContext ctx;

@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.automation.jsf.operations;
 
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_WORKING_LIST;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -28,15 +30,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_WORKING_LIST;
-
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)", aliases = { "Seam.AddToWorklist" })
+@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)", aliases = {
+        "WebUI.AddToWorklist" })
 public class PushToWorklist {
 
-    public static final String ID = "WebUI.AddToWorklist";
+    public static final String ID = "Seam.AddToWorklist";
 
     @Context
     protected OperationContext ctx;

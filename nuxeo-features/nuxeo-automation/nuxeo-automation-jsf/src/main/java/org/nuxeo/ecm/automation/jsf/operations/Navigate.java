@@ -30,10 +30,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = Navigate.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Navigate to Document", description = "Navigate to the input document. The outcome of the UI action will be stored in the operation chain context as the 'Outcome' variable. Returns back the document.", aliases = { "Seam.NavigateTo" })
+@Operation(id = Navigate.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Navigate to Document", description = "Navigate to the input document. The outcome of the UI action will be stored in the operation chain context as the 'Outcome' variable. Returns back the document.", aliases = {
+        "WebUI.NavigateTo" })
 public class Navigate {
 
-    public static final String ID = "WebUI.NavigateTo";
+    public static final String ID = "Seam.NavigateTo";
 
     @Context
     protected OperationContext ctx;

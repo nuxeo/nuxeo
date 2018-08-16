@@ -31,10 +31,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = InitSeamContext.ID, category = Constants.CAT_UI, label = "Init Seam Context", description = "Initialize a Seam context (including Conversation if needed)", aliases = { "Seam.InitContext" })
+@Operation(id = InitSeamContext.ID, category = Constants.CAT_UI, label = "Init Seam Context", description = "Initialize a Seam context (including Conversation if needed)", aliases = {"WebUI.InitSeamContext"})
 public class InitSeamContext {
 
-    public static final String ID = "WebUI.InitSeamContext";
+    public static final String ID = "Seam.InitContext";
 
     @Param(name = "conversationId", required = false)
     protected String conversationId;

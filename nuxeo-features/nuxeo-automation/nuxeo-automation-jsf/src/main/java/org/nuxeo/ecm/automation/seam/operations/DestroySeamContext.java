@@ -31,10 +31,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = DestroySeamContext.ID, category = Constants.CAT_UI, label = "Destroy Seam Context", description = "Cleanup up Seam context", aliases = { "Seam.DestroyContext" })
+@Operation(id = DestroySeamContext.ID, category = Constants.CAT_UI, label = "Destroy Seam Context", description = "Cleanup up Seam context", aliases = {"WebUI.DestroySeamContext"})
 public class DestroySeamContext {
 
-    public static final String ID = "WebUI.DestroySeamContext";
+    public static final String ID = "Seam.DestroyContext";
 
     @Param(name = "conversationId", required = false)
     protected String conversationId;
