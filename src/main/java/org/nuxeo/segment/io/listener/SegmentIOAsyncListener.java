@@ -19,10 +19,10 @@
 package org.nuxeo.segment.io.listener;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -31,43 +31,44 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOMapper;
 
-public class SegmentIOAsyncListener implements PostCommitEventListener {
+public class SegmentIOAsyncListener implements PostCommitFilteringEventListener {
+
+    @Override
+    public boolean acceptEvent(Event event) {
+        SegmentIO service = Framework.getService(SegmentIO.class);
+        return service.getMappedEvents().contains(event.getName());
+    }
 
     @Override
     public void handleEvent(EventBundle bundle) {
 
         SegmentIO service = Framework.getService(SegmentIO.class);
 
-        List<String> eventToProcess = new ArrayList<>();
+        List<String> eventToProcess = service.getMappedEvents()
+                                             .stream()
+                                             .filter(event -> bundle.containsEventName(event))
+                                             .collect(Collectors.toList());
 
-        for (String event : service.getMappedEvents()) {
-            if (bundle.containsEventName(event)) {
-                eventToProcess.add(event);
-            }
-        }
+        Map<String, List<SegmentIOMapper>> event2Mappers = service.getMappers(eventToProcess);
 
-        if (eventToProcess.size() > 0) {
-            Map<String, List<SegmentIOMapper>> event2Mappers = service.getMappers(eventToProcess);
-
+        try {
+            // Force system login in order to have access to user directory
+            LoginContext login = Framework.login();
             try {
-                // Force system login in order to have access to user directory
-                LoginContext login = Framework.login();
-                try {
-                    processEvents(event2Mappers, bundle);
-                } finally {
-                    if (login != null) {
-                        login.logout();
-                    }
+                processEvents(event2Mappers, bundle);
+            } finally {
+                if (login != null) {
+                    login.logout();
                 }
-            } catch (LoginException e) {
-                throw new NuxeoException(e);
             }
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
         }
     }
 

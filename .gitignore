@@ -11,3 +11,7 @@ bin
 *.jar
 *.war
 *.ear
+
+# Intellij
+.idea
+*.iml
