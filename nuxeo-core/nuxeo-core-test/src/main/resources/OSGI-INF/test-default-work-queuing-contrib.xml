@@ -1,4 +1,5 @@
-<component name="org.nuxeo.ecm.core.test.queuing">
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.default.work.queuing">
 
   <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
     <queuing class="org.nuxeo.ecm.core.work.TestWorkQueuing" />
