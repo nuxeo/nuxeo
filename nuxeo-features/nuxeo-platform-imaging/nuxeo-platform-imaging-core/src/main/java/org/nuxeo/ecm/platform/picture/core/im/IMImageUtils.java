@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.picture.core.im;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -43,7 +44,7 @@ public class IMImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(IMImageUtils.class);
 
-    public static abstract class ImageMagickCaller {
+    public abstract static class ImageMagickCaller {
 
         protected File sourceFile;
 
@@ -73,12 +74,18 @@ public class IMImageUtils implements ImageUtils {
                 return null;
             } finally {
                 if (tmpFile != null) {
-                    tmpFile.delete();
+                    try {
+                        Files.delete(tmpFile.toPath());
+                    } catch (IOException e) {
+                        log.error("Unable to delete temporary file when calling ImageMagick command: " + commandName,
+                                e);
+                    }
                 }
             }
         }
 
-        protected void makeFiles(Blob blob, String targetExt) throws CommandNotAvailable, CommandException, IOException {
+        protected void makeFiles(Blob blob, String targetExt)
+                throws CommandNotAvailable, CommandException, IOException {
             sourceFile = blob.getFile();
 
             // check extension
@@ -96,7 +103,7 @@ public class IMImageUtils implements ImageUtils {
                 } else {
                     // rename tmp file
                     File newTmpFile = new File(FilenameUtils.removeExtension(tmpFile.getPath()) + "." + ext);
-                    tmpFile.renameTo(newTmpFile);
+                    Files.move(tmpFile.toPath(), newTmpFile.toPath());
                     tmpFile = newTmpFile;
                     sourceFile = newTmpFile;
                 }
