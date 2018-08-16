@@ -49,10 +49,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @since 5.7
  */
-@Operation(id = AddMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Message", description = "Add a feedback message to be displayed. The message will be internationalized. You can specify the severity of the message using INFO, WARN and ERROR, default is INFO. Messages parameters are extracted from the context using the 'AddMessage.messageParams'.", aliases = { "Seam.AddMessage" })
+@Operation(id = AddMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Message", description = "Add a feedback message to be displayed. The message will be internationalized. You can specify the severity of the message using INFO, WARN and ERROR, default is INFO. Messages parameters are extracted from the context using the 'AddMessage.messageParams'.", aliases = {
+        "WebUI.AddMessage" })
 public class AddMessage {
 
-    public static final String ID = "WebUI.AddMessage";
+    public static final String ID = "Seam.AddMessage";
 
     public static final String MESSAGE_PARAMS_KEY = "AddMessage.messageParams";
 

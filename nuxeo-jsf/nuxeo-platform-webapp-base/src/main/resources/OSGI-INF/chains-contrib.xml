@@ -10,7 +10,7 @@
         <param type="string" name="filename">attachments.zip
         </param>
       </operation>
-      <operation id="WebUI.DownloadFile" />
+      <operation id="Seam.DownloadFile" />
     </chain>
 
   </extension>

@@ -27,10 +27,11 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 /**
  * @author Anahide Tchertchian
  */
-@Operation(id = ClearClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Clipboard", description = "Clear the clipboard content.", aliases = { "Seam.ClearClipboard" })
+@Operation(id = ClearClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Clipboard", description = "Clear the clipboard content.", aliases = {
+        "WebUI.ClearClipboard" })
 public class ClearClipboard {
 
-    public static final String ID = "WebUI.ClearClipboard";
+    public static final String ID = "Seam.ClearClipboard";
 
     @OperationMethod
     public void run() {

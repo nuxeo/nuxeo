@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 @Operation(id = CancelCreateDocumentInUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Cancel Document Creation in UI", description = "Cancels a document creation in UI, "
         + "as if user was hitting the 'Cancel' button on a the document creation form. "
-        + "It returns the parent document, that would have been the created document container.", aliases = { "Seam.CancelCreateDocumentInUI" })
+        + "It returns the parent document, that would have been the created document container.", aliases = {
+                "Seam.CancelCreateDocumentInUI" })
 public class CancelCreateDocumentInUI {
 
     public static final String ID = "Navigation.GoBack";

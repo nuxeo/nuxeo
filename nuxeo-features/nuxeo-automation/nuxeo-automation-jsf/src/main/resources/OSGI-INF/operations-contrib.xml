@@ -66,24 +66,24 @@
       <aliases>
         <alias>ImportWorklist</alias>
       </aliases>
-      <operation id="WebUI.InitSeamContext" />
+      <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
-      <operation id="WebUI.AddToWorklist" />
-      <operation id="WebUI.DestroySeamContext" />
+      <operation id="Seam.AddToWorklist" />
+      <operation id="Seam.DestroyContext" />
     </chain>
     <chain id="Blob.ImportClipboard">
       <aliases>
         <alias>ImportClipboard</alias>
       </aliases>
-      <operation id="WebUI.InitSeamContext" />
+      <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save" />
-      <operation id="WebUI.AddToClipboard" />
-      <operation id="WebUI.DestroySeamContext" />
+      <operation id="Seam.AddToClipboard" />
+      <operation id="Seam.DestroyContext" />
     </chain>
     <chain id="SeamActions.GET">
-      <operation id="WebUI.RunOperationInSeam">
+      <operation id="Seam.RunOperation">
         <param type="string" name="id">Actions.GET</param>
       </operation>
     </chain>
@@ -96,8 +96,8 @@
         <param type="properties" name="properties">expr:Context.get("docMetaData")
         </param>
       </operation>
-      <operation id="WebUI.RunOperationInSeam">
-        <param type="string" name="id">WebUI.Refresh</param>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
       </operation>
     </chain>
 
@@ -105,8 +105,8 @@
       <operation id="FileManager.Import">
         <param type="boolean" name="overwite">true</param>
       </operation>
-      <operation id="WebUI.RunOperationInSeam">
-        <param type="string" name="id">WebUI.Refresh</param>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
       </operation>
     </chain>
 

@@ -28,10 +28,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = AddErrorMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Error Message", description = "Add a message to be displayed in case the chain execution fails. This is a void operation - the input will be returned back as output", aliases = { "Seam.AddErrorMessage" })
+@Operation(id = AddErrorMessage.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Add Error Message", description = "Add a message to be displayed in case the chain execution fails. This is a void operation - the input will be returned back as output", aliases = {
+        "WebUI.AddErrorMessage" })
 public class AddErrorMessage {
 
-    public static final String ID = "WebUI.AddErrorMessage";
+    public static final String ID = "Seam.AddErrorMessage";
 
     @Context
     protected OperationContext ctx;

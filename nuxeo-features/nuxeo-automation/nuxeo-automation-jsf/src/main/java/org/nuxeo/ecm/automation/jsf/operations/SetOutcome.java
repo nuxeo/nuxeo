@@ -31,10 +31,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @since 5.4.2
  */
-@Operation(id = SetOutcome.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Set JSF Outcome", description = "Set the 'Outcome' context variable that represent a JSF outcome string. This outcome can be used by the next operations that need an outcome. It preserves the current input (e.g returns back the same input).", aliases = { "Seam.SetOutcome" })
+@Operation(id = SetOutcome.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Set JSF Outcome", description = "Set the 'Outcome' context variable that represent a JSF outcome string. This outcome can be used by the next operations that need an outcome. It preserves the current input (e.g returns back the same input).", aliases = {
+        "WebUI.SetJSFOutcome" })
 public class SetOutcome {
 
-    public static final String ID = "WebUI.SetJSFOutcome";
+    public static final String ID = "Seam.SetOutcome";
 
     @Context
     protected OperationContext ctx;

@@ -44,8 +44,8 @@ public class FetchFromClipboard {
 
     @OperationMethod
     public DocumentModelList run() {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
-                DocumentsListsManager.CLIPBOARD);
+        List<DocumentModel> res = OperationHelper.getDocumentListManager()
+                                                 .getWorkingList(DocumentsListsManager.CLIPBOARD);
         return new DocumentModelListImpl(res);
     }
 

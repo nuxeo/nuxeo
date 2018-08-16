@@ -5,8 +5,8 @@
 
     <chain id="addCurrentDocumentToWorklist">
       <operation id="Context.FetchDocument" />
-      <operation id="WebUI.AddToWorklist" />
-      <operation id="WebUI.AddMessage">
+      <operation id="Seam.AddToWorklist" />
+      <operation id="Seam.AddMessage">
         <param type="string" name="severity">INFO</param>
         <param type="string" name="message">label.document.added.to.worklist</param>
       </operation>

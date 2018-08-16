@@ -24,13 +24,14 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
- * @since 5.6
  * @author Laurent Doguin
+ * @since 5.6
  */
-@Operation(id = ClearSelectedDocuments.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Selected Documents", description = "Clear the selected documents list.", since = "5.6", aliases = { "Seam.ClearSelectedDocuments" })
+@Operation(id = ClearSelectedDocuments.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Selected Documents", description = "Clear the selected documents list.", since = "5.6", aliases = {
+        "WebUI.ClearSelectedDocuments" })
 public class ClearSelectedDocuments {
 
-    public static final String ID = "WebUI.ClearSelectedDocuments";
+    public static final String ID = "Seam.ClearSelectedDocuments";
 
     @OperationMethod
     public void run() {

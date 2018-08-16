@@ -44,8 +44,8 @@ public class GetSelectedDocuments {
 
     @OperationMethod
     public DocumentModelList run() {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> res = OperationHelper.getDocumentListManager()
+                                                 .getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         return new DocumentModelListImpl(res);
     }
 
