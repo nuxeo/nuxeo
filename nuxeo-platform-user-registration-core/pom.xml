@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-user-registration-parent</artifactId>
-    <version>8.10-HF35-SNAPSHOT</version>
+    <version>8.10-HF36-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-user-registration-core</artifactId>
