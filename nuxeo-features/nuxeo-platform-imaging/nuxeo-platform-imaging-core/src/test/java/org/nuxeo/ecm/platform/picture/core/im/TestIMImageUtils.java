@@ -69,19 +69,11 @@ public class TestIMImageUtils {
                 return;
             }
         };
-        try {
-            imc.makeFiles(blob, targetExt);
-            return "src=" + FilenameUtils.getExtension(imc.sourceFile.getName()) + " dst="
-                    + FilenameUtils.getExtension(imc.targetFile.getName()) + " tmp="
-                    + FilenameUtils.getExtension(imc.tmpFile == null ? "" : imc.tmpFile.getName());
-        } finally {
-            if (imc.targetFile != null) {
-                imc.targetFile.delete();
-            }
-            if (imc.tmpFile != null) {
-                imc.tmpFile.delete();
-            }
-        }
+        imc.makeFiles(blob, targetExt);
+        return "src=" + FilenameUtils.getExtension(imc.sourceFile.getName()) + " dst="
+                + FilenameUtils.getExtension(imc.targetFile.getName()) + " tmp="
+                + FilenameUtils.getExtension(imc.tmpFile == null ? ""
+                        : imc.tmpFile.getName());
     }
 
     @Test
