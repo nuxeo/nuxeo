@@ -9,8 +9,7 @@
   the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
   OF ANY KIND, either express or implied. See the License for the specific language
   governing permissions and limitations under the License. -->
-<Context antiResourceLocking="false" privileged="true"
-  path="${org.nuxeo.ecm.contextPath}" docBase="../nxserver/nuxeo.war">
+<Context antiResourceLocking="false" privileged="true" docBase="../nxserver/nuxeo.war">
 
   <!-- Disable HTTP Session persistence between restart since webengine session objects
     are not serializable -->
