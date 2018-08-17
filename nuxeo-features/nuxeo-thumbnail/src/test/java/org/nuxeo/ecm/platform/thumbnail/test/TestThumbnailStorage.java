@@ -110,5 +110,38 @@ public class TestThumbnailStorage {
         Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
         Assert.assertNotNull(file.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
         Assert.assertEquals(1, UpdateThumbnailCounter.count);
+
+        // update a property other than the content, shouldn't trigger thumbnail computation
+        file.setPropertyValue("dc:title", "Update title");
+        file = session.saveDocument(file);
+
+        txFeature.nextTransaction(); // wait for thumbnail update
+
+        file = session.getDocument(file.getRef());
+        Assert.assertEquals(1, UpdateThumbnailCounter.count);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-update-filename-listener-contrib.xml")
+    public void testAvoidThumbnailUpdateLoop() throws IOException {
+        // Create
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/big_nuxeo_logo.jpg"),
+                "image/jpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        txFeature.nextTransaction(); // wait for thumbnail update
+
+        Assert.assertEquals(1, UpdateThumbnailCounter.count);
+
+        // Update
+        blob.setFilename("logo.jpg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+
+        txFeature.nextTransaction(); // wait for thumbnail update
+
+        Assert.assertEquals(2, UpdateThumbnailCounter.count);
     }
 }
