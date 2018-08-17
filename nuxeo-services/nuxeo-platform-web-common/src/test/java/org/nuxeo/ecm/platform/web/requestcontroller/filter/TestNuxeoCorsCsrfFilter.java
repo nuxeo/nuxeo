@@ -23,7 +23,6 @@ import static com.google.common.net.HttpHeaders.REFERER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -31,7 +30,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsCsrfFilter.PRIVACY_SENSITIVE;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -130,7 +131,7 @@ public class TestNuxeoCorsCsrfFilter {
     public void testSourceURIOriginNull() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(eq(ORIGIN))).thenReturn("null");
-        assertNull(filter.getSourceURI(request));
+        assertEquals("privacy-sensitive:///", filter.getSourceURI(request).toASCIIString());
     }
 
     @Test
@@ -182,6 +183,11 @@ public class TestNuxeoCorsCsrfFilter {
         when(request.getHeader(eq(X_FORWARDED_HOST))).thenReturn("example.com");
         when(request.getHeader(eq(X_FORWARDED_PORT))).thenReturn("8080"); // TODO bug in VHH, ignored
         assertEquals("http://example.com/", filter.getTargetURI(request).toASCIIString());
+    }
+
+    @Test
+    public void testPrivacySensitiveURIDoesNotMatch() {
+        assertFalse(filter.sourceAndTargetMatch(PRIVACY_SENSITIVE, URI.create("http://example.com:8080")));
     }
 
     // test full filter
@@ -349,13 +355,28 @@ public class TestNuxeoCorsCsrfFilter {
     /**
      * Browser sending the Origin header from an attacker page, must fail.
      */
-    @SuppressWarnings("boxing")
     @Test
     public void testMismatchPost() throws Exception {
+        doTestMismatchPost("http://attacker.com");
+    }
+
+    /**
+     * Browser sending the Origin header from a local filesystem page, must fail.
+     * <p>
+     * Per RFC 6454, 7.3: Whenever a user agent issues an HTTP request from a "privacy-sensitive" context, the user
+     * agent MUST send the value "null" in the Origin header field.
+     */
+    @Test
+    public void testMismatchPostNullOrigin() throws Exception {
+        doTestMismatchPost("null");
+    }
+
+    @SuppressWarnings("boxing")
+    public void doTestMismatchPost(String origin) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(eq(ORIGIN))).thenReturn("http://attacker.com");
+        when(request.getHeader(eq(ORIGIN))).thenReturn(origin);
         when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
         when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
         MutableObject<InvocationOnMock> error = new MutableObject<>();
@@ -380,9 +401,9 @@ public class TestNuxeoCorsCsrfFilter {
         List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
         assertFalse("Expected WARN", events.isEmpty());
         String warn = events.get(events.size() - 1).getRenderedMessage();
-        assertEquals(
-                "CSRF check failure: source: http://attacker.com does not match target: http://example.com:8080/ and not allowed by CORS config",
-                warn);
+        String originInMessage = origin.equals("null") ? "privacy-sensitive:///" : origin;
+        assertEquals("CSRF check failure: source: " + originInMessage
+                + " does not match target: http://example.com:8080/ and not allowed by CORS config", warn);
     }
 
 }

@@ -71,6 +71,15 @@ public class NuxeoCorsCsrfFilter implements Filter {
 
     public static final String TRACE = HttpTrace.METHOD_NAME;
 
+    // RFC 6454
+    // 6.2 If the origin is not a scheme/host/port triple, then return the string null
+    // 7.3 Whenever a user agent issues an HTTP request from a "privacy-sensitive" context,
+    // the user agent MUST send the value "null" in the Origin header field.
+    public static final String ORIGIN_NULL = "null";
+
+    // marker for privacy-sensitive origins
+    public static final URI PRIVACY_SENSITIVE = URI.create("privacy-sensitive:///");
+
     public static final List<String> SCHEMES_ALLOWED = Arrays.asList("moz-extension", "chrome-extension");
 
     @Override
@@ -146,7 +155,13 @@ public class NuxeoCorsCsrfFilter implements Filter {
         response.sendError(HttpServletResponse.SC_FORBIDDEN, message);
     }
 
-    /** Gets the source URI: the URI of the page from which the request is actually coming. */
+    /**
+     * Gets the source URI: the URI of the page from which the request is actually coming.
+     * <p>
+     * {@code null} is returned is there is no header.
+     * <p>
+     * {@link #PRIVACY_SENSITIVE} is returned is there is a null origin (RFC 6454 7.3, "privacy-sensitive" context)
+     */
     public URI getSourceURI(HttpServletRequest request) {
         String source = request.getHeader(ORIGIN);
         if (isBlank(source)) {
@@ -156,9 +171,8 @@ public class NuxeoCorsCsrfFilter implements Filter {
             return null;
         }
         source = source.trim();
-        if ("null".equals(source)) {
-            // RFC 6454 7.1 origin-list-or-null
-            return null;
+        if (ORIGIN_NULL.equals(source)) {
+            return PRIVACY_SENSITIVE;
         }
         if (source.contains(" ")) {
             // RFC 6454 7.1 origin-list
