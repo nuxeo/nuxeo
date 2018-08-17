@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.thumbnail.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.platform.thumbnail.listener.UpdateThumbnailListener.THUMBNAIL_UPDATED;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -52,9 +53,13 @@ public class CheckBlobUpdateListener implements EventListener {
         }
 
         Property content = doc.getProperty("file:content");
-        if (DOCUMENT_CREATED.equals(event.getName()) || content.isDirty()) {
+        // Only perform the thumbnail update at creation or modification if the content is marked as changed and the
+        // thumbnail has not already been updated. This additional check is needed to avoid an infinite loop.
+        if (DOCUMENT_CREATED.equals(event.getName())
+                || content.isDirty() && !Boolean.TRUE.equals(ec.getProperty(THUMBNAIL_UPDATED))) {
 
-            if (BEFORE_DOC_UPDATE.equals(event.getName()) && doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+            if (BEFORE_DOC_UPDATE.equals(event.getName()) && doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)
+                    && content.getValue() == null) {
                 doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
             }
 

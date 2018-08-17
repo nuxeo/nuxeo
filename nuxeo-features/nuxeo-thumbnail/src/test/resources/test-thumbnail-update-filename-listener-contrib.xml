@@ -1,0 +1,13 @@
+<component name="org.nuxeo.thumbnail.event.listener.update.filename.test">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <!-- Lower priority than CheckBlobUpdateListener (999) to make sure the Blob is dirty when CheckBlobUpdateListener is 
+      called -->
+    <listener name="testUpdateFilenameListener" class="org.nuxeo.ecm.platform.thumbnail.test.TestUpdateFilenameListener"
+      priority="990">
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>
