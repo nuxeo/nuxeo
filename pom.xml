@@ -156,7 +156,7 @@
     <xdocreport.version>1.0.5</xdocreport.version>
     <librepdf.version>1.0.5</librepdf.version>
     <jclouds.version>1.9.2</jclouds.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>26.0-jre</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
     <google.api.client.version>1.19.1</google.api.client.version>
