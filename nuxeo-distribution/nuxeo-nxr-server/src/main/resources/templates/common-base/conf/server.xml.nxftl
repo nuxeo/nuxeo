@@ -81,7 +81,7 @@
                acceptCount="${nuxeo.server.http.acceptCount}"
                compression="on"
                compressionMinSize="512"
-               compressableMimeType="text/css,application/javascript,text/xml,text/html"
+               compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000"
                disableUploadTimeout="false"
                connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
@@ -111,7 +111,7 @@
                acceptCount="${nuxeo.server.http.acceptCount}"
                compression="on"
                compressionMinSize="512"
-               compressableMimeType="text/css,application/javascript,text/xml,text/html"
+               compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                scheme="https" secure="true"
                SSLEnabled="true">
         <SSLHostConfig certificateVerification="none">
@@ -135,7 +135,7 @@
                acceptCount="${nuxeo.server.http.acceptCount}"
                compression="on"
                compressionMinSize="512"
-               compressableMimeType="text/css,application/javascript,text/xml,text/html"
+               compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000"
                disableUploadTimeout="false"
                connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
