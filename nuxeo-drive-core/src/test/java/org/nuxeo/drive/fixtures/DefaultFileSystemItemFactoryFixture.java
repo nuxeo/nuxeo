@@ -139,6 +139,8 @@ public class DefaultFileSystemItemFactoryFixture {
 
     protected FileSystemItemFactory defaultFileSystemItemFactory;
 
+    protected FileSystemItemFactory defaultSyncRootFolderItemFactory;
+
     @Before
     public void createTestDocs() throws Exception {
         principal = session.getPrincipal();
@@ -189,8 +191,12 @@ public class DefaultFileSystemItemFactoryFixture {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+        FileSystemItemAdapterServiceImpl fileSystemItemAdapterServiceImpl = (FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService;
+        defaultFileSystemItemFactory = fileSystemItemAdapterServiceImpl.getFileSystemItemFactory(
                 "defaultFileSystemItemFactory");
+        // Get the default sync root folder item factory
+        defaultSyncRootFolderItemFactory = fileSystemItemAdapterServiceImpl.getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
     }
 
     @Test
@@ -861,8 +867,6 @@ public class DefaultFileSystemItemFactoryFixture {
         // defaultSyncRootFolderItemFactory
         DocumentModel section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
         nuxeoDriveManager.registerSynchronizationRoot(principal, section, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultSyncRootFolderItemFactory");
         FolderItem sectionItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(section);
         assertNotNull(sectionItem);
         assertFalse(sectionItem.getCanCreateChild());
@@ -911,8 +915,6 @@ public class DefaultFileSystemItemFactoryFixture {
             // Check that the lock info is not fetched for FileSystemItem
             // adaptation when calling getChildren or
             // scrollDescendants
-            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                    "defaultSyncRootFolderItemFactory");
             FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
                     syncRootFolder);
             List<FileSystemItem> children = syncRootFolderItem.getChildren();
@@ -970,8 +972,6 @@ public class DefaultFileSystemItemFactoryFixture {
         assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
 
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultSyncRootFolderItemFactory");
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 
@@ -1043,8 +1043,6 @@ public class DefaultFileSystemItemFactoryFixture {
         log.trace(
                 "Scroll through the descendants of \"/default-domain/UserWorkspaces/Administrator\", expecting one: \"testFolder\", "
                         + "the \"Collections\" folder and its descendants being ignored");
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultSyncRootFolderItemFactory");
         FolderItem userWorkspaceFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
                 userWorkspace);
         ScrollFileSystemItemList descendants = userWorkspaceFolderItem.scrollDescendants(null, 10, 1000);
@@ -1079,9 +1077,13 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
+        setPermission(doc, new ACE(userName, permission, isGranted));
+    }
+
+    protected void setPermission(DocumentModel doc, ACE ace) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        localACL.add(new ACE(userName, permission, isGranted));
+        localACL.add(ace);
         session.setACP(doc.getRef(), acp, true);
         session.save();
     }
