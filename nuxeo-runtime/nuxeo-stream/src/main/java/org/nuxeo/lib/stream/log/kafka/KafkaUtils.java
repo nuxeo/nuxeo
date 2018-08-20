@@ -33,7 +33,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -47,11 +49,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.log.LogPartition;
-
-import kafka.admin.AdminClient;
-import kafka.coordinator.group.GroupOverview;
-import scala.collection.Iterator;
-import scala.collection.JavaConverters;
 
 /**
  * Misc Kafka Utils
@@ -69,13 +66,13 @@ public class KafkaUtils implements AutoCloseable {
 
     protected AdminClient adminClient;
 
-    protected org.apache.kafka.clients.admin.AdminClient newAdminClient;
-
     protected List<String> allConsumers;
 
     protected long allConsumersTime;
 
     protected static final long ALL_CONSUMERS_CACHE_TIMEOUT_MS = 2000;
+
+    protected static final long ADMIN_CLIENT_CLOSE_TIMEOUT_S = 5;
 
     public KafkaUtils() {
         this(getDefaultAdminProperties());
@@ -95,15 +92,22 @@ public class KafkaUtils implements AutoCloseable {
         return System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     public static boolean kafkaDetected() {
         AdminClient client = AdminClient.create(getDefaultAdminProperties());
         try {
-            client.findAllBrokers();
+            client.describeCluster().nodes().get(5, TimeUnit.SECONDS);
             return true;
-        } catch (RuntimeException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new StreamRuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new StreamRuntimeException(e);
+        } catch (TimeoutException e) {
             return false;
         } finally {
-            client.close();
+            // cannot use try with resource because of timeout
+            client.close(0, TimeUnit.SECONDS);
         }
     }
 
@@ -157,7 +161,7 @@ public class KafkaUtils implements AutoCloseable {
         if (topicExists(topic)) {
             throw new IllegalArgumentException("Cannot create Topic already exists: " + topic);
         }
-        CreateTopicsResult ret = getNewAdminClient().createTopics(
+        CreateTopicsResult ret = getAdminClient().createTopics(
                 Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
         try {
             ret.all().get(5, TimeUnit.MINUTES);
@@ -177,7 +181,7 @@ public class KafkaUtils implements AutoCloseable {
 
     public int partitions(String topic) {
         try {
-            TopicDescription desc = getNewAdminClient().describeTopics(Collections.singletonList(topic))
+            TopicDescription desc = getAdminClient().describeTopics(Collections.singletonList(topic))
                                                        .values()
                                                        .get(topic)
                                                        .get();
@@ -198,7 +202,7 @@ public class KafkaUtils implements AutoCloseable {
 
     public Set<String> listTopics() {
         try {
-            return getNewAdminClient().listTopics().names().get();
+            return getAdminClient().listTopics().names().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
@@ -213,18 +217,20 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     protected List<String> getConsumerTopics(String group) {
-        return JavaConverters.mapAsJavaMap(getAdminClient().listGroupOffsets(group))
-                             .keySet()
-                             .stream()
-                             .map(TopicPartition::topic)
-                             .collect(Collectors.toList());
-    }
-
-    protected org.apache.kafka.clients.admin.AdminClient getNewAdminClient() {
-        if (newAdminClient == null) {
-            newAdminClient = org.apache.kafka.clients.admin.AdminClient.create(adminProperties);
+        try {
+            return getAdminClient().listConsumerGroupOffsets(group)
+                                   .partitionsToOffsetAndMetadata()
+                                   .get()
+                                   .keySet()
+                                   .stream()
+                                   .map(TopicPartition::topic)
+                                   .collect(Collectors.toList());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new StreamRuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new StreamRuntimeException(e);
         }
-        return newAdminClient;
     }
 
     protected AdminClient getAdminClient() {
@@ -237,16 +243,18 @@ public class KafkaUtils implements AutoCloseable {
     public List<String> listAllConsumers() {
         long now = System.currentTimeMillis();
         if (allConsumers == null || (now - allConsumersTime) > ALL_CONSUMERS_CACHE_TIMEOUT_MS) {
-            allConsumers = new ArrayList<>();
-            // this returns only consumer group that use the subscribe API (known by coordinator)
-            scala.collection.immutable.List<GroupOverview> groups = getAdminClient().listAllConsumerGroupsFlattened();
-            Iterator<GroupOverview> iterator = groups.iterator();
-            GroupOverview group;
-            while (iterator.hasNext()) {
-                group = iterator.next();
-                if (group != null && !allConsumers.contains(group.groupId())) {
-                    allConsumers.add(group.groupId());
-                }
+            try {
+                allConsumers = getAdminClient().listConsumerGroups()
+                                               .all()
+                                               .get()
+                                               .stream()
+                                               .map(ConsumerGroupListing::groupId)
+                                               .collect(Collectors.toList());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new StreamRuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new StreamRuntimeException(e);
             }
             if (!allConsumers.isEmpty()) {
                 allConsumersTime = now;
@@ -261,7 +269,7 @@ public class KafkaUtils implements AutoCloseable {
     public void markTopicForDeletion(String topic) {
         log.debug("mark topic for deletion: " + topic);
         try {
-            getNewAdminClient().deleteTopics(Collections.singleton(topic)).all().get();
+            getAdminClient().deleteTopics(Collections.singleton(topic)).all().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
@@ -271,7 +279,7 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public int getNumberOfPartitions(String topic) {
-        DescribeTopicsResult descriptions = getNewAdminClient().describeTopics(Collections.singletonList(topic));
+        DescribeTopicsResult descriptions = getAdminClient().describeTopics(Collections.singletonList(topic));
         try {
             return descriptions.values().get(topic).get().partitions().size();
         } catch (InterruptedException e) {
@@ -285,12 +293,8 @@ public class KafkaUtils implements AutoCloseable {
     @Override
     public void close() {
         if (adminClient != null) {
-            adminClient.close();
+            adminClient.close(ADMIN_CLIENT_CLOSE_TIMEOUT_S, TimeUnit.SECONDS);
             adminClient = null;
-        }
-        if (newAdminClient != null) {
-            newAdminClient.close();
-            newAdminClient = null;
         }
         log.debug("Closed.");
     }

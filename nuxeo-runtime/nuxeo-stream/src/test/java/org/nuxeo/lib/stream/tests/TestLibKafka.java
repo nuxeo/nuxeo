@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -135,7 +136,7 @@ public class TestLibKafka {
 
         assertEquals(5, consumer.assignment().size());
         int count = 0;
-        for (ConsumerRecord<String, String> record : consumer.poll(2000)) {
+        for (ConsumerRecord<String, String> record : consumer.poll(Duration.ofSeconds(2))) {
             // System.out.println("receive: " + record.key() + " " + record.value());
             count += 1;
         }
