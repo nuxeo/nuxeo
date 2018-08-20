@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@
  */
 
 package org.nuxeo.ecm.core.api.validation;
+
+import static java.util.Collections.singletonList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         return schemaManager;
     }
 
-    private Map<String, Boolean> validationActivations = new HashMap<String, Boolean>();
+    private Map<String, Boolean> validationActivations = new HashMap<>();
 
     @Override
     public void activate(ComponentContext context) {
@@ -114,7 +116,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(DocumentModel document, boolean dirtyOnly) {
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         DocumentType docType = document.getDocumentType();
         if (dirtyOnly) {
             for (DataModel dataModel : document.getDataModels().values()) {
@@ -122,7 +124,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 for (String fieldName : dataModel.getDirtyFields()) {
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
-                    List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
+                    List<PathNode> path = singletonList(new PathNode(property.getField()));
                     violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, true, true));
                 }
             }
@@ -130,7 +132,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             for (Schema schema : docType.getSchemas()) {
                 for (Field field : schema.getFields()) {
                     Property property = document.getProperty(field.getName().getPrefixedName());
-                    List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
+                    List<PathNode> path = singletonList(new PathNode(property.getField()));
                     violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, false, true));
                 }
             }
@@ -162,8 +164,8 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             path.add(0, new PathNode(inspect.getField()));
             inspect = inspect.getParent();
         }
-        return new DocumentValidationReport(validateAnyTypeProperty(property.getSchema(), path, property, false,
-                validateSubProperties));
+        return new DocumentValidationReport(
+                validateAnyTypeProperty(property.getSchema(), path, property, false, validateSubProperties));
     }
 
     @Override
@@ -175,7 +177,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     public DocumentValidationReport validate(String xpath, Object value, boolean validateSubProperties)
             throws IllegalArgumentException {
         SchemaManager tm = Framework.getService(SchemaManager.class);
-        List<String> splittedXpath = Arrays.asList(xpath.split("\\/"));
+        String[] splittedXpath = xpath.split("/");
         List<PathNode> path = new ArrayList<>();
         Field field = null;
         String fieldXpath = null;
@@ -233,8 +235,9 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     // ///////////////////
     // UTILITY OPERATIONS
 
-    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value, boolean validateSubProperties) {
-        List<PathNode> path = Arrays.asList(new PathNode(field));
+    protected List<ConstraintViolation> validate(Schema schema, Field field, Object value,
+            boolean validateSubProperties) {
+        List<PathNode> path = singletonList(new PathNode(field));
         return validateAnyTypeField(schema, path, field, value, validateSubProperties);
     }
 
@@ -280,8 +283,8 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             Object value) {
         Type type = field.getType();
         assert type.isSimpleType() || type.isListType(); // list type to manage ArrayProperty
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
-        Set<Constraint> constraints = null;
+        List<ConstraintViolation> violations = new ArrayList<>();
+        Set<Constraint> constraints;
         if (type.isListType()) { // ArrayProperty
             constraints = ((ListType) type).getFieldType().getConstraints();
         } else {
@@ -305,16 +308,16 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     private List<ConstraintViolation> validateComplexTypeField(Schema schema, List<PathNode> path, Field field,
             Object value) {
         assert field.getType().isComplexType();
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         ComplexType complexType = (ComplexType) field.getType();
         // this code does not support other type than Map as value
-        if (value != null && !(value instanceof Map)) {
+        if (!(value instanceof Map)) {
             return violations;
         }
         Map<String, Object> map = (Map<String, Object>) value;
         for (Field child : complexType.getFields()) {
             Object item = map.get(child.getName().getLocalName());
-            List<PathNode> subPath = new ArrayList<PathNode>(path);
+            List<PathNode> subPath = new ArrayList<>(path);
             subPath.add(new PathNode(child));
             violations.addAll(validateAnyTypeField(schema, subPath, child, item, true));
         }
@@ -329,7 +332,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
     private List<ConstraintViolation> validateListTypeField(Schema schema, List<PathNode> path, Field field,
             Object value) {
         assert field.getType().isListType();
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         Collection<?> castedValue = null;
         if (!field.isNillable() && value == null) {
             addNotNullViolation(violations, schema, path);
@@ -348,7 +351,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             Field listField = listType.getField();
             int index = 0;
             for (Object item : castedValue) {
-                List<PathNode> subPath = new ArrayList<PathNode>(path);
+                List<PathNode> subPath = new ArrayList<>(path);
                 subPath.add(new PathNode(listField, index));
                 violations.addAll(validateAnyTypeField(schema, subPath, listField, item, true));
                 index++;
@@ -393,7 +396,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             boolean dirtyOnly) {
         Field field = prop.getField();
         assert field.getType().isSimpleType() || prop.isScalar();
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         Serializable value = prop.getValue();
         if (prop.isPhantom() || value == null) {
             if (!field.isNillable()) {
@@ -412,7 +415,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             boolean dirtyOnly) {
         Field field = prop.getField();
         assert field.getType().isComplexType();
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         boolean allChildrenPhantom = true;
         for (Property child : prop.getChildren()) {
             if (!child.isPhantom()) {
@@ -436,7 +439,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                     }
                 } else {
                     for (Property child : prop.getChildren()) {
-                        List<PathNode> subPath = new ArrayList<PathNode>(path);
+                        List<PathNode> subPath = new ArrayList<>(path);
                         subPath.add(new PathNode(child.getField()));
                         violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly, true));
                     }
@@ -453,7 +456,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             boolean dirtyOnly) {
         Field field = prop.getField();
         assert field.getType().isListType();
-        List<ConstraintViolation> violations = new ArrayList<ConstraintViolation>();
+        List<ConstraintViolation> violations = new ArrayList<>();
         Serializable value = prop.getValue();
         if (prop.isPhantom() || value == null) {
             if (!field.isNillable()) {
@@ -476,7 +479,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                     // that's an ArrayProperty : there will not be child properties
                     for (Object itemValue : castedValue) {
                         if (!dirtyOnly || arrayProp.isDirty(index)) {
-                            List<PathNode> subPath = new ArrayList<PathNode>(path);
+                            List<PathNode> subPath = new ArrayList<>(path);
                             subPath.add(new PathNode(field, index));
                             violations.addAll(validateSimpleTypeField(schema, subPath, field, itemValue));
                         }
@@ -488,7 +491,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                         addNotNullViolation(violations, schema, path);
                     }
                     for (Property child : children) {
-                        List<PathNode> subPath = new ArrayList<PathNode>(path);
+                        List<PathNode> subPath = new ArrayList<>(path);
                         subPath.add(new PathNode(child.getField(), index));
                         violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly, true));
                         index++;
