@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -224,32 +223,10 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     protected void writeActors(List<String> actors, boolean isFetchActors, JsonGenerator jg) throws IOException {
         for (String actorId : actors) {
             if (isFetchActors) {
-                if (actorId.startsWith(USER_PREFIX + SEPARATOR)) {
-                    actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
-                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
-                    if (user != null) {
-                        writeEntity(user, jg);
-                        continue;
-                    }
-                } else if (actorId.startsWith(GROUP_PREFIX + SEPARATOR)) {
-                    actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
-                    NuxeoGroup group = userManager.getGroup(actorId);
-                    if (group != null) {
-                        writeEntity(group, jg);
-                        continue;
-                    }
-                } else {
-                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
-                    if (user != null) {
-                        writeEntity(user, jg);
-                        continue;
-                    } else {
-                        NuxeoGroup group = userManager.getGroup(actorId);
-                        if (group != null) {
-                            writeEntity(group, jg);
-                            continue;
-                        }
-                    }
+                Object actor = fetchActor(actorId);
+                if (actor != null) {
+                    writeEntity(actor, jg);
+                    continue;
                 }
             }
             jg.writeStartObject();
@@ -258,9 +235,27 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
         }
     }
 
+    protected Object fetchActor(String actorId) {
+        String unprefixedActorId = getUnprefixedActorId(actorId);
+        Object actor = userManager.getPrincipal(unprefixedActorId);
+        if (actor == null) {
+            actor = userManager.getGroup(unprefixedActorId);
+        }
+        return actor;
+    }
+
+    protected String getUnprefixedActorId(String actorId) {
+        if (actorId.contains(USER_PREFIX)) {
+            actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
+        } else if (actorId.contains(GROUP_PREFIX)) {
+            actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
+        }
+        return actorId;
+    }
+
     protected void writeWorkflowInitiator(JsonGenerator jg, String workflowInitiator) throws IOException {
         if (ctx.getFetched(ENTITY_TYPE).contains(FETCH_WORKFLOW_INITATIOR)) {
-            NuxeoPrincipal principal = userManager.getPrincipal(workflowInitiator);
+            Object principal = fetchActor(workflowInitiator);
             if (principal != null) {
                 writeEntityField("workflowInitiator", principal, jg);
                 return;
