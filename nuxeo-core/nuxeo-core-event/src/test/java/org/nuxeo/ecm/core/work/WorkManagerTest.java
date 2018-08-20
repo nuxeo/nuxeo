@@ -46,8 +46,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -518,7 +516,7 @@ public class WorkManagerTest {
         assertFalse(service.awaitCompletion(getDurationMillis(), TimeUnit.MILLISECONDS));
         service.schedule(new SleepWork(10000, "1"), WorkManager.Scheduling.CANCEL_SCHEDULED);
         assertTrue(WorkStateHelper.isCanceled("1"));
-        assertTrue(service.awaitCompletion(100, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(1000, TimeUnit.MILLISECONDS));
     }
 
 }
