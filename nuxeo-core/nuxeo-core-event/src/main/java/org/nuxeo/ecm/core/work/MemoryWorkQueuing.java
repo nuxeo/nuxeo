@@ -192,4 +192,9 @@ public class MemoryWorkQueuing implements WorkQueuing {
         return state == null ? (workState == State.SCHEDULED || workState == State.RUNNING) : workState == state;
     }
 
+    @Override
+    public boolean supportsProcessingDisabling() {
+        return false;
+    }
+
 }

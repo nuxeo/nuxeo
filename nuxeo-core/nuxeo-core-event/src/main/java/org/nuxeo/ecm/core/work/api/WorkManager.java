@@ -139,6 +139,12 @@ public interface WorkManager {
     boolean isProcessingEnabled();
 
     /**
+     * @return true if the implementation supports processing disabling
+     * @since 10.3
+     */
+    boolean supportsProcessingDisabling();
+
+    /**
      * Set processing for all queues
      *
      * @since 8.3

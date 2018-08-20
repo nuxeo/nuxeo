@@ -294,6 +294,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalArgumentException("no such queue " + queueId);
         }
         if (!value) {
+            if (!queuing.supportsProcessingDisabling()) {
+                log.error("Attempting to disable works processing on a WorkQueuing instance that does not support it."
+                        + "Works will still be processed."
+                        + "Disabling works processing to manage distribution finely can be done using Redis or Stream implementations.");
+            }
             deactivateQueue(config);
         } else {
             activateQueue(config);
@@ -938,6 +943,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public boolean isStarted() {
         return started && !shutdownInProgress;
+    }
+
+    @Override
+    public boolean supportsProcessingDisabling() {
+        return queuing.supportsProcessingDisabling();
     }
 
 }

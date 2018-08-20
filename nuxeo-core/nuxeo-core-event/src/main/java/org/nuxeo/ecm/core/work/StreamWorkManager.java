@@ -584,4 +584,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         }
     }
 
+    @Override
+    public boolean supportsProcessingDisabling() {
+        return true;
+    }
+
 }
