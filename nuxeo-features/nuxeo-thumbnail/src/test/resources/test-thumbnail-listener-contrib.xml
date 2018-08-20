@@ -1,12 +1,11 @@
 <component name="thumbnail:test:listeners">
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="updateThumbListenerCount"
-      class="org.nuxeo.ecm.platform.thumbnail.test.UpdateThumbnailCounter"
+    <listener name="updateThumbListenerCount" class="org.nuxeo.ecm.platform.thumbnail.test.UpdateThumbnailCounter"
       priority="999">
       <event>beforeDocumentModification</event>
     </listener>
+
   </extension>
 
 </component>
