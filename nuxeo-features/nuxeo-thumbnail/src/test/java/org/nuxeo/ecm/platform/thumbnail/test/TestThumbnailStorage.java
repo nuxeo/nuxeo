@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
@@ -41,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Test thumbnail storage for doctype File
@@ -61,10 +62,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestThumbnailStorage {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    EventService eventService;
+    protected EventService eventService;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Before
     public void resetUpdateCount() {
@@ -73,19 +77,14 @@ public class TestThumbnailStorage {
 
     @Test
     public void testCreation() throws IOException {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel file = session.createDocumentModel(root.getPathAsString(), "File", "File");
+        DocumentModel file = session.createDocumentModel("/", "File", "File");
         // Attach a blob
-        Blob blob = Blobs.createBlob(
-                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg");
-        blob.setFilename("logo.jpg");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/big_nuxeo_logo.jpg"),
+                "image/jpeg");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
-        TransactionHelper.commitOrRollbackTransaction();
 
-        eventService.waitForAsyncCompletion(); // wait for thumbnail update
-
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction(); // wait for thumbnail update
 
         file = session.getDocument(file.getRef());
         Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
@@ -95,29 +94,22 @@ public class TestThumbnailStorage {
 
     @Test
     public void testUpdate() throws IOException {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel file = session.createDocumentModel(root.getPathAsString(), "File", "File");
+        DocumentModel file = session.createDocumentModel("/", "File", "File");
         file = session.createDocument(file);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion(); // wait for thumbnail update
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction(); // wait for thumbnail update
 
         Assert.assertFalse(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
 
         // Attach a blob
-        Blob blob = Blobs.createBlob(
-                TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg");
-        blob.setFilename("logo.jpg");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/big_nuxeo_logo.jpg"),
+                "image/jpeg");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.saveDocument(file);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion(); // wait for thumbnail update
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction(); // wait for thumbnail update
 
         file = session.getDocument(file.getRef());
-
         Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
         Assert.assertNotNull(file.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
         Assert.assertEquals(1, UpdateThumbnailCounter.count);
