@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/special_file" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+           xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="country" default="france" nillable="true" nxsv:nillable="true">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="country"/>
+    </xs:simpleType>
+  </xs:element>
+
+</xs:schema>

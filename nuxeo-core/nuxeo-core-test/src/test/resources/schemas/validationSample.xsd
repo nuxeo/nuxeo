@@ -12,6 +12,8 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="required_simpleType" type="xs:string" default="imdefault" nillable="false" nxsv:nillable="false" />
+
   <xs:element name="roles">
     <xs:complexType>
       <xs:sequence>
