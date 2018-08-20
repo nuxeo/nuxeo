@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -458,6 +459,18 @@ public class WorkManagerTest {
 
         Thread.sleep(getDurationMillis());
         assertMetrics(0, 0, 1, 0);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue2.xml")
+    public void testWorkManagerDisableProcessingAll() throws Exception {
+        Assume.assumeTrue(service.supportsProcessingDisabling());
+        SleepWork work1 = new SleepWork(getDurationMillis());
+        MetricsTracker tracker = new MetricsTracker();
+        service.schedule(work1);
+        Thread.sleep(getDurationMillis() / 2);
+        // stays scheduled
+        tracker.assertDiff(1, 0, 0, 0);
     }
 
     @Test

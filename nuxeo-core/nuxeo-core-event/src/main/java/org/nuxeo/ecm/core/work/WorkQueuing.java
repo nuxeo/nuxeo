@@ -57,6 +57,12 @@ public interface WorkQueuing {
     void setActive(String queueId, boolean value);
 
     /**
+     * @return true if the implementation supports processing disabling
+     * @since 10.3
+     */
+    boolean supportsProcessingDisabling();
+
+    /**
      * Gets the blocking queue of work used by the {@link ThreadPoolExecutor}.
      *
      * @since 8.1
@@ -254,8 +260,5 @@ public interface WorkQueuing {
                 return new Null();
             }
         }
-
     }
-
-
 }

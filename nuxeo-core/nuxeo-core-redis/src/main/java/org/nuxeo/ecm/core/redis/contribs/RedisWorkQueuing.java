@@ -799,4 +799,9 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     }
 
+    @Override
+    public boolean supportsProcessingDisabling() {
+        return true;
+    }
+
 }
