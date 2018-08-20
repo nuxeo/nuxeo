@@ -13,6 +13,7 @@
         <locale>el_GR</locale><!-- Greek - Greece -->
         <locale>fr_CA</locale><!-- French - Canada -->
         <locale>gl_ES</locale><!-- Galician -->
+        <locale>he_IL</locale><!-- Hebrew -->
         <locale>hu_HU</locale><!-- Hungarian - Hungary -->
         <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
         <locale>mk_MK</locale><!-- Macedonian - Macedonia -->
