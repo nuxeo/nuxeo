@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.test.mandatory.metadata">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="special_file" prefix="sf" override="true" src="schema/special_file.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="SpecialFolder" extends="Folder">
+      <subtypes>
+        <type>SpecialFile</type>
+      </subtypes>
+    </doctype>
+    <doctype name="SpecialFile" extends="File">
+      <schema name="special_file"/>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService" point="factoryBinding">
+    <factoryBinding name="MyFolderFactory" factoryName="SimpleTemplateFactory" targetType="SpecialFolder">
+      <template>
+        <templateItem typeName="SpecialFile" id="SpecialFile" title="Special File"
+                      description="File with Mandatory Metadata" />
+      </template>
+    </factoryBinding>
+  </extension>
+
+</component>
