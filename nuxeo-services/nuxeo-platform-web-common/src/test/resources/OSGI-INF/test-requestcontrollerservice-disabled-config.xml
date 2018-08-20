@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.disableTestContrib">
+
+  <require>org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.testContrib</require>
+  <require>org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="responseHeaders">
+    <header name="X-UA-Compatible" enabled="false">IE=8; IE=9; IE=10</header>
+  </extension>
+  
+</component>
