@@ -78,6 +78,8 @@ public class TestDocumentValidationService {
 
     public static final String STRING_LIST_ARRAY_FIELD = "vs:anotherSimpleList";
 
+    public static final String SIMPLE_DEFAULT_MANDATORY = "vs:required_simpleType";
+
     public static final String COMPLEX_MANDATORY = "vs:required_complexType";
 
     public static final String COMPLEX_DUMMY_RESOLVER_1 = "vs:dummyComplex1";
@@ -169,6 +171,20 @@ public class TestDocumentValidationService {
     public void testFieldComplexWithoutViolation() {
         Field field = metamodel.getField(COMPLEX_FIELD);
         checkOk(validator.validate(field, createUser("Bob", "Sponge")));
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testMandatorySimpleTypeDefaultValueWithoutViolation() {
+        doc.setPropertyValue(SIMPLE_FIELD, 12345);
+        // don't set SIMPLE_DEFAULT_MANDATORY property, use case is: property has a default value and user didn't set it
+        // in this case validation shouldn't report  any violation
+        checkOk(validator.validate(doc));
+        // check there's still a violation if user explicitly set the property to null
+        doc.setPropertyValue(SIMPLE_DEFAULT_MANDATORY, null);
+        checkNotNullOnField(SIMPLE_DEFAULT_MANDATORY, validator.validate(doc));
     }
 
     @Test

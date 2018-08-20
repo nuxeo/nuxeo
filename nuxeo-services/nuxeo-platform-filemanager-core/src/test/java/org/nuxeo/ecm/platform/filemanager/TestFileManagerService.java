@@ -365,11 +365,11 @@ public class TestFileManagerService {
         Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfdNormalizedFileName);
         service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfdNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
-                                                                nfdNormalizedFileName));
+                nfdNormalizedFileName));
         // Check existing doc with NFC normalized filename
         String nfcNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
-                                                                nfcNormalizedFileName));
+                nfcNormalizedFileName));
     }
 
     @Test
@@ -436,6 +436,24 @@ public class TestFileManagerService {
         // Create a new folder
         DocumentModel testFolder3 = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), false);
         assertNotEquals(testFolder.getId(), testFolder3.getId());
+    }
+
+    /*
+     * NXP-24830
+     */
+    @Test
+    @Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":test-nxfilemanager-mandatory-metadata-contrib.xml")
+    public void testCreateBlobWithDocTypeHoldingMandatoryMetadataWithDefault() throws Exception {
+        File file = getTestFile("test-data/hello.doc");
+        Blob blob = Blobs.createBlob(file);
+        blob.setMimeType("application/msword");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+                "test-data/hello.doc");
+        assertNotNull(doc);
+        assertEquals("application/msword", blob.getMimeType());
+        assertEquals("SpecialFile", doc.getType());
+        // check mandatory metadata has fallback on its default value
+        assertEquals("france", doc.getPropertyValue("sf:country"));
     }
 
     private Object getMimeType(DocumentModel doc) {

@@ -277,4 +277,20 @@ public class TestContentTemplateFactory {
         assertNotNull(facetFolder);
     }
 
+    /*
+     * NXP-24757
+     */
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.content.template.tests:OSGI-INF/test-content-template-mandatory-metadata-contrib.xml")
+    public void testFolderFactoryWithMandatoryMetadata() {
+        DocumentModel specialFolder = session.createDocumentModel("/", "SpecialFolder", "SpecialFolder");
+        specialFolder = session.createDocument(specialFolder);
+        session.save();
+
+        // check that the created special folder has a special file with the mandatory metadata holding default value
+        DocumentModelList children = session.getChildren(specialFolder.getRef());
+        assertEquals(1, children.size());
+        assertEquals("france", children.get(0).getPropertyValue("sf:country"));
+    }
+
 }
