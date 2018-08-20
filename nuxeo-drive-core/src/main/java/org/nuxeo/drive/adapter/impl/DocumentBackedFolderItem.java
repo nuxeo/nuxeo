@@ -427,12 +427,15 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             log.trace(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
                     doc.getPathAsString()));
         }
-        DocumentModel parentDoc;
+        DocumentModel parentDoc = null;
         try {
             parentDoc = session.getDocument(parentDocRef);
         } catch (DocumentSecurityException e) {
-            throw new RootlessItemException(String.format("User %s has no READ access on parent of document %s (%s).",
-                    principal.getName(), doc.getPathAsString(), doc.getId()), e);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s has no READ access on parent of document %s (%s).",
+                        principal.getName(), doc.getPathAsString(), doc.getId()), e);
+            }
+            return null;
         }
         parentItem = populateAncestorCache(cache, parentDoc, session, true);
         if (parentItem == null) {
