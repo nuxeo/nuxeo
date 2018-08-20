@@ -1047,6 +1047,69 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals("testFolder", descendant.getName());
     }
 
+    /**
+     * Tests the following hierarchy:
+     *
+     * <pre>
+     * syncRoot             Synchronization root for joe with Read access
+     * |-- folder           Blocked inheritance
+     * |   |-- placeless    Read access for joe (placeless document)
+     * |
+     * |-- descendant1      Read access for joe (inheritance)
+     * |-- descendant2      Read access for joe (inheritance)
+     * |-- ...              Read access for joe (inheritance)
+     * </pre>
+     *
+     * syncRoot should be synchronized with its directly accessible descendants to obtain the following hierarchy
+     * client-side:
+     *
+     * <pre>
+     * syncRoot
+     * |-- descendant1
+     * |-- descendant2
+     * |-- ...
+     * </pre>
+     *
+     * The placeless document will not be synchronized.
+     *
+     * @since 10.3
+     */
+    @Test
+    public void testScrollDescendantsWithBlockedInheritance() {
+        log.trace("Create \"placelessDocument\" in \"/syncRoot/folder\"");
+        DocumentModel placeless = session.createDocumentModel(folder.getPathAsString(), "placeless", "File");
+        Blob blob = new StringBlob("This is a placeless file for joe.");
+        blob.setFilename("Placeless.odt");
+        placeless.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(placeless);
+
+        log.trace(
+                "Set permissions for joe: Read on \"syncRoot\", Blocked inheritance on \"folder\", Read on \"placeless\"");
+        setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
+        setPermission(folder, ACE.BLOCK);
+        setPermission(placeless, "joe", SecurityConstants.READ, true);
+
+        // Under Oracle, the READ ACL optims are not visible from the joe
+        // session while the transaction has not been committed.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            log.trace("Register \"/syncRoot\" as a synchronization root for joe");
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
+            log.trace(
+                    "Scroll through the descendants of \"/syncRoot\", expecting its 4 directly accessible descendants, "
+                            + "the blocked \"folder\" and its descendants being ignored");
+            syncRootFolder = joeSession.getDocument(syncRootFolder.getRef());
+            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
+                    syncRootFolder);
+            ScrollFileSystemItemList descendants = syncRootFolderItem.scrollDescendants(null, 10, 1000);
+            assertEquals(4, descendants.size());
+        }
+        resetPermissions(syncRootFolder, "joe");
+    }
+
     @Test
     @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     public void testBlobException() throws Exception {
