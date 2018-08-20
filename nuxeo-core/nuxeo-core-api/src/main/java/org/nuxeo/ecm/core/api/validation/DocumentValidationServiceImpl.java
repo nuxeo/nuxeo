@@ -398,7 +398,9 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         assert field.getType().isSimpleType() || prop.isScalar();
         List<ConstraintViolation> violations = new ArrayList<>();
         Serializable value = prop.getValue();
-        if (prop.isPhantom() || value == null) {
+        Object defaultValue = field.getDefaultValue();
+        // check nullity constraint only if field doesn't have a default value (phantom case)
+        if (prop.isPhantom() && defaultValue == null || value == null) {
             if (!field.isNillable()) {
                 addNotNullViolation(violations, schema, path);
             }
