@@ -12,4 +12,6 @@
   <xs:element name="author" type="xs:string"/>
   <xs:element name="text" type="nxs:clob"/>
   <xs:element name="creationDate" type="xs:date"/>
+  <xs:element name="modificationDate" type="xs:date"/>
+  <xs:element name="documentId" type="xs:string" />
 </xs:schema>
