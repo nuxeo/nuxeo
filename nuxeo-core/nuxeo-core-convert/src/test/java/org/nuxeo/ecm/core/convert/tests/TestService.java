@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@
  */
 package org.nuxeo.ecm.core.convert.tests;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -69,7 +70,7 @@ public class TestService {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
-    public void testServiceContrib() throws Exception {
+    public void testServiceContrib() {
         assertNotNull(cs);
 
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
@@ -79,7 +80,7 @@ public class TestService {
         assertNotNull(desc1);
 
         assertEquals("test/me", desc1.getDestinationMimeType());
-        assertSame(2, desc1.getSourceMimeTypes().size());
+        assertEquals(2, desc1.getSourceMimeTypes().size());
         assertTrue(desc1.getSourceMimeTypes().contains("text/plain"));
         assertTrue(desc1.getSourceMimeTypes().contains("text/xml"));
     }
@@ -109,7 +110,7 @@ public class TestService {
             ChainedConverter ccv = (ChainedConverter) cv;
             List<String> steps = ccv.getSteps();
             assertNotNull(steps);
-            assertSame(2, steps.size());
+            assertEquals(2, steps.size());
             assertTrue(steps.contains("test/me"));
             assertTrue(steps.contains("foo/bar"));
             isChain = true;
@@ -142,7 +143,7 @@ public class TestService {
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml")
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml")
-    public void testAvailability() throws Exception {
+    public void testAvailability() {
 
         ConverterCheckResult result = null;
 
@@ -202,7 +203,7 @@ public class TestService {
         assertTrue(result.isAvailable());
         assertNull(result.getErrorMessage());
         assertNull(result.getInstallationMessage());
-        assertSame(2, result.getSupportedInputMimeTypes().size());
+        assertEquals(2, result.getSupportedInputMimeTypes().size());
 
         notRegistred = false;
         try {
@@ -220,7 +221,7 @@ public class TestService {
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml")
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml")
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib5.xml")
-    public void testChainConverterAvailability() throws Exception {
+    public void testChainConverterAvailability() {
 
         ConverterCheckResult result = cs.isConverterAvailable("chainAvailable");
         assertNotNull(result);
@@ -253,7 +254,7 @@ public class TestService {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
-    public void testSupportedSourceMimeType() throws Exception {
+    public void testSupportedSourceMimeType() {
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/plain"));
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/xml"));
         assertFalse(cs.isSourceMimeTypeSupported("dummy1", "application/pdf"));
@@ -278,7 +279,7 @@ public class TestService {
         assertEquals("application/pdf", resultBlob.getMimeType());
         assertEquals("dummy.pdf", resultBlob.getFilename());
 
-        parameters.put("setMimeType", false);
+        parameters.put("setMimeType", FALSE);
         result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
         resultBlob = result.getBlob();
         assertNotNull(resultBlob);
@@ -286,7 +287,7 @@ public class TestService {
         assertEquals("dummy.pdf", resultBlob.getFilename());
 
         parameters = new HashMap<>();
-        parameters.put("tempFilename", true);
+        parameters.put("tempFilename", TRUE);
         result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
         resultBlob = result.getBlob();
         assertNotNull(resultBlob);

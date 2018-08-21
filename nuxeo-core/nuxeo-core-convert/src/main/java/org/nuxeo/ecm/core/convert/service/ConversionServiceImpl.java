@@ -186,14 +186,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     @Override
     public List<String> getRegistredConverters() {
-        List<String> converterNames = new ArrayList<>();
-        converterNames.addAll(converterDescriptors.keySet());
-        return converterNames;
+        return new ArrayList<>(converterDescriptors.keySet());
     }
 
     @Override
     @Deprecated
-    public Blob convertBlobToPDF(Blob blob) throws IOException {
+    public Blob convertBlobToPDF(Blob blob) {
         return convertThroughHTML(new SimpleBlobHolder(blob), MimetypeRegistry.PDF_MIMETYPE).getBlob();
     }
 
