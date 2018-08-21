@@ -7,10 +7,10 @@
     target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
     <filterConfig name="cmis-atom" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis(/.*)?</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis(/.*)?(\?.*)?</pattern>
     </filterConfig>
     <filterConfig name="cmis10-atom" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis10(/.*)?</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis10(/.*)?(\?.*)?</pattern>
     </filterConfig>
   </extension>
 

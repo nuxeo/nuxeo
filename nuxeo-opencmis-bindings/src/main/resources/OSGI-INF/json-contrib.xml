@@ -7,7 +7,7 @@
     target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
     <filterConfig name="cmis-json" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/json/cmis(/.*)?</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/json/cmis(/.*)?(\?.*)?</pattern>
     </filterConfig>
   </extension>
 
