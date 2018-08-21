@@ -160,20 +160,7 @@ public class TestService {
         assertTrue(rh.containsKey("WWW-Authenticate"));
         assertEquals("basic", rh.get("WWW-Authenticate"));
         assertTrue(rh.containsKey("X-UA-Compatible"));
-    }
-
-    /**
-     * Test if the "enabled" attribute of the "header" extension point is taken into
-     * account to disable a response header
-     *
-     * @since 10.3
-     */
-    @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-requestcontrollerservice-disabled-config.xml")
-    public void testDisabledHeadersContrib() throws Exception {
-        Map<String, String> rh = requestControllerManager.getResponseHeaders();
-        assertEquals(6, rh.size());
-        assertFalse(rh.containsKey("X-UA-Compatible"));
+        assertFalse(rh.containsKey("Warning"));
     }
 
     /**
