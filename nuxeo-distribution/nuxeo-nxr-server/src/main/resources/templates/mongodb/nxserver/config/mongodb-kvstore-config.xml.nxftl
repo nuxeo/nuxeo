@@ -1,0 +1,12 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.mongodb.kvstore">
+<#if "${nuxeo.keyvalue.provider}" == "mongodb">
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="mongodb" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore">
+      <property name="collection">kv</property>
+    </store>
+  </extension>
+</#if>
+</component>
+</#escape>
