@@ -2,8 +2,9 @@ var nuxeo = nuxeo || {};
 
 function createNewTag(term, data) {
     return {
-        id : term,
-        displayLabel : term,
+        // sanitize the term for the new tag
+        id : sanitizeTag(term, true),
+        displayLabel : sanitizeTag(term, true),
         newTag : true
     };
 }
@@ -30,4 +31,21 @@ function formatSelectedTags(tag) {
     var jsFragment = "listDocumentsForTag('" + escapeHTML(tag.displayLabel) + "');";
     return '<span class="s2newTag"><a href="' + window.nxContextPath + '/search/tag_search_results.faces?conversationId=' + currentConversationId + '" onclick="' + jsFragment + '">'
             + escapeHTML(tag.displayLabel) + '</a></span>'
+}
+
+/*
+This function is based on the cleanup done by TagServiceImpl#cleanLabel:
+- lowercase
+- no space
+- no slash
+- no antislash
+- no quote
+- no percent
+*/
+function sanitizeTag(tag, ignoreCase) {
+    if (ignoreCase) {
+        return tag.replace(/[\/'% \\]/g, '').toLowerCase();
+    } else {
+        return tag.replace(/[\/'% \\]/g, '');
+    }
 }
