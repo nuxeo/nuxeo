@@ -3,8 +3,8 @@ var nuxeo = nuxeo || {};
 function createNewTag(term, data) {
     return {
         // sanitize the term for the new tag
-        id : sanitize(term, true),
-        displayLabel : sanitize(term, true),
+        id : sanitizeTag(term, true),
+        displayLabel : sanitizeTag(term, true),
         newTag : true
     };
 }
@@ -34,7 +34,7 @@ function formatSelectedTags(tag) {
 }
 
 /*
-This `sanitize` function is based on the cleanup done by TagServiceImpl#cleanLabel:
+This function is based on the cleanup done by TagServiceImpl#cleanLabel:
 - lowercase
 - no space
 - no slash
@@ -42,7 +42,7 @@ This `sanitize` function is based on the cleanup done by TagServiceImpl#cleanLab
 - no quote
 - no percent
 */
-function sanitize(tag, ignoreCase) {
+function sanitizeTag(tag, ignoreCase) {
     if (ignoreCase) {
         return tag.replace(/[\/'% \\]/g, '').toLowerCase();
     } else {
