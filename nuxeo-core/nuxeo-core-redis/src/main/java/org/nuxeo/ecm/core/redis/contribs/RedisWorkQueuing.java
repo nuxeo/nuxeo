@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
-import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
 import org.nuxeo.ecm.core.work.WorkHolder;
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -479,23 +477,19 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @since 5.8
      */
     protected Set<String> getQueueIds(final String queuePrefix) {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Set<String>>() {
-            @Override
-            public Set<String> call(Jedis jedis) {
-                int offset = keyBytes(queuePrefix).length;
-                Set<byte[]> keys = jedis.keys(keyBytes(key(queuePrefix, "*")));
-                Set<String> queueIds = new HashSet<String>(keys.size());
-                for (byte[] bytes : keys) {
-                    try {
-                        String queueId = new String(bytes, offset, bytes.length - offset, UTF_8);
-                        queueIds.add(queueId);
-                    } catch (IOException e) {
-                        throw new NuxeoException(e);
-                    }
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            int offset = keyBytes(queuePrefix).length;
+            Set<byte[]> keys = jedis.keys(keyBytes(key(queuePrefix, "*")));
+            Set<String> queueIds = new HashSet<>(keys.size());
+            for (byte[] bytes : keys) {
+                try {
+                    String queueId = new String(bytes, offset, bytes.length - offset, UTF_8);
+                    queueIds.add(queueId);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
                 }
-                return queueIds;
             }
-
+            return queueIds;
         });
     }
 
@@ -507,17 +501,13 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @since 5.8
      */
     public int scheduleSuspendedWork(final String queueId) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Integer>() {
-            @Override
-            public Integer call(Jedis jedis) {
-                for (int n = 0;; n++) {
-                    byte[] workIdBytes = jedis.rpoplpush(suspendedKey(queueId), queuedKey(queueId));
-                    if (workIdBytes == null) {
-                        return Integer.valueOf(n);
-                    }
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            for (int n = 0;; n++) {
+                byte[] workIdBytes = jedis.rpoplpush(suspendedKey(queueId), queuedKey(queueId));
+                if (workIdBytes == null) {
+                    return Integer.valueOf(n);
                 }
             }
-
         }).intValue();
     }
 
@@ -529,15 +519,11 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @since 5.8
      */
     public int suspendScheduledWork(final String queueId) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Integer>() {
-
-            @Override
-            public Integer call(Jedis jedis) {
-                for (int n = 0;; n++) {
-                    byte[] workIdBytes = jedis.rpoplpush(queuedKey(queueId), suspendedKey(queueId));
-                    if (workIdBytes == null) {
-                        return n;
-                    }
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            for (int n = 0;; n++) {
+                byte[] workIdBytes = jedis.rpoplpush(queuedKey(queueId), suspendedKey(queueId));
+                if (workIdBytes == null) {
+                    return n;
                 }
             }
         }).intValue();
@@ -622,98 +608,79 @@ public class RedisWorkQueuing implements WorkQueuing {
      */
     protected State getWorkStateInfo(final String workId) {
         final byte[] workIdBytes = bytes(workId);
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<State>() {
-            @Override
-            public State call(Jedis jedis) {
-                // get state
-                byte[] bytes = jedis.hget(stateKey(), workIdBytes);
-                if (bytes == null || bytes.length == 0) {
-                    return null;
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            // get state
+            byte[] bytes = jedis.hget(stateKey(), workIdBytes);
+            if (bytes == null || bytes.length == 0) {
+                return null;
+            }
+            switch (bytes[0]) {
+            case STATE_SCHEDULED_B:
+                return State.SCHEDULED;
+            case STATE_RUNNING_B:
+                return State.RUNNING;
+            default:
+                String msg;
+                try {
+                    msg = new String(bytes, UTF_8);
+                } catch (UnsupportedEncodingException e) {
+                    msg = Arrays.toString(bytes);
                 }
-                switch (bytes[0]) {
-                case STATE_SCHEDULED_B:
-                    return State.SCHEDULED;
-                case STATE_RUNNING_B:
-                    return State.RUNNING;
-                default:
-                    String msg;
-                    try {
-                        msg = new String(bytes, UTF_8);
-                    } catch (UnsupportedEncodingException e) {
-                        msg = Arrays.toString(bytes);
-                    }
-                    log.error("Unknown work state: " + msg + ", work: " + workId);
-                    return null;
-                }
+                log.error("Unknown work state: " + msg + ", work: " + workId);
+                return null;
             }
         });
     }
 
     protected List<String> listWorkIdsList(final byte[] queueBytes) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<List<String>>() {
-
-            @Override
-            public List<String> call(Jedis jedis) {
-                List<byte[]> keys = jedis.lrange(queueBytes, 0, -1);
-                List<String> list = new ArrayList<String>(keys.size());
-                for (byte[] workIdBytes : keys) {
-                    list.add(string(workIdBytes));
-                }
-                return list;
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            List<byte[]> keys = jedis.lrange(queueBytes, 0, -1);
+            List<String> list = new ArrayList<>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                list.add(string(workIdBytes));
             }
-
+            return list;
         });
     }
 
     protected List<String> listWorkIdsSet(final byte[] queueBytes) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<List<String>>() {
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
 
-            @Override
-            public List<String> call(Jedis jedis) {
-
-                Set<byte[]> keys = jedis.smembers(queueBytes);
-                List<String> list = new ArrayList<String>(keys.size());
-                for (byte[] workIdBytes : keys) {
-                    list.add(string(workIdBytes));
-                }
-                return list;
+            Set<byte[]> keys = jedis.smembers(queueBytes);
+            List<String> list = new ArrayList<>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                list.add(string(workIdBytes));
             }
-
+            return list;
         });
 
     }
 
     protected List<Work> listWorkList(final byte[] queueBytes) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<List<Work>>() {
-            @Override
-            public List<Work> call(Jedis jedis) {
-                List<byte[]> keys = jedis.lrange(queueBytes, 0, -1);
-                List<Work> list = new ArrayList<Work>(keys.size());
-                for (byte[] workIdBytes : keys) {
-                    // get data
-                    byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                    Work work = deserializeWork(workBytes);
-                    list.add(work);
-                }
-                return list;
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            List<byte[]> keys = jedis.lrange(queueBytes, 0, -1);
+            List<Work> list = new ArrayList<>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                // get data
+                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
+                Work work = deserializeWork(workBytes);
+                list.add(work);
             }
+            return list;
         });
     }
 
     protected List<Work> listWorkSet(final byte[] queueBytes) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<List<Work>>() {
-            @Override
-            public List<Work> call(Jedis jedis) {
-                Set<byte[]> keys = jedis.smembers(queueBytes);
-                List<Work> list = new ArrayList<Work>(keys.size());
-                for (byte[] workIdBytes : keys) {
-                    // get data
-                    byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                    Work work = deserializeWork(workBytes);
-                    list.add(work);
-                }
-                return list;
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            Set<byte[]> keys = jedis.smembers(queueBytes);
+            List<Work> list = new ArrayList<>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                // get data
+                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
+                Work work = deserializeWork(workBytes);
+                list.add(work);
             }
+            return list;
         });
     }
 
@@ -726,14 +693,9 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected Work getWorkData(final byte[] workIdBytes) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Work>() {
-
-            @Override
-            public Work call(Jedis jedis) {
-                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                return deserializeWork(workBytes);
-            }
-
+        return Framework.getService(RedisExecutor.class).execute(jedis -> {
+            byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
+            return deserializeWork(workBytes);
         });
     }
 
