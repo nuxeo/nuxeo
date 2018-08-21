@@ -3,8 +3,8 @@ var nuxeo = nuxeo || {};
 function createNewTag(term, data) {
     return {
         // sanitize the term for the new tag
-        id : term.sanitize(true),
-        displayLabel : term.sanitize(true),
+        id : term.sanitizeTag(true),
+        displayLabel : term.sanitizeTag(true),
         newTag : true
     };
 }
@@ -42,7 +42,7 @@ This `sanitize` function is based on the cleanup done by TagServiceImpl#cleanLab
 - no quote
 - no percent
 */
-String.prototype.sanitize = function(ignoreCase) {
+String.prototype.sanitizeTag = function(ignoreCase) {
     if (ignoreCase) {
         return this.replace(/[\/'% \\]/g, '').toLowerCase();
     } else {
