@@ -21,3 +21,9 @@ nuxeo.dbs.cache.ttl=10
 mongodb.check.classpath=nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-mongodb-*.jar
 mongodb.check.class=org.nuxeo.ecm.core.storage.mongodb.MongoDBChecker
 nuxeo.mongodb.check.timeout=5
+
+## KeyValue Store
+nuxeo.keyvalue.provider=mongodb
+
+## Make sure we use repository lockmanager
+nuxeo.lock.manager=mongodb
