@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>9.10-HF15-SNAPSHOT</version>
+    <version>9.10-HF16-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-addons-core-parent</artifactId>
@@ -19,7 +19,7 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.core.version>9.10-HF15-SNAPSHOT</nuxeo.addons.core.version>
+    <nuxeo.addons.core.version>9.10-HF16-SNAPSHOT</nuxeo.addons.core.version>
   </properties>
 
   <modules>
