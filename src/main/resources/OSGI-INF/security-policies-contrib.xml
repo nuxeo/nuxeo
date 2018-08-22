@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.security.policies">
+
+  <require>org.nuxeo.ecm.core.security.defaultPolicies</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService" point="policies">
+    <!-- Override the standard LockSecurityPolicy -->
+    <policy name="lock" class="org.nuxeo.wopi.lock.WOPILockSecurityPolicy" />
+  </extension>
+
+</component>

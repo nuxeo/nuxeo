@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_FILE_ID;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
@@ -40,13 +42,21 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -69,6 +79,12 @@ public class TestLock {
 
     @Inject
     protected EventProducer eventProducer;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected UserManager userManager;
 
     @Inject
     protected TransactionalFeature transactionalFeature;
@@ -97,9 +113,13 @@ public class TestLock {
         // get unknown lock
         assertNull(LockHelper.getLock("unknownFileId"));
 
-        // add lock / get lock
+        // is not locked
+        assertFalse(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+
+        // add lock / get lock / is locked
         LockHelper.addLock(fileId, "wopiLock");
         assertEquals("wopiLock", LockHelper.getLock(fileId));
+        assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
 
         // update lock
         LockHelper.updateLock(fileId, "updatedWopiLock");
@@ -184,9 +204,59 @@ public class TestLock {
         assertNull(LockHelper.getLock(expiredLockFileId));
     }
 
+    @Test
+    public void testCollaborativeEdition() {
+        NuxeoPrincipal johnPrincipal = setUpPrincipal("john");
+        try (CloseableCoreSession johnSession = coreFeature.openCoreSession(johnPrincipal)) {
+            // no lock -> Write permission granted to john
+            assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+
+            // lock document as joe
+            NuxeoPrincipal joePrincipal = setUpPrincipal("joe");
+            try (CloseableCoreSession joeSession = coreFeature.openCoreSession(joePrincipal)) {
+                doc = joeSession.getDocument(doc.getRef());
+                doc.setLock();
+                assertTrue(joeSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+            }
+
+            // not a WOPI lock -> Write permission denied to john
+            assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+
+            // add a WOPI lock as joe
+            LockHelper.addLock(fileId, "foo");
+            assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+
+            // WOPI lock but not a WOPI user -> Write permission denied to john
+            assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+
+            // WOPI lock and a WOPI user -> Write permission granted to john
+            // This is possible thanks to the WOPI lock security policy that grants access if the doc is locked by a
+            // WOPI client (existing WOPI lock) and the current principal is a WOPI user.
+            LockHelper.markAsWOPIUser(johnPrincipal);
+            assertTrue(LockHelper.isWOPIUser(johnPrincipal));
+            assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+        }
+    }
+
     protected void fireLockExpirationEvent() {
         EventContext eventContext = new EventContextImpl();
         Event event = eventContext.newEvent(LOCK_EXPIRATION_EVENT);
         eventProducer.fireEvent(event);
     }
+
+    protected NuxeoPrincipal setUpPrincipal(String username) {
+        // grant Write access to the user on the root document
+        DocumentModel rootDocument = session.getRootDocument();
+        ACP acp = rootDocument.getACP();
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE(username, READ_WRITE, true));
+        rootDocument.setACP(acp, true);
+        // build a NuxeoPrincipal
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl(username);
+        DocumentModel model = userManager.getBareUserModel();
+        model.setPropertyValue("user:username", username);
+        principal.setModel(model);
+        return principal;
+    }
+
 }

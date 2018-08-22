@@ -38,6 +38,8 @@ public class Constants {
 
     public static final String WOPI_SRC = "WOPISrc";
 
+    public static final String WOPI_USER = "wopiUser";
+
     // -------- WOPI locks directory ---------------
 
     public static final String LOCK_DIRECTORY_DOC_ID = "docId";

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.exception.NotFoundException;
+import org.nuxeo.wopi.lock.LockHelper;
 
 /**
  * @since 10.3
@@ -45,6 +46,8 @@ public class WOPIRoot extends ModuleRoot {
         WebContext context = getContext();
         context.setRepositoryName(fileInfo.repositoryName);
         CoreSession session = context.getCoreSession();
+        // flag the session's principal as a WOPI user for locking policy purpose
+        LockHelper.markAsWOPIUser(session.getPrincipal());
         DocumentModel doc = getDocument(session, fileInfo.docId);
         Blob blob = getBlob(doc, fileInfo.xpath);
         return newObject("wopiFiles", session, doc, blob, fileInfo.xpath);

@@ -27,7 +27,10 @@ import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_REPOSITORY;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_TIMESTAMP;
 import static org.nuxeo.wopi.Constants.LOCK_TTL;
+import static org.nuxeo.wopi.Constants.WOPI_USER;
 
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -87,6 +91,18 @@ public class LockHelper {
     }
 
     /**
+     * Checks if a WOPI lock is stored for the given repository and doc id, no matter the xpath.
+     */
+    public static boolean isLocked(String repository, String docId) {
+        return callPriviledgedOnLockDirectory(session -> {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
+            filter.put(LOCK_DIRECTORY_DOC_ID, docId);
+            return !session.query(filter).isEmpty();
+        });
+    }
+
+    /**
      * Updates the WOPI lock stored for the given file id with the given lock and a fresh timestamp.
      */
     public static void updateLock(String fileId, String lock) {
@@ -121,6 +137,29 @@ public class LockHelper {
      */
     public static Map<String, List<DocumentModel>> getExpiredLocksByRepository() {
         return callPriviledgedOnLockDirectory(LockHelper::getExpiredLocksByRepository);
+    }
+
+    /**
+     * Marks the given principal as a WOPI user.
+     */
+    public static void markAsWOPIUser(Principal principal) {
+        if (principal instanceof NuxeoPrincipal) {
+            synchronized (principal) {
+                ((NuxeoPrincipal) principal).getModel().putContextData(WOPI_USER, true);
+            }
+        }
+    }
+
+    /**
+     * Checks if the given principal is marked as a WOPI user.
+     */
+    public static boolean isWOPIUser(Principal principal) {
+        if (!(principal instanceof NuxeoPrincipal)) {
+            return false;
+        }
+        synchronized (principal) {
+            return ((NuxeoPrincipal) principal).getModel().getContextData(WOPI_USER) != null;
+        }
     }
 
     protected static Map<String, List<DocumentModel>> getExpiredLocksByRepository(Session session) {
