@@ -159,6 +159,7 @@ public class TestService {
         assertEquals(7, rh.size());
         assertTrue(rh.containsKey("WWW-Authenticate"));
         assertEquals("basic", rh.get("WWW-Authenticate"));
+        assertFalse(rh.containsKey("Warning"));
     }
 
     /**
