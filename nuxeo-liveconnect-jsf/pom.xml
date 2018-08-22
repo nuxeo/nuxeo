@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.liveconnect</groupId>
     <artifactId>nuxeo-liveconnect-parent</artifactId>
-    <version>9.10-HF15-SNAPSHOT</version>
+    <version>9.10-HF15</version>
   </parent>
 
   <artifactId>nuxeo-liveconnect-jsf</artifactId>
