@@ -62,13 +62,11 @@ public class KafkaUtils implements AutoCloseable {
 
     public static final String DEFAULT_BOOTSTRAP_SERVERS = "localhost:9092";
 
-    protected final Properties adminProperties;
+    protected final AdminClient adminClient;
 
-    protected AdminClient adminClient;
+    protected volatile List<String> allConsumers;
 
-    protected List<String> allConsumers;
-
-    protected long allConsumersTime;
+    protected volatile long allConsumersTime;
 
     protected static final long ALL_CONSUMERS_CACHE_TIMEOUT_MS = 2000;
 
@@ -79,7 +77,7 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public KafkaUtils(Properties adminProperties) {
-        this.adminProperties = adminProperties;
+        this.adminClient = AdminClient.create(adminProperties);
     }
 
     public static Properties getDefaultAdminProperties() {
@@ -161,7 +159,7 @@ public class KafkaUtils implements AutoCloseable {
         if (topicExists(topic)) {
             throw new IllegalArgumentException("Cannot create Topic already exists: " + topic);
         }
-        CreateTopicsResult ret = getAdminClient().createTopics(
+        CreateTopicsResult ret = adminClient.createTopics(
                 Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
         try {
             ret.all().get(5, TimeUnit.MINUTES);
@@ -181,10 +179,10 @@ public class KafkaUtils implements AutoCloseable {
 
     public int partitions(String topic) {
         try {
-            TopicDescription desc = getAdminClient().describeTopics(Collections.singletonList(topic))
-                                                    .values()
-                                                    .get(topic)
-                                                    .get();
+            TopicDescription desc = adminClient.describeTopics(Collections.singletonList(topic))
+                                               .values()
+                                               .get(topic)
+                                               .get();
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Topic %s exists: %s", topic, desc));
             }
@@ -202,7 +200,7 @@ public class KafkaUtils implements AutoCloseable {
 
     public Set<String> listTopics() {
         try {
-            return getAdminClient().listTopics().names().get();
+            return adminClient.listTopics().names().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
@@ -218,13 +216,13 @@ public class KafkaUtils implements AutoCloseable {
 
     protected List<String> getConsumerTopics(String group) {
         try {
-            return getAdminClient().listConsumerGroupOffsets(group)
-                                   .partitionsToOffsetAndMetadata()
-                                   .get()
-                                   .keySet()
-                                   .stream()
-                                   .map(TopicPartition::topic)
-                                   .collect(Collectors.toList());
+            return adminClient.listConsumerGroupOffsets(group)
+                              .partitionsToOffsetAndMetadata()
+                              .get()
+                              .keySet()
+                              .stream()
+                              .map(TopicPartition::topic)
+                              .collect(Collectors.toList());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
@@ -233,23 +231,16 @@ public class KafkaUtils implements AutoCloseable {
         }
     }
 
-    protected AdminClient getAdminClient() {
-        if (adminClient == null) {
-            adminClient = AdminClient.create(adminProperties);
-        }
-        return adminClient;
-    }
-
-    public List<String> listAllConsumers() {
+    public synchronized List<String> listAllConsumers() {
         long now = System.currentTimeMillis();
         if (allConsumers == null || (now - allConsumersTime) > ALL_CONSUMERS_CACHE_TIMEOUT_MS) {
             try {
-                allConsumers = getAdminClient().listConsumerGroups()
-                                               .all()
-                                               .get()
-                                               .stream()
-                                               .map(ConsumerGroupListing::groupId)
-                                               .collect(Collectors.toList());
+                allConsumers = adminClient.listConsumerGroups()
+                                          .all()
+                                          .get()
+                                          .stream()
+                                          .map(ConsumerGroupListing::groupId)
+                                          .collect(Collectors.toList());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new StreamRuntimeException(e);
@@ -263,23 +254,8 @@ public class KafkaUtils implements AutoCloseable {
         return allConsumers;
     }
 
-    /**
-     * Work only if delete.topic.enable is true which is not the default
-     */
-    public void markTopicForDeletion(String topic) {
-        log.debug("mark topic for deletion: " + topic);
-        try {
-            getAdminClient().deleteTopics(Collections.singleton(topic)).all().get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new StreamRuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new StreamRuntimeException(e);
-        }
-    }
-
     public int getNumberOfPartitions(String topic) {
-        DescribeTopicsResult descriptions = getAdminClient().describeTopics(Collections.singletonList(topic));
+        DescribeTopicsResult descriptions = adminClient.describeTopics(Collections.singletonList(topic));
         try {
             return descriptions.values().get(topic).get().partitions().size();
         } catch (InterruptedException e) {
@@ -292,10 +268,7 @@ public class KafkaUtils implements AutoCloseable {
 
     @Override
     public void close() {
-        if (adminClient != null) {
-            adminClient.close(ADMIN_CLIENT_CLOSE_TIMEOUT_S, TimeUnit.SECONDS);
-            adminClient = null;
-        }
+        adminClient.close(ADMIN_CLIENT_CLOSE_TIMEOUT_S, TimeUnit.SECONDS);
         log.debug("Closed.");
     }
 
