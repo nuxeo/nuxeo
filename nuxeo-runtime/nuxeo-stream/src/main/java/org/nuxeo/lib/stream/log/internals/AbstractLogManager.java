@@ -50,7 +50,7 @@ public abstract class AbstractLogManager implements LogManager {
     protected final Map<LogPartitionGroup, LogTailer> tailersAssignments = new ConcurrentHashMap<>();
 
     // this define a concurrent set of tailers
-    protected final Set<LogTailer> tailers = Collections.newSetFromMap(new ConcurrentHashMap<LogTailer, Boolean>());
+    protected final Set<LogTailer> tailers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     protected abstract void create(String name, int size);
 
@@ -187,14 +187,12 @@ public abstract class AbstractLogManager implements LogManager {
                 if (record == null) {
                     throw new IllegalStateException("Unable to read " + offset + " lag: " + lag);
                 } else {
-                    try {
-                        long timestamp = timestampExtractor.apply(record.message());
-                        String key = keyExtractor.apply(record.message());
-                        ret.add(new Latency(timestamp, now, lag, key));
-                    } catch (ClassCastException e) {
-                        throw new IllegalStateException("Unexpected record type" + e.getMessage());
-                    }
+                    long timestamp = timestampExtractor.apply(record.message());
+                    String key = keyExtractor.apply(record.message());
+                    ret.add(new Latency(timestamp, now, lag, key));
                 }
+            } catch (ClassCastException e) {
+                throw new IllegalStateException("Unexpected record type" + e.getMessage());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new StreamRuntimeException(e);

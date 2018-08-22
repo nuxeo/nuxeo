@@ -20,7 +20,7 @@ package org.nuxeo.lib.stream.tools.renderer;
 
 import static java.lang.Math.min;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -51,11 +51,7 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
     protected String binaryString(byte[] data) {
         String overview = "";
         if (data != null) {
-            try {
-                overview += new String(data, "UTF-8").substring(0, min(data.length, 512));
-            } catch (UnsupportedEncodingException e) {
-                overview = "unsupported encoding";
-            }
+            overview += new String(data, StandardCharsets.UTF_8).substring(0, min(data.length, 512));
             overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
         }
         return overview;

@@ -182,9 +182,9 @@ public class KafkaUtils implements AutoCloseable {
     public int partitions(String topic) {
         try {
             TopicDescription desc = getAdminClient().describeTopics(Collections.singletonList(topic))
-                                                       .values()
-                                                       .get(topic)
-                                                       .get();
+                                                    .values()
+                                                    .get(topic)
+                                                    .get();
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Topic %s exists: %s", topic, desc));
             }

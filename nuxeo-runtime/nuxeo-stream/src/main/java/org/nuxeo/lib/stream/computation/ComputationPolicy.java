@@ -61,14 +61,11 @@ public class ComputationPolicy {
     public boolean isSkipFailure() {
         return skipFailure;
     }
+
     @Override
     public String toString() {
-        return "ComputationPolicy{" +
-                "retryMax=" + retryPolicy.getMaxRetries() +
-                ", retryDelay=" + retryPolicy.getDelay() +
-                ", batchCapacity=" + batchCapacity +
-                ", batchThreshold=" + batchThreshold +
-                ", skipFailure=" + skipFailure +
-                '}';
+        return "ComputationPolicy{" + "retryMax=" + retryPolicy.getMaxRetries() + ", retryDelay="
+                + retryPolicy.getDelay() + ", batchCapacity=" + batchCapacity + ", batchThreshold=" + batchThreshold
+                + ", skipFailure=" + skipFailure + '}';
     }
 }

@@ -18,7 +18,7 @@
  */
 package org.nuxeo.lib.stream.tests.computation;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,12 +108,7 @@ public class ComputationSource extends AbstractComputation {
     protected Record getRandomRecord() {
         String msg = "data from " + metadata.name() + " msg " + generated;
         Record ret;
-        try {
-            ret = Record.of("key" + generated, msg.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            // should never happen
-            throw new RuntimeException(e);
-        }
+        ret = Record.of("key" + generated, msg.getBytes(StandardCharsets.UTF_8));
         ret.setWatermark(getWatermark());
         return ret;
     }

@@ -80,7 +80,8 @@ public class TestLibChronicle implements StoreFileListener {
         SingleChronicleQueue ret = SingleChronicleQueueBuilder.binary(path)
                                                               .rollCycle(RollCycles.TEST_SECONDLY)
                                                               .storeFileListener(this)
-                                                              .blockSize(0) // reduce the cq4 sparse file to 1m instead 80m
+                                                              .blockSize(0) // reduce the cq4 sparse file to 1m instead
+                                                                            // 80m
                                                               .build();
         assertNotNull(ret);
         return ret;
@@ -267,7 +268,7 @@ public class TestLibChronicle implements StoreFileListener {
             assertNotNull(ret);
         }
         Thread.sleep(1500);
-        // even if we change cycle the queue is initilaized
+        // even if we change cycle the queue is initialized
         try (ChronicleQueue queue = openQueue(path)) {
             ExcerptTailer tailer = queue.createTailer().direction(TailerDirection.BACKWARD).toEnd();
             assertEquals(TailerState.FOUND_CYCLE, tailer.state());

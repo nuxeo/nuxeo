@@ -77,7 +77,7 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
     }
 
     public ChronicleLogOffsetTracker(String basePath, int partition, String group) {
-        this(basePath, partition, group, ChronicleRetentionDuration.DISABLE);
+        this(basePath, partition, group, ChronicleRetentionDuration.NONE);
     }
 
     public static boolean exists(Path basePath, String group) {

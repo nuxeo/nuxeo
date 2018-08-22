@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -186,18 +187,14 @@ public class TestCodec {
     }
 
     protected Record getRecord() throws UnsupportedEncodingException {
-        Record src = Record.of("key", "value".getBytes("UTF-8"));
+        Record src = Record.of("key", "value".getBytes(StandardCharsets.UTF_8));
         src.setFlags(EnumSet.of(Record.Flag.COMMIT, Record.Flag.TRACE));
         return src;
     }
 
     protected String overview(byte[] data) {
         String overview;
-        try {
-            overview = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            overview = "unsupported encoding";
-        }
+        overview = new String(data, StandardCharsets.UTF_8);
         return overview;
     }
 

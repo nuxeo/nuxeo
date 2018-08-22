@@ -144,7 +144,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     }
 
     protected static String buildSubscribeId(String group, Collection<String> names) {
-        return group + ":" + names.stream().collect(Collectors.joining("|"));
+        return group + ":" + String.join("|", names);
     }
 
     @Override

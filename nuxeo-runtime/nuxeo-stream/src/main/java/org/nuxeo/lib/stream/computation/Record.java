@@ -24,7 +24,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -145,11 +145,7 @@ public class Record implements Externalizable {
         String overview = "";
         String wmDate = "";
         if (data != null && data.length > 0) {
-            try {
-                overview = ", data=\"" + new String(data, "UTF-8").substring(0, min(data.length, 127)) + '"';
-            } catch (UnsupportedEncodingException e) {
-                overview = "unsupported encoding";
-            }
+            overview = ", data=\"" + new String(data, StandardCharsets.UTF_8).substring(0, min(data.length, 127)) + '"';
             overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
         }
         if (watermark > 0) {

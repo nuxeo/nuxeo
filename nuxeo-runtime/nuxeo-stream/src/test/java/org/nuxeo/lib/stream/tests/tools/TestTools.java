@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.lib.stream.tests.log.TestLog.DEF_TIMEOUT;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -71,7 +72,7 @@ public abstract class TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                Record record = Record.of(key, value.getBytes("UTF-8"));
+                Record record = Record.of(key, value.getBytes(StandardCharsets.UTF_8));
                 appender.append(i % LOG_SIZE, record);
                 if (i == NB_RECORD / 2) {
                     targetRecord = record;
@@ -254,7 +255,7 @@ public abstract class TestTools {
 
     @Test
     public void testDump() {
-        run(String.format("help dump", getManagerOptions(), LOG_NAME));
+        run("help dump");
 
         run(String.format("dump %s --log-name %s --count 4 --partition 0 --output /tmp/foo.avro", getManagerOptions(),
                 LOG_NAME));

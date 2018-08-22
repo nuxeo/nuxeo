@@ -70,7 +70,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * If this method raises an exception the retry policy is applied.
      *
      * @param context used to send records to output streams, note that the checkpoint is managed automatically.
-     * @param inputStreamName the input streams where the records are comming from
+     * @param inputStreamName the input streams where the records are coming from
      * @param records the batch of records
      */
     public abstract void batchProcess(ComputationContext context, String inputStreamName, List<Record> records);
@@ -90,7 +90,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
         if (!TIMER_BATCH.equals(key)) {
             return;
         }
-        if (! batchRecords.isEmpty()) {
+        if (!batchRecords.isEmpty()) {
             processBatch(context);
         }
         context.setTimer(TIMER_BATCH, System.currentTimeMillis() + thresholdMillis);
@@ -134,6 +134,12 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
         }
     }
 
+    /**
+     * Called before retrying, can be overridden
+     *
+     * @param context Computation context that could be used
+     * @param failure
+     */
     protected void processRetry(ComputationContext context, Throwable failure) {
         log.warn(String.format(
                 "Computation: %s fails to process batch of %d records from stream: %s, policy: %s, retrying ...",

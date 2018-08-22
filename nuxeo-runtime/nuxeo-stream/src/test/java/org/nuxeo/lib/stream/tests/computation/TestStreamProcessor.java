@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -478,7 +479,7 @@ public abstract class TestStreamProcessor {
             assertEquals("avroJson", appender.getCodec().getName());
 
             // write some input
-            appender.append(0, Record.of("key", "value".getBytes("UTF-8")));
+            appender.append(0, Record.of("key", "value".getBytes(StandardCharsets.UTF_8)));
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
             // read output using avro codec
