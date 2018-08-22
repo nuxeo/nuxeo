@@ -18,7 +18,7 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,11 +124,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
     }
 
     protected byte[] encodeLatency(Latency latency) {
-        try {
-            return latency.asJson().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Failed to byte encoding " + latency, e);
-        }
+        return latency.asJson().getBytes(StandardCharsets.UTF_8);
     }
 
     @SuppressWarnings("squid:S1193")

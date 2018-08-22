@@ -51,8 +51,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     protected static final long POLL_INTERVAL_MS = 100L;
 
     // keep track of all tailers on the same namespace index even from different log
-    protected static final Set<LogPartitionGroup> tailersId = Collections.newSetFromMap(
-            new ConcurrentHashMap<LogPartitionGroup, Boolean>());
+    protected static final Set<LogPartitionGroup> tailersId = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private static final Log log = LogFactory.getLog(ChronicleLogTailer.class);
 

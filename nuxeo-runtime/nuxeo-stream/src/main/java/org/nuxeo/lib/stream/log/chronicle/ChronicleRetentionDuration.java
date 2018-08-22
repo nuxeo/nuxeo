@@ -40,7 +40,7 @@ public class ChronicleRetentionDuration {
 
     protected final String retention;
 
-    public static final ChronicleRetentionDuration DISABLE = new ChronicleRetentionDuration("0d");
+    public static final ChronicleRetentionDuration NONE = new ChronicleRetentionDuration("0d");
 
     public ChronicleRetentionDuration(String retention) {
         this.retention = retention;

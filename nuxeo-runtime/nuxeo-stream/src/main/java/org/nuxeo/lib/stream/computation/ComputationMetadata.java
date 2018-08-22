@@ -21,7 +21,6 @@ package org.nuxeo.lib.stream.computation;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * The metadata defining a computation.
@@ -98,8 +97,7 @@ public class ComputationMetadata {
 
     @Override
     public String toString() {
-        return "ComputationMetadata{" + "name='" + name + '\'' + ", inputStreams="
-                + inputStreams.stream().collect(Collectors.joining(",")) + ", outputStreams="
-                + outputStreams.stream().collect(Collectors.joining(",")) + '}';
+        return "ComputationMetadata{" + "name='" + name + '\'' + ", inputStreams=" + String.join(",", inputStreams)
+                + ", outputStreams=" + String.join(",", outputStreams) + '}';
     }
 }

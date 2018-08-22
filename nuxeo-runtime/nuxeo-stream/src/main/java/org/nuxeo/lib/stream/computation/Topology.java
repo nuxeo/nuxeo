@@ -111,6 +111,10 @@ public class Topology {
                 }
             }
         }
+        generateMetadataMapping(metadataSet);
+    }
+
+    protected void generateMetadataMapping(Set<ComputationMetadataMapping> metadataSet) {
         for (Vertex vertex : dag) {
             if (VertexType.COMPUTATION.equals(vertex.getType())) {
                 for (ComputationMetadataMapping metadata : metadataSet) {

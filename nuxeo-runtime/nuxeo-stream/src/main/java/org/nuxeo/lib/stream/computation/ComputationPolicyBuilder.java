@@ -42,6 +42,7 @@ public class ComputationPolicyBuilder {
     protected Duration batchThreshold = Duration.ofSeconds(DEFAULT_BATCH_THRESHOLD_SECOND);
 
     public ComputationPolicyBuilder() {
+        // Empty constructor
     }
 
     /**
@@ -68,7 +69,7 @@ public class ComputationPolicyBuilder {
      * The fallback when processing a batch has failed after applying the retry policy has failed.
      *
      * @param value When {@code true} Skips the records affected by the batch in failure and continue.<br/>
-     *              When {@code false} aborts the computation, this is the default behavior.
+     *            When {@code false} aborts the computation, this is the default behavior.
      */
     public ComputationPolicyBuilder continueOnFailure(boolean value) {
         skipFailure = value;

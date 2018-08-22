@@ -16,6 +16,7 @@
  */
 package org.nuxeo.lib.stream.tests.log;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -261,11 +262,11 @@ public abstract class TestLog {
 
         try (LogTailer<KeyValueMessage> tailer1 = manager.createTailer(GROUP, LogPartition.of(logName, 1))) {
             assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
-            assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+            assertNull(tailer1.read(SMALL_TIMEOUT));
 
             // add message on another partition
             appender.append(2, msg2);
-            assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+            assertNull(tailer1.read(SMALL_TIMEOUT));
 
             appender.append(1, msg2);
             assertEquals(msg2, tailer1.read(DEF_TIMEOUT).message());
@@ -281,10 +282,10 @@ public abstract class TestLog {
                 LogTailer<KeyValueMessage> tailer2 = manager.createTailer(GROUP, LogPartition.of(logName, 2))) {
             assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
             assertEquals(msg2, tailer1.read(DEF_TIMEOUT).message());
-            assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+            assertNull(tailer1.read(SMALL_TIMEOUT));
 
             assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
-            assertEquals(null, tailer2.read(SMALL_TIMEOUT));
+            assertNull(tailer2.read(SMALL_TIMEOUT));
         }
 
         // consumers didn't commit, there are 3 messages
@@ -328,7 +329,7 @@ public abstract class TestLog {
             assertEquals("id1", tailer.read(DEF_TIMEOUT).message().key());
 
             tailer.toEnd();
-            assertEquals(null, tailer.read(SMALL_TIMEOUT));
+            assertNull(tailer.read(SMALL_TIMEOUT));
 
             tailer.toLastCommitted();
             assertEquals("id3", tailer.read(DEF_TIMEOUT).message().key());
@@ -574,29 +575,29 @@ public abstract class TestLog {
 
         assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
         assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
-        assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+        assertNull(tailer1.read(SMALL_TIMEOUT));
 
         tailer1.toLastCommitted(); // replay from the last commit
         assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
         assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
-        assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+        assertNull(tailer1.read(SMALL_TIMEOUT));
         tailer1.commit();
 
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
-        assertEquals(null, tailer2.read(SMALL_TIMEOUT));
+        assertNull(tailer2.read(SMALL_TIMEOUT));
         tailer2.toStart(); // replay again
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
         assertEquals(msg2, tailer2.read(DEF_TIMEOUT).message());
-        assertEquals(null, tailer2.read(SMALL_TIMEOUT));
+        assertNull(tailer2.read(SMALL_TIMEOUT));
 
         resetManager();
 
         // using another tailer with different assignment but same group, the committed offset are preserved
         LogTailer<KeyValueMessage> tailer3 = manager.createTailer(group, LogPartition.of(logName1, 0));
-        assertEquals(null, tailer3.read(SMALL_TIMEOUT));
+        assertNull(tailer3.read(SMALL_TIMEOUT));
         LogTailer<KeyValueMessage> tailer4 = manager.createTailer(group, LogPartition.of(logName1, 1));
         assertEquals(msg2, tailer4.read(DEF_TIMEOUT).message());
 
@@ -669,7 +670,7 @@ public abstract class TestLog {
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         assertEquals(LogLag.of(0), manager.getLag(logName, "unknown-group"));
         appender.append(0, msg1);
-        for(int i=0; i<100; i++) {
+        for (int i = 0; i < 100; i++) {
             assertEquals(LogLag.of(1), manager.getLag(logName, "unknown-group"));
         }
     }
@@ -808,7 +809,7 @@ public abstract class TestLog {
     }
 
     protected Record createRecord(String key) throws UnsupportedEncodingException {
-        return Record.of(key, ("value" + key).getBytes("UTF-8"));
+        return Record.of(key, ("value" + key).getBytes(UTF_8));
     }
 
     @SuppressWarnings("unchecked")
@@ -847,9 +848,9 @@ public abstract class TestLog {
         manager.createIfNotExists(logName, LOG_SIZE);
 
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName, codec);
-        KeyValueMessage msg1 = KeyValueMessage.ofForceBatch("key", "value".getBytes("UTF-8"));
-        KeyValueMessage msg2 = KeyValueMessage.of("id2", "foo".getBytes("UTF-8"));
-        KeyValueMessage msg3 = KeyValueMessage.of("1234567890", "0987654321".getBytes("UTF-8"));
+        KeyValueMessage msg1 = KeyValueMessage.ofForceBatch("key", "value".getBytes(UTF_8));
+        KeyValueMessage msg2 = KeyValueMessage.of("id2", "foo".getBytes(UTF_8));
+        KeyValueMessage msg3 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
         appender.append(0, msg1);
         appender.append(0, msg2);
         appender.append(0, msg3);
@@ -860,7 +861,7 @@ public abstract class TestLog {
             assertEquals(msg2, tailer1.read(DEF_TIMEOUT).message());
             assertEquals(msg3, tailer1.read(DEF_TIMEOUT).message());
             assertEquals(msg1, tailer1.read(DEF_TIMEOUT).message());
-            assertEquals(null, tailer1.read(SMALL_TIMEOUT));
+            assertNull(tailer1.read(SMALL_TIMEOUT));
         }
     }
 
@@ -870,7 +871,7 @@ public abstract class TestLog {
         final String GROUP = "defaultTest";
         final String GROUP2 = "defaultTest2";
         manager.createIfNotExists(logName, LOG_SIZE);
-        KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes("UTF-8"));
+        KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
 
         Codec<KeyValueMessage> codec1 = new AvroBinaryCodec<>(KeyValueMessage.class);
         Codec<KeyValueMessage> codec2 = new SerializableCodec<>();

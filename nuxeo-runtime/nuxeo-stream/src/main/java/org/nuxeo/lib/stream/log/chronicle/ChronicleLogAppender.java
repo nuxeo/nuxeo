@@ -153,14 +153,14 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
      * Create a new log.
      */
     public static <M extends Externalizable> ChronicleLogAppender<M> create(Codec<M> codec, File basePath, int size) {
-        return new ChronicleLogAppender<>(codec, basePath, size, ChronicleRetentionDuration.DISABLE);
+        return new ChronicleLogAppender<>(codec, basePath, size, ChronicleRetentionDuration.NONE);
     }
 
     /**
      * Open an existing log.
      */
     public static <M extends Externalizable> ChronicleLogAppender<M> open(Codec<M> codec, File basePath) {
-        return new ChronicleLogAppender<>(codec, basePath, 0, ChronicleRetentionDuration.DISABLE);
+        return new ChronicleLogAppender<>(codec, basePath, 0, ChronicleRetentionDuration.NONE);
     }
 
     /**

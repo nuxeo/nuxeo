@@ -166,7 +166,7 @@ public class PositionCommand extends Command {
     }
 
     protected String labelFor(String name, int partition) {
-        return partition >= 0 ?  name + ":" + labelFor(partition): name;
+        return partition >= 0 ? name + ":" + labelFor(partition) : name;
     }
 
     protected LogLag getLag(LogManager manager, String group, String name, int partition) {
@@ -211,7 +211,8 @@ public class PositionCommand extends Command {
                 }
                 tailer.seek(logOffset);
                 movedOffset = true;
-                log.info(String.format("# Set log %s, group: %s, to offset %s", labelFor(name, part), group, logOffset.offset()));
+                log.info(String.format("# Set log %s, group: %s, to offset %s", labelFor(name, part), group,
+                        logOffset.offset()));
             }
             if (movedOffset) {
                 tailer.commit();
@@ -235,7 +236,7 @@ public class PositionCommand extends Command {
                 // empty partition nothing to do
                 offsets.add(null);
             } else {
-                if (partition >= 0 && part!= partition) {
+                if (partition >= 0 && part != partition) {
                     offsets.add(null);
                 }
                 try (LogTailer<Record> tailer = manager.createTailer(newGroup, new LogPartition(name, part))) {

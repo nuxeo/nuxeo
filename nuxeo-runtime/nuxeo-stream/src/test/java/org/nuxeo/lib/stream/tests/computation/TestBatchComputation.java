@@ -19,7 +19,10 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 
@@ -60,7 +63,7 @@ public class TestBatchComputation {
         assertEquals(0, comp.processCounter);
 
         // send a record
-        Record aRecord = Record.of("foo", "bar".getBytes("UTF-8"));
+        Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         comp.processRecord(context, "i1", aRecord);
         // no record send to output
         assertEquals(0, context.getRecords("o1").size());
@@ -103,7 +106,7 @@ public class TestBatchComputation {
 
     @Test
     public void testComputationBatchFailureForward() throws Exception {
-        Record aRecord = Record.of("foo", "bar".getBytes("UTF-8"));
+        Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         int batchCapacity = 3;
         ComputationPolicy policyNoRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
                 Duration.ofMillis(500)).build();
@@ -120,8 +123,8 @@ public class TestBatchComputation {
         for (int i = 0; i < batchCapacity; i++) {
             comp.processRecord(context, "i1", aRecord);
         }
-        assertEquals(false, context.requireCheckpoint());
-        assertEquals(true, context.requireTerminate());
+        assertFalse(context.requireCheckpoint());
+        assertTrue(context.requireTerminate());
         assertEquals(1, comp.failureCounter);
         assertEquals(1, comp.processCounter);
 
@@ -133,17 +136,16 @@ public class TestBatchComputation {
         for (int i = 0; i < batchCapacity; i++) {
             comp.processRecord(context, "i1", aRecord);
         }
-        assertEquals(true, context.requireCheckpoint());
-        assertEquals(false, context.requireTerminate());
+        assertTrue(context.requireCheckpoint());
+        assertFalse(context.requireTerminate());
         assertEquals(0, comp.failureCounter);
         assertEquals(3, comp.processCounter);
 
     }
 
-
     @Test
     public void testComputationBatchFailureBatchForwardThatFails() throws Exception {
-        Record aRecord = Record.of("foo", "bar".getBytes("UTF-8"));
+        Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         int batchCapacity = 3;
         ComputationPolicy policyWithRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
                 Duration.ofMillis(500))
@@ -160,8 +162,8 @@ public class TestBatchComputation {
         for (int i = 0; i < batchCapacity; i++) {
             comp.processRecord(context, "i1", aRecord);
         }
-        assertEquals(true, context.requireCheckpoint());
-        assertEquals(false, context.requireTerminate());
+        assertTrue(context.requireCheckpoint());
+        assertFalse(context.requireTerminate());
         assertEquals(1, comp.failureCounter);
         assertEquals(2, comp.processCounter);
     }

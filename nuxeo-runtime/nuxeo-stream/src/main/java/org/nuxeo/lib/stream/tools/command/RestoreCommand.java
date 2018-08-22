@@ -26,7 +26,7 @@ import static org.nuxeo.lib.stream.tools.command.TrackerCommand.ALL_LOGS;
 import static org.nuxeo.lib.stream.tools.command.TrackerCommand.DEFAULT_LATENCIES_LOG;
 import static org.nuxeo.lib.stream.tools.command.TrackerCommand.INTERNAL_LOG_PREFIX;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -207,16 +207,11 @@ public class RestoreCommand extends Command {
     }
 
     protected Latency decodeLatency(byte[] data) {
-        try {
-            return Latency.fromJson(new String(data, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            log.error("Cannot decode message" + e.getMessage() + " " + Arrays.toString(data));
-        }
-        return null;
+        return Latency.fromJson(new String(data, StandardCharsets.UTF_8));
     }
 
     protected List<String> getLogNames(LogManager manager, String names) {
-        if (ALL_LOGS.equals(names.toLowerCase())) {
+        if (ALL_LOGS.equalsIgnoreCase(names)) {
             return manager.listAll().stream().filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX)).collect(
                     Collectors.toList());
         }
