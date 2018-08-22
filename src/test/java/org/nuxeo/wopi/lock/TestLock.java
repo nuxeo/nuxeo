@@ -1,4 +1,3 @@
-
 /*
  * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
