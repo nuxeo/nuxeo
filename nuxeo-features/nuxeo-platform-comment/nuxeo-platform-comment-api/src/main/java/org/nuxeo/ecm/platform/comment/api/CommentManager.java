@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.comment.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -83,5 +84,58 @@ public interface CommentManager {
      * @return the comment document model.
      */
     DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path);
+
+    /**
+     * Creates a comment.
+     *
+     * @param session the core session
+     * @return the created comment id
+     * @throws IllegalArgumentException if the document to comment does not exist
+     * @since 10.3
+     */
+    String createComment(CoreSession session, Comment comment) throws IllegalArgumentException;
+
+    /**
+     * Gets a comment.
+     *
+     * @param session the core session
+     * @param commentId the comment id
+     * @return the comment
+     * @throws IllegalArgumentException if the comment does not exist
+     * @since 10.3
+     */
+    Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException;
+
+    /**
+     * Gets all comments for a document.
+     * 
+     * @param session the core session
+     * @param documentId the document id
+     * @return the list of comments, or an empty list if no comment is found
+     * @throws IllegalArgumentException if no document was found with the given id
+     * @since 10.3
+     */
+    List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException;
+
+    /**
+     * Updates a comment.
+     * 
+     * @param session the core session
+     * @param commentId the comment id
+     * @param comment the updated comment
+     * @throws IllegalArgumentException if the comment does not exist
+     * @since 10.3
+     */
+    void updateComment(CoreSession session, String commentId, Comment comment) throws IllegalArgumentException;
+
+    /**
+     * Deletes a comment.
+     *
+     * @param session the core session
+     * @param commentId the comment id
+     * @throws IllegalArgumentException if no comment was found with the given id
+     * @since 10.3
+     */
+    void deleteComment(CoreSession session, String commentId) throws IllegalArgumentException;
 
 }

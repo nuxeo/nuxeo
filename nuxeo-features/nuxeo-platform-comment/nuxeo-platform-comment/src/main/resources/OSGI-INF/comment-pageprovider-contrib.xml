@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.comment.pageprovider">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+
+    <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT">
+      <pattern>
+        SELECT * FROM Comment WHERE comment:documentId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
