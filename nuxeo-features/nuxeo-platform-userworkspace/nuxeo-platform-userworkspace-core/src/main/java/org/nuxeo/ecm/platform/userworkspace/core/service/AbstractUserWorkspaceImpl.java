@@ -90,7 +90,8 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                     return;
                 }
                 // configured domain does not exist !!!
-                DocumentModelList domains = session.query("select * from Domain order by dc:created");
+                DocumentModelList domains = session.query(
+                        "select * from Domain where ecm:isTrashed = 0 order by dc:created");
 
                 if (!domains.isEmpty()) {
                     targetDomainName = domains.get(0).getName();
