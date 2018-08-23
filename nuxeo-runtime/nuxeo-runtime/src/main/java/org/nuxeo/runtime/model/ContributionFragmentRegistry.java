@@ -73,10 +73,12 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @see SimpleContributionRegistry<T>
+ * @deprecated since 10.3 use DefaultComponent descriptors management methods instead
  */
+@Deprecated
 public abstract class ContributionFragmentRegistry<T> {
 
-    protected Map<String, FragmentList<T>> contribs = new HashMap<String, FragmentList<T>>();
+    protected Map<String, FragmentList<T>> contribs = new HashMap<>();
 
     /**
      * Returns the contribution ID given the contribution object
@@ -232,7 +234,7 @@ public abstract class ContributionFragmentRegistry<T> {
         FragmentList<T> head = contribs.get(id);
         if (head == null) {
             // no merge needed
-            head = new FragmentList<T>();
+            head = new FragmentList<>();
             this.contribs.put(id, head);
         }
         head.add(contrib);
@@ -296,7 +298,7 @@ public abstract class ContributionFragmentRegistry<T> {
         }
 
         public final void add(T contrib) {
-            insertBefore(new Fragment<T>(contrib));
+            insertBefore(new Fragment<>(contrib));
             object = null;
         }
 
@@ -315,8 +317,8 @@ public abstract class ContributionFragmentRegistry<T> {
         public boolean remove(T contrib, boolean useEqualsMethod) {
             Fragment<T> p = next;
             while (p != this) {
-                if ((useEqualsMethod && (p.object != null && p.object.equals(contrib)))
-                        || (!useEqualsMethod && p.object == contrib)) {
+                if (useEqualsMethod && p.object != null && p.object.equals(contrib)
+                        || !useEqualsMethod && p.object == contrib) {
                     p.remove();
                     object = null;
                     return true;
