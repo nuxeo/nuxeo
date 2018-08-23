@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.userworkspace.core.listener;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -41,7 +42,10 @@ public class InvalidateUserWorkspacesListener implements EventListener {
         if (!(ec instanceof DocumentEventContext)) {
             return;
         }
-        if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
+        String evtName = event.getName();
+        if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(evtName)
+                && !TrashService.DOCUMENT_TRASHED.equals(evtName)
+                && !TrashService.DOCUMENT_UNTRASHED.equals(evtName)) {
             return;
         }
         DocumentEventContext context = (DocumentEventContext) ec;

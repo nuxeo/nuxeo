@@ -9,6 +9,8 @@
       class="org.nuxeo.ecm.platform.userworkspace.core.listener.InvalidateUserWorkspacesListener"
       priority="20">
       <event>documentRemoved</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
     </listener>
 
   </extension>
