@@ -41,7 +41,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +49,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
-import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
@@ -161,13 +159,13 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 if (requestDispatcher != null) {
                     requestDispatcher.forward(request, response);
                 } else {
-                    log.error("Cannot forward to error page, " + "no RequestDispatcher found for errorPage=" + errorPage
+                    log.error("Cannot forward to error page, no RequestDispatcher found for errorPage=" + errorPage
                             + " handler=" + handler);
                 }
                 parameters.getListener().responseComplete();
             } else if (!DownloadHelper.isClientAbortError(t)){
                 // do not throw an error, just log it: afterDispatch needs to be called
-                log.error("Cannot forward to error page: " + "response is already committed");
+                log.error("Cannot forward to error page: response is already committed", t);
             }
             parameters.getListener().afterDispatch(unwrappedException, request, response);
         } catch (ServletException e) {
