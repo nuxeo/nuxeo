@@ -67,6 +67,16 @@ public final class CommentsConstants {
 
     public static final String COMMENT_TEXT = "comment:text";
 
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_DOCUMENT_ID = "comment:documentId";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_MODIFICATION_DATE = "comment:modificationDate";
+
     private CommentsConstants() {
     }
 

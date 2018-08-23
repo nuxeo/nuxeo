@@ -21,8 +21,14 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -30,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +45,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -52,9 +60,11 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
@@ -455,5 +465,56 @@ public class CommentManagerImpl implements CommentManager {
             return thread;
         }
         return null;
+    }
+
+    @Override
+    public String createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
+        DocumentRef commentRef = new IdRef(comment.getDocumentId());
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
+        }
+        DocumentModel docToComment = session.getDocument(commentRef);
+        return createComment(docToComment, comment.getText(), comment.getAuthor()).getId();
+    }
+
+    @Override
+    public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
+        throw new UnsupportedOperationException(
+                "Retrieve a comment with its id is not possible through this implementation");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException {
+        DocumentRef docRef = new IdRef(documentId);
+        if (!session.exists(docRef)) {
+            throw new IllegalArgumentException("The document " + documentId + " does not exist.");
+        }
+        DocumentModel commentedDoc = session.getDocument(new IdRef(documentId));
+        return getComments(commentedDoc).stream().map(commentModel -> {
+            Comment comment = new CommentImpl();
+            comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
+            comment.setText((String) commentModel.getPropertyValue(COMMENT_TEXT));
+            comment.setDocumentId(documentId);
+            comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
+            return comment;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateComment(CoreSession session, String commentId, Comment comment) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Update a comment is not possible through this implementation");
+    }
+
+    @Override
+    public void deleteComment(CoreSession session, String commentId) throws IllegalArgumentException {
+        DocumentRef commentRef = new IdRef(commentId);
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+        }
+        DocumentModel comment = session.getDocument(commentRef);
+        DocumentModel commentedDoc = session.getDocument(
+                new IdRef((String) comment.getPropertyValue(COMMENT_DOCUMENT_ID)));
+        deleteComment(commentedDoc, comment);
     }
 }
