@@ -22,6 +22,7 @@ import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
 import org.nuxeo.lib.stream.codec.AvroJsonCodec;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -63,7 +64,7 @@ public abstract class Command {
         case "avroJson":
             return new AvroJsonCodec<>(Record.class);
         case "avroBinary":
-            return new AvroJsonCodec<>(Record.class);
+            return new AvroBinaryCodec<>(Record.class);
         default:
             throw new IllegalArgumentException("Unknown codec: " + codec);
         }
