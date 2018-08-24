@@ -16,7 +16,6 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-
 package org.nuxeo.wopi.lock;
 
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_DOC_ID;

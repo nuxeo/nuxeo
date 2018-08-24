@@ -34,9 +34,15 @@ public class Constants {
 
     public static final String ACCESS_TOKEN_TTL = "accessTokenTTL";
 
+    public static final String ACTION_EDIT = "edit";
+
+    public static final String ACTION_VIEW = "view";
+
     public static final String FILE_CONTENT_PROPERTY = "file:content";
 
     public static final String FORM_URL = "formURL";
+
+    public static final String WOPI_SERVLET_PATH = "wopi";
 
     public static final String WOPI_SOURCE = "wopi";
 
