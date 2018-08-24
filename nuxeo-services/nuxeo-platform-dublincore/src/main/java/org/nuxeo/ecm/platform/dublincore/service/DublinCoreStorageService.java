@@ -71,9 +71,8 @@ public class DublinCoreStorageService extends DefaultComponent {
         String principalName = principal.getName();
         if (principal instanceof SystemPrincipal) {
             SystemPrincipal nxp = (SystemPrincipal) principal;
-            String originatingUser = nxp.getOriginatingUser();
-            if ((originatingUser == null || SYSTEM_USERNAME.equals(originatingUser))
-                    && !DOCUMENT_CREATED.equals(event.getName())) {
+            String originatingUser = nxp.getActingUser();
+            if (SYSTEM_USERNAME.equals(originatingUser) && !DOCUMENT_CREATED.equals(event.getName())) {
                 return;
             } else {
                 principalName = originatingUser;
