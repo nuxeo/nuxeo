@@ -38,9 +38,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class XMLImporterComponent extends DefaultComponent implements XMLImporterService {
 
-    protected List<DocConfigDescriptor> docConfigs = new ArrayList<DocConfigDescriptor>();
+    protected List<DocConfigDescriptor> docConfigs = new ArrayList<>();
 
-    protected List<AttributeConfigDescriptor> attributeConfigs = new ArrayList<AttributeConfigDescriptor>();
+    protected List<AttributeConfigDescriptor> attributeConfigs = new ArrayList<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -51,7 +51,7 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
         }
     }
 
-    protected ParserConfigRegistry getRegistry() {
+    protected ParserConfigRegistry getConfigRegistry() {
         return new ParserConfigRegistry() {
 
             @Override
@@ -70,12 +70,12 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
     public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile) throws IOException {
         return importDocuments(root, xmlFile, null);
     }
-    
+
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile, boolean deferSave) throws IOException {
         return importDocuments(root, xmlFile, null, deferSave);
     }
-    
+
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream) throws IOException {
         return importDocuments(root, xmlStream, null);
@@ -84,22 +84,22 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
             Map<String, Object> mvelContext) throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext, false);
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getConfigRegistry(), mvelContext, false);
         return importer.parse(xmlStream);
     }
 
-	@Override
-	public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
-			throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext, false);
+    @Override
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
+            throws IOException {
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getConfigRegistry(), mvelContext, false);
         return importer.parse(source);
-	}
-	
-	@Override
-	public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext,
-			boolean deferSave)
-			throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext, deferSave);
+    }
+
+    @Override
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext,
+            boolean deferSave)
+            throws IOException {
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getConfigRegistry(), mvelContext, deferSave);
         return importer.parse(source);
-	}
+    }
 }
