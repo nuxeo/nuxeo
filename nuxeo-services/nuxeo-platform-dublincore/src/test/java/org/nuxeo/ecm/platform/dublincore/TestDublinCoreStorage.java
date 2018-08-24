@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISA
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -223,6 +224,18 @@ public class TestDublinCoreStorage {
             contributorsList = Arrays.asList(contributorsArray);
             assertTrue(contributorsList.contains("Administrator"));
             assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
+        }
+    }
+
+    @Test
+    public void testLastContributorForSystemSession() {
+        // use a system session with no originating user name
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSessionSystem(session.getRepositoryName(), (String) null)) {
+            DocumentModel file = session2.createDocumentModel("/", "file", "File");
+            file = session2.createDocument(file);
+            // check we haven't inserted a null in last contributors
+            assertEquals(Collections.singletonList("system"),
+                    Arrays.asList((String[]) file.getPropertyValue("dc:contributors")));
         }
     }
 
