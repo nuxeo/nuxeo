@@ -19,15 +19,22 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ORIGIN;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.annotation.AnnotationJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -46,11 +53,21 @@ public class AnnotationJsonReader extends EntityJsonReader<Annotation> {
 
     @Override
     protected Annotation readEntity(JsonNode jn) throws IOException {
+
         Annotation annotation = new AnnotationImpl();
+
+        annotation.setAuthor(jn.get(COMMENT_AUTHOR).textValue());
+        annotation.setText(jn.get(COMMENT_TEXT).textValue());
+        annotation.setDocumentId(jn.get(COMMENT_DOCUMENT_ID).textValue());
+        annotation.setCreationDate(Instant.parse(jn.get(COMMENT_CREATION_DATE).textValue()));
+        annotation.setModificationDate(Instant.parse(jn.get(COMMENT_MODIFICATION_DATE).textValue()));
+
         annotation.setId(jn.get(ANNOTATION_ID).textValue());
-        annotation.setDocumentId(jn.get(ANNOTATION_DOCUMENT_ID).textValue());
         annotation.setXpath(jn.get(ANNOTATION_XPATH).textValue());
-        annotation.setEntity(jn.get(ANNOTATION_ENTITY).textValue());
+
+        ((ExternalAnnotation) annotation).setEntityId(jn.get(ANNOTATION_ENTITY_ID).textValue());
+        ((ExternalAnnotation) annotation).setOrigin(jn.get(ANNOTATION_ORIGIN).textValue());
+        ((ExternalAnnotation) annotation).setEntity(jn.get(ANNOTATION_ENTITY).textValue());
 
         return annotation;
     }

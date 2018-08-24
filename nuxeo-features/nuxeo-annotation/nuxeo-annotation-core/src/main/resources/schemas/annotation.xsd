@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/annotation" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="annotationId" type="xs:string"/>
-  <xs:element name="documentId" type="xs:string"/>
   <xs:element name="xpath" type="xs:string"/>
-  <xs:element name="entity" type="xs:string"/>
 
 </xs:schema>
