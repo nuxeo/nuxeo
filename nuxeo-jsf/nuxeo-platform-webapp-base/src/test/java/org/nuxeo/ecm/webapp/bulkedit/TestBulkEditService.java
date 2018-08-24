@@ -60,6 +60,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.webapp.base")
 @Deploy("org.nuxeo.ecm.platform.tag.api")
 @Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.collections.core:OSGI-INF/collection-core-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 public class TestBulkEditService {
 
