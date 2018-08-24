@@ -339,21 +339,23 @@ public class MetricsDescriptor implements Serializable {
             LogFactory.getLog(MetricsServiceImpl.class).info(this);
             // TODO: do not hard code the common datasource
             // nameenable(registry)
-            String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
-            String connector = String.format("Catalina:type=ThreadPool,name=\"http-bio-%s-%s\"",
+            String pool = "org.nuxeo.ecm.core.management.jtajca:type=ConnectionPoolMonitor,name=jdbc/nuxeo";
+            String connector = String.format("Catalina:type=ThreadPool,name=\"http-nio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
-            String requestProcessor = String.format("Catalina:type=GlobalRequestProcessor,name=\"http-bio-%s-%s\"",
+            String requestProcessor = String.format("Catalina:type=GlobalRequestProcessor,name=\"http-nio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
-            String manager = "Catalina:type=Manager,context=/nuxeo,host=localhost";
-            registerTomcatGauge(pool, "numActive", registry, "jdbc-numActive");
-            registerTomcatGauge(pool, "numIdle", registry, "jdbc-numIdle");
+            String manager = "Catalina:type=Manager,host=localhost,context=/nuxeo";
+            registerTomcatGauge(pool, "ConnectionCount", registry, "jdbc-numActive");
+            registerTomcatGauge(pool, "IdleConnectionCount", registry, "jdbc-numIdle");
             registerTomcatGauge(connector, "currentThreadCount", registry, "currentThreadCount");
             registerTomcatGauge(connector, "currentThreadsBusy", registry, "currentThreadBusy");
             registerTomcatGauge(requestProcessor, "errorCount", registry, "errorCount");
             registerTomcatGauge(requestProcessor, "requestCount", registry, "requestCount");
             registerTomcatGauge(requestProcessor, "processingTime", registry, "processingTime");
+            registerTomcatGauge(requestProcessor, "bytesReceived", registry, "bytesReceived");
+            registerTomcatGauge(requestProcessor, "bytesSent", registry, "bytesSent");
             registerTomcatGauge(manager, "activeSessions", registry, "activeSessions");
         }
 
