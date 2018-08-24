@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
     <artifactId>nuxeo-drive-parent</artifactId>
-    <version>7.10-HF44-SNAPSHOT</version>
+    <version>7.10-HF44</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
