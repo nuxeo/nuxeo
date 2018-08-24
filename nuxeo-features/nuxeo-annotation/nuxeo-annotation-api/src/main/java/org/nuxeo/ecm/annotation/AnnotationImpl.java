@@ -20,35 +20,22 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID_PROPERTY;
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 
 /**
  * @since 10.1
  */
-public class AnnotationImpl implements Annotation {
+public class AnnotationImpl extends CommentImpl implements Annotation, ExternalAnnotation {
 
     protected String id;
 
-    protected String documentId;
-
     protected String xpath;
 
+    protected String entityId;
+
+    protected String origin;
+
     protected String entity;
-
-    public AnnotationImpl() {
-    }
-
-    protected AnnotationImpl(DocumentModel annotationModel) {
-        id = (String) annotationModel.getPropertyValue(ANNOTATION_ID_PROPERTY);
-        documentId = (String) annotationModel.getPropertyValue(ANNOTATION_DOCUMENT_ID_PROPERTY);
-        xpath = (String) annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY);
-        entity = (String) annotationModel.getPropertyValue(ANNOTATION_ENTITY_PROPERTY);
-    }
 
     @Override
     public String getId() {
@@ -58,16 +45,6 @@ public class AnnotationImpl implements Annotation {
     @Override
     public void setId(String id) {
         this.id = id;
-    }
-
-    @Override
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    @Override
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
     }
 
     @Override
@@ -81,6 +58,26 @@ public class AnnotationImpl implements Annotation {
     }
 
     @Override
+    public String getEntityId() {
+        return entityId;
+    }
+
+    @Override
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    @Override
+    public String getOrigin() {
+        return origin;
+    }
+
+    @Override
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    @Override
     public String getEntity() {
         return entity;
     }
@@ -89,5 +86,4 @@ public class AnnotationImpl implements Annotation {
     public void setEntity(String entity) {
         this.entity = entity;
     }
-
 }

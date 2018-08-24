@@ -144,13 +144,13 @@ public class TestAnnotationService {
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
-        assertNull(annotation.getEntity());
+        assertNull(((ExternalAnnotation) annotation).getEntity());
 
-        annotation.setEntity("Entity");
+        ((ExternalAnnotation) annotation).setEntity("Entity");
         annotationService.updateAnnotation(session, annotation);
         annotation = annotationService.getAnnotation(session, annotation.getId());
 
-        assertEquals("Entity", annotation.getEntity());
+        assertEquals("Entity", ((ExternalAnnotation) annotation).getEntity());
     }
 
     @Test

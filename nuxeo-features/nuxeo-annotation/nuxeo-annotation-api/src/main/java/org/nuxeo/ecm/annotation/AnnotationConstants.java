@@ -41,11 +41,34 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_ID = "id";
 
-    public static final String ANNOTATION_DOCUMENT_ID = "documentId";
-
     public static final String ANNOTATION_XPATH = "xpath";
 
     public static final String ANNOTATION_ENTITY = "entity";
+
+    /**
+     * @since 10.3
+     */
+    public static final String ANNOTATION_ENTITY_ID = "entityId";
+
+    /**
+     * @since 10.3
+     */
+    public static final String ANNOTATION_ENTITY_ID_PROPERTY = "annotation:entityId";
+
+    /**
+     * @since 10.3
+     */
+    public static final String ANNOTATION_ORIGIN = "origin";
+
+    /**
+     * @since 10.3
+     */
+    public static final String ANNOTATION_ORIGIN_PROPERTY = "annotation:origin";
+
+    /**
+     * @since 10.3
+     */
+    public static final String EXTERNAL_ANNOTATION_FACET = "ExternalAnnotation";
 
 
 }

@@ -19,12 +19,18 @@
 
 package org.nuxeo.ecm.annotation;
 
-import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_DOCUMENT_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ENTITY_ID;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ID;
+import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_ORIGIN;
 import static org.nuxeo.ecm.annotation.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.IOException;
 
@@ -47,9 +53,18 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
 
     @Override
     protected void writeEntityBody(Annotation entity, JsonGenerator jg) throws IOException {
+
+        jg.writeStringField(COMMENT_AUTHOR, entity.getAuthor());
+        jg.writeStringField(COMMENT_TEXT, entity.getText());
+        jg.writeStringField(COMMENT_DOCUMENT_ID, entity.getDocumentId());
+        jg.writeStringField(COMMENT_CREATION_DATE, entity.getCreationDate().toString());
+        jg.writeStringField(COMMENT_MODIFICATION_DATE, entity.getModificationDate().toString());
+
         jg.writeStringField(ANNOTATION_ID, entity.getId());
-        jg.writeStringField(ANNOTATION_DOCUMENT_ID, entity.getDocumentId());
         jg.writeStringField(ANNOTATION_XPATH, entity.getXpath());
-        jg.writeStringField(ANNOTATION_ENTITY, entity.getEntity());
+
+        jg.writeStringField(ANNOTATION_ENTITY_ID, ((ExternalAnnotation) entity).getEntityId());
+        jg.writeStringField(ANNOTATION_ORIGIN, ((ExternalAnnotation) entity).getOrigin());
+        jg.writeStringField(ANNOTATION_ENTITY, ((ExternalAnnotation) entity).getEntity());
     }
 }
