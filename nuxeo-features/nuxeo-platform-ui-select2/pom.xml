@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>7.10-HF44-SNAPSHOT</version>
+    <version>7.10-HF44</version>
   </parent>
   <artifactId>nuxeo-platform-ui-select2</artifactId>
   <name>Select2 Integration</name>
