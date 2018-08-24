@@ -89,9 +89,8 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
 
         String principalName = principal.getName();
         if (principal instanceof SystemPrincipal) {
-            principalName = ((SystemPrincipal) principal).getOriginatingUser();
-            if ((principalName == null || SYSTEM_USERNAME.equals(principalName))
-                    && !ABOUT_TO_CREATE.equals(event.getName())) {
+            principalName = ((SystemPrincipal) principal).getActingUser();
+            if (SYSTEM_USERNAME.equals(principalName) && !ABOUT_TO_CREATE.equals(event.getName())) {
                 return;
             }
         }
