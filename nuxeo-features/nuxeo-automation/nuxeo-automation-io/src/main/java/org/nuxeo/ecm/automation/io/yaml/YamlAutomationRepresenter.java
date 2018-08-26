@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.core.OperationChainContribution.Operation;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
@@ -74,7 +75,7 @@ public class YamlAutomationRepresenter extends Representer {
                 }
                 mapping.put("operations", ops);
             }
-            return representMapping(tag, mapping, null);
+            return representMapping(tag, mapping, FlowStyle.AUTO);
         }
     }
 
@@ -107,7 +108,7 @@ public class YamlAutomationRepresenter extends Representer {
                     }
                 }
                 mapping.put(op.getId(), subs);
-                return representMapping(tag, mapping, null);
+                return representMapping(tag, mapping, FlowStyle.AUTO);
             } else {
                 return YamlAutomationRepresenter.this.representData(op.getId());
             }
@@ -129,7 +130,7 @@ public class YamlAutomationRepresenter extends Representer {
                 subs.put("values", p.getValues());
             }
             mapping.put(p.getName(), subs);
-            return representMapping(tag, mapping, null);
+            return representMapping(tag, mapping, FlowStyle.AUTO);
         }
     }
 

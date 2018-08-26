@@ -70,7 +70,7 @@ public class TestDialectQuerySyntax {
                 allowing(m).getDatabaseMinorVersion();
                 will(returnValue(0));
 
-                allowing(m).getColumns(with(any(String.class)), with(any(String.class)), with(any(String.class)),
+                allowing(m).getColumns(with(aNull(String.class)), with(aNull(String.class)), with(any(String.class)),
                         with(any(String.class)));
                 will(returnValue(getMockEmptyResultSet()));
 

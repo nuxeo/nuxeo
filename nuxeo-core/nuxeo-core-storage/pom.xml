@@ -77,6 +77,11 @@
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
     </dependency>
+    <dependency>
+      <!-- needed by jericho-html -->
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.resource</groupId>

@@ -135,7 +135,7 @@
 
     <servlet-api.version>4.0.1</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
-    <jaxb.version>2.2.11</jaxb.version>
+    <jaxb.version>2.3.0.1</jaxb.version>
     <tomcat.version>9.0.10</tomcat.version>
     <lucene.version>7.3.1</lucene.version>
     <elasticsearch.version>6.3.0</elasticsearch.version>
@@ -143,23 +143,24 @@
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
     <guice.version>3.0</guice.version>
-    <jersey.version>1.18.3</jersey.version>
+    <jersey.version>1.19.4</jersey.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
-    <apache.axiom.version>1.2.5</apache.axiom.version>
+    <apache.axiom.version>1.2.20</apache.axiom.version>
     <chemistry.opencmis.version>1.1.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcore.version>4.4.6</apache.httpcore.version>
-    <apache.httpcomponents.version>4.5.3</apache.httpcomponents.version>
+    <apache.httpcore.version>4.4.10</apache.httpcore.version>
+    <apache.httpcomponents.version>4.5.6</apache.httpcomponents.version>
     <apache.poi.version>3.17</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
-    <librepdf.version>1.0.5</librepdf.version>
-    <jclouds.version>1.9.2</jclouds.version>
-    <guava.version>18.0</guava.version>
+    <librepdf.version>1.2.0</librepdf.version>
+    <librepdf.rtf.version>1.1.0</librepdf.rtf.version>
+    <jclouds.version>2.1.1</jclouds.version>
+    <guava.version>26.0-jre</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
-    <google.api.client.version>1.19.1</google.api.client.version>
+    <google.api.client.version>1.25.0</google.api.client.version>
     <google.api.drive.version>v2-rev161-1.19.1</google.api.drive.version>
     <dropbox.api.version>2.1.2</dropbox.api.version>
     <box.api.version>1.1.0</box.api.version>
@@ -170,8 +171,8 @@
     <aws.version>1.11.325</aws.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.9.5</jackson.version>
-    <bouncycastle.version>1.59</bouncycastle.version>
+    <jackson.version>2.9.6</jackson.version>
+    <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
     <xz.version>1.8</xz.version>
 
@@ -197,7 +198,7 @@
     <scala.version>2.12.3</scala.version>
     <scala-logging.version>3.9.0</scala-logging.version>
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
-    <jgiven.version>0.15.1</jgiven.version>
+    <jgiven.version>0.16.0</jgiven.version>
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
@@ -1880,7 +1881,7 @@
       <dependency>
         <groupId>org.jvnet.staxex</groupId>
         <artifactId>stax-ex</artifactId>
-        <version>1.6</version>
+        <version>1.7.8</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -1927,7 +1928,7 @@
       <dependency>
         <groupId>javax.persistence</groupId>
         <artifactId>persistence-api</artifactId>
-        <version>1.0</version>
+        <version>1.0.2</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
@@ -1942,7 +1943,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
-        <version>1.1.2</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
@@ -1964,17 +1965,17 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.5</version>
+        <version>2.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.6</version>
+        <version>3.8</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.1</version>
+        <version>1.4</version>
       </dependency>
       <!-- Keep the dependency for external libraries -->
       <dependency>
@@ -2060,12 +2061,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.1</version>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.4.2</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <!-- not used by Nuxeo anymore, but needed by some dependencies -->
@@ -2158,12 +2159,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
-        <version>2.9.1</version>
+        <version>2.11.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.9.1</version>
+        <version>2.11.1</version>
       </dependency>
 
       <!-- apache -->
@@ -2458,7 +2459,7 @@
       <dependency>
         <groupId>org.jbpm.jbpm3</groupId>
         <artifactId>jbpm-jpdl</artifactId>
-        <version>3.3.0.GA</version>
+        <version>3.3.1.GA</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.jackrabbit</groupId>
@@ -2473,7 +2474,7 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>2.2</version>
+        <version>2.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.remoting</groupId>
@@ -2816,7 +2817,7 @@
         <!-- also a jboss-seam-pdf dependency -->
         <groupId>com.github.librepdf</groupId>
         <artifactId>pdf-rtf</artifactId>
-        <version>${librepdf.version}</version>
+        <version>${librepdf.rtf.version}</version>
       </dependency>
       <dependency>
         <!-- also a jboss-seam-pdf dependency -->
@@ -2827,7 +2828,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.26-incubating</version>
+        <version>2.3.28</version>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
@@ -2842,7 +2843,7 @@
       <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
-        <version>1.8.0.1</version>
+        <version>1.8.0.10</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -2871,12 +2872,12 @@
       <dependency>
         <groupId>com.tngtech.java</groupId>
         <artifactId>junit-dataprovider</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.1</version>
       </dependency>
       <dependency>
         <groupId>org.fusesource.jansi</groupId>
         <artifactId>jansi</artifactId>
-        <version>1.16</version>
+        <version>1.17.1</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -2900,7 +2901,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>2.2.3</version>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>com.novemberain</groupId>
@@ -2934,7 +2935,7 @@
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
-        <version>2.5.2</version>
+        <version>2.6.11</version>
       </dependency>
       <!-- deprecated - use jackson instead -->
       <dependency>
@@ -2967,6 +2968,21 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-cbor</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-smile</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
@@ -3031,7 +3047,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.13</version>
+        <version>1.21</version>
       </dependency>
       <!-- beanshell ; Jetty use 1.3.0 -->
       <dependency>
@@ -3053,22 +3069,22 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.1.1</version>
+        <version>42.2.5</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.44</version>
+        <version>5.1.47</version>
       </dependency>
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
-        <version>1.6.4</version>
+        <version>1.7.4</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jtds</groupId>
         <artifactId>jtds</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
       </dependency>
       <!-- Informative declarations, Oracle drivers are not publicly available. -->
       <dependency>
@@ -3098,12 +3114,19 @@
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
-        <version>2.5.1</version>
+        <version>2.8.4</version>
+        <exclusions>
+          <!-- use cglib:cglib-nodep instead to avoid pulling old asm -->
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
-        <version>2.5.1</version>
+        <version>2.8.4</version>
         <exclusions>
           <exclusion>
             <groupId>junit</groupId>
@@ -3201,7 +3224,7 @@
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
-        <version>1.1</version>
+        <version>1.1.1</version>
       </dependency>
 
       <!-- ImageJ -->
@@ -3243,7 +3266,6 @@
       </dependency>
 
       <dependency>
-        <!-- note that this contains all of javax.ws.rs:jsr311-api -->
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-core</artifactId>
         <version>${jersey.version}</version>
@@ -3507,7 +3529,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.8.2</version>
+        <version>2.10</version>
       </dependency>
       <dependency>
         <groupId>com.hp.hpl.jena</groupId>
@@ -3544,7 +3566,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>51.1</version>
+        <version>62.1</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -3612,7 +3634,7 @@
       <dependency>
         <groupId>rhino</groupId>
         <artifactId>js</artifactId>
-        <version>1.7R1</version>
+        <version>1.7R2</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.nekohtml</groupId>
@@ -4116,12 +4138,12 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.5.1</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>not-yet-commons-ssl</artifactId>
-        <version>0.3.7</version>
+        <version>0.3.9</version>
         <scope>test</scope>
       </dependency>
 
@@ -4154,7 +4176,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>2.15.7</version>
+        <version>2.17.5</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4289,27 +4311,27 @@
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-core</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-graphite</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-log4j</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-jvm</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>5.0.3</version>
+        <version>6.2.1</version>
       </dependency>
 
       <dependency>
@@ -4326,7 +4348,7 @@
       <dependency>
         <groupId>dnsjava</groupId>
         <artifactId>dnsjava</artifactId>
-        <version>2.0.6</version>
+        <version>2.1.8</version>
       </dependency>
 
       <dependency>
@@ -4439,20 +4461,13 @@
       <dependency>
         <groupId>net.java.dev.webdav</groupId>
         <artifactId>webdav-jaxrs</artifactId>
-        <version>1.1.1</version>
-        <exclusions>
-          <!-- use com.sun.jersey:jersey-core instead -->
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>1.2.1</version>
       </dependency>
 
       <dependency>
         <groupId>net.htmlparser.jericho</groupId>
         <artifactId>jericho-html</artifactId>
-        <version>3.2</version>
+        <version>3.4</version>
       </dependency>
 
       <dependency>
@@ -4527,13 +4542,6 @@
         <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-allblobstore</artifactId>
         <version>${jclouds.version}</version>
-        <exclusions>
-          <!-- use com.sun.jersey:jersey-core instead -->
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -4727,7 +4735,7 @@
       <dependency>
         <groupId>com.thetransactioncompany</groupId>
         <artifactId>cors-filter</artifactId>
-        <version>2.4</version>
+        <version>2.6</version>
       </dependency>
       <dependency>
         <groupId>io.github.lukehutch</groupId>
@@ -4788,12 +4796,12 @@
       <dependency>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-core</artifactId>
-        <version>1.7.7</version>
+        <version>1.8.0</version>
       </dependency>
       <dependency>
         <groupId>ro.isdc.wro4j</groupId>
         <artifactId>wro4j-extensions</artifactId>
-        <version>1.7.7</version>
+        <version>1.8.0</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
@@ -4854,7 +4862,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>javax.json</artifactId>
-        <version>1.0.4</version>
+        <version>1.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
@@ -5207,7 +5215,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>2.4.2</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -5534,12 +5542,6 @@
                 <version>[1.8,)</version>
               </requireJavaVersion>
               <!-- <dependencyConvergence /> -->
-              <bannedDependencies>
-                <excludes>
-                  <exclude>javax.ws.rs:jsr311-api</exclude> <!-- included in com.sun.jersey:jersey-core -->
-                </excludes>
-                <message>javax.ws.rs:jsr311-api must not be used, use com.sun.jersey:jersey-core instead</message>
-              </bannedDependencies>
               <bannedDependencies>
                 <excludes>
                   <exclude>asm:asm</exclude> <!-- use more recent org.ow2.asm:asm instead -->
