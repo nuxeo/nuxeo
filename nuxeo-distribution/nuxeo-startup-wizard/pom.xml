@@ -72,8 +72,8 @@
                   <artifactId>jstl</artifactId>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>taglibs</groupId>
-                  <artifactId>standard</artifactId>
+                  <groupId>org.apache.taglibs</groupId>
+                  <artifactId>taglibs-standard-impl</artifactId>
                 </artifactItem>
                 <artifactItem>
                   <groupId>commons-codec</groupId>
