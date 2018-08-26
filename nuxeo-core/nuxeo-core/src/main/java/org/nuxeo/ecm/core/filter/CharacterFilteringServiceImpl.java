@@ -58,8 +58,8 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
 
             CharMatcher charsToPreserve = CharMatcher.anyOf("\r\n\t");
             CharMatcher allButPreserved = charsToPreserve.negate();
-            charsToRemove = CharMatcher.JAVA_ISO_CONTROL.and(allButPreserved);
-            charsToRemove = charsToRemove.or(CharMatcher.INVISIBLE.and(CharMatcher.WHITESPACE.negate()));
+            charsToRemove = CharMatcher.javaIsoControl().and(allButPreserved);
+            charsToRemove = charsToRemove.or(CharMatcher.invisible().and(CharMatcher.whitespace().negate()));
 
             List<String> additionalChars = desc.getDisallowedChars();
             if (additionalChars != null && !additionalChars.isEmpty()) {

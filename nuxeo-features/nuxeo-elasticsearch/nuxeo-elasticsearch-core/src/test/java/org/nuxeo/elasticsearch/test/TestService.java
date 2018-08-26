@@ -41,6 +41,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
@@ -128,7 +129,7 @@ public class TestService {
             public void onFailure(Throwable t) {
                 Assert.fail("Fail");
             }
-        });
+        }, MoreExecutors.newDirectExecutorService());
 
         Assert.assertTrue(futureRet.get());
         // callback are executed in async, :/

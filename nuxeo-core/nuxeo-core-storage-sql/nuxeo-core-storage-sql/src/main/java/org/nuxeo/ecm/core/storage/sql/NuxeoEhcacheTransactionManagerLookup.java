@@ -48,12 +48,17 @@ public class NuxeoEhcacheTransactionManagerLookup implements TransactionManagerL
     }
 
     @Override
-    public void register(EhcacheXAResource resource) {
+    public void init() {
+        log.debug("init");
+    }
+
+    @Override
+    public void register(EhcacheXAResource resource, boolean forRecovery) {
         log.info("register XA resource");
     }
 
     @Override
-    public void unregister(EhcacheXAResource resource) {
+    public void unregister(EhcacheXAResource resource, boolean forRecovery) {
         log.info("unregister XA resource");
     }
 
