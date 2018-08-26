@@ -165,7 +165,7 @@
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>1.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <pdfbox.version>1.8.9</pdfbox.version>
+    <pdfbox.version>1.8.15</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.11.325</aws.version>
     <azure.version>3.1.0</azure.version>
@@ -173,6 +173,7 @@
     <jackson.version>2.9.5</jackson.version>
     <bouncycastle.version>1.59</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
+    <xz.version>1.8</xz.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -2167,7 +2168,7 @@
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
-        <version>10.13.1.1</version>
+        <version>10.14.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -2292,9 +2293,14 @@
         <version>${avro.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.tukaani</groupId>
+        <artifactId>xz</artifactId>
+        <version>${xz.version}</version>
+      </dependency>
+      <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.11.0</version>
+        <version>2.12.0</version>
       </dependency>
       <dependency>
         <groupId>jmimemagic</groupId>
@@ -3049,9 +3055,9 @@
       </dependency>
       <!-- jsp library for login and error pages -->
       <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>1.1.2</version>
+        <groupId>org.apache.taglibs</groupId>
+        <artifactId>taglibs-standard-impl</artifactId>
+        <version>1.2.5</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -4226,7 +4232,7 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-css</artifactId>
-        <version>1.7</version>
+        <version>1.10</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -4244,18 +4250,8 @@
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>batik-ext</artifactId>
-        <version>1.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>batik-gui-util</artifactId>
-        <version>1.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>1.10</version>
       </dependency>
       <dependency>
         <groupId>org.w3c.css</groupId>
@@ -4494,7 +4490,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
-        <version>3.9</version>
+        <version>3.18</version>
       </dependency>
 
       <!-- daisydiff -->
