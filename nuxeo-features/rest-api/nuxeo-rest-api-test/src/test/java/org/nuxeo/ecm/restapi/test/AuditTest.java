@@ -332,8 +332,8 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
         queryParams.add("eventId", "thirdEvent");
-        queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.plusDays(1)));
-        queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.minus(1)));
+        queryParams.add("startEventDate", ISODateTimeFormat.dateTime().print(firstDate.plusDays(1)));
+        queryParams.add("endEventDate", ISODateTimeFormat.dateTime().print(secondDate.minus(1)));
         try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
