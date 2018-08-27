@@ -27,6 +27,10 @@
     <schema name="publishing" prefix="publish" src="schema/publishing.xsd" />
     <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
 
+    <schema name="collection" src="schema/collection.xsd" prefix="collection" />
+    <schema name="collectionMember" src="schema/collectionMember.xsd"
+      prefix="collectionMember" isVersionWritable="true"/>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -67,11 +71,26 @@
       <schema name="relatedtext" />
     </facet>
 
+    <facet name="Collection" perDocumentQuery="false" >
+      <schema name="collection" />
+    </facet>
+
+    <facet name="NotCollectionMember" perDocumentQuery="false"/>
+
+    <facet name="CollectionMember">
+      <schema name="collectionMember" />
+    </facet>
+
+    <proxies>
+      <schema name="collectionMember" />
+    </proxies>
+
     <doctype name="Folder" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
       <facet name="Folderish"/>
       <subtypes>
+        <type>Collection</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
         <type>File</type>
@@ -94,6 +113,7 @@
     </doctype>
 
     <doctype name="Root" extends="Folder">
+      <facet name="NotCollectionMember" />
       <subtypes>
         <type>Domain</type>
       </subtypes>
@@ -107,6 +127,7 @@
     <doctype name="Domain" extends="Folder">
       <schema name="domain"/>
       <facet name="SuperSpace"/>
+      <facet name="NotCollectionMember" />
       <subtypes>
         <type>WorkspaceRoot</type>
         <type>SectionRoot</type>
@@ -117,6 +138,7 @@
     <doctype name="WorkspaceRoot" extends="Folder">
       <facet name="SuperSpace"/>
       <facet name="HiddenInCreation" />
+      <facet name="NotCollectionMember" />
       <subtypes>
         <type>Workspace</type>
       </subtypes>
@@ -131,6 +153,7 @@
       <schema name="files" />
       <facet name="SuperSpace"/>
       <subtypes>
+        <type>Collection</type>
         <type>Workspace</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
@@ -142,6 +165,7 @@
     <doctype name="TemplateRoot" extends="Folder">
       <facet name="SuperSpace"/>
       <facet name="HiddenInCreation" />
+      <facet name="NotCollectionMember" />
       <subtypes>
         <type>Workspace</type>
       </subtypes>
@@ -151,6 +175,7 @@
       <facet name="SuperSpace"/>
       <facet name="HiddenInCreation" />
       <facet name="MasterPublishSpace" />
+      <facet name="NotCollectionMember" />
       <subtypes>
         <type>Section</type>
       </subtypes>
@@ -189,6 +214,22 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="HasRelatedText"/>
+    </doctype>
+
+    <doctype name="Collection" extends="Document">
+      <schema name="uid"/>
+      <facet name="Versionable"/>
+      <facet name="Collection" />
+      <facet name="NotCollectionMember" />
+      <schema name="dublincore" />
+      <schema name="common" />
+    </doctype>
+
+    <doctype name="Collections" extends="Folder">
+      <facet name="NotCollectionMember" />
+      <subtypes>
+        <type>Collection</type>
+      </subtypes>
     </doctype>
 
   </extension>

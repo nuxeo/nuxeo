@@ -44,7 +44,6 @@
     <module>nuxeo-thumbnail</module>
     <module>nuxeo-platform-oauth</module>
     <module>nuxeo-platform-oauth1</module>
-    <module>nuxeo-platform-collections</module>
     <module>rest-api</module>
     <module>nuxeo-search</module>
     <module>nuxeo-elasticsearch</module>

@@ -147,6 +147,18 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.bulk.BulkWaitForAction" />
 
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.SuggestCollectionEntry" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.CreateCollectionOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.AddToCollectionOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.RemoveFromCollectionOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.RemoveFromFavoritesOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.AddToFavoritesOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.GetCollectionsOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.GetDocumentsFromCollectionOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.GetDocumentsFromFavoritesOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.FetchFavorites" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.collections.MoveCollectionMemberOperation" />
+
   </extension>
 
   <extension point="chains"

@@ -24,10 +24,10 @@ package org.nuxeo.ecm.platform.userworkspace.core.service;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.collections.api.CollectionLocationService;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
@@ -64,6 +64,9 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == UserWorkspaceService.class) {
+            return adapter.cast(getUserWorkspaceService());
+        }
+        if (adapter == CollectionLocationService.class) {
             return adapter.cast(getUserWorkspaceService());
         }
         return null;

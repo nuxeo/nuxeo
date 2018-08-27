@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Collections Tests
+Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0

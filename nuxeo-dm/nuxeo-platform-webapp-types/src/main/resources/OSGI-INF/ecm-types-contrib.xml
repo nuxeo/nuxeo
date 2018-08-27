@@ -277,5 +277,72 @@
       <default-view>view_documents</default-view>
     </type>
 
+    <type id="Collections">
+      <label>Collections</label>
+      <description></description>
+      <default-view>view_documents</default-view>
+      <icon>/icons/collection.png</icon>
+      <bigIcon>/icons/collection_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+    <type id="Collection">
+      <label>Collection</label>
+      <description></description>
+      <default-view>view_documents</default-view>
+      <icon>/icons/collection.png</icon>
+      <bigIcon>/icons/collection_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="collectionContent">
+        <contentView showInExportView="false">collection_content_contentview</contentView>
+      </contentViews>
+    </type>
+
+    <type id="Favorites">
+      <label>Favorites</label>
+      <description></description>
+      <default-view>view_documents</default-view>
+      <icon>/icons/pin.png</icon>
+      <bigIcon>/icons/pin_100.png</bigIcon>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="collectionContent">
+        <contentView showInExportView="false">collection_content_contentview</contentView>
+      </contentViews>
+    </type>
+
   </extension>
 </component>

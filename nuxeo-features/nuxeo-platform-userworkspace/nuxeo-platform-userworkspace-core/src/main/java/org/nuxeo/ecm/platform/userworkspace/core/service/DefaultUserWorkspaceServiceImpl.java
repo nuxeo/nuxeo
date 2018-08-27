@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.userworkspace.core.service;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 

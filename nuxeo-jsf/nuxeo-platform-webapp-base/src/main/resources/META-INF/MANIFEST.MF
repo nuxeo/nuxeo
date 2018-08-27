@@ -27,6 +27,14 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/navtree-default-contrib.xml,
  OSGI-INF/webresources-contrib.xml,
  OSGI-INF/webapp-base-properties.xml,
- OSGI-INF/thumbnail-contrib.xml
+ OSGI-INF/thumbnail-contrib.xml,
+ OSGI-INF/collection-actions-contrib.xml,
+ OSGI-INF/collection-contentviews-contrib.xml,
+ OSGI-INF/collection-theme-contrib.xml,
+ OSGI-INF/collection-documentslists-contrib.xml,
+ OSGI-INF/collection-layout-listing-contrib.xml,
+ OSGI-INF/collection-layout-summary-contrib.xml,
+ OSGI-INF/favorites-actions-contrib.xml,
+ OSGI-INF/favorites-contentviews-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.webapp.base
