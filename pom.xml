@@ -146,7 +146,7 @@
     <jersey.version>1.18.3</jersey.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
-    <chemistry.opencmis.version>1.0.0</chemistry.opencmis.version>
+    <chemistry.opencmis.version>1.1.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcore.version>4.4.6</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.3</apache.httpcomponents.version>
