@@ -70,14 +70,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureConversions {
 
-    public static final String PICTURE_CORE = "org.nuxeo.ecm.platform.picture.core";
-
-    private static final String PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-override-more.xml";
-
-    private static final String PICTURE_CONVERSIONS_OVERRIDE_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-override.xml";
-
-    private static final String PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-filters.xml";
-
     @Inject
     protected CoreSession session;
 
@@ -110,7 +102,7 @@ public class TestPictureConversions {
     }
 
     @Test
-    @Deploy(PICTURE_CORE + ":" + PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION)
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override-more.xml")
     public void iHavePictureConversionsOrder() throws Exception {
         String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "Wide", "ThumbnailWide",
                 "Small", "Medium", "FullHD" };
@@ -124,7 +116,7 @@ public class TestPictureConversions {
     }
 
     @Test
-    @Deploy(PICTURE_CORE + ":" + PICTURE_CONVERSIONS_OVERRIDE_COMPONENT_LOCATION)
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override.xml")
     public void iCanMergePictureConversions() throws Exception {
         for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
             switch (pictureConversion.getId()) {
@@ -147,7 +139,7 @@ public class TestPictureConversions {
     }
 
     @Test
-    @Deploy(PICTURE_CORE + ":" + PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION)
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override-more.xml")
     public void iCanMergeMorePictureConversions() throws Exception {
         int count = 0;
         List<String> newPictureConversions = Arrays.asList("ThumbnailMini", "ThumbnailWide", "Tiny", "Wide");
@@ -169,7 +161,7 @@ public class TestPictureConversions {
     }
 
     @Test
-    @Deploy(PICTURE_CORE + ":" + PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION)
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-filters.xml")
     public void shouldFilterPictureConversions() throws Exception {
         DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));

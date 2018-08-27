@@ -43,9 +43,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.ecm.core.management", //
-        "org.nuxeo.ecm.core.management.test" })
+@Deploy("org.nuxeo.runtime.management")
+@Deploy("org.nuxeo.ecm.core.management")
+@Deploy("org.nuxeo.ecm.core.management.test")
 public class TestProbesCount {
 
     @Inject
