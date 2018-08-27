@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-SymbolicName: org.nuxeo.annotation.core.test;singleton:=true
-Bundle-Version: 1.0.0

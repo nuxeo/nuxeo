@@ -11,6 +11,22 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="GET_ANNOTATION">
+      <pattern>
+        SELECT * FROM Annotation WHERE externalEntity:entityId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_ANNOTATIONS_FOR_DOCUMENT">
+      <pattern>
+        SELECT * FROM Annotation WHERE annotation:documentId = ? AND annotation:xpath = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>

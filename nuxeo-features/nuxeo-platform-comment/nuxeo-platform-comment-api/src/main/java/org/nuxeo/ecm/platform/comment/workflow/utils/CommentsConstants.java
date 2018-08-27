@@ -77,6 +77,31 @@ public final class CommentsConstants {
      */
     public static final String COMMENT_MODIFICATION_DATE = "comment:modificationDate";
 
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_AUTHOR_FIELD = "author";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_TEXT_FIELD = "text";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_DOCUMENT_ID_FIELD = "documentId";
+
+    /**
+     * @since 10.3
+     */
+    public static final String COMMENT_MODIFICATION_DATE_FIELD = "modificationDate";
+
     private CommentsConstants() {
     }
 

@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.annotation.marshaller">
-  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-    <register class="org.nuxeo.ecm.annotation.AnnotationJsonWriter" enable="true"/>
-    <register class="org.nuxeo.ecm.annotation.AnnotationJsonReader" enable="true"/>
-    <register class="org.nuxeo.ecm.annotation.AnnotationListJsonWriter" enable="true"/>
-    <register class="org.nuxeo.ecm.annotation.AnnotationListJsonReader" enable="true"/>
-  </extension>
-</component>

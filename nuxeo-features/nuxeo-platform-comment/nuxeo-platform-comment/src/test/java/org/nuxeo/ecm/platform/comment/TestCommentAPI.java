@@ -19,20 +19,29 @@
 package org.nuxeo.ecm.platform.comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Calendar;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -51,6 +60,9 @@ public class TestCommentAPI {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected CommentManager commentManager;
 
     @Before
     public void init() {
@@ -94,4 +106,131 @@ public class TestCommentAPI {
         assertThat(comment.getPropertyValue("comment:text")).isEqualTo("Test");
         assertThat(comment.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
     }
+
+    @Test
+    public void testCreateComment() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setDocumentId("fakeId");
+
+        try {
+            commentManager.createComment(session, comment);
+            fail("Creating a comment should have failed !");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        comment.setDocumentId(doc.getId());
+        comment = commentManager.createComment(session, comment);
+        assertEquals(author, comment.getAuthor());
+        assertEquals(text, comment.getText());
+
+    }
+
+    @Test
+    public void testGetComment() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setDocumentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+
+        try {
+            commentManager.getComment(session, "fakeId");
+            fail("Getting a comment should have failed !");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        comment = commentManager.getComment(session, comment.getId());
+        assertEquals(author, comment.getAuthor());
+        assertEquals(text, comment.getText());
+
+    }
+
+    @Test
+    @Ignore("Not possible with the current comment manager implementation")
+    public void testUpdateComment() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setDocumentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+
+        try {
+            commentManager.updateComment(session, "fakeId", comment);
+            fail("Getting a comment should have failed !");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        comment.setAuthor("titi");
+        commentManager.updateComment(session, comment.getId(), comment);
+        comment = commentManager.getComment(session, comment.getId());
+
+        assertEquals(author, "titi");
+        assertEquals(text, comment.getText());
+
+    }
+
+    @Test
+    public void testDeleteComment() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setDocumentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+        assertTrue(session.exists(new IdRef(comment.getId())));
+
+        try {
+            commentManager.deleteComment(session, "fakeId");
+            fail("Deleting a comment should have failed !");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        commentManager.deleteComment(session, comment.getId());
+        assertFalse(session.exists(new IdRef(comment.getId())));
+    }
+
 }

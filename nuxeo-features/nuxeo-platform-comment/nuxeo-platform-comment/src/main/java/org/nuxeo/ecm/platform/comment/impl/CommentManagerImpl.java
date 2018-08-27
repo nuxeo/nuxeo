@@ -21,14 +21,11 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -66,6 +63,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -145,7 +143,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentModel commentDM = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
+            DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, author);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE, Calendar.getInstance());
@@ -459,7 +457,7 @@ public class CommentManagerImpl implements CommentManager {
         List<DocumentModel> threads = getDocumentsForComment(comment);
         if (threads.size() > 0) {
             DocumentModel thread = (DocumentModel) threads.get(0);
-            while (thread.getType().equals("Post") || thread.getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
+            while (thread.getType().equals("Post") || thread.getType().equals(COMMENT_DOC_TYPE)) {
                 thread = getThreadForComment(thread);
             }
             return thread;
@@ -468,23 +466,35 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     @Override
-    public String createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
+    public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
         DocumentRef commentRef = new IdRef(comment.getDocumentId());
         if (!session.exists(commentRef)) {
             throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
         }
         DocumentModel docToComment = session.getDocument(commentRef);
-        return createComment(docToComment, comment.getText(), comment.getAuthor()).getId();
+        DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
+
+        Comments.externalCommentToDocumentModel().accept(comment, commentModel);
+
+        DocumentModel createdCommentModel = createComment(docToComment, commentModel);
+        Comment createdComment = new CommentImpl();
+        Comments.documentModelToExternalComment().accept(createdCommentModel, createdComment);
+        return createdComment;
     }
 
     @Override
     public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
-        throw new UnsupportedOperationException(
-                "Retrieve a comment with its id is not possible through this implementation");
+        DocumentRef commentRef = new IdRef(commentId);
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The document " + commentId + " does not exist.");
+        }
+        DocumentModel commentModel =  session.getDocument(commentRef);
+        Comment comment = new CommentImpl();
+        Comments.documentModelToExternalComment().accept(commentModel, comment);
+        return comment;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException {
         DocumentRef docRef = new IdRef(documentId);
         if (!session.exists(docRef)) {
@@ -493,10 +503,7 @@ public class CommentManagerImpl implements CommentManager {
         DocumentModel commentedDoc = session.getDocument(new IdRef(documentId));
         return getComments(commentedDoc).stream().map(commentModel -> {
             Comment comment = new CommentImpl();
-            comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
-            comment.setText((String) commentModel.getPropertyValue(COMMENT_TEXT));
-            comment.setDocumentId(documentId);
-            comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
+            Comments.documentModelToExternalComment().accept(commentModel, comment);
             return comment;
         }).collect(Collectors.toList());
     }

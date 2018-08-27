@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
@@ -42,6 +49,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.Comments;
+import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
@@ -109,7 +118,7 @@ public class PropertyCommentManager implements CommentManager {
     }
 
     @Override
-    public String createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
+    public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
         if (!session.exists(new IdRef(comment.getDocumentId()))) {
             throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
         }
@@ -121,8 +130,19 @@ public class PropertyCommentManager implements CommentManager {
             commentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
             commentModel.setPropertyValue(COMMENT_CREATION_DATE, comment.getCreationDate());
             commentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, comment.getModificationDate());
+            if (comment instanceof ExternalEntity) {
+                commentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, ((ExternalEntity) comment).getEntityId());
+                commentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, ((ExternalEntity) comment).getOrigin());
+                commentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, ((ExternalEntity) comment).getEntity());
+                commentModel = s.createDocument(commentModel);
+                Comment createdComment = new CommentImpl();
+                Comments.documentModelToExternalComment().accept(commentModel, createdComment);
+                return createdComment;
+            }
             commentModel = s.createDocument(commentModel);
-            return commentModel.getId();
+            Comment createdComment = new CommentImpl();
+            Comments.documentModelToComment().accept(commentModel, createdComment);
+            return createdComment;
         });
     }
 
@@ -130,7 +150,7 @@ public class PropertyCommentManager implements CommentManager {
     public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
         return CoreInstance.doPrivileged(session, s -> {
             DocumentRef commentRef = new IdRef(commentId);
-            if (!session.exists(commentRef)) {
+            if (!s.exists(commentRef)) {
                 throw new IllegalArgumentException("The document " + commentId + " does not exist.");
             }
             DocumentModel commentModel = s.getDocument(commentRef);
@@ -140,6 +160,13 @@ public class PropertyCommentManager implements CommentManager {
             comment.setDocumentId((String) commentModel.getPropertyValue(COMMENT_DOCUMENT_ID));
             comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
             comment.setModificationDate((Instant) commentModel.getPropertyValue(COMMENT_MODIFICATION_DATE));
+            if (commentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
+                ((ExternalEntity) comment).setEntityId(
+                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
+                ((ExternalEntity) comment).setOrigin(
+                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
+                ((ExternalEntity) comment).setEntity((String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
+            }
             return comment;
         });
     }
@@ -163,6 +190,14 @@ public class PropertyCommentManager implements CommentManager {
                 comment.setDocumentId(documentId);
                 comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
                 comment.setModificationDate((Instant) commentModel.getPropertyValue(COMMENT_MODIFICATION_DATE));
+                if (commentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
+                    ((ExternalEntity) comment).setEntityId(
+                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
+                    ((ExternalEntity) comment).setOrigin(
+                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
+                    ((ExternalEntity) comment).setEntity(
+                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
+                }
                 return comment;
             }).collect(Collectors.toList());
         });
@@ -180,6 +215,11 @@ public class PropertyCommentManager implements CommentManager {
             commentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
             commentModel.setPropertyValue(COMMENT_CREATION_DATE, comment.getCreationDate());
             commentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, comment.getModificationDate());
+            if (comment instanceof ExternalEntity) {
+                commentModel.setPropertyValue(EXTERNAL_ENTITY_ID, ((ExternalEntity) comment).getEntityId());
+                commentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN, ((ExternalEntity) comment).getOrigin());
+                commentModel.setPropertyValue(EXTERNAL_ENTITY, ((ExternalEntity) comment).getEntity());
+            }
             s.saveDocument(commentModel);
         });
     }

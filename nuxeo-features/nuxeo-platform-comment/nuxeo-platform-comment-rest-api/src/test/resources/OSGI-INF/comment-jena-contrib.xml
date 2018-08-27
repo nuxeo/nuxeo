@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="test.comment.contribs">
+
+  <!-- memory graph -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+      point="graphs">
+    <graph name="documentComments" type="jena">
+      <namespaces>
+        <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>
+        <namespace name="isCommentFor">
+          http://www.nuxeo.org/predicates/isCommentFor
+        </namespace>
+        <namespace name="document">http://www.nuxeo.org/document/uid</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>

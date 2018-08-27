@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Annotation Service API
-Bundle-SymbolicName: org.nuxeo.ecm.annotation.api;singleton:=true
-Bundle-Version: 1.0.0
