@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -36,8 +37,9 @@ public class WOPIModule extends WebEngineModule {
     @Override
     public Set<Object> getSingletons() {
         Set<Object> singletons = new HashSet<>();
-        singletons.add(new JacksonJsonProvider());
+        singletons.add(new JsonCoreIODelegate());
         singletons.add(new BlobWriter());
+        singletons.add(new JacksonJsonProvider());
         singletons.add(new WOPIExceptionMapper());
         return singletons;
     }
