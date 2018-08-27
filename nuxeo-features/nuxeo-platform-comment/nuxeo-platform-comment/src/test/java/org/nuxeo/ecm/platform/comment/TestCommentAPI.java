@@ -42,12 +42,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.ecm.platform.comment.api")
-@Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.relations.api", "org.nuxeo.ecm.relations", "org.nuxeo.ecm.relations.jena",
+        "org.nuxeo.ecm.platform.comment.api", "org.nuxeo.ecm.platform.comment",
+        "org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml" })
 public class TestCommentAPI {
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";

@@ -86,8 +86,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.publisher.core")
 @Deploy("org.nuxeo.ecm.platform.publisher.task")
 @Deploy("org.nuxeo.ecm.platform.usermanager")
-@Deploy("org.nuxeo.ecm.platform.task.core")
-@Deploy("org.nuxeo.ecm.platform.task.testing")
+@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
+@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher")
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
@@ -109,7 +109,7 @@ public class TestRenditionPublicationWFAprove {
     @Inject
     protected EventService eventService;
 
-    protected HashMap<String, String> factoryParams = new HashMap<>();
+    protected HashMap<String, String> factoryParams = new HashMap<String, String>();
 
     protected DocumentModel doc2Publish = null;
 

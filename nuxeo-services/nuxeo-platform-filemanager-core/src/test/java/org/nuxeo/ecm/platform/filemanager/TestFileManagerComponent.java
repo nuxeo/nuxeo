@@ -37,9 +37,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.ecm.core.mimetype")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core:OSGI-INF/nxfilemanager-service.xml")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-contribs.xml")
+@Deploy(FileManagerUTConstants.MIMETYPE_BUNDLE)
+@Deploy(FileManagerUTConstants.FILEMANAGER_BUNDLE + ":OSGI-INF/nxfilemanager-service.xml")
+@Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":nxfilemanager-test-contribs.xml")
 public class TestFileManagerComponent {
 
     @Test

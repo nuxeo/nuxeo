@@ -45,6 +45,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(TransactionalFeature.class)
 public class TestDataSourceComponent {
 
+    private static final String DATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:datasource-contrib.xml";
+
+    private static final String XADATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:xadatasource-contrib.xml";
+
     private static final String COUNT_SQL = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SESSIONS";
 
     @Test
@@ -66,23 +70,23 @@ public class TestDataSourceComponent {
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonXANoTM() throws Exception {
         checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonXA() throws Exception {
         checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
+    @Deploy(DATASOURCE_CONTRIB)
     public void testNonShared() throws Exception {
-        PooledDataSource ds = (PooledDataSource) DataSourceHelper.getDataSource("foo");
+        PooledDataSource ds = (PooledDataSource)DataSourceHelper.getDataSource("foo");
         TransactionHelper.startTransaction();
         try (Connection c1 = ds.getConnection()) {
             int n1 = countPhysicalConnections(c1);
@@ -92,7 +96,7 @@ public class TestDataSourceComponent {
             }
             try (Connection c2 = ds.getConnection(true)) {
                 int n2 = countPhysicalConnections(c2);
-                assertEquals(n1 + 1, n2);
+                assertEquals(n1+1, n2);
             }
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
@@ -111,13 +115,13 @@ public class TestDataSourceComponent {
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
+    @Deploy(XADATASOURCE_CONTRIB)
     public void testXANoTx() throws Exception {
         checkDataSourceOk("foo", true);
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
+    @Deploy(XADATASOURCE_CONTRIB)
     public void testXA() throws Exception {
         TransactionHelper.startTransaction();
         try {
@@ -126,5 +130,6 @@ public class TestDataSourceComponent {
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
+
 
 }

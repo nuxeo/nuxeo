@@ -62,8 +62,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.filemanager.core")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:ecm-types-test-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-contribs.xml")
+@Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":ecm-types-test-contrib.xml")
+@Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":nxfilemanager-test-contribs.xml")
 public class TestFileManagerService {
 
     protected FileManager service;
@@ -219,7 +219,7 @@ public class TestFileManagerService {
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
         String expectedNoteTest = NOTE_HTML_CONTENT;
-        String noteText = (String) doc.getProperty("note", "note");
+        String noteText = ((String) doc.getProperty("note", "note"));
         if (SystemUtils.IS_OS_WINDOWS) {
             expectedNoteTest = expectedNoteTest.trim();
             expectedNoteTest = expectedNoteTest.replace("\n", "");
@@ -244,7 +244,7 @@ public class TestFileManagerService {
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
         String expectedNoteTest = NOTE_HTML_CONTENT;
-        String noteText = (String) doc.getProperty("note", "note");
+        String noteText = ((String) doc.getProperty("note", "note"));
         if (SystemUtils.IS_OS_WINDOWS) {
             expectedNoteTest = expectedNoteTest.trim();
             expectedNoteTest = expectedNoteTest.replace("\n", "");
@@ -262,7 +262,7 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        noteText = (String) doc.getProperty("note", "note");
+        noteText = ((String) doc.getProperty("note", "note"));
         if (SystemUtils.IS_OS_WINDOWS) {
             noteText = noteText.trim();
             noteText = noteText.replace("\n", "");
@@ -284,7 +284,7 @@ public class TestFileManagerService {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-override.xml")
+    @Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":nxfilemanager-test-override.xml")
     public void testFileImportersMerge() {
         FileManagerService fileManagerService = (FileManagerService) service;
 
@@ -442,7 +442,7 @@ public class TestFileManagerService {
      * NXP-24830
      */
     @Test
-    @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:test-nxfilemanager-mandatory-metadata-contrib.xml")
+    @Deploy(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE + ":test-nxfilemanager-mandatory-metadata-contrib.xml")
     public void testCreateBlobWithDocTypeHoldingMandatoryMetadataWithDefault() throws Exception {
         File file = getTestFile("test-data/hello.doc");
         Blob blob = Blobs.createBlob(file);
