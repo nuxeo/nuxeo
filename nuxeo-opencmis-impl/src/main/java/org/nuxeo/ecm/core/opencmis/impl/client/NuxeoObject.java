@@ -413,4 +413,9 @@ public abstract class NuxeoObject implements CmisObject {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public List<ObjectId> getPolicyIds() {
+        return Collections.emptyList();
+    }
+
 }

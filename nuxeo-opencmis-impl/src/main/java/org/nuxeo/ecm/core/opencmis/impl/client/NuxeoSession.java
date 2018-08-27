@@ -18,10 +18,13 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import static org.apache.chemistry.opencmis.commons.impl.Constants.RENDITION_NONE;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,10 +63,12 @@ import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -255,6 +260,122 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public ObjectId createPath(String newPath, Map<String, ?> properties) {
+        return createPath(null, newPath, properties);
+    }
+
+    @Override
+    public ObjectId createPath(ObjectId startFolderId, String newPath, Map<String, ?> properties) {
+        return createPath(startFolderId, newPath, properties, null, null, null);
+    }
+
+    @Override
+    public ObjectId createPath(String newPath, String typeId) {
+        return createPath(null, newPath, typeId);
+    }
+
+    @Override
+    public ObjectId createPath(ObjectId startFolderId, String newPath, String typeId) {
+        Map<String, Object> properties = Collections.singletonMap(PropertyIds.OBJECT_TYPE_ID, typeId);
+        return createPath(startFolderId, newPath, properties, null, null, null);
+    }
+
+    @Override
+    public ObjectId createPath(ObjectId startFolderId, String newPath, Map<String, ?> properties, List<Policy> policies,
+            List<Ace> addAces, List<Ace> removeAces) {
+        checkPath(newPath);
+        if (newPath.length() == 1) {
+            throw new CmisInvalidArgumentException("Cannot create root folder");
+        }
+        if (newPath.endsWith("/")) {
+            throw new CmisInvalidArgumentException("Path cannot end with a slash");
+        }
+        if (properties == null || properties.isEmpty()) {
+            throw new CmisInvalidArgumentException("Properties must not be empty");
+        }
+        if (!(properties.get(PropertyIds.OBJECT_TYPE_ID) instanceof String)) {
+            throw new CmisInvalidArgumentException("Property cmis:objectTypeId not set or invalid");
+        }
+        StringBuilder nextPath = new StringBuilder();
+        String[] segments;
+        ObjectId lastFolderId = null;
+        boolean create = false;
+
+        // check start folder
+        if (startFolderId != null && startFolderId.getId() != null) {
+            if (startFolderId instanceof Folder) {
+                Folder startFolder = (Folder) startFolderId;
+                if (!startFolder.isRootFolder()) {
+                    nextPath.append(startFolder.getPath());
+                    lastFolderId = startFolder;
+                }
+            } else {
+                String filter = PropertyIds.OBJECT_ID + ',' + PropertyIds.BASE_TYPE_ID + ',' + PropertyIds.PATH;
+                ObjectData startFolderData = service.getObject(repositoryId, startFolderId.getId(), filter,
+                        Boolean.FALSE, IncludeRelationships.NONE, RENDITION_NONE, Boolean.FALSE, Boolean.FALSE, null);
+                if (startFolderData.getBaseTypeId() != BaseTypeId.CMIS_FOLDER) {
+                    throw new CmisInvalidArgumentException("Start folder is not a folder");
+                }
+                if (startFolderData.getProperties() == null || startFolderData.getProperties().getProperties() == null
+                        || startFolderData.getProperties().getProperties().get(PropertyIds.PATH) == null) {
+                    throw new CmisInvalidArgumentException("Start folder has no path property");
+                }
+                String startPath = (String) startFolderData.getProperties()
+                                                           .getProperties()
+                                                           .get(PropertyIds.PATH)
+                                                           .getFirstValue();
+                if (!getRepositoryInfo().getRootFolderId().equals(startFolderData.getId())) {
+                    nextPath.append(startPath);
+                    lastFolderId = startFolderId;
+                }
+            }
+            if (!newPath.startsWith(nextPath.toString())) {
+                throw new CmisInvalidArgumentException("Start folder in not in the path");
+            }
+            segments = newPath.substring(nextPath.length()).split("/");
+        } else {
+            segments = newPath.split("/");
+        }
+
+        // create folders
+        for (int i = 1; i < segments.length; i++) {
+            String segment = segments[i];
+            if (create) {
+                lastFolderId = createFolder(propertiesWithName(properties, segment), lastFolderId, policies, addAces,
+                        removeAces);
+            } else {
+                try {
+                    nextPath.append('/');
+                    nextPath.append(segment);
+                    String filter = PropertyIds.OBJECT_ID + ',' + PropertyIds.BASE_TYPE_ID;
+                    ObjectData folderData = service.getObjectByPath(repositoryId, nextPath.toString(), filter,
+                            Boolean.FALSE, IncludeRelationships.NONE, RENDITION_NONE, Boolean.FALSE, Boolean.FALSE,
+                            null);
+                    if (folderData.getBaseTypeId() != BaseTypeId.CMIS_FOLDER) {
+                        throw new CmisConstraintException("Cannot create folder " + segment
+                                + " because there is already an object with this name which is not a folder");
+                    }
+                    lastFolderId = new ObjectIdImpl(folderData.getId());
+                } catch (CmisObjectNotFoundException e) {
+                    if (lastFolderId == null) {
+                        lastFolderId = new ObjectIdImpl(getRepositoryInfo().getRootFolderId());
+                    }
+                    lastFolderId = createFolder(propertiesWithName(properties, segment), lastFolderId, policies,
+                            addAces, removeAces);
+                    create = true;
+                }
+            }
+        }
+        return lastFolderId;
+    }
+
+    protected Map<String, Object> propertiesWithName(Map<String, ?> properties, String name) {
+        Map<String, Object> newProperties = new HashMap<>(properties);
+        newProperties.put(PropertyIds.NAME, name);
+        return newProperties;
+    }
+
+    @Override
     public ObjectId createDocumentFromSource(ObjectId source, Map<String, ?> properties, ObjectId folderId,
             VersioningState versioningState) {
         return createDocumentFromSource(source, properties, folderId, versioningState, null, null, null);
@@ -318,7 +439,7 @@ public class NuxeoSession implements Session {
     public boolean exists(String objectId) {
         try {
             service.getObject(repositoryId, objectId, PropertyIds.OBJECT_ID, Boolean.FALSE, IncludeRelationships.NONE,
-                    "cmis:none", Boolean.FALSE, Boolean.FALSE, null);
+                    RENDITION_NONE, Boolean.FALSE, Boolean.FALSE, null);
             return true;
         } catch (CmisObjectNotFoundException e) {
             return false;
@@ -345,7 +466,7 @@ public class NuxeoSession implements Session {
     public boolean existsPath(String path) {
         try {
             service.getObjectByPath(repositoryId, path, PropertyIds.OBJECT_ID, Boolean.FALSE, IncludeRelationships.NONE,
-                    "cmis:none", Boolean.FALSE, Boolean.FALSE, null);
+                    RENDITION_NONE, Boolean.FALSE, Boolean.FALSE, null);
             return true;
         } catch (CmisObjectNotFoundException e) {
             return false;
@@ -430,6 +551,11 @@ public class NuxeoSession implements Session {
                 context.getRenditionFilterString(), Boolean.valueOf(context.isIncludePolicies()),
                 Boolean.valueOf(context.isIncludeAcls()), null);
         return getObjectFactory().convertObject(data, context);
+    }
+
+    protected String getObjectIdByPath(String path) {
+        return service.getObjectByPath(repositoryId, path, PropertyIds.OBJECT_ID, Boolean.FALSE,
+                IncludeRelationships.NONE, RENDITION_NONE, Boolean.FALSE, Boolean.FALSE, null).getId();
     }
 
     @Override
@@ -603,11 +729,68 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public void deleteByPath(String path) {
+        deleteByPath(path, true);
+    }
+
+    @Override
+    public void deleteByPath(String parentPath, String name) {
+        deleteByPath(buildPath(parentPath, name), true);
+    }
+
+    @Override
+    public void deleteByPath(String path, boolean allVersions) {
+        checkPath(path);
+        delete(new ObjectIdImpl(getObjectIdByPath(path)), allVersions);
+    }
+
+    @Override
     public List<String> deleteTree(ObjectId folderId, boolean allVersions, UnfileObject unfile,
             boolean continueOnFailure) {
         FailedToDeleteData res = service.deleteTree(repositoryId, folderId.getId(), Boolean.valueOf(allVersions),
                 unfile, Boolean.valueOf(continueOnFailure), null);
         return res.getIds();
+    }
+
+    @Override
+    public List<String> deleteTreebyPath(String parentPath, String name, boolean allVersions, UnfileObject unfile,
+            boolean continueOnFailure) {
+        return deleteTreebyPath(buildPath(parentPath, name), allVersions, unfile, continueOnFailure);
+    }
+
+    @Override
+    public List<String> deleteTreebyPath(String path, boolean allVersions, UnfileObject unfile,
+            boolean continueOnFailure) {
+        checkPath(path);
+        return deleteTree(new ObjectIdImpl(getObjectIdByPath(path)), allVersions, unfile, continueOnFailure);
+    }
+
+    /** Checks that the path is valid. */
+    protected final void checkPath(String path) {
+        if (StringUtils.isEmpty(path)) {
+            throw new CmisInvalidArgumentException("Missing path");
+        }
+        if (!path.startsWith("/")) {
+            throw new CmisInvalidArgumentException("Path must start with a slash");
+        }
+    }
+
+    /** Checks that the parent path and name are valid, and builds a full path from them. */
+    protected String buildPath(String parentPath, String name) {
+        checkPath(parentPath);
+        if (StringUtils.isEmpty(name)) {
+            throw new CmisInvalidArgumentException("Missing name");
+        }
+        if (name.startsWith("/")) {
+            throw new CmisInvalidArgumentException("Name must not start with a slash");
+        }
+        StringBuilder path = new StringBuilder(parentPath.length() + name.length() + 1);
+        path.append(parentPath);
+        if (!parentPath.endsWith("/")) {
+            path.append('/');
+        }
+        path.append(name);
+        return path.toString();
     }
 
     @Override
@@ -621,6 +804,17 @@ public class NuxeoSession implements Session {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         return service.getContentStream(repositoryId, docId.getId(), streamId, offset, length, null);
+    }
+
+    @Override
+    public ContentStream getContentStreamByPath(String path) {
+        return getContentStreamByPath(path, null, null, null);
+    }
+
+    @Override
+    public ContentStream getContentStreamByPath(String path, String streamId, BigInteger offset, BigInteger length) {
+        checkPath(path);
+        return service.getContentStream(repositoryId, getObjectIdByPath(path), streamId, offset, length, null);
     }
 
     @Override

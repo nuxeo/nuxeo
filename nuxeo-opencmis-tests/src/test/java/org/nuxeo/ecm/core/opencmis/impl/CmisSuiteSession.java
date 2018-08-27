@@ -418,6 +418,13 @@ public class CmisSuiteSession {
     }
 
     @Test
+    public void testCreatePath() throws Exception {
+        session.createPath("/testfolder1/newlevel/newfolder", "Folder");
+        session.getObjectByPath("/testfolder1/newlevel");
+        session.getObjectByPath("/testfolder1/newlevel/newfolder");
+    }
+
+    @Test
     public void testUpdate() throws Exception {
         Document doc;
 
@@ -754,6 +761,30 @@ public class CmisSuiteSession {
     }
 
     @Test
+    public void testDeleteByPath() throws Exception {
+        session.deleteByPath("/testfolder1/testfile1", true);
+        session.clear();
+        try {
+            session.getObjectByPath("/testfolder1/testfile1");
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
+    public void testDeleteByPath2() throws Exception {
+        session.deleteByPath("/testfolder1", "testfile1");
+        session.clear();
+        try {
+            session.getObjectByPath("/testfolder1/testfile1");
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testDeleteTree() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         List<String> failed = folder.deleteTree(true, null, true);
@@ -774,6 +805,29 @@ public class CmisSuiteSession {
         }
 
         folder = (Folder) session.getObjectByPath("/testfolder2");
+        assertNotNull(folder);
+    }
+
+    @Test
+    public void testDeleteTreeByPath() throws Exception {
+        List<String> failed = session.deleteTreebyPath("/testfolder1", true, null, true);
+        assertTrue(failed == null || failed.isEmpty());
+
+        session.clear();
+        try {
+            session.getObjectByPath("/testfolder1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            session.getObjectByPath("/testfolder1/testfile1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+
+        Folder folder = (Folder) session.getObjectByPath("/testfolder2");
         assertNotNull(folder);
     }
 

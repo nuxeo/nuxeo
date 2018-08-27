@@ -242,6 +242,11 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
+    public Boolean isVersionSeriesPrivateWorkingCopy() {
+        return Boolean.valueOf(data.doc.isVersionSeriesCheckedOut());
+    }
+
+    @Override
     public Boolean isLatestMajorVersion() {
         return getPropertyValue(PropertyIds.IS_LATEST_MAJOR_VERSION);
     }
