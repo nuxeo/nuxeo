@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.model.Document;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -89,11 +90,11 @@ public interface CommentManager {
      * Creates a comment.
      *
      * @param session the core session
-     * @return the created comment id
+     * @return the created comment
      * @throws IllegalArgumentException if the document to comment does not exist
      * @since 10.3
      */
-    String createComment(CoreSession session, Comment comment) throws IllegalArgumentException;
+    Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException;
 
     /**
      * Gets a comment.

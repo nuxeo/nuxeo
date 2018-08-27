@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-annotation-rest-api-test
-Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server.annotation.test;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0

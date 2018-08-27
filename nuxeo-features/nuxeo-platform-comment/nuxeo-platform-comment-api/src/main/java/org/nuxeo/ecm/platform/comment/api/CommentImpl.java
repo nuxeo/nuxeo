@@ -24,7 +24,9 @@ import java.time.Instant;
 /**
  * @since 10.3
  */
-public class CommentImpl implements Comment {
+public class CommentImpl implements Comment, ExternalEntity {
+
+    protected String id;
 
     protected String documentId;
 
@@ -35,6 +37,22 @@ public class CommentImpl implements Comment {
     protected Instant creationDate;
 
     protected Instant modificationDate;
+
+    protected String entityId;
+
+    protected String origin;
+
+    protected String entity;
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Override
     public String getDocumentId() {
@@ -84,5 +102,35 @@ public class CommentImpl implements Comment {
     @Override
     public void setModificationDate(Instant modificationDate) {
         this.modificationDate = modificationDate;
+    }
+
+    @Override
+    public String getEntityId() {
+        return entityId;
+    }
+
+    @Override
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    @Override
+    public String getOrigin() {
+        return origin;
+    }
+
+    @Override
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    @Override
+    public String getEntity() {
+        return entity;
+    }
+
+    @Override
+    public void setEntity(String entity) {
+        this.entity = entity;
     }
 }

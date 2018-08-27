@@ -14,7 +14,6 @@
   <description>Nuxeo Features: Parent.</description>
 
   <modules>
-    <module>nuxeo-annotation</module>
     <module>nuxeo-platform-audit</module>
     <module>nuxeo-platform-task</module>
     <module>nuxeo-platform-comment</module>

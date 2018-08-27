@@ -29,6 +29,20 @@ import java.time.Instant;
 public interface Comment {
 
     /**
+     * Gets annotation id.
+     *
+     * @return the id
+     */
+    String getId();
+
+    /**
+     * Sets annotation id.
+     *
+     * @param id the id
+     */
+    void setId(String id);
+
+    /**
      * Gets commented document id.
      *
      * @return the commented document id

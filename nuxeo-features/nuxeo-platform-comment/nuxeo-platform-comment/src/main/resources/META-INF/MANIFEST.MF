@@ -20,7 +20,9 @@ Nuxeo-Component: OSGI-INF/CommentService.xml,
   OSGI-INF/comment-relation-contrib.xml,
   OSGI-INF/comment-listener-contrib.xml,
   OSGI-INF/comment-notification-contrib.xml,
-  OSGI-INF/comment-pageprovider-contrib.xml
+  OSGI-INF/comment-pageprovider-contrib.xml,
+  OSGI-INF/annotation-service.xml,
+  OSGI-INF/annotation-marshaller-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  javax.ejb,

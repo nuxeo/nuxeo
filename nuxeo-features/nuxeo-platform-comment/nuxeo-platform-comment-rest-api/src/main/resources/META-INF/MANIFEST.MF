@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-comment-rest-api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server.comment;singleton:=true
+Fragment-Host: org.nuxeo.ecm.platform.restapi.server
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0

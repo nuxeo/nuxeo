@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/externalEntity"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/externalEntity">
+
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="entityId" type="xs:string"/>
+  <xs:element name="origin" type="xs:string"/>
+  <xs:element name="entity" type="nxs:clob"/>
+
+</xs:schema>

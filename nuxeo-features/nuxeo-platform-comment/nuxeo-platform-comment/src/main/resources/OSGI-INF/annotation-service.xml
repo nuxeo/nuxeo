@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.api.AnnotationService">
+
+  <documentation>
+    The Annotation Service allows to manage annotations on documents.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.comment.impl.AnnotationServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.comment.api.AnnotationService"/>
+  </service>
+
+</component>
