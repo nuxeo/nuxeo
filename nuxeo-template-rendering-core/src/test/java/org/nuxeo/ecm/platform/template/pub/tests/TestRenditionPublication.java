@@ -60,7 +60,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -88,8 +87,8 @@ import org.nuxeo.template.processors.HtmlBodyExtractor;
 @Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
 @Deploy("org.nuxeo.ecm.platform.publisher.core")
 @Deploy("org.nuxeo.ecm.platform.publisher.task")
-@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
-@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher")
 @Deploy("org.nuxeo.template.manager")
 @Deploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
@@ -294,7 +293,8 @@ public class TestRenditionPublication {
 
         session.save();
 
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), JOE_USERNAME)) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                JOE_USERNAME)) {
             // Check that joe user cannot access the template document
             try {
                 joeSession.getDocument(templateDoc.getRef());
