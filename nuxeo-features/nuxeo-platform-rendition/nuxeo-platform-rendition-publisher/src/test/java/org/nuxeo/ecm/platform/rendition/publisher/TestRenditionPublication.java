@@ -48,7 +48,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -75,8 +74,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
 @Deploy("org.nuxeo.ecm.platform.publisher.core")
 @Deploy("org.nuxeo.ecm.platform.publisher.task")
-@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
-@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher")
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
@@ -181,7 +180,7 @@ public class TestRenditionPublication {
         renditionDoc = rendition.getHostDocument();
 
         assertEquals(renditionDoc.getId(), proxy.getSourceId());
-        assertNotEquals(renditionDoc.getId(),renditionUUID);
+        assertNotEquals(renditionDoc.getId(), renditionUUID);
 
     }
 

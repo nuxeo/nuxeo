@@ -57,7 +57,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features(RuntimeFeature.class)
 public class TestRegisterNotificationService {
 
-    private static final String BUNDLE_TEST_NAME = "org.nuxeo.ecm.platform.notification.core.tests";
 
     protected EmailHelper mailHelper = new EmailHelper();
 
@@ -73,7 +72,7 @@ public class TestRegisterNotificationService {
     }
 
     @Test
-    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml")
     public void testRegistration() throws Exception {
 
         List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
@@ -105,22 +104,22 @@ public class TestRegisterNotificationService {
     }
 
     @Test
-    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib-disabled.xml")
     public void testRegistrationDisabled() throws Exception {
         assertEquals(0, getService().getNotificationsForEvents("testEvent").size());
     }
 
     @Test
     public void testRegistrationOverrideWithDisabled() throws Exception {
-        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml");
         assertEquals(1, getService().getNotificationsForEvents("testEvent").size());
-        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib-disabled.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib-disabled.xml");
         assertEquals(0, getService().getNotificationsForEvents("testEvent").size());
     }
 
     @Test
-    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml")
-    @Deploy(BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib-overridden.xml")
     public void testRegistrationOverride() throws Exception {
 
         List<Notification> notifications = getService().getNotificationsForEvents("testEvent");
@@ -152,7 +151,7 @@ public class TestRegisterNotificationService {
 
     @Test
     public void testExpandVarsInGeneralSettings() throws Exception {
-        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml");
 
         assertEquals("http://localhost:8080/nuxeo/", getService().getServerUrlPrefix());
         assertEquals("[Nuxeo5]", getService().getEMailSubjectPrefix());
@@ -160,7 +159,7 @@ public class TestRegisterNotificationService {
         // this one should not be expanded
         assertEquals("java:/Mail", getService().getMailSessionJndiName());
 
-        hotDeployer.deploy(BUNDLE_TEST_NAME + ":notification-contrib-overridden.xml");
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib-overridden.xml");
 
         assertEquals("http://testServerPrefix/nuxeo", getService().getServerUrlPrefix());
         assertEquals("testSubjectPrefix", getService().getEMailSubjectPrefix());
@@ -170,8 +169,8 @@ public class TestRegisterNotificationService {
     }
 
     @Test
-    @Deploy(BUNDLE_TEST_NAME + ":notification-veto-contrib.xml")
-    @Deploy(BUNDLE_TEST_NAME + ":notification-veto-contrib-overridden.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-veto-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-veto-contrib-overridden.xml")
     public void testVetoRegistration() throws Exception {
 
         Collection<NotificationListenerVeto> vetos = getService().getNotificationVetos();
