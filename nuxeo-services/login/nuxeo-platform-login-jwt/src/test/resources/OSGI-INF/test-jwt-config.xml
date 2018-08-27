@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.jwt.JWTService" point="configuration">
     <configuration>
-      <maxTTL>60</maxTTL>
+      <defaultTTL>60</defaultTTL>
       <secret>abracadabra</secret>
     </configuration>
   </extension>

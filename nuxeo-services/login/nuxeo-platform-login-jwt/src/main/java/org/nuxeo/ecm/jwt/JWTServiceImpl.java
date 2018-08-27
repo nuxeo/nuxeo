@@ -149,15 +149,16 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
                 throw new NuxeoException("No currently logged-in user");
             }
             builder.withSubject(subject);
-            // default max TTL
+            // default TTL
             withTTL(0);
         }
 
         @Override
         public JWTBuilderImpl withTTL(int ttlSeconds) {
-            int maxTTL = getMaxTTL();
-            int ttl = ttlSeconds <= 0 ? maxTTL : Math.min(ttlSeconds, maxTTL);
-            builder.withExpiresAt(Date.from(Instant.now().plusSeconds(ttl)));
+            if (ttlSeconds <= 0) {
+                ttlSeconds = getDefaultTTL();
+            }
+            builder.withExpiresAt(Date.from(Instant.now().plusSeconds(ttlSeconds)));
             return this;
         }
 
@@ -291,8 +292,8 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
         }
     }
 
-    protected int getMaxTTL() {
-        return registry.getContribution().getMaxTTL();
+    protected int getDefaultTTL() {
+        return registry.getContribution().getDefaultTTL();
     }
 
     protected Algorithm getAlgorithm() {
