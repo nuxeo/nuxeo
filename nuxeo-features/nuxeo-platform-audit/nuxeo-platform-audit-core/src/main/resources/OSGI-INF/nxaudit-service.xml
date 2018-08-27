@@ -141,6 +141,8 @@
     <event name="download" />
     <event name="documentTrashed" />
     <event name="documentUntrashed" />
+    <event name="addedToCollection" />
+    <event name="removedFromCollection" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"

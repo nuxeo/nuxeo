@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.collections.test.CollectionLocationeServiceImpl">
+
+  <documentation>
+   This test implementation locates user collections and favorites at the root.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.collections.core.test.CollectionLocationServiceTestImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.collections.api.CollectionLocationService" />
+  </service>
+
+</component>

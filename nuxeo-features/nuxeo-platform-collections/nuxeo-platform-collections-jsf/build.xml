@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<project name="nuxeo-platform-relations-web" default="web-tomcat" basedir=".">
-
-  <import file="../../../build.xml" />
-  <property file="build.properties" />
-
-</project>

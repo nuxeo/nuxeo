@@ -7,6 +7,8 @@
   <service>
     <provide
       interface="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService" />
+    <provide
+      interface="org.nuxeo.ecm.collections.api.CollectionLocationService" />
   </service>
 
   <documentation>

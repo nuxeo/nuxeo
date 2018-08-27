@@ -28,6 +28,10 @@
       <facet name="NXTag" />
     </doctype>
 
+    <doctype name="Collection" append="true">
+      <facet name="NXTag" />
+    </doctype>
+
   </extension>
 
 </component>

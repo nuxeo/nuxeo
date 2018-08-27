@@ -51,6 +51,7 @@
     <module>nuxeo-permissions</module>
     <module>nuxeo-usermapper</module>
     <module>nuxeo-scim-server</module>
+    <module>nuxeo-collections</module>
     <module>login</module>
   </modules>
 

@@ -34,6 +34,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,6 +64,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.api")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
+@Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
 public class TestUserWorkspace {
 
     @Inject
@@ -365,6 +369,23 @@ public class TestUserWorkspace {
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
+        }
+    }
+
+    /**
+     * @since 10.3
+     */
+    public void testCollectionsAreInUserWorkspace() {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
+            DocumentModel foo = session.createDocumentModel(uw.getPathAsString(), "foo", "File");
+            foo = session.createDocument(foo);
+            CollectionManager collectioManager = Framework.getService(CollectionManager.class);
+            collectioManager.addToNewCollection("newCollection", null, foo, userSession);
+            session.save();
+            assertTrue(session.exists(new PathRef(
+                    uw.getPathAsString() + "/" + CollectionConstants.DEFAULT_COLLECTIONS_NAME + "/newCollection")));
+
         }
     }
 

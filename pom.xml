@@ -999,6 +999,18 @@
         <artifactId>nuxeo-permissions</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-collections-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-collections-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
 
       <!-- Nuxeo Theme -->
       <dependency>
@@ -1624,16 +1636,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-collections-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-collections-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
