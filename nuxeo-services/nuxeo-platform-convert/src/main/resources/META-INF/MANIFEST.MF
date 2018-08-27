@@ -14,7 +14,6 @@ Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/commandline-imagemagick-convert-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-wpd2text-contrib.xml,
- OSGI-INF/ooo-manager-framework.xml,
  OSGI-INF/commandline-soffice-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: com.sun.star.beans;ridl=split,

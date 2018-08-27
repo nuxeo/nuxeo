@@ -110,37 +110,6 @@
       <artifactId>nuxeo-platform-tag-core</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.artofsolving.jodconverter</groupId>
-      <artifactId>jodconverter-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>ridl</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>juh</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>unoil</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>jurt</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
