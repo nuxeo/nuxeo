@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,8 +52,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.publisher.core")
 @Deploy("org.nuxeo.ecm.platform.publisher.task")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy(TaskUTConstants.CORE_BUNDLE_NAME)
-@Deploy(TaskUTConstants.TESTING_BUNDLE_NAME)
+@Deploy("org.nuxeo.ecm.platform.task.core")
+@Deploy("org.nuxeo.ecm.platform.task.testing")
 @Deploy("org.nuxeo.snapshot")
 @Deploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
 public class TestTreePublication {
