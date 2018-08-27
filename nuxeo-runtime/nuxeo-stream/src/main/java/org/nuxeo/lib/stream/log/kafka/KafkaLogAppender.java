@@ -28,12 +28,14 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
@@ -76,6 +78,8 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
 
     protected boolean closed;
 
+    protected static final AtomicInteger PRODUCER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
+
     private KafkaLogAppender(Codec<M> codec, KafkaNamespace ns, String name, Properties producerProperties,
             Properties consumerProperties) {
         Objects.requireNonNull(codec);
@@ -90,6 +94,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         this.name = name;
         this.producerProps = producerProperties;
         this.consumerProps = consumerProperties;
+        producerProps.setProperty(ProducerConfig.CLIENT_ID_CONFIG, name + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.producer = new KafkaProducer<>(this.producerProps);
         this.size = producer.partitionsFor(topic).size();
         if (log.isDebugEnabled()) {

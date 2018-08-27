@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -95,6 +96,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected boolean consumerMoved;
 
+    protected static final AtomicInteger CONSUMER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
+
     protected KafkaLogTailer(Codec<M> codec, KafkaNamespace ns, String group, Properties consumerProps) {
         this.codec = codec;
         if (NO_CODEC.equals(codec)) {
@@ -106,6 +109,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         this.ns = ns;
         this.group = group;
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, ns.getKafkaGroup(group));
+        consumerProps.put(ConsumerConfig.CLIENT_ID_CONFIG, group + "-" + CONSUMER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.consumer = new KafkaConsumer<>(consumerProps);
     }
 

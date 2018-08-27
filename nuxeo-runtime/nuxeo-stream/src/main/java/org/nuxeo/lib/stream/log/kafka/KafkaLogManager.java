@@ -194,9 +194,10 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<LogLag> getLagPerPartition(String name, String group) {
+    public synchronized List<LogLag> getLagPerPartition(String name, String group) {
         Properties props = (Properties) consumerProperties.clone();
         props.put(ConsumerConfig.GROUP_ID_CONFIG, prefix + group);
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "lag");
         try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
             List<TopicPartition> topicPartitions = consumer.partitionsFor(ns.getTopicName(name))
                                                            .stream()
