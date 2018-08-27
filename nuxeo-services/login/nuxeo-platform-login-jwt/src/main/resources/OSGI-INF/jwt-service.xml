@@ -15,10 +15,10 @@
       Extension points to configure the JWTService.
       <code>
         <secret>something</secret>
-        <maxTTL>3600</maxTTL>
+        <defaultTTL>3600</defaultTTL>
       </code>
       The secret is an arbitrary string that must be shared by all servers in the cluster.
-      The maxTTL is expressed in secondes, and defaults to 3600 (1 hour).
+      The defaultTTL is expressed in secondes, and defaults to 3600 (1 hour).
     </documentation>
     <object class="org.nuxeo.ecm.jwt.JWTServiceConfigurationDescriptor" />
   </extension-point>

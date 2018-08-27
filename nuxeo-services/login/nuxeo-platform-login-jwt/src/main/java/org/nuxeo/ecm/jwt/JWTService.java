@@ -35,7 +35,9 @@ public interface JWTService {
     interface JWTBuilder {
 
         /**
-         * Adds a TTL (in seconds) to the token to be built. This may be capped by the service configuration.
+         * Adds a TTL (in seconds) to the token to be built.
+         * <p>
+         * A negative or zero TTL means to use the platform default.
          *
          * @param ttlSeconds the TTL, in seconds
          */

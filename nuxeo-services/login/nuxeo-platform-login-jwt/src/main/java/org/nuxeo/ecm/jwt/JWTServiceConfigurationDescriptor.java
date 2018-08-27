@@ -29,20 +29,20 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "configuration")
 public class JWTServiceConfigurationDescriptor {
 
-    public static final int DEFAULT_MAX_TTL = 60 * 60; // 1h
+    public static final int DEFAULT_DEFAULT_TTL = 60 * 60; // 1h
 
     @XNode("secret")
     public String secret;
 
-    @XNode("maxTTL")
-    public Integer maxTTL;
+    @XNode("defaultTTL")
+    public Integer defaultTTL;
 
     public String getSecret() {
         return secret;
     }
 
-    public int getMaxTTL() {
-        return maxTTL == null ? DEFAULT_MAX_TTL : maxTTL.intValue();
+    public int getDefaultTTL() {
+        return defaultTTL == null ? DEFAULT_DEFAULT_TTL : defaultTTL.intValue();
     }
 
     /** Empty constructor, to get defaults. */
@@ -52,7 +52,7 @@ public class JWTServiceConfigurationDescriptor {
     /** Copy constructor. */
     public JWTServiceConfigurationDescriptor(JWTServiceConfigurationDescriptor other) {
         this.secret = other.secret;
-        this.maxTTL = other.maxTTL;
+        this.defaultTTL = other.defaultTTL;
     }
 
     /** Merge method. */
@@ -60,8 +60,8 @@ public class JWTServiceConfigurationDescriptor {
         if (other.secret != null) {
             secret = other.secret;
         }
-        if (other.maxTTL != null) {
-            maxTTL = other.maxTTL;
+        if (other.defaultTTL != null) {
+            defaultTTL = other.defaultTTL;
         }
     }
 
