@@ -174,3 +174,7 @@ nuxeo.stream.audit.batch.threshold.ms=500
 nuxeo.stream.pubsub.log.config=pubsub
 nuxeo.stream.pubsub.log.name=pubsub
 nuxeo.stream.pubsub.log.codec=avroBinary
+
+# JWT config, must be the same cluster-wide
+nuxeo.jwt.secret=
+nuxeo.jwt.defaultTTL=60
