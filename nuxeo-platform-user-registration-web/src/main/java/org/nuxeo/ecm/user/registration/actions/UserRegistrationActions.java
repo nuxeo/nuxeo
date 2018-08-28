@@ -282,7 +282,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentValidable(DocumentModel doc) {
-        return "approved".equals(doc.getCurrentLifeCycleState());
+        return "accepted".equals(doc.getCurrentLifeCycleState());
     }
 
     public boolean getCanDelete() {
