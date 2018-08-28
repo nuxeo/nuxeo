@@ -2993,6 +2993,16 @@
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-base</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
         <version>1.0.4</version>
@@ -4972,7 +4982,11 @@
         <artifactId>java-jwt</artifactId>
         <version>3.4.0</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.beetstra.jutf7</groupId>
+        <artifactId>jutf7</artifactId>
+        <version>1.0.</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
