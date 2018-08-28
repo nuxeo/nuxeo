@@ -177,4 +177,4 @@ nuxeo.stream.pubsub.log.codec=avroBinary
 
 # JWT config, must be the same cluster-wide
 nuxeo.jwt.secret=
-nuxeo.jwt.defaultTTL=60
+nuxeo.jwt.defaultTTL=3600
