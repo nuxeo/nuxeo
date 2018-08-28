@@ -87,10 +87,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Helpers;
 import org.nuxeo.wopi.Operation;
@@ -347,8 +345,8 @@ public class FilesEndpoint extends DefaultObject {
         Blob newBlob = createBlobFromRequestBody(newFileName, null);
         newDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) newBlob);
         newDoc = session.createDocument(newDoc);
-        TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
-        String token = tokenAuthenticationService.acquireToken(principal.getName(), "wopi", "device", null, "rw");
+
+        String token = Helpers.createJWTToken();
         String baseURL = VirtualHostHelper.getBaseURL(request);
         String newFileId = FileInfo.computeFileId(newDoc, FILE_CONTENT_PROPERTY);
         String wopiSrc = String.format("%ssite/wopi/files/%s?access_token=%s", baseURL, newFileId, token);

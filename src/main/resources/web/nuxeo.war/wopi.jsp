@@ -41,7 +41,7 @@
   <form id="office_form" name="office_form" target="office_frame"
   action="${fn:escapeXml(formURL)}" method="post">
   <input name="access_token" value="${fn:escapeXml(accessToken)}" type="hidden"/>
-  <input name="access_token_ttl" value="0" type="hidden"/>
+  <input name="access_token_ttl" value="${fn:escapeXml(accessTokenTTL)}" type="hidden"/>
   </form>
 
   <span id="frameholder"></span>

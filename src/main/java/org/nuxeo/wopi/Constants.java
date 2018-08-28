@@ -28,7 +28,11 @@ public class Constants {
         // constants class
     }
 
+    public static final int JWT_TOKEN_TTL = 60 * 60; // 1h
+
     public static final String ACCESS_TOKEN = "accessToken";
+
+    public static final String ACCESS_TOKEN_TTL = "accessTokenTTL";
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
 

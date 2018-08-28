@@ -22,6 +22,7 @@ package org.nuxeo.wopi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.FORM_URL;
 import static org.nuxeo.wopi.Constants.WOPI_SRC;
@@ -45,10 +46,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 10.3
@@ -157,11 +155,9 @@ public class WOPIServlet extends HttpServlet {
                 return;
             }
 
-            TokenAuthenticationService tokenAuthenticationService = Framework.getService(
-                    TokenAuthenticationService.class);
-            NuxeoPrincipal principal = (NuxeoPrincipal) request.getUserPrincipal();
-            String token = tokenAuthenticationService.acquireToken(principal.getName(), "wopi", "device", null, "rw");
+            String token = Helpers.createJWTToken();
             request.setAttribute(ACCESS_TOKEN, token);
+            request.setAttribute(ACCESS_TOKEN_TTL, Helpers.getJWTTokenExp(token));
             String baseURL = VirtualHostHelper.getBaseURL(request);
             String fileId = FileInfo.computeFileId(doc, xpath);
             String wopiSrc = URLEncoder.encode(String.format("%ssite/wopi/files/%s", baseURL, fileId), UTF_8.name());

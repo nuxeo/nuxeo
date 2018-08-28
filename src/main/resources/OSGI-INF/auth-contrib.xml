@@ -1,13 +1,6 @@
 <component name="org.nuxeo.wopi.auth">
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="preFilter">
-
-    <preFilter name="wopi" order="0" class="org.nuxeo.ecm.platform.ui.web.auth.service.WOPIAuthFilter" />
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="specificChains">
 
     <specificAuthenticationChain name="wopi" handlePrompt="false">
@@ -17,7 +10,7 @@
       </urlPatterns>
 
       <replacementChain>
-        <plugin>TOKEN_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
 

@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.jwt.JWTClaims.CLAIM_SUBJECT;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
@@ -73,10 +74,10 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.jwt.JWTService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -102,8 +103,9 @@ import com.sun.jersey.api.client.WebResource;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, RestServerFeature.class })
-@Deploy("org.nuxeo.ecm.platform.login.token")
+@Deploy("org.nuxeo.ecm.jwt")
 @Deploy("org.nuxeo.wopi.rest.api")
+@Deploy("org.nuxeo.wopi.rest.api:test-jwt-contrib.xml")
 @ServletContainer(port = 18090)
 public class TestFilesEndpoint {
 
@@ -121,7 +123,7 @@ public class TestFilesEndpoint {
     protected CoreFeature coreFeature;
 
     @Inject
-    protected TokenAuthenticationService tokenAuthenticationService;
+    protected JWTService jwtService;
 
     @Inject
     protected TransactionalFeature transactionalFeature;
@@ -159,8 +161,8 @@ public class TestFilesEndpoint {
         createDocuments();
 
         // initialize REST API clients
-        joeToken = tokenAuthenticationService.acquireToken("joe", "wopi", "device", null, "rw");
-        johnToken = tokenAuthenticationService.acquireToken("john", "wopi", "device", null, "rw");
+        joeToken = jwtService.newBuilder().withClaim(CLAIM_SUBJECT, "joe").build();
+        johnToken = jwtService.newBuilder().withClaim(CLAIM_SUBJECT, "john").build();
         client = JerseyClientHelper.clientBuilder().build();
 
         // make sure everything is committed
@@ -224,7 +226,6 @@ public class TestFilesEndpoint {
     @After
     public void tearDown() {
         Stream.of("john", "joe").forEach(userManager::deleteUser);
-        Stream.of(johnToken, joeToken).forEach(tokenAuthenticationService::revokeToken);
         client.destroy();
     }
 

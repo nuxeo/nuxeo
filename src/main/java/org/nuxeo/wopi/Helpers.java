@@ -20,11 +20,16 @@
 package org.nuxeo.wopi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.wopi.Constants.JWT_TOKEN_TTL;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.jwt.JWTClaims;
+import org.nuxeo.ecm.jwt.JWTService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 10.3
@@ -40,6 +45,16 @@ public class Helpers {
     public static String readUTF7String(String s) {
         byte[] bytes = s.getBytes(UTF_8);
         return new String(bytes, UTF_7);
+    }
+
+    public static String createJWTToken() {
+        return Framework.getService(JWTService.class).newBuilder().withTTL(JWT_TOKEN_TTL).build();
+    }
+
+    public static long getJWTTokenExp(String token) {
+        Map<String, Object> claims = Framework.getService(JWTService.class).verifyToken(token);
+        long expireAt = (long) claims.get(JWTClaims.CLAIM_EXPIRES_AT);
+        return expireAt * 1000; // milliseconds
     }
 
     // copied from org.nuxeo.ecm.platform.ui.web.tag.fn.Functions which lives in nuxeo-platform-ui-web
