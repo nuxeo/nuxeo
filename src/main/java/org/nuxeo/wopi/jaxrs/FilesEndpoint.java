@@ -350,7 +350,8 @@ public class FilesEndpoint extends DefaultObject {
         TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
         String token = tokenAuthenticationService.acquireToken(principal.getName(), "wopi", "device", null, "rw");
         String baseURL = VirtualHostHelper.getBaseURL(request);
-        String wopiSrc = String.format("%ssite/wopi/files/%s?access_token=%s", baseURL, newDoc.getId(), token);
+        String newFileId = FileInfo.computeFileId(newDoc, FILE_CONTENT_PROPERTY);
+        String wopiSrc = String.format("%ssite/wopi/files/%s?access_token=%s", baseURL, newFileId, token);
         String hostViewUrl = String.format("%swopi/%s/default/%s", baseURL, "view", newDoc.getId());
         String hostEditUrl = String.format("%swopi/%s/default/%s", baseURL, "edit", newDoc.getId());
 
