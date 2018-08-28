@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -55,8 +54,8 @@ public class HasFolderishChildJsonEnricher extends AbstractJsonEnricher<Document
                     + " AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0"
                     + " AND ecm:parentId = " + NXQL.escapeString(document.getId());
             // Limit result set to 1 as we just want to know if there's at least one Folderish child
-            DocumentModelList children = wrapper.getSession().query(fetchFolderishChildQuery, 1);
-            jg.writeBooleanField(NAME, !children.isEmpty());
+            boolean hasChildren = !wrapper.getSession().queryProjection(fetchFolderishChildQuery, 1, 0).isEmpty();
+            jg.writeBooleanField(NAME, hasChildren);
         }
     }
 
