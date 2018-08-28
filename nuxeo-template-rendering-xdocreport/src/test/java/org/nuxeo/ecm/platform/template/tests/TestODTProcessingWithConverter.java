@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.Serializable;
@@ -47,7 +46,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.convert.ConvertHelper;
-import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -79,9 +77,6 @@ public class TestODTProcessingWithConverter {
     protected TemplateProcessorService tps;
 
     @Inject
-    protected OOoManagerService oooManagerService;
-
-    @Inject
     protected CommandLineExecutorService commandLineExecutorService;
 
     private DocumentModel templateDoc;
@@ -91,23 +86,6 @@ public class TestODTProcessingWithConverter {
     private static final Log log = LogFactory.getLog(TestODTProcessingWithConverter.class);
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
-
-    // @Before
-    public void setUp() throws Exception {
-        try {
-            oooManagerService.startOOoManager();
-        } catch (Exception e) {
-            log.warn("Can't run OpenOffice, JOD converter will not be available.");
-        }
-
-    }
-
-    // @After
-    public void tearDown() throws Exception {
-        if (oooManagerService.isOOoManagerStarted()) {
-            oooManagerService.stopOOoManager();
-        }
-    }
 
     protected void setupTestDocs() throws Exception {
 
@@ -152,8 +130,6 @@ public class TestODTProcessingWithConverter {
 
     @Test
     public void testNoteWithMasterTemplateAndConverter() throws Exception {
-        assumeTrue("Skipping test since no OOo server can be found", oooManagerService.isOOoManagerStarted());
-
         setupTestDocs();
 
         // check the template

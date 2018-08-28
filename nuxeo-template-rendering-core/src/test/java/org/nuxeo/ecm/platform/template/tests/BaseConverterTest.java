@@ -33,15 +33,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(BaseConverterTest.class);
-
-    OOoManagerService oooManagerService;
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
@@ -68,16 +64,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.convert");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.template.manager", "OSGI-INF/convert-service-contrib.xml");
-    }
-
-    @Override
-    protected void postSetUp() throws Exception {
-        oooManagerService = Framework.getService(OOoManagerService.class);
-        try {
-            oooManagerService.startOOoManager();
-        } catch (Exception e) {
-            log.warn("Can't run OpenOffice, JOD converter will not be available.");
-        }
     }
 
 }
