@@ -4,6 +4,11 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
 
+    <filterConfig name="cachednxfile" transactional="false" synchonize="false" cached="true" private="true" cacheTime="31536000">
+      <!-- if url contains doc changeToken: approximately one year -->
+      <!-- transaction is manually handled in DownloadServlet -->
+      <pattern>${org.nuxeo.ecm.contextPath}/nxfile/.*\\?.*changeToken=.+</pattern>
+    </filterConfig>
     <filterConfig name="nxfile" transactional="false" synchonize="false" cached="true" private="true" cacheTime="0">
       <!-- transaction is manually handled in DownloadServlet -->
       <pattern>${org.nuxeo.ecm.contextPath}/nxfile/.*</pattern>

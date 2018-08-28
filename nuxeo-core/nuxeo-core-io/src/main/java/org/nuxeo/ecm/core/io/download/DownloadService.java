@@ -113,21 +113,38 @@ public interface DownloadService {
      * <p>
      * The URL is relative to the Nuxeo Web Application context.
      * <p>
-     * Returns something like {@code nxbigfile/reponame/docuuid/blobholder:0/foo.jpg}
+     * Returns something like {@code nxfile/reponame/docuuid/blobholder:0/foo.jpg?changeToken=5-1}
      *
      * @param doc the document
      * @param xpath the blob's xpath or blobholder index, or {@code null} for default
      * @param filename the blob's filename, or {@code null} for default
-     * @return the download URL
+     * @return the download URL with changeToken as query param for optimized http caching
      */
     String getDownloadUrl(DocumentModel doc, String xpath, String filename);
+
 
     /**
      * Gets the URL to use to download the blob at the given xpath in the given document.
      * <p>
      * The URL is relative to the Nuxeo Web Application context.
      * <p>
-     * Returns something like {@code nxbigfile/reponame/docuuid/blobholder:0/foo.jpg}
+     * Returns something like {@code nxfile/reponame/docuuid/blobholder:0/foo.jpg?changeToken=5-1}
+     *
+     * @param doc the document
+     * @param xpath the blob's xpath or blobholder index, or {@code null} for default
+     * @param filename the blob's filename, or {@code null} for default
+     * @param changeToken the doc changeToken which will be appended as a query parameter for optimized http caching.
+     * @return the download URL
+     * @since 10.3
+     */
+    String getDownloadUrl(String repositoryName, String docId, String xpath, String filename, String changeToken);
+
+    /**
+     * Gets the URL to use to download the blob at the given xpath in the given document.
+     * <p>
+     * The URL is relative to the Nuxeo Web Application context.
+     * <p>
+     * Returns something like {@code nxfile/reponame/docuuid/blobholder:0/foo.jpg}
      *
      * @param repositoryName the document repository
      * @param docId the document id

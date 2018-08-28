@@ -25,6 +25,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
@@ -557,5 +558,38 @@ public class TestDownloadService {
         String filename = "/home/john/foo;bar.txt";
         String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
         assertEquals("nxfile/default/1234/file:content/foo%3Bbar.txt", url);
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testDownloadUrlWithChangeToken() throws IOException {
+        String repositoryName = "test";
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName)) {
+            Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
+            DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
+            doc.setProperty("dublincore", "title", "Spectre");
+
+            FileBlob blob = new FileBlob("Synopsis");
+            String blobFilename = "synopsis.txt";
+            blob.setFilename(blobFilename);
+
+            Map<String, Object> fileMap = new HashMap<>();
+            fileMap.put("file", blob);
+            List<Map<String, Object>> docFiles = new ArrayList<>();
+            docFiles.add(fileMap);
+
+            doc.setProperty("files", "files", docFiles);
+            doc = session.createDocument(doc);
+            session.save();
+
+            String pattern = "nxfile/test/.*/file:content/synopsis.txt\\?changeToken=[^&]+";
+            String url = downloadService.getDownloadUrl(repositoryName, doc.getId(), "file:content", "synopsis.txt",
+                    doc.getChangeToken());
+            assertTrue(url.matches(pattern));
+            url = downloadService.getDownloadUrl(doc, "file:content", "synopsis.txt");
+            assertTrue(url.matches(pattern));
+        }
     }
 }

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -49,6 +50,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -85,6 +88,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.3
  */
 public class DownloadServiceImpl extends DefaultComponent implements DownloadService {
+
+    private static final Log log = LogFactory.getLog(DownloadServiceImpl.class);
 
     /**
      * @since 10.3
@@ -160,11 +165,17 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public String getDownloadUrl(DocumentModel doc, String xpath, String filename) {
-        return getDownloadUrl(doc.getRepositoryName(), doc.getId(), xpath, filename);
+        return getDownloadUrl(doc.getRepositoryName(), doc.getId(), xpath, filename, doc.getChangeToken());
     }
 
     @Override
     public String getDownloadUrl(String repositoryName, String docId, String xpath, String filename) {
+        return getDownloadUrl(repositoryName, docId, xpath, filename, null);
+    }
+
+    @Override
+    public String getDownloadUrl(String repositoryName, String docId, String xpath, String filename,
+            String changeToken) {
         StringBuilder sb = new StringBuilder();
         sb.append(NXFILE);
         sb.append("/").append(repositoryName);
@@ -175,6 +186,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 // make sure filename doesn't contain path separators
                 filename = getSanitizedFilenameWithoutPath(filename);
                 sb.append("/").append(URIUtils.quoteURIPathComponent(filename, true));
+            }
+        }
+        if (StringUtils.isNotEmpty(changeToken)) {
+            try {
+                sb.append("?")
+                  .append(CoreSession.CHANGE_TOKEN)
+                  .append("=")
+                  .append(URLEncoder.encode(changeToken, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                log.error("Cannot append changeToken", e);
             }
         }
         return sb.toString();
