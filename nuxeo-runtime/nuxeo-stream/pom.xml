@@ -58,6 +58,14 @@
       <groupId>net.jodah</groupId>
       <artifactId>failsafe</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.confluent</groupId>
+      <artifactId>kafka-avro-serializer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.confluent</groupId>
+      <artifactId>kafka-schema-registry-client</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

@@ -153,6 +153,9 @@ kafka.heartbeat.interval.ms=2000
 kafka.max.poll.records=5
 # deprecated we don't use anymore zookeeper
 kafka.zkServers=localhost:2181
+# Confluent Avro Schema Registry
+confluent.schema_registry.enabled=false
+confluent.schema_registry.urls=http://localhost:8081
 
 # Stream default retention with Chronicle Queue
 nuxeo.stream.chronicle.retention.duration=4d

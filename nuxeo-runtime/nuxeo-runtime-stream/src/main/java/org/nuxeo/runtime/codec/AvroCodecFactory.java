@@ -21,6 +21,7 @@ package org.nuxeo.runtime.codec;
 import java.util.Map;
 
 import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
+import org.nuxeo.lib.stream.codec.AvroConfluentCodec;
 import org.nuxeo.lib.stream.codec.AvroJsonCodec;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -30,15 +31,26 @@ import org.nuxeo.runtime.avro.AvroService;
 /**
  * Factory to generate Avro codec with different flavors
  *
- * @since 10.2
+ * @since 10.3
  */
 public class AvroCodecFactory implements CodecFactory {
 
+    public static final String KEY_SCHEMA_REGISTRY_URLS = "schemaRegistryUrls";
+
+    public static final String DEFAULT_SCHEMA_REGISTRY_URLS = "http://localhost:8081";
+
+    public static final String KEY_ENCODING = "encoding";
+
+    public static final String DEFAULT_ENCODING = "default";
+
     protected String encoding;
+
+    protected String schemaRegistryUrls;
 
     @Override
     public void init(Map<String, String> options) {
-        this.encoding = options.getOrDefault("encoding", "default");
+        this.encoding = options.getOrDefault(KEY_ENCODING, DEFAULT_ENCODING);
+        this.schemaRegistryUrls = options.getOrDefault(KEY_SCHEMA_REGISTRY_URLS, DEFAULT_SCHEMA_REGISTRY_URLS);
     }
 
     @Override
@@ -48,6 +60,8 @@ public class AvroCodecFactory implements CodecFactory {
             return new AvroJsonCodec<>(objectClass);
         case "binary":
             return new AvroBinaryCodec<>(objectClass);
+        case "confluent":
+            return new AvroConfluentCodec<>(objectClass, schemaRegistryUrls);
         case "message":
         default:
             return new AvroMessageCodec<>(objectClass, Framework.getService(AvroService.class));

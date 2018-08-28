@@ -1,0 +1,1 @@
+{"type":"record","name":"Record","namespace":"org.nuxeo.lib.stream.computation","fields":[{"name":"watermark","type":"long"},{"name":"key","type":"string"},{"name":"data","type":{"type":"bytes","java-class":"[B"}},{"name":"flagsAsByte","type":{"type":"int","java-class":"java.lang.Byte"}}]}
