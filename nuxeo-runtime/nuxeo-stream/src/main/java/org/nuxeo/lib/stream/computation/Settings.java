@@ -22,6 +22,7 @@ import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.nuxeo.lib.stream.codec.Codec;
 
@@ -95,6 +96,7 @@ public class Settings {
      * @since 10.2
      */
     public Settings setCodec(String streamName, Codec<Record> codec) {
+        Objects.requireNonNull(codec);
         codecs.put(streamName, codec);
         return this;
     }
