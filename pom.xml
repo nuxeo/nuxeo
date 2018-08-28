@@ -11,11 +11,6 @@
   <name>Nuxeo WOPI</name>
   <description>Nuxeo implementation of WOPI endpoints</description>
 
-  <properties>
-    <!-- TODO to be added to Nuxeo main pom -->
-    <jutf7.version>1.0.0</jutf7.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -36,8 +31,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <!-- TODO to be added to Nuxeo main pom -->
-      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -46,7 +39,6 @@
     <dependency>
       <groupId>com.beetstra.jutf7</groupId>
       <artifactId>jutf7</artifactId>
-      <version>${jutf7.version}</version>
     </dependency>
 
     <dependency>
