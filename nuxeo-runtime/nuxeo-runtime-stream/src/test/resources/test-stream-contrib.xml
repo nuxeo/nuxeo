@@ -35,7 +35,7 @@
       defaultConcurrency="4" defaultPartitions="2" logConfig="default">
       <computation name="C1" concurrency="1" />
       <stream name="input" partitions="1" codec="avro" />
-      <stream name="output" codec="json" />
+      <stream name="output" codec="avroJson" />
       <option name="myOption">value</option>
     </streamProcessor>
 
