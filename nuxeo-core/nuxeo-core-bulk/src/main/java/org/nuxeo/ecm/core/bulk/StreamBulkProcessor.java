@@ -196,6 +196,8 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                         // there's at most one record because we loop while scrolling
                         if (!documentIds.isEmpty()) {
                             produceBucket(context, command.getAction(), commandId, documentCount);
+                        } else {
+                            context.askForCheckpoint();
                         }
 
                         Instant scrollEndTime = Instant.now();
