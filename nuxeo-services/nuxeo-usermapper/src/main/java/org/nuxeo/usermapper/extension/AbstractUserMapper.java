@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -151,7 +152,14 @@ public abstract class AbstractUserMapper implements UserMapper {
         UserManager userManager = getUserManager();
         DocumentModel userModel = userManager.getBareUserModel();
         userModel.getDataModel(userManager.getUserSchemaName()).setMap((Map) attributes);
-        return userManager.createUser(userModel);
+        DocumentModel userDoc;
+        try {
+            userDoc = Framework.doPrivileged(() -> userManager.createUser(userModel));
+        } catch (NuxeoException e) {
+            log.error("Error while creating user in UserManager", e);
+            return null;
+        }
+        return userDoc;
     }
 
     protected abstract void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
