@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.stream.defaultConfig">
+  <#if "${confluent.schema_registry.enabled}" == "true">
+  <require>org.nuxeo.runtime.codec.service</require>
+  <extension target="org.nuxeo.runtime.codec.service" point="codec">
+    <codec name="avroConfluent" class="org.nuxeo.runtime.codec.AvroCodecFactory">
+      <option name="encoding">confluent</option>
+      <option name="schemaRegistryUrls">${confluent.schema_registry.urls}</option>
+    </codec>
+  </extension>
+  </#if>
   <require>org.nuxeo.runtime.stream.service</require>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">

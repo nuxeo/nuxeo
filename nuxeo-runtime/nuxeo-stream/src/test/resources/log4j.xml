@@ -61,6 +61,11 @@
     <priority value="WARN" />
   </category>
 
+  <!-- DEBUG to view schema registry request -->
+  <category name="io.confluent.kafka">
+    <priority value="INFO" />
+  </category>
+
   <!-- Hide perf warnings -->
   <category name="net.openhft.chronicle.queue.impl.single.SCQIndexing">
     <priority value="ERROR" />

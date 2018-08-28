@@ -35,9 +35,11 @@ import java.util.EnumSet;
 import org.apache.avro.message.MissingSchemaException;
 import org.apache.avro.message.SchemaStore;
 import org.apache.avro.reflect.ReflectData;
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
+import org.nuxeo.lib.stream.codec.AvroConfluentCodec;
 import org.nuxeo.lib.stream.codec.AvroJsonCodec;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -50,6 +52,14 @@ import org.nuxeo.lib.stream.computation.Record;
 public class TestCodec {
 
     protected static final int MAX_DATA_SIZE = 1000;
+
+    public static void assumeConfluentRegistryEnabled() {
+        Assume.assumeTrue("Skip Confluent tests", "true".equals(System.getProperty("confluent")));
+    }
+
+    public static String getConfluentRegistryUrls() {
+        return System.getProperty("confluent.schema_registry.urls", "http://localhost:8081");
+    }
 
     @Test
     public void testAvroEvolution() {
@@ -132,6 +142,18 @@ public class TestCodec {
     }
 
     @Test
+    public void testRecordConfluentAvro() throws Exception {
+        assumeConfluentRegistryEnabled();
+        String baseUrl = getConfluentRegistryUrls();
+        Record src = getRecord();
+        Codec<Record> codec = new AvroConfluentCodec<>(Record.class, baseUrl);
+        testCodec(src, codec);
+        // note that because the message has been written with a different schema registry this will output a warning
+        // because the write schema id is unknown from the schema registry used to read it
+        testCodecFromFile("data/record-avro-confluent.bin", codec);
+    }
+
+    @Test
     public void testInvalidEncoding() throws Exception {
         byte[] data = readFile("data/record-externalizable.bin");
         Codec<Record> codec = new AvroMessageCodec<>(Record.class);
@@ -163,7 +185,6 @@ public class TestCodec {
         byte[] data = readFile(path);
         Record record = codec.decode(data);
         testCodec(record, codec);
-
     }
 
     protected byte[] readFile(String path) throws IOException {
@@ -198,7 +219,7 @@ public class TestCodec {
         return overview;
     }
 
-    @Ignore("Only to generate data file")
+    @Ignore("Skip test used only to generate data files")
     @Test
     public void testWriteRecord() throws Exception {
         Record src = getRecord();
@@ -221,6 +242,12 @@ public class TestCodec {
         codec = new AvroJsonCodec<>(Record.class);
         data = codec.encode(src);
         path = Paths.get("/tmp/record-avro.json");
+        Files.write(path, data);
+
+        // note that the schema id used for write will not be found if the message is read using another schema store
+        codec = new AvroConfluentCodec<>(Record.class, "http://localhost:8081");
+        data = codec.encode(src);
+        path = Paths.get("/tmp/record-avro-confluent.bin");
         Files.write(path, data);
     }
 }

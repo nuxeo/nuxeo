@@ -188,24 +188,59 @@ To build and run the tests, simply start the Maven build:
 
 ### Run Unit Tests with Kafka
 
- The tests expect a Kafka broker running on `localhost:9092`.
+ To run the Kafka unit tests you need to use the maven `kafka` profile.
+ By default it expects a Kafka broker running on `localhost:9092`.
 
  This can be setup using docker compose:
 
  1. Install [docker-compose](https://docs.docker.com/compose/install/).
- 2. Go to [`kafka-docker`](./kafka-docker) directory and run:
+ 2. Run docker-compose:
  ```
-   docker-compose up -d
+   (cd docker/kafka; docker-compose up -d)
  ```
  3. Run unit tests with the maven `kafka` profile:
  ```
    mvn -nsu -Pkafka test
  ```
- 4. Stop Kafka (and remove data) from the [`kafka-docker`](./kafka-docker) directory:
+ 4. Stop docker-compose:
  ```
-   docker-compose down
+   (cd docker/kafka; docker-compose down)
+ ``` 
+
+ To use an existing Kafka cluster use the following options:
  ```
- Visit the docker compose documentation for more information.
+   mvn -nsu test -Pkafka -Dkafka.bootstrap.servers=my-kafka-cluster:9092
+ ```
+
+### Run Unit Tests with Confluent Platform
+
+  The [Confluent Platform](https://www.confluent.io/product/confluent-platform/) runs a Kafka with additional services, 
+  
+  Nuxeo supports the [Confluent Avro Schema Registry](https://docs.confluent.io/current/schema-registry/docs/index.html) to encode its streams.
+  
+  The Confluent Platform can be run using docker-compose:
+
+1. Install [docker-compose](https://docs.docker.com/compose/install/).
+
+2. Run docker-compose:
+  ```
+  (cd docker/confluent-kafka; docker-compose up -d)
+  ```
+3. Run unit tests with the maven `kafka` and `confluent` profile:
+  ```
+  mvn -nsu -Pkafka,confluent test
+  ```
+4. Stop docker-compose:
+ ```
+   (cd docker/confluent-kafka; docker-compose down)
+ ``` 
+
+
+To use an existing Confluent schema registry, use the following options:
+ ```
+   mvn -nsu test -Pconfluent -Dconfluent.schema_registry.urls=http://my-schema-registry:8081
+ ```
+
 
 ### Following Project QA Status
 [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-master/)

@@ -226,6 +226,7 @@
     <quartz.mongodb.version>2.0.0-NX2</quartz.mongodb.version>
 
     <kafka.version>2.0.0</kafka.version>
+    <confluent.version>5.0.0</confluent.version>
   </properties>
 
   <dependencyManagement>
@@ -4896,6 +4897,18 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- Confluent -->
+      <dependency>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-avro-serializer</artifactId>
+	<version>${confluent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-schema-registry-client</artifactId>
+	<version>${confluent.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>net.openhft</groupId>
         <artifactId>chronicle-queue</artifactId>
@@ -6753,7 +6766,25 @@
          </plugins>
        </build>
     </profile>
+    <profile>
+      <id>confluent</id>
+       <build>
+         <plugins>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+             <configuration>
+               <systemPropertyVariables>
+                 <confluent>true</confluent>
+                 <confluent.schema.registry>${confluent.schema.registry}</confluent.schema.registry>
+               </systemPropertyVariables>
+             </configuration>
+           </plugin>
+         </plugins>
+       </build>
+    </profile>
 
+  
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->
     <profile>
       <id>addons</id>
