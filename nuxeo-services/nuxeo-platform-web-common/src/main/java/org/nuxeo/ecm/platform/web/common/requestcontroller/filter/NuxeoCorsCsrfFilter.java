@@ -48,6 +48,7 @@ import org.apache.http.client.methods.HttpTrace;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.thetransactioncompany.cors.CORSConfiguration;
 import com.thetransactioncompany.cors.CORSFilter;
@@ -82,9 +83,25 @@ public class NuxeoCorsCsrfFilter implements Filter {
 
     public static final List<String> SCHEMES_ALLOWED = Arrays.asList("moz-extension", "chrome-extension");
 
+    /**
+     * Allows to disable strict CORS checks when a request has Origin: null.
+     * <p>
+     * This may happen for local files, or for a JavaScript-triggered redirect. Setting this to false may expose the
+     * application to CSRF problems from files locally hosted on the user's disk.
+     *
+     * @since 10.3
+     */
+    public static final String ALLOW_NULL_ORIGIN_PROP = "nuxeo.cors.allowNullOrigin";
+
+    public static final String ALLOW_NULL_ORIGIN_DEFAULT = "false";
+
+    protected boolean allowNullOrigin;
+
     @Override
     public void init(FilterConfig filterConfig) {
-        // nothing to do
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        allowNullOrigin = Boolean.parseBoolean(
+                configurationService.getProperty(ALLOW_NULL_ORIGIN_PROP, ALLOW_NULL_ORIGIN_DEFAULT));
     }
 
     @Override
@@ -161,6 +178,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
      * {@code null} is returned is there is no header.
      * <p>
      * {@link #PRIVACY_SENSITIVE} is returned is there is a null origin (RFC 6454 7.3, "privacy-sensitive" context)
+     * unless configured to be ignored.
      */
     public URI getSourceURI(HttpServletRequest request) {
         String source = request.getHeader(ORIGIN);
@@ -172,7 +190,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
         source = source.trim();
         if (ORIGIN_NULL.equals(source)) {
-            return PRIVACY_SENSITIVE;
+            return allowNullOrigin ? null : PRIVACY_SENSITIVE;
         }
         if (source.contains(" ")) {
             // RFC 6454 7.1 origin-list
