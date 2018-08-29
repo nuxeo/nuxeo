@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.cors">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows to disable strict CORS checks when a request has Origin: null.
+      This may happen for local files, or for a JavaScript-triggered redirect.
+      Setting this to true may expose the application to CSRF problems from files
+      locally hosted on the user's disk.
+
+      @since 10.3
+    </documentation>
+    <property name="nuxeo.cors.allowNullOrigin">false</property>
+  </extension>
+
+</component>
