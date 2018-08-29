@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -176,6 +177,9 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
                 }
                 jg.writeEndArray();
             }
+        } else if (list instanceof PartialList) {
+            PartialList<EntityType> partial = (PartialList<EntityType>) list;
+            jg.writeNumberField("totalSize", partial.totalSize());
         }
     }
 

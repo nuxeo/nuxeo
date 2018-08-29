@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
@@ -69,11 +71,11 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     @Override
     public Annotation getAnnotation(CoreSession session, String annotationId) {
-        DocumentRef commentRef = new IdRef(annotationId);
-        if (!session.exists(commentRef)) {
+        DocumentRef annotationRef = new IdRef(annotationId);
+        if (!session.exists(annotationRef)) {
             throw new IllegalArgumentException("The document " + annotationId + " does not exist.");
         }
-        DocumentModel annotationModel = session.getDocument(commentRef);
+        DocumentModel annotationModel = session.getDocument(annotationRef);
         Annotation annotation = new AnnotationImpl();
         Comments.documentModelToExternalAnnotation().accept(annotationModel, annotation);
         return annotation;
@@ -81,10 +83,11 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     @Override
     public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath) {
-        if (!session.exists(new IdRef(documentId))) {
+        DocumentRef docRef = new IdRef(documentId);
+        if (!session.exists(docRef)) {
             throw new IllegalArgumentException("The document " + documentId + " does not exist.");
         }
-        DocumentModel annotatedDoc = session.getDocument(new IdRef(documentId));
+        DocumentModel annotatedDoc = session.getDocument(docRef);
         return Framework.getService(CommentManager.class)
                         .getComments(annotatedDoc)
                         .stream()
@@ -139,11 +142,12 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @SuppressWarnings("unchecked")
-    protected DocumentModel getAnnotationModel(CoreSession session, String annotationId) {
+    protected DocumentModel getAnnotationModel(CoreSession session, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_ANNOTATION_PAGEPROVIDER_NAME, null, null, null, props, annotationId)).getCurrentPage();
+                GET_ANNOTATION_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), 1L, 0L, props,
+                entityId)).getCurrentPage();
         if (results.isEmpty()) {
             return null;
         }

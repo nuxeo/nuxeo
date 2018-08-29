@@ -76,30 +76,30 @@ public final class CommentsConstants {
      * @since 10.3
      */
     public static final String COMMENT_MODIFICATION_DATE = "comment:modificationDate";
+    // JSON constant part
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
+    /** @since 10.3 */
+    public static final String COMMENT_ENTITY_TYPE = "comment";
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMMENT_AUTHOR_FIELD = "author";
+    /** @since 10.3 */
+    public static final String COMMENTS_ENTITY_TYPE = "comments";
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMMENT_TEXT_FIELD = "text";
+    /** @since 10.3 */
+    public static final String COMMENT_ID_FIELD = "id";
 
-    /**
-     * @since 10.3
-     */
+    /** @since 10.3 */
     public static final String COMMENT_DOCUMENT_ID_FIELD = "documentId";
 
-    /**
-     * @since 10.3
-     */
+    /** @since 10.3 */
+    public static final String COMMENT_AUTHOR_FIELD = "author";
+
+    /** @since 10.3 */
+    public static final String COMMENT_TEXT_FIELD = "text";
+
+    /** @since 10.3 */
+    public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
+
+    /** @since 10.3 */
     public static final String COMMENT_MODIFICATION_DATE_FIELD = "modificationDate";
 
     private CommentsConstants() {

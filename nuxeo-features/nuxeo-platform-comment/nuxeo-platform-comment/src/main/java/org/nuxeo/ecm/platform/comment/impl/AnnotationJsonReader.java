@@ -19,28 +19,16 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
-import static org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
-
-import java.io.IOException;
-import java.time.Instant;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
+import static org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.impl.CommentJsonReader.fillCommentEntity;
 
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -55,29 +43,10 @@ public class AnnotationJsonReader extends EntityJsonReader<Annotation> {
     }
 
     @Override
-    protected Annotation readEntity(JsonNode jn) throws IOException {
-
+    protected Annotation readEntity(JsonNode jn) {
         Annotation annotation = new AnnotationImpl();
-
-        annotation.setAuthor(jn.get(COMMENT_AUTHOR_FIELD).textValue());
-        annotation.setText(jn.get(COMMENT_TEXT_FIELD).textValue());
-        annotation.setDocumentId(jn.get(COMMENT_DOCUMENT_ID_FIELD).textValue());
-        Instant creationDate = jn.get(COMMENT_CREATION_DATE_FIELD).textValue() != null
-                ? Instant.parse(jn.get(COMMENT_CREATION_DATE_FIELD).textValue()) : null;
-        annotation.setCreationDate(creationDate);
-        Instant modificationDate = jn.get(COMMENT_MODIFICATION_DATE_FIELD).textValue() != null
-                ? Instant.parse(jn.get(COMMENT_MODIFICATION_DATE_FIELD).textValue()) : null;
-        annotation.setModificationDate(modificationDate);
-
-        annotation.setId(jn.get(ANNOTATION_ID).textValue());
+        fillCommentEntity(jn, annotation);
         annotation.setXpath(jn.get(ANNOTATION_XPATH).textValue());
-
-        if (jn.has(EXTERNAL_ENTITY_ID)) {
-            ((ExternalEntity) annotation).setEntityId(jn.get(EXTERNAL_ENTITY_ID).textValue());
-            ((ExternalEntity) annotation).setOrigin(jn.get(EXTERNAL_ENTITY_ORIGIN).textValue());
-            ((ExternalEntity) annotation).setEntity(jn.get(EXTERNAL_ENTITY).textValue());
-        }
-
         return annotation;
     }
 

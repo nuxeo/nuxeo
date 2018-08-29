@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
@@ -32,12 +35,12 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +49,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -174,6 +179,13 @@ public class PropertyCommentManager implements CommentManager {
     @Override
     @SuppressWarnings("unchecked")
     public List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException {
+        return getComments(session, documentId, null, null);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
+            Long currentPageIndex) throws IllegalArgumentException {
         if (!session.exists(new IdRef(documentId))) {
             throw new IllegalArgumentException("The document " + documentId + " does not exist.");
         }
@@ -181,8 +193,10 @@ public class PropertyCommentManager implements CommentManager {
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = Collections.singletonMap(
                     CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) s);
-            List<DocumentModel> commentList = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, null, null, null, props, documentId)).getCurrentPage();
+            PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), pageSize,
+                    currentPageIndex, props, documentId);
+            List<DocumentModel> commentList = pageProvider.getCurrentPage();
             return commentList.stream().map(commentModel -> {
                 Comment comment = new CommentImpl();
                 comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
@@ -199,7 +213,7 @@ public class PropertyCommentManager implements CommentManager {
                             (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
                 }
                 return comment;
-            }).collect(Collectors.toList());
+            }).collect(collectingAndThen(toList(), list -> new PartialList<>(list, pageProvider.getResultsCount())));
         });
     }
 
@@ -233,5 +247,21 @@ public class PropertyCommentManager implements CommentManager {
             }
             s.removeDocument(commentRef);
         });
+    }
+
+    @Override
+    public Comment getExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public void updateExternalComment(CoreSession session, String entityId, Comment comment)
+            throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

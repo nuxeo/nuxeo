@@ -32,8 +32,6 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_XPATH_PROPERTY = "annotation:xpath";
 
-    public static final String ANNOTATION_ID = "uid";
-
     public static final String ANNOTATION_XPATH = "xpath";
 
 }

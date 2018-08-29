@@ -54,7 +54,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  * @author rux allow extending the service for the possible customizations. Some atomic actions are provided with
  *         default implementation but allowed for overwriting.
+ * @deprecated since 10.3, use {@link org.nuxeo.ecm.restapi.server.jaxrs.comment.CommentAdapter} instead.
  */
+@Deprecated
 @WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = { "Commentable" })
 public class CommentService extends DefaultAdapter {
 
