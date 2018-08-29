@@ -32,7 +32,8 @@ Nuxeo-Component: OSGI-INF/authentication-framework.xml,
  OSGI-INF/core-management-contrib.xml,
  OSGI-INF/locale-framework.xml,
  OSGI-INF/locale-default-contrib.xml,
- OSGI-INF/login-screen-config.xml
+ OSGI-INF/login-screen-config.xml,
+ OSGI-INF/cors-configuration.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.web.common;singleton:=true
 Import-Package: javax.faces.context,
  javax.security.auth,

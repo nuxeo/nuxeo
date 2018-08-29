@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.corscsrf.cors.nullorigin.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.cors.allowNullOrigin">true</property>
+  </extension>
+
+</component>
