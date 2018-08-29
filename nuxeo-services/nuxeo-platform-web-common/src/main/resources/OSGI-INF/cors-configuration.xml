@@ -10,7 +10,8 @@
 
       @since 10.3
     </documentation>
-    <property name="nuxeo.cors.allowNullOrigin">false</property>
+    <!-- default is true for 9.10 and earlier -->
+    <property name="nuxeo.cors.allowNullOrigin">true</property>
   </extension>
 
 </component>
