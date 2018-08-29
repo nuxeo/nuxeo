@@ -58,6 +58,7 @@ import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
@@ -300,7 +301,7 @@ public class TestNuxeoCorsCsrfFilter {
      * Browser sending an Origin header with a whitelisted browser-specific scheme.
      */
     @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
+    @LocalDeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testOriginFromBrowserExtension() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -317,7 +318,7 @@ public class TestNuxeoCorsCsrfFilter {
      * Browser sending the Origin header from another page which is allowed by CORS.
      */
     @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
+    @LocalDeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testMismatchPostButAllowedByCORS() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -335,7 +336,7 @@ public class TestNuxeoCorsCsrfFilter {
      * parts) when redirecting to a POST on the site (SAML login use case).
      */
     @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
+    @LocalDeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testMismatchPostFromBuggyBrowser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
