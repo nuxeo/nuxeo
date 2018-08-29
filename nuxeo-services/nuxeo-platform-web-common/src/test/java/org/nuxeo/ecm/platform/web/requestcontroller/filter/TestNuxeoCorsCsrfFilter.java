@@ -119,7 +119,7 @@ public class TestNuxeoCorsCsrfFilter {
 
     @Test
     public void testSourceURIOriginNullDefault() {
-        doTestSourceURIOriginNull(false);
+        doTestSourceURIOriginNull(true);
     }
 
     @Test
@@ -374,7 +374,7 @@ public class TestNuxeoCorsCsrfFilter {
 
     @Test
     public void testMismatchPostNullOriginDefault() throws Exception {
-        doTestMismatchPostNullOrigin(false);
+        doTestMismatchPostNullOrigin(true);
     }
 
     @Test
