@@ -23,6 +23,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
@@ -49,14 +51,19 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.search.core.InvalidSearchParameterException;
 import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchConstants;
 import org.nuxeo.ecm.platform.search.core.SavedSearchRequest;
 import org.nuxeo.ecm.platform.search.core.SavedSearchService;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -88,6 +95,16 @@ public class SearchObject extends QueryExecutor {
         return queryByLang(queryLanguage, queryParams);
     }
 
+    @Path("lang/{queryLanguage}/bulk")
+    public Object doBulkActionByLang(@Context UriInfo uriInfo, @PathParam("queryLanguage") String queryLanguage) {
+        if (!EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
+            throw new IllegalParameterException("invalid query language");
+        }
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String query = getQueryString(null, queryParams);
+        return newObject("bulkAction", query);
+    }
+
     @GET
     @Path("pp/{pageProviderName}/execute")
     public Object doQueryByPageProvider(@Context UriInfo uriInfo,
@@ -102,6 +119,14 @@ public class SearchObject extends QueryExecutor {
             throws IOException {
         return buildResponse(Response.Status.OK, MediaType.APPLICATION_JSON,
                 getPageProviderDefinition(pageProviderName));
+    }
+
+    @Path("pp/{pageProviderName}/bulk")
+    public Object doBulkActionByPageProvider(@PathParam("pageProviderName") String pageProviderName,
+            @Context UriInfo uriInfo) {
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String query = getQueryString(pageProviderName, queryParams);
+        return newObject("bulkAction", query);
     }
 
     @GET
@@ -142,6 +167,17 @@ public class SearchObject extends QueryExecutor {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(search).build();
+    }
+
+    @Path("saved/{id}/bulk")
+    public Object doBulkActionBySavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
+        SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
+        if (search == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String query = getQueryString(search.getPageProviderName(), queryParams);
+        return newObject("bulkAction", query);
     }
 
     @PUT
@@ -276,6 +312,63 @@ public class SearchObject extends QueryExecutor {
 
         return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo,
                 quickFilters, parameters, props, documentModel);
+    }
+
+    /**
+     * Retrieves the query string from the page provider and/or the query parameters.
+     * 
+     * @param pageProviderName the page provider name
+     * @param queryParams the query parameters
+     * @return the query string
+     */
+    protected String getQueryString(String pageProviderName, MultivaluedMap<String, String> queryParams) {
+
+        Properties namedParameters = getNamedParameters(queryParams);
+        List<QuickFilter> quickFilters = pageProviderName == null ? Collections.emptyList()
+                : getQuickFilters(pageProviderName, queryParams);
+        Object[] parameters = getParameters(queryParams);
+
+        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
+                pageProviderName, namedParameters);
+
+        if (pageProviderName == null) {
+            pageProviderName = SearchAdapter.pageProviderName;
+        }
+
+        String quickFiltersClause = "";
+        for (QuickFilter quickFilter : quickFilters) {
+            String clause = quickFilter.getClause();
+            if (!quickFiltersClause.isEmpty() && clause != null) {
+                quickFiltersClause = NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+            } else {
+                quickFiltersClause = StringUtils.defaultString(clause);
+            }
+        }
+
+        String query;
+        PageProviderDefinition def = Framework.getService(PageProviderService.class)
+                                              .getPageProviderDefinition(pageProviderName);
+        WhereClauseDefinition whereClause = def.getWhereClause();
+        if (whereClause == null) {
+            String originalPattern = def.getPattern();
+            if (originalPattern == null) {
+                originalPattern = getQuery(queryParams);
+            }
+            String pattern = quickFiltersClause.isEmpty() ? originalPattern
+                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
+                            ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                            : originalPattern + " WHERE " + quickFiltersClause;
+
+            query = NXQLQueryBuilder.getQuery(pattern, parameters, def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), searchDocumentModel, null);
+        } else {
+            if (searchDocumentModel == null) {
+                throw new NuxeoException(String.format(
+                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
+            }
+            query = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, parameters, null);
+        }
+        return query;
     }
 
 }

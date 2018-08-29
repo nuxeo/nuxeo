@@ -29,15 +29,11 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
+import org.nuxeo.ecm.core.bulk.BulkParameters;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -60,7 +56,7 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
 
         Map<String, Serializable> params = emptyMap();
         if (jn.has(COMMAND_PARAMS)) {
-            params = toMap(jn.get(COMMAND_PARAMS));
+            params = BulkParameters.paramsToMap(jn.get(COMMAND_PARAMS));
         }
 
         return new BulkCommand().withUsername(getter.apply(COMMAND_USERNAME))
@@ -68,48 +64,6 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
                                 .withQuery(getter.apply(COMMAND_QUERY))
                                 .withAction(getter.apply(COMMAND_ACTION))
                                 .withParams(params);
-    }
-
-    protected HashMap<String, Serializable> toMap(JsonNode node) {
-        // we declare variable and method return type as HashMap to be compliant with Serializable in params map
-        HashMap<String, Serializable> params = new HashMap<>();
-        Iterable<Map.Entry<String, JsonNode>> paramNodes = node::fields;
-        for (Map.Entry<String, JsonNode> paramNode : paramNodes) {
-            params.put(paramNode.getKey(), toSerializable(paramNode.getValue()));
-        }
-        return params;
-    }
-
-    protected ArrayList<Serializable> toList(JsonNode value) {
-        // we declare method return type as ArrayList to be compliant with Serializable in params map
-        // spliterator calls iterator which is a bridge method of JsonNode#elements
-        return StreamSupport.stream(value.spliterator(), false).map(this::toSerializable).collect(
-                Collectors.toCollection(ArrayList::new));
-    }
-
-    protected Serializable toSerializable(JsonNode value) {
-        Serializable serializableValue;
-        switch (value.getNodeType()) {
-        case STRING:
-        case BINARY: // binary will be converted to base64
-            serializableValue = value.asText();
-            break;
-        case BOOLEAN:
-            serializableValue = value.asBoolean();
-            break;
-        case NUMBER:
-            serializableValue = value.asLong();
-            break;
-        case ARRAY:
-            serializableValue = toList(value);
-            break;
-        case OBJECT:
-            serializableValue = toMap(value);
-            break;
-        default:
-            throw new NuxeoException("Node type=" + value.getNodeType() + " is not supported");
-        }
-        return serializableValue;
     }
 
 }
