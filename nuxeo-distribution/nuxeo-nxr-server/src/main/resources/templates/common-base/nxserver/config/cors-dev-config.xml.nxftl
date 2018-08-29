@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.cors.dev">
+
+<#if (org.nuxeo.dev)?? && "${org.nuxeo.dev}" == "true">
+  <!-- allow Origin: null in dev mode, for the benefit of browser extensions -->
+
+  <require>org.nuxeo.ecm.platform.ui.web.cors</require>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.cors.allowNullOrigin">true</property>
+  </extension>
+
+</#if>
+
+</component>

@@ -23,6 +23,7 @@ import static com.google.common.net.HttpHeaders.REFERER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -66,6 +67,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, MockitoFeature.class, LogFeature.class, LogCaptureFeature.class })
 @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = TestNuxeoCorsCsrfFilter.LOGGER_NAME)
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml")
+@Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/cors-configuration.xml")
 public class TestNuxeoCorsCsrfFilter {
 
     protected static final String LOGGER_NAME = "org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsCsrfFilter";
@@ -103,6 +105,7 @@ public class TestNuxeoCorsCsrfFilter {
     @Before
     public void setUp() throws Exception {
         filter = new NuxeoCorsCsrfFilter();
+        filter.init(null);
         chain = new DummyFilterChain();
     }
 
@@ -128,10 +131,32 @@ public class TestNuxeoCorsCsrfFilter {
     }
 
     @Test
-    public void testSourceURIOriginNull() {
+    public void testSourceURIOriginNullDefault() {
+        doTestSourceURIOriginNull(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-forbidden.xml")
+    public void testSourceURIOriginNullForbidden() throws Exception {
+        doTestMismatchPostNullOrigin(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-allowed.xml")
+    public void testSourceURIOriginNullAllowed() throws Exception {
+        doTestMismatchPostNullOrigin(true);
+    }
+
+    protected void doTestSourceURIOriginNull(boolean allowNullOrigin) {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(eq(ORIGIN))).thenReturn("null");
-        assertEquals("privacy-sensitive:///", filter.getSourceURI(request).toASCIIString());
+        URI uri = filter.getSourceURI(request);
+        if (allowNullOrigin) {
+            assertNull(uri);
+        } else {
+            assertNotNull(uri);
+            assertEquals("privacy-sensitive:///", uri.toASCIIString());
+        }
     }
 
     @Test
@@ -357,7 +382,24 @@ public class TestNuxeoCorsCsrfFilter {
      */
     @Test
     public void testMismatchPost() throws Exception {
-        doTestMismatchPost("http://attacker.com");
+        doTestMismatchPost("http://attacker.com", false);
+    }
+
+    @Test
+    public void testMismatchPostNullOriginDefault() throws Exception {
+        doTestMismatchPostNullOrigin(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-forbidden.xml")
+    public void testMismatchPostNullOriginForbidden() throws Exception {
+        doTestMismatchPostNullOrigin(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-allowed.xml")
+    public void testMismatchPostNullOriginAllowed() throws Exception {
+        doTestMismatchPostNullOrigin(true);
     }
 
     /**
@@ -366,13 +408,12 @@ public class TestNuxeoCorsCsrfFilter {
      * Per RFC 6454, 7.3: Whenever a user agent issues an HTTP request from a "privacy-sensitive" context, the user
      * agent MUST send the value "null" in the Origin header field.
      */
-    @Test
-    public void testMismatchPostNullOrigin() throws Exception {
-        doTestMismatchPost("null");
+    protected void doTestMismatchPostNullOrigin(boolean allowNullOrigin) throws Exception {
+        doTestMismatchPost("null", allowNullOrigin);
     }
 
     @SuppressWarnings("boxing")
-    public void doTestMismatchPost(String origin) throws Exception {
+    protected void doTestMismatchPost(String origin, boolean allowNullOrigin) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getMethod()).thenReturn("POST");
@@ -392,18 +433,22 @@ public class TestNuxeoCorsCsrfFilter {
             logFeature.restoreConsoleLog();
         }
 
-        assertFalse(chain.called);
-        assertNotNull(error.getValue());
-        Object[] arguments = error.getValue().getArguments();
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, arguments[0]); // 403
-        assertEquals("CSRF check failure", arguments[1]);
+        if ("null".equals(origin) && allowNullOrigin) {
+            assertTrue(chain.called);
+        } else {
+            assertFalse(chain.called);
+            assertNotNull(error.getValue());
+            Object[] arguments = error.getValue().getArguments();
+            assertEquals(HttpServletResponse.SC_FORBIDDEN, arguments[0]); // 403
+            assertEquals("CSRF check failure", arguments[1]);
 
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
-        assertFalse("Expected WARN", events.isEmpty());
-        String warn = events.get(events.size() - 1).getRenderedMessage();
-        String originInMessage = origin.equals("null") ? "privacy-sensitive:///" : origin;
-        assertEquals("CSRF check failure: source: " + originInMessage
-                + " does not match target: http://example.com:8080/ and not allowed by CORS config", warn);
+            List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+            assertFalse("Expected WARN", events.isEmpty());
+            String warn = events.get(events.size() - 1).getRenderedMessage();
+            String originInMessage = origin.equals("null") ? "privacy-sensitive:///" : origin;
+            assertEquals("CSRF check failure: source: " + originInMessage
+                    + " does not match target: http://example.com:8080/ and not allowed by CORS config", warn);
+        }
     }
 
 }
