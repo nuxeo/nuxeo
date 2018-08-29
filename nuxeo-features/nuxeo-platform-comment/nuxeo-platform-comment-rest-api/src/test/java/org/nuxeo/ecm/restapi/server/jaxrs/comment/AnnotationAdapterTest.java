@@ -17,7 +17,7 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.restapi.server;
+package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -64,12 +63,12 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.restapi.server.comment.test:OSGI-INF/comment-jena-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.restapi.server.comment")
+@Deploy("org.nuxeo.ecm.platform.comment.restapi")
+@Deploy("org.nuxeo.ecm.platform.comment.restapi.test:OSGI-INF/comment-jena-contrib.xml")
 @Deploy("org.nuxeo.ecm.relations.api")
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")
-public class AnnotationTest extends BaseTest {
+public class AnnotationAdapterTest extends BaseTest {
 
     @Inject
     protected AnnotationService annotationService;
@@ -110,7 +109,6 @@ public class AnnotationTest extends BaseTest {
         String xpath = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
-        Calendar now = Calendar.getInstance();
         annotation.setDocumentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
@@ -153,7 +151,7 @@ public class AnnotationTest extends BaseTest {
     }
 
     @Test
-    public void testDeleteAnnotation() throws IOException {
+    public void testDeleteAnnotation() {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
         String xpath = "files:files/0/file";
@@ -170,6 +168,7 @@ public class AnnotationTest extends BaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
                 "id/" + file.getId() + "/@annotation/" + annotation.getId())) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
             fetchInvalidations();
             assertFalse(session.exists(new IdRef(annotation.getId())));
         }
@@ -228,14 +227,14 @@ public class AnnotationTest extends BaseTest {
         assertEquals(2, node2.size());
         assertEquals(2, node3.size());
 
-        assertEquals(annotation1.getId(), node1.get(0).get("uid").textValue());
+        assertEquals(annotation1.getId(), node1.get(0).get("id").textValue());
 
-        List<String> node2List = Arrays.asList(node2.get(0).get("uid").textValue(),
-                node2.get(1).get("uid").textValue());
+        List<String> node2List = Arrays.asList(node2.get(0).get("id").textValue(),
+                node2.get(1).get("id").textValue());
         assertTrue(node2List.contains(annotation2.getId()));
         assertTrue(node2List.contains(annotation3.getId()));
-        List<String> node3List = Arrays.asList(node3.get(0).get("uid").textValue(),
-                node3.get(1).get("uid").textValue());
+        List<String> node3List = Arrays.asList(node3.get(0).get("id").textValue(),
+                node3.get(1).get("id").textValue());
         assertTrue(node3List.contains(annotation4.getId()));
         assertTrue(node3List.contains(annotation5.getId()));
     }
@@ -319,6 +318,7 @@ public class AnnotationTest extends BaseTest {
 
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
                 "id/" + file.getId() + "/@annotation/external/" + entityId)) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
             fetchInvalidations();
             assertFalse(session.exists(new IdRef(annotation.getId())));
         }

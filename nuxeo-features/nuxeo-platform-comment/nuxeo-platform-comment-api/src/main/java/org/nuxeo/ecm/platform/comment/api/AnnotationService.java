@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-
 import java.util.List;
+
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * Annotation API to perform CRUD operations on annotations.
@@ -83,6 +83,7 @@ public interface AnnotationService {
      * @param entityId the annotation entity id
      * @return the annotation
      * @throws IllegalArgumentException if no annotation was found with the given id
+     * @since 10.3
      */
     Annotation getExternalAnnotation(CoreSession session, String entityId) throws IllegalArgumentException;
 
@@ -92,6 +93,7 @@ public interface AnnotationService {
      * @param session the core session
      * @param entityId the annotation document model id
      * @param annotation the annotation containing the modifications
+     * @since 10.3
      */
     void updateExternalAnnotation(CoreSession session, String entityId, Annotation annotation)
             throws IllegalArgumentException;
@@ -102,6 +104,7 @@ public interface AnnotationService {
      * @param session the core session
      * @param entityId the annotation entity id
      * @throws IllegalArgumentException if no annotation was found with the given id
+     * @since 10.3
      */
     void deleteExternalAnnotation(CoreSession session, String entityId) throws IllegalArgumentException;
 

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-comment-rest-api-test
-Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server.comment.test;singleton:=true
+Bundle-Name: nuxeo-platform-comment-rest-api-test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.restapi.test;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
