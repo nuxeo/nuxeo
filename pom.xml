@@ -138,7 +138,8 @@
     <jaxb.version>2.3.0.1</jaxb.version>
     <tomcat.version>9.0.10</tomcat.version>
     <lucene.version>7.3.1</lucene.version>
-    <elasticsearch.version>6.3.0</elasticsearch.version>
+    <elasticsearch.version>6.3.0</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
+    <jna.version>4.5.2</jna.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -2113,12 +2114,30 @@
         <version>4.4.5</version>
       </dependency>
 
+      <!-- JNA, required by Elasticsearch and Chronicle Queue -->
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna-platform</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
 
       <!-- elasticsearch -->
       <dependency>
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
+        <exclusions>
+          <!-- use net.java.dev.jna:jna instead -->
+          <exclusion>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>jna</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.elasticsearch.client</groupId>
@@ -4899,7 +4918,7 @@
       <dependency>
         <groupId>net.openhft</groupId>
         <artifactId>chronicle-queue</artifactId>
-        <version>5.16.4</version>
+        <version>5.16.4</version> <!-- when changing this make sure JNA version is in sync -->
       </dependency>
       <dependency>
         <groupId>net.openhft</groupId>
@@ -5603,6 +5622,12 @@
                   <exclude>javax.el:el-api</exclude> <!-- use more recent org.apache.tomcat:tomcat-el-api instead -->
                 </excludes>
                 <message>javax.el:el-api must not be used, use org.apache.tomcat:tomcat-el-api instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.elasticsearch:jna</exclude> <!-- use official net.java.dev.jna:jna instead -->
+                </excludes>
+                <message>org.elasticsearch:jna must not be used, use net.java.dev.jna:jna instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
