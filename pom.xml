@@ -4955,7 +4955,7 @@
       <dependency>
         <groupId>com.beetstra.jutf7</groupId>
         <artifactId>jutf7</artifactId>
-        <version>1.0.</version>
+        <version>1.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
