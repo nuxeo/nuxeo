@@ -421,16 +421,24 @@ public class NXQLQueryBuilder {
                 // both min and max are not provided, ignore predicate
                 return "";
             }
-        } else if (operator.equals("IN")) {
+        } else if (operator.equals("IN") || operator.equals("NOT IN")) {
             List<String> options = getListValue(model, values[0]);
             if (options == null || options.isEmpty()) {
                 return "";
             } else if (options.size() == 1) {
-                return serializeUnary(parameter, "=", options.get(0));
+                if (operator.equals("NOT IN")) {
+                    return serializeUnary(parameter, "!=", options.get(0));
+                } else {
+                    return serializeUnary(parameter, "=", options.get(0));
+                }
             } else {
                 StringBuilder builder = new StringBuilder();
                 builder.append(parameter);
-                builder.append(" IN (");
+                if (operator.equals("NOT IN")) {
+                    builder.append(" NOT IN (");
+                } else {
+                    builder.append(" IN (");
+                }
                 for (int i = 0; i < options.size(); i++) {
                     if (i != 0) {
                         builder.append(", ");
