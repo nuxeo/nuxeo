@@ -61,6 +61,7 @@
     <nuxeo.web.ui.version>10.3-SNAPSHOT</nuxeo.web.ui.version>
     <nuxeo.jsf.to.web.ui.version>10.3-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
     <nuxeo.adobe.cc.version>10.3-SNAPSHOT</nuxeo.adobe.cc.version>
+    <nuxeo.wopi.version>10.3-SNAPSHOT</nuxeo.wopi.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>10.3-SNAPSHOT</nuxeo.sync.version>
@@ -130,6 +131,7 @@
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-adobe-connector</module>
+    <module>nuxeo-wopi</module>
   </modules>
 
   <dependencyManagement>
@@ -1126,12 +1128,24 @@
         <artifactId>nuxeo-audit-storage-directory</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
-      
+
       <!-- Adobe CC Connector -->
       <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-adobe-connector-core</artifactId>
         <version>${nuxeo.adobe.cc.version}</version>
+      </dependency>
+
+      <!-- WOPI -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-wopi</artifactId>
+        <version>${nuxeo.wopi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-wopi-web-ui</artifactId>
+        <version>${nuxeo.wopi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
