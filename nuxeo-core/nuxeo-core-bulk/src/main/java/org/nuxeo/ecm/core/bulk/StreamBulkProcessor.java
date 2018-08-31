@@ -246,9 +246,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            log.debug(String.format("Starting computation: %s, threshold: %dms",
-                    COUNTER_ACTION_NAME, counterThresholdMs));
-            context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
+            log.debug(String.format("Starting: %s, threshold: %dms", COUNTER_ACTION_NAME, counterThresholdMs));
         }
 
         @Override
@@ -264,16 +262,18 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
                 counters.clear();
                 context.askForCheckpoint();
             }
-            context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
         }
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
             BulkCounter counter = BulkCodecs.getBulkCounterCodec().decode(record.getData());
             String bulkId = counter.getBulkId();
-
+            boolean startTimer = counters.isEmpty();
             counters.computeIfPresent(bulkId, (k, processedDocs) -> processedDocs + counter.getProcessedDocuments());
             counters.putIfAbsent(bulkId, counter.getProcessedDocuments());
+            if (startTimer) {
+                context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
+            }
         }
 
         protected BulkStatus getStatusAndUpdate(KeyValueStore kvStore, String commandId, long processedDocs) {
