@@ -263,8 +263,8 @@ public class NuxeoRequestControllerFilter implements Filter {
     protected void addHeaders(HttpServletRequest request, HttpServletResponse response,
             RequestFilterConfig config) {
         addConfiguredHeaders(response);
-        if (request.getMethod().equals("GET") && config.isCached()) {
-            addCacheHeaders(response, config.isPrivate(), config.getCacheTime());
+        if (request.getMethod().equals("GET")) {
+            addCacheHeaders(response, config);
         }
     }
 
@@ -278,11 +278,15 @@ public class NuxeoRequestControllerFilter implements Filter {
         }
     }
 
-    protected void addCacheHeaders(HttpServletResponse response, boolean isPrivate, String cacheTime) {
-        String privateOrPublic = isPrivate ? "private" : "public";
-        response.setHeader("Cache-Control", privateOrPublic + ", max-age=" + cacheTime);
-        long expires = System.currentTimeMillis() + Long.parseLong(cacheTime) * 1000;
-        response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(expires));
+    protected void addCacheHeaders(HttpServletResponse response, RequestFilterConfig config) {
+        if (config.isCached()) {
+            String privateOrPublic = config.isPrivate() ? "private" : "public";
+            response.setHeader("Cache-Control", privateOrPublic + ", max-age=" + config.getCacheTime());
+            long expires = System.currentTimeMillis() + Long.parseLong(config.getCacheTime()) * 1000;
+            response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(expires));
+        } else if (config.isPrivate()) {
+            response.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+        }
     }
 
 }
