@@ -204,7 +204,7 @@ public class StreamBulkProcessor implements StreamProcessorTopology {
 
                         currentStatus.setScrollStartTime(scrollStartTime);
                         currentStatus.setScrollEndTime(scrollEndTime);
-                        currentStatus.setState(RUNNING);
+                        currentStatus.setState(documentCount == 0 ? COMPLETED : RUNNING);
                         currentStatus.setCount(documentCount);
                         context.produceRecord(KVWRITER_ACTION_NAME, commandId,
                                 BulkCodecs.getBulkStatusCodec().encode(currentStatus));

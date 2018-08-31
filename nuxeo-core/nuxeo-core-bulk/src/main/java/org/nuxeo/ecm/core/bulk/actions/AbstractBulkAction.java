@@ -76,14 +76,11 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         int size = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
-        int timer = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
-        return Topology
-                       .builder()
-                       .addComputation(() -> createComputation(size, timer), getIOs())
-                       .build();
+        int threshold = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
+        return Topology.builder().addComputation(() -> createComputation(size, threshold), getStreamMapping()).build();
     }
 
-    protected List<String> getIOs() {
+    protected List<String> getStreamMapping() {
         return Arrays.asList("i1:" + getActionName(), "o1:" + COUNTER_ACTION_NAME);
     }
 

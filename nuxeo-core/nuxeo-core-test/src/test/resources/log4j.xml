@@ -22,7 +22,6 @@
     </layout>
   </appender>
   
-    
   <category name="org.nuxeo.ecm.core.work.WorkQueuing">
     <priority value="TRACE"/>
     <appender-ref ref="FILE"/>
@@ -35,9 +34,6 @@
 
   <!-- Needed by TestTrashBackwardMechanism -->
   <logger name="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener">
-    <level value="DEBUG" />
-  </logger>
-  <logger name="org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener">
     <level value="DEBUG" />
   </logger>
 

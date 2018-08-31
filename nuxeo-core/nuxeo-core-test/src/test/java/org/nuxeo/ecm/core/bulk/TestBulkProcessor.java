@@ -36,7 +36,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreBulkFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 public class TestBulkProcessor {
 
     @Inject

@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.test;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,6 +58,8 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -75,10 +78,11 @@ public class TestTreeIndexing {
 
     private static final String IDX_NAME = "nxutest";
 
-    private static final String TYPE_NAME = "doc";
-
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected BulkService bulk;
 
     @Inject
     CoreSession session;
@@ -101,6 +105,7 @@ public class TestTreeIndexing {
      * Wait for async worker completion then wait for indexing completion
      */
     public void waitForCompletion() throws Exception {
+        bulk.await(Duration.ofSeconds(20));
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
@@ -398,6 +403,7 @@ public class TestTreeIndexing {
     }
 
     @Test
+    @Deploy("org.nuxeo.elasticsearch.core.test:dummy-bulk-login-config.xml")
     public void shouldReindexSubTreeInTrash() throws Exception {
         buildAndIndexTree();
         startTransaction();
@@ -406,7 +412,7 @@ public class TestTreeIndexing {
         Framework.getService(TrashService.class).trashDocument(session.getDocument(ref));
 
         TransactionHelper.commitOrRollbackTransaction();
-        // let the bulkTrashedStateChangeListener do its work
+        // let BAF do its work
         waitForCompletion();
         // 1 moved event which triggers 1 recurse command -> 8 commands
         // 8 trashed events -> 7 commands (one of trashed events is merged into the resulted command from moved event)

@@ -21,9 +21,7 @@ package org.nuxeo.ecm.core.api.trash;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -110,7 +108,9 @@ public interface TrashService {
      * <p>
      * Do nothing if the document current state is trashed.
      * <p>
-     * Placeless documents are deleted immediately.
+     * Proxies are removed.
+     * <p>
+     * Since 10.3, sublevels are trashed asynchronously using BAF.
      *
      * @param docs the documents to trash
      */
@@ -121,7 +121,9 @@ public interface TrashService {
      * <p>
      * Do nothing if the document current state is trashed.
      * <p>
-     * Placeless documents are deleted immediately.
+     * Proxies are removed.
+     * <p>
+     * Since 10.3, sublevels are trashed asynchronously using BAF.
      *
      * @param doc the document to trash
      * @since 10.1

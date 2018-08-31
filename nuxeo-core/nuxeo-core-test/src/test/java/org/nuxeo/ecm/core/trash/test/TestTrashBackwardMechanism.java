@@ -23,9 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -40,7 +37,6 @@ import org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener;
 import org.nuxeo.ecm.core.trash.PropertyTrashService;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
@@ -120,12 +116,10 @@ public class TestTrashBackwardMechanism {
 
     public static class BulkListenersFilter implements LogCaptureFeature.Filter {
 
-        protected final Set<String> bulkListenerNames = Stream.of(BulkLifeCycleChangeListener.class,
-                BulkTrashedStateChangeListener.class).map(Class::getName).collect(Collectors.toSet());
-
         @Override
         public boolean accept(LoggingEvent event) {
-            return Level.DEBUG.equals(event.getLevel()) && bulkListenerNames.contains(event.getLoggerName());
+            return Level.DEBUG.equals(event.getLevel())
+                    && event.getLoggerName().equals(BulkLifeCycleChangeListener.class.getName());
         }
     }
 
