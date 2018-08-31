@@ -108,7 +108,9 @@ public interface TrashService {
      * <p>
      * Do nothing if the document current state is trashed.
      * <p>
-     * Placeless documents are deleted immediately.
+     * Proxies are removed.
+     * <p>
+     * Since 10.3, sublevels are trashed asynchronously using BAF.
      *
      * @param docs the documents to trash
      */
@@ -119,7 +121,9 @@ public interface TrashService {
      * <p>
      * Do nothing if the document current state is trashed.
      * <p>
-     * Placeless documents are deleted immediately.
+     * Proxies are removed.
+     * <p>
+     * Since 10.3, sublevels are trashed asynchronously using BAF.
      *
      * @param doc the document to trash
      * @since 10.1

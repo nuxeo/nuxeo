@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dummy.bulk.login.es">
+
+  <implementation class="org.nuxeo.ecm.core.bulk.CoreBulkFeature$DummyLogin" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
+  </service>
+
+</component>

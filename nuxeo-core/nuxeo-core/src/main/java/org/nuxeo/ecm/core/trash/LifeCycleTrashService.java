@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 /**
  * @deprecated since 10.1, use {@link PropertyTrashService} instead.
  */
+@Deprecated
 public class LifeCycleTrashService extends AbstractTrashService {
 
     private static final Log log = LogFactory.getLog(LifeCycleTrashService.class);
