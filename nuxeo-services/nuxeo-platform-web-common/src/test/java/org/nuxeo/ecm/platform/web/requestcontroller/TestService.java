@@ -54,6 +54,7 @@ import com.thetransactioncompany.cors.Origin;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml",
+        "org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-contrib.xml",
         "org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-contrib-test.xml" })
 public class TestService {
 
@@ -158,10 +159,22 @@ public class TestService {
     @Test
     public void testHeadersContrib() throws Exception {
         Map<String, String> rh = requestControllerManager.getResponseHeaders();
-        assertEquals(2, rh.size());
+        assertEquals(7, rh.size());
         assertTrue(rh.containsKey("WWW-Authenticate"));
         assertEquals("basic", rh.get("WWW-Authenticate"));
         assertFalse(rh.containsKey("Warning"));
     }
 
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testAdminPatterns() {
+        RequestControllerService requestControllerService = (RequestControllerService) requestControllerManager;
+        RequestFilterConfig config = requestControllerService.computeConfigForRequest(
+                "/nuxeo/nxadmin/default/default-domain@view_admin?tabIds=NUXEO_ADMIN");
+        assertNotNull(config);
+        assertFalse(config.isCached());
+        assertTrue(config.isPrivate());
+    }
 }
