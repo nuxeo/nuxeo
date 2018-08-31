@@ -116,9 +116,7 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            getLog().debug(
-                    String.format("Starting computation: %s, size: %d, timer: %dms", metadata.name(), size, timer));
-            context.setTimer("timer", System.currentTimeMillis() + timer);
+            getLog().debug(String.format("Starting : %s, size: %d, timer: %dms", metadata.name(), size, timer));
         }
 
         @Override
@@ -134,22 +132,23 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
                 loadCurrentBulkCommandContext(commandId);
             }
             // process record
+            boolean startTimer = documentIds.isEmpty();
             documentIds.addAll(docIdsFrom(record));
             if (documentIds.size() >= size) {
                 processBatch(context);
+            } else if (startTimer && !documentIds.isEmpty()) {
+                context.setTimer("timer", System.currentTimeMillis() + timer);
             }
         }
 
         @Override
         public void processTimer(ComputationContext context, String key, long timestamp) {
             processBatch(context);
-            context.setTimer("timer", System.currentTimeMillis() + timer);
         }
 
         @Override
         public void destroy() {
-            getLog().debug(
-                    String.format("Destroy computation: %s, pending entries: %d", metadata.name(), documentIds.size()));
+            getLog().debug(String.format("Destroy: %s, pending entries: %d", metadata.name(), documentIds.size()));
         }
 
         protected Log getLog() {
