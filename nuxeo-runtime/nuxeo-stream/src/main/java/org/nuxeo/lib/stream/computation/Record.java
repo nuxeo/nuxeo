@@ -145,7 +145,8 @@ public class Record implements Externalizable {
         String overview = "";
         String wmDate = "";
         if (data != null && data.length > 0) {
-            overview = ", data=\"" + new String(data, StandardCharsets.UTF_8).substring(0, min(data.length, 127)) + '"';
+            String dataAsString = new String(data, StandardCharsets.UTF_8);
+            overview = ", data=\"" + dataAsString.substring(0, min(dataAsString.length(), 127)) + '"';
             overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
         }
         if (watermark > 0) {
