@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.DOC_BY_LEVEL;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
@@ -124,8 +125,8 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(10, status.getProcessed());
-        assertEquals(10, status.getTotal());
+        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(DOC_BY_LEVEL, status.getTotal());
 
         String url = Framework.getService(DownloadService.class).getDownloadUrl(command.getId());
         assertEquals(url, status.getResult().get("url"));
@@ -142,7 +143,8 @@ public class TestCSVExportAction {
         File file = getUnzipFile(command, blob);
 
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
-        assertEquals(11, lines.size());
+        // number of docs plus the header
+        assertEquals(DOC_BY_LEVEL + 1, lines.size());
 
         // Check header
         assertArrayEquals(new String[] { REPOSITORY_FIELD, UID_FIELD, PATH_FIELD, TYPE_FIELD, STATE_FIELD,
@@ -164,8 +166,8 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(10, status.getProcessed());
-        assertEquals(10, status.getTotal());
+        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(DOC_BY_LEVEL, status.getTotal());
 
         Blob blob = getBlob(command.getId());
         // file is ziped
@@ -206,11 +208,11 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command1.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(10, status.getProcessed());
+        assertEquals(DOC_BY_LEVEL, status.getProcessed());
 
         status = bulkService.getStatus(command2.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(10, status.getProcessed());
+        assertEquals(DOC_BY_LEVEL, status.getProcessed());
 
         Blob blob1 = getBlob(command1.getId());
         Blob blob2 = getBlob(command2.getId());
@@ -218,7 +220,7 @@ public class TestCSVExportAction {
         // this produce the exact same content
         HashCode hash1 = hash(getUnzipFile(command1, blob1));
         HashCode hash2 = hash(getUnzipFile(command2, blob2));
-        assertEquals(hash1,  hash2);
+        assertEquals(hash1, hash2);
     }
 
     @Test
@@ -230,44 +232,45 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(10, status.getProcessed());
-        assertEquals(10, status.getTotal());
+        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(DOC_BY_LEVEL, status.getTotal());
 
         Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
         File testZip = new File(dir.toFile(), "test.zip");
-        FileOutputStream out = new FileOutputStream(testZip);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
+        try (FileOutputStream out = new FileOutputStream(testZip)) {
+            HttpServletRequest request = mock(HttpServletRequest.class);
+            when(request.getMethod()).thenReturn("GET");
 
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        ServletOutputStream sos = new DummyServletOutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                out.write(b);
-            }
-        };
-        PrintWriter printWriter = new PrintWriter(sos);
-        when(response.getOutputStream()).thenReturn(sos);
-        when(response.getWriter()).thenReturn(printWriter);
+            HttpServletResponse response = mock(HttpServletResponse.class);
+            ServletOutputStream sos = new DummyServletOutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    out.write(b);
+                }
+            };
+            PrintWriter printWriter = new PrintWriter(sos);
+            when(response.getOutputStream()).thenReturn(sos);
+            when(response.getWriter()).thenReturn(printWriter);
 
-        String url = (String) status.getResult().get("url");
-        downloadService.handleDownload(request, response, null, url);
+            String url = (String) status.getResult().get("url");
+            downloadService.handleDownload(request, response, null, url);
+        }
 
         ZipUtils.unzip(testZip, dir.toFile());
         File csv = new File(dir.toFile(), command.getId() + ".csv");
         List<String> lines = Files.lines(csv.toPath()).collect(Collectors.toList());
-        assertEquals(11, lines.size());
+        // number of docs plus header
+        assertEquals(DOC_BY_LEVEL + 1, lines.size());
 
     }
 
     private HashCode hash(File file) throws IOException {
-        return com.google.common.io.Files
-                .asByteSource(file).hash(Hashing.sha256());
+        return com.google.common.io.Files.asByteSource(file).hash(Hashing.sha256());
     }
 
     protected BulkCommand createCommand() {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
                                                                          .build();
@@ -275,7 +278,7 @@ public class TestCSVExportAction {
 
     protected BulkCommand createCommandWithParams() {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
                                                                          .param("schemas",

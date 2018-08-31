@@ -30,6 +30,7 @@
     <action name="setProperties" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" bucketSize="100" batchSize="25" />
     <action name="csvExport" bucketSize="100" batchSize="50" />
+    <action name="removeProxy" bucketSize="100" batchSize="25" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
@@ -39,6 +40,10 @@
 
     <!-- SetSystemProperty processor -->
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
+
+    <!-- RemoveProxy processor -->
+    <streamProcessor name="removeProxy" class="org.nuxeo.ecm.core.bulk.action.RemoveProxyAction"
       logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
     <!-- CSV exporter processor -->

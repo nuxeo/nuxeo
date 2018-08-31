@@ -96,7 +96,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
@@ -2131,7 +2130,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 }
                 docModel = readModel(doc);
                 docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
-                docModel.putContextData(BulkTrashedStateChangeListener.SKIP_CHILDREN_PROCESSING_KEY, Boolean.TRUE);
                 if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
                     trashService.trashDocument(docModel);
                 } else {

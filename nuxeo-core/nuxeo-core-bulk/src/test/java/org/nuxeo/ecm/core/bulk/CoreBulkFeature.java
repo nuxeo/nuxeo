@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.time.Duration;
-
 import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
@@ -44,7 +42,7 @@ public class CoreBulkFeature implements RunnerFeature {
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class)
-              .addWaiter(deadline -> Framework.getService(BulkService.class).await(Duration.ofMinutes(1)));
+              .addWaiter(duration -> Framework.getService(BulkService.class).await(duration));
     }
 
 }

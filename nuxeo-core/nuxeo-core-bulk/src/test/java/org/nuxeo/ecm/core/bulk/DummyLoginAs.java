@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,11 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.runtime.api.login.LoginAs;
 
 /**
+ * Computation rely on Framework.loginAsUser(String username).
+ * <p>
+ * This Framework wrapper method relies on the LoginAs service, thus we have to provide an implementation that allows
+ * tests to be executed.
+ *
  * @since 10.3
  */
 public class DummyLoginAs implements LoginAs {

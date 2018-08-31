@@ -75,7 +75,7 @@ public class TestRunBulkAction {
     public void testSetPropertyActionFromAutomation() throws Exception {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
 
         String title = "test title";
         String description = "test description";
@@ -108,7 +108,7 @@ public class TestRunBulkAction {
 
         txFeature.nextTransaction();
 
-        for (DocumentModel child : session.getChildren(model.getRef())) {
+        for (DocumentModel child : session.query(nxql)) {
             assertEquals(title, child.getTitle());
             assertEquals(description, child.getPropertyValue("dc:description"));
             assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));

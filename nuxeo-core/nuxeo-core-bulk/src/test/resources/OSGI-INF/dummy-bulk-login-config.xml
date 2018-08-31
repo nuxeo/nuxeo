@@ -7,7 +7,12 @@
 
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
     <domain name="nuxeo-client-login">
-      <login-module code="org.nuxeo.runtime.api.login.SystemLoginModule" flag="required" />
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
+        <option name="password-stacking">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+    </domain>
+    <domain name="nuxeo-ecm-web">
       <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
         <option name="password-stacking">true</option>
         <option name="multi-threaded">true</option>
