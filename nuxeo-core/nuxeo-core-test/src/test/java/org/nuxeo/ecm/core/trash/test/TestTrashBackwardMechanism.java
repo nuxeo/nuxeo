@@ -18,29 +18,19 @@
  */
 package org.nuxeo.ecm.core.trash.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener;
 import org.nuxeo.ecm.core.trash.PropertyTrashService;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
@@ -90,43 +80,6 @@ public class TestTrashBackwardMechanism {
         assertTrue(session.isTrashed(doc.getRef()));
         Boolean isTrashed = session.getDocumentSystemProp(doc.getRef(), SYSPROP_IS_TRASHED, Boolean.class);
         assertTrue(isTrashed != null && isTrashed.booleanValue());
-    }
-
-    /*
-     * NXP-24883 For trash purpose, we have a listener to trash children. This was also the case when trashed state was
-     * deduced from lifecycle. Backward mechanism should triggers only one of the two listeners.
-     *
-     * This test relies on debug log present in the entry point of both listeners.
-     */
-    @Test
-    @LogCaptureFeature.FilterWith(BulkListenersFilter.class)
-    public void testMechanismTriggersOneListener() {
-        DocumentModel doc = session.createDocumentModel("/", "file001", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        // follow delete transition
-        session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
-
-        coreFeature.waitForAsyncCompletion();
-
-        // assert that only BulkLifeCycleChangeListener has been called
-        List<LogEvent> events = logCaptureResult.getCaughtEvents();
-        assertEquals(1, events.size());
-        LogEvent event = events.get(0);
-        assertEquals(BulkLifeCycleChangeListener.class.getName(), event.getLoggerName());
-        assertEquals("Processing lifecycle change in async listener", event.getMessage().getFormattedMessage());
-    }
-
-    public static class BulkListenersFilter implements LogCaptureFeature.Filter {
-
-        protected final Set<String> bulkListenerNames = Stream.of(BulkLifeCycleChangeListener.class,
-                BulkTrashedStateChangeListener.class).map(Class::getName).collect(Collectors.toSet());
-
-        @Override
-        public boolean accept(LogEvent event) {
-            return Level.DEBUG.equals(event.getLevel()) && bulkListenerNames.contains(event.getLoggerName());
-        }
     }
 
 }

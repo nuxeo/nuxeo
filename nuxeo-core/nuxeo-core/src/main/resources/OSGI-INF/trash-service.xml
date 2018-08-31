@@ -33,18 +33,4 @@
     <property name="org.nuxeo.isTrashed.from.deleteTransition">true</property>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <documentation>
-      Listener for trashed state change events.
-
-      If event occurs on a folder, it will recurse on children to perform the action if possible.
-    </documentation>
-    <listener name="bulkTrashedStateChangeListener" async="true" postCommit="true"
-              class="org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener">
-      <event>documentTrashed</event>
-      <event>documentUntrashed</event>
-    </listener>
-
-  </extension>
-
 </component>
