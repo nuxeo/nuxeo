@@ -134,6 +134,8 @@ public class NuxeoRequestControllerFilter implements Filter {
             boolean isCached = config.isCached();
             if (isCached) {
                 addCacheHeader(httpResponse, config.isPrivate(), config.getCacheTime());
+            } else if (config.isPrivate()) {
+                httpResponse.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
             }
         }
 
