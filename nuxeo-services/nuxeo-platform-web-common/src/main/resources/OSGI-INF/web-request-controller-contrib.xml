@@ -39,12 +39,16 @@
       <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
     </filterConfig>
 
+    <filterConfig name="nxadmin" cached="false" private="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/nxadmin/.*</pattern>
+    </filterConfig>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="responseHeaders">
     <header name="X-UA-Compatible">IE=10; IE=11</header>
-    <header name="Cache-Control">no-cache, no-store, must-revalidate</header>
+    <header name="Cache-Control">no-cache</header>
     <header name="X-Content-Type-Options">nosniff</header>
     <header name="X-XSS-Protection">1; mode=block</header>
     <header name="X-Frame-Options">${nuxeo.frame.options:=SAMEORIGIN}</header>
