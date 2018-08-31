@@ -107,6 +107,14 @@
       </whereClause>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="TEST_NOT_IN_INTEGERS">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="size" operator="NOT IN">
+          <field schema="advanced_search" name="integerlist" />
+        </predicate>
+      </whereClause>
+    </coreQueryPageProvider>
+
     <genericPageProvider name="TEST_AGGREGATES"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <pattern>
