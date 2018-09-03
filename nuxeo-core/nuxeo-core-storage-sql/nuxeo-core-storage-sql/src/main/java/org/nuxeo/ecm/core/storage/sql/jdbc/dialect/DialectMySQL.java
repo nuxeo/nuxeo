@@ -314,11 +314,7 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getTableTypeString(Table table) {
-        if (table.hasFulltextIndex()) {
-            return " ENGINE=MyISAM";
-        } else {
-            return " ENGINE=InnoDB";
-        }
+        return " ENGINE=InnoDB";
     }
 
     @Override
