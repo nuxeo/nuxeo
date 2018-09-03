@@ -592,4 +592,52 @@ public class TestDownloadService {
             assertTrue(url.matches(pattern));
         }
     }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
+    public void testDownloadLoggedIfNoByteRange() throws IOException {
+        doTestDownloadLoggedOrNot(null, "Hello World", 1); // logged
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
+    public void testDownloadLoggedIfByteRangeFromStart() throws IOException {
+        doTestDownloadLoggedOrNot("0-4", "Hello", 1); // logged
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
+    public void testDownloadNotLoggedIfByteRangeOther() throws IOException {
+        doTestDownloadLoggedOrNot("6-10", "World", 0); // not logged
+    }
+
+    protected void doTestDownloadLoggedOrNot(String range, String expectedResult, int expectedSize) throws IOException {
+        String blobValue = "Hello World";
+        Blob blob = Blobs.createBlob(blobValue);
+        blob.setFilename("myFile.txt");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        if (range != null) {
+            when(req.getHeader("Range")).thenReturn("bytes=" + range);
+        }
+
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(resp.getOutputStream()).thenReturn(sos);
+        when(resp.getWriter()).thenReturn(printWriter);
+
+        DummyDownloadListener.clear();
+        downloadService.downloadBlob(req, resp, null, null, blob, null, "test");
+
+        assertEquals(expectedResult, out.toString("UTF-8"));
+        assertEquals(expectedSize, DummyDownloadListener.getEvents().size());
+    }
+
 }

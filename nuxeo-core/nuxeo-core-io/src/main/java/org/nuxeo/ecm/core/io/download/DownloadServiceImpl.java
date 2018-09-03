@@ -551,7 +551,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             long contentLength = byteRange == null ? length : byteRange.getLength();
             response.setContentLengthLong(contentLength);
 
-            logDownload(doc, xpath, filename, reason, extendedInfos);
+            // log the download but not if it's a random byte range
+            if (byteRange == null || byteRange.getStart() == 0) {
+                logDownload(doc, xpath, filename, reason, extendedInfos);
+            }
 
             // execute the final download
             blobTransferer.accept(byteRange);
