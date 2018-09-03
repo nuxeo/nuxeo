@@ -168,7 +168,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     @Override
     public List<LogEntry> queryLogs(QueryBuilder builder) {
         // prepare parameters
-        Predicate predicate = builder.predicate();
+        MultiExpression predicate = builder.predicate();
         OrderByList orders = builder.orders();
         long offset = builder.offset();
         long limit = builder.limit();
@@ -184,11 +184,10 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         return buildLogEntries(iterable);
     }
 
-    protected Bson createFilter(Predicate andPredicate) {
+    protected Bson createFilter(MultiExpression andPredicate) {
         // cast parameters
         // current implementation only support a MultiExpression with AND operator
-        @SuppressWarnings("unchecked")
-        List<Predicate> predicates = (List<Predicate>) (List<?>) ((MultiExpression) andPredicate).values;
+        List<Predicate> predicates = andPredicate.predicates;
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
         getFieldName = getFieldName.andThen(this::getMongoDBKey);
@@ -402,7 +401,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     @Override
     public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // prepare parameters
-        Predicate predicate = builder.predicate();
+        MultiExpression predicate = builder.predicate();
         OrderByList orders = builder.orders();
 
         // create MongoDB filter

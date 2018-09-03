@@ -81,6 +81,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -149,7 +150,7 @@ public final class NxqlQueryConverter {
 
             @Override
             public void visitMultiExpression(MultiExpression node) {
-                for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
+                for (Iterator<Predicate> it = node.predicates.iterator(); it.hasNext();) {
                     it.next().accept(this);
                     if (it.hasNext()) {
                         node.operator.accept(this);

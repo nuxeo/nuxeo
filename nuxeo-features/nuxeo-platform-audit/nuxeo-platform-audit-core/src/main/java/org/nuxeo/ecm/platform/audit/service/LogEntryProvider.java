@@ -271,13 +271,11 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             log.debug("queryLogs() builder=" + builder);
         }
         // prepare parameters
-        Predicate andPredicate = builder.predicate();
+        MultiExpression multiExpression = builder.predicate();
         OrderByList orders = builder.orders();
         long offset = builder.offset();
         long limit = builder.limit();
-        // cast parameters
-        // current implementation only support a MultiExpression with AND operator
-        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
+        List<Predicate> predicates = multiExpression.predicates;
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
 
@@ -285,12 +283,13 @@ public class LogEntryProvider implements BaseLogEntryProvider {
 
         // add predicate clauses
         boolean firstFilter = true;
+        String op = multiExpression.operator == Operator.AND ? " AND" : " OR";
         for (Predicate predicate : predicates) {
             if (firstFilter) {
                 queryStr.append(" WHERE");
                 firstFilter = false;
             } else {
-                queryStr.append(" AND");
+                queryStr.append(op);
             }
             String leftName = getFieldName.apply(predicate.lvalue);
             queryStr.append(" log.")

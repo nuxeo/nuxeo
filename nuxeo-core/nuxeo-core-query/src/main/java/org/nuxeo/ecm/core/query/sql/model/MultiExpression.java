@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,17 +35,20 @@ public class MultiExpression extends Predicate {
 
     private static final long serialVersionUID = 1L;
 
-    public final List<Operand> values;
+    public final List<Predicate> predicates;
 
-    public MultiExpression(Operator operator, List<Operand> values) {
+    public MultiExpression(Operator operator, List<Predicate> predicates) {
         super(null, operator, null);
-        this.values = values;
+        this.predicates = predicates;
     }
 
-    @SuppressWarnings("unchecked")
-    public static MultiExpression fromExpressionList(Operator operator, List<Expression> list) {
-        // bypass variance, as we know we won't modify the list by putting arbitrary Operands in it
-        return new MultiExpression(operator, (List<Operand>) ((List<?>) list));
+    /**
+     * Copy constructor.
+     *
+     * @since 10.3
+     */
+    public MultiExpression(MultiExpression other) {
+        this(other.operator, new ArrayList<>(other.predicates));
     }
 
     @Override
@@ -57,9 +61,9 @@ public class MultiExpression extends Predicate {
         StringBuilder buf = new StringBuilder();
         buf.append(operator);
         buf.append('(');
-        for (Iterator<Operand> it = values.iterator(); it.hasNext();) {
-            Operand operand = it.next();
-            buf.append(operand.toString());
+        for (Iterator<Predicate> it = predicates.iterator(); it.hasNext();) {
+            Predicate predicate = it.next();
+            buf.append(predicate.toString());
             if (it.hasNext()) {
                 buf.append(", ");
             }
@@ -80,12 +84,12 @@ public class MultiExpression extends Predicate {
     }
 
     protected boolean equals(MultiExpression other) {
-        return values.equals(other.values) && super.equals(other);
+        return predicates.equals(other.predicates) && super.equals(other);
     }
 
     @Override
     public int hashCode() {
-        return values.hashCode() + super.hashCode();
+        return predicates.hashCode() + super.hashCode();
     }
 
 }

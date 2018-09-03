@@ -154,22 +154,22 @@ public class TestDBSQueryOptimizer {
         assertEquals("", info.prefix);
         assertEquals(0, info.count);
 
-        MultiExpression me0 = (MultiExpression) me.values.get(0);
+        MultiExpression me0 = (MultiExpression) me.predicates.get(0);
         info = (PrefixInfo) me0.getInfo();
         assertEquals("", info.prefix);
         assertEquals(0, info.count);
 
-        MultiExpression me1 = (MultiExpression) me.values.get(1);
+        MultiExpression me1 = (MultiExpression) me.predicates.get(1);
         info = (PrefixInfo) me1.getInfo();
         assertEquals("ecm:acp/*1", info.prefix);
         assertEquals(3, info.count);
 
-        Expression me10 = (Expression) me1.values.get(0);
+        Expression me10 = (Expression) me1.predicates.get(0);
         info = (PrefixInfo) me10.getInfo();
         assertEquals("ecm:acp/*1", info.prefix);
         assertEquals(1, info.count);
 
-        Expression me11 = (Expression) me1.values.get(1);
+        Expression me11 = (Expression) me1.predicates.get(1);
         info = (PrefixInfo) me11.getInfo();
         assertEquals("ecm:acp/*1/acl/*1", info.prefix);
         assertEquals(2, info.count);

@@ -231,7 +231,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder) {
         // prepare parameters
-        Predicate predicate = builder.predicate();
+        MultiExpression predicate = builder.predicate();
         OrderByList orders = builder.orders();
         long offset = builder.offset();
         long limit = builder.limit();
@@ -277,7 +277,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return logEntries;
     }
 
-    protected SearchSourceBuilder createSearchRequestSource(Predicate predicate, OrderByList orders) {
+    protected SearchSourceBuilder createSearchRequestSource(MultiExpression predicate, OrderByList orders) {
         // create ES query builder
         QueryBuilder query = createQueryBuilder(predicate);
 
@@ -289,11 +289,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return source;
     }
 
-    protected QueryBuilder createQueryBuilder(Predicate andPredicate) {
+    protected QueryBuilder createQueryBuilder(MultiExpression andPredicate) {
         // cast parameters
         // current implementation only support a MultiExpression with AND operator
-        @SuppressWarnings("unchecked")
-        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
+        List<Predicate> predicates = andPredicate.predicates;
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
 
@@ -761,7 +760,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     public ScrollResult<String> scroll(org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder, int batchSize,
             int keepAliveSeconds) {
         // prepare parameters
-        Predicate predicate = builder.predicate();
+        MultiExpression predicate = builder.predicate();
         OrderByList orders = builder.orders();
 
         // create source

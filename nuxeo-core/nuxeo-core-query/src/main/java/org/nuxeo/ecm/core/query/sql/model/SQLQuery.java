@@ -102,8 +102,8 @@ public class SQLQuery implements ASTNode {
         offset = other.offset;
     }
 
-    public SQLQuery withWhereExpression(Expression whereExpression) {
-        return new SQLQuery(select, from, new WhereClause(whereExpression), groupBy, having, orderBy, limit, offset);
+    public SQLQuery withPredicate(Predicate predicate) {
+        return new SQLQuery(select, from, new WhereClause(predicate), groupBy, having, orderBy, limit, offset);
     }
 
     public SelectClause getSelectClause() {

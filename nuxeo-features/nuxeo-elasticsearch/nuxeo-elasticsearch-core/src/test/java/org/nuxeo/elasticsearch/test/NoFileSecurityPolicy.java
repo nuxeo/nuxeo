@@ -83,7 +83,7 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
             } else {
                 predicate = NO_FILE;
             }
-            return query.withWhereExpression(predicate);
+            return query.withPredicate(predicate);
         }
     }
 }

@@ -25,12 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
-import org.nuxeo.ecm.core.query.sql.model.Operand;
-import org.nuxeo.ecm.core.query.sql.model.Operator;
-import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.Predicate;
 
 /**
  * Query builder for a query, including ordering, limit and offset.
@@ -39,49 +33,81 @@ import org.nuxeo.ecm.core.query.sql.model.Predicate;
  */
 public class QueryBuilder {
 
-    /**
-     * Here filter is a {@link MultiExpression} with operator AND by design.
-     */
     protected MultiExpression filter;
 
     protected OrderByList orders;
 
-    protected long offset = 0;
+    protected long offset;
 
-    // By default retrieve all results
-    protected long limit = 0;
+    protected long limit;
+
+    protected boolean countTotal;
 
     public QueryBuilder() {
         filter = new MultiExpression(Operator.AND, new ArrayList<>());
-        orders = new OrderByList(null); // stupid constructor
-        orders.clear();
+        orders = new OrderByList();
     }
 
-    public Predicate predicate() {
+    /** Copy constructor. */
+    public QueryBuilder(QueryBuilder other) {
+        filter = new MultiExpression(other.filter);
+        orders = new OrderByList(other.orders);
+        offset = other.offset;
+        limit = other.limit;
+        countTotal = other.countTotal;
+    }
+
+    public MultiExpression predicate() {
         return filter;
     }
 
     /**
      * Adds a new predicate to the list of AND predicates.
      */
-    public QueryBuilder addAndPredicate(Predicate predicate) {
-        filter.values.add(predicate);
+    public QueryBuilder and(Predicate predicate) {
+        if (filter.predicates.isEmpty()) {
+            throw new IllegalStateException("Cannot AND without a first predicate");
+        }
+        if (filter.operator != Operator.AND) {
+            if (filter.predicates.size() == 1) {
+                filter = new MultiExpression(Operator.AND, filter.predicates);
+            } else {
+                throw new IllegalStateException("Not an AND MultiExpression");
+            }
+        }
+        return predicate(predicate);
+    }
+
+    /**
+     * Adds a new predicate to the list of OR predicates.
+     */
+    public QueryBuilder or(Predicate predicate) {
+        if (filter.predicates.isEmpty()) {
+            throw new IllegalStateException("Cannot OR without a first predicate");
+        }
+        if (filter.operator != Operator.OR) {
+            if (filter.predicates.size() == 1) {
+                filter = new MultiExpression(Operator.OR, filter.predicates);
+            } else {
+                throw new IllegalStateException("Not an OR MultiExpression");
+            }
+        }
+        return predicate(predicate);
+    }
+
+    /**
+     * Adds a new predicate to the list.
+     */
+    public QueryBuilder predicate(Predicate predicate) {
+        filter.predicates.add(predicate);
         return this;
     }
 
     /**
-     * Sets the predicates to use when querying audit. Filters are composed with an AND operator.
+     * Sets the filter.
      */
-    public QueryBuilder predicates(Predicate filter, Predicate... filters) {
-        return predicates(Stream.concat(Stream.of(filter), Stream.of(filters)).collect(Collectors.toList()));
-    }
-
-    /**
-     * Sets the predicates to use when querying audit. Filters are composed with an AND operator.
-     */
-    @SuppressWarnings("unchecked")
-    public QueryBuilder predicates(List<Predicate> filters) {
-        this.filter = new MultiExpression(Operator.AND, (List<Operand>) ((List<?>) filters));
+    public QueryBuilder filter(MultiExpression filter) {
+        this.filter = new MultiExpression(filter);
         return this;
     }
 
@@ -100,7 +126,7 @@ public class QueryBuilder {
      * Adds a new order to this query builder.
      */
     public QueryBuilder order(OrderByExpr order) {
-       this.orders.add(order);
+        this.orders.add(order);
         return this;
     }
 
@@ -135,6 +161,22 @@ public class QueryBuilder {
 
     public QueryBuilder limit(long limit) {
         this.limit = limit;
+        return this;
+    }
+
+    /**
+     * May be used by <b>supported APIs</b> to include in the query result a count of total results if there was no
+     * limit or offset.
+     * <p>
+     * If {@code true}, requests computation of the total size of the underlying list (the size if there was no limit or
+     * offset), otherwise when {@code false} does a best effort but may return {@code -2} when unknown
+     */
+    public boolean countTotal() {
+        return countTotal;
+    }
+
+    public QueryBuilder countTotal(boolean countTotal) {
+        this.countTotal = countTotal;
         return this;
     }
 

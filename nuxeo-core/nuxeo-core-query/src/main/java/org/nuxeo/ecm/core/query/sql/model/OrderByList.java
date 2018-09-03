@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +28,23 @@ import java.util.stream.Collectors;
 public class OrderByList extends ArrayList<OrderByExpr> implements Operand {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Empty constructor.
+     *
+     * @since 10.3
+     */
+    public OrderByList() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @since 10.3
+     */
+    public OrderByList(List<OrderByExpr> other) {
+        super(other);
+    }
 
     public OrderByList(OrderByExpr expr) {
         add(expr);

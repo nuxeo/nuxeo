@@ -106,8 +106,8 @@ public class DefaultQueryVisitor implements IVisitor {
 
     @Override
     public void visitMultiExpression(MultiExpression node) {
-        for (Operand operand : node.values) {
-            operand.accept(this);
+        for (Predicate predicate : node.predicates) {
+            predicate.accept(this);
         }
     }
 

@@ -419,8 +419,8 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         // create builder
         QueryBuilder builder = new AuditQueryBuilder();
         // create predicates
-        builder.addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid));
-        filterMap.values().stream().map(this::convert).forEach(builder::addAndPredicate);
+        builder.predicate(Predicates.eq(LOG_DOC_UUID, uuid));
+        filterMap.values().stream().map(this::convert).forEach(builder::and);
         if (doDefaultSort) {
             builder.defaultOrder();
         }
@@ -453,23 +453,23 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         QueryBuilder builder = new AuditQueryBuilder();
         if (ArrayUtils.isNotEmpty(eventIds)) {
             if (eventIds.length == 1) {
-                builder.addAndPredicate(Predicates.eq(LOG_EVENT_ID, eventIds[0]));
+                builder.predicate(Predicates.eq(LOG_EVENT_ID, eventIds[0]));
             } else {
-                builder.addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds[0]));
+                builder.predicate(Predicates.in(LOG_EVENT_ID, eventIds[0]));
             }
         }
         if (ArrayUtils.isNotEmpty(categories)) {
             if (categories.length == 1) {
-                builder.addAndPredicate(Predicates.eq(LOG_CATEGORY, categories[0]));
+                builder.predicate(Predicates.eq(LOG_CATEGORY, categories[0]));
             } else {
-                builder.addAndPredicate(Predicates.in(LOG_CATEGORY, categories[0]));
+                builder.predicate(Predicates.in(LOG_CATEGORY, categories[0]));
             }
         }
         if (path != null) {
-            builder.addAndPredicate(Predicates.eq(LOG_DOC_PATH, path));
+            builder.predicate(Predicates.eq(LOG_DOC_PATH, path));
         }
         if (limit != null) {
-            builder.addAndPredicate(Predicates.lt(LOG_EVENT_DATE, limit));
+            builder.predicate(Predicates.lt(LOG_EVENT_DATE, limit));
         }
         builder.offset(pageNb * pageSize).limit(pageSize);
         return queryLogs(builder);
@@ -477,22 +477,20 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     @Override
     public long getLatestLogId(String repositoryId, String... eventIds) {
-        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
-                Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
-                                                           .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
-                                                           .order(OrderByExprs.desc(LOG_ID))
-                                                           .limit(1);
+        QueryBuilder builder = new AuditQueryBuilder().predicate(Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                      .and(Predicates.in(LOG_EVENT_ID, eventIds))
+                                                      .order(OrderByExprs.desc(LOG_ID))
+                                                      .limit(1);
         return queryLogs(builder).stream().mapToLong(LogEntry::getId).findFirst().orElse(0L);
     }
 
     @Override
     public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds) {
-        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
-                Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
-                                                           .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
-                                                           .addAndPredicate(Predicates.gte(LOG_ID, logIdOffset))
-                                                           .order(OrderByExprs.asc(LOG_ID))
-                                                           .limit(limit);
+        QueryBuilder builder = new AuditQueryBuilder().predicate(Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                      .and(Predicates.in(LOG_EVENT_ID, eventIds))
+                                                      .and(Predicates.gte(LOG_ID, logIdOffset))
+                                                      .order(OrderByExprs.asc(LOG_ID))
+                                                      .limit(limit);
         return queryLogs(builder);
     }
 

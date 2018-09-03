@@ -49,9 +49,9 @@ public interface AuditReader {
      * @since 8.4
      */
     default List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        return queryLogs(
-                new AuditQueryBuilder().predicates(Predicates.eq(LOG_DOC_UUID, uuid),
-                        Predicates.eq(LOG_REPOSITORY_ID, repositoryId)).defaultOrder());
+        return queryLogs(new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, uuid))
+                                                .and(Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                .defaultOrder());
     }
 
     /**
@@ -64,7 +64,7 @@ public interface AuditReader {
     @Deprecated
     default List<LogEntry> getLogEntriesFor(String uuid) {
         return queryLogs(
-                new AuditQueryBuilder().predicates(Predicates.eq(LOG_DOC_UUID, uuid))
+                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, uuid))
                                        .defaultOrder());
     }
 

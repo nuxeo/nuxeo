@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -885,9 +886,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         sb.append(selectClause);
         sb.append(" WHERE ");
         if (expression instanceof MultiExpression) {
-            for (Iterator<Operand> it = ((MultiExpression) expression).values.iterator(); it.hasNext();) {
-                Operand operand = it.next();
-                sb.append(operand.toString());
+            for (Iterator<Predicate> it = ((MultiExpression) expression).predicates.iterator(); it.hasNext();) {
+                Predicate predicate = it.next();
+                sb.append(predicate.toString());
                 if (it.hasNext()) {
                     sb.append(" AND ");
                 }
