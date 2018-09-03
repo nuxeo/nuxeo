@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.TestSQLRepositoryFulltextConfig.IgnoreNonVCSAndMySQL;
+import org.nuxeo.ecm.core.TestSQLRepositoryFulltextConfig.IgnoreNonVCS;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,20 +49,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.reload")
-@ConditionalIgnoreRule.Ignore(condition = IgnoreNonVCSAndMySQL.class)
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonVCS.class)
 public class TestSQLRepositoryFulltextConfig {
 
-    public static class IgnoreNonVCSAndMySQL implements Condition {
+    public static class IgnoreNonVCS implements Condition {
 
         @Inject
         protected CoreFeature coreFeature;
 
         @Override
         public boolean shouldIgnore() {
-            return !coreFeature.getStorageConfiguration().isVCS()
-                    // MySQL fulltext is funky with respect to what words it finds in small databases
-                    // so don't bother testing on MySQL, this is mostly a configuration test anyway
-                    || coreFeature.getStorageConfiguration().isVCSMySQL();
+            return !coreFeature.getStorageConfiguration().isVCS();
         }
 
     }
