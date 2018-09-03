@@ -29,6 +29,7 @@ import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Nuxeo Runtime Component used to wrap nuxeo-connect-client services as Nuxeo Services.
@@ -39,6 +40,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author tiry
  */
 public class ConnectClientComponent extends DefaultComponent {
+
+    /**
+     * Name of the {@link ConfigurationService} property used to disable Studio snapshot package validation.
+     *
+     * @since 10.3
+     */
+    public static final String STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY = "studio.snapshot.disablePkgValidation";
 
     @Override
     public void activate(ComponentContext context) {

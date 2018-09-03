@@ -48,7 +48,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.connect.client.ConnectClientComponent;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
@@ -287,7 +287,7 @@ public class AppCenterViewsManager implements Serializable {
      */
     protected boolean shouldValidateStudioSnapshot() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue("studio.snapshot.disablePkgValidation")) {
+        if (cs.isBooleanPropertyTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
             return false;
         }
         return Boolean.TRUE.equals(getValidateStudioSnapshot());
