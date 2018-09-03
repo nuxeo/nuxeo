@@ -17,6 +17,21 @@
     ]
   },
   {
+    "path": "/search/lang/{queryLanguage}/bulk/{actionId}",
+    "description": "Executes bulk action.",
+    "operations" : [
+      {
+        "method":"POST",
+        "nickname":"querybulk",
+        "type":"bulkstatus",
+    <@params names = ["queryLanguage", "query","queryParams","actionId","bulkParameters"]/>,
+        "summary":"Performs a bulk action on the query result.",
+        "notes": "You can have also named parameters in the query. See http://doc.nuxeo.com/x/qAc5AQ",
+    <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+  {
     "path": "/search/pp/{providerName}/execute",
     "description": "Executes a page provider.",
     "operations" : [
@@ -28,6 +43,21 @@
         "summary":"Perform Named Page Provider on the repository",
         "notes": "You can have also named parameters in the query. See http://doc.nuxeo.com/x/qAc5AQ",
         <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+  {
+    "path": "/search/pp/{providerName}/bulk/{actionId}",
+    "description": "Executes bulk action.",
+    "operations" : [
+      {
+        "method":"POST",
+        "nickname":"pageproviderbulk",
+        "type":"bulkstatus",
+    <@params names = ["providerName","queryParams","actionId","bulkParameters"]/>,
+        "summary":"Performs a bulk action on the query result.",
+        "notes": "You can have also named parameters in the query. See http://doc.nuxeo.com/x/qAc5AQ",
+    <#include "views/doc/errorresponses.ftl"/>
       }
     ]
   },
@@ -107,6 +137,20 @@
         <@params names = ["searchId","pageSize","currentPageIndex","offset","maxResults","sortBy","sortOrder"]/>,
         "summary":"Executes saved searches, returning its results.",
         <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+  {
+    "path": "/search/saved/{searchId}/bulk/{actionId}",
+    "description": "Executes a bulk action.",
+    "operations" : [
+      {
+        "method":"POST",
+        "nickname":"savedsearchbulk",
+        "type":"bulkstatus",
+    <@params names = ["searchId","actionId","bulkParameters"]/>,
+        "summary":"Performs a bulk action on the saved search result.",
+    <#include "views/doc/errorresponses.ftl"/>
       }
     ]
   }
