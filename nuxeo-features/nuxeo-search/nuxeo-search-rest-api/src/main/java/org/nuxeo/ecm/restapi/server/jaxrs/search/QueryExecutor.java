@@ -285,7 +285,10 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         if (queryLanguage == null || !EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
             throw new IllegalParameterException("invalid query language");
         }
+        return queryByLang(queryParams);
+    }
 
+    protected DocumentModelList queryByLang(MultivaluedMap<String, String> queryParams) {
         String query = getQuery(queryParams);
         Long pageSize = getPageSize(queryParams);
         Long currentPageIndex = getCurrentPageIndex(queryParams);
