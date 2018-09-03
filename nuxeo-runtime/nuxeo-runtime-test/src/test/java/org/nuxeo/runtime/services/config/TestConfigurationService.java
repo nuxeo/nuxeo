@@ -113,4 +113,20 @@ public class TestConfigurationService {
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
     }
 
+    /**
+     * @since 10.3
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testMerge() throws Exception {
+        assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.anotherDummyStringProperty"));
+        // Deploy another contrib merging existing and overriding properties
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-merge-contrib.xml");
+        // Assert new property was merged
+        assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        // Assert new property was not merged
+        assertEquals("anotherNotMergedValue", cs.getProperty("nuxeo.test.anotherDummyStringProperty"));
+    }
+
 }

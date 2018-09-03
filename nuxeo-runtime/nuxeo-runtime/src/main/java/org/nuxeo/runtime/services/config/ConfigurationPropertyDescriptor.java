@@ -19,8 +19,10 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for JSF configuration contributions.
@@ -28,10 +30,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.4
  */
 @XObject("property")
-public class ConfigurationPropertyDescriptor {
+public class ConfigurationPropertyDescriptor implements Descriptor {
+
+    public static final String SEPARATOR = ",";
 
     @XNode("@name")
     protected String name;
+
+    @XNode("@append")
+    public boolean append;
 
     @XNode
     protected String value;
@@ -49,10 +56,31 @@ public class ConfigurationPropertyDescriptor {
         ConfigurationPropertyDescriptor clone = new ConfigurationPropertyDescriptor();
         clone.name = name;
         clone.value = value;
+        clone.append = append;
         return clone;
     }
 
-    public void merge(ConfigurationPropertyDescriptor other) {
-        value = other.value;
+    @Override
+    public Descriptor merge(Descriptor o) {
+        ConfigurationPropertyDescriptor other = (ConfigurationPropertyDescriptor) o;
+        if (other.append) {
+            ConfigurationPropertyDescriptor merged = new ConfigurationPropertyDescriptor();
+            merged.append = other.append;
+            merged.name = other.name != null ? other.name : name;
+            if (StringUtils.isNotEmpty(value)) {
+                merged.value = value + SEPARATOR + other.value;
+            } else {
+                merged.value = other.value;
+            }
+            return merged;
+        } else {
+            return other;
+        }
     }
+
+    @Override
+    public String getId() {
+        return getName();
+    }
+
 }

@@ -23,8 +23,11 @@ package org.nuxeo.runtime.services.config;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 7.4
@@ -35,7 +38,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     public static final String CONFIGURATION_EP = "configuration";
 
-    protected ConfigurationPropertyRegistry registry = new ConfigurationPropertyRegistry();
+    public static final String COMPONENT_NAME = "org.nuxeo.runtime.config";
 
     @Override
     public String getProperty(String key) {
@@ -44,10 +47,12 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        if (registry.hasProperty(key)) {
-            return registry.getProperty(key);
+        Descriptor desc = getDescriptor(CONFIGURATION_EP, key);
+        if (desc == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        String value = ((ConfigurationPropertyDescriptor) getDescriptor(CONFIGURATION_EP, key)).getValue();
+        return value != null ? value : defaultValue;
     }
 
     @Override
@@ -65,15 +70,28 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            registry.addContribution((ConfigurationPropertyDescriptor) contribution);
+            ConfigurationPropertyDescriptor configurationPropertyDescriptor = (ConfigurationPropertyDescriptor) contribution;
+            String key = configurationPropertyDescriptor.getName();
+            if (Framework.getProperties().containsKey(key)) {
+                String message = "Property '" + key + "' should now be contributed to extension "
+                        + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
+                DeprecationLogger.log(message, "7.4");
+                Framework.getRuntime().getMessageHandler().addWarning(message);
+            }
+            super.registerContribution(contribution, extensionPoint, contributor);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            registry.removeContribution((ConfigurationPropertyDescriptor) contribution);
+            super.unregisterContribution(contribution, extensionPoint, contributor);
         }
+    }
+
+    @Override
+    protected String getName() {
+        return COMPONENT_NAME;
     }
 
 }

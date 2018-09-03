@@ -5,6 +5,7 @@
     <property name="nuxeo.test.dummyBooleanProperty">true</property>
     <property name="nuxeo.test.anotherDummyBooleanProperty">false</property>
     <property name="nuxeo.test.dummyStringProperty">dummyValue</property>
+    <property name="nuxeo.test.anotherDummyStringProperty">anotherDummyValue</property>
 
   </extension>
 
