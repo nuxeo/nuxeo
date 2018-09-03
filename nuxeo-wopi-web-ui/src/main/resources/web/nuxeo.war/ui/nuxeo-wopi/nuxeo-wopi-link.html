@@ -1,0 +1,102 @@
+<!--
+(C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
+Licensed under the Apache License, Version 2.0 (the 'License');
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+​
+    http://www.apache.org/licenses/LICENSE-2.0
+​
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an 'AS IS' BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+Contributors:
+  Thomas Roger <troger@nuxeo.com>
+-->
+
+<!--
+`nuxeo-wopi-link`
+@group Nuxeo UI
+@element nuxeo-wopi-link
+-->
+<dom-module id="nuxeo-wopi-link">
+  <template>
+    <style include="iron-flex iron-flex-alignment">
+      :host {
+        display: inline-block;
+      }
+    </style>
+
+    <template is="dom-if" if="[[_isAvailable(blob)]]">
+      <a href="[[_wopiURL(document, blob, xpath)]]" tabindex="-1" target="_blank">
+        <paper-icon-button src="[[_wopiIcon(blob)]]" id="wopiLink"></paper-icon-button>
+      </a>
+      <paper-tooltip for="wopiLink">[[_wopiTooltip(blob)]]</paper-tooltip>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-wopi-link',
+
+      behaviors: [Nuxeo.I18nBehavior],
+
+      properties: {
+        document: Object,
+        blob: Object,
+        xpath: String,
+      },
+
+      appsToSupportedExtensions: {
+        word: ['doc', 'docm', 'docx', 'dot', 'dotm', 'odt', 'rtf', 'wopitest'],
+        excel: ['csv', 'ods', 'xls', 'xlsb', 'xlsm', 'xlsx'],
+        powerpoint: ['odp', 'pot', 'potm', 'potx', 'pps', 'ppsm', 'ppsx', 'ppt', 'pptm', 'pptx'],
+      },
+
+      _isAvailable: function(blob) {
+        if (!blob) {
+          return false;
+        }
+        return this._getWopiApp(blob) !== null;
+      },
+
+      _getWopiApp(blob) {
+        var keys = Object.keys(this.appsToSupportedExtensions);
+        for (var i = 0; i < keys.length; i++) {
+          for (var j = 0; j < this.appsToSupportedExtensions[keys[i]].length; j++) {
+            if (blob.name.endsWith('.' + this.appsToSupportedExtensions[keys[i]][j])) {
+              return keys[i];
+            }
+          }
+        }
+        return null;
+      },
+
+      _wopiIcon(blob) {
+        var app = this._getWopiApp(blob);
+        return app ? 'images/' + app +'.png' : null;
+      },
+
+      _wopiTooltip(blob) {
+        var app = this._getWopiApp(blob);
+        return this.i18n('wopiLink.' + app + '.tooltip');
+      },
+
+      _wopiURL() {
+        var parts = this.blob.data.split('/nxfile/');
+        var baseUrl = parts[0];
+        return [
+          baseUrl,
+          'wopi',
+          'view',
+          this.document.repository,
+          this.document.uid,
+          this.xpath
+        ].join('/');
+      }
+    });
+  </script>
+
+</dom-module>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.web.ui.resources">
+
+  <require>org.nuxeo.web.ui.resources</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="nuxeo-wopi.html" type="import" shrinkable="false">
+      <uri>/ui/nuxeo-wopi/nuxeo-wopi.html</uri>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="web-ui">
+      <resources append="true">
+        <resource>nuxeo-wopi.html</resource>
+      </resources>
+    </bundle>
+  </extension>
+
+</component>
