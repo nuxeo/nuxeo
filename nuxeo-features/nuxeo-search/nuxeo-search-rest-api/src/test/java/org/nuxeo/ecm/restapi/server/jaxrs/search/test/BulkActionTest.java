@@ -74,7 +74,7 @@ public class BulkActionTest extends BaseTest {
     public void testExecuteBulkActionWithQuery() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
-        testExecuteBulkAction("search/lang/NXQL", queryParams);
+        testExecuteBulkAction("search", queryParams);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class BulkActionTest extends BaseTest {
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        testExecuteBulkAction("search/lang/NXQL", queryParams);
+        testExecuteBulkAction("search", queryParams);
     }
 
     @Test

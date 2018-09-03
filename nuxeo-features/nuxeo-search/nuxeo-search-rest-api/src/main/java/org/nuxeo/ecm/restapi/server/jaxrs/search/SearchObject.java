@@ -88,18 +88,46 @@ public class SearchObject extends QueryExecutor {
         savedSearchService = Framework.getService(SavedSearchService.class);
     }
 
+    /**
+     * @deprecated since 10.3, use {@link #doQueryByLang(UriInfo)} instead.
+     */
     @GET
     @Path("lang/{queryLanguage}/execute")
+    @Deprecated
     public Object doQueryByLang(@Context UriInfo uriInfo, @PathParam("queryLanguage") String queryLanguage) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         return queryByLang(queryLanguage, queryParams);
     }
 
+    /**
+     * @since 10.3
+     */
+    @GET
+    @Path("execute")
+    public Object doQueryByLang(@Context UriInfo uriInfo) {
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        return queryByLang(queryParams);
+    }
+
+    /**
+     * @deprecated since 10.3, use {@link #doBulkActionByLang(UriInfo)} instead.
+     */
     @Path("lang/{queryLanguage}/bulk")
+    @Deprecated
     public Object doBulkActionByLang(@Context UriInfo uriInfo, @PathParam("queryLanguage") String queryLanguage) {
         if (!EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
             throw new IllegalParameterException("invalid query language");
         }
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String query = getQueryString(null, queryParams);
+        return newObject("bulkAction", query);
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Path("bulk")
+    public Object doBulkActionByLang(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
         return newObject("bulkAction", query);
