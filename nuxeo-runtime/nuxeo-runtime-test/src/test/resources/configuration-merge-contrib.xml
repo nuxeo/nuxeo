@@ -1,0 +1,11 @@
+<component name="org.nuxeo.runtime.ConfigurationService.test.merge">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.test.dummyStringProperty" append="true">mergedValue</property>
+    <property name="nuxeo.test.dummyStringProperty" append="true">anotherMergedValue</property>
+    <property name="nuxeo.test.anotherDummyStringProperty" append="false">anotherNotMergedValue</property>
+
+  </extension>
+
+</component>
