@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.client.ConnectClientComponent;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
@@ -57,6 +58,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Operation to trigger a Hot reload of the Studio Snapshot package. You must be an administrator to trigger it.
@@ -127,9 +129,17 @@ public class HotReloadStudioSnapshot {
         }
     }
 
+    protected boolean shouldValidate() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        if (cs.isBooleanPropertyTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
+            return false;
+        }
+        return validate;
+    }
+
     public Blob hotReloadPackage(DownloadablePackage remotePkg) {
 
-        if (validate) {
+        if (shouldValidate()) {
             pm.flushCache();
 
             String targetPlatform = PlatformVersionHelper.getPlatformFilter();
