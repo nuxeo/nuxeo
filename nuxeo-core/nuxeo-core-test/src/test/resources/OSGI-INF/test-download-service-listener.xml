@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.download.DownloadService.listener.test">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="testDownloadListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.io.download.DummyDownloadListener">
+      <event>download</event>
+    </listener>
+  </extension>
+
+</component>
