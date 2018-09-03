@@ -104,8 +104,8 @@ import com.sun.jersey.api.client.WebResource;
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, RestServerFeature.class })
 @Deploy("org.nuxeo.ecm.jwt")
-@Deploy("org.nuxeo.wopi.rest.api")
-@Deploy("org.nuxeo.wopi.rest.api:test-jwt-contrib.xml")
+@Deploy("org.nuxeo.wopi")
+@Deploy("org.nuxeo.wopi:test-jwt-contrib.xml")
 @ServletContainer(port = 18090)
 public class TestFilesEndpoint {
 

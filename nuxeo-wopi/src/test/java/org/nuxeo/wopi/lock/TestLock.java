@@ -71,7 +71,7 @@ import org.nuxeo.wopi.FileInfo;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.wopi.rest.api")
+@Deploy("org.nuxeo.wopi")
 public class TestLock {
 
     @Inject
