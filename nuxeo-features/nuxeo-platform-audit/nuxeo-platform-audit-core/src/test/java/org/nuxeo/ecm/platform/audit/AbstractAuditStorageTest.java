@@ -67,7 +67,7 @@ public abstract class AbstractAuditStorageTest {
     public void setUpTestData() throws Exception {
 
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        QueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicate(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         List<LogEntry> logs = backend.queryLogs(builder);
 
@@ -93,7 +93,7 @@ public abstract class AbstractAuditStorageTest {
     public void testSaveAndScroll() throws Exception {
         setUpTestData();
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        QueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicate(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         checkNumberOfLoggedEvents(backend, builder);
 
@@ -138,7 +138,7 @@ public abstract class AbstractAuditStorageTest {
     public void testStartsWith() throws Exception {
         setUpTestData();
         AbstractAuditBackend backend = (AbstractAuditBackend) this.auditBackend;
-        QueryBuilder builder = new AuditQueryBuilder().predicates(
+        QueryBuilder builder = new AuditQueryBuilder().predicate(
                 Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS));
         checkNumberOfLoggedEvents(backend, builder);
 
@@ -153,9 +153,9 @@ public abstract class AbstractAuditStorageTest {
      * Asserts the number of events that match the startsWith parameter
      */
     public void assertStartsWithCount(int eventsCount, String startsWith) {
-        List<LogEntry> logs = auditBackend.queryLogs(new AuditQueryBuilder().predicates(
-                Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS),
-                Predicates.startsWith(LOG_DOC_PATH, startsWith)));
+        List<LogEntry> logs = auditBackend.queryLogs(
+                new AuditQueryBuilder().predicate(Predicates.eq(LOG_EVENT_ID, ID_FOR_AUDIT_STORAGE_TESTS))
+                                       .and(Predicates.startsWith(LOG_DOC_PATH, startsWith)));
         assertEquals(eventsCount, logs.size());
     }
 }

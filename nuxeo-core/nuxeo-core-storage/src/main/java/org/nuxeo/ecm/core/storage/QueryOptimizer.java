@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -85,8 +86,8 @@ public abstract class QueryOptimizer {
     protected boolean onlyRelations;
 
     // group by prefix, keeping order
-    protected static Collector<Expression, ?, Map<String, List<Expression>>> GROUPING_BY_EXPR_PREFIX = groupingBy(
-            QueryOptimizer::getExpressionPrefix, LinkedHashMap::new, toList());
+    protected static Collector<Predicate, ?, Map<String, List<Predicate>>> GROUPING_BY_EXPR_PREFIX = groupingBy(
+            QueryOptimizer::getPredicatePrefix, LinkedHashMap::new, toList());
 
     public QueryOptimizer() {
         // schemaManager may be null in unit tests
@@ -109,57 +110,57 @@ public abstract class QueryOptimizer {
         // rewrite some uncorrelated wildcards and add NOT NULL clauses for projection ones
         query = addWildcardNotNullClauses(query);
 
-        List<Expression> clauses = new ArrayList<>();
+        List<Predicate> clauses = new ArrayList<>();
         addFacetFilters(clauses, facetFilter);
         addTypes(clauses, query.from);
         addWhere(clauses, query.where);
         simplifyTypes(clauses);
-        MultiExpression multiExpression = MultiExpression.fromExpressionList(Operator.AND, clauses);
+        MultiExpression multiExpression = new MultiExpression(Operator.AND, clauses);
 
         // collect information about common reference prefixes (stored on Reference and Expression)
         new ReferencePrefixAnalyzer().visitMultiExpression(multiExpression);
 
-        Expression whereExpr;
+        Predicate whereExpr;
         PrefixInfo info = (PrefixInfo) multiExpression.getInfo();
         if (!info.prefix.isEmpty()) {
             // all references have a common prefix
             whereExpr = multiExpression;
         } else {
             // do grouping by common prefix
-            Map<String, List<Expression>> grouped = clauses.stream().collect(GROUPING_BY_EXPR_PREFIX);
-            Map<String, Expression> groupedExpressions = new LinkedHashMap<>();
-            for (Entry<String, List<Expression>> en : grouped.entrySet()) {
+            Map<String, List<Predicate>> grouped = clauses.stream().collect(GROUPING_BY_EXPR_PREFIX);
+            Map<String, Predicate> groupedExpressions = new LinkedHashMap<>();
+            for (Entry<String, List<Predicate>> en : grouped.entrySet()) {
                 String prefix = en.getKey();
-                List<Expression> list = en.getValue();
-                groupedExpressions.put(prefix, makeSingleAndExpression(prefix, list));
+                List<Predicate> list = en.getValue();
+                groupedExpressions.put(prefix, makeSingleAndPredicate(prefix, list));
             }
 
             // potentially reorganize into nested grouping
             reorganizeGroupedExpressions(groupedExpressions);
 
-            List<Expression> expressions = new ArrayList<>(groupedExpressions.values());
-            whereExpr = makeSingleAndExpression("", expressions);
+            List<Predicate> expressions = new ArrayList<>(groupedExpressions.values());
+            whereExpr = makeSingleAndPredicate("", expressions);
         }
 
-        return query.withWhereExpression(whereExpr);
+        return query.withPredicate(whereExpr);
     }
 
     /**
-     * Makes a single AND expression from several expressions known to have a common prefix.
+     * Makes a single AND predicate from several expressions known to have a common prefix.
      */
-    public static Expression makeSingleAndExpression(String prefix, List<Expression> exprs) {
-        if (exprs.size() == 1) {
-            return exprs.get(0);
+    public static Predicate makeSingleAndPredicate(String prefix, List<Predicate> predicates) {
+        if (predicates.size() == 1) {
+            return predicates.get(0);
         } else {
-            int count = prefix.isEmpty() ? 0 : exprs.stream().mapToInt(QueryOptimizer::getExpressionCount).sum();
-            Expression e = MultiExpression.fromExpressionList(Operator.AND, exprs);
+            int count = prefix.isEmpty() ? 0 : predicates.stream().mapToInt(QueryOptimizer::getExpressionCount).sum();
+            Predicate e = new MultiExpression(Operator.AND, predicates);
             e.setInfo(new PrefixInfo(prefix, count));
             return e;
         }
     }
 
-    protected static String getExpressionPrefix(Expression expr) {
-        PrefixInfo info = (PrefixInfo) expr.getInfo();
+    protected static String getPredicatePrefix(Predicate predicate) {
+        PrefixInfo info = (PrefixInfo) predicate.getInfo();
         return info == null ? "" : info.prefix;
     }
 
@@ -173,17 +174,17 @@ public abstract class QueryOptimizer {
      *
      * @since 9.3
      */
-    public static void reorganizeGroupedExpressions(Map<String, Expression> groupedExpressions) {
+    public static void reorganizeGroupedExpressions(Map<String, Predicate> groupedExpressions) {
         if (groupedExpressions.size() > 1) {
             List<String> keys = new ArrayList<>(groupedExpressions.keySet());
             List<String> withPrefix = new ArrayList<>();
             String prefix = findPrefix(keys, withPrefix);
             if (prefix != null) {
                 // first part, the expression corresponding to the prefix
-                Expression first = groupedExpressions.remove(prefix);
+                Predicate first = groupedExpressions.remove(prefix);
 
                 // second part, all those that had that prefix
-                List<Expression> exprs = new ArrayList<>();
+                List<Predicate> exprs = new ArrayList<>();
                 for (String k : withPrefix) {
                     exprs.add(groupedExpressions.remove(k));
                 }
@@ -193,10 +194,10 @@ public abstract class QueryOptimizer {
                 } else {
                     throw new QueryParseException("Too complex correlated wildcards in query: " + groupedExpressions);
                 }
-                Expression second = makeSingleAndExpression(secondPrefix, exprs);
+                Predicate second = makeSingleAndPredicate(secondPrefix, exprs);
 
                 // finally bring them all together
-                Expression expr = makeSingleAndExpression(prefix, Arrays.asList(first, second));
+                Predicate expr = makeSingleAndPredicate(prefix, Arrays.asList(first, second));
                 groupedExpressions.put(prefix, expr);
             }
         }
@@ -257,14 +258,14 @@ public abstract class QueryOptimizer {
         return prefix;
     }
 
-    protected void addFacetFilters(List<Expression> clauses, FacetFilter facetFilter) {
+    protected void addFacetFilters(List<Predicate> clauses, FacetFilter facetFilter) {
         if (facetFilter == null) {
             return;
         }
         for (String mixin : facetFilter.required) {
             // every facet is required, not just any of them,
             // so do them one by one
-            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(mixin));
+            Predicate expr = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(mixin));
             clauses.add(expr);
         }
         if (!facetFilter.excluded.isEmpty()) {
@@ -272,7 +273,7 @@ public abstract class QueryOptimizer {
             for (String mixin : facetFilter.excluded) {
                 list.add(new StringLiteral(mixin));
             }
-            Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
+            Predicate expr = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
             clauses.add(expr);
         }
     }
@@ -316,7 +317,7 @@ public abstract class QueryOptimizer {
      * <p>
      * Adds them as a ecm:primaryType match in the toplevel operands.
      */
-    protected void addTypes(List<Expression> clauses, FromClause node) {
+    protected void addTypes(List<Predicate> clauses, FromClause node) {
         onlyRelations = true;
         Set<String> fromTypes = new HashSet<>();
         FromList elements = node.elements;
@@ -333,33 +334,25 @@ public abstract class QueryOptimizer {
         for (String type : fromTypes) {
             list.add(new StringLiteral(type));
         }
-        clauses.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
+        clauses.add(new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
     }
 
     /**
      * Adds a flattened version of all toplevel ANDed WHERE clauses.
      */
-    protected void addWhere(List<Expression> clauses, WhereClause where) {
+    protected void addWhere(List<Predicate> clauses, WhereClause where) {
         if (where != null) {
             addWhere(clauses, where.predicate);
         }
     }
 
-    protected void addWhere(List<Expression> clauses, Expression expr) {
+    protected void addWhere(List<Predicate> clauses, Predicate expr) {
         if (expr.operator == Operator.AND && expr.lvalue instanceof Expression && expr.rvalue instanceof Expression) {
-            addWhere(clauses, (Expression) expr.lvalue);
-            addWhere(clauses, (Expression) expr.rvalue);
+            addWhere(clauses, (Predicate) expr.lvalue);
+            addWhere(clauses, (Predicate) expr.rvalue);
         } else if (expr.operator == Operator.AND && expr instanceof MultiExpression) {
-            List<Operand> remainingOperands = new ArrayList<>();
-            for (Operand oper : ((MultiExpression) expr).values) {
-                if (oper instanceof Expression) {
-                    addWhere(clauses, (Expression) oper);
-                } else {
-                    remainingOperands.add(oper);
-                }
-            }
-            if (!remainingOperands.isEmpty()) {
-                clauses.add(new MultiExpression(Operator.AND, remainingOperands));
+            for (Predicate pred : ((MultiExpression) expr).predicates) {
+                addWhere(clauses, pred);
             }
         } else {
             clauses.add(expr);
@@ -369,18 +362,18 @@ public abstract class QueryOptimizer {
     /**
      * Simplify ecm:primaryType positive references, and non-per-instance mixin types.
      */
-    protected void simplifyTypes(List<Expression> clauses) {
+    protected void simplifyTypes(List<Predicate> clauses) {
         Set<String> primaryTypes = null; // if defined, required
-        for (Iterator<Expression> it = clauses.iterator(); it.hasNext();) {
+        for (Iterator<Predicate> it = clauses.iterator(); it.hasNext();) {
             // whenever we don't know how to optimize the expression,
             // we just continue the loop
-            Expression expr = it.next();
-            if (!(expr.lvalue instanceof Reference)) {
+            Predicate predicate = it.next();
+            if (!(predicate.lvalue instanceof Reference)) {
                 continue;
             }
-            String name = ((Reference) expr.lvalue).name;
-            Operator op = expr.operator;
-            Operand rvalue = expr.rvalue;
+            String name = ((Reference) predicate.lvalue).name;
+            Operator op = predicate.operator;
+            Operand rvalue = predicate.rvalue;
             if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                 if (op != Operator.EQ && op != Operator.IN) {
                     continue;
@@ -439,18 +432,18 @@ public abstract class QueryOptimizer {
                 // TODO better removal
                 primaryTypes.add("__NOSUCHTYPE__");
             }
-            Expression expr;
+            Predicate predicate;
             if (primaryTypes.size() == 1) {
                 String pt = primaryTypes.iterator().next();
-                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.EQ, new StringLiteral(pt));
+                predicate = new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.EQ, new StringLiteral(pt));
             } else { // primaryTypes.size() > 1
                 LiteralList list = new LiteralList();
                 for (String pt : primaryTypes) {
                     list.add(new StringLiteral(pt));
                 }
-                expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
+                predicate = new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
             }
-            clauses.add(expr);
+            clauses.add(predicate);
         }
     }
 
@@ -505,12 +498,11 @@ public abstract class QueryOptimizer {
     }
 
     protected SQLQuery addIsNotNullClauses(SQLQuery query, Collection<String> names) {
-        List<Operand> values = names.stream()
-                                    .map(name -> new Expression(new Reference(name), Operator.ISNOTNULL, null))
-                                    .collect(toList());
-        Expression expr = new Expression(query.where.predicate, Operator.AND,
-                new MultiExpression(Operator.AND, values));
-        return query.withWhereExpression(expr);
+        List<Predicate> values = names.stream()
+                                      .map(name -> new Predicate(new Reference(name), Operator.ISNOTNULL, null))
+                                      .collect(toList());
+        Predicate expr = new Predicate(query.where.predicate, Operator.AND, new MultiExpression(Operator.AND, values));
+        return query.withPredicate(expr);
     }
 
     protected static class ProjectionWildcardsFinder extends DefaultQueryVisitor {
@@ -623,7 +615,7 @@ public abstract class QueryOptimizer {
         @Override
         public void visitMultiExpression(MultiExpression node) {
             super.visitMultiExpression(node);
-            processExpression(node, node.values);
+            processExpression(node, node.predicates);
         }
 
         @Override
@@ -638,7 +630,7 @@ public abstract class QueryOptimizer {
             node.setInfo(new PrefixInfo(prefix, count));
         }
 
-        protected void processExpression(Expression node, List<Operand> operands) {
+        protected void processExpression(Expression node, List<? extends Operand> operands) {
             PrefixInfo commonInfo = null;
             for (Operand operand : operands) {
                 // find longest prefix for the operand

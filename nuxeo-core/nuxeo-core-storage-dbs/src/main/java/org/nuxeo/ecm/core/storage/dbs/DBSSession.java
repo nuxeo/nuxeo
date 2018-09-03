@@ -1651,8 +1651,7 @@ public class DBSSession implements Session<QueryFilter> {
             // replace ecm:path with ecm:__path for evaluation
             // (we don't want to allow ecm:path to be usable anywhere else
             // and resolve to a null value)
-            OrderByList obl = new OrderByList(null); // stupid constructor
-            obl.clear();
+            OrderByList obl = new OrderByList();
             for (OrderByExpr ob : orderByClause.elements) {
                 if (ob.reference.name.equals(NXQL.ECM_PATH)) {
                     ob = new OrderByExpr(new Reference(ExpressionEvaluator.NXQL_ECM_PATH), ob.isDescending);

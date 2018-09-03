@@ -164,7 +164,11 @@ public abstract class ExpressionEvaluator {
         } else if (op == Operator.NOT) {
             return walkNot(lvalue);
         } else if (op == Operator.OR) {
-            return walkOr(lvalue, rvalue);
+            if (expr instanceof MultiExpression) {
+                return walkMultiExpression((MultiExpression) expr);
+            } else {
+                return walkOr(lvalue, rvalue);
+            }
         } else if (op == Operator.LIKE) {
             return walkLike(lvalue, rvalue, true, false);
         } else if (op == Operator.ILIKE) {
@@ -317,11 +321,16 @@ public abstract class ExpressionEvaluator {
 
     // ternary logic
     public Boolean walkMultiExpression(MultiExpression expr) {
-        Boolean res = TRUE;
-        for (Operand value : expr.values) {
-            Boolean bool = bool(walkOperand(value));
+        boolean and = expr.operator == Operator.AND;
+        Boolean res = and ? TRUE : FALSE;
+        for (Predicate predicate : expr.predicates) {
+            Boolean bool = bool(walkExpression(predicate));
             // don't short-circuit on null, we want to walk all references deterministically
-            res = and(res, bool);
+            if (and) {
+                res = and(res, bool);
+            } else {
+                res = or(res, bool);
+            }
         }
         return res;
     }

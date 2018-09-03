@@ -31,7 +31,7 @@ public class AuditQueryBuilder extends QueryBuilder {
 
     @Override
     public QueryBuilder defaultOrder() {
-        return orders(OrderByExprs.desc(BuiltinLogEntryData.LOG_EVENT_DATE));
+        return order(OrderByExprs.desc(BuiltinLogEntryData.LOG_EVENT_DATE));
     }
 
 }

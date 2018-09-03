@@ -109,8 +109,7 @@ public class IdentityQueryTransformer implements QueryTransformer {
 
     @Override
     public OrderByList transform(OrderByList node) {
-        OrderByList list = new OrderByList(null); // stupid constructor
-        list.clear();
+        OrderByList list = new OrderByList();
         for (OrderByExpr value : node) {
             list.add(transform(value));
         }
@@ -140,6 +139,10 @@ public class IdentityQueryTransformer implements QueryTransformer {
             return transform((LiteralList) node);
         } else if (node instanceof Function) {
             return transform((Function) node);
+        } else if (node instanceof MultiExpression) {
+            return transform((MultiExpression) node);
+        } else if (node instanceof Predicate) {
+            return transform((Predicate) node);
         } else if (node instanceof Expression) {
             return transform((Expression) node);
         } else if (node instanceof Reference) {
@@ -151,18 +154,31 @@ public class IdentityQueryTransformer implements QueryTransformer {
 
     @Override
     public Expression transform(Expression node) {
+        if (node instanceof Predicate) {
+            return transform((Predicate) node);
+        }
         Expression expr = new Expression(transform(node.lvalue), transform(node.operator), transform(node.rvalue));
         expr.info = node.info;
         return expr;
     }
 
     @Override
-    public Expression transform(MultiExpression node) {
-        List<Operand> list = new ArrayList<>(node.values.size());
-        for (Operand o : node.values) {
-            list.add(transform(o));
+    public Predicate transform(Predicate node) {
+        if (node instanceof MultiExpression) {
+            return transform((MultiExpression) node);
         }
-        MultiExpression expr = new MultiExpression(transform(node.operator), list);
+        Predicate predicate = new Predicate(transform(node.lvalue), transform(node.operator), transform(node.rvalue));
+        predicate.info = node.info;
+        return predicate;
+    }
+
+    @Override
+    public MultiExpression transform(MultiExpression node) {
+        List<Predicate> predicates = new ArrayList<>(node.predicates.size());
+        for (Predicate predicate : node.predicates) {
+            predicates.add(transform(predicate));
+        }
+        MultiExpression expr = new MultiExpression(transform(node.operator), predicates);
         expr.info = node.info;
         return expr;
     }

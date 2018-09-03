@@ -543,9 +543,7 @@ public class NXQLQueryMaker implements QueryMaker {
             if (orderBy == null) {
                 if (hasSelectCollection) {
                     if (sqlQuery.orderBy == null) {
-                        OrderByList obl = new OrderByList(null); // stupid constructor
-                        obl.clear();
-                        sqlQuery.orderBy = new OrderByClause(obl);
+                        sqlQuery.orderBy = new OrderByClause(new OrderByList());
                     }
                     // always add ecm:uuid in ORDER BY
                     sqlQuery.orderBy.elements.add(new OrderByExpr(new Reference(NXQL.ECM_UUID), false));
@@ -1003,7 +1001,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected boolean inOrderBy;
 
-        protected LinkedList<Operand> toplevelOperands;
+        protected LinkedList<Predicate> toplevelPredicates;
 
         protected MultiExpression wherePredicate;
 
@@ -1032,7 +1030,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void init() {
-            toplevelOperands = new LinkedList<>();
+            toplevelPredicates = new LinkedList<>();
             whatColumnNames = new LinkedList<>();
             orderByColumnNames = new LinkedList<>();
             selectCollectionNotNull = new HashSet<>();
@@ -1063,9 +1061,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 // so do them one by one
                 // expr = getMixinsMatchExpression(Collections.singleton(facet),
                 // true);
-                Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
+                Predicate predicate = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
                         new StringLiteral(mixin));
-                toplevelOperands.add(expr);
+                toplevelPredicates.add(predicate);
             }
             if (!facetFilter.excluded.isEmpty()) {
                 // expr = getMixinsMatchExpression(facetFilter.excluded, false);
@@ -1073,8 +1071,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 for (String mixin : facetFilter.excluded) {
                     list.add(new StringLiteral(mixin));
                 }
-                Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
-                toplevelOperands.add(expr);
+                Predicate predicate = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
+                toplevelPredicates.add(predicate);
             }
         }
 
@@ -1120,64 +1118,64 @@ public class NXQLQueryMaker implements QueryMaker {
             for (String type : fromTypes) {
                 list.add(new StringLiteral(type));
             }
-            toplevelOperands.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
+            toplevelPredicates.add(new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
         }
 
         @Override
         public void visitWhereClause(WhereClause node) {
             if (node != null) {
-                analyzeToplevelOperands(node.predicate);
+                analyzeToplevelPredicates(node.predicate);
             }
-            simplifyToplevelOperands();
-            wherePredicate = new MultiExpression(Operator.AND, toplevelOperands);
+            simplifyToplevelPredicates();
+            wherePredicate = new MultiExpression(Operator.AND, toplevelPredicates);
             super.visitMultiExpression(wherePredicate);
         }
 
         /**
          * Process special toplevel ANDed operands: ecm:isProxy
          */
-        protected void analyzeToplevelOperands(Operand node) {
-            if (node instanceof Expression) {
-                Expression expr = (Expression) node;
-                Operator op = expr.operator;
-                if (op == Operator.AND) {
-                    analyzeToplevelOperands(expr.lvalue);
-                    analyzeToplevelOperands(expr.rvalue);
+        protected void analyzeToplevelPredicates(Predicate predicate) {
+            Operator op = predicate.operator;
+            if (op == Operator.AND) {
+                if (predicate.lvalue instanceof Predicate && predicate.rvalue instanceof Predicate) {
+                    analyzeToplevelPredicates((Predicate) predicate.lvalue);
+                    analyzeToplevelPredicates((Predicate) predicate.rvalue);
+                    return;
+                } else if (predicate instanceof MultiExpression) {
+                    for (Predicate p : ((MultiExpression) predicate).predicates) {
+                        analyzeToplevelPredicates(p);
+                    }
                     return;
                 }
-                if (op == Operator.EQ || op == Operator.NOTEQ) {
-                    // put reference on the left side
-                    if (expr.rvalue instanceof Reference) {
-                        expr = new Expression(expr.rvalue, op, expr.lvalue);
-                    }
-                    if (expr.lvalue instanceof Reference) {
-                        String name = ((Reference) expr.lvalue).name;
-                        if (NXQL.ECM_ISPROXY.equals(name)) {
-                            analyzeToplevelIsProxy(expr);
-                            return;
-                        } else if (NXQL.ECM_PROXY_TARGETID.equals(name) || NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
-                            analyzeToplevelProxyProperty(expr);
-                            // no return, we want the node
-                        }
+            }
+            if (op == Operator.EQ || op == Operator.NOTEQ) {
+                // put reference on the left side
+                if (predicate.rvalue instanceof Reference) {
+                    predicate = new Predicate(predicate.rvalue, op, predicate.lvalue);
+                }
+                if (predicate.lvalue instanceof Reference) {
+                    String name = ((Reference) predicate.lvalue).name;
+                    if (NXQL.ECM_ISPROXY.equals(name)) {
+                        analyzeToplevelIsProxy(predicate);
+                        return;
+                    } else if (NXQL.ECM_PROXY_TARGETID.equals(name) || NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
+                        analyzeToplevelProxyProperty(predicate);
+                        // no return, we want the node
                     }
                 }
             }
-            toplevelOperands.add(node);
+            toplevelPredicates.add(predicate);
         }
 
         /**
          * Simplify ecm:primaryType positive references, and non-per-instance mixin types.
          */
-        protected void simplifyToplevelOperands() {
+        protected void simplifyToplevelPredicates() {
             Set<String> primaryTypes = null; // if defined, required
-            for (Iterator<Operand> it = toplevelOperands.iterator(); it.hasNext();) {
+            for (Iterator<Predicate> it = toplevelPredicates.iterator(); it.hasNext();) {
                 // whenever we don't know how to optimize the expression,
                 // we just continue the loop
-                Operand node = it.next();
-                if (!(node instanceof Expression)) {
-                    continue;
-                }
-                Expression expr = (Expression) node;
+                Expression expr = it.next();
                 if (!(expr.lvalue instanceof Reference)) {
                     continue;
                 }
@@ -1242,18 +1240,18 @@ public class NXQLQueryMaker implements QueryMaker {
                     // TODO better removal
                     primaryTypes.add("__NOSUCHTYPE__");
                 }
-                Expression expr;
+                Predicate predicate;
                 if (primaryTypes.size() == 1) {
                     String pt = primaryTypes.iterator().next();
-                    expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.EQ, new StringLiteral(pt));
+                    predicate = new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.EQ, new StringLiteral(pt));
                 } else { // primaryTypes.size() > 1
                     LiteralList list = new LiteralList();
                     for (String pt : primaryTypes) {
                         list.add(new StringLiteral(pt));
                     }
-                    expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
+                    predicate = new Predicate(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
                 }
-                toplevelOperands.addFirst(expr);
+                toplevelPredicates.addFirst(predicate);
             }
         }
 
@@ -1848,7 +1846,7 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitMultiExpression(MultiExpression node) {
             buf.append('(');
-            for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
+            for (Iterator<Predicate> it = node.predicates.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     node.operator.accept(this);

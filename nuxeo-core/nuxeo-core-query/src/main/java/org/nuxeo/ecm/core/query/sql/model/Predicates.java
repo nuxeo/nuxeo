@@ -34,8 +34,28 @@ public class Predicates {
         // no instantiation allowed
     }
 
+    /** @since 10.3 */
+    public static Predicate and(Predicate left, Predicate right) {
+        return new Predicate(left, Operator.AND, right);
+    }
+
+    /** @since 10.3 */
+    public static Predicate or(Predicate left, Predicate right) {
+        return new Predicate(left, Operator.OR, right);
+    }
+
+    /** @since 10.3 */
+    public static Predicate not(Predicate predicate) {
+        return new Predicate(predicate, Operator.NOT, null);
+    }
+
     public static Predicate eq(String name, Object value) {
         return createPredicate(name, Operator.EQ, value);
+    }
+
+    /** @since 10.3 */
+    public static Predicate noteq(String name, Object value) {
+        return createPredicate(name, Operator.NOTEQ, value);
     }
 
     public static Predicate lt(String name, Object value) {
@@ -58,6 +78,27 @@ public class Predicates {
         return createPredicate(name, Operator.STARTSWITH, value);
     }
 
+    /** @since 10.3 */
+    public static Predicate like(String name, Object value) {
+        return createPredicate(name, Operator.LIKE, value);
+    }
+
+    /** @since 10.3 */
+    public static Predicate notlike(String name, Object value) {
+        return createPredicate(name, Operator.NOTLIKE, value);
+    }
+
+    /** @since 10.3 */
+    public static Predicate ilike(String name, Object value) {
+        return createPredicate(name, Operator.ILIKE, value);
+    }
+
+    /** @since 10.3 */
+    public static Predicate notilike(String name, Object value) {
+        return createPredicate(name, Operator.NOTILIKE, value);
+    }
+
+
     public static Predicate in(String name, Iterable<?> values) {
         return createPredicate(name, Operator.IN, StreamSupport.stream(values.spliterator(), false));
     }
@@ -68,6 +109,47 @@ public class Predicates {
 
     public static Predicate in(String name, Object[] values) {
         return createPredicate(name, Operator.IN, Stream.of(values));
+    }
+
+    /** @since 10.3 */
+    public static Predicate notin(String name, Iterable<?> values) {
+        return createPredicate(name, Operator.NOTIN, StreamSupport.stream(values.spliterator(), false));
+    }
+
+    /** @since 10.3 */
+    public static <T> Predicate notin(String name, T value, T... values) {
+        return createPredicate(name, Operator.NOTIN, Stream.concat(Stream.of(value), Stream.of(values)));
+    }
+
+    /** @since 10.3 */
+    public static Predicate notin(String name, Object[] values) {
+        return createPredicate(name, Operator.NOTIN, Stream.of(values));
+    }
+
+    /** @since 10.3 */
+    public static Predicate between(String name, Object min, Object max) {
+        LiteralList range = new LiteralList();
+        range.add(Literals.toLiteral(min));
+        range.add(Literals.toLiteral(max));
+        return new Predicate(new Reference(name), Operator.BETWEEN, range);
+    }
+
+    /** @since 10.3 */
+    public static Predicate notbetween(String name, Object min, Object max) {
+        LiteralList range = new LiteralList();
+        range.add(Literals.toLiteral(min));
+        range.add(Literals.toLiteral(max));
+        return new Predicate(new Reference(name), Operator.NOTBETWEEN, range);
+    }
+
+    /** @since 10.3 */
+    public static Predicate isnull(String name) {
+        return new Predicate(new Reference(name), Operator.ISNULL, null);
+    }
+
+    /** @since 10.3 */
+    public static Predicate isnotnull(String name) {
+        return new Predicate(new Reference(name), Operator.ISNOTNULL, null);
     }
 
     private static Predicate createPredicate(String name, Operator operator, Object value) {

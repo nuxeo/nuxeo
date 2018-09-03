@@ -57,7 +57,7 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
             } else {
                 predicate = new Predicate(NO_FILE, Operator.AND, where.predicate);
             }
-            return query.withWhereExpression(predicate);
+            return query.withPredicate(predicate);
         }
     }
 

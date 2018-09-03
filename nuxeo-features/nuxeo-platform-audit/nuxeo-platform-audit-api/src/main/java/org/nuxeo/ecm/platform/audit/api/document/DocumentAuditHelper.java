@@ -68,8 +68,8 @@ public class DocumentAuditHelper {
         String targetUUID = resolver.sourceDocument.getId();
         // now get from Audit Logs the creation date of
         // the version / proxy
-        QueryBuilder builder = new AuditQueryBuilder().addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid))
-                                                      .addAndPredicate(Predicates.eq(LOG_EVENT_ID,
+        QueryBuilder builder = new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, uuid))
+                                                      .and(Predicates.eq(LOG_EVENT_ID,
                                                               DocumentEventTypes.DOCUMENT_CREATED));
         AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = reader.queryLogs(builder);
@@ -100,13 +100,11 @@ public class DocumentAuditHelper {
             estimatedDate.add(Calendar.MILLISECOND, -500);
 
             QueryBuilder dateBuilder = new AuditQueryBuilder();
-            dateBuilder.predicates( //
-                    Predicates.in(LOG_DOC_UUID, ids), //
-                    Predicates.in(LOG_EVENT_ID, DocumentEventTypes.DOCUMENT_CREATED,
-                            DocumentEventTypes.DOCUMENT_CHECKEDIN), //
-                    Predicates.gte(LOG_EVENT_DATE, estimatedDate.getTime()) //
-            );
-            dateBuilder.orders(OrderByExprs.asc(LOG_EVENT_ID));
+            dateBuilder.predicate(Predicates.in(LOG_DOC_UUID, ids))
+                       .and(Predicates.in(LOG_EVENT_ID, DocumentEventTypes.DOCUMENT_CREATED,
+                               DocumentEventTypes.DOCUMENT_CHECKEDIN))
+                       .and(Predicates.gte(LOG_EVENT_DATE, estimatedDate.getTime()));
+            dateBuilder.order(OrderByExprs.asc(LOG_EVENT_ID));
             dateBuilder.offset(0).limit(20);
             List<LogEntry> dateEntries = reader.queryLogs(dateBuilder);
             if (dateEntries.size() > 0) {

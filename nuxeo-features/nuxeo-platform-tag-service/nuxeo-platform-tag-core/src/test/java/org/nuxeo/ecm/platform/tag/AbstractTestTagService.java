@@ -883,9 +883,10 @@ public abstract class AbstractTestTagService {
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
         AuditBackend backend = audit.getBackend();
-        assertEquals(0, backend.queryLogs(new AuditQueryBuilder().predicates(Predicates.eq(LOG_PRINCIPAL_NAME, "bob"),
-                Predicates.eq(LOG_EVENT_ID, DOCUMENT_UPDATED))).size());
-
+        assertEquals(0, backend
+                               .queryLogs(new AuditQueryBuilder().predicate(Predicates.eq(LOG_PRINCIPAL_NAME, "bob"))
+                                                                 .and(Predicates.eq(LOG_EVENT_ID, DOCUMENT_UPDATED)))
+                               .size());
     }
 
     protected abstract void createTags();
