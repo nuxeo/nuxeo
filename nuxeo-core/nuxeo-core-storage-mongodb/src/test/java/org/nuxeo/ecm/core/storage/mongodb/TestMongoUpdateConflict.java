@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.storage.mongodb.MongoDBConverter.UpdateBuilder;
 public class TestMongoUpdateConflict {
 
     protected UpdateBuilder newUpdateBuilder() {
-        UpdateBuilder ub = new MongoDBConverter(KEY_ID).new UpdateBuilder();
+        UpdateBuilder ub = new MongoDBConverter().new UpdateBuilder();
         ub.newUpdate();
         return ub;
     }

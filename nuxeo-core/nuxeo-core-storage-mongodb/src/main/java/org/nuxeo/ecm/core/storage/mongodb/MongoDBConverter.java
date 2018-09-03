@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static org.nuxeo.ecm.core.storage.State.NOP;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_EACH;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_INC;
@@ -46,19 +45,34 @@ import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
 /**
- * Convert to and from MongoDB types (bson) and DBS types (diff, state, list, serializable).
+ * Converts between MongoDB types (bson) and DBS types (diff, state, list, serializable).
+ * <p>
+ * The MongoDB native "_id" can optionally be translated into a custom id in memory (usually "ecm:id"). Otherwise it is
+ * stripped from returned results.
  *
  * @since 9.1
  */
 public class MongoDBConverter {
 
+    /** The key to use in memory to map the database native "_id". */
     protected final String idKey;
 
-    protected final boolean useCustomId;
+    /**
+     * Constructor for a converter that does not map the MongoDB native "_id".
+     *
+     * @since 10.3
+     */
+    public MongoDBConverter() {
+        this(null);
+    }
 
+    /**
+     * Constructor for a converter that also knows to optionally translate the native MongoDB "_id" into a custom id.
+     *
+     * @param idKey the key to use to map the native "_id" in memory, if not {@code null}
+     */
     public MongoDBConverter(String idKey) {
         this.idKey = idKey;
-        this.useCustomId = KEY_ID.equals(idKey);
     }
 
     /**
@@ -72,10 +86,10 @@ public class MongoDBConverter {
     }
 
     public String keyToBson(String key) {
-        if (useCustomId) {
+        if (idKey == null) {
             return key;
         } else {
-            return KEY_ID.equals(key) ? idKey : key;
+            return idKey.equals(key) ? MONGODB_ID : key;
         }
     }
 
@@ -113,10 +127,10 @@ public class MongoDBConverter {
     }
 
     public String bsonToKey(String key) {
-        if (useCustomId) {
+        if (idKey == null) {
             return key;
         } else {
-            return idKey.equals(key) ? KEY_ID : key;
+            return MONGODB_ID.equals(key) ? idKey : key;
         }
     }
 
@@ -126,8 +140,8 @@ public class MongoDBConverter {
         }
         State state = new State(doc.keySet().size());
         for (String key : doc.keySet()) {
-            if (useCustomId && MONGODB_ID.equals(key)) {
-                // skip native id
+            if (idKey == null && MONGODB_ID.equals(key)) {
+                // skip native id if it's not mapped to something
                 continue;
             }
             state.put(bsonToKey(key), bsonToValue(doc.get(key)));

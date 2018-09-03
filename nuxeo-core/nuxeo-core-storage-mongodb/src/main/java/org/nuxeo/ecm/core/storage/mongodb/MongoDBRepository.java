@@ -190,7 +190,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             sequenceBlockSize = sbs == null ? 1 : sbs.longValue();
             sequenceLeft = 0;
         }
-        converter = new MongoDBConverter(idKey);
+        converter = new MongoDBConverter(useCustomId ? null : KEY_ID);
         cursorService = new CursorService<>(ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
         initRepository();
     }
@@ -544,7 +544,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
+        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
         if (builder.hasFulltext && isFulltextSearchDisabled()) {
@@ -622,7 +622,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         cursorService.checkForTimedOutScroll();
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
+        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
         if (builder.hasFulltext && isFulltextSearchDisabled()) {
