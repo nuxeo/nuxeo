@@ -25,7 +25,7 @@ import org.junit.Test;
 public class TestMongoDBFulltextQuerySyntax {
 
     protected void assertDialectFT(String expected, String query) {
-        assertEquals(expected, MongoDBQueryBuilder.getMongoDBFulltextQuery(query));
+        assertEquals(expected, MongoDBRepositoryQueryBuilder.getMongoDBFulltextQuery(query));
     }
 
     @Test
