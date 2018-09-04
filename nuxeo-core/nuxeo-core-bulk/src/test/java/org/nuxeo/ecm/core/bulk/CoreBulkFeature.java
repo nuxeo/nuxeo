@@ -26,6 +26,7 @@ import javax.security.auth.login.LoginException;
 import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -40,10 +41,9 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
  * @since 10.2
  */
 @Deploy("org.nuxeo.runtime.kv")
-@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.bulk")
 @Deploy("org.nuxeo.ecm.core.bulk.test")
-@Features({ RuntimeFeature.class, TransactionalFeature.class, CoreIOFeature.class })
+@Features({ RuntimeFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class, CoreIOFeature.class })
 public class CoreBulkFeature implements RunnerFeature {
 
     public static class DummyLogin implements LoginAs {

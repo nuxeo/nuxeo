@@ -6,7 +6,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="bulk" type="chronicle" />
+    <logConfig name="bulk" type="${nuxeo.test.stream}" />
   </extension>
 
 </component>
