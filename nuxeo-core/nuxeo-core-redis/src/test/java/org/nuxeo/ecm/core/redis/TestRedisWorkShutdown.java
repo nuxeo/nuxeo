@@ -49,7 +49,7 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@Features({ RedisFeature.class, CoreFeature.class })
+@Features({ CoreFeature.class, RedisFeature.class })
 @RunWith(FeaturesRunner.class)
 public class TestRedisWorkShutdown {
 

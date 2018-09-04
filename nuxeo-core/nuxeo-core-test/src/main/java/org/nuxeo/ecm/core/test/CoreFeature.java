@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,10 +50,11 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
-import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -64,7 +64,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
@@ -102,38 +101,14 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Features({ RuntimeFeature.class, TransactionalFeature.class })
+@Features({ RuntimeFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class, WorkManagerFeature.class })
 public class CoreFeature implements RunnerFeature {
 
     protected ACP rootAcp;
 
-    public class WorksWaiter implements Waiter {
-        @Override
-        public boolean await(long deadline) throws InterruptedException {
-            WorkManager workManager = Framework.getService(WorkManager.class);
-            if (workManager.awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
-                return true;
-            }
-            logInfos(workManager);
-            return false;
-        }
-
-        protected void logInfos(WorkManager workManager) {
-            StringBuilder sb = new StringBuilder().append("Timed out while waiting for works").append(" ");
-            for (String queueId : workManager.getWorkQueueIds()) {
-                sb.append(System.lineSeparator());
-                sb.append(workManager.getMetrics(queueId));
-            }
-            log.error(sb.toString(), new Throwable("stack trace"));
-        }
-
-    }
-
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
     protected StorageConfiguration storageConfiguration;
-
-    protected WorkManagerConfiguration workManagerConfiguration;
 
     protected RepositoryInit repositoryInit;
 
@@ -150,17 +125,12 @@ public class CoreFeature implements RunnerFeature {
         return storageConfiguration;
     }
 
-    public WorkManagerConfiguration getWorkManagerConfiguration() {
-        return workManagerConfiguration;
-    }
-
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(RuntimeFeature.class).registerHandler(new CoreDeployer());
 
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
-        txFeature.addWaiter(new WorksWaiter());
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
         if (repositoryConfig == null) {
@@ -173,7 +143,6 @@ public class CoreFeature implements RunnerFeature {
         }
         Granularity cleanup = repositoryConfig.cleanup();
         granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
-        workManagerConfiguration = new WorkManagerConfiguration(this);
     }
 
     public Granularity getGranularity() {
@@ -196,11 +165,6 @@ public class CoreFeature implements RunnerFeature {
             harness.getContext().deploy(new URLStreamRef(blobContribUrl));
             URL repoContribUrl = storageConfiguration.getRepositoryContrib(runner);
             harness.getContext().deploy(new URLStreamRef(repoContribUrl));
-
-            workManagerConfiguration.init();
-            for (URL contribURL : workManagerConfiguration.getDeploymentContribURLs(runner)) {
-                harness.getContext().deploy(contribURL);
-            }
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
