@@ -18,9 +18,10 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,10 +67,17 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
+import org.opensaml.common.binding.BasicSAMLMessageContext;
+import org.opensaml.common.binding.SAMLMessageContext;
+import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.Conditions;
+import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml2.core.NameIDType;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.io.Unmarshaller;
@@ -234,6 +243,88 @@ public class SAMLAuthenticatorTest {
         when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(null);
         when(request.isSecure()).thenReturn(false);
         return request;
+    }
+
+    @Test
+    public void testNotOnOrAfterTimeSkew() {
+        AbstractSAMLProfile profile = new AbstractSAMLProfile(null) {
+            @Override
+            public String getProfileIdentifier() {
+                return "test";
+            }
+        };
+
+        Conditions conditions = mock(Conditions.class);
+
+        Issuer issuer = mock(Issuer.class);
+        when(issuer.getFormat()).thenReturn(NameIDType.ENTITY);
+
+        Assertion assertion = mock(Assertion.class);
+        when(assertion.getIssuer()).thenReturn(issuer);
+        when(assertion.getConditions()).thenReturn(conditions);
+
+        // Set message expiration 1ms ago
+        when(conditions.getNotOnOrAfter()).thenReturn(DateTime.now().minusMillis(1));
+
+        // Validation passes with default time skew
+        SAMLMessageContext context = new BasicSAMLMessageContext();
+        try {
+            profile.validateAssertion(assertion, context);
+        } catch (SAMLException e) {
+            fail("Validation should have passed");;
+        }
+
+        // Disabling time skew makes validation fail
+        profile.setSkewTimeMillis(0);
+
+        try {
+            profile.validateAssertion(assertion, context);
+            fail("Expected validation to fail");
+        } catch (SAMLException e) {
+            assertEquals("Conditions have expired", e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void testNotBeforeTimeSkew() {
+        AbstractSAMLProfile profile = new AbstractSAMLProfile(null) {
+            @Override
+            public String getProfileIdentifier() {
+                return "test";
+            }
+        };
+
+        Conditions conditions = mock(Conditions.class);
+
+        Issuer issuer = mock(Issuer.class);
+        when(issuer.getFormat()).thenReturn(NameIDType.ENTITY);
+
+        Assertion assertion = mock(Assertion.class);
+        when(assertion.getIssuer()).thenReturn(issuer);
+        when(assertion.getConditions()).thenReturn(conditions);
+
+        // Set message active in 1ms
+        when(conditions.getNotBefore()).thenReturn(DateTime.now().plusMillis(1));
+
+        // Validation passes with default time skew
+        SAMLMessageContext context = new BasicSAMLMessageContext();
+        try {
+            profile.validateAssertion(assertion, context);
+        } catch (SAMLException e) {
+            fail("Validation should have passed");;
+        }
+
+        // Disabling time skew makes validation fail
+        profile.setSkewTimeMillis(0);
+
+        try {
+            profile.validateAssertion(assertion, context);
+            fail("Expected validation to fail");
+        } catch (SAMLException e) {
+            assertEquals("Conditions are not yet active", e.getMessage());
+        }
+
     }
 
     protected SAMLObject decodeMessage(String message) {

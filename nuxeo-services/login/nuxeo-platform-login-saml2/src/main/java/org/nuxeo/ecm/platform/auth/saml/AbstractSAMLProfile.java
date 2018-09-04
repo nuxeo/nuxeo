@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletRequest;
@@ -47,7 +46,6 @@ import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.security.MetadataCriteria;
 import org.opensaml.security.SAMLSignatureProfileValidator;
 import org.opensaml.xml.XMLObjectBuilderFactory;
-import org.opensaml.xml.encryption.DecryptionException;
 import org.opensaml.xml.security.CriteriaSet;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.security.credential.UsageType;
@@ -73,9 +71,12 @@ public abstract class AbstractSAMLProfile {
 
     private Decrypter decrypter;
 
+    private int skewTimeMillis;
+
     public AbstractSAMLProfile(Endpoint endpoint) {
         this.endpoint = endpoint;
         this.builderFactory = Configuration.getBuilderFactory();
+        this.skewTimeMillis = SAMLConfiguration.getSkewTimeMillis();
     }
 
     /**
@@ -119,7 +120,8 @@ public abstract class AbstractSAMLProfile {
             throw new SAMLException("Assertion invalidated by issuer type");
         }
         // Validate that issuer is expected peer entity
-        if (!context.getPeerEntityMetadata().getEntityID().equals(issuer.getValue())) {
+        if (context.getPeerEntityMetadata() != null
+                && !context.getPeerEntityMetadata().getEntityID().equals(issuer.getValue())) {
             throw new SAMLException("Assertion invalidated by unexpected issuer value");
         }
     }
@@ -172,29 +174,22 @@ public abstract class AbstractSAMLProfile {
         }
     }
 
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException,
-            org.opensaml.xml.security.SecurityException, ValidationException, DecryptionException {
+    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException {
 
         validateIssuer(assertion.getIssuer(), context);
 
         Conditions conditions = assertion.getConditions();
 
         // validate conditions timestamps: notBefore, notOnOrAfter
-        Date now = new DateTime().toDate();
-        Date condition_notBefore = null;
-        Date condition_NotOnOrAfter = null;
-        if (conditions.getNotBefore() != null) {
-            condition_notBefore = conditions.getNotBefore().toDate();
-        }
-        if (conditions.getNotOnOrAfter() != null) {
-            condition_NotOnOrAfter = conditions.getNotOnOrAfter().toDate();
-        }
-        if (condition_notBefore != null && now.before(condition_notBefore)) {
-            log.debug("Current time: [" + now + "] NotBefore: [" + condition_notBefore + "]");
+        DateTime now = new DateTime();
+        DateTime notBefore = conditions.getNotBefore();
+        DateTime notOnOrAfter = conditions.getNotOnOrAfter();
+
+        if (notBefore != null && notBefore.minusMillis(getSkewTimeMillis()).isAfterNow()) {
+            log.debug("Current time: [" + now + "] NotBefore: [" + notBefore + "]");
             throw new SAMLException("Conditions are not yet active");
-        } else if (condition_NotOnOrAfter != null
-                && (now.after(condition_NotOnOrAfter) || now.equals(condition_NotOnOrAfter))) {
-            log.debug("Current time: [" + now + "] NotOnOrAfter: [" + condition_NotOnOrAfter + "]");
+        } else if (notOnOrAfter != null && notOnOrAfter.plusMillis(getSkewTimeMillis()).isBeforeNow()) {
+            log.debug("Current time: [" + now + "] NotOnOrAfter: [" + notOnOrAfter + "]");
             throw new SAMLException("Conditions have expired");
         }
 
@@ -230,6 +225,14 @@ public abstract class AbstractSAMLProfile {
 
     public void setDecrypter(Decrypter decrypter) {
         this.decrypter = decrypter;
+    }
+
+    public int getSkewTimeMillis() {
+        return skewTimeMillis;
+    }
+
+    public void setSkewTimeMillis(int skewTimeMillis) {
+        this.skewTimeMillis = skewTimeMillis;
     }
 
     protected String newUUID() {
