@@ -22,12 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -83,7 +83,7 @@ public class TestPageProvider {
     TransactionalFeature txFeature;
 
     public void waitForAsyncCompletion() throws InterruptedException {
-        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+        txFeature.nextTransaction(Duration.ofSeconds(20));
     }
 
     @Before

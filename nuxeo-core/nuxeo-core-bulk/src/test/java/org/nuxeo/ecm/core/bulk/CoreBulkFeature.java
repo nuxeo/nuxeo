@@ -56,9 +56,9 @@ public class CoreBulkFeature implements RunnerFeature {
 
     public static class BulkWaiter implements Waiter {
         @Override
-        public boolean await(long deadline) throws InterruptedException {
+        public boolean await(Duration duration) throws InterruptedException {
             BulkService bulks = Framework.getService(BulkService.class);
-            return bulks.await(Duration.ofMinutes(1));
+            return bulks.await(duration);
         }
 
     }

@@ -29,11 +29,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.management.MBeanServer;
@@ -125,7 +125,7 @@ public class TestNXAuditEventsService {
     }
 
     public void waitForAsyncCompletion() throws InterruptedException {
-        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+        txFeature.nextTransaction(Duration.ofSeconds(20));
     }
 
     public boolean extendedInfosComputedWithFullDocumentModel() {

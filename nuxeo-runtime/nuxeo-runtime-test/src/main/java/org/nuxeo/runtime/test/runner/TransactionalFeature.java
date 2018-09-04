@@ -18,15 +18,17 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -54,7 +56,18 @@ public class TransactionalFeature implements RunnerFeature {
     @FunctionalInterface
     public interface Waiter {
 
-        boolean await(long deadline) throws InterruptedException;
+        /**
+         * @deprecated since 10.3, use {@link #await(Duration)} instead.
+         */
+        @Deprecated
+        default boolean await(long deadline) throws InterruptedException {
+            return await(Duration.ofMillis(deadline - System.currentTimeMillis()));
+        }
+
+        /**
+         * @since 10.3
+         */
+        boolean await(Duration duration) throws InterruptedException;
 
     }
 
@@ -63,11 +76,18 @@ public class TransactionalFeature implements RunnerFeature {
     }
 
     public void nextTransaction() {
-        nextTransaction(10, TimeUnit.MINUTES);
+        nextTransaction(Duration.ofMinutes(10));
     }
 
+    /**
+     * @deprecated since 10.3, use {@link #nextTransaction(Duration)} instead.
+     */
+    @Deprecated
     public void nextTransaction(long duration, TimeUnit unit) {
-        long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(duration, unit);
+        nextTransaction(Duration.ofMillis(unit.toMillis(duration)));
+    }
+
+    public void nextTransaction(Duration duration) {
         boolean tx = TransactionHelper.isTransactionActive();
         boolean rb = TransactionHelper.isTransactionMarkedRollback();
         if (tx || rb) {
@@ -76,13 +96,17 @@ public class TransactionalFeature implements RunnerFeature {
             TransactionHelper.commitOrRollbackTransaction();
         }
         try {
+            Duration remainingDuration = duration;
             for (Waiter provider : waiters) {
+                long start = System.currentTimeMillis();
                 try {
-                    Assert.assertTrue(await(provider, deadline));
+                    assertTrue(await(provider, remainingDuration));
                 } catch (InterruptedException cause) {
                     Thread.currentThread().interrupt();
                     throw new AssertionError("interrupted while awaiting for asynch completion", cause);
                 }
+                long end = System.currentTimeMillis();
+                remainingDuration = remainingDuration.minusMillis(end - start);
             }
         } finally {
             if (tx || rb) {
@@ -95,8 +119,8 @@ public class TransactionalFeature implements RunnerFeature {
         }
     }
 
-    boolean await(Waiter waiter, long deadline) throws InterruptedException {
-        if (waiter.await(deadline)) {
+    protected boolean await(Waiter waiter, Duration duration) throws InterruptedException {
+        if (waiter.await(duration)) {
             return true;
         }
         try {

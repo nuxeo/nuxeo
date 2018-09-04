@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
@@ -34,7 +35,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@Features({ManagementFeature.class, PlatformFeature.class})
+@Features({ ManagementFeature.class, PlatformFeature.class })
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.ecm.core.persistence")
@@ -49,9 +50,8 @@ public class AuditFeature implements RunnerFeature {
 
     protected class BulkAuditWaiter implements TransactionalFeature.Waiter {
         @Override
-        public boolean await(long deadline) throws InterruptedException {
-            return Framework.getService(AuditLogger.class)
-                    .await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        public boolean await(Duration duration) throws InterruptedException {
+            return Framework.getService(AuditLogger.class).await(duration.toMillis(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -72,7 +72,9 @@ public class AuditFeature implements RunnerFeature {
     }
 
     public void doClear() {
-        EntityManager em = Framework.getService(PersistenceProviderFactory.class).newProvider("nxaudit-logs").acquireEntityManager();
+        EntityManager em = Framework.getService(PersistenceProviderFactory.class)
+                                    .newProvider("nxaudit-logs")
+                                    .acquireEntityManager();
         try {
             em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
             em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
