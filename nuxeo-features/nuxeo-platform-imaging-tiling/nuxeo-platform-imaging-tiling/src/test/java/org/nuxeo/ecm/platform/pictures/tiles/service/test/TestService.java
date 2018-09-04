@@ -96,6 +96,7 @@ public class TestService {
         // do nothing
     }
 
+    @Ignore("NXP-25718")
     @Test
     public void testTilingSpead() throws Exception {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
