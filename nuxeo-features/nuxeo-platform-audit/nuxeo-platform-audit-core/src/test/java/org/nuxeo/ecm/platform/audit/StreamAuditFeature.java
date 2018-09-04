@@ -28,7 +28,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @Features({ ManagementFeature.class, PlatformFeature.class })
-@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.ecm.core.persistence")
