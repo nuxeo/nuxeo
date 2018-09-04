@@ -20,6 +20,10 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 7.4
@@ -40,6 +43,48 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     public static final String COMPONENT_NAME = "org.nuxeo.runtime.config";
 
+    /**
+     * XXX remove once we are able to get such a cached map from DefaultComponent
+     *
+     * @since 10.3
+     */
+    protected Map<String, ConfigurationPropertyDescriptor> descriptors = null;
+
+    /**
+     * XXX remove once we are able to get such a cached map from DefaultComponent.
+     * <p>
+     * We'd ideally need a <T extends Descriptor> Map<String, T> getDescriptors(String xp) with cache method.
+     *
+     * @since 10.3
+     */
+    protected Map<String, ConfigurationPropertyDescriptor> getDescriptors() {
+        if (descriptors == null) {
+            synchronized (this) {
+                if (descriptors == null) {
+                    descriptors = new HashMap<String, ConfigurationPropertyDescriptor>();
+                    List<ConfigurationPropertyDescriptor> descs = getDescriptors(CONFIGURATION_EP);
+                    for (ConfigurationPropertyDescriptor desc : descs) {
+                        if (desc.append) {
+                            if (descriptors.containsKey(desc.getId())) {
+                                ConfigurationPropertyDescriptor old = descriptors.get(desc.getId());
+                                ConfigurationPropertyDescriptor mergedDesc = (ConfigurationPropertyDescriptor) old.merge(
+                                        desc);
+                                descriptors.put(desc.getId(), mergedDesc);
+                            } else {
+                                descriptors.put(desc.getId(), desc);
+                            }
+                        } else if (desc.doesRemove()) {
+                            descriptors.remove(desc.getId());
+                        } else {
+                            descriptors.put(desc.getId(), desc);
+                        }
+                    }
+                }
+            }
+        }
+        return descriptors;
+    }
+
     @Override
     public String getProperty(String key) {
         return getProperty(key, null);
@@ -47,11 +92,11 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        Descriptor desc = getDescriptor(CONFIGURATION_EP, key);
-        if (desc == null) {
+        ConfigurationPropertyDescriptor conf = getDescriptors().get(key);
+        if (conf == null) {
             return defaultValue;
         }
-        String value = ((ConfigurationPropertyDescriptor) getDescriptor(CONFIGURATION_EP, key)).getValue();
+        String value = conf.getValue();
         return value != null ? value : defaultValue;
     }
 
@@ -70,6 +115,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
+            descriptors = null;
             ConfigurationPropertyDescriptor configurationPropertyDescriptor = (ConfigurationPropertyDescriptor) contribution;
             String key = configurationPropertyDescriptor.getName();
             if (Framework.getProperties().containsKey(key)) {
@@ -85,6 +131,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
+            descriptors = null;
             super.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
