@@ -122,7 +122,7 @@
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
-    <ant.assembly.version>2.1.0</ant.assembly.version>
+    <ant.assembly.version>2.1.1-SNAPSHOT</ant.assembly.version>
     <nuxeo.ftest.version>1.8.6-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.0.1</nuxeo.java.client.version>
 
@@ -5543,7 +5543,7 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <!--<unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>-->
+                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
               </requirePluginVersions>
               <bannedPlugins>
                 <excludes>
