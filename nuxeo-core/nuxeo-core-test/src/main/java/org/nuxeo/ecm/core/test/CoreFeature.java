@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.test;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -209,7 +210,7 @@ public class CoreFeature implements RunnerFeature {
     public void beforeRun(FeaturesRunner runner) {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
-        txFeature.nextTransaction(10, TimeUnit.SECONDS);
+        txFeature.nextTransaction(Duration.ofSeconds(10));
         if (granularity != Granularity.METHOD) {
             // we need a transaction to properly initialize the session
             // but it hasn't been started yet by TransactionalFeature

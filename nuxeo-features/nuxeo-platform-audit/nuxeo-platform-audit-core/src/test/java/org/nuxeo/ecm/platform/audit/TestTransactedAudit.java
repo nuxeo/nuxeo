@@ -24,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -55,7 +55,7 @@ public class TestTransactedAudit {
     TransactionalFeature txFeature;
 
     public void waitForAsyncCompletion() {
-        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+        txFeature.nextTransaction(Duration.ofSeconds(20));
     }
 
     @Before
