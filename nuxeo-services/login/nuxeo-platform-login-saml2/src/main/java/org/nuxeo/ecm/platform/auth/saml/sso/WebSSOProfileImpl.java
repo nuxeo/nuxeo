@@ -143,7 +143,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
                         sessionIndexes.add(statement.getSessionIndex());
                     }
 
-                } catch (SAMLException | SecurityException | ValidationException | DecryptionException e) {
+                } catch (SAMLException e) {
                     log.debug("Validation of received assertion failed, assertion will be skipped", e);
                     continue;
                 }
@@ -236,8 +236,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
     }
 
     @Override
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException,
-            org.opensaml.xml.security.SecurityException, ValidationException, DecryptionException {
+    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException {
         super.validateAssertion(assertion, context);
         Signature signature = assertion.getSignature();
         if (signature == null) {

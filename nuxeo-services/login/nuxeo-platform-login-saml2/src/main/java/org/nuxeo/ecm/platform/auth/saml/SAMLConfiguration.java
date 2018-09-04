@@ -64,6 +64,10 @@ public class SAMLConfiguration {
 
     public static final String WANT_ASSERTIONS_SIGNED = "nuxeo.saml2.wantAssertionsSigned";
 
+    public static final String SKEW_TIME_MS= "nuxeo.saml2.skewTimeMs";
+
+    public static final int DEFAULT_SKEW_TIME_MS = 1000 * 60; // 1 minute;
+
     public static final String BINDING_PREFIX = "urn:oasis:names:tc:SAML:2.0:bindings";
 
     public static final String DEFAULT_LOGIN_BINDINGS = "HTTP-Redirect,HTTP-POST";
@@ -103,6 +107,11 @@ public class SAMLConfiguration {
 
     public static boolean getWantAssertionsSigned() {
         return Boolean.parseBoolean(Framework.getProperty(WANT_ASSERTIONS_SIGNED));
+    }
+
+    public static int getSkewTimeMillis() {
+        String skewTimeMs = Framework.getProperty(SKEW_TIME_MS);
+        return skewTimeMs != null ? Integer.parseInt(skewTimeMs) : DEFAULT_SKEW_TIME_MS;
     }
 
     /**

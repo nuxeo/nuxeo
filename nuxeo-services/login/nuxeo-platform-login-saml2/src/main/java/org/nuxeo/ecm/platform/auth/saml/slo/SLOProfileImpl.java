@@ -29,7 +29,6 @@ import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.metadata.SingleLogoutService;
 import org.opensaml.xml.encryption.DecryptionException;
-import org.opensaml.xml.validation.ValidationException;
 
 /**
  * WebSLO (Single Log Out) profile implementation.
