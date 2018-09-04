@@ -1,0 +1,17 @@
+<component name="org.nuxeo.runtime.ConfigurationService.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.test.dummyBooleanProperty">true</property>
+    <property name="nuxeo.test.anotherDummyBooleanProperty">false</property>
+    <property name="nuxeo.test.dummyStringProperty">dummyValue</property>
+    <property name="nuxeo.test.dummyStringProperty" append="true">anotherDummyValue</property>
+    <property name="nuxeo.anothertest.dummyBooleanProperty">true</property>
+    <property name="nuxeo.anothertest.pouet">toto</property>
+    <property name="nuxeo.yetanothertest.pouet">foo</property>
+    <property name="nuxeo.yetanothertest.pouet" append="true">bar</property>
+
+
+  </extension>
+
+</component>

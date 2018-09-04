@@ -23,6 +23,7 @@ package org.nuxeo.runtime.services.config;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -139,6 +140,23 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     protected String getName() {
         return COMPONENT_NAME;
+    }
+
+    @Override
+    public Map<String, String> getProperties(String namespace) {
+        if (StringUtils.isBlank(namespace)) {
+            return null;
+        }
+        if (namespace.charAt(namespace.length() - 1) == '.') {
+            throw new IllegalArgumentException("namespace cannot end with a dot");
+        }
+        return getDescriptors().values()
+                               .stream()
+                               .filter(desc -> desc.getName().length() > namespace.length()
+                                       && desc.getName().startsWith(namespace)
+                                       && desc.getName().charAt(namespace.length()) == '.')
+                               .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
+                                       desc -> desc.getValue()));
     }
 
 }

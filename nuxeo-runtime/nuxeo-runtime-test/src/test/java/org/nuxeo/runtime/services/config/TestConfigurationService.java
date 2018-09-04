@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
@@ -127,6 +128,29 @@ public class TestConfigurationService {
         assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
         // Assert new property was not merged
         assertEquals("anotherNotMergedValue", cs.getProperty("nuxeo.test.anotherDummyStringProperty"));
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
+    public void testByNamespace() throws Exception {
+        assertEquals(3, cs.getProperties("nuxeo.test").size());
+        assertEquals(2, cs.getProperties("nuxeo.anothertest").size());
+        assertEquals(6, cs.getProperties("nuxeo").size());
+        assertEquals(1, cs.getProperties("nuxeo.yetanothertest").size());
+        assertEquals("foo,bar", cs.getProperties("nuxeo.yetanothertest").get("pouet"));
+        assertTrue(cs.getProperties("nuxeo.test.dummyStringProperty").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.t").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.te").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.tes").isEmpty());
+        try {
+            assertTrue(cs.getProperties("nuxeo.test.").isEmpty());
+            fail("Should not be able with invalid namspace");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
     }
 
 }

@@ -19,6 +19,8 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import java.util.Map;
+
 /**
  * Service holding runtime configuration properties.
  *
@@ -40,6 +42,15 @@ public interface ConfigurationService {
      * @param defaultValue the default value for this key
      */
     String getProperty(String key, String defaultValue);
+
+    /**
+     * Returns the properties with key starting with the given namespace.
+     *
+     * @param namespace the namespace
+     * @return a map of properties with trimmed keys (namespace removed)
+     * @since 10.3
+     */
+    Map<String, String> getProperties(String namespace);
 
     /**
      * Returns true if given property is true when compared to a boolean value.
