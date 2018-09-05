@@ -18,8 +18,12 @@
  */
 package org.nuxeo.lib.stream.log.chronicle;
 
+import static net.openhft.chronicle.queue.RollCycles.DAILY;
+import static net.openhft.chronicle.queue.RollCycles.HOURLY;
+import static net.openhft.chronicle.queue.RollCycles.MINUTELY;
+import static net.openhft.chronicle.queue.RollCycles.TEST_SECONDLY;
+
 import net.openhft.chronicle.queue.RollCycle;
-import net.openhft.chronicle.queue.RollCycles;
 
 /**
  * @since 9.3
@@ -43,14 +47,21 @@ public class ChronicleRetentionDuration {
     public static final ChronicleRetentionDuration NONE = new ChronicleRetentionDuration("0d");
 
     public ChronicleRetentionDuration(String retention) {
-        this.retention = retention;
-        this.rollCycle = decodeRollCycle(retention);
-        this.retentionCycles = decodeRetentionCycles(retention);
+        this.retention = decodeRetention(retention);
+        this.rollCycle = decodeRollCycle(this.retention);
+        this.retentionCycles = decodeRetentionCycles(this.retention);
+    }
+
+    protected String decodeRetention(String retention) {
+        if (retention == null || retention.isEmpty()) {
+            return "0d";
+        }
+        return retention;
     }
 
     @Override
     public String toString() {
-        return disable() ? "disabled" : retention;
+        return retention;
     }
 
     public boolean disable() {
@@ -72,21 +83,20 @@ public class ChronicleRetentionDuration {
 
     protected RollCycle decodeRollCycle(String retentionDuration) {
         if (retentionDuration == null || retentionDuration.isEmpty()) {
-            return RollCycles.DAILY;
+            return DAILY;
         }
         String rollingPeriod = retentionDuration.substring(retentionDuration.length() - 1);
         switch (rollingPeriod) {
         case SECOND_ROLLING_PERIOD:
-            return RollCycles.TEST_SECONDLY;
+            return TEST_SECONDLY;
         case MINUTE_ROLLING_PERIOD:
-            return RollCycles.MINUTELY;
+            return MINUTELY;
         case HOUR_ROLLING_PERIOD:
-            return RollCycles.HOURLY;
+            return HOURLY;
         case DAY_ROLLING_PERIOD:
-            return RollCycles.DAILY;
+            return DAILY;
         default:
-            String msg = "Unknown rolling period: " + rollingPeriod;
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException("Unknown rolling period: " + rollingPeriod);
         }
     }
 
@@ -97,4 +107,23 @@ public class ChronicleRetentionDuration {
         return 0;
     }
 
+    protected static String encodeRollCycle(RollCycle rollCycle) {
+        if (rollCycle.equals(TEST_SECONDLY)) {
+            return SECOND_ROLLING_PERIOD;
+        }
+        if (rollCycle.equals(MINUTELY)) {
+            return MINUTE_ROLLING_PERIOD;
+        }
+        if (rollCycle.equals(HOURLY)) {
+            return HOUR_ROLLING_PERIOD;
+        }
+        if (rollCycle.equals(DAILY)) {
+            return DAY_ROLLING_PERIOD;
+        }
+        throw new IllegalArgumentException("Unknown rolling cycle: " + rollCycle);
+    }
+
+    public static ChronicleRetentionDuration disableOf(ChronicleRetentionDuration retention) {
+        return new ChronicleRetentionDuration("0" + encodeRollCycle(retention.getRollCycle()));
+    }
 }

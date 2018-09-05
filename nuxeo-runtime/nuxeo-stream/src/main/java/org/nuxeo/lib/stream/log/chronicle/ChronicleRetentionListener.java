@@ -65,7 +65,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
     }
 
     public synchronized void purge() {
-        if (queue == null || queue.isClosed() || retention.disable()) {
+        if (queue == null || queue.isClosed() || retention.disable() || !queue.file().exists()) {
             return;
         }
         List<Integer> cycles = getAllCycles();

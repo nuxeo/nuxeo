@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.log.chronicle;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+import static org.nuxeo.lib.stream.log.chronicle.ChronicleLogAppender.METADATA_FILE;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -74,8 +75,7 @@ public class ChronicleLogManager extends AbstractLogManager {
             log.info("Removing Chronicle Queues directory: " + basePath);
             // Performs a recursive delete if the directory contains only chronicles files
             try (Stream<Path> paths = Files.list(basePath)) {
-                int count = (int) paths.filter(path -> (path.toFile().isFile() && !path.toString().endsWith(".cq4")))
-                                       .count();
+                int count = (int) paths.filter(path -> (path.toFile().isFile() && !isChronicleLogFile(path))).count();
                 if (count > 0) {
                     String msg = "ChronicleLog basePath: " + basePath
                             + " contains unknown files, please choose another basePath";
@@ -89,6 +89,11 @@ public class ChronicleLogManager extends AbstractLogManager {
             log.error(msg, e);
             throw new IllegalArgumentException(msg, e);
         }
+    }
+
+    protected static boolean isChronicleLogFile(Path path) {
+        String filename = path.getFileName().toString();
+        return filename.endsWith(".cq4") || filename.endsWith(".cq4t") || METADATA_FILE.equals(filename);
     }
 
     public String getBasePath() {
@@ -112,7 +117,7 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     protected int getSize(String name) {
-        return ChronicleLogAppender.partitions(basePath.resolve(name).toFile());
+        return ChronicleLogAppender.partitions(basePath.resolve(name));
     }
 
     @Override
@@ -133,7 +138,7 @@ public class ChronicleLogManager extends AbstractLogManager {
             pos = 0;
         } else {
             try (ChronicleLogOffsetTracker offsetTracker = new ChronicleLogOffsetTracker(path.toString(), partition,
-                    group)) {
+                    group, ChronicleRetentionDuration.disableOf(retention))) {
                 pos = offsetTracker.readLastCommittedOffset();
             }
         }

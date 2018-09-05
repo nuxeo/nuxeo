@@ -62,34 +62,35 @@ the second is dedicated for cluster deployment.
 
   For instance a directory layout for a Log with 4 partitions looks like:
    ```
-   basePath                    # The base path of the LogManager
-    └── logName                # The name of the Log
-        ├── P-00               # Chronicle Queue for partition 00
-        │   ├── 20171114.cq4   # Cycle for day 2017-11-14
+   basePath                     # The base path of the LogManager
+    └── logName                 # The name of the Log
+        ├── metadata.properties # Internal metadata about the Log
+        ├── P-00                # Chronicle Queue for partition 00
+        │   ├── 20171114.cq4    # Cycle for day 2017-11-14
         │   ├── 20171115.cq4
         │   ├── 20171116.cq4
         │   ├── 20171117.cq4
-        │   └── directory-listing.cq4t # Chronicle queue interal file
+        │   └── metadata.cq4t  # Chronicle queue interal file
         ├── P-01               # Chronicle Queue for partition 01
         │   ├── 20171113.cq4   # Retention keep the last 4 cycles
         │   ├── 20171114.cq4
         │   ├── 20171116.cq4   # There was no record on this partition 2017-11-15
         │   ├── 20171117.cq4
-        │   └── directory-listing.cq4t
+        │   └── metadata.cq4t
         ├── P-02               # Chronicle Queue for partition 02
         │   ├── 20171115.cq4
         │   ├── 20171117.cq4
-        │   └── directory-listing.cq4t
+        │   └── metadata.cq4t
         ├── P-03               # Chronicle Queue for partition 03
         │   ├── 20171116.cq4
         │   ├── 20171117.cq4
-        │   └── directory-listing.cq4t
+        │   └── metadata.cq4t
         └── offset-myGroup     # Chronicle Queue for consumer offset of group myGroup
             ├── 20171114.cq4
             ├── 20171115.cq4
             ├── 20171116.cq4
             ├── 20171117.cq4
-            └── directory-listing.cq4t
+            └── metadata.cq4t
   ```
 
   Note that this implementation has some important limitations:
@@ -97,6 +98,7 @@ the second is dedicated for cluster deployment.
   - It is limited to a single node because Chronicle Queue can not be distributed using the open source version.
   - The dynamic assignment is not supported, hopefully as we are limited to a single node static assignment is easy to setup.
   - There is no replication, so even if the Log is crash resistant you need to backup the data directory and make sure you never run out of disk.
+  - The maximum message size is determined by the Chronicle Queue blockSize which is 4M and enable a message of 1MB.
 
 #### Kafka
 
@@ -137,6 +139,9 @@ the second is dedicated for cluster deployment.
   | `acks` | `1` | The number of acknowledgments the producer requires the leader to have received before considering a request complete. |
   | `compression.type` | `none` | Valid values are none, gzip, snappy, or lz4. Compression is of full batches of data, so the efficacy of batching will also impact the compression ratio (more batching means better compression). |
   | `default.replication.factor` | `1` | Not a Kafka option, used by the module to set the topic replication factor when creating new topic. |
+
+
+  The maximum message size is limited by Kafka configuration, the default `max.message.bytes` is fixed to 1MB.
 
 
 ## Stream

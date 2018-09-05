@@ -275,6 +275,24 @@ public class TestLibChronicle implements StoreFileListener {
         }
     }
 
+    @Test
+    public void testBlockSize() throws Exception {
+        File path = folder.newFolder("cq");
+        SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(path)
+                                                                .rollCycle(RollCycles.TEST_HOURLY)
+                                                                .blockSize(1024 * 1024 * 5)
+                                                                .build();
+        assertNotNull(queue);
+        ExcerptAppender appender = queue.acquireAppender();
+        appender.pretouch();
+        appender.writeText("123");
+        queue.close();
+        // Reopen with a different block size should be ok
+        queue = SingleChronicleQueueBuilder.binary(path).rollCycle(RollCycles.TEST_HOURLY).testBlockSize().build();
+        queue.acquireAppender().pretouch();
+        queue.close();
+    }
+
     @Override
     public void onAcquired(int cycle, File file) {
         log.debug("New file: " + file + " cycle: " + cycle);
