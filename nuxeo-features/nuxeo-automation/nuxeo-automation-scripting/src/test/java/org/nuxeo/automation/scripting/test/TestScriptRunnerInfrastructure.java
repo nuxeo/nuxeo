@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thierry Delprat <tdelprat@nuxeo.com>, Ronan DANIELLOU <rdaniellou@nuxeo.com>
+ *     Thierry Delprat <tdelprat@nuxeo.com>
+ *     Ronan DANIELLOU <rdaniellou@nuxeo.com>
  */
 package org.nuxeo.automation.scripting.test;
 
@@ -605,7 +606,7 @@ public class TestScriptRunnerInfrastructure {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput("/default-domain");
             DocumentModel doc = (DocumentModel) automationService.run(ctx, "Scripting.TestInputAdaptedAsDocument");
-            assertTrue(doc.getPathAsString().equals("/default-domain"));
+            assertEquals("/default-domain", doc.getPathAsString());
         }
     }
 
@@ -617,8 +618,8 @@ public class TestScriptRunnerInfrastructure {
             List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
                     "Scripting.TestInputAdaptedAsDocuments");
             assertEquals(2, docs.size());
-            assertTrue(docs.get(0).getPathAsString().equals("/default-domain"));
-            assertTrue(docs.get(1).getPathAsString().equals("/default-domain/workspaces"));
+            assertEquals("/default-domain", docs.get(0).getPathAsString());
+            assertEquals("/default-domain/workspaces", docs.get(1).getPathAsString());
         }
     }
 
@@ -632,8 +633,8 @@ public class TestScriptRunnerInfrastructure {
             List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
                     "Scripting.TestInputAdaptedAsDocuments");
             assertEquals(2, docs.size());
-            assertTrue(docs.get(0).getPathAsString().equals("/default-domain"));
-            assertTrue(docs.get(1).getPathAsString().equals("/default-domain/workspaces"));
+            assertEquals("/default-domain", docs.get(0).getPathAsString());
+            assertEquals("/default-domain/workspaces", docs.get(1).getPathAsString());
         }
     }
 
@@ -663,7 +664,8 @@ public class TestScriptRunnerInfrastructure {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(doc);
             DocumentModel res = (DocumentModel) automationService.run(ctx, "Scripting.TestUpdateComplexProperties");
-            Map<String, Serializable> complexItem = (Map<String, Serializable>) res.getPropertyValue("list:complexItem");
+            Map<String, Serializable> complexItem = (Map<String, Serializable>) res.getPropertyValue(
+                    "list:complexItem");
             assertEquals("foo", complexItem.get("name"));
             assertEquals("bar", complexItem.get("description"));
         }
