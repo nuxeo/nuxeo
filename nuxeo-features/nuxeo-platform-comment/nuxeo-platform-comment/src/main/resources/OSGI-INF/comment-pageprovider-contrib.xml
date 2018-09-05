@@ -3,6 +3,14 @@
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
+    <coreQueryPageProvider name="GET_COMMENT_AS_EXTERNAL_ENTITY">
+      <pattern>
+        SELECT * FROM Comment WHERE externalEntity:entityId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT">
       <pattern>
         SELECT * FROM Comment WHERE comment:documentId = ?

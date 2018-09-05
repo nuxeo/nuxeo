@@ -32,11 +32,40 @@ import org.nuxeo.ecm.core.api.PartialList;
  */
 public interface CommentManager {
 
+    /**
+     * Gets comments of a document.
+     *
+     * @param docModel the document model
+     * @return the list of comments
+     */
     List<DocumentModel> getComments(DocumentModel docModel);
 
+    /**
+     * Gets comments of a document.
+     *
+     * @param session the core session
+     * @param docModel the document model
+     * @return the list of comments
+     * @since 10.3
+     */
+    List<DocumentModel> getComments(CoreSession session, DocumentModel docModel);
+
+    /**
+     * Get comments of a document.
+     *
+     * @param docModel the document model
+     * @param parent the parent document model
+     * @return the list of comments
+     * @deprecated since 10.3, use {@link #getComments(DocumentModel)} instead.
+     */
+    @Deprecated
     List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent);
 
     /**
+     * Creates a comment.
+     *
+     * @param docModel the document to comment
+     * @param comment the comment content
      * @deprecated CommentManager cannot find the author if invoked remotely so one should use
      *             {@link #createComment(DocumentModel, String, String)}
      */
@@ -50,13 +79,40 @@ public interface CommentManager {
      * @param comment the comment content
      * @param author the comment author
      * @return the comment document model.
+     * @deprecated since 10.3, use {@link #createComment(CoreSession, Comment)} instead.
      */
+    @Deprecated
     DocumentModel createComment(DocumentModel docModel, String comment, String author);
 
+    /**
+     * Creates a comment document model, filling its properties with given info and linking it to given document.
+     *
+     * @param docModel the document to comment
+     * @param comment the comment document model
+     * @return the created comment document model.
+     */
     DocumentModel createComment(DocumentModel docModel, DocumentModel comment);
 
+    /**
+     * Creates a comment document model, filling its properties with given info and linking it to given document.
+     *
+     * @param docModel the document to comment
+     * @param parent the comment parent document model
+     * @param child the comment child document model
+     * @return the created comment document model.
+     * @deprecated since 10.3, use {@link #createComment(CoreSession, Comment)} instead.
+     */
+    @Deprecated
     DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child);
 
+    /**
+     * Deletes a comment.
+     *
+     * @param docModel the comment document model
+     * @param comment the comment
+     * @deprecated since 10.3, use {@link #deleteComment(CoreSession, String)} instead.
+     */
+    @Deprecated
     void deleteComment(DocumentModel docModel, DocumentModel comment);
 
     /**
@@ -64,14 +120,16 @@ public interface CommentManager {
      *
      * @param comment the comment
      * @return the list of documents
+     * @deprecated since 10.3, only used with deprecated implementation, no replacement.
      */
+    @Deprecated
     List<DocumentModel> getDocumentsForComment(DocumentModel comment);
 
     /**
-     * Gets thread in relation with a given comment (post or comment)
+     * Gets thread in relation with a given comment (post or comment).
      *
-     * @param comment
-     * @return
+     * @param comment the comment
+     * @return the thread
      * @since 5.5
      */
     DocumentModel getThreadForComment(DocumentModel comment);
@@ -113,10 +171,9 @@ public interface CommentManager {
      * @param session the core session
      * @param documentId the document id
      * @return the list of comments, or an em pty list if no comment is found
-     * @throws IllegalArgumentException if no document was found with the given id
      * @since 10.3
      */
-    List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException;
+    List<Comment> getComments(CoreSession session, String documentId);
 
     /**
      * Gets all comments for a document.
@@ -126,11 +183,9 @@ public interface CommentManager {
      * @param pageSize the page size to query, give null or 0 to disable pagination
      * @param currentPageIndex the page index to query, give null or 0 to disable pagination
      * @return the list of comments, or an empty list if no comment is found
-     * @throws IllegalArgumentException if no document was found with the given id
      * @since 10.3
      */
-    PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex)
-            throws IllegalArgumentException;
+    PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex);
 
     /**
      * Updates a comment.

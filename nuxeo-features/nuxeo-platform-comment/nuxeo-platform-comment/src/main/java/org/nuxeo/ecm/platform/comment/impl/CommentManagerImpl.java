@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
@@ -64,9 +65,9 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
+import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -103,6 +104,7 @@ public class CommentManagerImpl implements CommentManager {
         commentConverter = config.getCommentConverter();
     }
 
+    @Override
     public List<DocumentModel> getComments(DocumentModel docModel) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                 docModel.getCoreSession());
@@ -144,6 +146,12 @@ public class CommentManagerImpl implements CommentManager {
         return commentList;
     }
 
+    @Override
+    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
+        return getComments(docModel);
+    }
+
+    @Override
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
@@ -157,6 +165,7 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
+    @Override
     public DocumentModel createComment(DocumentModel docModel, String comment) {
         String author = getCurrentUser(docModel);
         return createComment(docModel, comment, author);
@@ -179,6 +188,7 @@ public class CommentManagerImpl implements CommentManager {
         return author;
     }
 
+    @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
@@ -365,6 +375,7 @@ public class CommentManagerImpl implements CommentManager {
         return creationDate.getTime();
     }
 
+    @Override
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         NuxeoPrincipal author = comment.getCoreSession() != null
                 ? (NuxeoPrincipal) comment.getCoreSession().getPrincipal()
@@ -383,6 +394,7 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
+    @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
@@ -406,10 +418,12 @@ public class CommentManagerImpl implements CommentManager {
         return userManager.getPrincipal(contributors[0]);
     }
 
+    @Override
     public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
         return getComments(parent);
     }
 
+    @Override
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                 comment.getCoreSession());
@@ -446,6 +460,7 @@ public class CommentManagerImpl implements CommentManager {
 
     }
 
+    @Override
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
@@ -454,10 +469,11 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
+    @Override
     public DocumentModel getThreadForComment(DocumentModel comment) {
         List<DocumentModel> threads = getDocumentsForComment(comment);
         if (threads.size() > 0) {
-            DocumentModel thread = (DocumentModel) threads.get(0);
+            DocumentModel thread = threads.get(0);
             while (thread.getType().equals("Post") || thread.getType().equals(COMMENT_DOC_TYPE)) {
                 thread = getThreadForComment(thread);
             }
@@ -474,13 +490,16 @@ public class CommentManagerImpl implements CommentManager {
         }
         DocumentModel docToComment = session.getDocument(commentRef);
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
+        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
 
-        Comments.externalCommentToDocumentModel().accept(comment, commentModel);
+        Comments.commentToDocumentModel(comment, commentModel);
+        if (comment instanceof ExternalEntity) {
+            commentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
+        }
 
         DocumentModel createdCommentModel = createComment(docToComment, commentModel);
-        Comment createdComment = new CommentImpl();
-        Comments.documentModelToExternalComment().accept(createdCommentModel, createdComment);
-        return createdComment;
+        return Comments.newComment(createdCommentModel);
     }
 
     @Override
@@ -490,24 +509,18 @@ public class CommentManagerImpl implements CommentManager {
             throw new IllegalArgumentException("The document " + commentId + " does not exist.");
         }
         DocumentModel commentModel =  session.getDocument(commentRef);
-        Comment comment = new CommentImpl();
-        Comments.documentModelToExternalComment().accept(commentModel, comment);
-        return comment;
+        return Comments.newComment(commentModel);
     }
 
     @Override
-    public List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException {
+    public List<Comment> getComments(CoreSession session, String documentId) {
         return getComments(session, documentId, Long.valueOf(0), Long.valueOf(0));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex) throws IllegalArgumentException {
-        DocumentRef docRef = new IdRef(documentId);
-        if (!session.exists(docRef)) {
-            throw new IllegalArgumentException("The document " + documentId + " does not exist.");
-        }
+            Long currentPageIndex) {
         DocumentModel commentedDoc = session.getDocument(new IdRef(documentId));
         // do a dummy implementation of pagination for former comment manager implementation
         List<DocumentModel> comments = getComments(commentedDoc);
@@ -517,11 +530,7 @@ public class CommentManagerImpl implements CommentManager {
                        .sorted(Comparator.comparing(doc -> (Calendar) doc.getPropertyValue("dc:created")))
                        .skip(offset)
                        .limit(maxSize)
-                       .map(commentModel -> {
-                           Comment comment = new CommentImpl();
-                           Comments.documentModelToExternalComment().accept(commentModel, comment);
-                           return comment;
-                       })
+                       .map(Comments::newComment)
                        .collect(collectingAndThen(toList(), list -> new PartialList<>(list, comments.size())));
     }
 

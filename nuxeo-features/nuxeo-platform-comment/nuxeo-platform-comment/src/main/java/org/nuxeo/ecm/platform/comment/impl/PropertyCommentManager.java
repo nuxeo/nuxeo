@@ -20,45 +20,37 @@
 package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl.COMMENTS_DIRECTORY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,56 +62,88 @@ public class PropertyCommentManager implements CommentManager {
 
     private static final Log log = LogFactory.getLog(PropertyCommentManager.class);
 
+    protected static final String GET_COMMENT_PAGEPROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
+
     protected static final String GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT";
+
+    protected static final String HIDDEN_FOLDER_TYPE = "HiddenFolder";
+
+    protected static final String COMMENT_NAME = "comment";
 
     @Override
     public List<DocumentModel> getComments(DocumentModel docModel) {
-        throw new UnsupportedOperationException();
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(docModel.getRepositoryName())) {
+            return getComments(session, docModel);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), null, null,
+                props, docModel.getId());
+        return pageProvider.getCurrentPage();
     }
 
     @Override
     public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, String comment) {
-        return createComment(docModel, comment, docModel.getCoreSession().getPrincipal().getName());
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, String text, String author) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
-    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
-        throw new UnsupportedOperationException();
+    public DocumentModel createComment(DocumentModel docModel, DocumentModel commentModel) {
+        CoreSession session = docModel.getCoreSession();
+        String path = getCommentContainerPath(session, docModel.getId());
+        DocumentModel createdCommentModel = session.createDocumentModel(path, COMMENT_NAME, commentModel.getType());
+        createdCommentModel.copyContent(commentModel);
+        return session.createDocument(createdCommentModel);
     }
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
     public DocumentModel getThreadForComment(DocumentModel comment) {
-        throw new UnsupportedOperationException();
+        CoreSession session = comment.getCoreSession();
+        DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_DOCUMENT_ID)));
+        while (COMMENT_DOC_TYPE.equals(parent.getType())) {
+            comment = getThreadForComment(parent);
+        }
+        return comment;
     }
 
     @Override
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path) {
-        throw new UnsupportedOperationException();
+        CoreSession session = docModel.getCoreSession();
+        DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, comment.getType());
+        commentModel.copyContent(comment);
+        commentModel = session.createDocument(commentModel);
+        return commentModel;
     }
 
     @Override
@@ -127,141 +151,131 @@ public class PropertyCommentManager implements CommentManager {
         if (!session.exists(new IdRef(comment.getDocumentId()))) {
             throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
         }
-        return CoreInstance.doPrivileged(session, s -> {
-            // TODO create comments container folder
-            DocumentModel commentModel = s.createDocumentModel(COMMENT_DOC_TYPE);
-            commentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
-            commentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
-            commentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
-            commentModel.setPropertyValue(COMMENT_CREATION_DATE, comment.getCreationDate());
-            commentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, comment.getModificationDate());
-            if (comment instanceof ExternalEntity) {
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, ((ExternalEntity) comment).getEntityId());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, ((ExternalEntity) comment).getOrigin());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, ((ExternalEntity) comment).getEntity());
-                commentModel = s.createDocument(commentModel);
-                Comment createdComment = new CommentImpl();
-                Comments.documentModelToExternalComment().accept(commentModel, createdComment);
-                return createdComment;
-            }
-            commentModel = s.createDocument(commentModel);
-            Comment createdComment = new CommentImpl();
-            Comments.documentModelToComment().accept(commentModel, createdComment);
-            return createdComment;
-        });
+        String path = getCommentContainerPath(session, comment.getDocumentId());
+        DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
+        Comments.commentToDocumentModel(comment, commentModel);
+        if (comment instanceof ExternalEntity) {
+            commentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
+        }
+        commentModel = session.createDocument(commentModel);
+        return Comments.newComment(commentModel);
     }
 
     @Override
     public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
-        return CoreInstance.doPrivileged(session, s -> {
-            DocumentRef commentRef = new IdRef(commentId);
-            if (!s.exists(commentRef)) {
-                throw new IllegalArgumentException("The document " + commentId + " does not exist.");
-            }
-            DocumentModel commentModel = s.getDocument(commentRef);
-            Comment comment = new CommentImpl();
-            comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
-            comment.setText((String) commentModel.getPropertyValue(COMMENT_TEXT));
-            comment.setDocumentId((String) commentModel.getPropertyValue(COMMENT_DOCUMENT_ID));
-            comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
-            comment.setModificationDate((Instant) commentModel.getPropertyValue(COMMENT_MODIFICATION_DATE));
-            if (commentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
-                ((ExternalEntity) comment).setEntityId(
-                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
-                ((ExternalEntity) comment).setOrigin(
-                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
-                ((ExternalEntity) comment).setEntity((String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
-            }
-            return comment;
-        });
+        DocumentRef commentRef = new IdRef(commentId);
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+        }
+        DocumentModel commentModel = session.getDocument(commentRef);
+        return Comments.newComment(commentModel);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Comment> getComments(CoreSession session, String documentId) throws IllegalArgumentException {
+    public List<Comment> getComments(CoreSession session, String documentId) {
         return getComments(session, documentId, null, null);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex) throws IllegalArgumentException {
-        if (!session.exists(new IdRef(documentId))) {
-            throw new IllegalArgumentException("The document " + documentId + " does not exist.");
-        }
-        return CoreInstance.doPrivileged(session, s -> {
-            PageProviderService ppService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = Collections.singletonMap(
-                    CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) s);
-            PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), pageSize,
-                    currentPageIndex, props, documentId);
-            List<DocumentModel> commentList = pageProvider.getCurrentPage();
-            return commentList.stream().map(commentModel -> {
-                Comment comment = new CommentImpl();
-                comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
-                comment.setText((String) commentModel.getPropertyValue(COMMENT_TEXT));
-                comment.setDocumentId(documentId);
-                comment.setCreationDate((Instant) commentModel.getPropertyValue(COMMENT_CREATION_DATE));
-                comment.setModificationDate((Instant) commentModel.getPropertyValue(COMMENT_MODIFICATION_DATE));
-                if (commentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
-                    ((ExternalEntity) comment).setEntityId(
-                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
-                    ((ExternalEntity) comment).setOrigin(
-                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
-                    ((ExternalEntity) comment).setEntity(
-                            (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
-                }
-                return comment;
-            }).collect(collectingAndThen(toList(), list -> new PartialList<>(list, pageProvider.getResultsCount())));
-        });
+            Long currentPageIndex) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), pageSize,
+                currentPageIndex, props, documentId);
+        List<DocumentModel> commentList = pageProvider.getCurrentPage();
+        return commentList.stream().map(Comments::newComment).collect(
+                collectingAndThen(toList(), list -> new PartialList<>(list, pageProvider.getResultsCount())));
     }
 
     @Override
     public void updateComment(CoreSession session, String commentId, Comment comment) throws IllegalArgumentException {
-        CoreInstance.doPrivileged(session, s -> {
-            IdRef commentRef = new IdRef(commentId);
-            if (!s.exists(commentRef)) {
-                throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
-            }
-            DocumentModel commentModel = s.getDocument(commentRef);
-            commentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
-            commentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
-            commentModel.setPropertyValue(COMMENT_CREATION_DATE, comment.getCreationDate());
-            commentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, comment.getModificationDate());
-            if (comment instanceof ExternalEntity) {
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ID, ((ExternalEntity) comment).getEntityId());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN, ((ExternalEntity) comment).getOrigin());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY, ((ExternalEntity) comment).getEntity());
-            }
-            s.saveDocument(commentModel);
-        });
+        IdRef commentRef = new IdRef(commentId);
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+        }
+        DocumentModel commentModel = session.getDocument(commentRef);
+        Comments.commentToDocumentModel(comment, commentModel);
+        if (comment instanceof ExternalEntity) {
+            Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
+        }
+        session.saveDocument(commentModel);
     }
 
     @Override
     public void deleteComment(CoreSession session, String commentId) throws IllegalArgumentException {
-        CoreInstance.doPrivileged(session, s -> {
-            IdRef commentRef = new IdRef(commentId);
-            if (!s.exists(commentRef)) {
-                throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
-            }
-            s.removeDocument(commentRef);
-        });
+        IdRef commentRef = new IdRef(commentId);
+        if (!session.exists(commentRef)) {
+            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+        }
+        session.removeDocument(commentRef);
     }
 
     @Override
     public Comment getExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+        if (commentModel == null) {
+            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+        }
+        return Comments.newComment(commentModel);
     }
 
     @Override
     public void updateExternalComment(CoreSession session, String entityId, Comment comment)
             throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+        if (commentModel == null) {
+            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+        }
+        Comments.commentToDocumentModel(comment, commentModel);
+        if (comment instanceof ExternalEntity) {
+            Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
+        }
+        session.saveDocument(commentModel);
     }
 
     @Override
     public void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+        if (commentModel == null) {
+            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+        }
+        session.removeDocument(commentModel.getRef());
     }
+
+    @SuppressWarnings("unchecked")
+    protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
+                GET_COMMENT_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
+        if (results.isEmpty()) {
+            return null;
+        }
+        return results.get(0);
+    }
+
+    protected String getCommentContainerPath(CoreSession session, String commentedDocumentId) {
+        return CoreInstance.doPrivileged(session, s -> {
+            // Create or retrieve the folder to store the comment.
+            // If the document is under a domain, the folder is a child of this domain.
+            // Otherwise, it is a child of the root document.
+            DocumentModel annotatedDoc = s.getDocument(new IdRef(commentedDocumentId));
+            String parentPath = "/";
+            if (annotatedDoc.getPath().segmentCount() > 1) {
+                parentPath += annotatedDoc.getPath().segment(0);
+            }
+            PathRef ref = new PathRef(parentPath, COMMENTS_DIRECTORY);
+            DocumentModel commentFolderDoc = s.createDocumentModel(parentPath, COMMENTS_DIRECTORY, HIDDEN_FOLDER_TYPE);
+            s.getOrCreateDocument(commentFolderDoc);
+            s.save();
+            return ref.toString();
+        });
+    }
+
 }

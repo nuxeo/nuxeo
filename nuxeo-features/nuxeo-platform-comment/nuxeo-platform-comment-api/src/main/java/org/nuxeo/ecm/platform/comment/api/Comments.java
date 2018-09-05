@@ -49,88 +49,72 @@ public class Comments {
         // no instance allowed
     }
 
-    public static BiConsumer<Comment, DocumentModel> commentToDocumentModel() {
-        return (comment, commentModel) -> {
-            commentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
-            commentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
-            commentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
-            Instant creationDate = comment.getCreationDate();
-            if (creationDate != null) {
-                commentModel.setPropertyValue(COMMENT_CREATION_DATE,
-                        GregorianCalendar.from(ZonedDateTime.ofInstant(creationDate, ZoneId.systemDefault())));
-            }
-            Instant modificationDate = comment.getModificationDate();
-            if (modificationDate != null) {
-                commentModel.setPropertyValue(COMMENT_MODIFICATION_DATE,
-                        GregorianCalendar.from(ZonedDateTime.ofInstant(modificationDate, ZoneId.systemDefault())));
-            }
-        };
+    public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
+        documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
+        documentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
+        documentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
+        Instant creationDate = comment.getCreationDate();
+        if (creationDate != null) {
+            documentModel.setPropertyValue(COMMENT_CREATION_DATE,
+                    GregorianCalendar.from(ZonedDateTime.ofInstant(creationDate, ZoneId.systemDefault())));
+        }
+        Instant modificationDate = comment.getModificationDate();
+        if (modificationDate != null) {
+            documentModel.setPropertyValue(COMMENT_MODIFICATION_DATE,
+                    GregorianCalendar.from(ZonedDateTime.ofInstant(modificationDate, ZoneId.systemDefault())));
+        }
     }
 
-    public static BiConsumer<Comment, DocumentModel> annotationToDocumentModel() {
-        return commentToDocumentModel().andThen((comment, commentModel) -> commentModel.setPropertyValue(
-                ANNOTATION_XPATH_PROPERTY, ((Annotation) comment).getXpath()));
+    public static void annotationToDocumentModel(Annotation annotation, DocumentModel documentModel) {
+        commentToDocumentModel(annotation, documentModel);
+        documentModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
     }
 
-    public static BiConsumer<Comment, DocumentModel> externalEntityToDocumentModel() {
-        return (comment, commentModel) -> {
-            if (((ExternalEntity) comment).getEntityId() != null) {
-                commentModel.addFacet(EXTERNAL_ENTITY_FACET);
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, ((ExternalEntity) comment).getEntityId());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, ((ExternalEntity) comment).getOrigin());
-                commentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, ((ExternalEntity) comment).getEntity());
-            }
-        };
+    public static void externalEntityToDocumentModel(ExternalEntity entity, DocumentModel documentModel) {
+        documentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, entity.getEntityId());
+        documentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, entity.getOrigin());
+        documentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, entity.getEntity());
     }
 
-    public static BiConsumer<Comment, DocumentModel> externalCommentToDocumentModel() {
-        return commentToDocumentModel().andThen(externalEntityToDocumentModel());
+    public static void documentModelToComment(DocumentModel documentModel, Comment comment) {
+        comment.setId(documentModel.getId());
+        comment.setAuthor((String) documentModel.getPropertyValue(COMMENT_AUTHOR));
+        comment.setText((String) documentModel.getPropertyValue(COMMENT_TEXT));
+        comment.setDocumentId((String) documentModel.getPropertyValue(COMMENT_DOCUMENT_ID));
+        Calendar creationDate = (Calendar) documentModel.getPropertyValue(COMMENT_CREATION_DATE);
+        if (creationDate != null) {
+            comment.setCreationDate(creationDate.toInstant());
+        }
+        Calendar modificationDate = (Calendar) documentModel.getPropertyValue(COMMENT_MODIFICATION_DATE);
+        if (modificationDate != null) {
+            comment.setModificationDate(modificationDate.toInstant());
+        }
     }
 
-    public static BiConsumer<Comment, DocumentModel> externalAnnotationToDocumentModel() {
-        return annotationToDocumentModel().andThen(externalEntityToDocumentModel());
+    public static void documentModelToAnnotation(DocumentModel documentModel, Annotation annotation) {
+        documentModelToComment(documentModel, annotation);
+        annotation.setXpath((String) documentModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY));
     }
 
-    public static BiConsumer<DocumentModel, Comment> documentModelToComment() {
-        return (commentModel, comment) -> {
-            comment.setId(commentModel.getId());
-            comment.setAuthor((String) commentModel.getPropertyValue(COMMENT_AUTHOR));
-            comment.setText((String) commentModel.getPropertyValue(COMMENT_TEXT));
-            comment.setDocumentId((String) commentModel.getPropertyValue(COMMENT_DOCUMENT_ID));
-            Calendar creationDate = (Calendar) commentModel.getPropertyValue(COMMENT_CREATION_DATE);
-            if (creationDate != null) {
-                comment.setCreationDate(creationDate.toInstant());
-            }
-            Calendar modificationDate = (Calendar) commentModel.getPropertyValue(COMMENT_MODIFICATION_DATE);
-            if (modificationDate != null) {
-                comment.setModificationDate(modificationDate.toInstant());
-            }
-        };
+    public static void documentModelToExternalEntity(DocumentModel documentModel, ExternalEntity entity) {
+        if (documentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
+            entity.setEntityId((String) documentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
+            entity.setOrigin((String) documentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
+            entity.setEntity((String) documentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
+        }
     }
 
-    public static BiConsumer<DocumentModel, Comment> documentModelToAnnotation() {
-        return documentModelToComment().andThen(((commentModel, comment) -> ((Annotation) comment).setXpath(
-                (String) commentModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY))));
+    public static Comment newComment(DocumentModel commentModel) {
+        Comment comment = new CommentImpl();
+        documentModelToComment(commentModel, comment);
+        documentModelToExternalEntity(commentModel, (ExternalEntity) comment);
+        return comment;
     }
 
-    public static BiConsumer<DocumentModel, Comment> documentModelToExternalEntity() {
-        return (commentModel, comment) -> {
-            if (commentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
-                ((ExternalEntity) comment).setEntityId(
-                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
-                ((ExternalEntity) comment).setOrigin(
-                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY));
-                ((ExternalEntity) comment).setEntity(
-                        (String) commentModel.getPropertyValue(EXTERNAL_ENTITY_PROPERTY));
-            }
-        };
-    }
-
-    public static BiConsumer<DocumentModel, Comment> documentModelToExternalComment() {
-        return documentModelToComment().andThen(documentModelToExternalEntity());
-    }
-
-    public static BiConsumer<DocumentModel, Comment>  documentModelToExternalAnnotation() {
-        return documentModelToAnnotation().andThen(documentModelToExternalEntity());
+    public static Annotation newAnnotation(DocumentModel annotationModel) {
+        Annotation annotation = new AnnotationImpl();
+        documentModelToAnnotation(annotationModel, annotation);
+        documentModelToExternalEntity(annotationModel, (ExternalEntity) annotation);
+        return annotation;
     }
 }
