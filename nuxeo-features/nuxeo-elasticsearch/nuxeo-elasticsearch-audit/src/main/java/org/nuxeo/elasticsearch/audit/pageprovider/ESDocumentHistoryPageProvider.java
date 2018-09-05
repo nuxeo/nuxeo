@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@
  */
 package org.nuxeo.elasticsearch.audit.pageprovider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -25,9 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.document.AdditionalDocumentAuditParams;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentAuditHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
@@ -37,41 +37,46 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
     protected Object[] newParams;
 
-    protected static String singleQuery = "            {\n" + "                \"bool\" : {\n"
-            + "                  \"must\" : {\n" + "                    \"match\" : {\n"
-            + "                      \"docUUID\" : {\n" + "                        \"query\" : \"?\"\n"
-            + "                      }\n"
-            + "                    }\n" + "                  }\n" + "                }\n"
-            + "              }          \n" + "";
+    protected static String singleQuery = "{\n" + //
+            "  \"bool\" : {\n" + //
+            "    \"must\" : {\n" + //
+            "      \"match\" : {\n" + //
+            "        \"docUUID\" : {\n" + //
+            "          \"query\" : \"?\"\n" + //
+            "        }\n" + //
+            "      }\n" + //
+            "    }\n" + //
+            "  }\n" + //
+            "}\n";
 
     protected static String complexQuery = "{\n" +  //
-            "    \"bool\": {\n" +  //
-            "      \"should\": [\n" +  //
-            "        {\n" +  //
-            "          \"term\": {\n" +  //
-            "            \"docUUID\": \"?\"\n" +  //
-            "          }\n" +  //
-            "        },\n" +  //
-            "        {\n" +  //
-            "          \"bool\": {\n" +  //
-            "            \"must\": [\n" +  //
-            "              {\n" +  //
-            "                \"term\": {\n" +  //
-            "                  \"docUUID\": \"?\"\n" +  //
-            "                }\n" +  //
-            "              },\n" +  //
-            "              {\n" +  //
-            "                \"range\": {\n" +  //
-            "                  \"eventDate\": {\n" +  //
-            "                    \"lte\": \"?\"\n" +  //
-            "                  }\n" +  //
+            "  \"bool\": {\n" +  //
+            "    \"should\": [\n" +  //
+            "      {\n" +  //
+            "        \"term\": {\n" +  //
+            "          \"docUUID\": \"?\"\n" +  //
+            "        }\n" +  //
+            "      },\n" +  //
+            "      {\n" +  //
+            "        \"bool\": {\n" +  //
+            "          \"must\": [\n" +  //
+            "            {\n" +  //
+            "              \"term\": {\n" +  //
+            "                \"docUUID\": \"?\"\n" +  //
+            "              }\n" +  //
+            "            },\n" +  //
+            "            {\n" +  //
+            "              \"range\": {\n" +  //
+            "                \"eventDate\": {\n" +  //
+            "                  \"lte\": \"?\"\n" +  //
             "                }\n" +  //
             "              }\n" +  //
-            "            ]\n" +  //
-            "          }\n" +  //
+            "            }\n" +  //
+            "          ]\n" +  //
             "        }\n" +  //
-            "      ]\n" +  //
-            "    }\n" +  //
+            "      }\n" +  //
+            "    ]\n" +  //
+            "  }\n" +  //
             "}\n";
 
     @Override
@@ -88,7 +93,7 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
         List<SortInfo> sort = super.getSortInfos();
         if (sort == null || sort.size() == 0) {
-            sort = new ArrayList<SortInfo>();
+            sort = new ArrayList<>();
             sort.add(new SortInfo("eventDate", true));
             sort.add(new SortInfo("id", true));
         }
