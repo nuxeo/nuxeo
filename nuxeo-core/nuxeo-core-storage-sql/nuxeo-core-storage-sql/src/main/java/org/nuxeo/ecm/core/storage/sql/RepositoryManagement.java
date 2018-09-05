@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
 
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+
 /**
  * @author Florent Guillaume
  */
@@ -82,5 +84,12 @@ public interface RepositoryManagement {
      * @return the number of documents deleted
      */
     int cleanupDeletedDocuments(int max, Calendar beforeTime);
+
+    /**
+     * Gets the fulltext configuration.
+     *
+     * @since 10.3
+     */
+    FulltextConfiguration getFulltextConfiguration();
 
 }

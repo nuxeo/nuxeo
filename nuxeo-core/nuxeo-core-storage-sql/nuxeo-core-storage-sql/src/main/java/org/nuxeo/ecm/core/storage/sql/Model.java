@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -49,7 +50,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
@@ -522,7 +523,7 @@ public class Model {
         if (repositoryDescriptor.getFulltextDescriptor().getFulltextDisabled()) {
             fulltextConfiguration = null;
         } else {
-            fulltextConfiguration = new FulltextConfiguration(repositoryDescriptor.getFulltextDescriptor());
+            fulltextConfiguration = FulltextConfigurationFactory.make(repositoryDescriptor.getFulltextDescriptor());
         }
 
         initMainModel();
