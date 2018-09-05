@@ -28,11 +28,11 @@ Contributors:
       }
     </style>
 
-    <template is="dom-if" if="[[_isAvailable(blob)]]">
-      <a href="[[_wopiURL(document, blob, xpath)]]" tabindex="-1" target="_blank">
-        <paper-icon-button src="[[_wopiIcon(blob)]]" id="wopiLink"></paper-icon-button>
+    <template is="dom-if" if="[[_isAvailable(url)]]">
+      <a href="[[url]]" tabindex="-1" target="_blank">
+        <paper-icon-button src="[[_wopiIcon(appName)]]" id="wopiLink"></paper-icon-button>
       </a>
-      <paper-tooltip for="wopiLink">[[_wopiTooltip(blob)]]</paper-tooltip>
+      <paper-tooltip for="wopiLink">[[_wopiTooltip(appName)]]</paper-tooltip>
     </template>
 
   </template>
@@ -45,54 +45,43 @@ Contributors:
 
       properties: {
         document: Object,
-        blob: Object,
         xpath: String,
-      },
-
-      appsToSupportedExtensions: {
-        word: ['doc', 'docm', 'docx', 'dot', 'dotm', 'odt', 'rtf', 'wopitest'],
-        excel: ['csv', 'ods', 'xls', 'xlsb', 'xlsm', 'xlsx'],
-        powerpoint: ['odp', 'pot', 'potm', 'potx', 'pps', 'ppsm', 'ppsx', 'ppt', 'pptm', 'pptx'],
-      },
-
-      _isAvailable: function(blob) {
-        if (!blob) {
-          return false;
+        appName: {
+          type: String,
+          computed: '_appName(document)'
+        },
+        url: {
+          type: String,
+          computed: '_wopiURL(document, xpath)'
         }
-        return this._getWopiApp(blob) !== null;
       },
 
-      _getWopiApp(blob) {
-        var keys = Object.keys(this.appsToSupportedExtensions);
-        for (var i = 0; i < keys.length; i++) {
-          for (var j = 0; j < this.appsToSupportedExtensions[keys[i]].length; j++) {
-            if (blob.name.endsWith('.' + this.appsToSupportedExtensions[keys[i]][j])) {
-              return keys[i];
-            }
-          }
-        }
-        return null;
+      _appName() {
+        return this.document.contextParameters && this.document.contextParameters.wopi
+          && this.document.contextParameters.wopi.appName && this.document.contextParameters.wopi.appName.toLowerCase();
       },
 
-      _wopiIcon(blob) {
-        var app = this._getWopiApp(blob);
-        return app ? 'images/' + app +'.png' : null;
+      _isAvailable() {
+        return !!this.url;
       },
 
-      _wopiTooltip(blob) {
-        var app = this._getWopiApp(blob);
-        return this.i18n('wopiLink.' + app + '.tooltip');
+      _wopiIcon() {
+        return 'images/' + this.appName +'.png'
+      },
+
+      _wopiTooltip() {
+        return this.i18n('wopiLink.' + this.appName + '.tooltip');
       },
 
       _wopiURL() {
-        var parts = this.blob.data.split('/nxfile/');
-        var baseUrl = parts[0];
+        var wopi = this.document.contextParameters && this.document.contextParameters.wopi;
+        if (!wopi) {
+          return null;
+        }
+
+        var url = wopi.edit ? wopi.edit : wopi.view;
         return [
-          baseUrl,
-          'wopi',
-          'view',
-          this.document.repository,
-          this.document.uid,
+          url,
           this.xpath
         ].join('/');
       }

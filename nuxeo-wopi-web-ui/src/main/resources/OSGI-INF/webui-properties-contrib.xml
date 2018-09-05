@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.web.ui.properties">
+
+  <require>org.nuxeo.web.ui.properties.contrib</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.web.ui.app.enrichers" append="true">wopi</property>
+  </extension>
+
+</component>

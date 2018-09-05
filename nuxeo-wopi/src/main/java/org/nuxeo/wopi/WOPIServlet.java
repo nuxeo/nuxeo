@@ -69,45 +69,45 @@ public class WOPIServlet extends HttpServlet {
 
     public static final String WOPITEST_VIEW_URL = "https://onenote.officeapps-df.live.com/hosting/WopiTestFrame.aspx?";
 
-    public static final Map<Pair<String, String>, String> ACTIONS_TO_URLS = new HashMap<>();
+    public static final Map<Pair<String, String>, Pair<String, String>> ACTIONS_TO_URLS = new HashMap<>();
 
     static {
-        ACTIONS_TO_URLS.put(Pair.of("view", "doc"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "docm"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "dot"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "dotm"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "odt"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "rtf"), WORD_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docm"), WORD_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docx"), WORD_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odt"), WORD_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "csv"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "ods"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "xls"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsb"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsm"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsx"), EXCEL_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ods"), EXCEL_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsb"), EXCEL_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsm"), EXCEL_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsx"), EXCEL_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "odp"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "pot"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "potm"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "potx"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "pps"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsm"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsx"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppt"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptm"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptx"), POWERPOINT_VIEW_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odp"), POWERPOINT_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ppsx"), POWERPOINT_EDIT_URL);
-        ACTIONS_TO_URLS.put(Pair.of("edit", "pptx"), POWERPOINT_EDIT_URL);
+        ACTIONS_TO_URLS.put(Pair.of("view", "doc"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docm"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "dot"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "dotm"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "odt"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "rtf"), Pair.of("Word", WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "docm"), Pair.of("Word", WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "docx"), Pair.of("Word", WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "odt"), Pair.of("Word", WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "csv"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ods"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xls"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsb"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsm"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsx"), Pair.of("Excel", EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "ods"), Pair.of("Excel", EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsb"), Pair.of("Excel", EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsm"), Pair.of("Excel", EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsx"), Pair.of("Excel", EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "odp"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pot"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "potm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "potx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pps"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppsm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppsx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppt"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pptm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pptx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "odp"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "ppsx"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "pptx"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
         // for testing
-        ACTIONS_TO_URLS.put(Pair.of("view", "wopitest"), WOPITEST_VIEW_URL);
+        ACTIONS_TO_URLS.put(Pair.of("view", "wopitest"), Pair.of("WopiTest", WOPITEST_VIEW_URL));
     }
 
     public static final String WOPI_JSP = "/wopi.jsp";
@@ -148,7 +148,8 @@ public class WOPIServlet extends HttpServlet {
             }
 
             String extension = FilenameUtils.getExtension(blob.getFilename());
-            String url = ACTIONS_TO_URLS.get(Pair.of(action, extension));
+            Pair<String, String> pair = ACTIONS_TO_URLS.get(Pair.of(action, extension));
+            String url = pair.getRight();
             if (url == null) {
                 // TODO http code?
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot open file with Office Online");

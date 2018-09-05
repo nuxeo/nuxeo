@@ -19,6 +19,10 @@ Contributors:
 
 <nuxeo-slot-content name="wopiLink" slot="BLOB_ACTIONS">
   <template>
-    <nuxeo-wopi-link document="[[document]]" blob="[[blob]]" xpath="[[xpath]]"></nuxeo-wopi-link>
+    <nuxeo-filter document="[[document]]" expression="!!document.contextParameters.wopi">
+      <template>
+        <nuxeo-wopi-link document="[[document]]" xpath="[[xpath]]"></nuxeo-wopi-link>
+      </template>
+    </nuxeo-filter>
   </template>
 </nuxeo-slot-content>

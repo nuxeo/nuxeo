@@ -51,6 +51,8 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String NAME = "wopi";
 
+    public static final String APP_NAME_FIELD = "appName";
+
     public static final String LOCKED_FIELD = "locked";
 
     public WOPIJsonEnricher() {
@@ -80,6 +82,7 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
         if (viewURL != null || editURL != null) {
             jg.writeFieldName(NAME);
             jg.writeStartObject();
+            jg.writeStringField(APP_NAME_FIELD, getAppName(extension, ACTION_VIEW));
             if (viewURL != null) {
                 jg.writeStringField(ACTION_VIEW, viewURL);
             }
@@ -98,6 +101,16 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     protected String getWOPIURL(DocumentModel doc, String action) {
         return String.format("%s%s/%s/%s/%s", ctx.getBaseUrl(), WOPI_SERVLET_PATH, action, doc.getRepositoryName(),
                 doc.getId());
+    }
+
+    // TODO NXP-25381 - to be removed when using the discovery XML file
+    protected String getAppName(String extension, String action) {
+        Pair<String, String> pair = WOPIServlet.ACTIONS_TO_URLS.get(Pair.of(action, extension));
+        if (pair != null) {
+            return pair.getLeft();
+        }
+        // default to Word
+        return "Word";
     }
 
 }

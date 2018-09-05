@@ -112,6 +112,7 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
                 .isEquals(RenderingContext.DEFAULT_URL + "wopi/view/" + doc.getRepositoryName() + "/" + doc.getId());
             json.hasNot("edit");
             json.has("locked").isBool().isEquals(false);
+            json.has("appName").isText().isEquals("Word");
 
             // write access, expecting view and edit action URLs
             // lock the document, expecting locked to be true
@@ -127,6 +128,7 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
             json.has("edit")
                 .isEquals(RenderingContext.DEFAULT_URL + "wopi/edit/" + doc.getRepositoryName() + "/" + doc.getId());
             json.has("locked").isBool().isEquals(true);
+            json.has("appName").isText().isEquals("Word");
         }
 
     }
