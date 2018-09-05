@@ -138,7 +138,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * Called before retrying, can be overridden
      *
      * @param context Computation context that could be used
-     * @param failure
+     * @param failure The throwable
      */
     protected void processRetry(ComputationContext context, Throwable failure) {
         log.warn(String.format(
