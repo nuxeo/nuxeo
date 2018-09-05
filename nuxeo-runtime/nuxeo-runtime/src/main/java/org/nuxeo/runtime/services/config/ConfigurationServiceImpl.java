@@ -20,6 +20,7 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @since 7.4
  */
@@ -43,6 +46,12 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     public static final String CONFIGURATION_EP = "configuration";
 
     public static final String COMPONENT_NAME = "org.nuxeo.runtime.config";
+
+    protected ObjectMapper mapper = null;
+
+    public ConfigurationServiceImpl() {
+        mapper = new ObjectMapper();
+    }
 
     /**
      * XXX remove once we are able to get such a cached map from DefaultComponent
@@ -82,6 +91,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                     }
                 }
             }
+            return descriptors;
         }
         return descriptors;
     }
@@ -157,6 +167,11 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                                        && desc.getName().charAt(namespace.length()) == '.')
                                .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
                                        desc -> desc.getValue()));
+    }
+
+    @Override
+    public String getPropertiesAsJson(String namespace) throws IOException {
+        return mapper.writeValueAsString(getProperties(namespace));
     }
 
 }
