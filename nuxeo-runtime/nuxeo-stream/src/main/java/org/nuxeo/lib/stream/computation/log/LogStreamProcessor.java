@@ -226,8 +226,8 @@ public class LogStreamProcessor implements StreamProcessor {
 
     protected void initSourceAppenders() {
         log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        topology.streamsSet().stream().forEach(
-                sourceStream -> manager.getAppender(sourceStream, settings.getCodec(sourceStream)));
+        topology.streamsSet()
+                .forEach(sourceStream -> manager.getAppender(sourceStream, settings.getCodec(sourceStream)));
     }
 
 }

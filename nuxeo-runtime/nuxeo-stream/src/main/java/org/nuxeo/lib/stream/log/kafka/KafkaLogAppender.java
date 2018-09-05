@@ -94,7 +94,8 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         this.name = name;
         this.producerProps = producerProperties;
         this.consumerProps = consumerProperties;
-        producerProps.setProperty(ProducerConfig.CLIENT_ID_CONFIG, name + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
+        producerProps.setProperty(ProducerConfig.CLIENT_ID_CONFIG,
+                name + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.producer = new KafkaProducer<>(this.producerProps);
         this.size = producer.partitionsFor(topic).size();
         if (log.isDebugEnabled()) {
