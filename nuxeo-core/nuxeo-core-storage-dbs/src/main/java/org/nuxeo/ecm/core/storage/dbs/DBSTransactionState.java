@@ -75,6 +75,8 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -83,8 +85,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
-import org.nuxeo.ecm.core.storage.FulltextParser;
+import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.State;
@@ -1208,7 +1209,7 @@ public class DBSTransactionState {
         // single-threaded
         for (String id : docWithDirtyBinaries) {
             // don't exclude proxies
-            Work work = new DBSFulltextExtractorWork(repository.getName(), id);
+            Work work = new FulltextExtractorWork(repository.getName(), id, false);
             works.add(work);
         }
     }

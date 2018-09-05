@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.core.model;
 
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+
 /**
  * Interface to manage a low-level repository.
  */
@@ -40,5 +42,12 @@ public interface Repository {
      * @since 7.4
      */
     void markReferencedBinaries();
+
+    /**
+     * Gets the fulltext configuration for this repository.
+     *
+     * @since 10.3 (already available since 8.1 for DBSRepository)
+     */
+    FulltextConfiguration getFulltextConfiguration();
 
 }

@@ -39,6 +39,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
@@ -222,6 +223,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
             return 0;
         }
         return repository.cleanupDeletedDocuments(max, beforeTime);
+    }
+
+    @Override
+    public FulltextConfiguration getFulltextConfiguration() {
+        if (repository == null) {
+            return null;
+        }
+        return repository.getFulltextConfiguration();
     }
 
     /*
