@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>9.10-HF16-SNAPSHOT</version>
+    <version>9.10-HF17-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-automation-features</artifactId>
   <name>Nuxeo Automation Features</name>

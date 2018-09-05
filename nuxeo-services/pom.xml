@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>9.10-HF16-SNAPSHOT</version>
+    <version>9.10-HF17-SNAPSHOT</version>
     <relativePath>../nuxeo-core/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-services-parent</artifactId>
-  <version>9.10-HF16-SNAPSHOT</version>
+  <version>9.10-HF17-SNAPSHOT</version>
   <name>Nuxeo Services Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo Services: Parent.</description>
