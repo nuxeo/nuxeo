@@ -40,10 +40,8 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
     protected static String singleQuery = "{\n" + //
             "  \"bool\" : {\n" + //
             "    \"must\" : {\n" + //
-            "      \"match\" : {\n" + //
-            "        \"docUUID\" : {\n" + //
-            "          \"query\" : \"?\"\n" + //
-            "        }\n" + //
+            "      \"term\" : {\n" + //
+            "        \"docUUID\" : \"?\"\n" + //
             "      }\n" + //
             "    }\n" + //
             "  }\n" + //
