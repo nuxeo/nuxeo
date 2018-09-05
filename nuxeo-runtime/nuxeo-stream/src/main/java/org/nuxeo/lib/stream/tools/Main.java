@@ -88,7 +88,7 @@ public class Main {
         } catch (ParseException e) {
             log.error("Parse error: " + e.getMessage() + ", try: help " + command);
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Interrupted: " + e.getMessage());

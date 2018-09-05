@@ -100,18 +100,19 @@ public class TestLogChronicle extends TestLog {
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
         Path queuePath = Paths.get(manager.getBasePath(), logName, "P-00");
-        // there is an extra directory-listing.cq4t and a queue-lock.cq4t files in addition of the cycle
-        assertEquals(2, Files.list(queuePath).count());
+        // there is an extra metadata.cq4t file
+        assertEquals(1, Files.list(queuePath).count());
         appender.append(0, msg);
-        assertEquals(3, Files.list(queuePath).count());
+        // after the first append we have the cycle file
+        assertEquals(2, Files.list(queuePath).count());
         Thread.sleep(1010);
         // cycle 2
         appender.append(0, msg);
-        assertEquals(4, Files.list(queuePath).count());
+        assertEquals(3, Files.list(queuePath).count());
         Thread.sleep(2010);
         // cycle 3
         appender.append(0, msg);
-        assertEquals(5, Files.list(queuePath).count());
+        assertEquals(4, Files.list(queuePath).count());
         Thread.sleep(1010);
 
         // cycle 4:
@@ -119,13 +120,13 @@ public class TestLogChronicle extends TestLog {
         // cycle 3 is released and there is no purge because we see only 3 cycles
         // cycle 4 is acquired we now have 4 cycles
         appender.append(0, msg);
-        assertEquals(6, Files.list(queuePath).count());
+        assertEquals(5, Files.list(queuePath).count());
         Thread.sleep(1010);
 
         // cycle 5: cycle 4 is released and purge cycle 1 we have 3 cycles
         // then cycle 5 is acquired we have 4 cycles files
         appender.append(0, msg);
-        assertEquals(6, Files.list(queuePath).count());
+        assertEquals(5, Files.list(queuePath).count());
 
         // in practice we always have one more cycle file than the expected retention
     }

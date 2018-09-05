@@ -46,6 +46,10 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
 
     protected static final String OFFSET_QUEUE_PREFIX = "offset-";
 
+    // message are small, minimum block size of 256K is buggy so take the size above
+    // this will create a cq4 file of 1.3MB max message size is around 256KB
+    public static final int CQ_BLOCK_SIZE = 1_048_576;
+
     protected final SingleChronicleQueue offsetQueue;
 
     protected final int partition;
@@ -59,25 +63,20 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
         this.partition = partition;
         this.retention = retention;
         File offsetFile = new File(basePath, OFFSET_QUEUE_PREFIX + group);
-        SingleChronicleQueueBuilder builder = binary(offsetFile);
         ChronicleRetentionListener listener = null;
-        if (!retention.disable()) {
-            builder.rollCycle(retention.getRollCycle());
-            if (partition == 0) {
-                // offset queue is shared among partitions
-                // only the first partition handle the retention
-                listener = new ChronicleRetentionListener(retention);
-                builder.storeFileListener(listener);
-            }
+        SingleChronicleQueueBuilder builder = binary(offsetFile).rollCycle(retention.getRollCycle())
+                                                                .blockSize(CQ_BLOCK_SIZE);
+        if (!retention.disable() && partition == 0) {
+            // offset queue is shared among partitions
+            // only the first partition handle the retention
+            listener = new ChronicleRetentionListener(retention);
+            builder.storeFileListener(listener);
+
         }
         offsetQueue = builder.build();
         if (listener != null) {
             listener.setQueue(offsetQueue);
         }
-    }
-
-    public ChronicleLogOffsetTracker(String basePath, int partition, String group) {
-        this(basePath, partition, group, ChronicleRetentionDuration.NONE);
     }
 
     public static boolean exists(Path basePath, String group) {

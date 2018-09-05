@@ -228,6 +228,7 @@
 
     <kafka.version>2.0.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
+    <chronicle.bom.version>1.16.158</chronicle.bom.version>
   </properties>
 
   <dependencyManagement>
@@ -4930,28 +4931,10 @@
 
       <dependency>
         <groupId>net.openhft</groupId>
-        <artifactId>chronicle-queue</artifactId>
-        <version>5.16.4</version> <!-- when changing this make sure JNA version is in sync -->
-      </dependency>
-      <dependency>
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-core</artifactId>
-        <version>1.16.10</version>
-      </dependency>
-      <dependency>
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-wire</artifactId>
-        <version>1.16.6</version>
-      </dependency>
-      <dependency>
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-bytes</artifactId>
-        <version>1.16.15</version>
-      </dependency>
-      <dependency>
-        <groupId>net.openhft</groupId>
-        <artifactId>chronicle-threads</artifactId>
-        <version>1.16.1</version>
+        <artifactId>chronicle-bom</artifactId>
+	<version>${chronicle.bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>net.jodah</groupId>
