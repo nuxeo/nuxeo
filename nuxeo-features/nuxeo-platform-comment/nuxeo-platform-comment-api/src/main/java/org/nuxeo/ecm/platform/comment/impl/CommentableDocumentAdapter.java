@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,27 +44,29 @@ public class CommentableDocumentAdapter implements CommentableDocument {
     }
 
     public DocumentModel addComment(DocumentModel comment) {
-        return commentManager.createComment(docModel, comment);
+        return addComment(docModel, comment);
     }
 
     public DocumentModel addComment(DocumentModel comment, String path) {
+        comment.setPropertyValue(COMMENT_DOCUMENT_ID, docModel.getId());
         return commentManager.createLocatedComment(docModel, comment, path);
     }
 
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
-        return commentManager.createComment(docModel, parent, comment);
+        comment.setPropertyValue(COMMENT_DOCUMENT_ID, parent.getId());
+        return commentManager.createComment(parent, comment);
     }
 
     public void removeComment(DocumentModel comment) {
-        commentManager.deleteComment(docModel, comment);
+        commentManager.deleteComment(docModel.getCoreSession(), comment.getId());
     }
 
     public List<DocumentModel> getComments() {
-        return commentManager.getComments(docModel);
+        return commentManager.getComments(docModel.getCoreSession(), docModel);
     }
 
     public List<DocumentModel> getComments(DocumentModel parent) {
-        return commentManager.getComments(docModel, parent);
+        return commentManager.getComments(parent);
     }
 
 }

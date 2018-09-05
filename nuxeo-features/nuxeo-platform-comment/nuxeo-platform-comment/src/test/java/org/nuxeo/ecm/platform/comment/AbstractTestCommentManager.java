@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,8 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo
+ *     Funsho David
  */
+
 package org.nuxeo.ecm.platform.comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,21 +44,22 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+/**
+ * @since 10.3
+ */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
-public class TestCommentAPI {
+//TODO add test class with NXP-25429
+public abstract class AbstractTestCommentManager {
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
 
@@ -76,38 +78,6 @@ public class TestCommentAPI {
         DocumentModel container = session.createDocumentModel(domain.getPathAsString(), "CommentContainer", "Folder");
         session.createDocument(container);
         session.save();
-    }
-
-    @Test
-    public void iCanCreateComments() {
-        // Prepare a comment
-        DocumentModel doc = session.getDocument(new PathRef("/Folder/File"));
-        CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
-        DocumentModel comment = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
-        comment.setPropertyValue(CommentsConstants.COMMENT_TEXT, "Test");
-        comment.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, "system");
-        comment.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE, Calendar.getInstance());
-
-        // Create a comment
-        commentableDocument.addComment(comment);
-        // Creation check
-        assertThat(commentableDocument.getComments()).hasSize(1);
-        DocumentModel newComment = commentableDocument.getComments().get(0);
-        assertThat(newComment.getPropertyValue("comment:text")).isEqualTo("Test");
-
-        // Create a comment in a specific location
-        newComment = commentableDocument.addComment(comment, FOLDER_COMMENT_CONTAINER);
-        // Check if Comments folder has been created in the given container
-        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
-
-        // Create a comment linked to a parent in a specific location
-        commentableDocument.addComment(newComment, comment);
-        // Check if both comments are linked and located accordingly
-        assertThat(commentableDocument.getComments()).hasSize(2);
-        newComment = commentableDocument.getComments().get(0);
-        comment = commentableDocument.getComments(newComment).get(0);
-        assertThat(comment.getPropertyValue("comment:text")).isEqualTo("Test");
-        assertThat(comment.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
     }
 
     @Test
@@ -137,6 +107,25 @@ public class TestCommentAPI {
         comment = commentManager.createComment(session, comment);
         assertEquals(author, comment.getAuthor());
         assertEquals(text, comment.getText());
+
+        // Create a comment in a specific location
+        DocumentModel commentModel = session.createDocumentModel(null, "Comment", CommentsConstants.COMMENT_DOC_TYPE);
+        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
+        Comments.commentToDocumentModel(comment, commentModel);
+        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
+        // Check if Comments folder has been created in the given container
+        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
+
+        // Create a comment linked to a parent in a specific location
+        Comment newComment = new CommentImpl();
+        newComment.setDocumentId(commentModel.getId());
+        commentManager.createComment(session, newComment);
+        session.save();
+
+        // Check if both comments are linked and located accordingly
+        assertEquals(2, commentManager.getComments(session, doc.getId()).size());
+        assertEquals(1, commentManager.getComments(session, commentModel.getId()).size());
+        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
 
     }
 
@@ -201,7 +190,7 @@ public class TestCommentAPI {
         commentManager.updateComment(session, comment.getId(), comment);
         comment = commentManager.getComment(session, comment.getId());
 
-        assertEquals(author, "titi");
+        assertEquals("titi", comment.getAuthor());
         assertEquals(text, comment.getText());
 
     }
@@ -234,6 +223,30 @@ public class TestCommentAPI {
 
         commentManager.deleteComment(session, comment.getId());
         assertFalse(session.exists(new IdRef(comment.getId())));
+    }
+
+    @Test
+    public void testCommentableDocumentAdapter() {
+
+        DocumentModel doc = session.getDocument(new PathRef("/Folder/File"));
+        CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
+        DocumentModel comment = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
+        comment.setPropertyValue(CommentsConstants.COMMENT_TEXT, "Test");
+        comment.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, "system");
+        comment.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE, Calendar.getInstance());
+
+        // Create a comment
+        commentableDocument.addComment(comment);
+
+        // Creation check
+        assertEquals(1, commentableDocument.getComments().size());
+        DocumentModel newComment = commentableDocument.getComments().get(0);
+        assertThat(newComment.getPropertyValue("comment:text")).isEqualTo("Test");
+
+        // Deletion check
+        commentableDocument.removeComment(newComment);
+        assertTrue(commentableDocument.getComments().isEmpty());
+
     }
 
 }

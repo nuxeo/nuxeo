@@ -23,6 +23,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -38,10 +39,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
-import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
+import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
@@ -61,12 +62,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         // Create base comment in the annotation
         DocumentModel docToAnnotate = session.getDocument(new IdRef(annotation.getDocumentId()));
         DocumentModel annotationModel = session.createDocumentModel(ANNOTATION_DOC_TYPE);
-        Comments.externalAnnotationToDocumentModel().accept(annotation, annotationModel);
+        Comments.annotationToDocumentModel(annotation, annotationModel);
+        if (annotation instanceof ExternalEntity) {
+            annotationModel.addFacet(EXTERNAL_ENTITY_FACET);
+            Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
+        }
         annotationModel = Framework.getService(CommentManager.class).createComment(docToAnnotate, annotationModel);
-
-        Annotation createdAnnotation = new AnnotationImpl();
-        Comments.documentModelToExternalAnnotation().accept(annotationModel, createdAnnotation);
-        return createdAnnotation;
+        return Comments.newAnnotation(annotationModel);
     }
 
     @Override
@@ -76,9 +78,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
             throw new IllegalArgumentException("The document " + annotationId + " does not exist.");
         }
         DocumentModel annotationModel = session.getDocument(annotationRef);
-        Annotation annotation = new AnnotationImpl();
-        Comments.documentModelToExternalAnnotation().accept(annotationModel, annotation);
-        return annotation;
+        return Comments.newAnnotation(annotationModel);
     }
 
     @Override
@@ -89,21 +89,26 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         }
         DocumentModel annotatedDoc = session.getDocument(docRef);
         return Framework.getService(CommentManager.class)
-                        .getComments(annotatedDoc)
+                        .getComments(session, annotatedDoc)
                         .stream()
                         .filter(annotationModel -> xpath.equals(
                                 annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
-                        .map(annotationModel -> {
-                            Annotation annotation = new AnnotationImpl();
-                            Comments.documentModelToExternalAnnotation().accept(annotationModel, annotation);
-                            return annotation;
-                        })
+                        .map(Comments::newAnnotation)
                         .collect(Collectors.toList());
     }
 
     @Override
     public void updateAnnotation(CoreSession session, String annotationId, Annotation annotation) {
-        Framework.getService(CommentManager.class).updateComment(session, annotationId, annotation);
+        IdRef annotationRef = new IdRef(annotationId);
+        if (!session.exists(annotationRef)) {
+            throw new IllegalArgumentException("The annotation " + annotationId + " does not exist.");
+        }
+        DocumentModel annotationModel = session.getDocument(annotationRef);
+        Comments.annotationToDocumentModel(annotation, annotationModel);
+        if (annotation instanceof ExternalEntity) {
+            Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
+        }
+        session.saveDocument(annotationModel);
     }
 
     @Override
@@ -117,9 +122,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         if (annotationModel == null) {
             throw new IllegalArgumentException("The external annotation " + entityId + " does not exist.");
         }
-        Annotation annotation = new AnnotationImpl();
-        Comments.documentModelToExternalAnnotation().accept(annotationModel, annotation);
-        return annotation;
+        return Comments.newAnnotation(annotationModel);
     }
 
     @Override
@@ -128,7 +131,10 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         if (annotationModel == null) {
             throw new IllegalArgumentException("The external annotation " + entityId + " does not exist.");
         }
-        Comments.externalAnnotationToDocumentModel().accept(annotation, annotationModel);
+        Comments.annotationToDocumentModel(annotation, annotationModel);
+        if (annotation instanceof ExternalEntity) {
+            Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
+        }
         session.saveDocument(annotationModel);
     }
 

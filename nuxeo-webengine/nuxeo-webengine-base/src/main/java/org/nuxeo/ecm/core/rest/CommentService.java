@@ -160,7 +160,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void deleteComment(DocumentModel target, DocumentModel comment) {
-        getCommentManager().deleteComment(target, comment);
+        getCommentManager().deleteComment(target.getCoreSession(), comment.getId());
     }
 
     /**
@@ -171,7 +171,7 @@ public class CommentService extends DefaultAdapter {
      */
     protected void rejectComment(CoreSession session, DocumentModel target, DocumentModel comment) {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
-        getCommentManager().deleteComment(target, comment);
+        getCommentManager().deleteComment(target.getCoreSession(), comment.getId());
     }
 
     /**

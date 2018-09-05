@@ -176,13 +176,12 @@ public class TestAnnotationService {
 
         assertNull(((ExternalEntity) annotation).getEntity());
 
+        ((ExternalEntity) annotation).setEntityId("entityId");
         ((ExternalEntity) annotation).setEntity("Entity");
-        try {
-            annotationService.updateAnnotation(session, annotation.getId(), annotation);
-            fail("Update an annotation is not possible with this implementation");
-        } catch (UnsupportedOperationException e) {
-            // ok
-        }
+        annotationService.updateAnnotation(session, annotation.getId(), annotation);
+
+        assertEquals("Entity",
+                ((ExternalEntity) annotationService.getAnnotation(session, annotation.getId())).getEntity());
     }
 
     @Test
