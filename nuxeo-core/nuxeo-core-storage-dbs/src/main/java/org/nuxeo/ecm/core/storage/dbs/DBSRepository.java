@@ -27,11 +27,11 @@ import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
@@ -49,14 +49,6 @@ public interface DBSRepository extends Repository, LockManager {
      * @return the blob manager.
      */
     BlobManager getBlobManager();
-
-    /**
-     * Gets the fulltext configuration.
-     *
-     * @return the fulltext configuration
-     * @since 7.10-HF04, 8.1
-     */
-    FulltextConfiguration getFulltextConfiguration();
 
     /**
      * Checks if fulltext indexing (and search) is disabled.

@@ -16,20 +16,21 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -46,13 +47,13 @@ import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Info about the fulltext configuration.
+ * Factory building a {@link FulltextConfiguration} from a {@link FulltextDescriptor}.
+ *
+ * @since 10.3
  */
-public class FulltextConfiguration {
+public class FulltextConfigurationFactory {
 
-    private static final Log log = LogFactory.getLog(FulltextConfiguration.class);
-
-    public static final String ROOT_TYPE = "Root";
+    private static final Log log = LogFactory.getLog(FulltextConfigurationFactory.class);
 
     public static final String PROP_TYPE_STRING = "string";
 
@@ -60,55 +61,28 @@ public class FulltextConfiguration {
 
     public static final String FULLTEXT_DEFAULT_INDEX = "default";
 
-    /** All index names. */
-    public final Set<String> indexNames = new LinkedHashSet<>();
-
-    /** Indexes holding exactly one field. */
-    public final Map<String, String> fieldToIndexName = new HashMap<>();
-
-    /** Indexes containing all simple properties. */
-    public final Set<String> indexesAllSimple = new HashSet<>();
-
-    /** Indexes containing all binaries properties. */
-    public final Set<String> indexesAllBinary = new HashSet<>();
-
-    /** Indexes for each specific simple property path. */
-    public final Map<String, Set<String>> indexesByPropPathSimple = new HashMap<>();
-
-    /** Indexes for each specific binary property path. */
-    // DBSTransactionState.findDirtyDocuments expects this to contain unprefixed versions for schemas
-    // without prefix, like "content/data".
-    public final Map<String, Set<String>> indexesByPropPathBinary = new HashMap<>();
-
-    /** Indexes for each specific simple property path excluded. */
-    public final Map<String, Set<String>> indexesByPropPathExcludedSimple = new HashMap<>();
-
-    /** Indexes for each specific binary property path excluded. */
-    public final Map<String, Set<String>> indexesByPropPathExcludedBinary = new HashMap<>();
-
-    // inverse of above maps
-    public final Map<String, Set<String>> propPathsByIndexSimple = new HashMap<>();
-
-    public final Map<String, Set<String>> propPathsByIndexBinary = new HashMap<>();
-
-    public final Map<String, Set<String>> propPathsExcludedByIndexSimple = new HashMap<>();
-
-    public final Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<>();
-
-    public final Set<String> excludedTypes = new HashSet<>();
-
-    public final Set<String> includedTypes = new HashSet<>();
-
-    public final boolean fulltextSearchDisabled;
-
-    public final int fulltextFieldSizeLimit;
-
-    public FulltextConfiguration(FulltextDescriptor fulltextDescriptor) {
+    public static FulltextConfiguration make(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        FulltextConfiguration ftc = new FulltextConfiguration();
 
-        fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
+        String fulltextParserClassName = fulltextDescriptor.getFulltextParser();
+        if (StringUtils.isBlank(fulltextParserClassName)) {
+            fulltextParserClassName = DefaultFulltextParser.class.getName();
+        }
+        Class<?> fulltextParserClass;
+        try {
+            fulltextParserClass = Thread.currentThread().getContextClassLoader().loadClass(fulltextParserClassName);
+        } catch (ClassNotFoundException e) {
+            throw new NuxeoException("Unknown fulltext parser class: " + fulltextParserClassName, e);
+        }
+        if (!FulltextParser.class.isAssignableFrom(fulltextParserClass)) {
+            throw new NuxeoException("Invalid fulltext parser class: " + fulltextParserClassName);
+        }
+        ftc.fulltextParserClass = (Class<? extends FulltextParser>) fulltextParserClass;
 
-        fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
+        ftc.fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
+
+        ftc.fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
         // find what paths we mean by "all"
         // for schemas without prefix, we add both the unprefixed and the prefixed version
@@ -128,7 +102,7 @@ public class FulltextConfiguration {
         }
         for (FulltextIndexDescriptor desc : descs) {
             String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX : desc.name;
-            indexNames.add(name);
+            ftc.indexNames.add(name);
             if (desc.fields == null) {
                 desc.fields = new HashSet<>();
             }
@@ -136,14 +110,14 @@ public class FulltextConfiguration {
                 desc.excludeFields = new HashSet<>();
             }
             if (desc.fields.size() == 1 && desc.excludeFields.isEmpty()) {
-                fieldToIndexName.put(desc.fields.iterator().next(), name);
+                ftc.fieldToIndexName.put(desc.fields.iterator().next(), name);
             }
 
             if (desc.fieldType != null) {
-                if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_STRING)) {
-                    indexesAllSimple.add(name);
-                } else if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_BLOB)) {
-                    indexesAllBinary.add(name);
+                if (desc.fieldType.equals(FulltextConfigurationFactory.PROP_TYPE_STRING)) {
+                    ftc.indexesAllSimple.add(name);
+                } else if (desc.fieldType.equals(FulltextConfigurationFactory.PROP_TYPE_BLOB)) {
+                    ftc.indexesAllBinary.add(name);
                 } else {
                     log.error("Ignoring unknow repository fulltext configuration fieldType: " + desc.fieldType);
                 }
@@ -151,28 +125,28 @@ public class FulltextConfiguration {
             }
             if (desc.fields.isEmpty() && desc.fieldType == null) {
                 // no fields specified and no field type -> all of them
-                indexesAllSimple.add(name);
-                indexesAllBinary.add(name);
+                ftc.indexesAllSimple.add(name);
+                ftc.indexesAllBinary.add(name);
             }
 
-            if (indexesAllSimple.contains(name)) {
-                propPathsByIndexSimple.put(name, new HashSet<>(allSimplePaths));
+            if (ftc.indexesAllSimple.contains(name)) {
+                ftc.propPathsByIndexSimple.put(name, new HashSet<>(allSimplePaths));
                 for (String path : allSimplePaths) {
-                    indexesByPropPathSimple.computeIfAbsent(path, p -> new HashSet<>()).add(name);
+                    ftc.indexesByPropPathSimple.computeIfAbsent(path, p -> new HashSet<>()).add(name);
                 }
             }
-            if (indexesAllBinary.contains(name)) {
-                propPathsByIndexBinary.put(name, new HashSet<>(allBinaryPaths));
+            if (ftc.indexesAllBinary.contains(name)) {
+                ftc.propPathsByIndexBinary.put(name, new HashSet<>(allBinaryPaths));
                 for (String path : allBinaryPaths) {
-                    indexesByPropPathBinary.computeIfAbsent(path, p -> new HashSet<>()).add(name);
+                    ftc.indexesByPropPathBinary.computeIfAbsent(path, p -> new HashSet<>()).add(name);
                 }
             }
 
             if (fulltextDescriptor.getFulltextExcludedTypes() != null) {
-                excludedTypes.addAll(fulltextDescriptor.getFulltextExcludedTypes());
+                ftc.excludedTypes.addAll(fulltextDescriptor.getFulltextExcludedTypes());
             }
             if (fulltextDescriptor.getFulltextIncludedTypes() != null) {
-                includedTypes.addAll(fulltextDescriptor.getFulltextIncludedTypes());
+                ftc.includedTypes.addAll(fulltextDescriptor.getFulltextIncludedTypes());
             }
 
             for (Set<String> fields : Arrays.asList(desc.fields, desc.excludeFields)) {
@@ -207,11 +181,11 @@ public class FulltextConfiguration {
                         baseType = ((ComplexType) baseType).getField(BaseDocument.BLOB_DATA).getType(); // BinaryType
                     }
                     if (baseType instanceof StringType) {
-                        indexesByPropPath = include ? indexesByPropPathSimple : indexesByPropPathExcludedSimple;
-                        propPathsByIndex = include ? propPathsByIndexSimple : propPathsExcludedByIndexSimple;
+                        indexesByPropPath = include ? ftc.indexesByPropPathSimple : ftc.indexesByPropPathExcludedSimple;
+                        propPathsByIndex = include ? ftc.propPathsByIndexSimple : ftc.propPathsExcludedByIndexSimple;
                     } else if (baseType instanceof BinaryType) {
-                        indexesByPropPath = include ? indexesByPropPathBinary : indexesByPropPathExcludedBinary;
-                        propPathsByIndex = include ? propPathsByIndexBinary : propPathsExcludedByIndexBinary;
+                        indexesByPropPath = include ? ftc.indexesByPropPathBinary : ftc.indexesByPropPathExcludedBinary;
+                        propPathsByIndex = include ? ftc.propPathsByIndexBinary : ftc.propPathsExcludedByIndexBinary;
                         if (!path.endsWith("/" + BaseDocument.BLOB_DATA)) {
                             path += "/" + BaseDocument.BLOB_DATA;
                             // needed for indexesByPropPathBinary as DBSTransactionState.findDirtyDocuments expects this
@@ -231,12 +205,14 @@ public class FulltextConfiguration {
         // Add document types with the NotFulltextIndexable facet
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             if (documentType.hasFacet(FacetNames.NOT_FULLTEXT_INDEXABLE)) {
-                excludedTypes.add(documentType.getName());
+                ftc.excludedTypes.add(documentType.getName());
             }
         }
+
+        return ftc;
     }
 
-    protected Type getBaseType(Type type) {
+    protected static Type getBaseType(Type type) {
         if (type instanceof SimpleTypeImpl) {
             return getBaseType(type.getSuperType());
         }
@@ -315,16 +291,6 @@ public class FulltextConfiguration {
                 }
             }
         }
-    }
-
-    public boolean isFulltextIndexable(String typeName) {
-        if (ROOT_TYPE.equals(typeName)) {
-            return false;
-        }
-        if (includedTypes.contains(typeName) || (includedTypes.isEmpty() && !excludedTypes.contains(typeName))) {
-            return true;
-        }
-        return false;
     }
 
 }

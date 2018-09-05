@@ -34,8 +34,12 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -47,13 +51,10 @@ import org.nuxeo.runtime.api.Framework;
  * Work task that does fulltext extraction from the blobs of the given document.
  * <p>
  * The extracted fulltext is then passed to the single-threaded {@link FulltextUpdaterWork}.
- * <p>
- * This base abstract class must be subclassed in order to implement the proper
- * {@link #initFulltextConfigurationAndParser} depending on the storage.
  *
  * @since 5.7
  */
-public abstract class FulltextExtractorWork extends AbstractWork {
+public class FulltextExtractorWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,7 +118,20 @@ public abstract class FulltextExtractorWork extends AbstractWork {
      *
      * @since 5.9.5
      */
-    public abstract void initFulltextConfigurationAndParser();
+    public void initFulltextConfigurationAndParser() {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        Repository repository = repositoryService.getRepository(repositoryName);
+        fulltextConfiguration = repository.getFulltextConfiguration();
+        Class<? extends FulltextParser> fulltextParserClass = fulltextConfiguration.fulltextParserClass;
+        fulltextParser = new DefaultFulltextParser();
+        if (fulltextParserClass != null) {
+            try {
+                fulltextParser = fulltextConfiguration.fulltextParserClass.getConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
+                log.error("Failed to instantiate " + fulltextConfiguration.fulltextParserClass.getCanonicalName(), e);
+            }
+        }
+    }
 
     protected void extractBinaryText() {
         IdRef docRef = new IdRef(docId);

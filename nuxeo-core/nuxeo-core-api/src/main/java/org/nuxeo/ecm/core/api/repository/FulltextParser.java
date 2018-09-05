@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage;
+package org.nuxeo.ecm.core.api.repository;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 

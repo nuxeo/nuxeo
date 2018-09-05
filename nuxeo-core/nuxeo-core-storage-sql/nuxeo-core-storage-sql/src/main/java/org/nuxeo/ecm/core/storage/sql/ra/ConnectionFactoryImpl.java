@@ -30,6 +30,7 @@ import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
@@ -173,6 +174,11 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
         } catch (NuxeoException e) {
             LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot shutdown connection factory  " + name);
         }
+    }
+
+    @Override
+    public FulltextConfiguration getFulltextConfiguration() {
+        return managedConnectionFactory.getFulltextConfiguration();
     }
 
     /*

@@ -35,9 +35,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
-import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -530,6 +531,11 @@ public class RepositoryImpl implements Repository {
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public FulltextConfiguration getFulltextConfiguration() {
+        return model.getFulltextConfiguration();
     }
 
     /*
