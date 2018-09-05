@@ -19,6 +19,7 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -61,5 +62,14 @@ public interface ConfigurationService {
      * Returns true if given property is false when compared to a boolean value.
      */
     boolean isBooleanPropertyFalse(String key);
+
+    /**
+     * Returns the json string representing the properties with key starting with the given namespace.
+     *
+     * @param namespace the namespace of the properties
+     * @throws IOException
+     * @since 10.3
+     */
+    String getPropertiesAsJson(String namespace) throws IOException;
 
 }

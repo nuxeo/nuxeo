@@ -35,6 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 7.4
@@ -151,6 +152,24 @@ public class TestConfigurationService {
         } catch (IllegalArgumentException e) {
             // Expected
         }
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
+    public void testToJson() throws Exception {
+        String expected = "{\n" + //
+                "\"anothertest.dummyBooleanProperty\": \"true\",\n" + //
+                "\"anothertest.pouet\": \"toto\",\n" + //
+                "\"test.anotherDummyBooleanProperty\": \"false\",\n" + //
+                "\"test.dummyBooleanProperty\": \"true\",\n" + //
+                "\"test.dummyStringProperty\": \"dummyValue,anotherDummyValue\",\n" + //
+                "\"yetanothertest.pouet\": \"foo,bar\"\n" + //
+                "}";
+        String json = cs.getPropertiesAsJson("nuxeo");
+        JSONAssert.assertEquals(expected, json, false);
     }
 
 }
