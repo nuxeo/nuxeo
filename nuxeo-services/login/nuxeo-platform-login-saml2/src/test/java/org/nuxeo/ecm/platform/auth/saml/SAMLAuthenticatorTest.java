@@ -263,10 +263,10 @@ public class SAMLAuthenticatorTest {
         when(assertion.getIssuer()).thenReturn(issuer);
         when(assertion.getConditions()).thenReturn(conditions);
 
-        // Set message expiration 1ms ago
-        when(conditions.getNotOnOrAfter()).thenReturn(DateTime.now().minusMillis(1));
+        // Set message expiration 30s ago
+        when(conditions.getNotOnOrAfter()).thenReturn(DateTime.now().minusSeconds(30));
 
-        // Validation passes with default time skew
+        // Validation passes with default 60s time skew
         SAMLMessageContext context = new BasicSAMLMessageContext();
         try {
             profile.validateAssertion(assertion, context);
@@ -304,10 +304,10 @@ public class SAMLAuthenticatorTest {
         when(assertion.getIssuer()).thenReturn(issuer);
         when(assertion.getConditions()).thenReturn(conditions);
 
-        // Set message active in 1ms
-        when(conditions.getNotBefore()).thenReturn(DateTime.now().plusMillis(1));
+        // Set message active in 30s
+        when(conditions.getNotBefore()).thenReturn(DateTime.now().plusSeconds(30));
 
-        // Validation passes with default time skew
+        // Validation passes with default 60s time skew
         SAMLMessageContext context = new BasicSAMLMessageContext();
         try {
             profile.validateAssertion(assertion, context);
