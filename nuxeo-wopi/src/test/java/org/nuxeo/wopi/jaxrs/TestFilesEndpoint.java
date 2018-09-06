@@ -63,6 +63,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -80,6 +81,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -167,6 +169,8 @@ public class TestFilesEndpoint {
 
         // make sure everything is committed
         transactionalFeature.nextTransaction();
+
+        Framework.getProperties().put(Environment.PRODUCT_NAME, "WOPI Test");
     }
 
     protected void createUsers() {
@@ -227,6 +231,8 @@ public class TestFilesEndpoint {
     public void tearDown() {
         Stream.of("john", "joe").forEach(userManager::deleteUser);
         client.destroy();
+
+        Framework.getProperties().remove(Environment.PRODUCT_NAME);
     }
 
     @Test

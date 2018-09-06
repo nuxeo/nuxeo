@@ -22,11 +22,16 @@ package org.nuxeo.wopi.jaxrs;
 
 import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
 import static org.nuxeo.wopi.Constants.BASE_FILE_NAME;
+import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_NAME;
+import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_URL;
+import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_NAME;
+import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_URL;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
 import static org.nuxeo.wopi.Constants.NAME;
+import static org.nuxeo.wopi.Constants.NOTIFICATION_DOCUMENT_ID_CODEC_NAME;
 import static org.nuxeo.wopi.Constants.OWNER_ID;
 import static org.nuxeo.wopi.Constants.READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL;
@@ -78,17 +83,25 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Helpers;
 import org.nuxeo.wopi.Operation;
@@ -310,7 +323,6 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutRelativeFile.html"></a>.
      */
     public Object putRelativeFile() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
         String suggestedTarget = getHeader(SUGGESTED_TARGET, true);
         if (suggestedTarget != null) {
             suggestedTarget = Helpers.readUTF7String(suggestedTarget);
@@ -333,7 +345,8 @@ public class FilesEndpoint extends DefaultObject {
         String newFileName = relativeTarget;
         if (StringUtils.isNotEmpty(suggestedTarget)) {
             newFileName = suggestedTarget.startsWith(".")
-                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget : suggestedTarget;
+                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget
+                    : suggestedTarget;
         }
 
         DocumentModel parent = session.getDocument(parentRef);
@@ -565,7 +578,7 @@ public class FilesEndpoint extends DefaultObject {
         addUserMetadataProperties(map, principal);
         addUserPermissionsProperties(map, session, doc);
         addFileURLProperties(map);
-        addBreadcrumbProperties(map);
+        addBreadcrumbProperties(map, session, doc, VirtualHostHelper.getBaseURL(request));
         return map;
     }
 
@@ -607,8 +620,31 @@ public class FilesEndpoint extends DefaultObject {
         // TODO
     }
 
-    protected static void addBreadcrumbProperties(Map<String, Serializable> map) {
-        // TODO NXP-25502
+    protected static void addBreadcrumbProperties(Map<String, Serializable> map, CoreSession session, DocumentModel doc,
+            String baseURL) {
+        map.put(BREADCRUMB_BRAND_NAME, Framework.getProperty(Environment.PRODUCT_NAME));
+        map.put(BREADCRUMB_BRAND_URL, baseURL);
+
+        DocumentRef parentRef = doc.getParentRef();
+        if (session.exists(parentRef)) {
+            DocumentModel parent = session.getDocument(parentRef);
+            map.put(BREADCRUMB_FOLDER_NAME, parent.getTitle());
+            String url = getDocumentURL(parent, baseURL);
+            if (url != null) {
+                map.put(BREADCRUMB_FOLDER_URL, url);
+            }
+        }
+    }
+
+    protected static String getDocumentURL(DocumentModel doc, String baseURL) {
+        TypeInfo adapter = doc.getAdapter(TypeInfo.class);
+        if (adapter != null) {
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
+            DocumentView docView = new DocumentViewImpl(docLoc, adapter.getDefaultView());
+            return Framework.getService(DocumentViewCodecManager.class)
+                            .getUrlFromDocumentView(NOTIFICATION_DOCUMENT_ID_CODEC_NAME, docView, true, baseURL);
+        }
+        return null;
     }
 
 }

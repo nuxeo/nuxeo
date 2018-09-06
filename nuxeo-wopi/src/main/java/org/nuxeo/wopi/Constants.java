@@ -50,6 +50,8 @@ public class Constants {
 
     public static final String WOPI_USER = "wopiUser";
 
+    public static final String NOTIFICATION_DOCUMENT_ID_CODEC_NAME = "notificationDocId";
+
     // -------- WOPI locks directory ---------------
 
     public static final String LOCK_DIRECTORY_DOC_ID = "docId";
@@ -115,6 +117,16 @@ public class Constants {
     public static final String USER_CAN_WRITE = "UserCanWrite";
 
     public static final String USER_CAN_NOT_WRITE_RELATIVE = "UserCanNotWriteRelative";
+
+    // -------- Breadcrumb properties ---------------
+
+    public static final String BREADCRUMB_BRAND_NAME = "BreadcrumbBrandName";
+
+    public static final String BREADCRUMB_BRAND_URL = "BreadcrumbBrandUrl";
+
+    public static final String BREADCRUMB_FOLDER_NAME = "BreadcrumbFolderName";
+
+    public static final String BREADCRUMB_FOLDER_URL = "BreadcrumbFolderUrl";
 
     // -------- End CheckFileInfo ---------------
 

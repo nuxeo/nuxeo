@@ -15,5 +15,8 @@
   "SupportsExtendedLockLength": true,
   "UserCanRename": false,
   "UserCanWrite": false,
-  "UserCanNotWriteRelative": true
+  "UserCanNotWriteRelative": true,
+  "BreadcrumbBrandName": "WOPI Test",
+  "BreadcrumbBrandUrl": "http://localhost:18090/",
+  "BreadcrumbFolderName": "wopi"
 }
