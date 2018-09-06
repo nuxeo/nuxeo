@@ -87,7 +87,11 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public static String getBootstrapServers() {
-        return System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
+        String bootstrapServers = System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
+        if (bootstrapServers == null || bootstrapServers.isEmpty()) {
+            bootstrapServers = DEFAULT_BOOTSTRAP_SERVERS;
+        }
+        return bootstrapServers;
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")

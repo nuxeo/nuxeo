@@ -230,6 +230,7 @@
     <confluent.version>5.0.0</confluent.version>
     <chronicle.bom.version>1.16.158</chronicle.bom.version>
     <metrics.version>3.2.6</metrics.version>
+    <maven.surefire.version>2.22.0</maven.surefire.version>
   </properties>
 
   <dependencyManagement>
@@ -5439,29 +5440,29 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.17</version>
+	  <version>${maven.surefire.version}</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit47</artifactId>
-              <version>2.17</version>
+	      <version>${maven.surefire.version}</version>
             </dependency>
           </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>2.17</version>
+	  <version>${maven.surefire.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.17</version>
+	  <version>${maven.surefire.version}</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit47</artifactId>
-              <version>2.17</version>
+	      <version>${maven.surefire.version}</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -6026,7 +6027,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.17</version>
+	<version>${maven.surefire.version}</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

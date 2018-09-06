@@ -53,12 +53,20 @@ public class TestCodec {
 
     protected static final int MAX_DATA_SIZE = 1000;
 
+    public static final String SCHEMA_REGISTRY_URL_PROP = "confluent.schema_registry.urls";
+
+    public static final String SCHEMA_REGISTRY_URL_DEFAULT = "http://localhost:8081";
+
     public static void assumeConfluentRegistryEnabled() {
         Assume.assumeTrue("Skip Confluent tests", "true".equals(System.getProperty("confluent")));
     }
 
     public static String getConfluentRegistryUrls() {
-        return System.getProperty("confluent.schema_registry.urls", "http://localhost:8081");
+        String url = System.getProperty(SCHEMA_REGISTRY_URL_PROP, SCHEMA_REGISTRY_URL_DEFAULT);
+        if (url == null || url.isEmpty()) {
+            url = SCHEMA_REGISTRY_URL_DEFAULT;
+        }
+        return url;
     }
 
     @Test
