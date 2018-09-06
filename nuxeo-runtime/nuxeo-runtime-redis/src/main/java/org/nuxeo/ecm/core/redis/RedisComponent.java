@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StrBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.Bundle;
 
@@ -98,10 +99,8 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent) Framework.getRuntime()
-                                            .getComponentInstance("org.nuxeo.ecm.core.work.service")
-                                            .getInstance()).getApplicationStartedOrder()
-                - 1;
+        ComponentInstance compo = Framework.getRuntime().getComponentInstance("org.nuxeo.ecm.core.work.service");
+        return compo != null ? ((DefaultComponent) compo.getInstance()).getApplicationStartedOrder() - 1 : -500;
     }
 
     @Override

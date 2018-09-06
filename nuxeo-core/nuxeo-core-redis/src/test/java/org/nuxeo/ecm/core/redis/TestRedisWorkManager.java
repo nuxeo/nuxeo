@@ -18,14 +18,10 @@
  */
 package org.nuxeo.ecm.core.redis;
 
-import javax.inject.Inject;
-
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.work.WorkManagerTest;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.ecm.core.work.AbstractWorkManagerTest;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured through the properties of
@@ -33,27 +29,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  *
  * @since 5.8
  */
-public class TestRedisWorkManager extends WorkManagerTest {
 
-    private final boolean monitorRedis = false;
-
-    private RedisExecutor redisExecutor;
-
-    @Inject
-    public RuntimeHarness harness;
+@Features({ RedisFeature.class })
+public class TestRedisWorkManager extends AbstractWorkManagerTest {
 
     @Override
     public boolean persistent() {
         return true;
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        RedisFeature.setup(harness);
-        if (monitorRedis) {
-            redisExecutor = Framework.getService(RedisExecutor.class);
-            redisExecutor.startMonitor();
-        }
     }
 
     @Test

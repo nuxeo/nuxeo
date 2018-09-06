@@ -50,12 +50,10 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(DirectoryFeature.class)
+@Features({ DirectoryFeature.class, RedisFeature.class })
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory.tests:directory-cache-config.xml")
 public class TestCachedDirectory extends AbstractDirectoryTest {
-
-    protected final static String REDIS_CACHE_CONFIG = "directory-redis-cache-config.xml";
 
     protected final static String ENTRY_CACHE_NAME = "entry-cache";
 
@@ -64,11 +62,14 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
     @Inject
     protected RuntimeHarness harness;
 
+    @Inject
+    protected RedisFeature redisFeature;
+
     @Before
     public void setUp() throws Exception {
 
-        if (RedisFeature.setup(harness)) {
-            harness.deployContrib("org.nuxeo.ecm.directory.tests", REDIS_CACHE_CONFIG);
+        if (redisFeature.isRedisConfigured()) {
+            harness.deployContrib("org.nuxeo.ecm.directory.tests", "directory-redis-cache-config.xml");
             Framework.getService(WorkManager.class).init();
         }
 

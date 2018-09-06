@@ -22,33 +22,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Adapt the tests with the limitation of the stream impl.
  *
  * @since 9.3
  */
-@RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
-@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.stream")
-@Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
-public class StreamWorkManagerTest extends WorkManagerTest {
+public class StreamWorkManagerTest extends AbstractWorkManagerTest {
+
+    @Override
+    public boolean persistent() {
+        return true;
+    }
 
     @Override
     protected int getDurationMillis() {
@@ -61,7 +55,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     }
 
     @Override
-    void assertMetrics(long scheduled, long running, long completed, long cancelled) {
+    protected void assertMetrics(long scheduled, long running, long completed, long cancelled) {
         WorkQueueMetrics current = service.getMetrics(QUEUE);
         assertEquals("completed", completed, current.completed.longValue());
         // stream workmanager has only an estimation of the max running
@@ -88,7 +82,6 @@ public class StreamWorkManagerTest extends WorkManagerTest {
 
     @Test
     public void testWorkIdempotent() throws InterruptedException {
-        MetricsTracker tracker = new MetricsTracker();
         SleepWork work = new SleepWork(getDurationMillis());
         assertTrue(work.isIdempotent());
         service.schedule(work);
@@ -112,7 +105,6 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-disable-storestate.xml")
     public void testWorkNonIdempotent() throws InterruptedException {
-        MetricsTracker tracker = new MetricsTracker();
         SleepWork work = new SleepWork(getDurationMillis());
         work.setIdempotent(false);
         assertFalse(work.isIdempotent());
@@ -134,8 +126,6 @@ public class StreamWorkManagerTest extends WorkManagerTest {
 
     @Test
     public void testWorkIdempotentConcurrent() throws InterruptedException {
-        MetricsTracker tracker = new MetricsTracker();
-        tracker.assertDiff(0, 0, 0, 0);
         SleepWork work1 = new SleepWork(getDurationMillis());
         SleepWork work2 = new SleepWork(getDurationMillis());
         service.schedule(work1);
