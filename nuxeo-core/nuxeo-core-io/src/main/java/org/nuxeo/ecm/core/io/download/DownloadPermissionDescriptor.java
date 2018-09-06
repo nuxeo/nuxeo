@@ -54,7 +54,7 @@ public class DownloadPermissionDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         DownloadPermissionDescriptor other = (DownloadPermissionDescriptor) o;
         DownloadPermissionDescriptor merged = new DownloadPermissionDescriptor();
-        merged.name = other.name != null ? other.name : name;
+        merged.name = name;
         merged.script = other.script != null ? other.script : script;
         merged.scriptLanguage = other.scriptLanguage != null ? other.scriptLanguage : scriptLanguage;
         return merged;

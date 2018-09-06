@@ -25,6 +25,7 @@ import java.util.Set;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for a {@link WorkManager} queue configuration.
@@ -32,7 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.6
  */
 @XObject("queue")
-public class WorkQueueDescriptor {
+public class WorkQueueDescriptor implements Descriptor {
 
     public static final String ALL_QUEUES = "*";
 
@@ -47,6 +48,11 @@ public class WorkQueueDescriptor {
 
     @XNode("@queueing")
     public Boolean queuing;
+
+    @Override
+    public String getId() {
+        return id;
+    }
 
     /**
      * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
@@ -92,65 +98,22 @@ public class WorkQueueDescriptor {
     }
 
     @Override
-    public WorkQueueDescriptor clone() {
-        WorkQueueDescriptor o = new WorkQueueDescriptor();
-        o.id = id;
-        o.queuing = queuing;
-        o.processing = processing;
-        o.name = name;
-        o.maxThreads = maxThreads;
-        o.capacity = capacity;
-        o.categories = new HashSet<String>(categories);
-        return o;
-    }
-
-    public void merge(WorkQueueDescriptor other) {
-        if (other.queuing != null) {
-            queuing = other.queuing;
-        }
-        if (other.processing != null) {
-            processing = other.processing;
-        }
-        if (other.name != null) {
-            name = other.name;
-        }
-        if (other.maxThreads != null) {
-            maxThreads = other.maxThreads;
-        }
-        if (other.capacity != null) {
-            capacity = other.capacity;
-        }
-        categories.addAll(other.categories);
+    public Descriptor merge(Descriptor o) {
+        WorkQueueDescriptor other = (WorkQueueDescriptor) o;
+        WorkQueueDescriptor merged = new WorkQueueDescriptor();
+        merged.id = id;
+        merged.name = other.name != null ? other.name : name;
+        merged.queuing = other.queuing != null ? other.queuing : queuing;
+        merged.capacity = other.capacity != null ? other.capacity : capacity;
+        merged.processing = other.processing != null ? other.processing : processing;
+        merged.maxThreads = other.maxThreads != null ? other.maxThreads : maxThreads;
+        merged.categories = new HashSet<>(categories);
+        merged.categories.addAll(other.categories);
+        return merged;
     }
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(getClass().getSimpleName());
-        buf.append("[id=");
-        buf.append(id);
-        buf.append(" categories=");
-        buf.append(categories);
-        if (queuing != null) {
-            buf.append(" queuing=");
-            buf.append(queuing);
-        }
-        if (processing != null) {
-            buf.append(" processing=");
-            buf.append(processing);
-        }
-        if (maxThreads != null) {
-            buf.append(" maxThreads=");
-            buf.append(maxThreads);
-        }
-        if (capacity != null) {
-            buf.append(" capacity=");
-            buf.append(capacity);
-        }
-        buf.append("]");
-        return buf.toString();
-    }
-
-    public String toEffectiveString() {
         StringBuilder buf = new StringBuilder(getClass().getSimpleName());
         buf.append("(id=");
         buf.append(id);
@@ -164,9 +127,7 @@ public class WorkQueueDescriptor {
         buf.append(getMaxThreads());
         buf.append(" capacity=");
         buf.append(getCapacity());
-        buf.append(" clearCompletedAfterSeconds=");
         buf.append(")");
         return buf.toString();
     }
-
 }

@@ -22,6 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.work.MemoryWorkQueuing;
 import org.nuxeo.ecm.core.work.WorkQueuing;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * Descriptor for a {@link WorkManager} queuing implementation configuration.
@@ -29,9 +30,13 @@ import org.nuxeo.ecm.core.work.WorkQueuing;
  * @since 5.8
  */
 @XObject("queuing")
-public class WorkQueuingDescriptor {
+public class WorkQueuingDescriptor implements Descriptor {
 
     @XNode("@class")
     public Class<? extends WorkQueuing> klass = MemoryWorkQueuing.class;
 
+    @Override
+    public String getId() {
+        return UNIQUE_DESCRIPTOR_ID;
+    }
 }

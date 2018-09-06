@@ -57,7 +57,7 @@ public class TestDescriptorRegistry {
         public Descriptor merge(Descriptor o) {
             TestDescriptor other = (TestDescriptor) o;
             TestDescriptor merged = new TestDescriptor();
-            merged.id = other.id != null ? other.id : id;
+            merged.id = id;
             merged.name = other.name != null ? other.name : name;
             merged.desc = other.desc != null ? other.desc : desc;
             return merged;
