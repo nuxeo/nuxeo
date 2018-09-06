@@ -205,7 +205,7 @@ public class Record implements Externalizable {
         return ret;
     }
 
-    protected EnumSet<Flag> decodeFlags(short encoded) {
+    protected EnumSet<Flag> decodeFlags(byte encoded) {
         // adapted from Adamski: http://stackoverflow.com/questions/2199399/storing-enumset-in-a-database
         Map<Integer, Flag> ordinalMap = new HashMap<>();
         for (Flag val : Flag.ALL_OPTS) {
@@ -213,7 +213,7 @@ public class Record implements Externalizable {
         }
         EnumSet<Flag> ret = EnumSet.noneOf(Flag.class);
         int ordinal = 0;
-        for (int i = 1; i != 0; i <<= 1) {
+        for (byte i = 1; i != 0; i <<= 1) {
             if ((i & encoded) != 0) {
                 ret.add(ordinalMap.get(ordinal));
             }

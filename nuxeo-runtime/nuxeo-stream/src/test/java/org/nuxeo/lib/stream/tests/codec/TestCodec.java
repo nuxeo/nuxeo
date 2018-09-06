@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.tests.codec;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +26,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,7 +113,8 @@ public class TestCodec {
     public void testRecordExternalizable() throws Exception {
         Record src = getRecord();
         Codec<Record> codec = new SerializableCodec<>();
-        testCodec(src, codec);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
         testCodecFromFile("data/record-externalizable.bin", codec);
     }
 
@@ -121,7 +122,8 @@ public class TestCodec {
     public void testRecordMessageAvro() throws Exception {
         Record src = getRecord();
         Codec<Record> codec = new AvroMessageCodec<>(Record.class);
-        testCodec(src, codec);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
         testCodecFromFile("data/record-avro-message.bin", codec);
     }
 
@@ -129,7 +131,8 @@ public class TestCodec {
     public void testRecordRawMessageAvro() throws Exception {
         Record src = getRecord();
         Codec<Record> codec = new AvroBinaryCodec<>(Record.class);
-        testCodec(src, codec);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
         testCodecFromFile("data/record-avro-binary.bin", codec);
     }
 
@@ -137,7 +140,8 @@ public class TestCodec {
     public void testRecordJsonAvro() throws Exception {
         Record src = getRecord();
         Codec<Record> codec = new AvroJsonCodec<>(Record.class);
-        testCodec(src, codec);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
         testCodecFromFile("data/record-avro.json", codec);
     }
 
@@ -147,7 +151,8 @@ public class TestCodec {
         String baseUrl = getConfluentRegistryUrls();
         Record src = getRecord();
         Codec<Record> codec = new AvroConfluentCodec<>(Record.class, baseUrl);
-        testCodec(src, codec);
+        Record dest = testCodec(src, codec);
+        assertEquals(src.toString(), dest.toString());
         // note that because the message has been written with a different schema registry this will output a warning
         // because the write schema id is unknown from the schema registry used to read it
         testCodecFromFile("data/record-avro-confluent.bin", codec);
@@ -196,7 +201,7 @@ public class TestCodec {
         return ret;
     }
 
-    protected <T> void testCodec(T src, Codec<T> codec) {
+    protected <T> T testCodec(T src, Codec<T> codec) {
         byte[] data = codec.encode(src);
         T dest = codec.decode(data);
         assertEquals(src, dest);
@@ -205,17 +210,18 @@ public class TestCodec {
         assertEquals(src, dest2);
         assertEquals(String.format("%s\n%s", overview(data), overview(data2)), data.length, data2.length);
         // System.out.println(String.format("Codec: %s, size: %d", codec.getClass().getSimpleName(), data.length));
+        return dest2;
     }
 
-    protected Record getRecord() throws UnsupportedEncodingException {
+    protected Record getRecord() {
         Record src = Record.of("key", "value".getBytes(StandardCharsets.UTF_8));
-        src.setFlags(EnumSet.of(Record.Flag.COMMIT, Record.Flag.TRACE));
+        src.setFlags(EnumSet.of(Record.Flag.COMMIT, Record.Flag.USER2, Record.Flag.DEFAULT));
         return src;
     }
 
     protected String overview(byte[] data) {
         String overview;
-        overview = new String(data, StandardCharsets.UTF_8);
+        overview = new String(data, UTF_8);
         return overview;
     }
 
