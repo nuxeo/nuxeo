@@ -32,36 +32,32 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.TAGGING_SOURCE_FIELD;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.migrator.AbstractRepositoryMigrator;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
-import org.nuxeo.runtime.migration.MigrationService.Migrator;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Migrator of tags.
  *
  * @since 9.3
  */
-public class TagsMigrator implements Migrator {
+public class TagsMigrator extends AbstractRepositoryMigrator {
 
     private static final Log log = LogFactory.getLog(TagsMigrator.class);
 
@@ -129,18 +125,6 @@ public class TagsMigrator implements Migrator {
 
     protected static final int BATCH_SIZE = 50;
 
-    protected MigrationContext migrationContext;
-
-    // exception used for simpler flow control
-    protected static class MigrationShutdownException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-        public MigrationShutdownException() {
-            super();
-        }
-    }
-
     @Override
     public void notifyStatusChange() {
         TagServiceImpl tagService = (TagServiceImpl) Framework.getRuntime().getComponent(TagServiceImpl.NAME);
@@ -156,10 +140,7 @@ public class TagsMigrator implements Migrator {
         return MIGRATION_STATE_FACETS;
     }
 
-    protected String probeRepository(String repositoryName) {
-        return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
-    }
-
+    @Override
     protected String probeSession(CoreSession session) {
         // finds if there are any taggings
         List<Map<String, Serializable>> taggingMaps = session.queryProjection(QUERY_TAGGING, 1, 0); // limit 1
@@ -185,21 +166,7 @@ public class TagsMigrator implements Migrator {
         }
     }
 
-    protected void checkShutdownRequested() {
-        if (migrationContext.isShutdownRequested()) {
-            throw new MigrationShutdownException();
-        }
-    }
-
-    protected void reportProgress(String message, long num, long total) {
-        log.debug(message + ": " + num + "/" + total);
-        migrationContext.reportProgress(message, num, total);
-    }
-
-    protected void migrateRepository(String repositoryName) {
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::migrateSession));
-    }
-
+    @Override
     protected void migrateSession(CoreSession session) {
         // query all tagging
         List<Map<String, Serializable>> taggingMaps = session.queryProjection(QUERY_TAGGING, -1, 0);
@@ -233,11 +200,13 @@ public class TagsMigrator implements Migrator {
         checkShutdownRequested();
 
         // recreate all doc tags
-        processBatched(docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()), "Creating new tags");
+        processBatched(BATCH_SIZE, docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()),
+                "Creating new tags");
 
         // delete all Tagging and Tag documents
-        processBatched(taggingIds, docId -> removeDocument(session, docId), "Deleting old Tagging documents");
-        processBatched(tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
+        processBatched(BATCH_SIZE, taggingIds, docId -> removeDocument(session, docId),
+                "Deleting old Tagging documents");
+        processBatched(BATCH_SIZE, tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
 
         reportProgress("Done", docTags.size(), docTags.size());
     }
@@ -289,25 +258,6 @@ public class TagsMigrator implements Migrator {
             doc.putContextData(ALLOW_VERSION_WRITE, TRUE);
             doc.setPropertyValue(TAG_LIST, (Serializable) tagsList);
             doc.getCoreSession().saveDocument(doc);
-        }
-    }
-
-    /**
-     * Runs a consumer on the collection, committing every BATCH_SIZE elements, reporting progress and checking for
-     * shutdown request.
-     */
-    protected <T> void processBatched(Collection<T> collection, Consumer<T> consumer, String progressMessage) {
-        int size = collection.size();
-        int i = -1;
-        for (T element : collection) {
-            consumer.accept(element);
-            checkShutdownRequested();
-            i++;
-            if (i % BATCH_SIZE == 0 || i == size - 1) {
-                reportProgress(progressMessage, i + 1, size);
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
         }
     }
 

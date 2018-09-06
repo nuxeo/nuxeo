@@ -32,14 +32,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.migrator.AbstractRepositoryMigrator;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
-import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -47,15 +46,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 10.2
  */
-public class TrashedStateMigrator implements Migrator {
+public class TrashedStateMigrator extends AbstractRepositoryMigrator {
 
     private static final Log log = LogFactory.getLog(TrashedStateMigrator.class);
 
     protected static final String QUERY_DELETED = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted' AND ecm:isVersion = 0";
 
     protected static final int BATCH_SIZE = 50;
-
-    protected MigrationContext migrationContext;
 
     @Override
     public void notifyStatusChange() {
@@ -72,10 +69,7 @@ public class TrashedStateMigrator implements Migrator {
         return MIGRATION_STATE_PROPERTY;
     }
 
-    protected String probeRepository(String repositoryName) {
-        return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
-    }
-
+    @Override
     protected String probeSession(CoreSession session) {
         // finds if there are documents in 'deleted' lifecycle state
         List<Map<String, Serializable>> deletedMaps = session.queryProjection(QUERY_DELETED, 1, 0); // limit 1
@@ -102,26 +96,13 @@ public class TrashedStateMigrator implements Migrator {
         }
     }
 
-    protected void checkShutdownRequested() {
-        if (migrationContext.isShutdownRequested()) {
-            throw new MigrationShutdownException();
-        }
-    }
-
-    protected void reportProgress(String message, long num, long total) {
-        log.debug(message + ": " + num + "/" + total);
-        migrationContext.reportProgress(message, num, total);
-    }
-
-    protected void reportProgress(String repositoryName, String message, long num, long total) {
-        reportProgress(String.format("[%s] %s", repositoryName, message), num, total);
-    }
-
+    @Override
     protected void migrateRepository(String repositoryName) {
         reportProgress(repositoryName, "Initializing", 0, -1); // unknown
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::migrateSession));
+        super.migrateRepository(repositoryName);
     }
 
+    @Override
     protected void migrateSession(CoreSession session) {
         // query all 'deleted' documents
         List<Map<String, Serializable>> deletedMaps = session.queryProjection(QUERY_DELETED, -1, 0);
@@ -151,15 +132,5 @@ public class TrashedStateMigrator implements Migrator {
             }
         }
         reportProgress(session.getRepositoryName(), "Done", size, size);
-    }
-
-    // exception used for simpler flow control
-    protected static class MigrationShutdownException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-        public MigrationShutdownException() {
-            super();
-        }
     }
 }
