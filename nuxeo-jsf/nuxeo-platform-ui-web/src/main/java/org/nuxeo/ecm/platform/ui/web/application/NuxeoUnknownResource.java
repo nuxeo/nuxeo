@@ -29,6 +29,7 @@ import java.net.URLStreamHandler;
 import javax.faces.application.ViewResource;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,12 +53,9 @@ public class NuxeoUnknownResource extends ViewResource {
 
     protected final String path;
 
-    protected final String errorMessage;
-
     public NuxeoUnknownResource(String path) {
         super();
         this.path = path;
-        errorMessage = "ERROR: facelet not found at '" + path + "'";
     }
 
     @Override
@@ -78,7 +76,7 @@ public class NuxeoUnknownResource extends ViewResource {
 
         @Override
         protected URLConnection openConnection(URL url) throws IOException {
-            log.error(errorMessage);
+            log.error("facelet not found: " + path);
             return new Connection(url);
         }
 
@@ -94,8 +92,13 @@ public class NuxeoUnknownResource extends ViewResource {
 
             @Override
             public InputStream getInputStream() throws IOException {
+                String message = "ERROR: facelet not found";
+                // NXP-25746
+                if (Framework.isDevModeSet() && !path.contains("$") && !path.contains("#")) {
+                    message += " at '" + path + "'";
+                }
                 String msg = "<span><span style=\"color:red;font-weight:bold;\">"
-                        + StringEscapeUtils.escapeHtml(errorMessage) + "</span><br/></span>";
+                        + StringEscapeUtils.escapeHtml(message) + "</span><br/></span>";
                 return new ByteArrayInputStream(msg.getBytes());
             }
         }
