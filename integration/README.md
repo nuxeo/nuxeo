@@ -35,6 +35,11 @@ During the Maven **`test`** phase, regardless where it is executed from:
     - some database specific properties are optionally set (database kind, default port...)
     - the Nuxeo Testing Framework instantiates the right `org.nuxeo.ecm.core.storage.sql.DatabaseHelper`
 
+Note that variables in descriptor are resolved when loaded in [DefaultRuntimeContext](org.nuxeo.runtime.model.impl.DefaultRuntimeContext#createRegistrationInfo(org.nuxeo.runtime.model.StreamRef)
+Since surefire 2.18 empty properties are propagated which is not expected by some tests that
+want to resolve later undefined variables, to do this empty system properties that starts with `nuxeo.test.`
+are removed by the test [RuntimeHarness](org.nuxeo.runtime.test.RuntimeHarnessImpl#wipeEmptyTestSystemProperties).
+
 ### Properties Conventions
 
 The `vcstests.xml` inherits the properties initialization from `nuxeo-ftest.xml` then it copies the properties to `nuxeo.test.\*`. For instance:

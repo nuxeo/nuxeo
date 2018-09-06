@@ -71,7 +71,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
 
     protected static String defaultProperty(String name, String def) {
         String value = System.getProperty(name);
-        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+        if (value == null || value.isEmpty() || value.equals("${" + name + "}")) {
             value = def;
         }
         Framework.getProperties().setProperty(name, value);

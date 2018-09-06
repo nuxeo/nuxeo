@@ -271,6 +271,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     @Override
     public void start() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
+        wipeEmptyTestSystemProperties();
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -491,6 +492,32 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                 throw new RuntimeServiceException("Interrupted during shutdown", cause);
             }
         }
+    }
+
+    /**
+     * Removes Nuxeo test system properties that are empty.
+     * <p>
+     * This is needed when using maven surefire > 2.17 because since SUREFIRE-649 surefire propagates empty system
+     * properties.
+     */
+    protected void wipeEmptyTestSystemProperties() {
+        List<String> emptyProps = System.getProperties()
+                                        .entrySet()
+                                        .stream()
+                                        .filter(this::isAnEmptyTestProperty)
+                                        .map(entry -> entry.getKey().toString())
+                                        .collect(Collectors.toList());
+        emptyProps.forEach(property -> System.clearProperty(property));
+        if (log.isDebugEnabled()) {
+            emptyProps.forEach(property -> log.debug("Removed empty test system property: " + property));
+        }
+    }
+
+    protected boolean isAnEmptyTestProperty(Map.Entry<Object, Object> entry) {
+        if (!entry.getKey().toString().startsWith("nuxeo.test.")) {
+            return false;
+        }
+        return entry.getValue() == null || entry.getValue().toString().isEmpty();
     }
 
 }
