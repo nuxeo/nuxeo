@@ -37,8 +37,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisPubSubProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.pubsub.PubSubService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
@@ -46,7 +46,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, RedisFeature.class })
+@Deploy("org.nuxeo.runtime.pubsub")
+@Deploy("org.nuxeo.ecm.core.redis.tests:test-redis-pubsub-contrib.xml")
 public class TestRedisPubSubProvider {
 
     @Inject
@@ -55,7 +57,11 @@ public class TestRedisPubSubProvider {
     @Inject
     public HotDeployer deployer;
 
+    @Inject
     public PubSubService pubSubService;
+
+    @Inject
+    public RedisFeature redisFeature;
 
     protected List<String> messages = new CopyOnWriteArrayList<>();
 
@@ -63,15 +69,7 @@ public class TestRedisPubSubProvider {
 
     @Before
     public void setUp() throws Exception {
-        RedisFeature redisFeature = RedisFeature.setUpFeature(harness);
         assumeTrue("Requires a true Redis server with pubsub support", redisFeature.getMode() == Mode.server);
-        // we must check for a real Redis server and not the embedded one BEFORE initializing
-        // the Redis pubsub contribution, because the embedded server doesn't support pubsub
-        deployer.deploy(
-                "org.nuxeo.runtime.pubsub",
-                "org.nuxeo.ecm.core.event",
-                "org.nuxeo.ecm.core.redis.tests:test-redis-pubsub-contrib.xml");
-        pubSubService = Framework.getService(PubSubService.class);
     }
 
     @Test
