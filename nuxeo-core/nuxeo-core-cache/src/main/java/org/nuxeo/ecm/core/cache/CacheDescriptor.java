@@ -87,9 +87,9 @@ public class CacheDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         CacheDescriptor other = (CacheDescriptor) o;
         CacheDescriptor merged = new CacheDescriptor();
+        merged.name = name;
         merged.remove = other.remove;
         merged.ttl = other.ttl != null ? other.ttl : ttl;
-        merged.name = other.name != null ? other.name : name;
         merged.klass = other.klass != null ? other.klass : klass;
         merged.options.putAll(options);
         merged.options.putAll(other.options);

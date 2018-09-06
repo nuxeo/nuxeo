@@ -21,13 +21,13 @@ package org.nuxeo.ecm.core.work;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.work.api.WorkManager.Scheduling.CANCEL_SCHEDULED;
 
-import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -58,6 +58,7 @@ import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -189,7 +190,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public void start(ComponentContext context) {
-        init();
+        super.start(context);
         ConfigurationService configuration = Framework.getService(ConfigurationService.class);
         storeState = configuration.isBooleanPropertyTrue(STORESTATE_KEY);
         stateTTL = Long.parseLong(configuration.getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
@@ -200,13 +201,15 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (started) {
             return;
         }
+        WorkManagerImpl wmi = (WorkManagerImpl) Framework.getRuntime().getComponent("org.nuxeo.ecm.core.work.service");
+        wmi.active = false;
         log.debug("Initializing");
         synchronized (this) {
             if (started) {
                 return;
             }
-            supplantWorkManagerImpl();
-            workQueueConfig.index();
+            streamIds.addAll(getDescriptors(QUEUES_EP).stream().map(Descriptor::getId).collect(Collectors.toList()));
+            index();
             initTopology();
             logManager = getLogManager();
             streamProcessor = new LogStreamProcessor(logManager);
@@ -228,16 +231,16 @@ public class StreamWorkManager extends WorkManagerImpl {
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
             streamProcessor.start();
-            for (String id : workQueueConfig.getQueueIds()) {
-                activateQueueMetrics(id);
+            for (Descriptor d : getDescriptors(QUEUES_EP)) {
+                activateQueueMetrics(d.getId());
             }
         }
 
         @Override
         public void afterStop(ComponentManager mgr, boolean isStandby) {
             Framework.getRuntime().getComponentManager().removeListener(this);
-            for (String id : workQueueConfig.getQueueIds()) {
-                deactivateQueueMetrics(id);
+            for (Descriptor d : getDescriptors(QUEUES_EP)) {
+                deactivateQueueMetrics(d.getId());
             }
         }
     }
@@ -259,46 +262,16 @@ public class StreamWorkManager extends WorkManagerImpl {
         return wqd != null && wqd.isProcessingEnabled();
     }
 
-    /**
-     * Hack to steal the WorkManagerImpl queue contributions.
-     */
-    protected void supplantWorkManagerImpl() {
-        WorkManagerImpl wmi = (WorkManagerImpl) Framework.getRuntime().getComponent("org.nuxeo.ecm.core.work.service");
-        Class clazz = WorkManagerImpl.class;
-        Field workQueueConfigField;
-        try {
-            workQueueConfigField = clazz.getDeclaredField("workQueueConfig");
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-        workQueueConfigField.setAccessible(true);
-        final WorkQueueRegistry wqr;
-        try {
-            wqr = (WorkQueueRegistry) workQueueConfigField.get(wmi);
-            log.debug("Remove contributions from WorkManagerImpl");
-            // Removes the WorkManagerImpl so it does not create any worker pool
-            workQueueConfigField.set(wmi, new WorkQueueRegistry());
-            // TODO: should we remove workQueuingConfig registry as well ?
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        wqr.getQueueIds().forEach(id -> workQueueConfig.addContribution(wqr.get(id)));
-        streamIds.addAll(workQueueConfig.getQueueIds());
-        workQueueConfig.getQueueIds().forEach(id -> log.info("Registering : " + id));
-    }
-
     protected void initTopology() {
         // create a single topology with one root per work pool
         Topology.Builder builder = Topology.builder();
-        workQueueConfig.getQueueIds().stream().filter(item -> workQueueConfig.get(item).isProcessingEnabled()).forEach(
-                item -> builder.addComputation(() -> new WorkComputation(item),
-                        Collections.singletonList("i1:" + item)));
+        List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        descriptors.stream().filter(WorkQueueDescriptor::isProcessingEnabled).forEach(d -> builder.addComputation(
+                () -> new WorkComputation(d.getId()), Collections.singletonList("i1:" + d.getId())));
         topology = builder.build();
         settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec());
-        workQueueConfig.getQueueIds()
-                       .forEach(item -> settings.setConcurrency(item, workQueueConfig.get(item).getMaxThreads()));
-        workQueueConfig.getQueueIds().forEach(
-                item -> settings.setPartitions(item, getPartitions(workQueueConfig.get(item).getMaxThreads())));
+        descriptors.forEach(item -> settings.setConcurrency(item.getId(), item.getMaxThreads()));
+        descriptors.forEach(item -> settings.setPartitions(item.getId(), getPartitions(item.getMaxThreads())));
     }
 
     protected int getPartitions(int maxThreads) {
@@ -342,7 +315,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
             throw new IllegalArgumentException("cannot activate all queues");
         }
-        log.info("Activated queue " + config.id + " " + config.toEffectiveString());
+        log.info("Activated queue " + config.id + " " + config.toString());
         if (config.isProcessingEnabled()) {
             activateQueueMetrics(config.id);
         }
@@ -439,8 +412,8 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (queueId != null) {
             return awaitCompletionOnQueue(queueId, duration, unit);
         }
-        for (String item : workQueueConfig.getQueueIds()) {
-            if (!awaitCompletionOnQueue(item, duration, unit)) {
+        for (Descriptor item : getDescriptors(QUEUES_EP)) {
+            if (!awaitCompletionOnQueue(item.getId(), duration, unit)) {
                 return false;
             }
         }
