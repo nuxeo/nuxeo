@@ -3,7 +3,6 @@
 <component name="org.nuxeo.kafka.defaultConfig">
 <#if "${kafka.enabled}" == "true">
   <require>org.nuxeo.runtime.stream.kafka.service</require>
-
   <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
     <kafkaConfig name="default" topicPrefix="${kafka.topicPrefix}">
       <producer>
@@ -20,6 +19,20 @@
       </consumer>
     </kafkaConfig>
   </extension>
+  <kafkaConfig name="bulk" topicPrefix="${kafka.topicPrefix}bulk-">
+    <producer>
+      <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
+      <property name="default.replication.factor">${kafka.default.replication.factor}</property>
+    </producer>
+    <consumer>
+      <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
+      <property name="request.timeout.ms">${kafka.request.timeout.ms}</property>
+      <property name="max.poll.interval.ms">${kafka.max.poll.interval.ms}</property>
+      <property name="session.timeout.ms">${kafka.session.timeout.ms}</property>
+      <property name="heartbeat.interval.ms">${kafka.heartbeat.interval.ms}</property>
+      <property name="max.poll.records">${kafka.max.poll.records}</property>
+    </consumer>
+  </kafkaConfig>
 </#if>
 </component>
 </#escape>
