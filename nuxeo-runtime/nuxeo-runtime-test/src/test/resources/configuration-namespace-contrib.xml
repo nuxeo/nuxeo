@@ -2,16 +2,16 @@
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
 
-    <property name="nuxeo.test.dummyBooleanProperty">true</property>
-    <property name="nuxeo.test.anotherDummyBooleanProperty">false</property>
-    <property name="nuxeo.test.dummyStringProperty">dummyValue</property>
-    <property name="nuxeo.test.dummyStringProperty" append="true">anotherDummyValue</property>
-    <property name="nuxeo.anothertest.dummyBooleanProperty">true</property>
-    <property name="nuxeo.anothertest.pouet">toto</property>
-    <property name="nuxeo.yetanothertest.pouet">foo</property>
-    <property name="nuxeo.yetanothertest.pouet" append="true">bar</property>
-
-
+    <property name="nuxeo.namespace.test.dummyBooleanProperty">true</property>
+    <property name="nuxeo.namespace.test.anotherDummyBooleanProperty">false</property>
+    <property name="nuxeo.namespace.test.dummyStringProperty" list="true">dummyValue</property>
+    <property name="nuxeo.namespace.test.dummyStringProperty">anotherDummyValue</property>
+    <property name="nuxeo.namespace.anothertest.dummyBooleanProperty">true</property>
+    <property name="nuxeo.namespace.anothertest.pouet">toto</property>
+    <property name="nuxeo.namespace.yetanothertest.pouet">foo</property>
+    <property name="nuxeo.namespace.yetanothertest.pouet" list="true">bar</property>
+    <property name="nuxeo.namespace.yetanothertest.truc" list="true">foo</property>
+    <property name="nuxeo.namespace.yetanothertest.truc">bar</property>
   </extension>
 
 </component>

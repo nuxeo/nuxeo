@@ -2,9 +2,11 @@
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
 
-    <property name="nuxeo.test.dummyStringProperty" append="true">mergedValue</property>
-    <property name="nuxeo.test.dummyStringProperty" append="true">anotherMergedValue</property>
-    <property name="nuxeo.test.anotherDummyStringProperty" append="false">anotherNotMergedValue</property>
+    <property name="nuxeo.test.listStringProperty" list="true">mergedValue</property>
+    <property name="nuxeo.test.listStringProperty">anotherMergedValue</property>
+    <property name="nuxeo.test.notListStringProperty">notMergedValue</property>
+    <property name="nuxeo.test.notExistingDummyStringProperty" list="true" override="true">anotherNotMergedValue</property>
+    <property name="nuxeo.test.listStringPropertytoBeReplaced">thisPropertyWasOverridenButIsStillAList</property>
 
   </extension>
 

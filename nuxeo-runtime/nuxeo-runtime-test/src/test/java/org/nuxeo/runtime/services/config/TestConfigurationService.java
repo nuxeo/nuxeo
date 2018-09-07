@@ -18,12 +18,15 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.Serializable;
 
 import javax.inject.Inject;
 
@@ -119,16 +122,19 @@ public class TestConfigurationService {
      * @since 10.3
      */
     @Test
-    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-another-test-contrib.xml")
     public void testMerge() throws Exception {
-        assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
-        assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.anotherDummyStringProperty"));
+        assertEquals("dummyValue", cs.getProperty("nuxeo.test.listStringProperty"));
+        assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.notListStringProperty"));
+        assertEquals("newValue", cs.getProperty("nuxeo.test.listStringPropertytoBeReplaced"));
         // Deploy another contrib merging existing and overriding properties
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-merge-contrib.xml");
         // Assert new property was merged
-        assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getProperty("nuxeo.test.listStringProperty"));
         // Assert new property was not merged
-        assertEquals("anotherNotMergedValue", cs.getProperty("nuxeo.test.anotherDummyStringProperty"));
+        assertEquals("notMergedValue", cs.getProperty("nuxeo.test.notListStringProperty"));
+        assertEquals("newValue,thisPropertyWasOverridenButIsStillAList",
+                cs.getProperty("nuxeo.test.listStringPropertytoBeReplaced"));
     }
 
     /**
@@ -137,17 +143,25 @@ public class TestConfigurationService {
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
     public void testByNamespace() throws Exception {
-        assertEquals(3, cs.getProperties("nuxeo.test").size());
-        assertEquals(2, cs.getProperties("nuxeo.anothertest").size());
-        assertEquals(6, cs.getProperties("nuxeo").size());
-        assertEquals(1, cs.getProperties("nuxeo.yetanothertest").size());
-        assertEquals("foo,bar", cs.getProperties("nuxeo.yetanothertest").get("pouet"));
-        assertTrue(cs.getProperties("nuxeo.test.dummyStringProperty").isEmpty());
-        assertTrue(cs.getProperties("nuxeo.t").isEmpty());
-        assertTrue(cs.getProperties("nuxeo.te").isEmpty());
-        assertTrue(cs.getProperties("nuxeo.tes").isEmpty());
+        assertEquals(3, cs.getProperties("nuxeo.namespace.test").size());
+        assertEquals(2, cs.getProperties("nuxeo.namespace.anothertest").size());
+        assertEquals(7, cs.getProperties("nuxeo.namespace").size());
+        assertEquals(2, cs.getProperties("nuxeo.namespace.yetanothertest").size());
+        Serializable pouet = cs.getProperties("nuxeo.namespace.yetanothertest").get("pouet");
+        assertTrue(pouet instanceof String);
+        assertEquals("bar", pouet);
+        assertTrue(cs.getProperties("nuxeo.namespace.test.dummyStringProperty").isEmpty());
+        Serializable truc = cs.getProperties("nuxeo.namespace.yetanothertest").get("truc");
+        assertTrue(truc instanceof String[]);
+        String[] trucArray = (String[]) truc;
+        assertEquals(2, trucArray.length);
+        assertArrayEquals(new String[] { "foo", "bar" }, trucArray);
+        assertTrue(cs.getProperties("nuxeo.namespace.test.dummyStringProperty").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.namespace.t").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.namespace.te").isEmpty());
+        assertTrue(cs.getProperties("nuxeo.namespace.tes").isEmpty());
         try {
-            assertTrue(cs.getProperties("nuxeo.test.").isEmpty());
+            assertTrue(cs.getProperties("nuxeo.namespace.test.").isEmpty());
             fail("Should not be able with invalid namspace");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -160,13 +174,19 @@ public class TestConfigurationService {
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
     public void testToJson() throws Exception {
-        String expected = "{\n" + //
-                "\"anothertest.dummyBooleanProperty\": \"true\",\n" + //
-                "\"anothertest.pouet\": \"toto\",\n" + //
-                "\"test.anotherDummyBooleanProperty\": \"false\",\n" + //
-                "\"test.dummyBooleanProperty\": \"true\",\n" + //
-                "\"test.dummyStringProperty\": \"dummyValue,anotherDummyValue\",\n" + //
-                "\"yetanothertest.pouet\": \"foo,bar\"\n" + //
+        String expected = "{" + "\"namespace.anothertest.dummyBooleanProperty\": \"true\"," + //
+                "\"namespace.anothertest.pouet\": \"toto\", " + //
+                "\"namespace.test.anotherDummyBooleanProperty\": \"false\", " + //
+                "\"namespace.test.dummyBooleanProperty\": \"true\", " + //
+                "\"namespace.test.dummyStringProperty\": [" + //
+                "\"dummyValue\", " + //
+                "\"anotherDummyValue\"" + //
+                "], " + //
+                "\"namespace.yetanothertest.pouet\": \"bar\", " + //
+                "\"namespace.yetanothertest.truc\": [" + //
+                "\"foo\", " + //
+                "\"bar\"" + //
+                "]" + //
                 "}";
         String json = cs.getPropertiesAsJson("nuxeo");
         JSONAssert.assertEquals(expected, json, false);

@@ -19,11 +19,19 @@
     <documentation>
       The configuration extension point allows to define named properties.
 
+      Properties can be marked as list and if defined many times, values will be appended as comma separated values.
+
+      You can override existing list property with the override attribute.
+
       Example:
 
       <code>
         <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
         <property name="nuxeo.jsf.useAjaxTabs">false</property>
+
+        <property name="nuxeo.list.value" list="true">foo</property>
+        <property name="nuxeo.list.value">bar</property>
+        <property name="nuxeo.list.value" override="true">I'd like to make sure value is not foo,bar anymore</property>
       </code>
     </documentation>
     <object class="org.nuxeo.runtime.services.config.ConfigurationPropertyDescriptor" />

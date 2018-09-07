@@ -1,0 +1,12 @@
+<component name="org.nuxeo.runtime.ConfigurationService.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.test.listStringProperty" list="true">dummyValue</property>
+    <property name="nuxeo.test.notListStringProperty">anotherDummyValue</property>
+    <property name="nuxeo.test.listStringPropertytoBeReplaced" list="true">listStringPropertytoBeplaced</property>
+    <property name="nuxeo.test.listStringPropertytoBeReplaced" override="true">newValue</property>
+
+  </extension>
+
+</component>

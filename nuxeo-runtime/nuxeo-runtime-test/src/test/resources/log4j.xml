@@ -27,4 +27,11 @@
     <appender-ref ref="CONSOLE" />
   </root>
 
+  <!--
+  <category name="org.nuxeo.runtime.services.config">
+    <priority value="DEBUG" />
+    <appender-ref ref="CONSOLE"/>
+  </category>
+   -->
+
 </log4j:configuration>
