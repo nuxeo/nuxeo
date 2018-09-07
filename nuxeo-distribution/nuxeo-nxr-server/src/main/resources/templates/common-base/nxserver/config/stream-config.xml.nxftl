@@ -16,7 +16,7 @@
       <option name="kafkaConfig">default</option>
     </logConfig>
     <logConfig name="bulk" type="kafka">
-      <option name="kafkaConfig">default</option>
+      <option name="kafkaConfig">bulk</option>
     </logConfig>
   <#else>
     <logConfig name="default" type="chronicle">
