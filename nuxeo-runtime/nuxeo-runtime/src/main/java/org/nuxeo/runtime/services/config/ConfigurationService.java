@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.services.config;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -28,6 +29,8 @@ import java.util.Map;
  * @since 7.4
  */
 public interface ConfigurationService {
+
+    public static final String LIST_SEPARATOR = ",";
 
     /**
      * Returns the given property value if any, otherwise null.
@@ -51,7 +54,7 @@ public interface ConfigurationService {
      * @return a map of properties with trimmed keys (namespace removed)
      * @since 10.3
      */
-    Map<String, String> getProperties(String namespace);
+    Map<String, Serializable> getProperties(String namespace);
 
     /**
      * Returns true if given property is true when compared to a boolean value.

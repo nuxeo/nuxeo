@@ -20,6 +20,8 @@
 package org.nuxeo.runtime.services.config;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -32,16 +34,37 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("property")
 public class ConfigurationPropertyDescriptor implements Descriptor {
 
-    public static final String SEPARATOR = ",";
+    protected static final Log log = LogFactory.getLog(ConfigurationPropertyDescriptor.class);
 
     @XNode("@name")
     protected String name;
 
-    @XNode("@append")
-    public boolean append;
+    @XNode("@list")
+    public boolean list;
+
+    @XNode("@override")
+    public boolean override;
 
     @XNode
     protected String value;
+
+    @Override
+    public ConfigurationPropertyDescriptor clone() {
+        ConfigurationPropertyDescriptor clone = new ConfigurationPropertyDescriptor();
+        clone.name = name;
+        clone.value = value;
+        clone.list = list;
+        clone.override = override;
+        return clone;
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Override
+    public String getId() {
+        return getName();
+    }
 
     public String getName() {
         return name;
@@ -51,36 +74,59 @@ public class ConfigurationPropertyDescriptor implements Descriptor {
         return value;
     }
 
-    @Override
-    public ConfigurationPropertyDescriptor clone() {
-        ConfigurationPropertyDescriptor clone = new ConfigurationPropertyDescriptor();
-        clone.name = name;
-        clone.value = value;
-        clone.append = append;
-        return clone;
+    /**
+     * @since 10.3
+     */
+    public boolean isList() {
+        return list;
     }
 
+    /**
+     * @since 10.3
+     */
+    public boolean isOverride() {
+        return override;
+    }
+
+    /**
+     * @since 10.3
+     */
     @Override
     public Descriptor merge(Descriptor o) {
         ConfigurationPropertyDescriptor other = (ConfigurationPropertyDescriptor) o;
-        if (other.append) {
+        if (this.list) {
             ConfigurationPropertyDescriptor merged = new ConfigurationPropertyDescriptor();
-            merged.append = other.append;
-            merged.name = other.name != null ? other.name : name;
-            if (StringUtils.isNotEmpty(value)) {
-                merged.value = value + SEPARATOR + other.value;
+            merged.list = this.list;
+            merged.name = this.name;
+            if (StringUtils.isNotEmpty(value) && !other.override) {
+                merged.value = value + ConfigurationService.LIST_SEPARATOR + other.value;
             } else {
                 merged.value = other.value;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Merging property %s with old % resulting in %s", other, this, merged));
+            }
             return merged;
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Overriding existing property %s with %s", this, other));
+            }
+            if (other.list) {
+                other.list = false;
+                log.warn(String.format(
+                        "Property %s cannot be marked as list because it is already defined as not list. Overriding existing property.",
+                        other.getName()));
+            }
             return other;
         }
     }
 
+    /**
+     * @since 10.3
+     */
     @Override
-    public String getId() {
-        return getName();
+    public String toString() {
+        return String.format("name=%s, value=%s, list=%s, replace=%s", name, value, list, override);
     }
 
 }

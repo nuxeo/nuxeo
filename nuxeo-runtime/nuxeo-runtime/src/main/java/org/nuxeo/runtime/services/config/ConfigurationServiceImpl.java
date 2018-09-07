@@ -21,7 +21,7 @@
 package org.nuxeo.runtime.services.config;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,27 +71,12 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
         if (descriptors == null) {
             synchronized (this) {
                 if (descriptors == null) {
-                    descriptors = new HashMap<String, ConfigurationPropertyDescriptor>();
                     List<ConfigurationPropertyDescriptor> descs = getDescriptors(CONFIGURATION_EP);
-                    for (ConfigurationPropertyDescriptor desc : descs) {
-                        if (desc.append) {
-                            if (descriptors.containsKey(desc.getId())) {
-                                ConfigurationPropertyDescriptor old = descriptors.get(desc.getId());
-                                ConfigurationPropertyDescriptor mergedDesc = (ConfigurationPropertyDescriptor) old.merge(
-                                        desc);
-                                descriptors.put(desc.getId(), mergedDesc);
-                            } else {
-                                descriptors.put(desc.getId(), desc);
-                            }
-                        } else if (desc.doesRemove()) {
-                            descriptors.remove(desc.getId());
-                        } else {
-                            descriptors.put(desc.getId(), desc);
-                        }
-                    }
+                    descriptors = descs.stream().collect(Collectors.toMap(desc -> desc.getId(), desc -> desc));
+                    return descriptors;
                 }
             }
-            return descriptors;
+
         }
         return descriptors;
     }
@@ -153,7 +138,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     }
 
     @Override
-    public Map<String, String> getProperties(String namespace) {
+    public Map<String, Serializable> getProperties(String namespace) {
         if (StringUtils.isBlank(namespace)) {
             return null;
         }
@@ -166,7 +151,8 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                                        && desc.getName().startsWith(namespace)
                                        && desc.getName().charAt(namespace.length()) == '.')
                                .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
-                                       desc -> desc.getValue()));
+                                       desc -> desc.getValue() != null && desc.list
+                                               ? desc.getValue().split(LIST_SEPARATOR) : desc.getValue()));
     }
 
     @Override
