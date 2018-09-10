@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.service.RelationContrib">
+
+  <extension target="org.nuxeo.ecm.platform.comment.service.CommentService" point="config">
+    <config>
+      <converterClass>
+        org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl
+      </converterClass>
+      <graphName>documentComments</graphName>
+      <commentNamespace>http://www.nuxeo.org/comments/uid</commentNamespace>
+      <documentNamespace>http://www.nuxeo.org/document/uid</documentNamespace>
+      <predicateNamespace>
+        http://www.nuxeo.org/predicates/isCommentFor
+      </predicateNamespace>
+    </config>
+  </extension>
+
+</component>

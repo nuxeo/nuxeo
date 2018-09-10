@@ -22,6 +22,7 @@ Nuxeo-Component: OSGI-INF/CommentService.xml,
   OSGI-INF/comment-notification-contrib.xml,
   OSGI-INF/comment-pageprovider-contrib.xml,
   OSGI-INF/comment-marshaller-contrib.xml,
+  OSGI-INF/comment-migration.xml,
   OSGI-INF/annotation-service.xml,
   OSGI-INF/annotation-marshaller-contrib.xml
 Bundle-ManifestVersion: 2

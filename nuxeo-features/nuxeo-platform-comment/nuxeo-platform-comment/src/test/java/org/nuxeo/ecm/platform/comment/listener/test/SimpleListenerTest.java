@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.comment.listener.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,17 +34,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
-import org.nuxeo.ecm.platform.comment.service.CommentService;
-import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
-import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -53,23 +51,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 public class SimpleListenerTest {
 
     @Inject
     protected CoreSession session;
 
-    protected int getCommentGrahNodesNumber() throws Exception {
-        RelationManager rm = Framework.getService(RelationManager.class);
+    @Inject
+    protected CommentManager commentManager;
 
-        List<Statement> statementList = rm.getGraphByName("documentComments").getStatements();
-        return statementList.size();
-    }
 
     protected DocumentModel doCreateADocWithComments() throws Exception {
 
@@ -85,18 +77,19 @@ public class SimpleListenerTest {
 
         doc = session.createDocument(doc);
         session.save();
-        AsyncProcessorConfig.setForceJMSUsage(false);
 
         // Create a first commentary
-        CommentableDocument cDoc = doc.getAdapter(CommentableDocument.class);
-        DocumentModel comment = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
-        comment.setProperty("comment", "text", "This is my comment");
-        comment = cDoc.addComment(comment);
+        Comment comment = new CommentImpl();
+        comment.setText("This is my comment");
+        comment.setParentId(doc.getId());
+        commentManager.createComment(session, comment);
 
         // Create a second commentary
-        DocumentModel comment2 = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
-        comment2.setProperty("comment", "text", "This is another  comment");
-        comment2 = cDoc.addComment(comment2);
+        Comment comment2 = new CommentImpl();
+        comment2.setText("This is another comment");
+        comment2.setParentId(doc.getId());
+        commentManager.createComment(session, comment2);
+        session.save();
         return doc;
     }
 
@@ -109,8 +102,8 @@ public class SimpleListenerTest {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);
 
-        int nbLinks = getCommentGrahNodesNumber();
-        assertTrue(nbLinks > 0);
+        List<Comment> comments = commentManager.getComments(session, doc.getId());
+        assertFalse(comments.isEmpty());
 
         // Suppression the documents
         session.removeDocument(doc.getRef());
@@ -123,9 +116,9 @@ public class SimpleListenerTest {
         }
         waitForAsyncExec();
 
-        // Did all the relations have been deleted?
-        nbLinks = getCommentGrahNodesNumber();
-        assertEquals(0, nbLinks);
+        // Did all the comments have been deleted?
+        comments = commentManager.getComments(session, doc.getId());
+        assertTrue(comments.isEmpty());
     }
 
     @Test
@@ -133,24 +126,20 @@ public class SimpleListenerTest {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);
 
-        int nbLinks = getCommentGrahNodesNumber();
-        assertEquals(2, nbLinks);
-
-        // Get the comments
-        CommentService commentService = CommentServiceHelper.getCommentService();
-        List<DocumentModel> comments = commentService.getCommentManager().getComments(doc);
+        List<Comment> comments = commentManager.getComments(session, doc.getId());
+        assertEquals(2, comments.size());
 
         // Delete the first comment
-        session.removeDocument(comments.get(0).getRef());
-        // Check that the first relation has been deleted
-        nbLinks = getCommentGrahNodesNumber();
-        assertEquals(1, nbLinks);
+        session.removeDocument(new IdRef(comments.get(0).getId()));
+        // Check that the first comment has been deleted
+        comments = commentManager.getComments(session, doc.getId());
+        assertEquals(1, comments.size());
 
         // Delete the second comment
-        session.removeDocument(comments.get(1).getRef());
-        // Check that the second relation has been deleted
-        nbLinks = getCommentGrahNodesNumber();
-        assertEquals(0, nbLinks);
+        session.removeDocument(new IdRef(comments.get(0).getId()));
+        // Check that the second comment has been deleted
+        comments = commentManager.getComments(session, doc.getId());
+        assertEquals(0, comments.size());
     }
 
 }

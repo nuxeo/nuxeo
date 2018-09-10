@@ -24,7 +24,8 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
 import java.io.Serializable;
@@ -34,7 +35,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,25 +47,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
@@ -79,13 +67,14 @@ import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ * @deprecated since 10.3, use {@link PropertyCommentManager} instead.
  */
-public class CommentManagerImpl implements CommentManager {
+@Deprecated
+public class CommentManagerImpl extends AbstractCommentManager {
 
     private static final Log log = LogFactory.getLog(CommentManagerImpl.class);
 
@@ -97,19 +86,17 @@ public class CommentManagerImpl implements CommentManager {
 
     final CommentConverter commentConverter;
 
-    public static final String COMMENTS_DIRECTORY = "Comments";
-
     public CommentManagerImpl(CommentServiceConfig config) {
         this.config = config;
         commentConverter = config.getCommentConverter();
     }
 
     @Override
-    public List<DocumentModel> getComments(DocumentModel docModel) {
+    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
-                docModel.getCoreSession());
+                session);
         RelationManager relationManager = Framework.getService(RelationManager.class);
-        Graph graph = relationManager.getGraph(config.graphName, docModel.getCoreSession());
+        Graph graph = relationManager.getGraph(config.graphName, session);
         Resource docResource = relationManager.getResource(config.documentNamespace, docModel, ctxMap);
         if (docResource == null) {
             throw new NuxeoException("Could not adapt document model to relation resource ; "
@@ -144,11 +131,6 @@ public class CommentManagerImpl implements CommentManager {
         Collections.sort(commentList, sorter);
 
         return commentList;
-    }
-
-    @Override
-    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
-        return getComments(docModel);
     }
 
     @Override
@@ -191,6 +173,8 @@ public class CommentManagerImpl implements CommentManager {
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+            comment.setPropertyValue(COMMENT_ANCESTOR_IDS,
+                    (Serializable) computeAncestorIds(session, docModel.getId()));
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
             doc.detach(true);
@@ -200,7 +184,6 @@ public class CommentManagerImpl implements CommentManager {
 
     protected DocumentModel internalCreateComment(CoreSession session, DocumentModel docModel, DocumentModel comment,
             String path) {
-        String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
 
         createdComment = createCommentDocModel(session, docModel, comment, path);
@@ -221,14 +204,7 @@ public class CommentManagerImpl implements CommentManager {
         Statement stmt = new StatementImpl(commentRes, predicateRes, documentRes);
         relationManager.getGraph(config.graphName, session).add(stmt);
 
-        UserManager userManager = Framework.getService(UserManager.class);
-        if (userManager != null) {
-            // null in tests
-            NuxeoPrincipal principal = userManager.getPrincipal(author);
-            if (principal != null) {
-                notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null, createdComment, principal);
-            }
-        }
+        notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, createdComment);
 
         return createdComment;
     }
@@ -269,7 +245,7 @@ public class CommentManagerImpl implements CommentManager {
                 dm.setProperty("dublincore", "description", "");
                 dm.setProperty("dublincore", "created", Calendar.getInstance());
                 dm = mySession.createDocument(dm);
-                setFolderPermissions(dm);
+                setFolderPermissions(mySession, dm);
                 parent = dm;
             }
         }
@@ -283,54 +259,10 @@ public class CommentManagerImpl implements CommentManager {
         converter.updateDocumentModel(commentDocModel, comment);
         commentDocModel.setPathInfo(pathStr, pss.generatePathSegment(commentDocModel));
         commentDocModel = mySession.createDocument(commentDocModel);
-        setCommentPermissions(commentDocModel);
+        setCommentPermissions(mySession, commentDocModel);
         log.debug("created comment with id=" + commentDocModel.getId());
 
         return commentDocModel;
-    }
-
-    private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType, DocumentModel parent,
-            DocumentModel child, NuxeoPrincipal principal) {
-
-        DocumentEventContext ctx = new DocumentEventContext(session, principal, docModel);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        if (parent != null) {
-            props.put(CommentConstants.PARENT_COMMENT, parent);
-        }
-        props.put(CommentConstants.COMMENT_DOCUMENT, child);
-        props.put(CommentConstants.COMMENT, (String) child.getProperty("comment", "text"));
-        // Keep comment_text for compatibility
-        props.put(CommentConstants.COMMENT_TEXT, (String) child.getProperty("comment", "text"));
-        props.put("category", CommentConstants.EVENT_COMMENT_CATEGORY);
-        ctx.setProperties(props);
-        Event event = ctx.newEvent(eventType);
-
-        EventProducer evtProducer = Framework.getService(EventProducer.class);
-        evtProducer.fireEvent(event);
-        // send also a synchronous Seam message so the CommentManagerActionBean
-        // can rebuild its list
-        // Events.instance().raiseEvent(eventType, docModel);
-    }
-
-    private static void setFolderPermissions(DocumentModel dm) {
-        ACP acp = new ACPImpl();
-        ACE grantAddChildren = new ACE("members", SecurityConstants.ADD_CHILDREN, true);
-        ACE grantRemoveChildren = new ACE("members", SecurityConstants.REMOVE_CHILDREN, true);
-        ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantAddChildren, grantRemoveChildren, grantRemove });
-        acp.addACL(acl);
-        dm.setACP(acp, true);
-    }
-
-    private static void setCommentPermissions(DocumentModel dm) {
-        ACP acp = new ACPImpl();
-        ACE grantRead = new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true);
-        ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantRead, grantRemove });
-        acp.addACL(acl);
-        dm.setACP(acp, true);
     }
 
     private String[] getCommentPathList(DocumentModel comment) {
@@ -377,9 +309,6 @@ public class CommentManagerImpl implements CommentManager {
 
     @Override
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
-        NuxeoPrincipal author = comment.getCoreSession() != null
-                ? (NuxeoPrincipal) comment.getCoreSession().getPrincipal()
-                : getAuthor(comment);
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
@@ -388,7 +317,7 @@ public class CommentManagerImpl implements CommentManager {
 
             session.removeDocument(ref);
 
-            notifyEvent(session, docModel, CommentEvents.COMMENT_REMOVED, null, comment, author);
+            notifyEvent(session, CommentEvents.COMMENT_REMOVED, docModel, comment);
 
             session.save();
         }
@@ -404,23 +333,6 @@ public class CommentManagerImpl implements CommentManager {
             session.save();
             return newComment;
         }
-    }
-
-    private static NuxeoPrincipal getAuthor(DocumentModel docModel) {
-        String[] contributors;
-        try {
-            contributors = (String[]) docModel.getProperty("dublincore", "contributors");
-        } catch (PropertyException e) {
-            log.error("Error building principal for comment author", e);
-            return null;
-        }
-        UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(contributors[0]);
-    }
-
-    @Override
-    public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
-        return getComments(parent);
     }
 
     @Override
@@ -484,9 +396,9 @@ public class CommentManagerImpl implements CommentManager {
 
     @Override
     public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
-        DocumentRef commentRef = new IdRef(comment.getDocumentId());
+        DocumentRef commentRef = new IdRef(comment.getParentId());
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
+            throw new IllegalArgumentException("The document " + comment.getParentId() + " does not exist.");
         }
         DocumentModel docToComment = session.getDocument(commentRef);
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
@@ -513,15 +425,14 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     @Override
-    public List<Comment> getComments(CoreSession session, String documentId) {
-        return getComments(session, documentId, Long.valueOf(0), Long.valueOf(0));
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
             Long currentPageIndex) {
-        DocumentModel commentedDoc = session.getDocument(new IdRef(documentId));
+        DocumentRef docRef = new IdRef(documentId);
+        if (!session.exists(docRef)) {
+            return new PartialList<>(Collections.emptyList(), 0);
+        }
+        DocumentModel commentedDoc = session.getDocument(docRef);
         // do a dummy implementation of pagination for former comment manager implementation
         List<DocumentModel> comments = getComments(commentedDoc);
         long maxSize = pageSize == null || pageSize <= 0 ? comments.size() : pageSize;
@@ -547,7 +458,7 @@ public class CommentManagerImpl implements CommentManager {
         }
         DocumentModel comment = session.getDocument(commentRef);
         DocumentModel commentedDoc = session.getDocument(
-                new IdRef((String) comment.getPropertyValue(COMMENT_DOCUMENT_ID)));
+                new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
         deleteComment(commentedDoc, comment);
     }
 
@@ -568,5 +479,15 @@ public class CommentManagerImpl implements CommentManager {
     public void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
         throw new UnsupportedOperationException(
                 "Delete a comment from its external entity id is not possible through this implementation");
+    }
+
+    @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case COMMENTS_LINKED_WITH_PROPERTY:
+            return false;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
     }
 }

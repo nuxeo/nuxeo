@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.comment.manager.migrator" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+
+    <migration id="comment-storage">
+      <description label="migration.comment-storage">Migration of the comment storage model</description>
+      <class>org.nuxeo.ecm.platform.comment.impl.CommentsMigrator</class>
+      <defaultState>property</defaultState>
+      <state id="relation">
+        <description label="migration.comment-storage.relation">Comments stored as relations</description>
+      </state>
+      <state id="property">
+        <description label="migration.comment-storage.property">Comments stored with their parent id as property
+        </description>
+      </state>
+
+      <step id="relation-to-property" fromState="relation" toState="property">
+        <description label="migration.comment-storage.relation-to-property">Migrate comments from relations to the
+          parent id property usage
+        </description>
+      </step>
+    </migration>
+
+  </extension>
+
+</component>

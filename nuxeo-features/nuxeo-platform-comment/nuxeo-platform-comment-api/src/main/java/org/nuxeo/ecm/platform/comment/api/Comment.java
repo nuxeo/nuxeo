@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.comment.api;
 
 import java.time.Instant;
+import java.util.Collection;
 
 /**
  * Comment interface.
@@ -29,32 +30,46 @@ import java.time.Instant;
 public interface Comment {
 
     /**
-     * Gets annotation id.
+     * Gets comment id.
      *
      * @return the id
      */
     String getId();
 
     /**
-     * Sets annotation id.
+     * Sets comment id.
      *
      * @param id the id
      */
     void setId(String id);
 
     /**
-     * Gets commented document id.
+     * Gets parent id.
      *
-     * @return the commented document id
+     * @return the parent id
      */
-    String getDocumentId();
+    String getParentId();
 
     /**
-     * Sets commented document id.
+     * Sets parent id.
      *
-     * @param documentId the commented document id
+     * @param parentId the parent id
      */
-    void setDocumentId(String documentId);
+    void setParentId(String parentId);
+
+    /**
+     * Gets the list of ancestor ids.
+     * 
+     * @return the list of ancestor ids
+     */
+    Collection<String> getAncestorIds();
+
+    /**
+     * Adds an ancestor id.
+     * 
+     * @param ancestorId the ancestor id
+     */
+    void addAncestorId(String ancestorId);
 
     /**
      * Gets comment author.

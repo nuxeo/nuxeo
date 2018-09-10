@@ -19,14 +19,15 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +38,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -55,12 +55,14 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     private static final Log log = LogFactory.getLog(AnnotationServiceImpl.class);
 
-    protected static final String GET_ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATION";
+    protected static final String GET_ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATION_AS_EXTERNAL_ENTITY";
+
+    protected static final String GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
 
     @Override
     public Annotation createAnnotation(CoreSession session, Annotation annotation) {
         // Create base comment in the annotation
-        DocumentModel docToAnnotate = session.getDocument(new IdRef(annotation.getDocumentId()));
+        DocumentModel docToAnnotate = session.getDocument(new IdRef(annotation.getParentId()));
         DocumentModel annotationModel = session.createDocumentModel(ANNOTATION_DOC_TYPE);
         Comments.annotationToDocumentModel(annotation, annotationModel);
         if (annotation instanceof ExternalEntity) {
@@ -82,17 +84,26 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath) {
         DocumentRef docRef = new IdRef(documentId);
         if (!session.exists(docRef)) {
             throw new IllegalArgumentException("The document " + documentId + " does not exist.");
         }
         DocumentModel annotatedDoc = session.getDocument(docRef);
+        CommentManager commentManager = Framework.getService(CommentManager.class);
+        if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
+            Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+            PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, null, null, null, props, documentId, xpath);
+            return pageProvider.getCurrentPage().stream().map(Comments::newAnnotation).collect(Collectors.toList());
+        }
         return Framework.getService(CommentManager.class)
                         .getComments(session, annotatedDoc)
                         .stream()
-                        .filter(annotationModel -> xpath.equals(
-                                annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
+                        .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
+                                && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
                         .map(Comments::newAnnotation)
                         .collect(Collectors.toList());
     }
@@ -152,8 +163,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_ANNOTATION_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), 1L, 0L, props,
-                entityId)).getCurrentPage();
+                GET_ANNOTATION_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
         if (results.isEmpty()) {
             return null;
         }

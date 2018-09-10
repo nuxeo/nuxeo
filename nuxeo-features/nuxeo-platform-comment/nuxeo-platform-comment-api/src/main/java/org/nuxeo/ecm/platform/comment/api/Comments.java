@@ -24,17 +24,19 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.function.BiConsumer;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -52,7 +54,8 @@ public class Comments {
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
         documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
         documentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
-        documentModel.setPropertyValue(COMMENT_DOCUMENT_ID, comment.getDocumentId());
+        documentModel.setPropertyValue(COMMENT_PARENT_ID, comment.getParentId());
+        documentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) comment.getAncestorIds());
         Instant creationDate = comment.getCreationDate();
         if (creationDate != null) {
             documentModel.setPropertyValue(COMMENT_CREATION_DATE,
@@ -76,11 +79,16 @@ public class Comments {
         documentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, entity.getEntity());
     }
 
+    @SuppressWarnings("unchecked")
     public static void documentModelToComment(DocumentModel documentModel, Comment comment) {
         comment.setId(documentModel.getId());
         comment.setAuthor((String) documentModel.getPropertyValue(COMMENT_AUTHOR));
         comment.setText((String) documentModel.getPropertyValue(COMMENT_TEXT));
-        comment.setDocumentId((String) documentModel.getPropertyValue(COMMENT_DOCUMENT_ID));
+        Collection<String> ancestorIds = (Collection<String>) documentModel.getPropertyValue(COMMENT_ANCESTOR_IDS);
+        ancestorIds.forEach(comment::addAncestorId);
+        String parentId = (String) documentModel.getPropertyValue(COMMENT_PARENT_ID);
+        comment.setParentId(parentId);
+
         Calendar creationDate = (Calendar) documentModel.getPropertyValue(COMMENT_CREATION_DATE);
         if (creationDate != null) {
             comment.setCreationDate(creationDate.toInstant());

@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.relations.core.listener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeFalse;
+import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -44,6 +47,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,6 +61,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.relations.core.listener")
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.relations.core.listener.tests")
 public class TestPublishRelationsListener {
 
@@ -83,6 +88,7 @@ public class TestPublishRelationsListener {
     @Before
     public void setUp() throws Exception {
 
+        assumeFalse(Framework.getService(CommentManager.class).hasFeature(COMMENTS_LINKED_WITH_PROPERTY));
         workspace = session.createDocumentModel("Folder");
         workspace.setProperty("dublincore", "title", "Workspace");
         workspace.setPathInfo("/", "workspace");

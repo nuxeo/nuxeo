@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.comment.listener;
 
+import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
+
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -29,12 +31,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.runtime.api.Framework;
 
 public class DocumentRemovedCommentEventListener extends AbstractCommentListener implements PostCommitEventListener {
 
@@ -44,7 +48,13 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
     protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) {
         log.debug("Processing relations cleanup on Document removal");
-        onDocumentRemoved(coreSession, relationManager, config, docMessage);
+        CommentManager commentManager = Framework.getService(CommentManager.class);
+        if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
+            deleteCommentChildren(coreSession, commentManager, docMessage);
+            coreSession.save();
+        } else {
+            onDocumentRemoved(coreSession, relationManager, config, docMessage);
+        }
     }
 
     private static void onDocumentRemoved(CoreSession coreSession, RelationManager relationManager,

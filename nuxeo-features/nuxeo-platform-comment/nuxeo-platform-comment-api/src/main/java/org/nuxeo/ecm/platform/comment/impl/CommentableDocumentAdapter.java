@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -47,13 +50,15 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         return addComment(docModel, comment);
     }
 
+    @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel comment, String path) {
-        comment.setPropertyValue(COMMENT_DOCUMENT_ID, docModel.getId());
+        comment.setPropertyValue(COMMENT_PARENT_ID, docModel.getId());
         return commentManager.createLocatedComment(docModel, comment, path);
     }
 
+    @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
-        comment.setPropertyValue(COMMENT_DOCUMENT_ID, parent.getId());
+        comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
         return commentManager.createComment(parent, comment);
     }
 

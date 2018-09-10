@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.comment.listener;
 
+import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
+
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,12 +30,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.runtime.api.Framework;
 
 public class CommentRemovedEventListener extends AbstractCommentListener implements EventListener {
 
@@ -45,7 +49,13 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
         if (CommentsConstants.COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {
-            onCommentRemoved(relationManager, config, docMessage);
+            CommentManager commentManager = Framework.getService(CommentManager.class);
+            if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
+                deleteCommentChildren(coreSession, commentManager, docMessage);
+                coreSession.save();
+            } else {
+                onCommentRemoved(relationManager, config, docMessage);
+            }
         }
     }
 
@@ -61,5 +71,4 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
         List<Statement> statementList = graph.getStatements(commentRes, null, null);
         graph.remove(statementList);
     }
-
 }

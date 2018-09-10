@@ -21,7 +21,13 @@ package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -88,7 +94,7 @@ public class AnnotationAdapterTest extends BaseTest {
         String xpath = "file:content";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
 
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
@@ -97,8 +103,8 @@ public class AnnotationAdapterTest extends BaseTest {
                 jsonAnnotation)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(file.getId(), node.get("documentId").textValue());
-            assertEquals(xpath, node.get("xpath").textValue());
+            assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+            assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
         }
     }
 
@@ -109,7 +115,7 @@ public class AnnotationAdapterTest extends BaseTest {
         String xpath = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
         fetchInvalidations();
@@ -117,12 +123,11 @@ public class AnnotationAdapterTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/" + annotation.getId());
 
         assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
-        assertEquals(file.getId(), node.get("documentId").textValue());
-        assertEquals(xpath, node.get("xpath").textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
     }
 
     @Test
-    @Ignore("Not possible with current comment manager implementation")
     public void testUpdateAnnotation() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -132,21 +137,24 @@ public class AnnotationAdapterTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         annotation.setId("foo");
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
 
+        assertNull(annotation.getText());
+        annotation.setText("test");
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
 
-        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + file.getId() + "/@annotation",
-                jsonAnnotation)) {
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@annotation/" + annotation.getId(), jsonAnnotation)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             fetchInvalidations();
 
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
+            assertEquals("test", updatedAnnotation.getText());
         }
     }
 
@@ -158,8 +166,9 @@ public class AnnotationAdapterTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         annotation.setId("foo");
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
@@ -186,19 +195,19 @@ public class AnnotationAdapterTest extends BaseTest {
         String xpath3 = "file:content";
 
         Annotation annotation1 = new AnnotationImpl();
-        annotation1.setDocumentId(file1.getId());
+        annotation1.setParentId(file1.getId());
         annotation1.setXpath(xpath1);
         Annotation annotation2 = new AnnotationImpl();
-        annotation2.setDocumentId(file1.getId());
+        annotation2.setParentId(file1.getId());
         annotation2.setXpath(xpath2);
         Annotation annotation3 = new AnnotationImpl();
-        annotation3.setDocumentId(file1.getId());
+        annotation3.setParentId(file1.getId());
         annotation3.setXpath(xpath2);
         Annotation annotation4 = new AnnotationImpl();
-        annotation4.setDocumentId(file2.getId());
+        annotation4.setParentId(file2.getId());
         annotation4.setXpath(xpath3);
         Annotation annotation5 = new AnnotationImpl();
-        annotation5.setDocumentId(file2.getId());
+        annotation5.setParentId(file2.getId());
         annotation5.setXpath(xpath3);
 
         annotation1 = annotationService.createAnnotation(session, annotation1);
@@ -210,11 +219,11 @@ public class AnnotationAdapterTest extends BaseTest {
         fetchInvalidations();
 
         MultivaluedMap<String, String> params1 = new MultivaluedMapImpl();
-        params1.putSingle("xpath", xpath1);
+        params1.putSingle(ANNOTATION_XPATH, xpath1);
         MultivaluedMap<String, String> params2 = new MultivaluedMapImpl();
-        params2.putSingle("xpath", xpath2);
+        params2.putSingle(ANNOTATION_XPATH, xpath2);
         MultivaluedMap<String, String> params3 = new MultivaluedMapImpl();
-        params3.putSingle("xpath", xpath3);
+        params3.putSingle(ANNOTATION_XPATH, xpath3);
 
         JsonNode node1 = getResponseAsJson(RequestType.GET, "id/" + file1.getId() + "/@annotation", params1).get(
                 "entries");
@@ -253,7 +262,7 @@ public class AnnotationAdapterTest extends BaseTest {
         ((ExternalEntity) annotation).setEntityId(entityId);
         ((ExternalEntity) annotation).setOrigin(origin);
         ((ExternalEntity) annotation).setEntity(entity);
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
         fetchInvalidations();
@@ -261,11 +270,11 @@ public class AnnotationAdapterTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/external/" + entityId);
 
         assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
-        assertEquals(entityId, node.get("entityId").textValue());
-        assertEquals(origin, node.get("origin").textValue());
-        assertEquals(entity, node.get("entity").textValue());
-        assertEquals(file.getId(), node.get("documentId").textValue());
-        assertEquals(xpath, node.get("xpath").textValue());
+        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID).textValue());
+        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
     }
 
     @Test
@@ -279,7 +288,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setAuthor("toto");
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
@@ -308,8 +317,9 @@ public class AnnotationAdapterTest extends BaseTest {
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setDocumentId(file.getId());
+        annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
