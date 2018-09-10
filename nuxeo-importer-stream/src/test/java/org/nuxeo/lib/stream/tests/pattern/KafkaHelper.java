@@ -30,7 +30,8 @@ public class KafkaHelper {
     public static final String TOPIC_PREFIX = "nuxeo-test";
 
     public static void assumeKafkaEnabled() {
-        if ("true".equals(System.getProperty("kafka"))) {
+        if ("true".equals(System.getProperty("kafka")) // deprecated since 10.3
+                || "true".equals(System.getProperty("nuxeo.test.stream.type"))) {
             if (!KafkaUtils.kafkaDetected()) {
                 fail("Kafka profile is enable, but no Kafka server found.");
             }
