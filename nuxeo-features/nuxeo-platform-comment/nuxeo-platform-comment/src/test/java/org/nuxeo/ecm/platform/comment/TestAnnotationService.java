@@ -61,11 +61,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
-// TODO create an abstract to test both implementations of CommentManager
 public class TestAnnotationService {
 
     @Inject
@@ -116,7 +111,7 @@ public class TestAnnotationService {
         Annotation annotation = new AnnotationImpl();
         annotation.setAuthor("jdoe");
         annotation.setText(comment);
-        annotation.setDocumentId(docIdToAnnotate);
+        annotation.setParentId(docIdToAnnotate);
         annotation.setXpath(xpathToAnnotate);
         annotation.setCreationDate(Instant.now());
         annotation.setModificationDate(Instant.now());
@@ -128,7 +123,8 @@ public class TestAnnotationService {
 
         assertEquals("jdoe", annotation.getAuthor());
         assertEquals(comment, annotation.getText());
-        assertEquals(docIdToAnnotate, annotation.getDocumentId());
+        assertEquals(docIdToAnnotate, annotation.getParentId());
+        assertTrue(annotation.getAncestorIds().contains(docIdToAnnotate));
         assertNotNull(annotation.getCreationDate());
         assertNotNull(annotation.getModificationDate());
         assertEquals(xpathToAnnotate, annotation.getXpath());
@@ -150,7 +146,7 @@ public class TestAnnotationService {
         String annotationId;
         try (CloseableCoreSession adminSession = CoreInstance.openCoreSessionSystem(coreFeature.getRepositoryName())) {
             Annotation annotation = new AnnotationImpl();
-            annotation.setDocumentId(docIdToAnnotate);
+            annotation.setParentId(docIdToAnnotate);
             annotation.setXpath(xpathToAnnotate);
             ((ExternalEntity) annotation).setEntityId(entityId);
             annotationId = annotationService.createAnnotation(adminSession, annotation).getId();
@@ -169,7 +165,7 @@ public class TestAnnotationService {
         String xpathToAnnotate = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setDocumentId(docToAnnotate.getId());
+        annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
@@ -193,7 +189,7 @@ public class TestAnnotationService {
         String xpathToAnnotate = "files:files/0/file";
 
         Annotation annotation = new AnnotationImpl();
-        annotation.setDocumentId(docToAnnotate.getId());
+        annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
@@ -227,7 +223,7 @@ public class TestAnnotationService {
         docToAnnotate1 = session.createDocument(docToAnnotate1);
         int nbAnnotations1 = 99;
         Annotation annotation1 = new AnnotationImpl();
-        annotation1.setDocumentId(docToAnnotate1.getId());
+        annotation1.setParentId(docToAnnotate1.getId());
         annotation1.setXpath(xpathToAnnotate);
         for (int i = 0; i < nbAnnotations1; i++) {
             annotationService.createAnnotation(session, annotation1);
@@ -238,7 +234,7 @@ public class TestAnnotationService {
         docToAnnotate2 = session.createDocument(docToAnnotate2);
         int nbAnnotations2 = 74;
         Annotation annotation2 = new AnnotationImpl();
-        annotation2.setDocumentId(docToAnnotate2.getId());
+        annotation2.setParentId(docToAnnotate2.getId());
         annotation2.setXpath(xpathToAnnotate);
         for (int i = 0; i < nbAnnotations2; i++) {
             annotationService.createAnnotation(session, annotation2);
@@ -263,7 +259,7 @@ public class TestAnnotationService {
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setDocumentId(docIdToAnnotate);
+        annotation.setParentId(docIdToAnnotate);
         annotation.setXpath(xpathToAnnotate);
         annotationService.createAnnotation(session, annotation);
         session.save();
@@ -284,7 +280,7 @@ public class TestAnnotationService {
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setDocumentId(docToAnnotate.getId());
+        annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
         annotationService.createAnnotation(session, annotation);
         session.save();
@@ -316,7 +312,7 @@ public class TestAnnotationService {
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setDocumentId(docToAnnotate.getId());
+        annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();

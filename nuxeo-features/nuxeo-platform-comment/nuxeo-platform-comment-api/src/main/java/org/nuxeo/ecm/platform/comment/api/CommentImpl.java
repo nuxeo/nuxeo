@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.comment.api;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * @since 10.3
@@ -28,7 +30,9 @@ public class CommentImpl implements Comment, ExternalEntity {
 
     protected String id;
 
-    protected String documentId;
+    protected String parentId;
+
+    protected Collection<String> ancestorIds = new HashSet<>();
 
     protected String author;
 
@@ -55,13 +59,23 @@ public class CommentImpl implements Comment, ExternalEntity {
     }
 
     @Override
-    public String getDocumentId() {
-        return documentId;
+    public String getParentId() {
+        return parentId;
     }
 
     @Override
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    @Override
+    public Collection<String> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    @Override
+    public void addAncestorId(String ancestorId) {
+        ancestorIds.add(ancestorId);
     }
 
     @Override

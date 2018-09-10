@@ -23,7 +23,8 @@ import static java.util.function.Predicate.isEqual;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Migrator of comments.
@@ -109,6 +111,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void migrateComments(CoreSession session, RelationManager relationManager, CommentServiceConfig config,
             Statement statement) {
         Map<String, Object> ctxMap = Collections.singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
@@ -120,7 +123,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         DocumentModel comment = (DocumentModel) relationManager.getResourceRepresentation(config.commentNamespace,
                 subject, ctxMap);
 
-        comment.setPropertyValue(COMMENT_DOCUMENT_ID, parent.getId());
+        comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
         session.saveDocument(comment);
 
         Graph graph = relationManager.getGraph(config.graphName, session);

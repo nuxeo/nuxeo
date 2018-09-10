@@ -13,13 +13,13 @@
 
     <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT">
       <pattern>
-        SELECT * FROM Comment WHERE comment:documentId = ?
+        SELECT * FROM Comment WHERE comment:parentId = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="GET_ANNOTATION">
+    <coreQueryPageProvider name="GET_ANNOTATION_AS_EXTERNAL_ENTITY">
       <pattern>
         SELECT * FROM Annotation WHERE externalEntity:entityId = ?
       </pattern>
@@ -29,7 +29,7 @@
 
     <coreQueryPageProvider name="GET_ANNOTATIONS_FOR_DOCUMENT">
       <pattern>
-        SELECT * FROM Annotation WHERE annotation:documentId = ? AND annotation:xpath = ?
+        SELECT * FROM Annotation WHERE comment:parentId = ? AND annotation:xpath = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>

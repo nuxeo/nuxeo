@@ -33,6 +33,17 @@ import org.nuxeo.ecm.core.api.PartialList;
 public interface CommentManager {
 
     /**
+     * Features of the implementation of the service.
+     *
+     * @see CommentManager#hasFeature
+     * @since 10.3
+     */
+    enum Feature {
+        /** Comments are linked with the parent id property. */
+        COMMENTS_LINKED_WITH_PROPERTY,
+    }
+
+    /**
      * Gets comments of a document.
      *
      * @param docModel the document model
@@ -239,5 +250,12 @@ public interface CommentManager {
      * @since 10.3
      */
     void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException;
+
+    /**
+     * Checks if a feature is available.
+     *
+     * @since 10.3
+     */
+    boolean hasFeature(Feature feature);
 
 }

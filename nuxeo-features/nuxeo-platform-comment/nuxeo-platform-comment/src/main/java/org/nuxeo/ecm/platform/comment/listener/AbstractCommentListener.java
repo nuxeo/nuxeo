@@ -25,11 +25,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -60,6 +62,12 @@ public abstract class AbstractCommentListener {
                 return;
             }
         }
+    }
+
+    protected void deleteCommentChildren(CoreSession coreSession, CommentManager commentManager,
+            DocumentModel documentModel) {
+        commentManager.getComments(coreSession, documentModel.getId())
+                      .forEach(comment -> coreSession.removeDocument(new IdRef(comment.getId())));
     }
 
     protected abstract void doProcess(CoreSession coreSession, RelationManager relationManager,

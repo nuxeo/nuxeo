@@ -27,6 +27,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/relation-comment-manager-override.xml")
 public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
 }

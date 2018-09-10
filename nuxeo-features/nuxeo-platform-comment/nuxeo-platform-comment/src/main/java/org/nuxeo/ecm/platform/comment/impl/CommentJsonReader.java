@@ -25,7 +25,7 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
@@ -59,7 +59,7 @@ public class CommentJsonReader extends EntityJsonReader<Comment> {
 
     protected static Comment fillCommentEntity(JsonNode jn, Comment comment) {
         // don't read id from given JsonNode, if needed it is read from path
-        comment.setDocumentId(jn.get(COMMENT_DOCUMENT_ID_FIELD).textValue());
+        comment.setParentId(jn.get(COMMENT_PARENT_ID_FIELD).textValue());
         comment.setAuthor(jn.get(COMMENT_AUTHOR_FIELD).textValue());
         comment.setText(jn.get(COMMENT_TEXT_FIELD).textValue());
 

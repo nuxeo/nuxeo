@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.comment.manager.override">
+
+  <require>org.nuxeo.ecm.platform.comment.manager.migrator</require>
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+    <migration id="comment-storage">
+      <defaultState>relation</defaultState>
+    </migration>
+  </extension>
+
+</component>

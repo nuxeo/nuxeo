@@ -25,7 +25,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -96,9 +104,9 @@ public class CommentAdapterTest extends BaseTest {
                 jsonComment)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(file.getId(), node.get("documentId").textValue());
-            assertEquals(comment.getAuthor(), node.get("author").textValue());
-            assertEquals(comment.getText(), node.get("text").textValue());
+            assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+            assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+            assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
         }
     }
 
@@ -173,15 +181,14 @@ public class CommentAdapterTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId);
 
         assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
-        assertEquals(comment.getId(), node.get("id").textValue());
-        assertEquals(file.getId(), node.get("documentId").textValue());
-        assertEquals(comment.getAuthor(), node.get("author").textValue());
-        assertEquals(comment.getText(), node.get("text").textValue());
-        assertEquals(comment.getCreationDate().toString(), node.get("creationDate").textValue());
+        assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
     }
 
     @Test
-    @Ignore("Not possible with current comment manager implementation")
     public void testUpdateComment() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -226,7 +233,6 @@ public class CommentAdapterTest extends BaseTest {
     }
 
     @Test
-    @Ignore("Not possible with current comment manager implementation")
     public void testGetExternalComment() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -239,22 +245,21 @@ public class CommentAdapterTest extends BaseTest {
         ((ExternalEntity) comment).setEntityId(entityId);
         ((ExternalEntity) comment).setOrigin(origin);
         ((ExternalEntity) comment).setEntity(entity);
-        comment.setDocumentId(file.getId());
+        comment.setParentId(file.getId());
         comment = commentManager.createComment(session, comment);
         fetchInvalidations();
 
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/external/" + entityId);
 
         assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
-        assertEquals(comment.getId(), node.get("id").textValue());
-        assertEquals(file.getId(), node.get("documentId").textValue());
-        assertEquals(entityId, node.get("entityId").textValue());
-        assertEquals(origin, node.get("origin").textValue());
-        assertEquals(entity, node.get("entity").textValue());
+        assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID).textValue());
+        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
     }
 
     @Test
-    @Ignore("Not possible with current comment manager implementation")
     public void testUpdateExternalComment() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -264,7 +269,7 @@ public class CommentAdapterTest extends BaseTest {
 
         Comment comment = new CommentImpl();
         ((ExternalEntity) comment).setEntityId(entityId);
-        comment.setDocumentId(file.getId());
+        comment.setParentId(file.getId());
         comment.setAuthor("toto");
         comment = commentManager.createComment(session, comment);
 
@@ -284,15 +289,13 @@ public class CommentAdapterTest extends BaseTest {
     }
 
     @Test
-    @Ignore("Not possible with current comment manager implementation")
     public void testDeleteExternalComment() {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
         String entityId = "foo";
 
-        Comment comment = new CommentImpl();
+        Comment comment = instantiateComment(file.getId());
         ((ExternalEntity) comment).setEntityId(entityId);
-        comment.setDocumentId(file.getId());
         comment = commentManager.createComment(session, comment);
 
         fetchInvalidations();
@@ -313,8 +316,8 @@ public class CommentAdapterTest extends BaseTest {
 
     protected Comment instantiateComment(String documentId) {
         Comment comment = new CommentImpl();
-        comment.setDocumentId(documentId);
-        comment.setAuthor("Test Author");
+        comment.setParentId(documentId);
+        comment.setAuthor(session.getPrincipal().getName());
         comment.setText("Here my wonderful comment on " + documentId + "!");
         comment.setCreationDate(Instant.now());
         comment.setModificationDate(Instant.now());

@@ -61,21 +61,24 @@ public final class CommentsConstants {
      */
     public static final String COMMENT_DOC_TYPE = "Comment";
 
+    /** @since 10.3 */
+    public static final String COMMENT_SCHEMA = "comment";
+
     public static final String COMMENT_CREATION_DATE = "comment:creationDate";
 
     public static final String COMMENT_AUTHOR = "comment:author";
 
     public static final String COMMENT_TEXT = "comment:text";
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMMENT_DOCUMENT_ID = "comment:documentId";
+    /** @since 10.3 */
+    public static final String COMMENT_PARENT_ID = "comment:parentId";
 
-    /**
-     * @since 10.3
-     */
+    /** @since 10.3 */
     public static final String COMMENT_MODIFICATION_DATE = "comment:modificationDate";
+
+    /** @since 10.3 */
+    public static final String COMMENT_ANCESTOR_IDS = "comment:ancestorIds";
+
     // JSON constant part
 
     /** @since 10.3 */
@@ -88,7 +91,10 @@ public final class CommentsConstants {
     public static final String COMMENT_ID_FIELD = "id";
 
     /** @since 10.3 */
-    public static final String COMMENT_DOCUMENT_ID_FIELD = "documentId";
+    public static final String COMMENT_PARENT_ID_FIELD = "parentId";
+
+    /** @since 10.3 */
+    public static final String COMMENT_ANCESTOR_IDS_FIELD = "ancestorIds";
 
     /** @since 10.3 */
     public static final String COMMENT_AUTHOR_FIELD = "author";

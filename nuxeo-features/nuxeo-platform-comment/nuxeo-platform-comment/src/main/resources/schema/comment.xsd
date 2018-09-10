@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/comment"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:nxs="http://www.nuxeo.org/ecm/schemas/comment">
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/comment">
+
+  <xs:include schemaLocation="base.xsd" />
 
   <xs:simpleType name="clob">
     <xs:restriction base="xs:string">
@@ -13,5 +15,6 @@
   <xs:element name="text" type="nxs:clob"/>
   <xs:element name="creationDate" type="xs:date"/>
   <xs:element name="modificationDate" type="xs:date"/>
-  <xs:element name="documentId" type="xs:string" />
+  <xs:element name="parentId" type="xs:string" />
+  <xs:element name="ancestorIds" type="nxs:stringList" />
 </xs:schema>

@@ -38,6 +38,18 @@ public final class CommentConstants {
 
     public static final String COMMENT_TASK_TYPE = "comment_moderation";
 
+    /** @since 10.3 */
+    public static final String MIGRATION_ID = "comment-storage"; // also in XML
+
+    /** @since 10.3 */
+    public static final String MIGRATION_STATE_RELATION = "relation"; // also in XML
+
+    /** @since 10.3 */
+    public static final String MIGRATION_STATE_PROPERTY = "property"; // also in XML
+
+    /** @since 10.3 */
+    public static final String MIGRATION_STEP_RELATION_TO_PROPERTY = "relation-to-property"; // also in XML
+
     private CommentConstants() {
     }
 

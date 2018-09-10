@@ -24,8 +24,8 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl.COMMENTS_DIRECTORY;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,7 +45,7 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -58,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @since 10.3
  */
-public class PropertyCommentManager implements CommentManager {
+public class PropertyCommentManager extends AbstractCommentManager {
 
     private static final Log log = LogFactory.getLog(PropertyCommentManager.class);
 
@@ -70,12 +69,6 @@ public class PropertyCommentManager implements CommentManager {
 
     protected static final String COMMENT_NAME = "comment";
 
-    @Override
-    public List<DocumentModel> getComments(DocumentModel docModel) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(docModel.getRepositoryName())) {
-            return getComments(session, docModel);
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -107,9 +100,17 @@ public class PropertyCommentManager implements CommentManager {
     public DocumentModel createComment(DocumentModel docModel, DocumentModel commentModel) {
         CoreSession session = docModel.getCoreSession();
         String path = getCommentContainerPath(session, docModel.getId());
-        DocumentModel createdCommentModel = session.createDocumentModel(path, COMMENT_NAME, commentModel.getType());
-        createdCommentModel.copyContent(commentModel);
-        return session.createDocument(createdCommentModel);
+
+        DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME, commentModel.getType());
+        commentModelToCreate.copyContent(commentModel);
+        commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS,
+                (Serializable) computeAncestorIds(session, docModel.getId()));
+        DocumentModel createdCommentModel = session.createDocument(commentModelToCreate);
+        CoreInstance.doPrivileged(session, s -> {
+            setCommentPermissions(s, createdCommentModel);
+        });
+        notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, createdCommentModel);
+        return createdCommentModel;
     }
 
     @Override
@@ -130,7 +131,7 @@ public class PropertyCommentManager implements CommentManager {
     @Override
     public DocumentModel getThreadForComment(DocumentModel comment) {
         CoreSession session = comment.getCoreSession();
-        DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_DOCUMENT_ID)));
+        DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
         while (COMMENT_DOC_TYPE.equals(parent.getType())) {
             comment = getThreadForComment(parent);
         }
@@ -142,24 +143,41 @@ public class PropertyCommentManager implements CommentManager {
         CoreSession session = docModel.getCoreSession();
         DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, comment.getType());
         commentModel.copyContent(comment);
-        commentModel = session.createDocument(commentModel);
-        return commentModel;
+        commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS,
+                (Serializable) computeAncestorIds(session, docModel.getId()));
+        DocumentModel createdCommentModel = session.createDocument(commentModel);
+        CoreInstance.doPrivileged(session, s -> {
+            setCommentPermissions(s, createdCommentModel);
+        });
+        notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, createdCommentModel);
+        return createdCommentModel;
     }
 
     @Override
     public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
-        if (!session.exists(new IdRef(comment.getDocumentId()))) {
-            throw new IllegalArgumentException("The document " + comment.getDocumentId() + " does not exist.");
+        String parentId = comment.getParentId();
+        DocumentRef docRef = new IdRef(parentId);
+        if (!session.exists(docRef)) {
+            throw new IllegalArgumentException("The document " + comment.getParentId() + " does not exist.");
         }
-        String path = getCommentContainerPath(session, comment.getDocumentId());
+        String path = getCommentContainerPath(session, parentId);
         DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
         Comments.commentToDocumentModel(comment, commentModel);
         if (comment instanceof ExternalEntity) {
             commentModel.addFacet(EXTERNAL_ENTITY_FACET);
             Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
         }
-        commentModel = session.createDocument(commentModel);
-        return Comments.newComment(commentModel);
+
+        // Compute the list of ancestor ids
+        commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(session, parentId));
+
+        DocumentModel createdCommentModel = session.createDocument(commentModel);
+        CoreInstance.doPrivileged(session, s -> {
+            setCommentPermissions(s, createdCommentModel);
+        });
+
+        notifyEvent(session, CommentEvents.COMMENT_ADDED, session.getDocument(docRef), createdCommentModel);
+        return Comments.newComment(createdCommentModel);
     }
 
     @Override
@@ -174,17 +192,10 @@ public class PropertyCommentManager implements CommentManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Comment> getComments(CoreSession session, String documentId) {
-        return getComments(session, documentId, null, null);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
             Long currentPageIndex) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), pageSize,
                 currentPageIndex, props, documentId);
@@ -213,7 +224,10 @@ public class PropertyCommentManager implements CommentManager {
         if (!session.exists(commentRef)) {
             throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
         }
+        DocumentModel comment = session.getDocument(commentRef);
+        DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
         session.removeDocument(commentRef);
+        notifyEvent(session, CommentEvents.COMMENT_REMOVED, parent, comment);
     }
 
     @Override
@@ -245,7 +259,20 @@ public class PropertyCommentManager implements CommentManager {
         if (commentModel == null) {
             throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
         }
+        DocumentModel comment = session.getDocument(commentModel.getRef());
+        DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
         session.removeDocument(commentModel.getRef());
+        notifyEvent(session, CommentEvents.COMMENT_REMOVED, parent, comment);
+    }
+
+    @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case COMMENTS_LINKED_WITH_PROPERTY:
+            return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -272,7 +299,8 @@ public class PropertyCommentManager implements CommentManager {
             }
             PathRef ref = new PathRef(parentPath, COMMENTS_DIRECTORY);
             DocumentModel commentFolderDoc = s.createDocumentModel(parentPath, COMMENTS_DIRECTORY, HIDDEN_FOLDER_TYPE);
-            s.getOrCreateDocument(commentFolderDoc);
+            commentFolderDoc = s.getOrCreateDocument(commentFolderDoc);
+            setFolderPermissions(s, commentFolderDoc);
             s.save();
             return ref.toString();
         });

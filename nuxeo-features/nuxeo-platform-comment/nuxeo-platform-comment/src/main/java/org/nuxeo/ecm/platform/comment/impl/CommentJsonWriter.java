@@ -23,9 +23,10 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOCUMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
@@ -57,7 +58,12 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
 
     protected static void writeCommentEntity(Comment entity, JsonGenerator jg) throws IOException {
         jg.writeStringField(COMMENT_ID_FIELD, entity.getId());
-        jg.writeStringField(COMMENT_DOCUMENT_ID_FIELD, entity.getDocumentId());
+        jg.writeStringField(COMMENT_PARENT_ID_FIELD, entity.getParentId());
+        jg.writeArrayFieldStart(COMMENT_ANCESTOR_IDS_FIELD);
+        for (String ancestorId : entity.getAncestorIds()) {
+            jg.writeString(ancestorId);
+        }
+        jg.writeEndArray();
         jg.writeStringField(COMMENT_AUTHOR_FIELD, entity.getAuthor());
         jg.writeStringField(COMMENT_TEXT_FIELD, entity.getText());
 
