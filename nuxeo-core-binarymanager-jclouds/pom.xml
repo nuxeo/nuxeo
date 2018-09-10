@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-binarymanager-cloud</artifactId>
-    <version>8.10-HF36-SNAPSHOT</version>
+    <version>8.10-HF36</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
