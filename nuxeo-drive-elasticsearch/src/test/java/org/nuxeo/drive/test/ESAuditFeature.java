@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 
 /**
  * Elasticsearch audit feature cleaning up audit log after each test.
@@ -55,31 +54,26 @@ public class ESAuditFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
-        runner.getFeature(TransactionalFeature.class).addWaiter(new Waiter() {
-
-            @Override
-            public boolean await(long deadline) throws InterruptedException {
-                if (!Framework.getService(AuditLogger.class).await(deadline - System.currentTimeMillis(),
-                        TimeUnit.MILLISECONDS)) {
-                    return false;
-                }
-                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-                if (esa == null) {
-                    return true;
-                }
-                // Wait for indexing
-                try {
-                    esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                } catch (ExecutionException | TimeoutException cause) {
-                    return false;
-                }
-                // Explicit refresh
-                esa.refresh();
-                // Explicit refresh for the audit index until it is handled by esa.refresh
-                esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
+        runner.getFeature(TransactionalFeature.class).addWaiter(duration -> {
+            long deadline = duration.toMillis() + System.currentTimeMillis();
+            if (!Framework.getService(AuditLogger.class).await(duration.toMillis(), TimeUnit.MILLISECONDS)) {
+                return false;
+            }
+            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+            if (esa == null) {
                 return true;
             }
-
+            // Wait for indexing
+            try {
+                esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+            } catch (ExecutionException | TimeoutException cause) {
+                return false;
+            }
+            // Explicit refresh
+            esa.refresh();
+            // Explicit refresh for the audit index until it is handled by esa.refresh
+            esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
+            return true;
         });
     }
 

@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -180,10 +179,6 @@ public abstract class AbstractChangeFinderTestCase {
 
     protected void commitAndWaitForAsyncCompletion() throws Exception {
         txFeature.nextTransaction();
-    }
-
-    protected void waitForAsyncCompletion() throws Exception {
-        txFeature.nextTransaction(20, TimeUnit.SECONDS);
     }
 
     protected void setPermissions(DocumentModel doc, ACE... aces) throws Exception {
