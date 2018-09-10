@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>8.10-HF36-SNAPSHOT</version>
+    <version>8.10-HF36</version>
   </parent>
   <artifactId>nuxeo-core-convert-plugins</artifactId>
   <name>Nuxeo Core Converter Service default plugins</name>
