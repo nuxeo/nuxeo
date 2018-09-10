@@ -2575,7 +2575,7 @@
                   <label mode="any">
                     If set to true, pagination actions (first,
                     previous, next, last) actions will be performed using ajax.
-                    Defaults to true since version 7.10-HF45-SNAPSHOT.
+                    Defaults to true since version 7.10-HF46-SNAPSHOT.
                   </label>
                 </helpLabels>
                 <fields>
