@@ -187,6 +187,9 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.CollectionToDocModelList"
              accept="java.util.Collection"
              produce="org.nuxeo.ecm.core.api.DocumentModelList" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.CollectionToBlobList"
+             accept="java.util.Collection"
+             produce="org.nuxeo.ecm.automation.core.util.BlobList" />
   </extension>
 
 

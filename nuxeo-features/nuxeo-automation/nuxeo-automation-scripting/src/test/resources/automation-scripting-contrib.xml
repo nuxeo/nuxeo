@@ -441,7 +441,7 @@
       ]]></script>
     </scriptedOperation>
 
-    <scriptedOperation id="Scripting.TestInputBlobList">
+    <scriptedOperation id="Scripting.TestBlobListInputToAnotherOperation">
       <inputType>void</inputType>
       <outputType>Blobs</outputType>
       <category>Scripting</category>
@@ -461,7 +461,7 @@
       ]]></script>
     </scriptedOperation>
 
-    <scriptedOperation id="Scripting.TestInputBlobArray">
+    <scriptedOperation id="Scripting.TestBlobArrayInputToAnotherOperation">
       <inputType>void</inputType>
       <outputType>void</outputType>
       <category>Scripting</category>
@@ -542,6 +542,17 @@
           if (input.length !== 2) {
             throw new Error('input should be an array of 2 documents');
           }
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestInputAdaptedAsBlobs">
+      <inputType>blobs</inputType>
+      <outputType>blobs</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
           return input;
         }
       ]]></script>

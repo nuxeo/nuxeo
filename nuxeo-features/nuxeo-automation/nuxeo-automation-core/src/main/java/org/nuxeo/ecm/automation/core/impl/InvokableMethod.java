@@ -29,8 +29,8 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -107,7 +107,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
                 consume = Blob.class;
                 break;
             case "blobs":
-                consume = Blobs.class;
+                consume = BlobList.class;
                 break;
             default:
                 consume = Object.class;
