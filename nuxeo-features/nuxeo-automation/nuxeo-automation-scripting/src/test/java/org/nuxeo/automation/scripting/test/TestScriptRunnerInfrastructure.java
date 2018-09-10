@@ -522,7 +522,7 @@ public class TestScriptRunnerInfrastructure {
      * NXP-19176
      */
     @Test
-    public void handleBlobListAsInput() throws IOException, OperationException {
+    public void testBlobListAsInputToAnotherOperation() throws IOException, OperationException {
         // Init parameters
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         Blob fb = Blobs.createBlob(fieldAsJsonFile);
@@ -535,7 +535,7 @@ public class TestScriptRunnerInfrastructure {
         session.saveDocument(doc);
 
         try (OperationContext ctx = new OperationContext(session)) {
-            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList");
+            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestBlobListInputToAnotherOperation");
             assertNotNull(result);
             assertEquals(2, result.size());
             // We added two blobs to context
@@ -549,7 +549,7 @@ public class TestScriptRunnerInfrastructure {
      * NXP-19176
      */
     @Test
-    public void handleBlobArrayAsInput() throws IOException, OperationException {
+    public void testBlobArrayAsInputToAnotherOperation() throws IOException, OperationException {
         // Init parameters
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         Blob fb = Blobs.createBlob(fieldAsJsonFile);
@@ -562,7 +562,7 @@ public class TestScriptRunnerInfrastructure {
         session.saveDocument(doc);
 
         try (OperationContext ctx = new OperationContext(session)) {
-            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray");
+            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestBlobArrayInputToAnotherOperation");
             assertNotNull(result);
             assertEquals(2, result.size());
             // We added two blobs to context
@@ -635,6 +635,20 @@ public class TestScriptRunnerInfrastructure {
             assertEquals(2, docs.size());
             assertEquals("/default-domain", docs.get(0).getPathAsString());
             assertEquals("/default-domain/workspaces", docs.get(1).getPathAsString());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testBlobsInputAdaptedAsBlobs() throws Exception {
+        Blob blob1 = Blobs.createBlob("Blob1");
+        Blob blob2 = Blobs.createBlob("Blob2");
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(Arrays.asList(blob1, blob2));
+            List<Blob> blobs = (List<Blob>) automationService.run(ctx, "Scripting.TestInputAdaptedAsBlobs");
+            assertEquals(2, blobs.size());
+            assertEquals("Blob1", blobs.get(0).getString());
+            assertEquals("Blob2", blobs.get(1).getString());
         }
     }
 
