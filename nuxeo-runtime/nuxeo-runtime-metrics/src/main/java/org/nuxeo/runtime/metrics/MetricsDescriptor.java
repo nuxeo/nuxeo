@@ -125,7 +125,7 @@ public class MetricsDescriptor implements Serializable {
         public Integer period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY, "10"));
 
         @XNode("@prefix")
-        public String prefix = prefix();
+        public String prefix = getPrefix();
 
         /**
          * A list of metric prefixes that if defined should be kept reported
@@ -145,7 +145,7 @@ public class MetricsDescriptor implements Serializable {
         public List<String> deniedMetrics = Arrays.asList(
                 Framework.getProperty(DENIED_METRICS_PROPERTY, DEFAULT_DENIED_METRICS).split(","));
 
-        public String prefix() {
+        public String getPrefix() {
             if (prefix == null) {
                 prefix = Framework.getProperty(PREFIX_PROPERTY, "servers.${hostname}.nuxeo");
             }
@@ -165,8 +165,8 @@ public class MetricsDescriptor implements Serializable {
 
         @Override
         public String toString() {
-            return String.format("graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d", enabled ? "enabled"
-                    : "disabled", prefix, host, port, period);
+            return String.format("graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
+                    enabled ? "enabled" : "disabled", prefix, host, port, period);
         }
 
         protected GraphiteReporter reporter;
@@ -181,7 +181,7 @@ public class MetricsDescriptor implements Serializable {
             reporter = GraphiteReporter.forRegistry(registry)
                                        .convertRatesTo(TimeUnit.SECONDS)
                                        .convertDurationsTo(TimeUnit.MICROSECONDS)
-                                       .prefixedWith(prefix())
+                                       .prefixedWith(getPrefix())
                                        .filter((name, metric) -> filter(name))
                                        .build(graphite);
             reporter.start(period, TimeUnit.SECONDS);
@@ -321,8 +321,8 @@ public class MetricsDescriptor implements Serializable {
 
         protected void registerTomcatGauge(String mbean, String attribute, MetricRegistry registry, String name) {
             try {
-                registry.register(MetricRegistry.name("tomcat", name), new JmxAttributeGauge(new ObjectName(mbean),
-                        attribute));
+                registry.register(MetricRegistry.name("tomcat", name),
+                        new JmxAttributeGauge(new ObjectName(mbean), attribute));
             } catch (MalformedObjectNameException | IllegalArgumentException e) {
                 throw new UnsupportedOperationException("Cannot compute object name of " + mbean, e);
             }
@@ -383,8 +383,8 @@ public class MetricsDescriptor implements Serializable {
             registry.register("jvm.garbage", new GarbageCollectorMetricSet());
             registry.register("jvm.threads", new ThreadStatesGaugeSet());
             registry.register("jvm.files", new FileDescriptorRatioGauge());
-            registry.register("jvm.buffers", new BufferPoolMetricSet(
-                    Framework.getService(ServerLocator.class).lookupServer()));
+            registry.register("jvm.buffers",
+                    new BufferPoolMetricSet(Framework.getService(ServerLocator.class).lookupServer()));
         }
 
         public void disable(MetricRegistry registry) {
