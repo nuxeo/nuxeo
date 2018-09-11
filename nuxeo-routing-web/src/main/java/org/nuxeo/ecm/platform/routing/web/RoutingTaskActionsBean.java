@@ -144,7 +144,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     protected Task currentTask;
 
-    protected List<String> formVariablesToRemove;
+    protected List<String> formVariablesToKeep;
 
     public void validateTaskDueDate(FacesContext context, UIComponent component, Object value) {
         final String DATE_FORMAT = "dd/MM/yyyy";
@@ -224,8 +224,7 @@ public class RoutingTaskActionsBean implements Serializable {
             data.put("WorkflowVariables", getFormVariables(task));
             data.put("NodeVariables", getFormVariables(task));
             // if there is a comment on the submitted form, pass it to be
-            // logged
-            // by audit
+            // logged by audit
             if (formVariables.containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
                 data.put(GraphNode.NODE_VARIABLE_COMMENT, formVariables.get(GraphNode.NODE_VARIABLE_COMMENT));
             }
@@ -449,7 +448,7 @@ public class RoutingTaskActionsBean implements Serializable {
             String id = getTaskActionId(task, "process_task");
             Action processAction = new Action(id, Action.EMPTY_CATEGORIES);
 
-            formVariablesToRemove = new ArrayList<>();
+            formVariablesToKeep = new ArrayList<>();
             WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
             LayoutDefinition taskLayout = layoutService.getLayoutDefinition(taskInfo.layout);
             if (taskLayout != null) {
@@ -465,12 +464,12 @@ public class RoutingTaskActionsBean implements Serializable {
                         el.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
                         el.setCurrentDocument(navigationContext.getCurrentDocument());
                         mode = el.evalExpression(mode, String.class);
-                        if (mode != null && !mode.equals(BuiltinModes.EDIT)) {
+                        if (mode != null && mode.equals(BuiltinModes.EDIT)) {
                             Arrays.stream(widgetDefinition.getFieldDefinitions()).forEach((field) -> {
                                 // workflow form fields are always like "['$variable']"
                                 // remove both [' and '] to keep only the variable name
                                 String fieldName = field.getFieldName().replaceAll("^\\['|']$", "");
-                                formVariablesToRemove.add(fieldName);
+                                formVariablesToKeep.add(fieldName);
                             });
                         }
                     }
@@ -557,15 +556,7 @@ public class RoutingTaskActionsBean implements Serializable {
         Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties().get(
                 "formVariables");
 
-        // Remove form variables that should not be updated
-        if (formVariablesToRemove != null && formVariables != null) {
-            formVariablesToRemove.forEach(formVariables::remove);
-        }
-        formVariablesToRemove = null;
-
         if (formVariables != null && !formVariables.isEmpty()) {
-            data.put("WorkflowVariables", formVariables);
-            data.put("NodeVariables", formVariables);
             // if there is a comment on the submitted form, pass it to be
             // logged by audit
             if (formVariables.containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
@@ -579,6 +570,14 @@ public class RoutingTaskActionsBean implements Serializable {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
+                // For each task, compute its own node and workflow variables
+                Task task = new TaskImpl(doc);
+                Map<String, Serializable> variables = getFormVariables(task);
+                for (String fieldName : formVariablesToKeep) {
+                    variables.put(fieldName, formVariables.get(fieldName));
+                }
+                data.put("WorkflowVariables", variables);
+                data.put("NodeVariables", variables);
                 if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
                     // add the button name that was clicked
                     try {
@@ -589,6 +588,7 @@ public class RoutingTaskActionsBean implements Serializable {
                     }
                 }
             }
+            formVariablesToKeep = null;
         }
         if (hasErrors) {
             facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.tasksEnded"));
