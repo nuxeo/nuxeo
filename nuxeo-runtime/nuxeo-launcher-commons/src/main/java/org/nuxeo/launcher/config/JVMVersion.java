@@ -69,7 +69,7 @@ public class JVMVersion implements Comparable<JVMVersion> {
 
     static final Pattern PreJDK9Pattern = Pattern.compile("1\\.(\\d)\\.\\d(?:_(\\d+))?(?:-.*)?");
 
-    static final Pattern JDK9_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+)(?:\\.(\\d+)(\\..*)?)?)?");
+    static final Pattern JDK9_PATTERN = Pattern.compile("(\\d+)(?:-ea)?(?:\\.(\\d+)(?:\\.(\\d+)(\\..*)?)?)?");
 
     public static JVMVersion parsePreJdk9(String version) throws ParseException {
         Matcher matcher = PreJDK9Pattern.matcher(version);
