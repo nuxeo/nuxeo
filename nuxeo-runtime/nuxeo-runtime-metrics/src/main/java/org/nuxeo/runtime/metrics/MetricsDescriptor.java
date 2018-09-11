@@ -268,6 +268,113 @@ public class MetricsDescriptor implements Serializable {
 
     }
 
+    /**
+     * @since 10.3
+     */
+    @XObject(value = "statsDReporter")
+    public static class StatsDDescriptor {
+
+        public static final String ENABLED_PROPERTY = "metrics.statsd.enabled";
+
+        public static final String HOST_PROPERTY = "metrics.statsd.host";
+
+        public static final String PORT_PROPERTY = "metrics.statsd.port";
+
+        public static final String PERIOD_PROPERTY = "metrics.statsd.period";
+
+        public static final String PREFIX_PROPERTY = "metrics.statsd.prefix";
+
+        /**
+         * A list of metric prefixes that if defined should be kept reported, separated by commas
+         */
+        public static final String ALLOWED_METRICS_PROPERTY = "metrics.statsd.allowedMetrics";
+
+        /**
+         * A list of metric prefixes that if defined should not be reported, separated by commas
+         */
+        public static final String DENIED_METRICS_PROPERTY = "metrics.statsd.deniedMetrics";
+
+        public static final String DEFAULT_ALLOWED_METRICS = GraphiteDescriptor.DEFAULT_ALLOWED_METRICS;
+
+        public static final String DEFAULT_DENIED_METRICS = GraphiteDescriptor.DEFAULT_DENIED_METRICS;
+
+        public static final String ALL_METRICS = "ALL";
+
+        @XNode("@enabled")
+        protected Boolean enabled = Boolean.valueOf(Framework.getProperty(ENABLED_PROPERTY, "false"));
+
+        @XNode("@host")
+        public String host = Framework.getProperty(HOST_PROPERTY, "127.0.0.1");
+
+        @XNode("@port")
+        public Integer port = Integer.valueOf(Framework.getProperty(PORT_PROPERTY, "8125"));
+
+        @XNode("@periodInSecond")
+        public Integer period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY, "10"));
+
+        @XNode("@prefix")
+        public String prefix = getPrefix();
+
+        /**
+         * A list of metric prefixes that if defined should be kept reported
+         */
+        @XNodeList(value = "allowedMetrics/metric", type = ArrayList.class, componentType = String.class)
+        public List<String> allowedMetrics = Arrays.asList(
+                Framework.getProperty(ALLOWED_METRICS_PROPERTY, DEFAULT_ALLOWED_METRICS).split(","));
+
+        /**
+         * A list of metric prefixes that if defined should not be reported
+         */
+        @XNodeList(value = "deniedMetrics/metric", type = ArrayList.class, componentType = String.class)
+        public List<String> deniedMetrics = Arrays.asList(
+                Framework.getProperty(DENIED_METRICS_PROPERTY, DEFAULT_DENIED_METRICS).split(","));
+
+        public String getPrefix() {
+            if (prefix == null) {
+                prefix = Framework.getProperty(PREFIX_PROPERTY, "servers.${hostname}.nuxeo");
+            }
+            String hostname;
+            try {
+                hostname = InetAddress.getLocalHost().getHostName().split("\\.")[0];
+            } catch (UnknownHostException e) {
+                hostname = "unknown";
+            }
+            return prefix.replace("${hostname}", hostname);
+        }
+
+        public boolean filter(String name) {
+            return allowedMetrics.stream().anyMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f))
+                    || deniedMetrics.stream().noneMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("statdReporter %s prefix: %s, host: %s, port: %d, period: %d",
+                    enabled ? "enabled" : "disabled", prefix, host, port, period);
+        }
+
+        protected StatsDReporter reporter;
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            reporter = StatsDReporter.forRegistry(registry).build(host, port);
+            reporter.start(period, TimeUnit.SECONDS);
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (reporter == null) {
+                return;
+            }
+            try {
+                reporter.stop();
+            } finally {
+                reporter = null;
+            }
+        }
+    }
+
     @XObject(value = "log4jInstrumentation")
     public static class Log4jInstrumentationDescriptor {
 
@@ -402,6 +509,9 @@ public class MetricsDescriptor implements Serializable {
     @XNode("csvReporter")
     public CsvDescriptor csvReporter = new CsvDescriptor();
 
+    @XNode("statsDReporter")
+    public StatsDDescriptor statsDReporter = new StatsDDescriptor();
+
     @XNode("log4jInstrumentation")
     public Log4jInstrumentationDescriptor log4jInstrumentation = new Log4jInstrumentationDescriptor();
 
@@ -421,6 +531,7 @@ public class MetricsDescriptor implements Serializable {
         log4jInstrumentation.enable(registry);
         tomcatInstrumentation.enable(registry);
         jvmInstrumentation.enable(registry);
+        statsDReporter.enable(registry);
     }
 
     public void disable(MetricRegistry registry) {
@@ -430,6 +541,7 @@ public class MetricsDescriptor implements Serializable {
             log4jInstrumentation.disable(registry);
             tomcatInstrumentation.disable(registry);
             jvmInstrumentation.disable(registry);
+            statsDReporter.enable(registry);
             jmxReporter.stop();
         } finally {
             jmxReporter = null;

@@ -40,6 +40,14 @@
       <artifactId>metrics-jvm</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.readytalk</groupId>
+      <artifactId>metrics3-statsd</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.readytalk</groupId>
+      <artifactId>metrics-statsd-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>compile</scope>

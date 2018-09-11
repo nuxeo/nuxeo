@@ -4348,6 +4348,18 @@
         <artifactId>metrics-jvm</artifactId>
         <version>${metrics.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.readytalk</groupId>
+        <artifactId>metrics3-statsd</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+      <groupId>com.readytalk</groupId>
+      <artifactId>metrics-statsd-common</artifactId>
+     <version>4.2.0</version>
+      </dependency>
+
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
