@@ -9,7 +9,7 @@
   <name>Elasticsearch WebApp integration</name>
   <dependencies>
     <dependency>
-      <groupId>com.codahale.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>

@@ -46,7 +46,8 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     @Override
     public String[] getInfos() {
-        List<CoreSessionRegistrationInfo> infos = Framework.getService(CoreSessionService.class).getCoreSessionRegistrationInfos();
+        List<CoreSessionRegistrationInfo> infos = Framework.getService(CoreSessionService.class)
+                                                           .getCoreSessionRegistrationInfos();
         return toInfos(toSortedRegistration(infos));
     }
 
