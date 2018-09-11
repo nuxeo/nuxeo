@@ -177,12 +177,12 @@ fi
 JUL_CONFIG="-Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties"
 JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 
-## Java 9 modules
+## Jigsaw modules
 case $JAVA_VERSION in
-  1.*) # Java < 9
+  1.*) # Java < 11
      ;;
-  *) # Java 9 needs some non-default modules
-     MODULE_OPTS="--add-modules java.se.ee --illegal-access=permit" # use =warn for more diagnostics
+  *) # Java 11
+     MODULE_OPTS="--illegal-access=permit" # use =warn for more diagnostics
      JAVA_OPTS="$MODULE_OPTS $JAVA_OPTS"
      ;;
 esac
