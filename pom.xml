@@ -229,6 +229,7 @@
     <kafka.version>2.0.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
     <chronicle.bom.version>1.16.158</chronicle.bom.version>
+    <metrics.version>3.2.6</metrics.version>
   </properties>
 
   <dependencyManagement>
@@ -4319,25 +4320,26 @@
         <artifactId>javasimon-jdbc3</artifactId>
         <version>2.5.0</version>
       </dependency>
+
       <dependency>
-        <groupId>com.codahale.metrics</groupId>
+        <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-core</artifactId>
-        <version>3.0.2</version>
+        <version>${metrics.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.codahale.metrics</groupId>
+        <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-graphite</artifactId>
-        <version>3.0.2</version>
+        <version>${metrics.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.codahale.metrics</groupId>
+        <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-log4j</artifactId>
-        <version>3.0.2</version>
+        <version>${metrics.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.codahale.metrics</groupId>
+        <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-jvm</artifactId>
-        <version>3.0.2</version>
+        <version>${metrics.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>

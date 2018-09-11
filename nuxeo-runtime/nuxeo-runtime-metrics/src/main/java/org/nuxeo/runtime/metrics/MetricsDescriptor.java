@@ -28,18 +28,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -49,8 +46,6 @@ import org.nuxeo.runtime.management.ServerLocator;
 
 import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.JmxReporter;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
@@ -60,6 +55,7 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.codahale.metrics.log4j.InstrumentedAppender;
+import com.readytalk.metrics.StatsDReporter;
 
 @XObject("metrics")
 public class MetricsDescriptor implements Serializable {
@@ -395,13 +391,7 @@ public class MetricsDescriptor implements Serializable {
             if (!enabled) {
                 return;
             }
-            registry.removeMatching(new MetricFilter() {
-
-                @Override
-                public boolean matches(String name, Metric metric) {
-                    return name.startsWith("jvm.");
-                }
-            });
+            registry.removeMatching((name, metric) -> name.startsWith("jvm."));
 
         }
     }
