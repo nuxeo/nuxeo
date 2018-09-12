@@ -1,5 +1,5 @@
 <component name="org.nuxeo.ecm.core.redis.workmanager.test">
-  <require>org.nuxeo.ecm.core.work.config.test</require>
+  <require>org.nuxeo.ecm.core.work.test.default.queuing</require>
   <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
     <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing" />
   </extension>
