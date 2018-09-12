@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
+import static org.nuxeo.wopi.Constants.FILE_SCHEMA;
 import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 
 import java.io.IOException;
@@ -61,6 +62,10 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
+        if (!document.hasSchema(FILE_SCHEMA)) {
+            return;
+        }
+
         Blob blob = (Blob) document.getPropertyValue(FILE_CONTENT_PROPERTY);
         if (blob == null) {
             return;
