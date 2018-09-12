@@ -47,18 +47,14 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     public static final String COMPONENT_NAME = "org.nuxeo.runtime.config";
 
-    protected ObjectMapper mapper = null;
-
-    public ConfigurationServiceImpl() {
-        mapper = new ObjectMapper();
-    }
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
      * XXX remove once we are able to get such a cached map from DefaultComponent
      *
      * @since 10.3
      */
-    protected Map<String, ConfigurationPropertyDescriptor> descriptors = null;
+    protected volatile Map<String, ConfigurationPropertyDescriptor> descriptors;
 
     /**
      * XXX remove once we are able to get such a cached map from DefaultComponent.
@@ -68,15 +64,15 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
      * @since 10.3
      */
     protected Map<String, ConfigurationPropertyDescriptor> getDescriptors() {
-        if (descriptors == null) {
+        Map<String, ConfigurationPropertyDescriptor> d = descriptors;
+        if (d == null) {
             synchronized (this) {
-                if (descriptors == null) {
+                d = descriptors;
+                if (d == null) {
                     List<ConfigurationPropertyDescriptor> descs = getDescriptors(CONFIGURATION_EP);
-                    descriptors = descs.stream().collect(Collectors.toMap(desc -> desc.getId(), desc -> desc));
-                    return descriptors;
+                    descriptors = d = descs.stream().collect(Collectors.toMap(desc -> desc.getId(), desc -> desc));
                 }
             }
-
         }
         return descriptors;
     }
@@ -111,7 +107,9 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            descriptors = null;
+            synchronized (this) {
+                descriptors = null;
+            }
             ConfigurationPropertyDescriptor configurationPropertyDescriptor = (ConfigurationPropertyDescriptor) contribution;
             String key = configurationPropertyDescriptor.getName();
             if (Framework.getProperties().containsKey(key)) {
@@ -127,7 +125,9 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            descriptors = null;
+            synchronized (this) {
+                descriptors = null;
+            }
             super.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
@@ -139,7 +139,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public Map<String, Serializable> getProperties(String namespace) {
-        if (StringUtils.isBlank(namespace)) {
+        if (StringUtils.isEmpty(namespace)) {
             return null;
         }
         if (namespace.charAt(namespace.length() - 1) == '.') {
@@ -147,9 +147,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
         }
         return getDescriptors().values()
                                .stream()
-                               .filter(desc -> desc.getName().length() > namespace.length()
-                                       && desc.getName().startsWith(namespace)
-                                       && desc.getName().charAt(namespace.length()) == '.')
+                               .filter(desc -> startsWithNamespace(desc.getName(), namespace))
                                .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
                                        desc -> desc.getValue() != null && desc.list
                                                ? desc.getValue().split(LIST_SEPARATOR) : desc.getValue()));
@@ -157,7 +155,19 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public String getPropertiesAsJson(String namespace) throws IOException {
-        return mapper.writeValueAsString(getProperties(namespace));
+        return MAPPER.writeValueAsString(getProperties(namespace));
+    }
+
+    /**
+     * Returns true if a string starts with a namespace.
+     *
+     * @param string a string
+     * @param namespace
+     * @since 10.3
+     */
+    protected static boolean startsWithNamespace(String string, String namespace) {
+        int nl = namespace.length();
+        return string.length() > nl && string.charAt(nl) == '.' && string.startsWith(namespace);
     }
 
 }
