@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EsHint implements Operand {
 
@@ -74,10 +78,55 @@ public class EsHint implements Operand {
                 && StringUtils.equals(operator, other.operator);
     }
 
-    public String[] getIndex() {
+    /**
+     * Get Index field hints
+     */
+    public List<FieldHint> getIndex() {
         if (index == null) {
-            return null;
+            return Collections.emptyList();
         }
-        return index.split(",");
+        String[] fields = index.split(",");
+        return Arrays.stream(fields).map(FieldHint::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Get Index field names (without boost)
+     */
+    public String[] getIndexFieldNames() {
+        return getIndex().stream().map(FieldHint::getField).toArray(String[]::new);
+    }
+
+    /**
+     * A field specified using a hint, with optional boost value
+     */
+    public static class FieldHint {
+        public static final float DEFAULT_BOOST = 1.0F;
+
+        protected final String field;
+
+        protected final float boost;
+
+        public FieldHint(String indexField) {
+            String[] parsed = indexField.split("\\^");
+            this.field = parsed[0];
+            if (parsed.length > 1) {
+                this.boost = Float.parseFloat(parsed[1]);
+            } else {
+                this.boost = DEFAULT_BOOST;
+            }
+        }
+
+        public FieldHint(String field, Float boost) {
+            this.field = field;
+            this.boost = boost == null ? DEFAULT_BOOST : boost;
+        }
+
+        public String getField() {
+            return field;
+        }
+
+        public float getBoost() {
+            return boost;
+        }
     }
 }
