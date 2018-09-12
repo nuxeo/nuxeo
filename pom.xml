@@ -102,8 +102,8 @@
       <artifactId>commons-logging</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
+      <groupId>com.sun.activation</groupId>
+      <artifactId>javax.activation</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
