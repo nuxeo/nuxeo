@@ -355,7 +355,7 @@ public class TestQueryParser {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title.ngram) */ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("dc:title"),
                 new EsHint(new EsIdentifierList("dc:title.ngram"), null, null)), lvalue);
     }
@@ -366,7 +366,7 @@ public class TestQueryParser {
                 "SELECT p FROM t WHERE /*+ES: INDEX(my-schema:article.author) */ my-schema:article/author = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("my-schema:article/author"),
                 new EsHint(new EsIdentifierList("my-schema:article.author"), null, null)), lvalue);
     }
@@ -377,7 +377,7 @@ public class TestQueryParser {
                 "SELECT p FROM t WHERE /*+es: INDEX(dc:title.ngram^3) */ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("dc:title"),
                 new EsHint(new EsIdentifierList("dc:title.ngram^3"), null, null)), lvalue);
     }
@@ -388,7 +388,7 @@ public class TestQueryParser {
                 "SELECT p FROM t WHERE /*+ES: INDEX(dc:title,dc:description) */ ecm:fulltext = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(2, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(2, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("ecm:fulltext"),
                 new EsHint(new EsIdentifierList("dc:title,dc:description"), null, null)), lvalue);
     }

@@ -19,7 +19,7 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -44,10 +44,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Test that NXQL can be used to generate ES queries
@@ -1403,7 +1401,7 @@ public class TestNxqlConversion {
                         "    \"query\" : \"this is a test\",\n" +
                         "    \"fields\" : [\n" +
                         "      \"dc:description^1.0\",\n" +
-                        "      \"dc:title^3^1.0\"\n" +
+                        "      \"dc:title^3.0\"\n" +
                         "    ],\n" +
                         "    \"type\" : \"best_fields\",\n" +
                         "    \"operator\" : \"OR\",\n" +
@@ -1557,7 +1555,7 @@ public class TestNxqlConversion {
     public void testConvertHintFulltext() throws Exception {
         // search on title and description, boost title
         String es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where /*+ES: INDEX(dc:title.fulltext^3,dc:description.fulltext) */ ecm:fulltext = 'foo'")
+                "select * from Document where /*+ES: INDEX(dc:title.fulltext^4,dc:description.fulltext) */ ecm:fulltext = 'foo'")
                 .toString();
         // fields are not ordered
         assertIn(es,"{\n" +
@@ -1565,7 +1563,7 @@ public class TestNxqlConversion {
                         "    \"query\" : \"foo\",\n" +
                         "    \"fields\" : [\n" +
                         "      \"dc:description.fulltext^1.0\",\n" +
-                        "      \"dc:title.fulltext^3^1.0\"\n" +
+                        "      \"dc:title.fulltext^4.0\"\n" +
                         "    ],\n" +
                         "    \"analyzer\" : \"fulltext\",\n" +
                         "    \"flags\" : -1,\n" +
