@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -71,7 +72,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features({ QuotaFeature.class })
+@Features({ QuotaFeature.class, CoreBulkFeature.class })
 public class TestDocumentsSizeUpdater {
 
     @Inject
@@ -110,6 +111,7 @@ public class TestDocumentsSizeUpdater {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         eventService.waitForAsyncCompletion(TimeUnit.MINUTES.toMillis(1));
+        coreFeature.waitForAsyncCompletion();
     }
 
     @Test
