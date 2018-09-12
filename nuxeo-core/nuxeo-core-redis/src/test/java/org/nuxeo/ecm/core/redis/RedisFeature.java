@@ -37,7 +37,7 @@ import redis.clients.jedis.Protocol;
 @Deploy("org.nuxeo.ecm.core.redis.tests:redis-contribs.xml")
 @Deploy("org.nuxeo.ecm.core.storage")
 @Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.redis.tests:test-redis-workmanager.xml")
 public class RedisFeature implements RunnerFeature {
 
@@ -129,7 +129,7 @@ public class RedisFeature implements RunnerFeature {
         return null;
     }
 
-    @Override
+    @Override@Deploy("org.nuxeo.ecm.core.redis.tests:test-redis-workmanager.xml")
     public void start(FeaturesRunner runner) throws Exception {
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override

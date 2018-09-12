@@ -15,7 +15,4 @@
     </queue>
   </extension>
 
- <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
-   <queuing class="org.nuxeo.ecm.core.work.TestWorkQueuing"/>
- </extension>
 </component>

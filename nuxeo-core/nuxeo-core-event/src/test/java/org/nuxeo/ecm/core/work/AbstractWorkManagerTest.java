@@ -59,7 +59,8 @@ import org.nuxeo.runtime.trackers.files.FileEvent;
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-queue-config.xml")
 public abstract class AbstractWorkManagerTest {
 
     protected static class CreateFile extends AbstractWork implements Serializable {

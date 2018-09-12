@@ -50,7 +50,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ RuntimeFeature.class, RestartFeature.class })
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.ecm.core.event")
-@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-config.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
+@Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-queue-config.xml")
 public class WorkManagerTXTest {
 
     @Inject
