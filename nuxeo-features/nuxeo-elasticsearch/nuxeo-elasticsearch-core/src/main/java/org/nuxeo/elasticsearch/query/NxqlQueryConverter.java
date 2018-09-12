@@ -65,6 +65,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.trash.TrashService.Feature;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -88,7 +89,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
-import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 
@@ -475,8 +475,9 @@ public final class NxqlQueryConverter {
             ret = matchPhrasePrefixQuery;
             break;
         case "multi_match":
-            // hint.index must be set
-            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
+            // multiMatchQuery requires at least 1 field on creation, so we set them twice, incase there's a field boost
+            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndexFieldNames());
+            hint.getIndex().forEach(fieldHint -> multiMatchQuery.field(fieldHint.getField(), fieldHint.getBoost()));
             if (hint.analyzer != null) {
                 multiMatchQuery.analyzer(hint.analyzer);
             }
@@ -501,8 +502,8 @@ public final class NxqlQueryConverter {
         case "query_string":
             QueryStringQueryBuilder queryString = QueryBuilders.queryStringQuery((String) value);
             if (hint.index != null) {
-                for (String index : hint.getIndex()) {
-                    queryString.field(index);
+                for (EsHint.FieldHint fieldHint : hint.getIndex()) {
+                    queryString.field(fieldHint.getField(), fieldHint.getBoost());
                 }
             } else {
                 queryString.defaultField(name);
@@ -515,8 +516,8 @@ public final class NxqlQueryConverter {
         case "simple_query_string":
             SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryStringQuery((String) value);
             if (hint.index != null) {
-                for (String index : hint.getIndex()) {
-                    querySimpleString.field(index);
+                for (EsHint.FieldHint fieldHint : hint.getIndex()) {
+                    querySimpleString.field(fieldHint.getField(), fieldHint.getBoost());
                 }
             } else {
                 querySimpleString.field(name);
@@ -527,7 +528,8 @@ public final class NxqlQueryConverter {
             ret = querySimpleString;
             break;
         case "more_like_this":
-            String[] fields = hint.getIndex() != null ? hint.getIndex() : new String[] { name };
+            String[] indexFields = hint.getIndexFieldNames();
+            String[] fields = indexFields.length > 0 ? indexFields : new String[] { name };
             MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, null,
                     getItems(value));
             if (hint.analyzer != null) {
@@ -698,8 +700,8 @@ public final class NxqlQueryConverter {
                                                       .defaultOperator(defaultOperator)
                                                       .analyzer(analyzer);
         if (hint != null && hint.index != null) {
-            for (String index : hint.getIndex()) {
-                query.field(index);
+            for (EsHint.FieldHint fieldHint : hint.getIndex()) {
+                query.field(fieldHint.getField(), fieldHint.getBoost());
             }
         } else {
             query.field(name);

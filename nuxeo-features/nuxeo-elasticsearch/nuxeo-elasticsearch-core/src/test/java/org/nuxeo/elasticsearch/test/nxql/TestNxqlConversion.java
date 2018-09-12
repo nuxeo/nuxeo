@@ -19,6 +19,7 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -29,6 +30,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,8 +41,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -1491,7 +1498,7 @@ public class TestNxqlConversion {
                         "    \"query\" : \"this is a test\",\n" +
                         "    \"fields\" : [\n" +
                         "      \"dc:description^1.0\",\n" +
-                        "      \"dc:title^3^1.0\"\n" +
+                        "      \"dc:title^3.0\"\n" +
                         "    ],\n" +
                         "    \"type\" : \"best_fields\",\n" +
                         "    \"operator\" : \"OR\",\n" +
@@ -1612,7 +1619,7 @@ public class TestNxqlConversion {
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where /*+ES: INDEX(dc:title.fulltext,dc:description.fulltext) OPERATOR(more_like_this) */ ecm:uuid = '1234'").toString();
+                "select * from Document where /*+ES: INDEX(dc:title.fulltext^2,dc:description.fulltext) OPERATOR(more_like_this) */ ecm:uuid = '1234'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"more_like_this\" : {\n" +
                 "    \"fields\" : [\n" +
@@ -1646,6 +1653,34 @@ public class TestNxqlConversion {
                 "  \"more_like_this\" : {\n" +
                 "    \"fields\" : [\n" +
                 "      \"all_field\"\n" +
+                "    ],\n" +
+                "    \"like\" : [\n" +
+                "      {\n" +
+                "        \"_index\" : \"nxutest\",\n" +
+                "        \"_type\" : \"doc\",\n" +
+                "        \"_id\" : \"'1234', '4567'\"\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"max_query_terms\" : 12,\n" +
+                "    \"min_term_freq\" : 1,\n" +
+                "    \"min_doc_freq\" : 3,\n" +
+                "    \"max_doc_freq\" : 2147483647,\n" +
+                "    \"min_word_length\" : 0,\n" +
+                "    \"max_word_length\" : 0,\n" +
+                "    \"minimum_should_match\" : \"30%\",\n" +
+                "    \"boost_terms\" : 0.0,\n" +
+                "    \"include\" : false,\n" +
+                "    \"fail_on_unsupported_field\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(more_like_this) */ ecm:uuid IN ('1234', '4567')").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"more_like_this\" : {\n" +
+                "    \"fields\" : [\n" +
+                "      \"ecm:uuid\"\n" +
                 "    ],\n" +
                 "    \"like\" : [\n" +
                 "      {\n" +
@@ -1704,15 +1739,15 @@ public class TestNxqlConversion {
     public void testConvertHintFulltext() {
         // search on title and description, boost title
         String es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where /*+ES: INDEX(dc:title.fulltext^3,dc:description.fulltext) */ ecm:fulltext = 'foo'")
+                "select * from Document where /*+ES: INDEX(dc:title.fulltext^4,dc:description.fulltext) */ ecm:fulltext = 'foo'")
                 .toString();
         // fields are not ordered
         assertIn(es,"{\n" +
                         "  \"simple_query_string\" : {\n" +
                         "    \"query\" : \"foo\",\n" +
                         "    \"fields\" : [\n" +
-                        "      \"dc:title.fulltext^3^1.0\",\n" +
-                        "      \"dc:description.fulltext^1.0\"\n" +
+                        "      \"dc:description.fulltext^1.0\",\n" +
+                        "      \"dc:title.fulltext^4.0\"\n" +
                         "    ],\n" +
                         "    \"analyzer\" : \"fulltext\",\n" +
                         "    \"flags\" : -1,\n" +
