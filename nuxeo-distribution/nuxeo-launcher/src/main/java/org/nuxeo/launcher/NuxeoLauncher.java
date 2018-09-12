@@ -870,7 +870,7 @@ public abstract class NuxeoLauncher {
 
     private List<String> getUnixCommand(List<String> roughCommand) {
         ArrayList<String> osCommand = new ArrayList<>();
-        String linearizedCommand = new String();
+        String linearizedCommand = "exec";
         for (String commandToken : roughCommand) {
             if (StringUtils.isBlank(commandToken)) {
                 continue;
