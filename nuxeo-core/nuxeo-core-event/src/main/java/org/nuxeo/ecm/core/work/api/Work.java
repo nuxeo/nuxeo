@@ -395,4 +395,15 @@ public interface Work extends Serializable {
         return true;
     }
 
+    /**
+     * When setting the coalescing flag to true you indicate to the work manager that if multiple works with the same id
+     * are scheduled you only care about the lastest execution. The goal is to skip useless executions to save
+     * resources, It is up to the work manager implementation to support or not this optimization.
+     *
+     * @since 10.3
+     */
+    default boolean isCoalescing() {
+        return false;
+    }
+
 }

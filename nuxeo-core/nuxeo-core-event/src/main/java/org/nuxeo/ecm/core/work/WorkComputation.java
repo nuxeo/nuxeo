@@ -84,11 +84,13 @@ public class WorkComputation extends AbstractComputation {
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         work = deserialize(record.data);
         try {
-            if (work.isIdempotent() && workIds.contains(work.getId())) {
-                log.warn("Duplicate work id: " + work.getId() + " skipping");
+            if (work.isCoalescing() && WorkStateHelper.getLastOffset(work.getId()) > context.getLastOffset().offset()) {
+                log.debug("Skipping duplicate of coalescing work id: " + work.getId());
+            } else if (work.isIdempotent() && workIds.contains(work.getId())) {
+                log.debug("Skipping duplicate of idempotent work id: " + work.getId());
             } else {
-                boolean storeState = Boolean.parseBoolean(
-                        Framework.getService(ConfigurationService.class).getProperty(STORESTATE_KEY));
+                boolean storeState = Framework.getService(ConfigurationService.class)
+                                              .isBooleanPropertyTrue(STORESTATE_KEY);
                 if (storeState) {
                     if (WorkStateHelper.getState(work.getId()) != Work.State.SCHEDULED) {
                         log.warn("work has been canceled, saving and returning");
@@ -98,7 +100,8 @@ public class WorkComputation extends AbstractComputation {
                     WorkStateHelper.setState(work.getId(), Work.State.RUNNING, stateTTL);
                 }
                 new WorkHolder(work).run();
-                if (storeState) {
+                // if the same work id has not been scheduled again, set the state to null for 'completed'
+                if (storeState && WorkStateHelper.getState(work.getId()) == Work.State.RUNNING) {
                     WorkStateHelper.setState(work.getId(), null, stateTTL);
                 }
                 workIds.add(work.getId());
