@@ -40,6 +40,8 @@ public class SleepWork extends AbstractWork {
 
     protected boolean idempotent = true;
 
+    protected boolean coalescing = false;
+
     /**
      * Creates a work instance that does nothing but sleep.
      *
@@ -161,6 +163,15 @@ public class SleepWork extends AbstractWork {
 
     public void setIdempotent(boolean idempotent) {
         this.idempotent = idempotent;
+    }
+
+    @Override
+    public boolean isCoalescing() {
+        return coalescing;
+    }
+
+    public void setCoalescing(boolean coalescing) {
+        this.coalescing = coalescing;
     }
 
     @Override
