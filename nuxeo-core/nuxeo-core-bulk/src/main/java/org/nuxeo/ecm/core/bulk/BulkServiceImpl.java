@@ -129,6 +129,16 @@ public class BulkServiceImpl implements BulkService {
         for (String id : commandIds) {
             while (getStatus(id).getState() != State.COMPLETED) {
                 Thread.sleep(100);
+                // nanoTime is always monotonous
+                long deadline = System.nanoTime() + duration.toNanos();
+                for (String commandId : commandIds) {
+                    while (getStatus(commandId).getState() != COMPLETED) {
+                        Thread.sleep(100);
+                        if (deadline < System.nanoTime()) {
+                            return false;
+                        }
+                    }
+                }
             }
         }
         return true;
