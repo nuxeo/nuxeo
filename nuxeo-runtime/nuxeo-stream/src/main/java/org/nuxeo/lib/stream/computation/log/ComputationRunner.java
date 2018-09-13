@@ -272,7 +272,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             inRecords++;
             lowWatermark.mark(record.watermark);
             String from = metadata.reverseMap(logRecord.offset().partition().name());
-            // System.out.println(metadata.name() + ": Receive from " + from + " record: " + record);
+            context.setLastOffset(logRecord.offset());
             computation.processRecord(context, from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();

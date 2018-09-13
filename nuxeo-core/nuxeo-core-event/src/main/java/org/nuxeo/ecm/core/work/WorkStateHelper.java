@@ -34,10 +34,29 @@ public class WorkStateHelper {
 
     protected static final String STATE_SUFFIX = ":state";
 
+    protected static final String OFFSET_SUFFIX = ":offset";
+
     protected static final String CANCELED = "canceled";
 
     protected static KeyValueStore getKeyValueStore() {
         return Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
+    }
+
+    /**
+     * Returns the last offset created for a given work id.
+     * <p>
+     *
+     * @param workId id of the work whose we want the last offset
+     * @return the last offset or -1 for convenience
+     * @since 10.3
+     */
+    protected static long getLastOffset(String workId) {
+        String stringOffset = getKeyValueStore().getString(getOffsetKey(workId));
+        return stringOffset == null ? -1 : Long.parseLong(stringOffset);
+    }
+
+    protected static String getOffsetKey(String workId) {
+        return workId + OFFSET_SUFFIX;
     }
 
     protected static Work.State getState(String workId) {
@@ -55,6 +74,10 @@ public class WorkStateHelper {
 
     protected static void setCanceled(String workId) {
         getKeyValueStore().put(getStateKey(workId), CANCELED, 0);
+    }
+
+    protected static void setLastOffset(String workId, Long offset, long ttl) {
+        getKeyValueStore().put(getOffsetKey(workId), offset == null ? null : offset, ttl);
     }
 
     protected static void setState(String workId, Work.State state, long ttl) {

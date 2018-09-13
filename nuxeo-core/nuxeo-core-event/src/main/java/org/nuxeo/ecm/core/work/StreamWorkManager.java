@@ -53,6 +53,7 @@ import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -154,7 +155,10 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         String key = work.getPartitionKey();
-        appender.append(key, Record.of(key, WorkComputation.serialize(work)));
+        LogOffset offset = appender.append(key, Record.of(key, WorkComputation.serialize(work)));
+        if (work.isCoalescing()) {
+            WorkStateHelper.setLastOffset(work.getId(), offset.offset(), stateTTL);
+        }
         if (storeState) {
             WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
@@ -393,12 +397,12 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public int getQueueSize(String queueId, Work.State state) {
         switch (state) {
-        case SCHEDULED:
-            return getMetrics(queueId).getScheduled().intValue();
-        case RUNNING:
-            return getMetrics(queueId).getRunning().intValue();
-        default:
-            return 0;
+            case SCHEDULED:
+                return getMetrics(queueId).getScheduled().intValue();
+            case RUNNING:
+                return getMetrics(queueId).getRunning().intValue();
+            default:
+                return 0;
         }
     }
 

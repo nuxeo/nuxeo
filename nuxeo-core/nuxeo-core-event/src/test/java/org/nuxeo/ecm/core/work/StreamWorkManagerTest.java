@@ -163,4 +163,44 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         super.testNoConcurrentJobsWithSameId();
     }
 
+    @Test
+    public void testCoalescingWorks() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        long duration = 1000;
+        // long work, to serve as a filler
+        SleepWork longWork = new SleepWork(duration * 10);
+        longWork.setIdempotent(false);
+        longWork.setCoalescing(true);
+        assertFalse(longWork.isIdempotent());
+        assertTrue(longWork.isCoalescing());
+
+        // short work the only to be actually computed
+        SleepWork shortWork = new SleepWork(duration, false, longWork.getId());
+        shortWork.setIdempotent(false);
+        shortWork.setCoalescing(true);
+        assertFalse(shortWork.isIdempotent());
+        assertTrue(shortWork.isCoalescing());
+
+        // we have to let the service warm up as the first offset is falsely set to 0
+        service.schedule(shortWork);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+        // a work will actually be executed only if handled before the next one is scheduled
+        // it's not the case here and the long works will be skipped
+        service.schedule(longWork);
+        service.schedule(longWork);
+        // only the last, short work, will actually be computed and waiting for it's execution time is enough
+        service.schedule(shortWork);
+        assertTrue(service.awaitCompletion(duration, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 4, 0);
+
+        // if we wait a bit for the first one to be started, first and last works will be computed
+        service.schedule(shortWork);
+        Thread.sleep(100);
+        service.schedule(longWork);
+        service.schedule(shortWork);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 7, 0);
+    }
+
 }

@@ -19,6 +19,8 @@
  */
 package org.nuxeo.lib.stream.computation;
 
+import org.nuxeo.lib.stream.log.LogOffset;
+
 /**
  * @since 9.3
  */
@@ -61,4 +63,10 @@ public interface ComputationContext {
      * @since 10.1
      */
     void askForTermination();
+
+    /**
+     * @return the LogOffset of the last record read.
+     * @since 10.3
+     */
+    LogOffset getLastOffset();
 }
