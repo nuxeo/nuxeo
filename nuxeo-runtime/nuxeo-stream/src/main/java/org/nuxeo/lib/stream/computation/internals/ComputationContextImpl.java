@@ -28,6 +28,7 @@ import java.util.Objects;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
  * @since 9.3
@@ -44,6 +45,8 @@ public class ComputationContextImpl implements ComputationContext {
     protected long lowWatermark;
 
     protected boolean terminateFlag;
+
+    protected LogOffset lastOffset;
 
     public ComputationContextImpl(ComputationMetadataMapping metadata) {
         this.metadata = metadata;
@@ -77,6 +80,15 @@ public class ComputationContextImpl implements ComputationContext {
             throw new IllegalArgumentException("Stream not registered as output: " + targetStream + ":" + streamName);
         }
         streamRecords.computeIfAbsent(targetStream, key -> new ArrayList<>()).add(record);
+    }
+
+    @Override
+    public LogOffset getLastOffset() {
+        return lastOffset;
+    }
+
+    public void setLastOffset(LogOffset lastOffset) {
+        this.lastOffset = lastOffset;
     }
 
     public long getSourceLowWatermark() {
