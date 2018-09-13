@@ -129,7 +129,7 @@ public class RedisFeature implements RunnerFeature {
         return null;
     }
 
-    @Override@Deploy("org.nuxeo.ecm.core.redis.tests:test-redis-workmanager.xml")
+    @Override
     public void start(FeaturesRunner runner) throws Exception {
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override
