@@ -74,7 +74,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                 }
             }
         }
-        return descriptors;
+        return d;
     }
 
     @Override
