@@ -51,6 +51,13 @@ public class MigrationDescriptor implements Descriptor {
             return id;
         }
 
+        public String getDescriptionLabel() {
+            return descriptionLabel;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 
     @XObject("step")
@@ -74,6 +81,22 @@ public class MigrationDescriptor implements Descriptor {
         @Override
         public String getId() {
             return id;
+        }
+
+        public String getFromState() {
+            return fromState;
+        }
+
+        public String getToState() {
+            return toState;
+        }
+
+        public String getDescriptionLabel() {
+            return descriptionLabel;
+        }
+
+        public String getDescription() {
+            return description;
         }
     }
 
@@ -101,6 +124,30 @@ public class MigrationDescriptor implements Descriptor {
     @Override
     public String getId() {
         return id;
+    }
+
+    public String getDescriptionLabel() {
+        return descriptionLabel;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Class<?> getKlass() {
+        return klass;
+    }
+
+    public String getDefaultState() {
+        return defaultState;
+    }
+
+    public Map<String, MigrationStateDescriptor> getStates() {
+        return states;
+    }
+
+    public Map<String, MigrationStepDescriptor> getSteps() {
+        return steps;
     }
 
     @Override
