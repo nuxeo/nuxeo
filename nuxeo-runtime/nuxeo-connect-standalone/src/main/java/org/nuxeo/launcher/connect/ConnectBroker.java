@@ -594,27 +594,11 @@ public class ConnectBroker {
                 return false;
             }
             if (isRestartRequired()) {
-                persistCommand(serializeUninstallCmd(remaining));
+                remaining.forEach(pkg -> persistCommand(CommandInfo.CMD_UNINSTALL + " " + pkg));
                 throw new LauncherRestartException();
             }
         }
         return true;
-    }
-
-    protected String serializeUninstallCmd(Collection<String> packages) {
-        if (packages.isEmpty()) {
-            return "";
-        } else {
-            return CommandInfo.CMD_UNINSTALL + " " + String.join(" ", packages);
-        }
-    }
-
-    protected String serializeInstallCmd(Collection<String> packages) {
-        if (packages.isEmpty()) {
-            return "";
-        } else {
-            return CommandInfo.CMD_INSTALL + " " + String.join(" ", packages);
-        }
     }
 
     /**
@@ -880,7 +864,7 @@ public class ConnectBroker {
                 return false;
             }
             if (isRestartRequired()) {
-                persistCommand(serializeInstallCmd(remaining));
+                remaining.forEach(pkg -> persistCommand(CommandInfo.CMD_INSTALL + " " + pkg));
                 throw new LauncherRestartException();
             }
         }
@@ -1482,8 +1466,8 @@ public class ConnectBroker {
                         return false;
                     }
                     if (isRestartRequired()) {
-                        persistCommand(serializeUninstallCmd(packageIdsToRemove));
-                        persistCommand(serializeInstallCmd(packageIdsToInstall));
+                        packageIdsToRemove.forEach(pkg -> persistCommand(CommandInfo.CMD_UNINSTALL + " " + pkg));
+                        packageIdsToInstall.forEach(pkg -> persistCommand(CommandInfo.CMD_INSTALL + " " + pkg));
                         throw new LauncherRestartException();
                     }
                 }
