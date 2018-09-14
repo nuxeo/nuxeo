@@ -73,10 +73,6 @@
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-drive-operations</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
