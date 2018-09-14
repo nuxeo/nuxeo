@@ -25,12 +25,11 @@ import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -52,17 +51,14 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     public static class LogFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             if (!Level.WARN.equals(event.getLevel())) {
                 return false;
             }
             if (!ConnectionImpl.class.getName().equals(event.getLoggerName())) {
                 return false;
             }
-            if (!ConnectionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrowableInformation().getThrowable().getClass())) {
-                return false;
-            }
-            return true;
+            return ConnectionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrown().getClass());
         }
     }
 
@@ -75,9 +71,9 @@ public class QueryResultsAreAutomaticallyClosedTest {
     protected void assertWarnInLogs() throws NoLogCaptureFilterException {
         if (coreFeature.getStorageConfiguration().isVCS()) {
             logCaptureResults.assertHasEvent();
-            LoggingEvent event = logCaptureResults.getCaughtEvents().get(0);
+            LogEvent event = logCaptureResults.getCaughtEvents().get(0);
             assertEquals(Level.WARN, event.getLevel());
-            assertEquals(VCS_CLOSING_WARN, event.getMessage());
+            assertEquals(VCS_CLOSING_WARN, event.getMessage().getFormattedMessage());
         }
     }
 

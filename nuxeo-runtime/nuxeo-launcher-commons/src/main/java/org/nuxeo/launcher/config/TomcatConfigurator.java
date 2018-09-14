@@ -86,7 +86,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     @Override
     public File getLogConfFile() {
-        return new File(getServerLibDir(), "log4j.xml");
+        return new File(getServerLibDir(), "log4j2.xml");
     }
 
     @Override

@@ -266,7 +266,7 @@ elif [ "$tomcat" = "true" ]; then
   NUXEO_EAR="$NUXEO_HOME/nxserver"
   DATA_DIR=${DATA_DIR:-nxserver/data}
   NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/lib/*"
-  LOG4J_CONF="$NUXEO_HOME/lib/log4j.xml"
+  LOG4J_CONF="$NUXEO_HOME/lib/log4j2.xml"
   MAIN_CLASS=org.nuxeo.runtime.deployment.preprocessor.PackWar
 
 #
@@ -309,7 +309,7 @@ pack() {
     java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" \
-      -Dlog4j.configuration="$LOG4J_CONF" \
+      -Dlog4j.configurationFile="$LOG4J_CONF" \
       $MAIN_CLASS $1 $2
 }
 

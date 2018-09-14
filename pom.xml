@@ -192,6 +192,7 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>10.3-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
+    <org.apache.log4j.version>2.11.1</org.apache.log4j.version>
     <org.slf4j.version>1.7.21</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     <gatling.version>2.3.1</gatling.version>
@@ -1800,6 +1801,12 @@
         <groupId>org.nuxeo.connect</groupId>
         <artifactId>nuxeo-connect-client</artifactId>
         <version>${nuxeo.connect.client.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.connect</groupId>
@@ -2182,16 +2189,6 @@
         <artifactId>analysis-common</artifactId>
         <version>6.3.0</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>2.11.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.11.1</version>
-      </dependency>
 
       <!-- apache -->
       <dependency>
@@ -2336,6 +2333,10 @@
         <artifactId>jmimemagic</artifactId>
         <version>0.1.2</version>
         <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
           <!-- jmimemagic has a dependency on an old xercesImpl -->
           <exclusion>
             <groupId>xerces</groupId>
@@ -2942,21 +2943,29 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-parent</artifactId>
-        <version>${org.slf4j.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${org.apache.log4j.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${org.apache.log4j.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${org.slf4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId> <!-- redirect log4j to log4j2 -->
+        <version>${org.apache.log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jcl</artifactId> <!-- redirect commons-logging to log4j2 -->
+        <version>${org.apache.log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId> <!-- use log4j-slf4j18-impl when upgrading SLF4j to 1.8 -->
+        <version>${org.apache.log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -3581,6 +3590,10 @@
             <!-- conflicts with woodstox-core-asl needed by jaxws-rt -->
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4347,7 +4360,7 @@
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-log4j</artifactId>
+        <artifactId>metrics-log4j2</artifactId>
         <version>${metrics.version}</version>
       </dependency>
       <dependency>
@@ -5016,11 +5029,30 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-jcl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -5328,7 +5360,7 @@
           <version>2.10</version>
           <configuration>
             <ignoredUnusedDeclaredDependencies>
-              <artifact>log4j:log4j</artifact>
+              <artifact>org.apache.logging.log4j:log4j-api</artifact>
               <artifact>junit:junit</artifact>
               <artifact>commons-logging:commons-logging</artifact>
             </ignoredUnusedDeclaredDependencies>

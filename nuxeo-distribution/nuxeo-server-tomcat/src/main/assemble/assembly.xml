@@ -172,10 +172,7 @@ install nuxeo-jsf-ui
         <include name="mail-*" />
         <include name="xercesImpl-*" />
         <include name="xml-apis-*" />
-        <!-- install sl4j bridge in container classpath -->
-        <include name="slf4j*" />
-        <include name="jcl-over-slf4j*" />
-        <include name="log4j-*" />
+        <include name="log4j-*" /> <!-- everything we need, log4j2 / bridges: jcl, slf4j, log4j -->
         <include name="json-smart-*" />
         <include name="jsonevent-layout-*" />
       </fileset>

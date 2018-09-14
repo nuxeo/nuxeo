@@ -29,10 +29,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
+
+    public static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
     @SuppressWarnings("deprecation")
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
@@ -139,48 +137,12 @@ public class TestSQLRepositoryJTAJCA {
         t.join();
     }
 
-    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
-
-    protected static class TxWarnChecker extends AppenderSkeleton {
-
-        boolean seenWarn;
-
-        @Override
-        public void close() {
-
-        }
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi. LoggingEvent)
-         */
-        @Override
-        protected void append(LoggingEvent event) {
-            if (!Level.WARN.equals(event.getLevel())) {
-                return;
-            }
-            Object msg = event.getMessage();
-            if (msg instanceof String
-                    && (((String) msg).startsWith("Session invoked in a container without a transaction active"))) {
-                seenWarn = true;
-            }
-        }
-
-    }
-
     /**
      * Cannot use session after close if no tx.
      */
     @Test
     public void testAccessWithoutTx() {
         TransactionHelper.commitOrRollbackTransaction();
-        TxWarnChecker checker = new TxWarnChecker();
-        Logger.getRootLogger().addAppender(checker);
         try {
             session.getRootDocument();
             fail("should throw");

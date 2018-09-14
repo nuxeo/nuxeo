@@ -3310,7 +3310,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                     throw r2.throwable;
                 }
                 int count = r1.count + r2.count;
-                log.warn("Parallel locks per second: " + count);
+                log.info("Parallel locks per second: " + count);
             } // else timed out
         } finally {
             // error condition recovery

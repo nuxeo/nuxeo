@@ -29,7 +29,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -272,12 +272,13 @@ public class RandomBug {
             return displayName;
         }
 
-        protected void onEnter(int aSerial) {
-            MDC.put("fRepeat", serial = aSerial);
+        protected void onEnter(int serial) {
+            this.serial = serial;
+            ThreadContext.put("fRepeat", Integer.toString(serial));
         }
 
         protected void onLeave() {
-            MDC.remove("fRepeat");
+            ThreadContext.remove("fRepeat");
         }
 
         @Override

@@ -148,7 +148,7 @@ set JBOSS_DATA=%NUXEO_HOME%\server\default\data
 echo "" >> "%NUXEO_CONF%"
 echo "nuxeo.updatecenter.disbaled=true" >> "%NUXEO_CONF%"
 
-set PACK_ARGS=%JAVA_OPTS% -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_HOME%/log" -Dnuxeo.data.dir="%JBOSS_DATA%/NXRuntime/data" -Dnuxeo.tmp.dir="%NUXEO_TMP_DIR%" -Dlog4j.configuration="%LOG4J_CONF%" org.nuxeo.runtime.deployment.preprocessor.PackZip "target\stage\server\default\deploy\nuxeo.ear" %1
+set PACK_ARGS=%JAVA_OPTS% -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_HOME%/log" -Dnuxeo.data.dir="%JBOSS_DATA%/NXRuntime/data" -Dnuxeo.tmp.dir="%NUXEO_TMP_DIR%" -Dlog4j.configurationFile="%LOG4J_CONF%" org.nuxeo.runtime.deployment.preprocessor.PackZip "target\stage\server\default\deploy\nuxeo.ear" %1
 echo "PACK_ARGS: %PACK_ARGS%"
 
 call "%JAVA%" -classpath "%NUXEO_PREPROCESSING_CLASSPATH%" %PACK_ARGS% preprocessing

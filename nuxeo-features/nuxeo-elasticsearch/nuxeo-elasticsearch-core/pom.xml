@@ -215,11 +215,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.codelibs.elasticsearch.module</groupId>
       <artifactId>analysis-common</artifactId>
     </dependency>

@@ -33,7 +33,7 @@ The nuxeo-core-* jars are exposing the repository API so you need them if you wa
 To get more features you can deploy more JARs. For example you cna deploy all nuxeo-core JArs to get an embedded repository.
 Note that some feature smay need additional configuration files, these files should be put in the config directory (create one if not exists)
 Take a Nuxeo WebEngine distribution as an example on configuration files. 
-For example of you want logging then put a log4j.xml or log4j.properties file in config directory. 
+For example of you want logging then put a log4j2.xml or log4j2.properties file in config directory.
   
 Let assume you create a directory named "nuxeo: as a home directory and you pout the needed  JARs into nuxeo/lib directory.
 Now you can start a nuxeo client by running the command:

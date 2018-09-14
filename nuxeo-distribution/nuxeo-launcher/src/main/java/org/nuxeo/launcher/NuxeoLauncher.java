@@ -21,6 +21,7 @@
 package org.nuxeo.launcher;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
 
 import java.io.Console;
 import java.io.File;
@@ -81,6 +82,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.logging.log4j.Level;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -1075,10 +1077,10 @@ public abstract class NuxeoLauncher {
             setQuiet();
         }
         if (cmdLine.hasOption(OPTION_DEBUG)) {
-            setDebug(cmdLine.getOptionValues(OPTION_DEBUG), "org.nuxeo.launcher");
+            setDebug(cmdLine.getOptionValues(OPTION_DEBUG));
         }
         if (cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
-            setDebug(cmdLine.getOptionValues(OPTION_DEBUG_CATEGORY), "org.nuxeo.launcher");
+            setDebug(cmdLine.getOptionValues(OPTION_DEBUG_CATEGORY));
         }
         if (cmdLine.hasOption(OPTION_FORCE) || cmdLine.hasOption(OPTION_STRICT)) {
             setStrict(true);
@@ -2455,46 +2457,19 @@ public abstract class NuxeoLauncher {
      */
     protected static void setQuiet() {
         quiet = true;
-        Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
+        Log4JHelper.setLevel(new String[] { ROOT_LOGGER_NAME }, Level.WARN, false);
     }
 
     /**
-     * @param categories Root categories to switch DEBUG on.
+     * @param loggerNames the loggers names to switch DEBUG on
      * @since 7.4
      */
-    protected static void setDebug(String[] categories, String defaultCategory) {
+    protected static void setDebug(String[] loggerNames) {
         debug = true;
-        if (categories == null) {
-            categories = new String[] { defaultCategory };
+        if (loggerNames == null) {
+            loggerNames = new String[] { "org.nuxeo.launcher" };
         }
-        Log4JHelper.setDebug(categories, true, true, new String[] { Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
-    }
-
-    /**
-     * @param categories Root categories to switch DEBUG on.
-     * @since 5.6
-     */
-    protected static void setDebug(String categories) {
-        setDebug(categories, true);
-    }
-
-    /**
-     * @param categories Root categories to switch DEBUG on or off
-     * @param activateDebug Set DEBUG on or off.
-     * @since 5.6
-     */
-    protected static void setDebug(String categories, boolean activateDebug) {
-        debug = activateDebug;
-        Log4JHelper.setDebug(categories, activateDebug, true,
-                new String[] { Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
-    }
-
-    /**
-     * @param activateDebug if true, will activate the DEBUG logs
-     * @since 5.5
-     */
-    protected static void setDebug(boolean activateDebug) {
-        setDebug("org.nuxeo", activateDebug);
+        Log4JHelper.setLevel(loggerNames, Level.DEBUG, true);
     }
 
     /**

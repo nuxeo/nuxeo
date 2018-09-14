@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -107,8 +107,8 @@ public class WorkErrorsAreTracableTest {
         boolean completed = manager.awaitCompletion(1000, TimeUnit.MILLISECONDS);
         assertTrue(completed);
         result.assertHasEvent();
-        LoggingEvent loggingEvent = result.getCaughtEvents().get(0);
-        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace) loggingEvent.getThrowableInformation().getThrowable();
+        LogEvent loggingEvent = result.getCaughtEvents().get(0);
+        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace) loggingEvent.getThrown();
         assertIsRootWork(work, trace);
         return trace;
     }

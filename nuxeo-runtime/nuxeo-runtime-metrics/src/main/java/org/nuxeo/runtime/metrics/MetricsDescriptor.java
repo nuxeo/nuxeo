@@ -18,6 +18,9 @@
  */
 package org.nuxeo.runtime.metrics;
 
+import static org.apache.logging.log4j.Level.INFO;
+import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
+
 import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -36,7 +39,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -54,7 +59,7 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
-import com.codahale.metrics.log4j.InstrumentedAppender;
+import com.codahale.metrics.log4j2.InstrumentedAppender;
 import com.readytalk.metrics.StatsDReporter;
 
 @XObject("metrics")
@@ -395,9 +400,15 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             LogFactory.getLog(MetricsServiceImpl.class).info(this);
-            appender = new InstrumentedAppender(registry);
-            appender.activateOptions();
-            LogManager.getRootLogger().addAppender(appender);
+
+            InstrumentedAppender appender = new InstrumentedAppender(registry, null, null, false);
+            appender.start();
+
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            Configuration config = context.getConfiguration();
+            config.getLoggerConfig(ROOT_LOGGER_NAME).addAppender(appender, INFO, null);
+            context.updateLoggers(config);
+
         }
 
         public void disable(MetricRegistry registry) {
@@ -405,7 +416,10 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             try {
-                LogManager.getRootLogger().removeAppender(appender);
+                LoggerContext context = (LoggerContext) LogManager.getContext(false);
+                Configuration config = context.getConfiguration();
+                config.getLoggerConfig(ROOT_LOGGER_NAME).removeAppender(appender.getName());
+                context.updateLoggers(config);
             } finally {
                 appender = null;
             }

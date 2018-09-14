@@ -35,8 +35,9 @@ import javax.inject.Named;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
-import org.slf4j.MDC;
 
 /**
  * @author matic
@@ -202,16 +202,12 @@ public class CanMonitorTransactionsTest {
 
     public static class LogRollbackTraceFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             if (event.getLevel() != Level.TRACE) {
                 return false;
             }
-            Object msg = event.getMessage();
-            if (!(msg instanceof TransactionStatistics)) {
-                return false;
-            }
-            TransactionStatistics stats = (TransactionStatistics) msg;
-            return TransactionStatistics.Status.ROLLEDBACK.equals(stats.getStatus());
+            String msg = event.getMessage().getFormattedMessage();
+            return msg.contains("and was in status " + TransactionStatistics.Status.ROLLEDBACK);
         }
     }
 
@@ -226,8 +222,8 @@ public class CanMonitorTransactionsTest {
 
     public static class LogMessageFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
-            return MDC.get("tx") != null;
+        public boolean accept(LogEvent event) {
+            return ThreadContext.get("tx") != null;
         }
     }
 

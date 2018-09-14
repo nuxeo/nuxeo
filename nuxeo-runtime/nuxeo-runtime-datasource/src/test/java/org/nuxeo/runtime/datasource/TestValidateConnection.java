@@ -23,8 +23,8 @@ import java.sql.Statement;
 import javax.inject.Inject;
 
 import org.apache.geronimo.connector.outbound.GeronimoConnectionEventListener;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
 import org.junit.Assert;
@@ -69,19 +69,19 @@ public class TestValidateConnection {
     public static class CaptureValidationErrors implements LogCaptureFeature.Filter {
 
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             return acceptValidationError(event) || acceptConnectionErrors(event);
         }
 
-        boolean acceptValidationError(LoggingEvent event) {
-            if (event.getLevel().toInt() != Level.ERROR.toInt()) {
+        boolean acceptValidationError(LogEvent event) {
+            if (event.getLevel() != Level.ERROR) {
                 return false;
             }
             return event.getLoggerName().equals(NuxeoValidationSupport.class.getName());
         }
 
-        boolean acceptConnectionErrors(LoggingEvent event) {
-            if (event.getLevel().toInt() != Level.WARN.toInt()) {
+        boolean acceptConnectionErrors(LogEvent event) {
+            if (event.getLevel() != Level.WARN) {
                 return false;
             }
             return event.getLoggerName().equals(GeronimoConnectionEventListener.class.getName());

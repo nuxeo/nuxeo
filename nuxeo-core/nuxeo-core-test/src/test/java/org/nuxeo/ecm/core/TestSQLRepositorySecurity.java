@@ -48,8 +48,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -809,19 +809,13 @@ public class TestSQLRepositorySecurity {
 
     public static class LogDuplicateFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             Level level = event.getLevel();
-            if (! level.WARN.equals(level)) {
+            if (!Level.WARN.equals(level)) {
                 return false;
             }
-            Object msg = event.getMessage();
-            if (!(msg instanceof String)) {
-                return false;
-            }
-            if (((String) msg).contains("duplicate entry")) {
-                return true;
-            }
-            return false;
+            String msg = event.getMessage().getFormattedMessage();
+            return msg.contains("duplicate entry");
         }
     }
 

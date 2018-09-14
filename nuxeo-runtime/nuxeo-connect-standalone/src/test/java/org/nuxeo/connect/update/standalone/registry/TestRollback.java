@@ -32,8 +32,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.nuxeo.connect.update.PackageDef;
 import org.nuxeo.connect.update.PackageType;
@@ -176,7 +176,7 @@ public class TestRollback extends SharedFilesTest {
 
     public static class RegistryCorruptionLogFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             return event.getLevel().equals(Level.WARN)
                     && (event.getLoggerName().contains("UpdateManager") || event.getLoggerName().contains("Copy"));
         }
@@ -326,17 +326,17 @@ public class TestRollback extends SharedFilesTest {
         ensureFiles();
 
         // check logs
-        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(3, caughtEvents.size());
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(0).getRenderedMessage());
+                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(0));
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(1).getRenderedMessage());
+                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(1));
         assertEquals(String.format(
                 "Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : bundles%s",
-                File.separator + JARNAME), caughtEvents.get(2).getRenderedMessage());
+                File.separator + JARNAME), caughtEvents.get(2));
     }
 
     /**
@@ -446,16 +446,16 @@ public class TestRollback extends SharedFilesTest {
         ensureFiles();
 
         // check logs
-        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(3, caughtEvents.size());
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(0).getRenderedMessage());
+                JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(0));
         assertEquals(String.format(
                 "Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : bundles%s",
-                File.separator + JARNAME), caughtEvents.get(1).getRenderedMessage());
+                File.separator + JARNAME), caughtEvents.get(1));
         assertEquals(String.format("Could not rollback version bundles%s since the backup file was not found",
-                File.separator + JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(2).getRenderedMessage());
+                File.separator + JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(2));
 
     }
 

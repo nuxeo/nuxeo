@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.runners.model.FrameworkMethod;
-import org.slf4j.MDC;
 
 import com.google.inject.Binder;
 
@@ -33,62 +33,62 @@ public class MDCFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
-        MDC.put(F_STATE, "initialize");
+        ThreadContext.put(F_STATE, "initialize");
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        MDC.put(F_STATE, "configure");
+        ThreadContext.put(F_STATE, "configure");
     }
 
     @Override
     public void beforeRun(FeaturesRunner runner) {
-        MDC.put(F_STATE, "beforeRun");
+        ThreadContext.put(F_STATE, "beforeRun");
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) {
-        MDC.put(F_STATE, "afterRun");
+        ThreadContext.put(F_STATE, "afterRun");
     }
 
     @Override
     public void start(FeaturesRunner runner) {
-        MDC.put(F_STATE, "start");
+        ThreadContext.put(F_STATE, "start");
     }
 
     @Override
     public void testCreated(Object test) {
-        MDC.put(F_STATE, "testCreated");
-        MDC.put(F_SUITE, test.getClass().getName());
+        ThreadContext.put(F_STATE, "testCreated");
+        ThreadContext.put(F_SUITE, test.getClass().getName());
     }
 
     @Override
     public void stop(FeaturesRunner runner) {
-        MDC.remove(F_STATE);
-        MDC.remove(F_SUITE);
-        MDC.remove(F_TEST);
+        ThreadContext.remove(F_STATE);
+        ThreadContext.remove(F_SUITE);
+        ThreadContext.remove(F_TEST);
     }
 
     @Override
     public void beforeSetup(FeaturesRunner runner) {
-        MDC.put(F_STATE, "beforeSetup");
+        ThreadContext.put(F_STATE, "beforeSetup");
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) {
-        MDC.put(F_STATE, "afterTeardown");
+        ThreadContext.put(F_STATE, "afterTeardown");
     }
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        MDC.put(F_STATE, "beforeMethodRun");
-        MDC.put(F_TEST, method.getMethod().getName());
+        ThreadContext.put(F_STATE, "beforeMethodRun");
+        ThreadContext.put(F_TEST, method.getMethod().getName());
     }
 
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        MDC.put(F_STATE, "afterMethodRun");
-        MDC.remove(F_TEST);
+        ThreadContext.put(F_STATE, "afterMethodRun");
+        ThreadContext.remove(F_TEST);
     }
 
 }

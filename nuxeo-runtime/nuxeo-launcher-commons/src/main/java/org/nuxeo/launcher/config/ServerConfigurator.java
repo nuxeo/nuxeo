@@ -27,7 +27,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -42,8 +41,8 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -54,6 +53,7 @@ import org.nuxeo.launcher.info.DistributionInfo;
 import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.launcher.info.KeyValueInfo;
 import org.nuxeo.launcher.info.PackageInfo;
+import org.nuxeo.log4j.Log4JHelper;
 
 import freemarker.template.TemplateException;
 
@@ -282,22 +282,18 @@ public abstract class ServerConfigurator {
      */
     public void initLogs() {
         File logFile = getLogConfFile();
-        try {
-            String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
-            if (logDirectory == null) {
-                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-            }
-            if (logFile == null || !logFile.exists()) {
-                System.out.println("No logs configuration, will setup a basic one.");
-                BasicConfigurator.configure();
-            } else {
-                System.out.println("Try to configure logs with " + logFile);
-                DOMConfigurator.configure(logFile.toURI().toURL());
-            }
-            log.info("Logs successfully configured.");
-        } catch (MalformedURLException e) {
-            log.error("Could not initialize logs with " + logFile, e);
+        String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+        if (logDirectory == null) {
+            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         }
+        if (logFile == null || !logFile.exists()) {
+            System.out.println("No logs configuration, will setup a basic one.");
+            Configurator.initialize(new DefaultConfiguration());
+        } else {
+            System.out.println("Try to configure logs with " + logFile);
+            Configurator.initialize(Log4JHelper.newConfiguration(logFile));
+        }
+        log.info("Logs successfully configured.");
     }
 
     /**
