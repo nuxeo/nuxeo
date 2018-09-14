@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webdav;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -53,6 +55,10 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
                 log.error(e, e);
             }
             // msg = "Error " + status + "\n" + e.getMessage() + "\n" + sw;
+        } else if (e.getCause() instanceof RecoverableClientException
+                && ("QuotaExceededException".equals(e.getCause().getClass().getSimpleName()))) {
+            status = HttpStatus.SC_INSUFFICIENT_STORAGE; // 507
+            log.debug(e, e);
         } else {
             log.error(e, e);
             // msg = "Error\n\n" + e.getMessage() + "\n\n" + sw;
