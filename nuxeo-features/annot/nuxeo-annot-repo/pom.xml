@@ -50,11 +50,6 @@
       <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-
     <!-- scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
