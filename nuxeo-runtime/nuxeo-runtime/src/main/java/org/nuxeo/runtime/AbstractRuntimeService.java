@@ -34,8 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
-import org.nuxeo.common.logging.Log4JHelper;
-import org.nuxeo.common.logging.Log4jWatchdogHandle;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -63,12 +61,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
     public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.threshold";
-
-    public static final String LOG4J_WATCH_DISABLED = "org.nuxeo.runtime.log4jwatch.disabled";
-
-    public static final String LOG4J_WATCH_DELAY = "org.nuxeo.runtime.log4jwatch.delay";
-
-    public static final long LOG4J_WATCH_DELAY_DEFAULT = 10;
 
     // package-private for subclass access without synthetic accessor
     static final Log log = LogFactory.getLog(RuntimeService.class);
@@ -363,40 +355,15 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      */
     protected class LogConfig {
 
-        Log4jWatchdogHandle wdog;
-
         public void configure() {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
                 Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
                 JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
             }
-            if (Boolean.parseBoolean(getProperty(LOG4J_WATCH_DISABLED, "false"))) {
-                log.info("Disabled log4j.xml change detection");
-            } else {
-                long delay;
-                try {
-                    delay = Long.parseLong(getProperty(LOG4J_WATCH_DELAY, Long.toString(LOG4J_WATCH_DELAY_DEFAULT)));
-                } catch (NumberFormatException e) {
-                    delay = LOG4J_WATCH_DELAY_DEFAULT;
-                }
-                wdog = Log4JHelper.configureAndWatch(delay);
-                if (wdog == null) {
-                    log.warn("Failed to configure log4j.xml change detection");
-                } else {
-                    log.info("Configured log4j.xml change detection with a delay of " + delay + "s");
-                }
-            }
         }
 
         public void cleanup() {
-            try {
-                if (wdog != null) {
-                    wdog.cancel();
-                }
-            } finally {
-                wdog = null;
-                JavaUtilLoggingHelper.reset();
-            }
+            JavaUtilLoggingHelper.reset();
         }
     }
 
