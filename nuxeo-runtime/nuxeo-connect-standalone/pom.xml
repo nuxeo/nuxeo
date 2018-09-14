@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-connect-standalone</artifactId>
+  <version>9.10-HF13-patch-NXP-25668</version>
   <name>Nuxeo Runtime Online Services standalone client</name>
   <description>Standalone client for Nuxeo Online Services (i.e. package management)</description>
 

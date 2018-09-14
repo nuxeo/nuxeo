@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -199,18 +198,6 @@ public class TestConnectBroker {
         System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
     }
 
-    @Test
-    public void testSerializeUninstallCmd() {
-        assertThat(connectBroker.serializeUninstallCmd(Arrays.asList("A", "B"))).isEqualTo("uninstall A B");
-        assertThat(connectBroker.serializeUninstallCmd(Collections.emptyList())).isEqualTo("");
-    }
-
-    @Test
-    public void testSerializeInstallCmd() {
-        assertThat(connectBroker.serializeInstallCmd(Arrays.asList("A", "B"))).isEqualTo("install A B");
-        assertThat(connectBroker.serializeInstallCmd(Collections.emptyList())).isEqualTo("");
-    }
-
     // NXP-24507
     @Test
     public void testPkgRequest_restartLauncherWithoutPendingCommand() {
@@ -295,7 +282,8 @@ public class TestConnectBroker {
         checkPackagesState(PackageState.STARTED, "NXP-24507-A-1.0.0");
         // And a file is created for pending changes
         Path pending = connectBroker.getPendingFile();
-        assertThat(pending).hasContent("install B C");
+        assertThat(pending).hasContent("install B\n"
+                + "install C\n");
     }
 
     @Test
