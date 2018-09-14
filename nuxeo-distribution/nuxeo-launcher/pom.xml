@@ -10,6 +10,7 @@
 
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-launcher</artifactId>
+  <version>9.10-HF07-patch-NXP-25668</version>
   <name>Nuxeo Control Panel and Launcher</name>
   <description>Nuxeo Control Panel and Launcher</description>
 
@@ -41,6 +42,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-connect-standalone</artifactId>
+      <version>9.10-HF07-patch-NXP-25668</version>
       <exclusions>
         <!-- pulled by nuxeo-runtime, included in JDK, unneeded -->
         <exclusion>
