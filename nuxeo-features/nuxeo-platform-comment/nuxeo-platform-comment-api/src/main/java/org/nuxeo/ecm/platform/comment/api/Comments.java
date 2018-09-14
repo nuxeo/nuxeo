@@ -52,10 +52,10 @@ public class Comments {
     }
 
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
+        // Do not set ancestor ids as it is computed at document creation
         documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
         documentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
         documentModel.setPropertyValue(COMMENT_PARENT_ID, comment.getParentId());
-        documentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) comment.getAncestorIds());
         Instant creationDate = comment.getCreationDate();
         if (creationDate != null) {
             documentModel.setPropertyValue(COMMENT_CREATION_DATE,
