@@ -104,7 +104,7 @@ public class ConfigurationPropertyDescriptor implements Descriptor {
                 merged.value = other.value;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Merging property %s with old % resulting in %s", other, this, merged));
+                log.debug(String.format("Merging property %s with old %s resulting in %s", other, this, merged));
             }
             return merged;
         } else {

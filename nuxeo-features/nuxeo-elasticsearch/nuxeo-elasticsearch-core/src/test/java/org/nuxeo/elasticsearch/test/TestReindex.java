@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

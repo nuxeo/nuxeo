@@ -84,8 +84,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringSubstitutor;
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.NullEnumeration;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -432,7 +431,7 @@ public class ConfigurationGenerator {
         } else {
             serverConfigurator = new UnknownServerConfigurator(this);
         }
-        if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
+        if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
             serverConfigurator.initLogs();
         }
         backingServicesConfigurator = new BackingServiceConfigurator(this);
@@ -1536,10 +1535,10 @@ public class ConfigurationGenerator {
      *         one.
      * @since 5.4.2
      */
-    public ArrayList<String> getLogFiles() {
+    public List<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
         System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-        return Log4JHelper.getFileAppendersFiles(log4jConfFile);
+        return Log4JHelper.getFileAppendersFileNames(log4jConfFile);
     }
 
     /**

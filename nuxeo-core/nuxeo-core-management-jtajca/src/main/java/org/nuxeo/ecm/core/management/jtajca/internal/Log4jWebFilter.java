@@ -32,7 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * @author matic
@@ -44,7 +44,7 @@ public class Log4jWebFilter implements Filter {
     protected FilterConfig config;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         config = filterConfig;
     }
 
@@ -64,16 +64,16 @@ public class Log4jWebFilter implements Filter {
             putProperty(request, "UserPrincipal");
             final HttpSession session = ((HttpServletRequest) request).getSession(false);
             if (session != null) {
-                MDC.put("SessionID", session.getId());
+                ThreadContext.put("SessionID", session.getId());
             }
             chain.doFilter(request, response);
         } finally {
-            MDC.remove("RemoteAddr");
-            MDC.remove("PathInfo");
-            MDC.remove("RequestURL");
-            MDC.remove("ServletPath");
-            MDC.remove("UserPrincipal");
-            MDC.remove("SessionID");
+            ThreadContext.remove("RemoteAddr");
+            ThreadContext.remove("PathInfo");
+            ThreadContext.remove("RequestURL");
+            ThreadContext.remove("ServletPath");
+            ThreadContext.remove("UserPrincipal");
+            ThreadContext.remove("SessionID");
         }
 
     }
@@ -84,7 +84,7 @@ public class Log4jWebFilter implements Filter {
                 String name = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
                 Object prop = PropertyUtils.getProperty(object, name);
                 if (prop != null) {
-                    MDC.put(propertyName, prop);
+                    ThreadContext.put(propertyName, prop.toString());
                 }
             }
         } catch (ReflectiveOperationException e) {

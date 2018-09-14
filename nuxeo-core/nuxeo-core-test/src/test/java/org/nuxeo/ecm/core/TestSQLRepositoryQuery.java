@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -3542,7 +3542,7 @@ public class TestSQLRepositoryQuery {
         ret = session.scroll("SELECT * FROM File", 10, 1);
         assertFalse(ret.hasResults());
         // we expect to have no warn because empty scroll should not maintain any cursor
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
         assertTrue(events.isEmpty());
     }
 

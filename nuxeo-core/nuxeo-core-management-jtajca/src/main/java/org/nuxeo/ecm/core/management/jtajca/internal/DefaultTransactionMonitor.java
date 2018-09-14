@@ -35,7 +35,7 @@ import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.apache.geronimo.transaction.manager.XidImpl;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
@@ -129,7 +129,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
     public void threadAssociated(Transaction tx) {
         long now = System.currentTimeMillis();
         Object key = tm.getTransactionKey();
-        MDC.put("tx", id(key));
+        ThreadContext.put("tx", id(key));
         Stopwatch sw = SimonManager.getStopwatch("tx");
         final Thread thread = Thread.currentThread();
         DefaultTransactionStatistics info = new DefaultTransactionStatistics(key);
@@ -173,7 +173,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
                 lastRollbackedStatistics = stats;
             }
         } finally {
-            MDC.remove("tx");
+            ThreadContext.remove("tx");
         }
     }
 

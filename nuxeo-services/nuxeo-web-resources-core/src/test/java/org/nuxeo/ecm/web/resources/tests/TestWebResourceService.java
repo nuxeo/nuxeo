@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.web.resources.api.Processor;
@@ -145,11 +144,11 @@ public class TestWebResourceService {
         assertTrue(r.getResources().isEmpty());
         assertEquals("myFaultyApp", r.getName());
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, events.size());
         assertEquals("Some resources references were null or blank while setting myFaultyApp and have been supressed. "
                 + "This probably happened because some <resource> tags were empty in the xml declaration. "
-                + "The correct form is <resource>resource name</resource>.", events.get(0).getMessage());
+                + "The correct form is <resource>resource name</resource>.", events.get(0));
     }
 
     @Test

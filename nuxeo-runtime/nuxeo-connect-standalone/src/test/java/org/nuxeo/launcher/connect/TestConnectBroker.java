@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -47,8 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.After;
@@ -95,8 +94,8 @@ public class TestConnectBroker {
 
     public static class PkgRequestLogFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
-            return event.getLevel().isGreaterOrEqual(Level.INFO) && (event.getLoggerName().contains("ConnectBroker")
+        public boolean accept(LogEvent event) {
+            return event.getLevel().isMoreSpecificThan(Level.INFO) && (event.getLoggerName().contains("ConnectBroker")
                     || event.getLoggerName().contains("PackagePersistence")
                     || event.getLoggerName().contains("PackageManagerImpl")
                     || event.getLoggerName().contains("MessageInfo")
@@ -797,8 +796,8 @@ public class TestConnectBroker {
 
         // B-1.0.1-SNAPSHOT must be uninstalled then reinstalled as it is a SNAPSHOT
         // it must be replaced in local cache because a new file is provided
-        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_STORE_PATH + "/B-1.0.1-SNAPSHOT.zip"), null, null, true,
-                false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_STORE_PATH + "/B-1.0.1-SNAPSHOT.zip"), null, null,
+                true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
@@ -827,9 +826,8 @@ public class TestConnectBroker {
 
         // K-1.0.0-SNAPSHOT must be uninstalled then reinstalled as it is a SNAPSHOT, even if not available remotely
         // it must be replaced in local cache because a new file is provided
-        assertThat(connectBroker.pkgRequest(null,
-                singletonList(TEST_LOCAL_ONLY_PATH + "/K-1.0.0-SNAPSHOT.zip"), null, null,
-                true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_LOCAL_ONLY_PATH + "/K-1.0.0-SNAPSHOT.zip"), null,
+                null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, K-1.0.0-SNAPSHOT]
         checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
@@ -1387,8 +1385,7 @@ public class TestConnectBroker {
     }
 
     protected static String logOf(LogCaptureFeature.Result logCaptureResult) {
-        return logCaptureResult.getCaughtEvents().stream().map(LoggingEvent::getRenderedMessage).collect(
-                Collectors.joining("\n"));
+        return String.join("\n", logCaptureResult.getCaughtEventMessages());
     }
 
 }

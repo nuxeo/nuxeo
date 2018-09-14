@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Log4j 2 configuration file extracted from Nuxeo Server to test Log4jHelper -->
+<Configuration monitorInterval="30">
+  <Appenders>
+    <!-- ================================= -->
+    <!-- Preserve messages in a local file -->
+    <!-- ================================= -->
+    <RollingFile name="FILE" fileName="${sys:nuxeo.log.dir}/server.log"
+                 filePattern="${sys:nuxeo.log.dir}/server-%d{yyyy-MM-dd}.log.gz" append="true">
+      <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
+      <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
+      <DefaultRolloverStrategy />
+    </RollingFile>
+
+    <!-- ============================= -->
+    <!-- Gather errors in a local file -->
+    <!-- ============================= -->
+    <RollingFile name="ERROR-FILE" fileName="${sys:nuxeo.log.dir}/nuxeo-error.log"
+                 filePattern="${sys:nuxeo.log.dir}/nuxeo-error-%d{yyyy-MM-dd}.log.gz" append="true">
+      <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
+      <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
+      <DefaultRolloverStrategy />
+    </RollingFile>
+
+    <!-- ============================= -->
+    <!-- Gather stderr in a local file -->
+    <!-- ============================= -->
+    <RollingFile name="STDERR-FILE" fileName="${sys:nuxeo.log.dir}/stderr.log"
+                 filePattern="${sys:nuxeo.log.dir}/stderr-%d{yyyy-MM-dd}.log.gz" append="true">
+      <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
+      <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
+      <DefaultRolloverStrategy />
+    </RollingFile>
+
+    <!-- ============================== -->
+    <!-- Append messages to the console -->
+    <!-- ============================== -->
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <ThresholdFilter level="INFO" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{ISO8601} %-5p [%c{1}] %m%n" />
+    </Console>
+
+    <File name="CLASSLOADER" fileName="${sys:nuxeo.log.dir}/classloader.log" append="false">
+      <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
+    </File>
+
+    <File name="TOMCAT" fileName="${sys:nuxeo.log.dir}/tomcat.log" append="false">
+      <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
+    </File>
+  </Appenders>
+</Configuration>

@@ -48,10 +48,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -482,8 +483,9 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testCheckJavaVersionCompliant() throws Exception {
-        final LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN);
-        Logger.getRootLogger().addAppender(logCaptureAppender);
+        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN);
+        Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
+        rootLogger.addAppender(logCaptureAppender);
         try {
             // Nuxeo 6.0 case
             ConfigurationGenerator.checkJavaVersion("1.7.0_10", new String[] { "1.7.0_1", "1.8.0_1" });
@@ -526,7 +528,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                         ce.getMessage());
             }
         } finally {
-            Logger.getRootLogger().removeAppender(logCaptureAppender);
+            rootLogger.removeAppender(logCaptureAppender);
         }
     }
 
@@ -620,31 +622,23 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         }
     }
 
-    private static class LogCaptureAppender extends AppenderSkeleton {
+    private static class LogCaptureAppender extends AbstractAppender {
 
         private final List<String> messages = new ArrayList<>();
 
         private final Level level;
 
         public LogCaptureAppender(Level level) {
+            super(LogCaptureAppender.class.getName(), null, null);
             this.level = level;
         }
 
         @Override
-        protected void append(LoggingEvent event) {
+        public void append(LogEvent event) {
             if ("org.nuxeo.launcher.config.ConfigurationGenerator".equals(event.getLoggerName())
                     && level.equals(event.getLevel())) {
-                messages.add(event.getRenderedMessage());
+                messages.add(event.getMessage().getFormattedMessage());
             }
-        }
-
-        @Override
-        public void close() {
-        }
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
         }
 
         public boolean isEmpty() {

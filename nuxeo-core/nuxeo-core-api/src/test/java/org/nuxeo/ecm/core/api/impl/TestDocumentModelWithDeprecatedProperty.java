@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -123,7 +122,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getProperty(DEPRECATED_SCHEMA, deprecatedProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 4 logs:
         // - a set while setting the value
         // - a set for deprecated parent as this is this value we set
@@ -131,13 +130,11 @@ public class TestDocumentModelWithDeprecatedProperty {
         // - a get to assert property
         assertEquals(4, events.size());
         assertEquals(String.format(SET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(0).getRenderedMessage());
-        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(1).getRenderedMessage());
-        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(2).getRenderedMessage());
+                deprecatedProperty), events.get(0));
+        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(1));
+        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(2));
         assertEquals(String.format(GET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(3).getRenderedMessage());
+                deprecatedProperty), events.get(3));
         logCaptureResult.clear();
     }
 
@@ -152,7 +149,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getPropertyValue(xpath));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 4 logs:
         // - a set while setting the value
         // - a set for deprecated parent as this is this value we set
@@ -160,13 +157,11 @@ public class TestDocumentModelWithDeprecatedProperty {
         // - a get to assert property
         assertEquals(4, events.size());
         assertEquals(String.format(SET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(0).getRenderedMessage());
-        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(1).getRenderedMessage());
-        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(2).getRenderedMessage());
+                deprecatedProperty), events.get(0));
+        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(1));
+        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(2));
         assertEquals(String.format(GET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(3).getRenderedMessage());
+                deprecatedProperty), events.get(3));
         logCaptureResult.clear();
 
         // Test also with a xpath without schema
@@ -175,7 +170,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getProperty(xpath).getValue());
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         // 4 logs:
         // - a set while setting the value
         // - a set for deprecated parent as this is this value we set
@@ -183,13 +178,11 @@ public class TestDocumentModelWithDeprecatedProperty {
         // - a get to assert property
         assertEquals(4, events.size());
         assertEquals(String.format(SET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(0).getRenderedMessage());
-        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(1).getRenderedMessage());
-        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(2).getRenderedMessage());
+                deprecatedProperty), events.get(0));
+        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(1));
+        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(2));
         assertEquals(String.format(GET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(3).getRenderedMessage());
+                deprecatedProperty), events.get(3));
         logCaptureResult.clear();
     }
 
@@ -204,7 +197,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getProperties(DEPRECATED_SCHEMA).get(deprecatedProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 4 logs:
         // - a set while setting the value
         // - a set for deprecated parent as this is this value we set
@@ -212,13 +205,11 @@ public class TestDocumentModelWithDeprecatedProperty {
         // - a get to assert property
         assertEquals(4, events.size());
         assertEquals(String.format(SET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(0).getRenderedMessage());
-        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(1).getRenderedMessage());
-        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                events.get(2).getRenderedMessage());
+                deprecatedProperty), events.get(0));
+        assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(1));
+        assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(2));
         assertEquals(String.format(GET_VALUE_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty), events.get(3).getRenderedMessage());
+                deprecatedProperty), events.get(3));
         logCaptureResult.clear();
     }
 
@@ -292,18 +283,18 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getProperty(DEPRECATED_SCHEMA, fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 3 logs:
         // - a set is done on scalar property
         // - a set is done on its container
         // - a get which retrieve the scalar (that's why there's no 4th log on scalar property)
         assertEquals(3, events.size());
         assertEquals(String.format(SET_VALUE_FALLBACK_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0).getRenderedMessage());
+                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0));
         assertEquals(String.format(SET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(1).getRenderedMessage());
+                events.get(1));
         assertEquals(String.format(GET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(2).getRenderedMessage());
+                events.get(2));
     }
 
     @Test
@@ -317,18 +308,18 @@ public class TestDocumentModelWithDeprecatedProperty {
         assertEquals(value, doc.getPropertyValue(fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 3 logs:
         // - a set is done on scalar property
         // - a set is done on its container
         // - a get which retrieve the scalar (that's why there's no 4th log on scalar property)
         assertEquals(3, events.size());
         assertEquals(String.format(SET_VALUE_FALLBACK_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0).getRenderedMessage());
+                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0));
         assertEquals(String.format(SET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(1).getRenderedMessage());
+                events.get(1));
         assertEquals(String.format(GET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(2).getRenderedMessage());
+                events.get(2));
     }
 
     @Test
@@ -346,18 +337,18 @@ public class TestDocumentModelWithDeprecatedProperty {
                 ((Map<String, Serializable>) properties.get("complexfallback")).get("scalar").toString());
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         // 3 logs:
         // - a set is done on scalar property
         // - a set is done on its container
         // - a get which retrieve the scalar (that's why there's no 4th log on scalar property)
         assertEquals(3, events.size());
         assertEquals(String.format(SET_VALUE_FALLBACK_PARENT_LOG, deprecatedProperty + "/scalar", DEPRECATED_SCHEMA,
-                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0).getRenderedMessage());
+                deprecatedProperty, fallbackProperty + "/scalar"), events.get(0));
         assertEquals(String.format(SET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(1).getRenderedMessage());
+                events.get(1));
         assertEquals(String.format(GET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                events.get(2).getRenderedMessage());
+                events.get(2));
     }
 
     @Test
@@ -385,7 +376,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, events);
     }
 
@@ -405,7 +396,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, events);
         logCaptureResult.clear();
 
@@ -419,7 +410,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, events);
     }
 
@@ -456,7 +447,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, events);
     }
 
@@ -478,7 +469,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, fallbackProperty, events);
     }
 
@@ -503,7 +494,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, fallbackProperty, events);
         logCaptureResult.clear();
 
@@ -519,7 +510,7 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, fallbackProperty, events);
     }
 
@@ -557,31 +548,29 @@ public class TestDocumentModelWithDeprecatedProperty {
         }
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(deprecatedProperty, fallbackProperty, events);
     }
 
-    protected void assertLogMessages(String deprecatedProperty, List<LoggingEvent> events) {
+    protected void assertLogMessages(String deprecatedProperty, List<String> events) {
         // 2 logs:
         // - a set while setting the value
         // - a get to assert property
         assertEquals(2, events.size());
         int index = deprecatedProperty.indexOf("Dep/");
         if (index == -1) {
-            assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                    events.get(0).getRenderedMessage());
-            assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA),
-                    events.get(1).getRenderedMessage());
+            assertEquals(String.format(SET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(0));
+            assertEquals(String.format(GET_VALUE_LOG, deprecatedProperty, DEPRECATED_SCHEMA), events.get(1));
         } else {
             String deprecatedParent = deprecatedProperty.substring(0, index + 3);
             assertEquals(String.format(SET_VALUE_PARENT_LOG, deprecatedProperty, DEPRECATED_SCHEMA, deprecatedParent),
-                    events.get(0).getRenderedMessage());
+                    events.get(0));
             assertEquals(String.format(GET_VALUE_PARENT_LOG, deprecatedProperty, DEPRECATED_SCHEMA, deprecatedParent),
-                    events.get(1).getRenderedMessage());
+                    events.get(1));
         }
     }
 
-    protected void assertLogMessages(String deprecatedProperty, String fallbackProperty, List<LoggingEvent> events) {
+    protected void assertLogMessages(String deprecatedProperty, String fallbackProperty, List<String> events) {
         // 2 logs:
         // - a set while setting the value
         // - a get to assert property
@@ -589,15 +578,15 @@ public class TestDocumentModelWithDeprecatedProperty {
         int index = deprecatedProperty.indexOf('/');
         if (index == -1) {
             assertEquals(String.format(SET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                    events.get(0).getRenderedMessage());
+                    events.get(0));
             assertEquals(String.format(GET_VALUE_FALLBACK_LOG, deprecatedProperty, DEPRECATED_SCHEMA, fallbackProperty),
-                    events.get(1).getRenderedMessage());
+                    events.get(1));
         } else {
             String deprecatedParentProperty = deprecatedProperty.substring(0, index);
             assertEquals(String.format(SET_VALUE_FALLBACK_PARENT_LOG, deprecatedProperty, DEPRECATED_SCHEMA,
-                    deprecatedParentProperty, fallbackProperty), events.get(0).getRenderedMessage());
+                    deprecatedParentProperty, fallbackProperty), events.get(0));
             assertEquals(String.format(GET_VALUE_FALLBACK_PARENT_LOG, deprecatedProperty, DEPRECATED_SCHEMA,
-                    deprecatedParentProperty, fallbackProperty), events.get(1).getRenderedMessage());
+                    deprecatedParentProperty, fallbackProperty), events.get(1));
         }
     }
 

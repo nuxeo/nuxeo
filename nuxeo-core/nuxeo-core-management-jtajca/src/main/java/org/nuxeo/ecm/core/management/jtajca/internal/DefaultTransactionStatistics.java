@@ -123,7 +123,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
                     "Transaction has started at %s with a duration of %d ms and was in status %s\n%s", date, duration,
                     status, getEndCapturedContextMessage()));
         } else {
-            writer.write(String.format("Transaction has started at %s and was in state %s\n%s", date, status,
+            writer.write(String.format("Transaction has started at %s and was in status %s\n%s", date, status,
                     getStartCapturedContextMessage()));
         }
         writer.flush();

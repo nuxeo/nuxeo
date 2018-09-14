@@ -20,20 +20,12 @@ package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
@@ -42,68 +34,26 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.runtime.test.tests:BaseXPoint.xml")
+@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = ComponentManagerImpl.class)
 public class TestExtensionPointWithError {
-
-    protected List<Appender> savedAppenders;
-
-    protected List<LoggingEvent> loggingEvents = new ArrayList<>();
-
-    protected Appender appender = new AppenderSkeleton() {
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        public void close() {
-        }
-
-        /** Keep only logging events for ComponentManagerImpl. */
-        @Override
-        protected void append(LoggingEvent event) {
-            if (ComponentManagerImpl.class.getName().equals(event.getLoggerName())) {
-                loggingEvents.add(event);
-            }
-        }
-    };
 
     @Inject
     protected HotDeployer hotDeployer;
 
-    @Before
-    public void setUp() throws Exception {
-        // save appenders
-        Logger rootLogger = Logger.getRootLogger();
-        @SuppressWarnings("unchecked")
-        Enumeration<Appender> rootAppenders = rootLogger.getAllAppenders();
-        savedAppenders = Collections.list(rootAppenders);
-
-        // intercept all logs to avoid expected logging on Console
-        rootLogger.removeAllAppenders();
-        rootLogger.addAppender(appender);
-        loggingEvents.clear();
-
-        // add contribution with error
-        hotDeployer.deploy("org.nuxeo.runtime.test.tests:OverridingXPoint-witherror.xml");
-    }
-
-    @After
-    public void tearDown() {
-        // restore appenders
-        Logger rootLogger = Logger.getRootLogger();
-        rootLogger.removeAllAppenders();
-        for (Appender appender : savedAppenders) {
-            rootLogger.addAppender(appender);
-        }
-    }
+    @Inject
+    protected LogCaptureFeature.Result logResult;
 
     @Test
-    public void testInvalidExtensionPoint() {
+    public void testInvalidExtensionPoint() throws Exception {
+        // add contribution with error
+        hotDeployer.deploy("org.nuxeo.runtime.test.tests:OverridingXPoint-witherror.xml");
+
         ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
         DummyContribution[] contribs = co.getContributions();
         assertEquals(0, contribs.length); // contrib with errors not loaded
@@ -114,12 +64,12 @@ public class TestExtensionPointWithError {
         assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror", warnings.get(0));
 
         // check logs
-        assertEquals(1, loggingEvents.size());
-        LoggingEvent event = loggingEvents.get(0);
+        assertEquals(1, logResult.getCaughtEvents().size());
+        LogEvent event = logResult.getCaughtEvents().get(0);
         assertEquals(Level.ERROR, event.getLevel());
         assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror",
-                event.getRenderedMessage());
-        Throwable t = event.getThrowableInformation().getThrowable();
+                event.getMessage().getFormattedMessage());
+        Throwable t = event.getThrown();
         assertEquals(RuntimeException.class, t.getClass());
         assertEquals("Cannot load class: this-is-not-a-class while processing component: OverridingXPoint-witherror",
                 t.getMessage());

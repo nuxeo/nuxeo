@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -26,11 +28,13 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.message.Message;
 import org.junit.Assert;
 import org.junit.runners.model.FrameworkMethod;
 
@@ -91,7 +95,7 @@ public class LogCaptureFeature implements RunnerFeature {
         }
 
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             if (logLevel != null && !logLevel.equals(event.getLevel())) {
                 return false;
             }
@@ -100,7 +104,7 @@ public class LogCaptureFeature implements RunnerFeature {
     }
 
     public class Result {
-        protected final ArrayList<LoggingEvent> caughtEvents = new ArrayList<>();
+        protected final List<LogEvent> caughtEvents = new ArrayList<>();
 
         protected boolean noFilterFlag = false;
 
@@ -116,8 +120,12 @@ public class LogCaptureFeature implements RunnerFeature {
             noFilterFlag = false;
         }
 
-        public List<LoggingEvent> getCaughtEvents() {
+        public List<LogEvent> getCaughtEvents() {
             return caughtEvents;
+        }
+
+        public List<String> getCaughtEventMessages() {
+            return caughtEvents.stream().map(LogEvent::getMessage).map(Message::getFormattedMessage).collect(toList());
         }
 
         protected void setNoFilterFlag(boolean noFilterFlag) {
@@ -129,27 +137,19 @@ public class LogCaptureFeature implements RunnerFeature {
         /**
          * {@link LogCaptureFeature} will capture the event if it does match the implementation condition.
          */
-        boolean accept(LoggingEvent event);
+        boolean accept(LogEvent event);
     }
 
     protected Filter logCaptureFilter;
 
     protected final Result myResult = new Result();
 
-    protected Logger rootLogger = Logger.getRootLogger();
+    protected Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
 
-    protected Appender logAppender = new AppenderSkeleton() {
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
+    protected Appender logAppender = new AbstractAppender("LOG_CAPTURE_APPENDER", null, null) {
 
         @Override
-        public void close() {
-        }
-
-        @Override
-        protected void append(LoggingEvent event) {
+        public void append(LogEvent event) {
             if (logCaptureFilter == null) {
                 myResult.setNoFilterFlag(true);
                 return;
@@ -219,6 +219,7 @@ public class LogCaptureFeature implements RunnerFeature {
         if (logCaptureFilter != null) {
             setupCaptureFiler = logCaptureFilter;
         } else {
+            logAppender.start();
             rootLogger.addAppender(logAppender);
         }
         logCaptureFilter = filter;
@@ -236,6 +237,7 @@ public class LogCaptureFeature implements RunnerFeature {
         if (logCaptureFilter != null) {
             myResult.clear();
             rootLogger.removeAppender(logAppender);
+            logAppender.stop();
             logCaptureFilter = null;
         }
     }
