@@ -24,7 +24,7 @@ properties([
         [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
         [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
                 // branch hardcoded for now
-                [$class: 'StringParameterDefinition', name: 'BRANCH', description: '', defaultValue: 'improvement-NXP-24951-run-with-java-11'],
+                [$class: 'StringParameterDefinition', name: 'BRANCH', description: '', defaultValue: 'master'],
                 [$class: 'StringParameterDefinition', name: 'PARENT_BRANCH', description: '', defaultValue: 'master'],
                 [$class: 'BooleanParameterDefinition', name: 'CLEAN', description: '', defaultValue: true],
         ]]])
