@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-adobe-connector-parent</artifactId>
-    <version>9.10-HF14-SNAPSHOT</version>
+    <version>9.10-HF18-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-adobe-connector-core</artifactId>
   <name>Nuxeo adobe connector core</name>

@@ -6,7 +6,7 @@
     <version>9.10</version>
   </parent>
   <artifactId>nuxeo-adobe-connector-parent</artifactId>
-  <version>9.10-HF14-SNAPSHOT</version>
+  <version>9.10-HF18-SNAPSHOT</version>
   <name>Nuxeo adobe connector</name>
   <packaging>pom</packaging>
   <description></description>
