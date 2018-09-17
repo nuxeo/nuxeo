@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ import com.google.common.base.Strings;
  * On a test class or a test method using this feature, a default filter can be configured with the annotation
  * {@link LogCaptureFeature.FilterOn} or a custom one implementing {@link LogCaptureFeature.Filter} class can be
  * provided with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.</br>
- * A {@link LogCaptureFeature.Result} instance is to be injected with {@link Inject} as an attribute of the test.</br>
+ * A {@link LogCaptureFeature.Result} instance is to be injected with {@link javax.inject.Inject} as an attribute of the
+ * test.</br>
  * The method {@link LogCaptureFeature.Result#assertHasEvent()} can then be called from test methods to check that
  * matching log calls (events) have been captured.
  *
@@ -94,10 +95,7 @@ public class LogCaptureFeature implements RunnerFeature {
             if (logLevel != null && !logLevel.equals(event.getLevel())) {
                 return false;
             }
-            if (loggerName != null && !loggerName.equals(event.getLoggerName())) {
-                return false;
-            }
-            return true;
+            return loggerName == null || loggerName.equals(event.getLoggerName());
         }
     }
 

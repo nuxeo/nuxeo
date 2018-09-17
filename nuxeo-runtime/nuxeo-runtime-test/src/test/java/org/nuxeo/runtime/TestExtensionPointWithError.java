@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class TestExtensionPointWithError {
 
     protected List<Appender> savedAppenders;
 
-    protected ArrayList<LoggingEvent> loggingEvents = new ArrayList<>();
+    protected List<LoggingEvent> loggingEvents = new ArrayList<>();
 
     protected Appender appender = new AppenderSkeleton() {
         @Override
@@ -103,7 +103,7 @@ public class TestExtensionPointWithError {
     }
 
     @Test
-    public void testInvalidExtensionPoint() throws Exception {
+    public void testInvalidExtensionPoint() {
         ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
         DummyContribution[] contribs = co.getContributions();
         assertEquals(0, contribs.length); // contrib with errors not loaded

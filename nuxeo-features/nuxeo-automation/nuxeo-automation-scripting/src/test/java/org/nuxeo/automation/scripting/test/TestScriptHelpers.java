@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static java.lang.Boolean.TRUE;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -45,7 +46,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -63,16 +63,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestScriptHelpers {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    AutomationService automationService;
+    protected AutomationService automationService;
 
-    protected RuntimeService runtime = Framework.getRuntime();
+    protected ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
-    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-
-    private PrintStream outStream;
+    protected PrintStream outStream;
 
     @Before
     public void setUpStreams() {
@@ -97,7 +95,7 @@ public class TestScriptHelpers {
         assertThat(logs.get(0).getMessage(), is("Warnings"));
         assertThat(logs.get(1).getLevel(), is(Level.ERROR));
         assertThat(logs.get(1).getMessage(), is("Errors"));
-        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, true);
+        Framework.getRuntime().setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, TRUE);
         automationService.run(ctx, "Scripting.UseConsoleHelper", Collections.emptyMap());
         logs = ((LogChecker) logger.getAppender("CHECKER")).getLogs();
         assertThat(logs.get(2).getLevel(), is(Level.WARN));

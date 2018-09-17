@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,7 +216,7 @@ public class ComponentRegistry {
      * Get a copy of the registered components as an array.
      */
     public synchronized RegistrationInfo[] getComponentsArray() {
-        return components.values().toArray(new RegistrationInfo[components.size()]);
+        return components.values().toArray(new RegistrationInfo[0]);
     }
 
     /**
@@ -265,8 +265,7 @@ public class ComponentRegistry {
         }
         resolved.put(ri.getName(), ri); // track resolved components
 
-        // try to resolve pending components that are waiting the newly
-        // resolved component
+        // try to resolve pending components that are waiting the newly resolved component
         Set<ComponentName> dependsOnMe = new HashSet<>();
         for (ComponentName n : names) {
             Set<ComponentName> reqs = requirements.get(n);
@@ -274,7 +273,7 @@ public class ComponentRegistry {
                 dependsOnMe.addAll(reqs); // unaliased
             }
         }
-        if (dependsOnMe == null || dependsOnMe.isEmpty()) {
+        if (dependsOnMe.isEmpty()) {
             return;
         }
         for (ComponentName name : dependsOnMe) { // unaliased
@@ -306,7 +305,7 @@ public class ComponentRegistry {
         }
         Set<ComponentName> set = requirements.get(name); // unaliased
         if (set != null && !set.isEmpty()) {
-            for (ComponentName dep : set.toArray(new ComponentName[set.size()])) {
+            for (ComponentName dep : set.toArray(new ComponentName[0])) {
                 RegistrationInfo depRi = components.get(dep);
                 if (depRi != null) {
                     unresolveComponent(depRi);
@@ -341,11 +340,7 @@ public class ComponentRegistry {
         }
 
         public Set<ComponentName> put(ComponentName key, ComponentName value) {
-            Set<ComponentName> set = map.get(key);
-            if (set == null) {
-                set = new HashSet<>();
-                map.put(key, set);
-            }
+            Set<ComponentName> set = map.computeIfAbsent(key, k -> new HashSet<>());
             set.add(value);
             return set;
         }

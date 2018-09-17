@@ -388,13 +388,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     public void loadProperties(URL url) throws IOException {
-        InputStream in = url.openStream();
-        try {
+        try (InputStream in = url.openStream()) {
             loadProperties(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 

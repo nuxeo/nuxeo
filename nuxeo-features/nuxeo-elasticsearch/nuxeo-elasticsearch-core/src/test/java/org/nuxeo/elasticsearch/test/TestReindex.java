@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,16 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Assert;
@@ -98,15 +99,6 @@ public class TestReindex {
 
     private boolean syncMode = false;
 
-    private int commandProcessed;
-
-    private Priority consoleThresold;
-
-    // Number of processed command since the startTransaction
-    public void assertNumberOfCommandProcessed(int processed) throws Exception {
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
-    }
-
     /**
      * Wait for async worker completion then wait for indexing completion
      */
@@ -118,28 +110,22 @@ public class TestReindex {
 
     protected void startTransaction() {
         if (syncMode) {
-            ElasticSearchInlineListener.useSyncIndexing.set(true);
+            ElasticSearchInlineListener.useSyncIndexing.set(TRUE);
         }
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
-
-    public void activateSynchronousMode() throws Exception {
-        ElasticSearchInlineListener.useSyncIndexing.set(true);
-        syncMode = true;
+        assertEquals(0, esa.getPendingWorkerCount());
     }
 
     @Before
-    public void setupIndex() throws Exception {
+    public void setupIndex() {
         esa.initIndexes(true);
     }
 
     @After
     public void disableSynchronousMode() {
-        ElasticSearchInlineListener.useSyncIndexing.set(false);
+        ElasticSearchInlineListener.useSyncIndexing.set(TRUE);
         syncMode = false;
     }
 
@@ -153,20 +139,20 @@ public class TestReindex {
         DocumentModelList coreDocs = session.query(nxql);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
-        Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
-        Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
+        assertEquals(coreDocs.totalSize(), docs.totalSize());
+        assertEquals(getDigest(coreDocs), getDigest(docs));
         // cannot do that because of NXP-16154
         // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
         esa.initIndexes(true);
         esa.refresh();
         DocumentModelList docs2 = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(0, docs2.totalSize());
+        assertEquals(0, docs2.totalSize());
         esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Document");
         esi.runReindexingWorker(session.getRepositoryName(), "SELECT * FROM Relation");
         waitForCompletion();
         docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
-        Assert.assertEquals(getDigest(coreDocs), getDigest(docs2));
+        assertEquals(getDigest(coreDocs), getDigest(docs2));
 
     }
 
@@ -196,7 +182,7 @@ public class TestReindex {
             doc = session.saveDocument(doc);
             DocumentModel proxy = session.publishDocument(doc, folder);
             if (i % 2 == 0) {
-                trashService.trashDocuments(Arrays.asList(doc));
+                trashService.trashDocuments(singletonList(doc));
             }
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -210,7 +196,7 @@ public class TestReindex {
             if (nameOrTitle == null || nameOrTitle.isEmpty()) {
                 nameOrTitle = doc.getTitle();
             }
-            sb.append(doc.getType() + " " + doc.isProxy() + " " + doc.getId() + " ");
+            sb.append(doc.getType()).append(" ").append(doc.isProxy()).append(" ").append(doc.getId()).append(" ");
             sb.append(nameOrTitle);
             sb.append("\n");
         }

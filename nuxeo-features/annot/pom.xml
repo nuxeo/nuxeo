@@ -16,17 +16,7 @@
     <module>nuxeo-annot-contrib</module>
     <module>nuxeo-annot-http</module>
     <module>nuxeo-annot-repo</module>
+    <module>nuxeo-annot-gwt</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>gwt</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-annot-gwt</module>
-      </modules>
-    </profile>
-  </profiles>
 </project>
