@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <ThresholdFilter level="WARN" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n±" />
+    </Console>
+    <File name="FILE" fileName="target/trace.log" append="false">
+      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n±" />
+    </File>
+  </Appenders>
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="CONSOLE" />
+      <AppenderRef ref="FILE" />
+    </Root>
+  </Loggers>
+</Configuration>
