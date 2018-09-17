@@ -20,23 +20,27 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Test class for tag service based on facet
@@ -184,6 +188,42 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         doc.refresh();
         assertEquals("1.0", doc.getVersionLabel()); // version unchanged
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.tag.tests:test-no-tag-sanitization-contrib.xml")
+    public void testNoSanitization() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File");
+        file = session.createDocument(file);
+        session.save();
+        String fileId = file.getId();
+        List<String> charToTests = Arrays.asList(" ", "\\", "/", "'");
+        for (String charToTest : charToTests) {
+            String tagLabel = charToTest + "my" + charToTest + "tag" + charToTest;
+            String message = "tag " + tagLabel + " is invalid";
+            // add tag
+            tagService.tag(session, fileId, tagLabel);
+            session.save();
+            // find tag for doc
+            Set<String> tags = tagService.getTags(session, fileId);
+            assertTrue(message, tags.contains(tagLabel));
+            // find suggestion
+            Set<String> suggestions = tagService.getSuggestions(session, "%tag" + charToTest);
+            assertTrue(message, suggestions.contains(tagLabel));
+            suggestions = tagService.getSuggestions(session, charToTest + "my");
+            assertTrue(message, suggestions.contains(tagLabel));
+            // find documents with this tag
+            List<String> taggedDocIds = tagService.getTagDocumentIds(session, tagLabel);
+            assertEquals(message, singletonList(fileId), taggedDocIds);
+            // remove tag
+            tagService.untag(session, fileId, tagLabel);
+            session.save();
+            tags = tagService.getTags(session, fileId);
+            assertTrue(message, tags.isEmpty());
+
+            maybeSleep();
+        }
     }
 
 }

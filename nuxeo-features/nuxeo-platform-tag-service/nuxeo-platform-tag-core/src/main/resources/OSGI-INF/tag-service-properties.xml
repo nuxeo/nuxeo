@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.tag.service.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables sanitization on tags.
+    </documentation>
+    <property name="nuxeo.tag.sanitization.enabled">true</property>
+  </extension>
+
+</component>

@@ -212,7 +212,7 @@ public class RelationTagService extends AbstractTagService {
         return canUntag;
     }
 
-    protected static class UnrestrictedCanRemoveTagging extends UnrestrictedSessionRunner {
+    protected class UnrestrictedCanRemoveTagging extends UnrestrictedSessionRunner {
 
         private final String docId;
 
