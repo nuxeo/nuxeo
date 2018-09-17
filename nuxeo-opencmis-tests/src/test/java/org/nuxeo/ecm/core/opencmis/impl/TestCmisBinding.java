@@ -865,9 +865,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         v = p.getProperties().get("cmis:changeToken");
         StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         if (storageConfiguration.isChangeTokenEnabled()) {
-            // there are 2 updates for fulltext (simple text and binary)
+            // 1 update for fulltext
             // and DBS has an additional update for ecm:racl
-            String expected = storageConfiguration.isVCS() ? "2-0" : "3-0";
+            String expected = storageConfiguration.isVCS() ? "1-0" : "2-0";
             assertEquals(expected, v.getFirstValue());
         } else {
             Calendar lastModified = (Calendar) p.getProperties().get("dc:modified").getFirstValue();
