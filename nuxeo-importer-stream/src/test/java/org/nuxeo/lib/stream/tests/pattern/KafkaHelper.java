@@ -31,7 +31,7 @@ public class KafkaHelper {
 
     public static void assumeKafkaEnabled() {
         if ("true".equals(System.getProperty("kafka")) // deprecated since 10.3
-                || "true".equals(System.getProperty("nuxeo.test.stream.type"))) {
+                || "true".equals(System.getProperty("nuxeo.test.stream"))) {
             if (!KafkaUtils.kafkaDetected()) {
                 fail("Kafka profile is enable, but no Kafka server found.");
             }
