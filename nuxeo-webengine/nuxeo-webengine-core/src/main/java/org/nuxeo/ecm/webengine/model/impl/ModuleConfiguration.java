@@ -38,6 +38,8 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
+import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -127,7 +129,8 @@ public class ModuleConfiguration implements Cloneable {
 
     public WebEngine engine;
 
-    private ModuleImpl module;
+    // volatile for double-checked locking
+    private volatile ModuleImpl module;
 
     public boolean allowHostOverride;
 
@@ -167,28 +170,41 @@ public class ModuleConfiguration implements Cloneable {
     }
 
     public Module get(WebContext context) {
-        if (module == null) {
-            Module superModule = null;
-            if (base != null) { // make sure super modules are resolved
-                ModuleConfiguration superM = engine.getModuleManager().getModule(base);
-                if (superM == null) {
-                    throw new WebResourceNotFoundException("The module '" + name
-                            + "' cannot be loaded since it's super module '" + base + "' cannot be found");
+        ModuleImpl mod = module;
+        if (mod == null) {
+            synchronized (this) {
+                mod = module;
+                if (mod == null) {
+                    Module superModule = null;
+                    if (base != null) { // make sure super modules are resolved
+                        ModuleConfiguration superM = engine.getModuleManager().getModule(base);
+                        if (superM == null) {
+                            throw new WebResourceNotFoundException("The module '" + name
+                                    + "' cannot be loaded since its super module '" + base + "' cannot be found");
+                        }
+                        // force super module loading
+                        superModule = superM.get(context);
+                    }
+                    ServerInjectableProviderContext sic = context.getServerInjectableProviderContext();
+                    mod = new ModuleImpl(engine, (ModuleImpl) superModule, this, sic);
+                    if (sic != null) {
+                        // cache the module only if it has a ServerInjectableProviderContext
+                        module = mod;
+                    }
                 }
-                // force super module loading
-                superModule = superM.get(context);
             }
-            module = new ModuleImpl(engine, (ModuleImpl) superModule, this, context.getServerInjectableProviderContext());
         }
-        return module;
+        return mod;
     }
 
     public void flushCache() {
-        if (module == null) {
-            return;
+        synchronized (this) {
+            if (module == null) {
+                return;
+            }
+            module.flushCache();
+            module = null;
         }
-        module.flushCache();
-        module = null;
     }
 
     public boolean isLoaded() {
