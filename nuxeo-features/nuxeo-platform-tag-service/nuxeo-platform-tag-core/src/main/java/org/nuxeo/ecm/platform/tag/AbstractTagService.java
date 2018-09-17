@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +46,14 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 9.3
  */
 public abstract class AbstractTagService implements TagService {
+
+    public static final String TAG_SANITIZATION_PROP = "nuxeo.tag.sanitization.enabled";
 
     protected enum PAGE_PROVIDERS {
         GET_DOCUMENT_IDS_FOR_FACETED_TAG,
@@ -192,6 +197,10 @@ public abstract class AbstractTagService implements TagService {
     @Override
     public Set<String> getSuggestions(CoreSession session, String label) {
         label = cleanLabel(label, true, true);
+        if (!isTagSanitizationEnabled()) {
+            // Escape character for LIKE statement
+            label = label.replace("\\", "\\\\");
+        }
         if (!label.contains("%")) {
             label += "%";
         }
@@ -203,6 +212,11 @@ public abstract class AbstractTagService implements TagService {
     @Override
     public List<Tag> getSuggestions(CoreSession session, String label, String username) {
         return getSuggestions(session, label).stream().map(t -> new Tag(t, 0)).collect(Collectors.toList());
+    }
+
+    protected boolean isTagSanitizationEnabled() {
+        return !hasFeature(TAGS_BELONG_TO_DOCUMENT)
+                || Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(TAG_SANITIZATION_PROP);
     }
 
     public abstract void doTag(CoreSession session, String docId, String label, String username);
@@ -217,7 +231,7 @@ public abstract class AbstractTagService implements TagService {
 
     public abstract Set<String> doGetTagSuggestions(CoreSession session, String label);
 
-    protected static String cleanLabel(String label, boolean allowEmpty, boolean allowPercent) {
+    protected String cleanLabel(String label, boolean allowEmpty, boolean allowPercent) {
         if (label == null) {
             if (allowEmpty) {
                 return null;
@@ -225,10 +239,12 @@ public abstract class AbstractTagService implements TagService {
             throw new NuxeoException("Invalid empty tag");
         }
         label = label.toLowerCase(); // lowercase
-        label = label.replace(" ", ""); // no spaces
-        label = label.replace("/", ""); // no slash
-        label = label.replace("\\", ""); // dubious char
-        label = label.replace("'", ""); // dubious char
+        if (isTagSanitizationEnabled()) {
+            label = label.replace(" ", ""); // no spaces
+            label = label.replace("/", ""); // no slash
+            label = label.replace("\\", ""); // dubious char
+            label = label.replace("'", ""); // dubious char
+        }
         if (!allowPercent) {
             label = label.replace("%", ""); // dubious char
         }
