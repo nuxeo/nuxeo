@@ -66,6 +66,7 @@ public class LogFeature implements RunnerFeature {
                                                      .withFilter(ThresholdFilter.createFilter(Level.toLevel(level),
                                                              null, null))
                                                      .build();
+        newAppender.start();
         rootLogger.addAppender(newAppender);
         hiddenAppender = newAppender;
     }

@@ -1,34 +1,20 @@
-<?xml version="1.0"?><!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
-
-  <appender name="stderr" class="org.apache.log4j.ConsoleAppender">
-    <param name="threshold" value="warn" />
-    <param name="target" value="System.err" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] %m%n" />
-    </layout>
-  </appender>
-
-  <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
-    <param name="threshold" value="INFO" />
-    <param name="target" value="System.out" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%m%n" />
-    </layout>
-    <filter class="org.apache.log4j.varia.LevelRangeFilter">
-      <param name="LevelMin" value="debug" />
-      <param name="LevelMax" value="info" />
-    </filter>
-  </appender>
-
-  <category name="org.nuxeo.lib.stream.tools">
-    <priority value="INFO" />
-  </category>
-
-  <root>
-    <appender-ref ref="stderr" />
-    <appender-ref ref="stdout" />
-  </root>
-
-</log4j:configuration>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="stderr" target="SYSTEM_ERR">
+      <ThresholdFilter level="WARN" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%c{1}] %m%n" />
+    </Console>
+    <Console name="stdout" target="SYSTEM_OUT">
+      <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" />
+      <PatternLayout pattern="%m%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.nuxeo.lib.stream.tools" level="info" />
+    <Root>
+      <AppenderRef ref="stderr" />
+      <AppenderRef ref="stdout" />
+    </Root>
+  </Loggers>
+</Configuration>
