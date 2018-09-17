@@ -158,6 +158,40 @@ public abstract class TestPatternBoundedQueuing {
         assertTrue(NB_PRODUCERS * NB_DOCUMENTS < cret.stream().mapToLong(r -> r.accepted).sum());
     }
 
+    @Test
+    public void producerAndBrokenConsumers() throws Exception {
+        final int LOG_SIZE = 2;
+        final short NB_PRODUCERS = 2;
+        final short NB_CONSUMERS = 2;
+        final int NB_DOCUMENTS = 1;
+        final int BATCH_SIZE = 1;
+
+        manager.createIfNotExists(LOG_NAME, LOG_SIZE);
+        ProducerPool<KeyValueMessage> producers = new ProducerPool<>(LOG_NAME, manager,
+                new RandomIdMessageProducerFactory(NB_DOCUMENTS, RandomIdMessageProducerFactory.ProducerType.ORDERED),
+                NB_PRODUCERS);
+        List<ProducerStatus> pret = producers.start().get();
+        assertEquals(NB_PRODUCERS, (long) pret.size());
+        assertEquals(NB_PRODUCERS * NB_DOCUMENTS, pret.stream().mapToLong(r -> r.nbProcessed).sum());
+
+        // 2. Use the log and run a broken consumers
+        ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
+                .waitMessageTimeout(Duration.ofSeconds(10))
+                .maxThreads(NB_CONSUMERS)
+                .batchPolicy(BatchPolicy.builder().capacity(BATCH_SIZE).build())
+                .retryPolicy(new RetryPolicy().withMaxRetries(2))
+                .build();
+        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(LOG_NAME, manager, IdMessageFactory.ERROR,
+                consumerPolicy);
+        List<ConsumerStatus> cret = consumers.start().get();
+
+        assertEquals(consumerPolicy.getMaxThreads(), (long) cret.size());
+        assertEquals(0, cret.stream().mapToLong(r -> r.committed).sum());
+        assertEquals(0, cret.stream().mapToLong(r -> r.accepted).sum());
+        assertEquals(0, cret.stream().filter(r -> !r.fail).count());
+    }
+
+
     public int getNbDocumentForBuggyConsumerTest() {
         return 10151;
     }

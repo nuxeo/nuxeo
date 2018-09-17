@@ -100,7 +100,10 @@ public abstract class AbstractCallablePool<T> implements AutoCloseable {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     future.completeExceptionally(e);
-                } catch (Exception e) {
+                } catch (Throwable e) { // NOSONAR
+                    // Throwable is needed to catch all kind of problem that can happen in custom code
+                    // when using future the UncaughtExceptionHandler is not reporting all errors.
+                    // A LinkageError will stop silently the thread resulting in a hang during future.get
                     log.error("Exception catch in runner: " + e.getMessage(), e);
                     future.completeExceptionally(e);
                 }

@@ -36,8 +36,13 @@ public class IdMessageFactory implements ConsumerFactory<KeyValueMessage> {
      */
     public static final IdMessageFactory BUGGY = new IdMessageFactory(ConsumerType.BUGGY);
 
+    /**
+     * Factory for consumer that raise error randomly
+     */
+    public static final IdMessageFactory ERROR = new IdMessageFactory(ConsumerType.ERROR);
+
     protected enum ConsumerType {
-        NOOP, BUGGY
+        NOOP, BUGGY, ERROR
     }
 
     protected final ConsumerType type;
@@ -51,6 +56,8 @@ public class IdMessageFactory implements ConsumerFactory<KeyValueMessage> {
         switch (type) {
         case BUGGY:
             return new BuggyIdMessageConsumer(consumerId);
+        case ERROR:
+            return new ErrorIdMessageConsumer(consumerId);
         default:
         case NOOP:
             return new NoopIdMessageConsumer(consumerId);
