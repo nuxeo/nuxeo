@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -508,7 +508,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public String[] getServices() {
-        return services.keySet().toArray(new String[services.size()]);
+        return services.keySet().toArray(new String[0]);
     }
 
     protected static void handleError(String message, Exception e) {
@@ -800,7 +800,7 @@ public class ComponentManagerImpl implements ComponentManager {
         List<RegistrationInfo> ris = activateComponents();
 
         // TODO we sort using the old start order sorter (see OSGiRuntimeService.RIApplicationStartedComparator)
-        Collections.sort(ris, new RIApplicationStartedComparator());
+        ris.sort(new RIApplicationStartedComparator());
 
         // then start activated components
         startComponents(ris, false);

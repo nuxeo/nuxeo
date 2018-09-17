@@ -313,7 +313,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
             break;
         case ACTIVATED:
-            this.state = ACTIVATED;
             componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
             break;
         case STARTING:

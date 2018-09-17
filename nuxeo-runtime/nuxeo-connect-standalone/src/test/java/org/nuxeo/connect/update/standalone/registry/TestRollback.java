@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public class TestRollback extends SharedFilesTest {
     public class HotFixPackage1Corrupted extends HotFixPackage1 {
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
@@ -134,7 +134,7 @@ public class TestRollback extends SharedFilesTest {
     public class HotFixPackage2Corrupted extends HotFixPackage2 {
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
@@ -192,11 +192,11 @@ public class TestRollback extends SharedFilesTest {
      */
     @Test
     public void testHotfixUninstall() throws Exception {
-        final String BASEFILENAME = JARNAME + "-5.6.jar";
-        FileUtils.writeStringToFile(new File(bundles, BASEFILENAME), BASEFILENAME, UTF_8);
+        final String baseFilename = JARNAME + "-5.6.jar";
+        FileUtils.writeStringToFile(new File(bundles, baseFilename), baseFilename, UTF_8);
         UpdateManager mgr = getManager();
         assertEquals(0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
         File bak = new File(mgr.getBackupRoot(), "bundles");
         if (bak.isDirectory()) {
             assertEquals(0, bak.list().length);
@@ -216,7 +216,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.uninstall();
         mgr.load();
         assertEquals("Registry size", 0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
 
         hotfix1.install();
         mgr.load();
@@ -246,7 +246,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.uninstall();
         mgr.load();
         assertEquals("Registry size", 0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
     }
 
     /**

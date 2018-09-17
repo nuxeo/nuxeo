@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import org.apache.log4j.MDC;
 import org.junit.runners.model.FrameworkMethod;
+import org.slf4j.MDC;
 
 import com.google.inject.Binder;
 
@@ -32,7 +32,7 @@ public class MDCFeature implements RunnerFeature {
     protected static final String F_STATE = "fState";
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
+    public void initialize(FeaturesRunner runner) {
         MDC.put(F_STATE, "initialize");
     }
 
@@ -42,51 +42,51 @@ public class MDCFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         MDC.put(F_STATE, "beforeRun");
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         MDC.put(F_STATE, "afterRun");
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void start(FeaturesRunner runner) {
         MDC.put(F_STATE, "start");
     }
 
     @Override
-    public void testCreated(Object test) throws Exception {
+    public void testCreated(Object test) {
         MDC.put(F_STATE, "testCreated");
-        MDC.put(F_SUITE, test.getClass());
+        MDC.put(F_SUITE, test.getClass().getName());
     }
 
     @Override
-    public void stop(FeaturesRunner runner) throws Exception {
+    public void stop(FeaturesRunner runner) {
         MDC.remove(F_STATE);
         MDC.remove(F_SUITE);
         MDC.remove(F_TEST);
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) {
         MDC.put(F_STATE, "beforeSetup");
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner) {
         MDC.put(F_STATE, "afterTeardown");
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
         MDC.put(F_STATE, "beforeMethodRun");
         MDC.put(F_TEST, method.getMethod().getName());
     }
 
     @Override
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
         MDC.put(F_STATE, "afterMethodRun");
         MDC.remove(F_TEST);
     }

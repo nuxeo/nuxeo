@@ -201,7 +201,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     }
 
     @Override
-    public void fireFrameworkStarted() throws Exception {
+    public void fireFrameworkStarted() {
         if (frameworkStarted) {
             throw new IllegalStateException("fireFrameworkStarted must not be called more than once");
         }
@@ -294,7 +294,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     }
 
     @Override
-    public void undeployContrib(String name, String contrib) throws Exception {
+    public void undeployContrib(String name, String contrib) {
         RuntimeContext context = runtime.getContext(name);
         if (context == null) {
             context = runtime.getContext();
@@ -374,10 +374,8 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
 
     /**
      * Inits the urls.
-     *
-     * @throws Exception the exception
      */
-    protected void initUrls() throws Exception {
+    protected void initUrls() {
         urls = introspectClasspath();
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -476,10 +474,8 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
      * <p>
      * This happens for instance if a previous test had errors in its <code>setUp()</code>, because
      * <code>tearDown()</code> has not been called.
-     *
-     * @throws Exception the exception
      */
-    protected void wipeRuntime() throws Exception {
+    protected void wipeRuntime() {
         // Make sure there is no active runtime (this might happen if an
         // exception is raised during a previous setUp -> tearDown is not called afterwards).
         runtime = null;
@@ -507,7 +503,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                                         .filter(this::isAnEmptyTestProperty)
                                         .map(entry -> entry.getKey().toString())
                                         .collect(Collectors.toList());
-        emptyProps.forEach(property -> System.clearProperty(property));
+        emptyProps.forEach(System::clearProperty);
         if (log.isDebugEnabled()) {
             emptyProps.forEach(property -> log.debug("Removed empty test system property: " + property));
         }

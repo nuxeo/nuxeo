@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,7 @@
 
 package org.nuxeo.launcher.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -39,33 +28,15 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.joda.time.DateTime;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
@@ -342,7 +313,8 @@ public class NuxeoFrame extends JFrame {
     protected JTabbedPane buildLogsTab() {
         JTabbedPane logsTabbedPane = new JTabbedPane(SwingConstants.TOP);
         // Get Launcher log file(s)
-        ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
+        List<String> logFiles = Log4JHelper.getFileAppendersFileNames(
+                LoggerContext.getContext(false).getConfiguration());
         // Add nuxeoctl log file
         File nuxeoctlLog = new File(controller.getConfigurationGenerator().getLogDir(), "nuxeoctl.log");
         if (nuxeoctlLog.exists()) {
@@ -403,7 +375,8 @@ public class NuxeoFrame extends JFrame {
         summaryPanel.setBackground(Color.BLACK);
         summaryPanel.setForeground(Color.WHITE);
 
-        summaryPanel.add(new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.status.label")));
+        summaryPanel.add(
+                new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.status.label")));
         summaryStatus = new JLabel(controller.launcher.status());
         summaryStatus.setForeground(Color.WHITE);
         summaryPanel.add(summaryStatus);
@@ -419,12 +392,14 @@ public class NuxeoFrame extends JFrame {
 
         summaryPanel.add(new JSeparator());
         ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
-        summaryPanel.add(new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
+        summaryPanel.add(
+                new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>" + config.getNuxeoHome().getPath()));
-        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + NuxeoLauncherGUI.getMessage("summary.nuxeoconf.label")));
+        summaryPanel.add(
+                new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.nuxeoconf.label")));
         summaryPanel.add(new JLabel("<html><font color=white>" + config.getNuxeoConf().getPath()));
-        summaryPanel.add(new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.datadir.label")));
+        summaryPanel.add(
+                new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.datadir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>" + config.getDataDir().getPath()));
         return summaryPanel;
     }
@@ -539,8 +514,8 @@ public class NuxeoFrame extends JFrame {
      */
     public void updateLogsTab(String consoleLogId) {
         if (consoleLogId != null) {
-            addFileToLogsTab(logsTab, new File(controller.getConfigurationGenerator().getLogDir(), "console"
-                    + consoleLogId + ".log").getPath());
+            addFileToLogsTab(logsTab, new File(controller.getConfigurationGenerator().getLogDir(),
+                    "console" + consoleLogId + ".log").getPath());
         }
     }
 

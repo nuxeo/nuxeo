@@ -300,7 +300,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertyWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertyWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // First create a valid object
         doc.setProperty(REMOVED_SCHEMA, "list",
@@ -312,7 +312,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertyValueWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertyValueWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // First create a valid object
         doc.setProperty(REMOVED_SCHEMA, "list",
@@ -324,7 +324,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertiesWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertiesWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc.setProperties(REMOVED_SCHEMA, Collections.singletonMap("list",
                 Collections.singletonList(Collections.singletonMap("renamed", "test scalar"))));
@@ -393,7 +393,7 @@ public class TestDocumentModelWithRemovedProperty {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // compat on set not work alright if Blob is null in the first place (cannot set value on null blob), still
         // works alright on get:
-        assertNull(((Blob) doc.getPropertyValue("file:filename")));
+        assertNull(doc.getPropertyValue("file:filename"));
         assertNull(doc.getPropertyValue("file:content"));
 
         // fill value
