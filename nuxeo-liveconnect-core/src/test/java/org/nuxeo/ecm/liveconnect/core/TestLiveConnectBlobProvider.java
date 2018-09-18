@@ -66,9 +66,6 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     private static final String TEST_FILE_NAME = "LiveConnectFile";
 
     @Inject
-    private RuntimeHarness harness;
-
-    @Inject
     private CoreSession session;
 
     @Inject
@@ -97,7 +94,7 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     }
 
     @Test
-    public void testSupportsUserUpdate() throws Exception {
+    public void testSupportsUserUpdate() {
         assertTrue(blobProvider.supportsUserUpdate());
     }
 
@@ -233,7 +230,7 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     }
 
     @Test
-    public void testToBlobWithFileWithRevision() throws Exception {
+    public void testToBlobWithFileWithRevision() {
         String revision = UUID.randomUUID().toString();
         LiveConnectFile file = new MockLiveConnectFile(new LiveConnectFileInfo(USERID, FILE_1_ID, revision),
                 FILE_1_NAME, FILE_1_SIZE, FILE_1_DIGEST);
@@ -296,13 +293,13 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     @Test
     public void testAsUriError() {
         URI uri = blobProvider.asURI("http://");
-        assertTrue(uri == null);
+        assertNull(uri);
     }
 
     @Test
     public void testAsUriValid() {
         URI uri = blobProvider.asURI("http://www.nuxeo.com/");
-        assertFalse(uri == null);
+        assertNotNull(uri);
     }
 
     private DocumentModel createDocumentWithBlob(long id, String digest) {
