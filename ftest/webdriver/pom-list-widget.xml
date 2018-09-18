@@ -83,7 +83,7 @@
               <includes>
                 <include>**/ITAjaxListWidgetTest.java</include>
               </includes>
-              <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
+              <argLine>-Dlog4j.configurationFile=${file.uri.prefix}${basedir}/src/test/resources/log4j2-test.xml
                 -Dnuxeo.log.dir=${project.build.directory}
               </argLine>
               <reportNameSuffix>layoutDemoAjaxListWidget</reportNameSuffix>
