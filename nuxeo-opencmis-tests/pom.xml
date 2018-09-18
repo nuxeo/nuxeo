@@ -206,10 +206,6 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
     <!-- OpenCMIS -->
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
