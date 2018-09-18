@@ -290,7 +290,7 @@ public class LDAPReference extends AbstractReference {
                                     + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]", sourceId,
                                     StringUtils.join(targetIds, ", "), sourceDn, attrsToAdd, this));
                         }
-                        sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrsToAdd);
+                        sourceSession.getContext().modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrsToAdd);
 
                         // robustly clean any existing empty marker now that we are sure that the list in not empty
                         if (storedAttr.contains(emptyRefMarker)) {
@@ -302,7 +302,8 @@ public class LDAPReference extends AbstractReference {
                                                 + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]", sourceId,
                                         StringUtils.join(targetIds, ", "), sourceDn, cleanAttrs, this));
                             }
-                            sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
+                            sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE,
+                                    cleanAttrs);
                         }
                     } catch (SchemaViolationException e) {
                         if (isDynamic()) {
@@ -389,7 +390,7 @@ public class LDAPReference extends AbstractReference {
                                     + " mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]", StringUtils.join(sourceIds, ", "),
                                     targetId, sourceDn, attrs, this));
                         }
-                        sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrs);
+                        sourceSession.getContext().modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrs);
 
                         // robustly clean any existing empty marker now that we
                         // are sure that the list in not empty
@@ -401,7 +402,8 @@ public class LDAPReference extends AbstractReference {
                                         StringUtils.join(sourceIds, ", "), targetId, sourceDn, cleanAttrs.toString(),
                                         this));
                             }
-                            sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
+                            sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE,
+                                    cleanAttrs);
                         }
                     } catch (SchemaViolationException e) {
                         if (isDynamic()) {
@@ -484,7 +486,7 @@ public class LDAPReference extends AbstractReference {
                             + " filter='%s' args='%s' scope='%s' [%s]", targetId, searchBaseDn, filterExpr,
                             StringUtils.join(filterArgs, ", "), sctls.getSearchScope(), this));
                 }
-                NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(searchBaseDn, filterExpr,
+                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(searchBaseDn, filterExpr,
                         filterArgs, sctls);
 
                 try {
@@ -547,7 +549,7 @@ public class LDAPReference extends AbstractReference {
                             + " filter='%s' scope='%s' [%s]", targetId, searchBaseDn, filterExpr,
                             sctls.getSearchScope(), this));
                 }
-                NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(searchBaseDn, filterExpr,
+                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(searchBaseDn, filterExpr,
                         sctls);
                 try {
                     while (results.hasMore()) {
@@ -868,7 +870,7 @@ public class LDAPReference extends AbstractReference {
             }
 
             Name name = new CompositeName().add(dn);
-            entry = session.dirContext.getAttributes(name, attributeIdsToCollect);
+            entry = session.getContext().getAttributes(name, attributeIdsToCollect);
         } catch (NamingException e) {
             return null;
         }
@@ -934,7 +936,7 @@ public class LDAPReference extends AbstractReference {
         }
 
         Name name = new CompositeName().add(dn);
-        NamingEnumeration<SearchResult> results = targetSession.dirContext.search(name, filter, scts);
+        NamingEnumeration<SearchResult> results = targetSession.getContext().search(name, filter, scts);
         try {
             while (results.hasMore()) {
                 // NXP-2461: check that id field is filled
@@ -1026,7 +1028,7 @@ public class LDAPReference extends AbstractReference {
                                         + " mod_op='REPLACE_ATTRIBUTE' attrs='%s' [%s]", sourceId, sourceDn,
                                 emptyAttribute, this));
                     }
-                    sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.REPLACE_ATTRIBUTE, emptyAttribute);
+                    sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REPLACE_ATTRIBUTE, emptyAttribute);
                 } else if (attrToRemove.size() > 0) {
                     // remove the attribute managed by the current reference
                     Attributes attrsToRemove = new BasicAttributes();
@@ -1037,7 +1039,7 @@ public class LDAPReference extends AbstractReference {
                                         + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]", sourceId, sourceDn,
                                 attrsToRemove, this));
                     }
-                    sourceSession.dirContext.modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, attrsToRemove);
+                    sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, attrsToRemove);
                 }
             } catch (SchemaViolationException e) {
                 if (isDynamic()) {
@@ -1117,7 +1119,7 @@ public class LDAPReference extends AbstractReference {
                             + " filter='%s' scope='%s' [%s]", targetId, sourceSession.searchBaseDn, searchFilter,
                             scts.getSearchScope(), this));
                 }
-                NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(sourceSession.searchBaseDn,
+                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(sourceSession.searchBaseDn,
                         searchFilter, scts);
                 String emptyRefMarker = ldapSourceDirectory.getDescriptor().getEmptyRefMarker();
                 Attributes emptyAttribute = new BasicAttributes(attributeId, emptyRefMarker);
@@ -1142,7 +1144,7 @@ public class LDAPReference extends AbstractReference {
                                                     + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]", targetId,
                                             result.getNameInNamespace(), attrs, this));
                                 }
-                                sourceSession.dirContext.modifyAttributes(result.getNameInNamespace(),
+                                sourceSession.getContext().modifyAttributes(result.getNameInNamespace(),
                                         DirContext.ADD_ATTRIBUTE, emptyAttribute);
                             }
                             // remove the reference to the target key
@@ -1156,7 +1158,7 @@ public class LDAPReference extends AbstractReference {
                                                 + "mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]", targetId,
                                         result.getNameInNamespace(), attrs, this));
                             }
-                            sourceSession.dirContext.modifyAttributes(result.getNameInNamespace(),
+                            sourceSession.getContext().modifyAttributes(result.getNameInNamespace(),
                                     DirContext.REMOVE_ATTRIBUTE, attrs);
                         } catch (SchemaViolationException e) {
                             if (isDynamic()) {
