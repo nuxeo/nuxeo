@@ -7,7 +7,7 @@
       <coreQueryPageProvider name="DEFAULT_DOCUMENT_SUGGESTION">
         <property name="maxResults">PAGE_SIZE</property>
         <pattern quoteParameters="false" escapeParameters="true">
-          SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+          SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isVersion = 0 AND
           ecm:isTrashed = 0 AND ecm:parentId IS NOT NULL
         </pattern>

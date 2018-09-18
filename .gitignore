@@ -5,3 +5,9 @@ bin
 .settings
 pojo-bin
 seam-bin
+*.iml
+*~
+*_
+*~bak
+*-bak
+*.bak
