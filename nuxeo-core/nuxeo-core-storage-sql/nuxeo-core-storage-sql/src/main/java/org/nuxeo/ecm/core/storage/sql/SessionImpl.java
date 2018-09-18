@@ -43,7 +43,6 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -53,7 +52,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -63,8 +61,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
-import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
-import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
@@ -104,8 +100,6 @@ public class SessionImpl implements Session, XAResource {
     private final Mapper mapper;
 
     private final Model model;
-
-    protected final FulltextParser fulltextParser;
 
     // public because used by unit tests
     public final PersistenceContext context;
@@ -149,11 +143,6 @@ public class SessionImpl implements Session, XAResource {
         live = true;
         readAclsChanged = false;
 
-        try {
-            fulltextParser = repository.fulltextParserClass.newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
         queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
         aclrUpdateTimer = registry.timer(
@@ -386,186 +375,34 @@ public class SessionImpl implements Session, XAResource {
         Set<Serializable> dirtyStrings = new HashSet<>();
         Set<Serializable> dirtyBinaries = new HashSet<>();
         context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
-        if (dirtyStrings.isEmpty() && dirtyBinaries.isEmpty()) {
+        Set<Serializable> dirtyIds = new HashSet<>();
+        dirtyIds.addAll(dirtyStrings);
+        dirtyIds.addAll(dirtyBinaries);
+        if (dirtyIds.isEmpty()) {
             return Collections.emptyList();
         }
-
-        List<Work> works = new LinkedList<>();
-        getFulltextSimpleWorks(works, dirtyStrings);
-        getFulltextBinariesWorks(works, dirtyBinaries);
+        markIndexingInProgress(dirtyIds);
+        List<Work> works = new ArrayList<>(dirtyIds.size());
+        for (Serializable id : dirtyIds) {
+            boolean updateSimpleText = dirtyStrings.contains(id);
+            boolean updateBinaryText = dirtyBinaries.contains(id);
+            Work work = new FulltextExtractorWork(repository.getName(), model.idToString(id), updateSimpleText,
+                    updateBinaryText);
+            works.add(work);
+        }
         return works;
     }
 
-    protected void getFulltextSimpleWorks(List<Work> works, Set<Serializable> dirtyStrings) {
+    /**
+     * Mark indexing in progress, so that future copies (including versions) will be indexed as well.
+     */
+    protected void markIndexingInProgress(Set<Serializable> dirtyIds) {
         FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
-        if (fulltextConfiguration.fulltextSearchDisabled) {
-            return;
-        }
-        // update simpletext on documents with dirty strings
-        for (Serializable docId : dirtyStrings) {
-            if (docId == null) {
-                // cannot happen, but has been observed :(
-                log.error("Got null doc id in fulltext update, cannot happen");
-                continue;
-            }
-            Node document = getNodeById(docId);
-            if (document == null) {
-                // cannot happen
-                continue;
-            }
-            if (document.isProxy()) {
-                // proxies don't have any fulltext attached, it's
-                // the target document that carries it
-                continue;
-            }
-            String documentType = document.getPrimaryType();
-            String[] mixinTypes = document.getMixinTypes();
-
-            if (!fulltextConfiguration.isFulltextIndexable(documentType)) {
-                continue;
-            }
-            document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(model.idToString(document.getId()));
-            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser, document, this);
-            List<IndexAndText> indexesAndText = new LinkedList<>();
-            for (String indexName : fulltextConfiguration.indexNames) {
-                Set<String> paths;
-                if (fulltextConfiguration.indexesAllSimple.contains(indexName)) {
-                    // index all string fields, minus excluded ones
-                    // TODO XXX excluded ones...
-                    paths = model.getSimpleTextPropertyPaths(documentType, mixinTypes);
-                } else {
-                    // index configured fields
-                    paths = fulltextConfiguration.propPathsByIndexSimple.get(indexName);
-                }
-                String text = fulltextFinder.findFulltext(paths);
-                indexesAndText.add(new IndexAndText(indexName, text));
-            }
-            if (!indexesAndText.isEmpty()) {
-                Work work = new FulltextUpdaterWork(repository.getName(), model.idToString(docId), true, false,
-                        indexesAndText);
-                works.add(work);
-            }
-        }
-    }
-
-    protected void getFulltextBinariesWorks(List<Work> works, final Set<Serializable> dirtyBinaries) {
-        if (dirtyBinaries.isEmpty()) {
-            return;
-        }
-
-        // mark indexing in progress, so that future copies (including versions)
-        // will be indexed as well
-        for (Node node : getNodesByIds(new ArrayList<>(dirtyBinaries))) {
-            if (!model.getFulltextConfiguration().isFulltextIndexable(node.getPrimaryType())) {
+        for (Node node : getNodesByIds(dirtyIds)) {
+            if (!fulltextConfiguration.isFulltextIndexable(node.getPrimaryType())) {
                 continue;
             }
             node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(model.idToString(node.getId()));
-        }
-
-        // FulltextExtractorWork does fulltext extraction using converters
-        // and then schedules a FulltextUpdaterWork to write the results
-        // single-threaded
-        for (Serializable id : dirtyBinaries) {
-            String docId = model.idToString(id);
-            Work work = new FulltextExtractorWork(repository.getName(), docId, true);
-            works.add(work);
-        }
-    }
-
-    /**
-     * Finds the fulltext in a document and sends it to a fulltext parser.
-     *
-     * @since 5.9.5
-     */
-    protected static class FulltextFinder {
-
-        protected final FulltextParser fulltextParser;
-
-        protected final Node document;
-
-        protected final SessionImpl session;
-
-        protected final String documentType;
-
-        protected final String[] mixinTypes;
-
-        public FulltextFinder(FulltextParser fulltextParser, Node document, SessionImpl session) {
-            this.fulltextParser = fulltextParser;
-            this.document = document;
-            this.session = session;
-            if (document == null) {
-                documentType = null;
-                mixinTypes = null;
-            } else { // null in tests
-                documentType = document.getPrimaryType();
-                mixinTypes = document.getMixinTypes();
-            }
-        }
-
-        /**
-         * Parses the document for one index.
-         */
-        protected String findFulltext(Set<String> paths) {
-            if (paths == null) {
-                return "";
-            }
-            List<String> strings = new ArrayList<>();
-
-            for (String path : paths) {
-                ModelProperty pi = session.getModel().getPathPropertyInfo(documentType, mixinTypes, path);
-                if (pi == null) {
-                    continue; // doc type doesn't have this property
-                }
-                if (pi.propertyType != PropertyType.STRING && pi.propertyType != PropertyType.ARRAY_STRING) {
-                    continue;
-                }
-
-                List<Node> nodes = new ArrayList<>(Collections.singleton(document));
-
-                String[] names = path.split("/");
-                for (int i = 0; i < names.length; i++) {
-                    String name = names[i];
-                    if (i < names.length - 1) {
-                        // traverse
-                        List<Node> newNodes;
-                        if ("*".equals(names[i + 1])) {
-                            // traverse complex list
-                            i++;
-                            newNodes = new ArrayList<>();
-                            for (Node node : nodes) {
-                                newNodes.addAll(session.getChildren(node, name, true));
-                            }
-                        } else {
-                            // traverse child
-                            newNodes = new ArrayList<>(nodes.size());
-                            for (Node node : nodes) {
-                                node = session.getChildNode(node, name, true);
-                                if (node != null) {
-                                    newNodes.add(node);
-                                }
-                            }
-                        }
-                        nodes = newNodes;
-                    } else {
-                        // last path component: get value
-                        for (Node node : nodes) {
-                            if (pi.propertyType == PropertyType.STRING) {
-                                String v = node.getSimpleProperty(name).getString();
-                                if (v != null) {
-                                    fulltextParser.parse(v, path, strings);
-                                }
-                            } else { /* ARRAY_STRING */
-                                for (Serializable v : node.getCollectionProperty(name).getValue()) {
-                                    if (v != null) {
-                                        fulltextParser.parse((String) v, path, strings);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return StringUtils.join(strings, ' ');
         }
     }
 
@@ -619,7 +456,7 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id, true);
     }
 
-    public List<Node> getNodesByIds(List<Serializable> ids, boolean prefetch) {
+    public List<Node> getNodesByIds(Collection<Serializable> ids, boolean prefetch) {
         // get hier fragments
         List<RowId> hierRowIds = new ArrayList<>(ids.size());
         for (Serializable id : ids) {
@@ -760,7 +597,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public List<Node> getNodesByIds(List<Serializable> ids) {
+    public List<Node> getNodesByIds(Collection<Serializable> ids) {
         checkLive();
         return getNodesByIds(ids, true);
     }

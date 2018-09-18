@@ -36,9 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -65,8 +63,6 @@ public class RepositoryImpl implements Repository {
     private static final Random RANDOM = new Random();
 
     protected final RepositoryDescriptor repositoryDescriptor;
-
-    protected final Class<? extends FulltextParser> fulltextParserClass;
 
     private RepositoryBackend backend;
 
@@ -99,21 +95,6 @@ public class RepositoryImpl implements Repository {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<>();
         invalidationsPropagator = new InvalidationsPropagator();
-
-        String className = repositoryDescriptor.getFulltextDescriptor().getFulltextParser();
-        if (StringUtils.isBlank(className)) {
-            className = DefaultFulltextParser.class.getName();
-        }
-        Class<?> klass;
-        try {
-            klass = Thread.currentThread().getContextClassLoader().loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new NuxeoException("Unknown fulltext parser class: " + className, e);
-        }
-        if (!FulltextParser.class.isAssignableFrom(klass)) {
-            throw new NuxeoException("Invalid fulltext parser class: " + className);
-        }
-        fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "instance-up"));
@@ -214,10 +195,6 @@ public class RepositoryImpl implements Repository {
 
     public InvalidationsPropagator getInvalidationsPropagator() {
         return invalidationsPropagator;
-    }
-
-    public Class<? extends FulltextParser> getFulltextParserClass() {
-        return fulltextParserClass;
     }
 
     public boolean isChangeTokenEnabled() {

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
@@ -210,10 +209,6 @@ public class SQLRepositoryService extends DefaultComponent {
             repositories.add(getRepository(repositoryName));
         }
         return repositories;
-    }
-
-    public Class<? extends FulltextParser> getFulltextParserClass(String repositoryName) {
-        return getRepositoryImpl(repositoryName).getFulltextParserClass();
     }
 
     public FulltextConfiguration getFulltextConfiguration(String repositoryName) {

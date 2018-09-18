@@ -37,11 +37,9 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
@@ -66,7 +64,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.BatchFinderWork;
@@ -76,7 +73,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -84,10 +80,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.BaseDocument;
-import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
-import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
-import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -215,7 +208,7 @@ public class DBSTransactionState {
      * Returns states and marks them transient, because they're about to be returned to user code (where they may be
      * modified).
      */
-    public List<DBSDocumentState> getStatesForUpdate(List<String> ids) {
+    public List<DBSDocumentState> getStatesForUpdate(Collection<String> ids) {
         // check which ones we have to fetch from repository
         List<String> idsToFetch = new LinkedList<>();
         for (String id : ids) {
@@ -1016,13 +1009,31 @@ public class DBSTransactionState {
         Set<String> docsWithDirtyStrings = new HashSet<>();
         Set<String> docsWithDirtyBinaries = new HashSet<>();
         findDirtyDocuments(docsWithDirtyStrings, docsWithDirtyBinaries);
-        if (docsWithDirtyStrings.isEmpty() && docsWithDirtyBinaries.isEmpty()) {
+        Set<String> dirtyIds = new HashSet<>();
+        dirtyIds.addAll(docsWithDirtyStrings);
+        dirtyIds.addAll(docsWithDirtyBinaries);
+        if (dirtyIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Work> works = new LinkedList<>();
-        getFulltextSimpleWorks(works, docsWithDirtyStrings);
-        getFulltextBinariesWorks(works, docsWithDirtyBinaries);
+        markIndexingInProgress(dirtyIds);
+        List<Work> works = new ArrayList<>(dirtyIds.size());
+        for (String id : dirtyIds) {
+            boolean updateSimpleText = docsWithDirtyStrings.contains(id);
+            boolean updateBinaryText = docsWithDirtyBinaries.contains(id);
+            Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText);
+            works.add(work);
+        }
         return works;
+    }
+
+    protected void markIndexingInProgress(Set<String> ids) {
+        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+        for (DBSDocumentState docState : getStatesForUpdate(ids)) {
+            if (!fulltextConfiguration.isFulltextIndexable(docState.getPrimaryType())) {
+                continue;
+            }
+            docState.put(KEY_FULLTEXT_JOBID, docState.getId());
+        }
     }
 
     /**
@@ -1139,157 +1150,6 @@ public class DBSTransactionState {
                 Serializable v = es.getValue();
                 String newPath = path == null ? key : path + "/" + key;
                 findDirtyPaths(v, newPath);
-            }
-        }
-    }
-
-    protected void getFulltextSimpleWorks(List<Work> works, Set<String> docsWithDirtyStrings) {
-        // TODO XXX make configurable, see also FulltextExtractorWork
-        FulltextParser fulltextParser = new DefaultFulltextParser();
-        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
-        if (fulltextConfiguration.fulltextSearchDisabled) {
-            return;
-        }
-        // update simpletext on documents with dirty strings
-        for (String id : docsWithDirtyStrings) {
-            if (id == null) {
-                // cannot happen, but has been observed :(
-                log.error("Got null doc id in fulltext update, cannot happen");
-                continue;
-            }
-            DBSDocumentState docState = getStateForUpdate(id);
-            if (docState == null) {
-                // cannot happen
-                continue;
-            }
-            String documentType = docState.getPrimaryType();
-            // Object[] mixinTypes = (Object[]) docState.get(KEY_MIXIN_TYPES);
-
-            if (!fulltextConfiguration.isFulltextIndexable(documentType)) {
-                continue;
-            }
-            docState.put(KEY_FULLTEXT_JOBID, docState.getId());
-            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser, docState, session);
-            List<IndexAndText> indexesAndText = new LinkedList<>();
-            for (String indexName : fulltextConfiguration.indexNames) {
-                // TODO paths from config
-                String text = fulltextFinder.findFulltext(indexName);
-                indexesAndText.add(new IndexAndText(indexName, text));
-            }
-            if (!indexesAndText.isEmpty()) {
-                Work work = new FulltextUpdaterWork(repository.getName(), id, true, false, indexesAndText);
-                works.add(work);
-            }
-        }
-    }
-
-    protected void getFulltextBinariesWorks(List<Work> works, Set<String> docWithDirtyBinaries) {
-        if (docWithDirtyBinaries.isEmpty()) {
-            return;
-        }
-
-        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
-
-        // mark indexing in progress, so that future copies (including versions)
-        // will be indexed as well
-        for (String id : docWithDirtyBinaries) {
-            DBSDocumentState docState = getStateForUpdate(id);
-            if (docState == null) {
-                // cannot happen
-                continue;
-            }
-            if (!fulltextConfiguration.isFulltextIndexable(docState.getPrimaryType())) {
-                continue;
-            }
-            docState.put(KEY_FULLTEXT_JOBID, docState.getId());
-        }
-
-        // FulltextExtractorWork does fulltext extraction using converters
-        // and then schedules a FulltextUpdaterWork to write the results
-        // single-threaded
-        for (String id : docWithDirtyBinaries) {
-            // don't exclude proxies
-            Work work = new FulltextExtractorWork(repository.getName(), id, false);
-            works.add(work);
-        }
-    }
-
-    protected static class FulltextFinder {
-
-        protected final FulltextParser fulltextParser;
-
-        protected final DBSDocumentState document;
-
-        protected final DBSSession session;
-
-        protected final String documentType;
-
-        protected final Object[] mixinTypes;
-
-        /**
-         * Prepares parsing for one document.
-         */
-        public FulltextFinder(FulltextParser fulltextParser, DBSDocumentState document, DBSSession session) {
-            this.fulltextParser = fulltextParser;
-            this.document = document;
-            this.session = session;
-            if (document == null) {
-                documentType = null;
-                mixinTypes = null;
-            } else { // null in tests
-                documentType = document.getPrimaryType();
-                mixinTypes = (Object[]) document.get(KEY_MIXIN_TYPES);
-            }
-        }
-
-        /**
-         * Parses the document for one index.
-         */
-        public String findFulltext(String indexName) {
-            // TODO indexName
-            // TODO paths
-            List<String> strings = new ArrayList<>();
-            findFulltext(indexName, document.getState(), strings);
-            return StringUtils.join(strings, ' ');
-        }
-
-        protected void findFulltext(String indexName, State state, List<String> strings) {
-            for (Entry<String, Serializable> en : state.entrySet()) {
-                String key = en.getKey();
-                if (key.startsWith(KEY_PREFIX)) {
-                    switch (key) {
-                    // allow indexing of this:
-                    case DBSDocument.KEY_NAME:
-                        break;
-                    default:
-                        continue;
-                    }
-                }
-                Serializable value = en.getValue();
-                if (value instanceof State) {
-                    State s = (State) value;
-                    findFulltext(indexName, s, strings);
-                } else if (value instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    List<State> v = (List<State>) value;
-                    for (State s : v) {
-                        findFulltext(indexName, s, strings);
-                    }
-                } else if (value instanceof Object[]) {
-                    Object[] ar = (Object[]) value;
-                    for (Object v : ar) {
-                        if (v instanceof String) {
-                            fulltextParser.parse((String) v, null, strings);
-                        } else {
-                            // arrays are homogeneous, no need to continue
-                            break;
-                        }
-                    }
-                } else {
-                    if (value instanceof String) {
-                        fulltextParser.parse((String) value, null, strings);
-                    }
-                }
             }
         }
     }

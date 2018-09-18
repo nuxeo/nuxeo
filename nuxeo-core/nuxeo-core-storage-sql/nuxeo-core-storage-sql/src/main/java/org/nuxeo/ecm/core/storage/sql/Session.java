@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,7 @@ public interface Session extends Connection {
      * @param ids the ids
      * @return the nodes, in the same order as the ids, with elements being {@code null} if not found
      */
-    List<Node> getNodesByIds(List<Serializable> ids);
+    List<Node> getNodesByIds(Collection<Serializable> ids);
 
     /**
      * Gets a node given its absolute path, or given an existing node and a relative path.

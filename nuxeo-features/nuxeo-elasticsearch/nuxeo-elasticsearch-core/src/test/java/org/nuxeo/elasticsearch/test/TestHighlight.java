@@ -190,16 +190,16 @@ public class TestHighlight {
         assertEquals(1, highlights.size());
         assertEquals(4, highlights.get("ecm:binarytext").size());
         assertEquals(
-                "sit amet aenean vel euismod risus eu rhoncus erat nulla neque dui egestas sit amet nibh eget maximus <em>vehicula</em>",
+                "Nulla neque dui, egestas sit amet nibh eget, maximus <em>vehicula</em> nisi.",
                 highlights.get("ecm:binarytext").get(0));
         assertEquals(
-                "mauris aenean quam risus vestibulum sed mattis ac lobortis quis nunc nam eu est nunc proin ac libero <em>vehicula</em>",
+                "Proin ac libero <em>vehicula</em>, mollis turpis quis, tempus sem.",
                 highlights.get("ecm:binarytext").get(1));
         assertEquals(
-                "mollis turpis quis tempus sem donec <em>vehicula</em> ante eget porttitor hendrerit orci nibh rhoncus turpis",
+                "Donec <em>vehicula</em>, ante eget porttitor hendrerit, orci nibh rhoncus turpis, vel tempor turpis dui eget turpis",
                 highlights.get("ecm:binarytext").get(2));
         assertEquals(
-                "congue posuere morbi at suscipit augue morbi tincidunt eros eu rutrum semper nam auctor enim vel lacinia <em>vehicula</em>",
+                "Nam auctor, enim vel lacinia <em>vehicula</em>, leo leo porttitor massa, in blandit tortor ante quis ligula.",
                 highlights.get("ecm:binarytext").get(3));
 
     }
