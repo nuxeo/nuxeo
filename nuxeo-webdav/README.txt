@@ -17,7 +17,7 @@ the proper location of your Nuxeo server, then "make deploy-jboss" or "make
 deploy-tomcat".
 
 If you want to debug on Tomcat, you may want to change the priority for
-category "org.nuxeo" to DEBUG in the lib/log4j.xml file in the Nuxeo server
+category "org.nuxeo" to DEBUG in the lib/log4j2.xml file in the Nuxeo server
 distribution.
 
 Testing the embedded server
