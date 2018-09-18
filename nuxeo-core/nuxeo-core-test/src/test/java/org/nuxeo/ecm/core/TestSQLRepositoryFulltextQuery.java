@@ -226,7 +226,7 @@ public class TestSQLRepositoryFulltextQuery {
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
         file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
-        file3 = session.createDocument(file3);
+        file3 = session.createDocument(file3); // Note has automatic versioning so this creates a version too
 
         DocumentModel folder2 = session.createDocumentModel("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
@@ -272,6 +272,7 @@ public class TestSQLRepositoryFulltextQuery {
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
         DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
+        // DocumentModel file3v1 = session.getLastDocumentVersion(file3.getRef())
         DocumentModel file4 = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
 
         // query
@@ -317,8 +318,9 @@ public class TestSQLRepositoryFulltextQuery {
         }
 
         file3.setProperty("dublincore", "title", "brave new world");
-        session.saveDocument(file3);
+        session.saveDocument(file3); // Note with automatic versioning, creates a version too
         session.save();
+        DocumentModel file3v2 = session.getLastDocumentVersion(file3.getRef());
         waitForFulltextIndexing();
 
         // query
@@ -333,7 +335,7 @@ public class TestSQLRepositoryFulltextQuery {
 
         query = "SELECT * FROM Note WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
-        assertIdSet(dml, file3.getId());
+        assertIdSet(dml, file3.getId(), file3v2.getId());
 
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' " + "AND dc:contributors = 'pete'";
         waitForFulltextIndexing();
@@ -769,6 +771,7 @@ public class TestSQLRepositoryFulltextQuery {
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
         DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
+        DocumentModel file3v1 = session.getLastDocumentVersion(file3.getRef());
 
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
@@ -777,25 +780,27 @@ public class TestSQLRepositoryFulltextQuery {
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
         session.save();
+        DocumentModel file3v2 = session.getLastDocumentVersion(file3.getRef());
         waitForFulltextIndexing();
 
         // check main fulltext index
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
-        assertIdSet(dml, file1.getId(), file2.getId(), file3.getId());
+        assertIdSet(dml, file1.getId(), file2.getId(), file3.getId(), file3v1.getId(), file3v2.getId());
 
         // check secondary fulltext index, just for title field (no secondary indexes on MongoDB)
         if (!isDBS()) {
             query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
             dml = session.query(query);
-            assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in descr
+            // file2 has it in descr so is not returned
+            assertIdSet(dml, file1.getId(), file3.getId(), file3v1.getId(), file3v2.getId());
         }
 
         // field-based fulltext
         // index exists
         query = "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'brave'";
         dml = session.query(query);
-        assertIdSet(dml, file3.getId());
+        assertIdSet(dml, file3.getId(), file3v1.getId(), file3v2.getId());
         // no index exists
         query = "SELECT * FROM Document WHERE ecm:fulltext.dc:description = 'oyster'";
         dml = session.query(query);
@@ -982,8 +987,8 @@ public class TestSQLRepositoryFulltextQuery {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        // 3 = 1 main save + 1 simple index + 1 binary index
-        assertEventSet("sessionSaved=3", "binaryTextUpdated=1");
+        // 3 = 1 main save + 1 index
+        assertEventSet("sessionSaved=2", "binaryTextUpdated=1");
 
         // delete
         session.removeDocument(doc.getRef());
@@ -1002,7 +1007,7 @@ public class TestSQLRepositoryFulltextQuery {
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
         assertTrue(map.containsKey("binarytext"));
-        assertTrue(map.get("binarytext").contains("drink"));
+        assertTrue(map.get("binarytext").contains("Drink"));
     }
 
     @Test
@@ -1018,7 +1023,7 @@ public class TestSQLRepositoryFulltextQuery {
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
         assertTrue(map.containsKey("binarytext"));
-        assertTrue(map.get("binarytext").contains("drink"));
+        assertTrue(map.get("binarytext").contains("Drink"));
     }
 
     @Test

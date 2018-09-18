@@ -46,6 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
@@ -63,7 +64,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl;
@@ -142,7 +143,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         if (fulltextDescriptor.getFulltextDisabled()) {
             fulltextConfiguration = null;
         } else {
-            fulltextConfiguration = new FulltextConfiguration(fulltextDescriptor);
+            fulltextConfiguration = FulltextConfigurationFactory.make(fulltextDescriptor);
         }
         this.cm = cm;
         changeTokenEnabled = descriptor.isChangeTokenEnabled();

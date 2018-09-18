@@ -124,16 +124,6 @@ public class FulltextDescriptor {
         fulltextSearchDisabled = Boolean.valueOf(disabled);
     }
 
-    private String fulltextParser;
-
-    public String getFulltextParser() {
-        return fulltextParser;
-    }
-
-    public void setFulltextParser(String fulltextParser) {
-        this.fulltextParser = fulltextParser;
-    }
-
     private List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<>(0);
 
     public List<FulltextIndexDescriptor> getFulltextIndexes() {
@@ -172,7 +162,6 @@ public class FulltextDescriptor {
         fulltextFieldSizeLimit = other.fulltextFieldSizeLimit;
         fulltextDisabled = other.fulltextDisabled;
         fulltextSearchDisabled = other.fulltextSearchDisabled;
-        fulltextParser = other.fulltextParser;
         fulltextIndexes = FulltextIndexDescriptor.copyList(other.fulltextIndexes);
         fulltextExcludedTypes = new HashSet<>(other.fulltextExcludedTypes);
         fulltextIncludedTypes = new HashSet<>(other.fulltextIncludedTypes);
@@ -187,9 +176,6 @@ public class FulltextDescriptor {
         }
         if (other.fulltextSearchDisabled != null) {
             fulltextSearchDisabled = other.fulltextSearchDisabled;
-        }
-        if (other.fulltextParser != null) {
-            fulltextParser = other.fulltextParser;
         }
         for (FulltextIndexDescriptor oi : other.fulltextIndexes) {
             boolean append = true;

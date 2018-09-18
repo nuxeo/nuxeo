@@ -20,60 +20,88 @@
 package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
+import net.htmlparser.jericho.Source;
+
 /**
- * Work task that does fulltext extraction from the blobs of the given document.
- * <p>
- * The extracted fulltext is then passed to the single-threaded {@link FulltextUpdaterWork}.
- * <p>
- * This base abstract class must be subclassed in order to implement the proper
- * {@link #initFulltextConfigurationAndParser} depending on the storage.
+ * Work task that does fulltext extraction from the string properties and the blobs of the given document, saving them
+ * into the fulltext table.
  *
- * @since 5.7
+ * @since 5.7 for the original implementation
+ * @since 10.3 the extraction and update are done in the same Work
  */
-public abstract class FulltextExtractorWork extends AbstractWork {
+public class FulltextExtractorWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(FulltextExtractorWork.class);
 
-    protected static final String ANY2TEXT = "any2text";
+    public static final String SYSPROP_FULLTEXT_SIMPLE = "fulltextSimple";
+
+    public static final String SYSPROP_FULLTEXT_BINARY = "fulltextBinary";
+
+    public static final String SYSPROP_FULLTEXT_JOBID = "fulltextJobId";
+
+    public static final String FULLTEXT_DEFAULT_INDEX = "default";
 
     protected static final String CATEGORY = "fulltextExtractor";
 
-    protected static final String TITLE = "fulltextExtractor";
+    protected static final String TITLE = "Fulltext Extractor";
 
-    protected final boolean excludeProxies;
+    protected static final String ANY2TEXT_CONVERTER = "any2text";
+
+    protected static final int HTML_MAGIC_OFFSET = 8192;
+
+    protected static final String TEXT_HTML = "text/html";
 
     protected transient FulltextConfiguration fulltextConfiguration;
 
-    protected transient FulltextParser fulltextParser;
+    protected transient DocumentModel document;
 
-    public FulltextExtractorWork(String repositoryName, String docId, boolean excludeProxies) {
+    protected transient List<DocumentModel> docsToUpdate;
+
+    /** If true, update the simple text from the document. */
+    protected final boolean updateSimpleText;
+
+    /** If true, update the binary text from the document. */
+    protected final boolean updateBinaryText;
+
+    public FulltextExtractorWork(String repositoryName, String docId, boolean updateSimpleText,
+            boolean updateBinaryText) {
+        super(); // random id, for unique job
         setDocument(repositoryName, docId);
-        this.excludeProxies = excludeProxies;
+        this.updateSimpleText = updateSimpleText;
+        this.updateBinaryText = updateBinaryText;
     }
 
     @Override
@@ -88,141 +116,269 @@ public abstract class FulltextExtractorWork extends AbstractWork {
 
     @Override
     public int getRetryCount() {
-        // even read-only threads may encounter concurrent update exceptions
-        // when trying to read a previously deleted complex property
-        // due to read committed semantics, cf NXP-17384
         return 1;
     }
 
     @Override
     public void work() {
         openSystemSession();
-        // if the runtime has shutdown (normally because tests are finished)
+        // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009
         if (session.getPrincipal() == null) {
             return;
         }
-
-        initFulltextConfigurationAndParser();
+        DocumentRef docRef = new IdRef(docId);
+        if (!session.exists(docRef)) {
+            return;
+        }
+        document = session.getDocument(docRef);
+        // find which docs will receive the extracted text (there may be more than one if the original
+        // doc was copied between the time it was saved and this listener being asynchronously executed)
+        String query = String.format("SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",
+                docId);
+        docsToUpdate = session.query(query);
+        if (docsToUpdate.isEmpty()) {
+            return;
+        }
+        initFulltextConfiguration();
 
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_0_PC);
-        extractBinaryText();
+        extractAndUpdate();
+        setStatus("Saving");
+        session.save();
         setProgress(Progress.PROGRESS_100_PC);
         setStatus("Done");
     }
 
-    /**
-     * Initializes the fulltext configuration and parser.
-     *
-     * @since 5.9.5
-     */
-    public abstract void initFulltextConfigurationAndParser();
+    protected void initFulltextConfiguration() {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        Repository repository = repositoryService.getRepository(repositoryName);
+        fulltextConfiguration = repository.getFulltextConfiguration();
+    }
 
-    protected void extractBinaryText() {
-        IdRef docRef = new IdRef(docId);
-        if (!session.exists(docRef)) {
-            // doc is gone
-            return;
+    protected void extractAndUpdate() {
+        // update all docs
+        if (updateSimpleText) {
+            extractAndUpdateSimpleText();
         }
-        DocumentModel doc = session.getDocument(docRef);
-        if (excludeProxies && doc.isProxy()) {
-            // VCS proxies don't have any fulltext attached, it's
-            // the target document that carries it
-            return;
+        if (updateBinaryText) {
+            extractAndUpdateBinaryText();
         }
-        if (!fulltextConfiguration.isFulltextIndexable(doc.getType())) {
-            // excluded by config
-            return;
+        // reset job id
+        for (DocumentModel doc : docsToUpdate) {
+            session.setDocumentSystemProp(doc.getRef(), SYSPROP_FULLTEXT_JOBID, null);
         }
+    }
 
-        // Iterate on each index to set the binaryText column
-        BlobsExtractor extractor = new BlobsExtractor();
-        DocumentLocation docLocation = new DocumentLocationImpl(doc);
-        List<IndexAndText> indexesAndText = new LinkedList<>();
+    protected void extractAndUpdateSimpleText() {
+        if (fulltextConfiguration.fulltextSearchDisabled) {
+            // if fulltext search is disabled, we don't extract simple text at all
+            return;
+        }
+        for (String indexName : fulltextConfiguration.indexNames) {
+            Set<String> paths;
+            if (fulltextConfiguration.indexesAllSimple.contains(indexName)) {
+                // index all string fields, minus excluded ones
+                // TODO XXX excluded ones...
+                paths = null;
+            } else {
+                // index configured fields
+                paths = fulltextConfiguration.propPathsByIndexSimple.get(indexName);
+            }
+            // get string properties
+            List<String> strings = new StringsExtractor().findStrings(document, paths);
+            // use parser to transform to text
+            String text = strings.stream().map(this::stringToText).collect(Collectors.joining("\n"));
+            // limit size
+            text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
+            String property = getFulltextPropertyName(SYSPROP_FULLTEXT_SIMPLE, indexName);
+            for (DocumentModel doc : docsToUpdate) {
+                session.setDocumentSystemProp(doc.getRef(), property, text);
+            }
+        }
+    }
+
+    protected void extractAndUpdateBinaryText() {
+        // we extract binary text even if fulltext search is disabled,
+        // because it is still used to inject into external indexers like Elasticsearch
+        BlobsExtractor blobsExtractor = new BlobsExtractor();
+        Map<Blob, String> blobsText = new IdentityHashMap<>();
         for (String indexName : fulltextConfiguration.indexNames) {
             if (!fulltextConfiguration.indexesAllBinary.contains(indexName)
                     && fulltextConfiguration.propPathsByIndexBinary.get(indexName) == null) {
                 // nothing to do: index not configured for blob
                 continue;
             }
-            extractor.setExtractorProperties(fulltextConfiguration.propPathsByIndexBinary.get(indexName),
+            // get original text from all blobs
+            blobsExtractor.setExtractorProperties(fulltextConfiguration.propPathsByIndexBinary.get(indexName),
                     fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
-            List<Blob> blobs = extractor.getBlobs(doc);
-            StringBlob stringBlob = blobsToStringBlob(blobs, docId);
-            String text = fulltextParser.parse(stringBlob.getString(), null, stringBlob.getMimeType(), docLocation);
-            int fullTextFieldSizeLimit = fulltextConfiguration.fulltextFieldSizeLimit;
-            if (fullTextFieldSizeLimit != 0 && text.length() > fullTextFieldSizeLimit) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Fulltext extract of length: %s for indexName: %s of document: %s truncated to length: %s",
-                            text.length(), indexName, docId, fullTextFieldSizeLimit));
-                }
-                text = text.substring(0, fullTextFieldSizeLimit);
-            }
-            indexesAndText.add(new IndexAndText(indexName, text));
-        }
-        if (!indexesAndText.isEmpty()) {
-            Work work = new FulltextUpdaterWork(repositoryName, docId, false, true, indexesAndText);
-            if (!fulltextConfiguration.fulltextSearchDisabled) {
-                WorkManager workManager = Framework.getService(WorkManager.class);
-                workManager.schedule(work, true);
-            } else {
-                ((FulltextUpdaterWork) work).updateWithSession(session);
-            }
-        }
-
-    }
-
-    @Override
-    public void cleanUp(boolean ok, Exception e) {
-        super.cleanUp(ok, e);
-        fulltextConfiguration = null;
-        fulltextParser = null;
-    }
-
-    protected StringBlob blobsToStringBlob(List<Blob> blobs, String docId) {
-        String mimeType = null;
-        List<String> strings = new LinkedList<>();
-        for (Blob blob : blobs) {
-            try {
-                SimpleBlobHolder bh = new SimpleBlobHolder(blob);
-                BlobHolder result = convert(bh);
-                if (result == null) {
-                    continue;
-                }
-                blob = result.getBlob();
-                if (blob == null) {
-                    continue;
-                }
-                if (StringUtils.isEmpty(mimeType) && StringUtils.isNotEmpty(blob.getMimeType())) {
-                    mimeType = blob.getMimeType();
-                }
-                String string = new String(blob.getByteArray(), "UTF-8");
-                // strip '\0 chars from text
-                if (string.indexOf('\0') >= 0) {
-                    string = string.replace("\0", " ");
-                }
+            List<String> strings = new ArrayList<>();
+            for (Blob blob : blobsExtractor.getBlobs(document)) {
+                String string = blobsText.computeIfAbsent(blob, this::blobToText);
                 strings.add(string);
-            } catch (ConversionException | IOException e) {
-                String msg = "Could not extract fulltext of file '" + blob.getFilename() + "' for document: " + docId
-                        + ": " + e;
-                log.warn(msg);
-                log.debug(msg, e);
-                continue;
+            }
+            String text = String.join("\n\n", strings);
+            text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
+            String property = getFulltextPropertyName(SYSPROP_FULLTEXT_BINARY, indexName);
+            for (DocumentModel doc : docsToUpdate) {
+                session.setDocumentSystemProp(doc.getRef(), property, text);
             }
         }
-        return new StringBlob(StringUtils.join(strings, " "), mimeType);
     }
 
-    protected BlobHolder convert(BlobHolder blobHolder) throws ConversionException {
-        ConversionService conversionService = Framework.getService(ConversionService.class);
-        if (conversionService == null) {
-            log.debug("No ConversionService available");
-            return null;
+    /**
+     * Converts the blob to text by calling a converter.
+     */
+    protected String blobToText(Blob blob) {
+        try {
+            ConversionService conversionService = Framework.getService(ConversionService.class);
+            if (conversionService == null) {
+                log.debug("No ConversionService available");
+                return "";
+            }
+            BlobHolder blobHolder = conversionService.convert(ANY2TEXT_CONVERTER, new SimpleBlobHolder(blob), null);
+            if (blobHolder == null) {
+                return "";
+            }
+            Blob resultBlob = blobHolder.getBlob();
+            if (resultBlob == null) {
+                return "";
+            }
+            String string = resultBlob.getString();
+            // strip '\0 chars from text
+            if (string.indexOf('\0') >= 0) {
+                string = string.replace("\0", " ");
+            }
+            return string;
+        } catch (ConversionException | IOException e) {
+            String msg = "Could not extract fulltext of file '" + blob.getFilename() + "' for document: " + docId + ": "
+                    + e;
+            log.warn(msg);
+            log.debug(msg, e);
+            return "";
         }
-        return conversionService.convert(ANY2TEXT, blobHolder, null);
+    }
+
+    protected String stringToText(String string) {
+        string = removeHtml(string);
+        string = removeEntities(string);
+        return string;
+    }
+
+    protected String removeHtml(String string) {
+        // quick HTML detection on the initial part of the string
+        String initial = string.substring(0, Math.min(string.length(), HTML_MAGIC_OFFSET)).toLowerCase();
+        if (initial.startsWith("<!doctype html") || initial.contains("<html")) {
+            // convert using Jericho HTML Parser
+            string = new Source(string).getRenderer()
+                                       .setIncludeHyperlinkURLs(false)
+                                       .setDecorateFontStyles(false)
+                                       .toString();
+        }
+        return string;
+    }
+
+    protected String removeEntities(String string) {
+        if (string.indexOf('&') >= 0) {
+            string = StringEscapeUtils.unescapeHtml4(string);
+        }
+        return string;
+    }
+
+    @SuppressWarnings("boxing")
+    protected String limitStringSize(String string, int maxSize) {
+        if (maxSize != 0 && string.length() > maxSize) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fulltext extract of length: %s for document: %s truncated to length: %s",
+                        string.length(), docId, maxSize));
+            }
+            string = string.substring(0, maxSize);
+        }
+        return string;
+    }
+
+    protected String getFulltextPropertyName(String name, String indexName) {
+        if (!FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
+            name += '_' + indexName;
+        }
+        return name;
+    }
+
+    /**
+     * Finds the strings in a document (string properties).
+     * <p>
+     * This class is not thread-safe.
+     *
+     * @since 10.3
+     */
+    public static class StringsExtractor {
+
+        protected DocumentModel document;
+
+        // paths for which we extract fulltext, or null for all
+        protected Set<String> paths;
+
+        // collected strings
+        protected List<String> strings;
+
+        /**
+         * Finds strings from the document for a given set of paths.
+         * <p>
+         * Paths must be specified with a schema prefix in all cases (normalized).
+         *
+         * @param document the document
+         * @param paths the paths, or {@code null} for all paths
+         * @return a list of strings (each string is never {@code null})
+         */
+        public List<String> findStrings(DocumentModel document, Set<String> paths) {
+            this.document = document;
+            this.paths = paths;
+            strings = new ArrayList<>();
+            for (String schema : document.getSchemas()) {
+                for (Property property : document.getPropertyObjects(schema)) {
+                    String path = property.getField().getName().getPrefixedName();
+                    if (!path.contains(":")) {
+                        // add schema name as prefix if the schema doesn't have a prefix
+                        path = property.getSchema().getName() + ":" + path;
+                    }
+                    findStrings(property, path);
+                }
+            }
+            return strings;
+        }
+
+        protected void findStrings(Property property, String path) {
+            if (property instanceof StringProperty) {
+                if (paths == null || paths.contains(path)) {
+                    Serializable value = property.getValue();
+                    if (value instanceof String) {
+                        strings.add((String) value);
+                    }
+                }
+            } else if (property instanceof ArrayProperty) {
+                if (paths == null || paths.contains(path)) {
+                    Serializable value = property.getValue();
+                    if (value instanceof Object[]) {
+                        for (Object v : (Object[]) value) {
+                            if (v instanceof String) {
+                                strings.add((String) v);
+                            }
+                        }
+                    }
+                }
+            } else if (property instanceof ComplexProperty) {
+                for (Property p : ((ComplexProperty) property).getChildren()) {
+                    String pp = p.getField().getName().getPrefixedName();
+                    findStrings(p, path + '/' + pp);
+                }
+            } else if (property instanceof ListProperty) {
+                for (Property p : (ListProperty) property) {
+                    findStrings(p, path + "/*");
+                }
+            }
+        }
     }
 
 }
