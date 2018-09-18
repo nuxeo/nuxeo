@@ -183,6 +183,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
         if (defaultDescriptor == null) {
             defaultDescriptor = new CacheDescriptor();
+            defaultDescriptor.name = DEFAULT_CACHE_ID;
             defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
             register(XP_CACHES, defaultDescriptor);
         }
