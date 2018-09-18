@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -66,6 +67,9 @@ public class TestRunBulkAction {
 
     @Inject
     protected AutomationService service;
+
+    @Inject
+    public TransactionalFeature txFeature;
 
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
@@ -101,6 +105,8 @@ public class TestRunBulkAction {
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
+
+        txFeature.nextTransaction();
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());

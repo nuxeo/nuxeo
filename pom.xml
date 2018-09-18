@@ -5000,6 +5000,14 @@
         <artifactId>jutf7</artifactId>
         <version>1.0.0</version>
       </dependency>
+
+      <!-- Java implementation of external sorting -->
+      <dependency>
+        <groupId>com.google.code.externalsortinginjava</groupId>
+        <artifactId>externalsortinginjava</artifactId>
+        <version>0.2.5</version>
+     </dependency>
+
     </dependencies>
   </dependencyManagement>
 

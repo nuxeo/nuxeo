@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
+
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.lib.stream.computation.Computation;
+import org.nuxeo.lib.stream.computation.Topology.Builder;
 
 /**
  * @since 10.3
@@ -34,19 +37,16 @@ public class SetSystemPropertiesAction extends AbstractBulkAction {
 
     public static final String ACTION_NAME = "setSystemProperties";
 
-    public SetSystemPropertiesAction() {
-        super(ACTION_NAME);
-    }
-
     @Override
-    protected Computation createComputation(int batchSize, int batchThresholdMs) {
-        return new SetSystemPropertyComputation(getActionName(), batchSize, batchThresholdMs);
+    protected Builder addComputations(Builder builder, int size, int threshold) {
+        return builder.addComputation(() -> new SetSystemPropertyComputation(size, threshold),
+                Arrays.asList("i1:" + ACTION_NAME, "o1:" + COUNTER_ACTION_NAME));
     }
 
     public static class SetSystemPropertyComputation extends AbstractBulkComputation {
 
-        public SetSystemPropertyComputation(String name, int batchSize, int batchThresholdMs) {
-            super(name, 1, 1, batchSize, batchThresholdMs);
+        public SetSystemPropertyComputation(int batchSize, int batchThresholdMs) {
+            super(ACTION_NAME, 1, 1, batchSize, batchThresholdMs);
         }
 
         @Override

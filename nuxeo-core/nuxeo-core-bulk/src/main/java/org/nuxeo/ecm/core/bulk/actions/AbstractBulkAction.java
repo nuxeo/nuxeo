@@ -23,11 +23,9 @@ import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.commandIdFrom;
 import static org.nuxeo.ecm.core.bulk.BulkRecords.docIdsFrom;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
-import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,10 +42,10 @@ import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkCounter;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
-import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.lib.stream.computation.Topology.Builder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
@@ -67,31 +65,14 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
 
     public static final int DEFAULT_BATCH_THRESHOLD_MS = 200;
 
-    protected final String name;
-
-    protected AbstractBulkAction(String name) {
-        this.name = name;
-    }
-
     @Override
     public Topology getTopology(Map<String, String> options) {
         int size = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
-        int timer = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
-        return Topology
-                       .builder()
-                       .addComputation(() -> createComputation(size, timer), getIOs())
-                       .build();
+        int threshold = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
+        return addComputations(Topology.builder(), size, threshold).build();
     }
 
-    protected List<String> getIOs() {
-        return Arrays.asList("i1:" + getActionName(), "o1:" + COUNTER_ACTION_NAME);
-    }
-
-    protected String getActionName() {
-        return name;
-    }
-
-    protected abstract Computation createComputation(int size, int timer);
+    protected abstract Builder addComputations(Builder builder, int size, int threshold);
 
     protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
         String value = options.get(option);
@@ -119,8 +100,7 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
 
         @Override
         public void init(ComputationContext context) {
-            getLog().debug(
-                    String.format("Starting computation: %s, size: %d, timer: %dms", metadata.name(), size, timer));
+            getLog().debug(String.format("Starting: %s, size: %d, timer: %dms", metadata.name(), size, timer));
             context.setTimer("timer", System.currentTimeMillis() + timer);
         }
 
@@ -151,8 +131,7 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
 
         @Override
         public void destroy() {
-            getLog().debug(
-                    String.format("Destroy computation: %s, pending entries: %d", metadata.name(), documentIds.size()));
+            getLog().debug(String.format("Destroy: %s, pending entries: %d", metadata.name(), documentIds.size()));
         }
 
         protected Log getLog() {
@@ -180,14 +159,18 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
                         throw new NuxeoException(e);
                     }
                 });
-                BulkCounter counter = new BulkCounter(currentCommandId, documentIds.size());
-                context.produceRecord("o1", currentCommandId, BulkCodecs.getBulkCounterCodec().encode(counter));
+                produceOutput(context);
                 documentIds.clear();
                 context.askForCheckpoint();
             }
         }
 
         protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);
+
+        public void produceOutput(ComputationContext context) {
+            BulkCounter counter = new BulkCounter(currentCommandId, documentIds.size());
+            context.produceRecord("o1", currentCommandId, BulkCodecs.getBulkCounterCodec().encode(counter));
+        }
     }
 
 }

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import java.util.Date;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -35,7 +37,8 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
         super.populate(session);
         DocumentModel test = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         for (int i = 0; i < SIZE; i++) {
-            DocumentModel doc = session.createDocumentModel(test.getPathAsString(), "doc " + i, "ComplexDoc");
+            DocumentModel doc = session.createDocumentModel(test.getPathAsString(), "doc" + i, "ComplexDoc");
+            doc.setProperty("dublincore", "modified", new Date());
             session.createDocument(doc);
         }
     }

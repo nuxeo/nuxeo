@@ -19,14 +19,20 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
+import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
+
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.lib.stream.computation.Computation;
+import org.nuxeo.lib.stream.computation.Topology.Builder;
 
 /**
  * @since 10.2
@@ -35,28 +41,27 @@ public class SetPropertiesAction extends AbstractBulkAction {
 
     public static final String ACTION_NAME = "setProperties";
 
-    public SetPropertiesAction() {
-        super(ACTION_NAME);
-    }
-
     @Override
-    protected Computation createComputation(int batchSize, int batchThresholdMs) {
-        return new SetPropertyComputation(getActionName(), batchSize, batchThresholdMs);
+    protected Builder addComputations(Builder builder, int size, int threshold) {
+        return builder.addComputation(() -> new SetPropertyComputation(size, threshold),
+                Arrays.asList("i1:" + ACTION_NAME, "o1:" + COUNTER_ACTION_NAME));
     }
 
     public static class SetPropertyComputation extends AbstractBulkComputation {
 
-        public SetPropertyComputation(String name, int batchSize, int batchThresholdMs) {
-            super(name, 1, 1, batchSize, batchThresholdMs);
+        public SetPropertyComputation(int batchSize, int batchThresholdMs) {
+            super(ACTION_NAME, 1, 1, batchSize, batchThresholdMs);
         }
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            ids.forEach(id -> {
-                DocumentModel doc = session.getDocument(new IdRef(id));
-                properties.forEach(doc::setPropertyValue);
-                session.saveDocument(doc);
-            });
+            DocumentRef[] docRefs = ids.stream()
+                                       .map(IdRef::new)
+                                       .collect(Collectors.toList())
+                                       .toArray(new DocumentRef[0]);
+            DocumentModelList docs = session.getDocuments(docRefs);
+            docs.forEach(doc -> properties.forEach(doc::setPropertyValue));
+            session.saveDocuments(docs.toArray(new DocumentModel[0]));
         }
     }
 

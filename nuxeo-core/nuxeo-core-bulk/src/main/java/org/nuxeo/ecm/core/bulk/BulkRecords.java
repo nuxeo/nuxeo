@@ -44,8 +44,14 @@ public class BulkRecords {
      * @return a new {@link Record} containing document ids respecting bulk format
      */
     public static Record of(String commandId, long currentCount, List<String> documentIds) {
+        return of(commandId, currentCount, String.join(VALUE_SEPARATOR, documentIds));
+    }
+
+    /**
+     * @return a new {@link Record} containing a string respecting bulk format
+     */
+    public static Record of(String commandId, long currentCount, String value) {
         String key = commandId + KEY_SEPARATOR + currentCount;
-        String value = String.join(VALUE_SEPARATOR, documentIds);
         return Record.of(key, value.getBytes(UTF_8));
     }
 
@@ -65,4 +71,18 @@ public class BulkRecords {
         return Arrays.asList(value.split(VALUE_SEPARATOR));
     }
 
+    /**
+     * @return the count extracted from {@link Record}
+     */
+    public static long countFrom(Record record) {
+        String key = record.getKey();
+        return Long.parseLong(key.split(KEY_SEPARATOR)[1]);
+    }
+
+    /**
+     * @return the data as string extracted from {@link Record}
+     */
+    public static String dataFrom(Record record) {
+        return new String(record.getData(), UTF_8);
+    }
 }
