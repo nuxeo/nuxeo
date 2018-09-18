@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreBulkFeature.class, CoreFeature.class })
@@ -52,6 +53,9 @@ public class TestSetPropertiesAction {
 
     @Inject
     public CoreSession session;
+
+    @Inject
+    public TransactionalFeature txFeature;
 
     @Test
     public void testSetProperties() throws Exception {
@@ -89,6 +93,8 @@ public class TestSetPropertiesAction {
 
         List<BulkStatus> emptyStatuses = service.getStatuses("toto");
         assertEquals(0, emptyStatuses.size());
+
+        txFeature.nextTransaction();
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());

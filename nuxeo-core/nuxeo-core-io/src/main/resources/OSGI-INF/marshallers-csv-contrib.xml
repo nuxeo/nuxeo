@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.MarshallerRegistry.csv.marshallers" version="1.0.0">
+  <documentation>
+    Core IO CSV registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelListCSVWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentPropertyCSVWriter" enable="true" />
+  </extension>
+</component>

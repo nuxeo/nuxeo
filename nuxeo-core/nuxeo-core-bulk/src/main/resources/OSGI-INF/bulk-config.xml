@@ -6,6 +6,7 @@
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="setProperties" />
     <action name="setSystemProperties" />
+    <action name="csvExport" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
@@ -31,6 +32,14 @@
       <option name="batchSize">50</option>
       <option name="batchThresholdMs">200</option>
     </streamProcessor>
+
+    <!-- SetSystemProperty processor -->
+    <streamProcessor name="csvExport" class="org.nuxeo.ecm.core.bulk.actions.CSVExportAction"
+      logConfig="bulk" defaultConcurrency="1" defaultPartitions="1">
+      <option name="batchSize">50</option>
+      <option name="batchThresholdMs">200</option>
+    </streamProcessor>
+
   </extension>
 
 </component>
