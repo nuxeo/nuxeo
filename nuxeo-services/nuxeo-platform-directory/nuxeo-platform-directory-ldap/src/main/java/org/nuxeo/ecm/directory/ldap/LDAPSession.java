@@ -95,7 +95,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String schemaName;
 
-    protected final DirContext dirContext;
+    protected DirContext dirContext;
 
     protected final String idAttribute;
 
@@ -117,9 +117,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String passwordHashAlgorithm;
 
-    public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
+    public LDAPSession(LDAPDirectory directory) {
         super(directory);
-        this.dirContext = LdapRetryHandler.wrap(dirContext, directory.getServer().getRetries());
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(getIdField());
         LDAPDirectoryDescriptor descriptor = directory.getDescriptor();
@@ -141,6 +140,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     public DirContext getContext() {
+        if (dirContext == null) {
+            // Initialize directory context lazily
+            LDAPDirectory ldapDirectory = (LDAPDirectory) directory;
+            ContextProvider testServer = ldapDirectory.getTestServer();
+            DirContext context = testServer == null ? ldapDirectory.createContext() : testServer.getContext();
+            dirContext = LdapRetryHandler.wrap(context, ldapDirectory.getServer().getRetries());
+        }
         return dirContext;
     }
 
@@ -215,7 +221,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 log.debug(String.format("LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]", idField,
                         fieldMap.get(idField), dn, logAttrs, this));
             }
-            dirContext.bind(dn, null, attrs);
+            getContext().bind(dn, null, attrs);
 
             for (String referenceFieldName : referenceFieldList) {
                 List<Reference> references = directory.getReferences(referenceFieldName);
@@ -304,7 +310,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
         NamingEnumeration<SearchResult> results;
         try {
-            results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
+            results = getContext().search(searchBaseDn, filterExpr, filterArgs, scts);
         } catch (NameNotFoundException nnfe) {
             // sometimes ActiveDirectory have some query fail with: LDAP:
             // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
@@ -357,7 +363,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         + " args=* scope=%s [%s]", searchBaseDn, getDirectory().getBaseFilter(), scts.getSearchScope(),
                         this));
             }
-            NamingEnumeration<SearchResult> results = dirContext.search(searchBaseDn, getDirectory().getBaseFilter(),
+            NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, getDirectory().getBaseFilter(),
                     scts);
             // skip reference fetching
             return ldapResultsToDocumentModels(results, false);
@@ -432,13 +438,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
                             + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrsToDel, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
+                getContext().modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
                             + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrs, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
+                getContext().modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
             }
 
             // update reference fields
@@ -496,7 +502,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 log.debug(String.format("LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]", id,
                         result.getNameInNamespace(), this));
             }
-            dirContext.destroySubcontext(result.getNameInNamespace());
+            getContext().destroySubcontext(result.getNameInNamespace());
         } catch (NamingException e) {
             handleException(e, "deleteEntry failed for: " + id);
         }
@@ -588,7 +594,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         searchBaseDn, filterExpr, StringUtils.join(filterArgs, ","), scts.getSearchScope(), this));
             }
             try {
-                NamingEnumeration<SearchResult> results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
+                NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filterExpr, filterArgs,
+                        scts);
                 DocumentModelList entries = ldapResultsToDocumentModels(results, fetchReferences);
 
                 if (orderBy != null && !orderBy.isEmpty()) {
@@ -633,7 +640,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     public void close() throws DirectoryException {
         try {
-            dirContext.close();
+            getContext().close();
         } catch (NamingException e) {
             throw new DirectoryException("close failed", e);
         } finally {
@@ -1021,7 +1028,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             List<String> mandatoryAttributes = new ArrayList<>();
 
-            DirContext schema = dirContext.getSchema("");
+            DirContext schema = getContext().getSchema("");
             List<String> objectClasses = new ArrayList<>();
             if (objectClassesAttribute == null) {
                 // use the creation classes as reference schema for this entry

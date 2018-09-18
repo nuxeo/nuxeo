@@ -1073,4 +1073,13 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         String normalizedDN = LDAPReference.pseudoNormalizeDn("cn=Lamerand\\, Quentin,OU=developper,ou=PEOPLE, dc=nuxeo,dc=com");
         assertEquals("cn=lamerand\\, quentin,ou=developper,ou=people,dc=nuxeo,dc=com", normalizedDN);
     }
+
+    @Test
+    public void testDirectoryContextLazyLoading() {
+        try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
+            assertNull(session.dirContext);
+            assertNotNull(session.getContext());
+            assertNotNull(session.dirContext);
+        }
+    }
 }
