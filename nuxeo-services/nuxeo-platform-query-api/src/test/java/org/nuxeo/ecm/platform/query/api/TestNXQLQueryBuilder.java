@@ -144,6 +144,45 @@ public class TestNXQLQueryBuilder {
     }
 
     @Test
+    public void testBuildNotInIntegersQuery() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_NOT_IN_INTEGERS").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+
+        @SuppressWarnings("boxing")
+        Integer[] array1 = new Integer[] { 1, 2, 3 };
+        model.setPropertyValue("search:integerlist", array1);
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size NOT IN (1, 2, 3)", query);
+
+        @SuppressWarnings("boxing")
+        Integer[] array2 = new Integer[] { 1 };
+        model.setPropertyValue("search:integerlist", array2);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size != 1", query);
+
+        // criteria with no values are removed
+        Integer[] array3 = new Integer[0];
+        model.setPropertyValue("search:integerlist", array3);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document", query);
+
+        // arrays of long work too
+        @SuppressWarnings("boxing")
+        Long[] array4 = new Long[] { 1L, 2L, 3L };
+        model.setPropertyValue("search:integerlist", array4);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size NOT IN (1, 2, 3)", query);
+
+        // lists work too
+        @SuppressWarnings("boxing")
+        List<Long> list = Arrays.asList(1L, 2L, 3L);
+        model.setPropertyValue("search:integerlist", (Serializable) list);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size NOT IN (1, 2, 3)", query);
+    }
+
+    @Test
     public void testBuildInIntegersEmptyQuery() throws Exception {
         String pattern = "SELECT * FROM Document WHERE ecm:parentId = ? and ecm:currentLifeCycleState IN (?)";
         Object[] params = new Object[] { "docId", "" };
@@ -154,6 +193,20 @@ public class TestNXQLQueryBuilder {
         query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
         assertEquals(
                 "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('foo', 'bar')",
+                query);
+    }
+
+    @Test
+    public void testBuildInNotIntegersEmptyQuery() throws Exception {
+        String pattern = "SELECT * FROM Document WHERE ecm:parentId = ? and ecm:currentLifeCycleState NOT IN (?)";
+        Object[] params = new Object[] { "docId", "" };
+        String query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
+        assertEquals("SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState NOT IN ('')",
+                query);
+        params = new Object[] { "docId", new String[] { "foo", "bar" } };
+        query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState NOT IN ('foo', 'bar')",
                 query);
     }
 
