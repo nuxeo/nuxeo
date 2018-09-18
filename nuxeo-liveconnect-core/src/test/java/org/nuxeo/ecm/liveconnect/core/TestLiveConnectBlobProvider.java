@@ -39,7 +39,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +55,6 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
@@ -123,10 +121,10 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
             BlobInfo blobInfo = createBlobInfo(INVALID_FILE_ID);
             Blob blob = blobProvider.readBlob(blobInfo);
 
-            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
             assertEquals("Failed to access file: LiveConnectFileInfo{user=tester@example.com, fileId=invalid-file-id}",
-                    caughtEvents.get(0).getRenderedMessage());
+                    caughtEvents.get(0));
             logCaptureResult.clear();
 
             assertTrue(blob instanceof SimpleManagedBlob);
@@ -142,10 +140,9 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
             }
             assertEquals(0, bytes.length);
 
-            caughtEvents = logCaptureResult.getCaughtEvents();
+            caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
-            assertEquals("Failed to access file: core:tester@example.com:invalid-file-id",
-                    caughtEvents.get(0).getRenderedMessage());
+            assertEquals("Failed to access file: core:tester@example.com:invalid-file-id", caughtEvents.get(0));
         } finally {
             logFeature.restoreConsoleLog();
         }
