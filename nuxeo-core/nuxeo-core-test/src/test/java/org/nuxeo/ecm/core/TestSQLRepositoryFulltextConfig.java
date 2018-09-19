@@ -135,7 +135,7 @@ public class TestSQLRepositoryFulltextConfig {
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description", "test note description");
         file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
-        file3 = session.createDocument(file3);
+        file3 = session.createDocument(file3); // Note has automatic versioning so this creates a version too
 
         DocumentModel folder2 = session.createDocumentModel("/", "testfolder2", "Folder");
         folder2.setPropertyValue("dc:description", "second test folder description");
@@ -168,10 +168,13 @@ public class TestSQLRepositoryFulltextConfig {
         // query test for all types
         String query = "SELECT * FROM Document WHERE ecm:fulltext = 'test'";
         dml = session.query(query);
-        assertEquals(4, dml.size());
+        assertEquals(5, dml.size());
 
         // query for Note only
         query = "SELECT * FROM Note WHERE ecm:fulltext = 'test'";
+        dml = session.query(query);
+        assertEquals(2, dml.size());
+        query = "SELECT * FROM Note WHERE ecm:fulltext = 'test' AND ecm:isVersion = 0";
         dml = session.query(query);
         assertEquals(1, dml.size());
 

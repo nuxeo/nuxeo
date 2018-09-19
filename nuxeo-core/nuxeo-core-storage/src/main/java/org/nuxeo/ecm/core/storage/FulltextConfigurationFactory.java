@@ -25,12 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.repository.FulltextParser;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -64,24 +61,7 @@ public class FulltextConfigurationFactory {
     public static FulltextConfiguration make(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         FulltextConfiguration ftc = new FulltextConfiguration();
-
-        String fulltextParserClassName = fulltextDescriptor.getFulltextParser();
-        if (StringUtils.isBlank(fulltextParserClassName)) {
-            fulltextParserClassName = DefaultFulltextParser.class.getName();
-        }
-        Class<?> fulltextParserClass;
-        try {
-            fulltextParserClass = Thread.currentThread().getContextClassLoader().loadClass(fulltextParserClassName);
-        } catch (ClassNotFoundException e) {
-            throw new NuxeoException("Unknown fulltext parser class: " + fulltextParserClassName, e);
-        }
-        if (!FulltextParser.class.isAssignableFrom(fulltextParserClass)) {
-            throw new NuxeoException("Invalid fulltext parser class: " + fulltextParserClassName);
-        }
-        ftc.fulltextParserClass = (Class<? extends FulltextParser>) fulltextParserClass;
-
         ftc.fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
-
         ftc.fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
         // find what paths we mean by "all"

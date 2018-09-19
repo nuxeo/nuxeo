@@ -75,11 +75,6 @@ public class DBSRepositoryDescriptor implements Cloneable {
         fulltextDescriptor.setFulltextSearchDisabled(disabled);
     }
 
-    @XNode("fulltext@parser")
-    public void setFulltextParser(String fulltextParser) {
-        fulltextDescriptor.setFulltextParser(fulltextParser);
-    }
-
     @XNodeList(value = "fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public void setFulltextIndexes(List<FulltextIndexDescriptor> fulltextIndexes) {
         fulltextDescriptor.setFulltextIndexes(fulltextIndexes);

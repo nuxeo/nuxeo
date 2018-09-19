@@ -339,11 +339,6 @@ public class RepositoryDescriptor {
         fulltextDescriptor.setFulltextSearchDisabled(disabled);
     }
 
-    @XNode("indexing/fulltext@parser")
-    public void setFulltextParser(String fulltextParser) {
-        fulltextDescriptor.setFulltextParser(fulltextParser);
-    }
-
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public void setFulltextIndexes(List<FulltextIndexDescriptor> fulltextIndexes) {
         fulltextDescriptor.setFulltextIndexes(fulltextIndexes);
