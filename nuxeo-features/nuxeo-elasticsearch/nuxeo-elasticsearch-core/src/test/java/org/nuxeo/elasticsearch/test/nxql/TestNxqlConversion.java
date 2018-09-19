@@ -611,7 +611,7 @@ public class TestNxqlConversion {
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
                 "      \"exists\" : {\n" +
-                "        \"field\" : \"ecm:path.children\",\n" +
+                "        \"field\" : \"ecm:parentId\",\n" +
                 "        \"boost\" : 1.0\n" +
                 "      }\n" +
                 "    },\n" +
