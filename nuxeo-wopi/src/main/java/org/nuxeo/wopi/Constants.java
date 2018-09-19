@@ -28,8 +28,6 @@ public class Constants {
         // constants class
     }
 
-    public static final int JWT_TOKEN_TTL = 60 * 60; // 1h
-
     public static final String ACCESS_TOKEN = "accessToken";
 
     public static final String ACCESS_TOKEN_TTL = "accessTokenTTL";
@@ -44,6 +42,10 @@ public class Constants {
 
     public static final String FORM_URL = "formURL";
 
+    public static final int JWT_TOKEN_TTL = 60 * 60; // 1h
+
+    public static final String NOTIFICATION_DOCUMENT_ID_CODEC_NAME = "notificationDocId";
+
     public static final String WOPI_SERVLET_PATH = "wopi";
 
     public static final String WOPI_SOURCE = "wopi";
@@ -51,8 +53,6 @@ public class Constants {
     public static final String WOPI_SRC = "WOPISrc";
 
     public static final String WOPI_USER = "wopiUser";
-
-    public static final String NOTIFICATION_DOCUMENT_ID_CODEC_NAME = "notificationDocId";
 
     // -------- WOPI locks directory ---------------
 
@@ -148,7 +148,7 @@ public class Constants {
 
     public static final String SHARE_URL = "ShareUrl";
 
-    public static final String SHARE_URL_READ_ONLY = "ReadOnly";
+    public static final String SHARE_URL_READ_ONLY = "ReadOnly"; // NOSONAR
 
     public static final String SHARE_URL_READ_WRITE = "ReadWrite";
 

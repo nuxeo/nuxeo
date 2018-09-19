@@ -55,13 +55,19 @@ public class WOPIServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String WORD_APP_NAME = "Word";
+
     public static final String WORD_VIEW_URL = "https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?";
 
     public static final String WORD_EDIT_URL = "https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?";
 
+    public static final String EXCEL_APP_NAME = "Excel";
+
     public static final String EXCEL_VIEW_URL = "https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?";
 
     public static final String EXCEL_EDIT_URL = EXCEL_VIEW_URL + "edit=1&";
+
+    public static final String POWERPOINT_APP_NAME = "PowerPoint";
 
     public static final String POWERPOINT_VIEW_URL = "https://powerpoint.officeapps-df.live.com/p/PowerPointFrame.aspx?PowerPointView=ReadingView&";
 
@@ -69,43 +75,43 @@ public class WOPIServlet extends HttpServlet {
 
     public static final String WOPITEST_VIEW_URL = "https://onenote.officeapps-df.live.com/hosting/WopiTestFrame.aspx?";
 
-    public static final Map<Pair<String, String>, Pair<String, String>> ACTIONS_TO_URLS = new HashMap<>();
+    protected static final Map<Pair<String, String>, Pair<String, String>> ACTIONS_TO_URLS = new HashMap<>();
 
     static {
-        ACTIONS_TO_URLS.put(Pair.of("view", "doc"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docm"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "dot"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "dotm"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "odt"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "rtf"), Pair.of("Word", WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docm"), Pair.of("Word", WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docx"), Pair.of("Word", WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odt"), Pair.of("Word", WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "csv"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ods"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xls"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsb"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsm"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsx"), Pair.of("Excel", EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ods"), Pair.of("Excel", EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsb"), Pair.of("Excel", EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsm"), Pair.of("Excel", EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsx"), Pair.of("Excel", EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "odp"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pot"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "potm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "potx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pps"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppt"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptm"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptx"), Pair.of("PowerPoint", POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odp"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ppsx"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "pptx"), Pair.of("PowerPoint", POWERPOINT_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "doc"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docm"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "dot"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "dotm"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "odt"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "rtf"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "docm"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "docx"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "odt"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "csv"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ods"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xls"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsb"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsm"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "xlsx"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "ods"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsb"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsm"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsx"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "odp"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pot"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "potm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "potx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pps"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppsm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppsx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "ppt"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pptm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("view", "pptx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "odp"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "ppsx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
+        ACTIONS_TO_URLS.put(Pair.of("edit", "pptx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
         // for testing
         ACTIONS_TO_URLS.put(Pair.of("view", "wopitest"), Pair.of("WopiTest", WOPITEST_VIEW_URL));
     }
