@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -184,7 +185,7 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public List<Node> getNodesByIds(List<Serializable> ids) {
+    public List<Node> getNodesByIds(Collection<Serializable> ids) {
         return getSession().getNodesByIds(ids);
     }
 

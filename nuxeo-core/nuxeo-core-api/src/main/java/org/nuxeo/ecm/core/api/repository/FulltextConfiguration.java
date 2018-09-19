@@ -73,13 +73,6 @@ public class FulltextConfiguration {
 
     public final Set<String> includedTypes = new HashSet<>();
 
-    /**
-     * Fulltext parser class.
-     *
-     * @since 10.3
-     */
-    public Class<? extends FulltextParser> fulltextParserClass;
-
     public boolean fulltextSearchDisabled;
 
     public int fulltextFieldSizeLimit;
