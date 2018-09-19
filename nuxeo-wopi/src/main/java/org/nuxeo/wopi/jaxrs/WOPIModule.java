@@ -40,7 +40,6 @@ public class WOPIModule extends WebEngineModule {
         singletons.add(new JsonCoreIODelegate());
         singletons.add(new BlobWriter());
         singletons.add(new JacksonJsonProvider());
-        singletons.add(new WOPIExceptionMapper());
         return singletons;
     }
 }
