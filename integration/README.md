@@ -66,9 +66,9 @@ Here are some extracts from a typical execution of `ondemand-testandpush` job ag
 [INFO] --- ant-assembly-maven-plugin:2.1.0:build (setup-vcs) @ nuxeo-ecm ---
 [INFO] Active Maven profiles:
 qa (source: external)
-qa (source: org.nuxeo:nuxeo-ecm:10.3-SNAPSHOT)
-customdb (source: org.nuxeo:nuxeo-ecm:10.3-SNAPSHOT)
-mysql (source: org.nuxeo:nuxeo-ecm:10.3-SNAPSHOT)
+qa (source: org.nuxeo:nuxeo-ecm:10.3-I20180919_0126)
+customdb (source: org.nuxeo:nuxeo-ecm:10.3-I20180919_0126)
+mysql (source: org.nuxeo:nuxeo-ecm:10.3-I20180919_0126)
 
 vcs-tests._initdb:
 [INFO]      [echo] Using NX_MYSQL_DB_PORT fallback for undefined NX_DB_PORT
