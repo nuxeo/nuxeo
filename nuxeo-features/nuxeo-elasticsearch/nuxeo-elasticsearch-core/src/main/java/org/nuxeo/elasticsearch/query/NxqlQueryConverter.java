@@ -468,6 +468,11 @@ public final class NxqlQueryConverter {
             ret = matchPhraseQuery;
             break;
         case "match_phrase_prefix":
+            String valueString = (String) value;
+            if (valueString.endsWith("*") && valueString.length() > 2) {
+                // remove useless trailing *, this is not mandatory but cleaner
+                value = valueString.substring(0, valueString.length() - 1);
+            }
             MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
             if (hint.analyzer != null) {
                 matchPhrasePrefixQuery.analyzer(hint.analyzer);
