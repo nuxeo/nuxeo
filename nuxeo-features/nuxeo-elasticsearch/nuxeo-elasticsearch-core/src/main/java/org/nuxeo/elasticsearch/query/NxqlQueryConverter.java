@@ -573,8 +573,13 @@ public final class NxqlQueryConverter {
         QueryBuilder filter;
         String indexName = name + ".children";
         if ("/".equals(value)) {
-            // match all document with a path
-            filter = QueryBuilders.existsQuery(indexName);
+            if (NXQL.ECM_PATH.equals(name)) {
+                // any non orphan|place-less document must have a path starting with "/"
+                filter = QueryBuilders.existsQuery(NXQL.ECM_PARENTID);
+            } else {
+                // match any document with a populated field
+                filter = QueryBuilders.existsQuery(indexName);
+            }
         } else {
             String v = String.valueOf(value);
             if (v.endsWith("/")) {

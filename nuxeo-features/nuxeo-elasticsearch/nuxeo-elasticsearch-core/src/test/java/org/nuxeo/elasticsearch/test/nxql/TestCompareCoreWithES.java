@@ -114,6 +114,10 @@ public class TestCompareCoreWithES {
         DocumentModel proxy = session.publishDocument(file, folder);
         proxyPath = proxy.getPathAsString();
 
+        DocumentModel orphan = session.createDocumentModel(null, "orphan", "File");
+        orphan.setPropertyValue("dc:title", "orphan document");
+        session.createDocument(orphan);
+
         trashService.trashDocument(session.getDocument(new PathRef("/file1")));
         trashService.trashDocument(session.getDocument(new PathRef("/note5")));
 
@@ -196,7 +200,7 @@ public class TestCompareCoreWithES {
     protected void compareESAndCore(String nxql) throws Exception {
 
         DocumentModelList coreResult = session.query(nxql);
-        NxQueryBuilder nxQueryBuilder = new NxQueryBuilder(session).nxql(nxql).limit(20);
+        NxQueryBuilder nxQueryBuilder = new NxQueryBuilder(session).nxql(nxql).limit(30);
         for (int i = 0; i < 2; i++) {
             if (i == 1) {
                 nxQueryBuilder = nxQueryBuilder.fetchFromElasticsearch();
@@ -272,7 +276,6 @@ public class TestCompareCoreWithES {
         testQueries(new String[] {
                 // Note that there are differnces between ES and VCS:
                 // ES version document has a path and is searchable with startswith
-                // ES match the root document, VCS only the children
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/nomatch' ORDER BY dc:title",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/folder' AND ecm:path != '/folder' ORDER BY dc:title",
                 "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' AND ecm:isVersion = 0 ORDER BY dc:title", });
