@@ -466,7 +466,7 @@ public class RoutingTaskActionsBean implements Serializable {
                         el.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
                         el.setCurrentDocument(navigationContext.getCurrentDocument());
                         mode = el.evalExpression(mode, String.class);
-                        if (mode != null && mode.equals(BuiltinModes.EDIT)) {
+                        if (mode == null || mode.equals(BuiltinModes.EDIT)) {
                             Arrays.stream(widgetDefinition.getFieldDefinitions()).forEach((field) -> {
                                 // workflow form fields are always like "['$variable']"
                                 // remove both [' and '] to keep only the variable name
