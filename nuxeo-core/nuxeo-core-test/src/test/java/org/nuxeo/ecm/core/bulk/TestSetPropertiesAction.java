@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -81,6 +82,13 @@ public class TestSetPropertiesAction {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(10, status.getProcessed());
+
+        List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
+        assertEquals(1, statuses.size());
+        assertEquals(status.getId(), statuses.get(0).getId());
+
+        List<BulkStatus> emptyStatuses = service.getStatuses("toto");
+        assertEquals(0, emptyStatuses.size());
 
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(title, child.getTitle());

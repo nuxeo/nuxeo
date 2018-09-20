@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import java.time.Duration;
+import java.util.List;
 
 /**
  * API to manage Bulk Computation.
@@ -58,5 +59,14 @@ public interface BulkService {
      * @since 10.3
      */
     boolean await(Duration duration) throws InterruptedException;
+
+    /**
+     * Gets the list of action statuses triggered by the given user.
+     * 
+     * @param username the user name
+     * @return the list of statuses
+     * @since 10.3
+     */
+    List<BulkStatus> getStatuses(String username);
 
 }
