@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Default generic descriptor registry.
  * <p>
@@ -40,6 +43,8 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("unchecked")
 public class DescriptorRegistry {
+
+    private static final Logger log = LogManager.getLogger();
 
     // target -> xp -> id -> list of descriptors
     protected Map<String, Map<String, Map<String, List<Descriptor>>>> descriptors = new HashMap<>();
@@ -61,15 +66,17 @@ public class DescriptorRegistry {
                                     .collect(Collectors.toList());
     }
 
-    public boolean register(String target, String xp, Descriptor descpritor) {
+    public boolean register(String target, String xp, Descriptor descriptor) {
+        log.trace("Register {} to {}/{}", descriptor.getId(), target, xp);
         return descriptors.computeIfAbsent(target, k -> new HashMap<>())
                           .computeIfAbsent(xp, k -> new LinkedHashMap<>())
-                          .computeIfAbsent(descpritor.getId(), k -> new ArrayList<>())
-                          .add(descpritor);
+                          .computeIfAbsent(descriptor.getId(), k -> new ArrayList<>())
+                          .add(descriptor);
 
     }
 
     public boolean unregister(String target, String xp, Descriptor descriptor) {
+        log.trace("Register {} to {}/{}", descriptor.getId(), target, xp);
         return descriptors.getOrDefault(target, Collections.emptyMap())
                           .getOrDefault(xp, Collections.emptyMap())
                           .getOrDefault(descriptor.getId(), Collections.emptyList())

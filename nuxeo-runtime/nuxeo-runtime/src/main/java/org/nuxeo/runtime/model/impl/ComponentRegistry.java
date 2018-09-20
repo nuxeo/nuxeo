@@ -27,8 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public class ComponentRegistry {
 
-    private final Log log = LogFactory.getLog(ComponentRegistry.class);
+    private final Logger log = LogManager.getLogger();
 
     /**
      * All registered components including unresolved ones. You can check the state of a component for getting the
@@ -118,8 +118,7 @@ public class ComponentRegistry {
     public synchronized boolean addComponent(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         Set<ComponentName> al = ri.getAliases();
-        String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
-        log.info("Registering component: " + name + aliasInfo);
+        log.trace("Registering component: {}{}", () -> name, () -> al.isEmpty() ? "" : ", aliases=" + al);
         if (ri.useFormerLifecycleManagement()) {
             ((RegistrationInfoImpl) ri).register();
         } else {

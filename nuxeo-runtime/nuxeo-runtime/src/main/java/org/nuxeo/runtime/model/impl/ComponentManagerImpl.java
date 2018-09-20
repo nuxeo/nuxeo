@@ -43,8 +43,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
@@ -65,9 +65,7 @@ import org.nuxeo.runtime.util.Watch;
  */
 public class ComponentManagerImpl implements ComponentManager {
 
-    private static final Log log = LogFactory.getLog(ComponentManagerImpl.class);
-
-    private static final Log infoLog = LogFactory.getLog(ComponentManager.class);
+    private static final Logger log = LogManager.getLogger();
 
     // must use an ordered Set to avoid loosing the order of the pending
     // extensions
@@ -253,7 +251,7 @@ public class ComponentManagerImpl implements ComponentManager {
     public synchronized void register(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {
-            log.info("Component " + name.getName() + " was blacklisted. Ignoring.");
+            log.debug("Component {} was blacklisted. Ignoring.", name.getName());
             return;
         }
 
@@ -296,7 +294,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
 
         try {
-            log.info("Registering component: " + name);
+            log.debug("Registering component: {}", name);
             if (!registry.addComponent(ri)) {
                 log.info("Registration delayed for component: " + name + ". Waiting for: "
                         + registry.getMissingDependencies(ri.getName()));
@@ -323,10 +321,10 @@ public class ComponentManagerImpl implements ComponentManager {
             changed = true;
         }
         try {
-            log.info("Unregistering component: " + name);
+            log.debug("Unregistering component: {}", name);
             registry.removeComponent(name);
         } catch (RuntimeException e) {
-            log.error("Failed to unregister component: " + name, e);
+            log.error("Failed to unregister component: {}", name, e);
         }
     }
 
@@ -374,9 +372,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         ComponentInstance ci = ri.getComponent();
         if (ci == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("The component exposing the service " + serviceClass + " is not resolved or not started");
-            }
+            log.debug("The component exposing the service {} is not resolved or not started", serviceClass);
         }
         return ci;
     }
@@ -409,7 +405,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     void sendEvent(ComponentEvent event) {
-        log.debug("Dispatching event: " + event);
+        log.trace("Dispatching event: {}", event);
         Object[] listeners = this.compListeners.getListeners();
         for (Object listener : listeners) {
             ((ComponentListener) listener).handleEvent(event);
@@ -420,18 +416,14 @@ public class ComponentManagerImpl implements ComponentManager {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfo ri = registry.getComponent(name);
         if (ri != null && ri.getComponent() != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Register contributed extension: " + extension);
-            }
+            log.debug("Register contributed extension: {}", extension);
             loadContributions(ri, extension);
             ri.getComponent().registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         } else {
             // put the extension in the pending queue
-            if (log.isDebugEnabled()) {
-                log.debug("Enqueue contributed extension to pending queue: " + extension);
-            }
+            log.debug("Enqueue contributed extension to pending queue: {}", extension);
             // must keep order in which extensions are contributed
             pendingExtensions.computeIfAbsent(name, key -> new LinkedHashSet<>()).add(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
@@ -441,9 +433,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public synchronized void unregisterExtension(Extension extension) {
         // TODO check if framework is shutting down and in that case do nothing
-        if (log.isDebugEnabled()) {
-            log.debug("Unregister contributed extension: " + extension);
-        }
+        log.debug("Unregister contributed extension: {}", extension);
         ComponentName name = extension.getTargetComponent();
         RegistrationInfo ri = registry.getComponent(name);
         if (ri != null) {
@@ -489,9 +479,8 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
         for (String serviceName : serviceNames) {
-            log.info("Registering service: " + serviceName);
+            log.trace("Registering service: {}", serviceName);
             services.put(serviceName, ri);
-            // TODO: send notifications
         }
     }
 
@@ -502,7 +491,6 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         for (String service : serviceNames) {
             services.remove(service);
-            // TODO: send notifications
         }
     }
 
@@ -523,6 +511,7 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.2
      */
     protected List<RegistrationInfo> activateComponents() {
+        log.info("Activate components");
         Watch watch = new Watch();
         watch.start();
         listeners.beforeActivation();
@@ -541,9 +530,7 @@ public class ComponentManagerImpl implements ComponentManager {
         listeners.afterActivation();
         watch.stop();
 
-        if (infoLog.isInfoEnabled()) {
-            infoLog.info("Components activated in " + watch.total.formatSeconds() + " sec.");
-        }
+        log.debug("Components activated in {}s", watch.total::formatSeconds);
         writeDevMetrics(watch, "activate");
 
         return ris;
@@ -568,7 +555,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
         ComponentInstance component = ri.getComponent();
         component.activate();
-        log.info("Component activated: " + ri.getName());
+        log.debug("Component activated: {}", ri.getName());
 
         // register contributed extensions if any
         Extension[] extensions = ri.getExtensions();
@@ -622,6 +609,7 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.2
      */
     protected void deactivateComponents(boolean isShutdown) {
+        log.info("Deactivate components");
         Watch watch = new Watch();
         watch.start();
         listeners.beforeDeactivation();
@@ -641,9 +629,7 @@ public class ComponentManagerImpl implements ComponentManager {
         listeners.afterDeactivation();
         watch.stop();
 
-        if (infoLog.isInfoEnabled()) {
-            infoLog.info("Components deactivated in " + watch.total.formatSeconds() + " sec.");
-        }
+        log.debug("Components deactivated in {}s", watch.total::formatSeconds);
         writeDevMetrics(watch, "deactivate");
     }
 
@@ -686,6 +672,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
         ComponentInstance component = ri.getComponent();
         component.deactivate();
+        log.debug("Component deactivated: {}", ri.getName());
         ri.setState(RegistrationInfo.RESOLVED);
     }
 
@@ -695,6 +682,7 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.2
      */
     protected void startComponents(List<RegistrationInfo> ris, boolean isResume) {
+        log.info("Start components (isResume={})", isResume);
         Watch watch = new Watch();
         watch.start();
         listeners.beforeStart(isResume);
@@ -707,9 +695,7 @@ public class ComponentManagerImpl implements ComponentManager {
         listeners.afterStart(isResume);
         watch.stop();
 
-        if (infoLog.isInfoEnabled()) {
-            infoLog.info("Components started in " + watch.total.formatSeconds() + " sec.");
-        }
+        log.debug("Components started in {}s", watch.total::formatSeconds);
         writeDevMetrics(watch, "start");
     }
 
@@ -730,10 +716,10 @@ public class ComponentManagerImpl implements ComponentManager {
             ri.setState(RegistrationInfo.STARTING);
             ComponentInstance component = ri.getComponent();
             component.start();
+            log.debug("Component started: {}", ri.getName());
             ri.setState(RegistrationInfo.STARTED);
         } catch (RuntimeException e) {
-            log.error(String.format("Component %s notification of application started failed: %s", ri.getName(),
-                    e.getMessage()), e);
+            log.error("Component {} notification of application started failed: {}", ri.getName(), e.getMessage(), e);
             ri.setState(RegistrationInfo.START_FAILURE);
         }
     }
@@ -744,6 +730,7 @@ public class ComponentManagerImpl implements ComponentManager {
      * @since 9.2
      */
     protected void stopComponents(boolean isStandby) {
+        log.info("Stop components (isStandby={})", isStandby);
         try {
             Watch watch = new Watch();
             watch.start();
@@ -760,9 +747,7 @@ public class ComponentManagerImpl implements ComponentManager {
             listeners.afterStop(isStandby);
             watch.stop();
 
-            if (infoLog.isInfoEnabled()) {
-                infoLog.info("Components stopped in " + watch.total.formatSeconds() + " sec.");
-            }
+            log.debug("Components stopped in {}s", watch.total::formatSeconds);
             writeDevMetrics(watch, "stop");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -786,6 +771,7 @@ public class ComponentManagerImpl implements ComponentManager {
         ri.setState(RegistrationInfo.STOPPING);
         ComponentInstance component = ri.getComponent();
         component.stop();
+        log.debug("Component stopped: {}", ri.getName());
         ri.setState(RegistrationInfo.RESOLVED);
     }
 
@@ -795,7 +781,7 @@ public class ComponentManagerImpl implements ComponentManager {
             return false;
         }
 
-        infoLog.info("Starting Nuxeo Components");
+        log.info("Starting Nuxeo Components");
 
         List<RegistrationInfo> ris = activateComponents();
 
@@ -814,7 +800,7 @@ public class ComponentManagerImpl implements ComponentManager {
             return false;
         }
 
-        infoLog.info("Stopping Nuxeo Components");
+        log.info("Stopping Nuxeo Components");
 
         try {
             stopComponents(false);
@@ -968,7 +954,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     protected synchronized void applyStash(Stash stash) {
-        log.info("Applying stashed components");
+        log.debug("Applying stashed components");
         isFlushingStash = true;
         try {
             for (ComponentName name : stash.toRemove) {
@@ -1075,7 +1061,7 @@ public class ComponentManagerImpl implements ComponentManager {
             Arrays.stream(watch.getIntervals()).sorted(Comparator.reverseOrder()).forEach(ps::println);
             ps.flush();
         } catch (IOException e) {
-            log.error("Failed to write metrics file: " + file, e);
+            log.error("Failed to write metrics file: {}", file, e);
         }
     }
 
