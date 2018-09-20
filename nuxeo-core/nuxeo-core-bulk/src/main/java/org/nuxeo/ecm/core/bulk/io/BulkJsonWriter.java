@@ -22,12 +22,15 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.BulkStatus;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -52,6 +55,10 @@ public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
         jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
         jg.writeNumberField(BULK_COUNT, entity.getCount());
         jg.writeNumberField(BULK_PROCESSED, entity.getProcessed());
+        Map<String, Serializable> result = entity.getResult();
+        if (!result.isEmpty()) {
+            jg.writeObjectField(BULK_RESULT, result);
+        }
     }
 
 }

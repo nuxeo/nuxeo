@@ -18,18 +18,23 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.Map;
 
+import org.nuxeo.ecm.core.bulk.BulkParameters;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
 import org.nuxeo.ecm.core.bulk.BulkStatus.State;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
@@ -74,6 +79,12 @@ public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
         if (processed != null) {
             status.setProcessed(processed.longValue());
         }
+
+        Map<String, Serializable> result = emptyMap();
+        if (jn.has(BULK_RESULT)) {
+            result = BulkParameters.paramsToMap(jn.get(BULK_RESULT));
+        }
+        status.setResult(result);
 
         return status;
     }

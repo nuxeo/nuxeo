@@ -42,6 +42,9 @@ public class BulkConstants {
      */
     public static final String BULK_PROCESSED = "processed";
 
+    /** @since 10.3 */
+    public static final String BULK_RESULT = "result";
+
     // BulkCommand part
 
     public static final String COMMAND_ENTITY_TYPE = "bulkCommand";

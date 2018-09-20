@@ -21,9 +21,12 @@ package org.nuxeo.ecm.core.bulk;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.avro.reflect.AvroEncode;
 import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
+import org.nuxeo.ecm.core.bulk.io.MapAsJsonAsStringEncoding;
 
 /**
  * This object holds the current bulk command execution status.
@@ -70,6 +73,9 @@ public class BulkStatus implements Serializable {
     protected long processed;
 
     protected long count;
+
+    @AvroEncode(using = MapAsJsonAsStringEncoding.class)
+    protected Map<String, Serializable> result;
 
     /**
      * Gets bulk id.
@@ -195,6 +201,26 @@ public class BulkStatus implements Serializable {
      */
     public void setCount(long count) {
         this.count = count;
+    }
+
+    /**
+     * Gets action result.
+     * 
+     * @return the action result
+     * @since 10.3
+     */
+    public Map<String, Serializable> getResult() {
+        return Collections.unmodifiableMap(result);
+    }
+
+    /**
+     * Sets action result.
+     * 
+     * @param result the action result
+     * @since 10.3
+     */
+    public void setResult(Map<String, Serializable> result) {
+        this.result = result;
     }
 
 }
