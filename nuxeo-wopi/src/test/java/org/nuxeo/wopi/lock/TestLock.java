@@ -238,6 +238,30 @@ public class TestLock {
         }
     }
 
+    @Test
+    public void testLockRemovalOnNuxeoUnlock() {
+        // add WOPI lock and lock document in Nuxeo
+        LockHelper.addLock(fileId, "foo");
+        doc.setLock();
+        assertTrue(doc.isLocked());
+        assertEquals("foo", LockHelper.getLock(fileId));
+
+        // unlock document in Nuxeo, expect WOPI lock removal
+        doc.removeLock();
+        assertFalse(doc.isLocked());
+        assertNull(LockHelper.getLock(fileId));
+
+        // lock document in Nuxeo
+        doc.setLock();
+        assertTrue(doc.isLocked());
+        assertNull(LockHelper.getLock(fileId));
+
+        // unlock document in Nuxeo, expect no side effect
+        doc.removeLock();
+        assertFalse(doc.isLocked());
+        assertNull(LockHelper.getLock(fileId));
+    }
+
     protected void fireLockExpirationEvent() {
         EventContext eventContext = new EventContextImpl();
         Event event = eventContext.newEvent(LOCK_EXPIRATION_EVENT);

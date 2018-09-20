@@ -7,6 +7,7 @@ Bundle-Vendor: Nuxeo
 Nuxeo-WebModule: org.nuxeo.wopi.jaxrs.WOPIModule;name=wopi
 Nuxeo-Component: OSGI-INF/auth-contrib.xml,
  OSGI-INF/directories-contrib.xml,
+ OSGI-INF/listeners-contrib.xml,
  OSGI-INF/marshallers-contrib.xml,
  OSGI-INF/request-controller-contrib.xml,
  OSGI-INF/schedulers-contrib.xml,

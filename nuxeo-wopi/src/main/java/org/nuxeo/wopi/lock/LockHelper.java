@@ -132,6 +132,18 @@ public class LockHelper {
     }
 
     /**
+     * Removes all the WOPI locks stored for the given repository and doc id.
+     */
+    public static void removeLocks(String repository, String docId) {
+        doPriviledgedOnLockDirectory(session -> {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
+            filter.put(LOCK_DIRECTORY_DOC_ID, docId);
+            session.query(filter).forEach(session::deleteEntry);
+        });
+    }
+
+    /**
      * Returns the list of expired stored WOPI locks according to the {@link Constants#LOCK_TTL} for each repository.
      */
     public static Map<String, List<DocumentModel>> getExpiredLocksByRepository() {
