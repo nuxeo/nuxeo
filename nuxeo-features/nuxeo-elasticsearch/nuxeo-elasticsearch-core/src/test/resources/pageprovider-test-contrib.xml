@@ -274,6 +274,24 @@
             <property name="size">5</property>
           </properties>
         </aggregate>
+        <aggregate id="primaryType" parameter="ecm:primaryType" type="terms">
+          <field name="system_primaryType_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="mixinType" parameter="ecm:mixinType" type="terms">
+          <field name="system_mixinType_agg" schema="advanced_search" />
+        </aggregate>
+      </aggregates>
+    </genericPageProvider>
+
+    <genericPageProvider name="invalid_system_prop_aggregate" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <property name="maxResults">10000</property>
+      <pageSize>20</pageSize>
+      <pattern>SELECT * FROM Document</pattern>
+      <aggregates>
+        <aggregate id="path" parameter="ecm:path" type="terms">
+          <field name="system_path_agg" schema="advanced_search" />
+        </aggregate>
       </aggregates>
     </genericPageProvider>
 
