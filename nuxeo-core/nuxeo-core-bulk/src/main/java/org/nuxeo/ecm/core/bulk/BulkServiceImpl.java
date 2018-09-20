@@ -30,7 +30,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
@@ -142,5 +145,15 @@ public class BulkServiceImpl implements BulkService {
             Thread.sleep(100);
         }
         return true;
+    }
+
+    @Override
+    public List<BulkStatus> getStatuses(String username) {
+        KeyValueStoreProvider kv = (KeyValueStoreProvider) getKvStore();
+        return kv.keyStream()
+                 .filter(key -> key.endsWith(COMMAND)
+                         && username.equals(BulkCodecs.getBulkCommandCodec().decode(kv.get(key)).getUsername()))
+                 .map(key -> BulkCodecs.getBulkStatusCodec().decode(kv.get(key.replace(COMMAND, STATUS))))
+                 .collect(Collectors.toList());
     }
 }

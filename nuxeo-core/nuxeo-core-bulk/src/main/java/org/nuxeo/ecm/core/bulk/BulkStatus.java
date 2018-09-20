@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.bulk;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.avro.reflect.AvroEncode;
@@ -75,7 +76,7 @@ public class BulkStatus implements Serializable {
     protected long count;
 
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
-    protected Map<String, Serializable> result;
+    protected Map<String, Serializable> result = new HashMap<>();
 
     /**
      * Gets bulk id.
