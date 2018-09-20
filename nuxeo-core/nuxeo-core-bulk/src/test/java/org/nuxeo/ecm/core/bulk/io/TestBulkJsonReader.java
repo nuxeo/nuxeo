@@ -21,7 +21,10 @@ package org.nuxeo.ecm.core.bulk.io;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
@@ -42,11 +45,16 @@ public class TestBulkJsonReader extends AbstractJsonReaderTest.Local<BulkJsonRea
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDefault() throws Exception {
         File file = FileUtils.getResourceFileFromContext("bulk-status-test-default.json");
         BulkStatus status = asObject(file);
         assertEquals("00000000-0000-0000-0000-000000000000", status.getId());
         assertEquals(State.SCHEDULED, status.getState());
         assertEquals(Instant.parse("2018-06-21T12:37:08.172Z"), status.getSubmitTime());
+        Map<String, Serializable> result = status.getResult();
+        assertEquals("o1", result.get("result1"));
+        assertEquals("o2", ((List<String>) result.get("result2")).get(0));
+        assertEquals("o3", ((List<String>) result.get("result2")).get(1));
     }
 }

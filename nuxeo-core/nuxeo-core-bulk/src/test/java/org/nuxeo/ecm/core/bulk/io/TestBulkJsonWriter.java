@@ -22,11 +22,13 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 
 import java.time.Instant;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.bulk.BulkStatus;
@@ -55,14 +57,16 @@ public class TestBulkJsonWriter extends AbstractJsonWriterTest.Local<BulkJsonWri
         status.setId(zeroId);
         status.setState(State.SCHEDULED);
         status.setSubmitTime(Instant.parse(instant));
+        status.setResult(Collections.singletonMap("result", "test"));
 
         JsonAssert json = jsonAssert(status);
-        json.properties(6);
+        json.properties(7);
         json.has(ENTITY_FIELD_NAME).isEquals(BULK_ENTITY_TYPE);
         json.has(BULK_ID).isEquals(status.getId());
         json.has(BULK_STATE).isEquals(status.getState().toString());
         json.has(BULK_SUBMIT).isEquals(instant);
         json.has(BULK_COUNT).isEquals(0);
         json.has(BULK_PROCESSED).isEquals(0);
+        json.has(BULK_RESULT).has("result").isEquals("test");
     }
 }
