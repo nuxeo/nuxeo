@@ -19,13 +19,18 @@
 package org.nuxeo.elasticsearch.test.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -230,6 +235,33 @@ public class RestESDocumentsTest extends BaseTest {
             assertEquals("art/cinema", keyText);
             fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
             assertEquals("cinema", fetchedkeyIdText);
+
+            JsonNode primaryTypeNode = node.get("aggregations").get("primaryType");
+            assertEquals("terms", primaryTypeNode.get("type").getTextValue());
+            JsonNode noteTypeNode = StreamSupport.stream(primaryTypeNode.get("buckets").spliterator(), false)
+                                                 .filter(n -> "Note".equals(n.get("key").getTextValue()))
+                                                 .findFirst()
+                                                 .orElse(null);
+            assertNotNull(noteTypeNode);
+
+            JsonNode mixinTypeNode = node.get("aggregations").get("mixinType");
+            assertEquals("terms", mixinTypeNode.get("type").getTextValue());
+            JsonNode tagFacetNode = StreamSupport.stream(mixinTypeNode.get("buckets").spliterator(), false)
+                                                 .filter(n -> TAG_FACET.equals(n.get("key").getTextValue()))
+                                                 .findFirst()
+                                                 .orElse(null);
+            assertNotNull(tagFacetNode);
+
         }
+
+        // Test invalid system property as page provider aggregate
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/invalid_system_prop_aggregate", null,
+                null, null, headers)) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertNull(node.get("aggregations").get("path").get("buckets"));
+        }
+
     }
 }

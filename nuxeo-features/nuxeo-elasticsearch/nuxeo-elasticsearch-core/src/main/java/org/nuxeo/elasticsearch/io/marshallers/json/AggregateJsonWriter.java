@@ -23,6 +23,12 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARA
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_LIFECYCLESTATE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_MIXINTYPE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PREFIX;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_TAG;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_VERSIONLABEL;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -45,7 +51,10 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SchemaImpl;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -68,6 +77,17 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
 
     private static final Log log = LogFactory.getLog(AggregateJsonWriter.class);
 
+    /** Fake schema for system properties usable as a page provider aggregate */
+    protected static final Schema SYSTEM_SCHEMA = new SchemaImpl("system", null);
+
+    static {
+        SYSTEM_SCHEMA.addField(ECM_MIXINTYPE, new ListTypeImpl("system", "", StringType.INSTANCE), null, 0, null);
+        SYSTEM_SCHEMA.addField(ECM_TAG, new ListTypeImpl("system", "", StringType.INSTANCE), null, 0, null);
+        SYSTEM_SCHEMA.addField(ECM_PRIMARYTYPE, StringType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField(ECM_LIFECYCLESTATE, StringType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField(ECM_VERSIONLABEL, StringType.INSTANCE, null, 0, null);
+    }
+
     @Inject
     private SchemaManager schemaManager;
 
@@ -88,6 +108,17 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
     @Override
     protected void writeEntityBody(Aggregate agg, JsonGenerator jg) throws IOException {
         boolean fetch = ctx.getFetched(ENTITY_TYPE).contains(FETCH_KEY);
+        String fieldName = agg.getField();
+        Field field;
+        if (fieldName.startsWith(ECM_PREFIX)) {
+            field = SYSTEM_SCHEMA.getField(fieldName);
+            if (field == null) {
+                log.warn(String.format("%s is not a valid field for aggregates", fieldName));
+                return;
+            }
+        } else {
+            field = schemaManager.getField(fieldName);
+        }
         jg.writeObjectField("id", agg.getId());
         jg.writeObjectField("field", agg.getField());
         jg.writeObjectField("properties", agg.getProperties());
@@ -98,8 +129,6 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
             jg.writeObjectField("buckets", agg.getBuckets());
             jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
         } else {
-            String fieldName = agg.getField();
-            Field field = schemaManager.getField(fieldName);
             if (field != null) {
                 try (Closeable resource = ctx.wrap()
                                              .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
