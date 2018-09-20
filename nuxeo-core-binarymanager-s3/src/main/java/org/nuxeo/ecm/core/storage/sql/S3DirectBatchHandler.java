@@ -219,13 +219,12 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             }
         }
 
-        String blobKey = transientStoreName + ':' + etag;
         String filename = fileInfo.getFilename();
         long length = newMetadata.getContentLength();
-        String digest = newMetadata.getContentMD5();
+        String digest = newMetadata.getContentMD5() != null ? newMetadata.getContentMD5() : etag;
         String blobProviderId = transientStoreName; // TODO decouple this
-        Binary binary = new LazyBinary(blobKey, blobProviderId, null);
-        Blob blob = new BinaryBlob(binary, blobKey, filename, mimeType, encoding, digest, length);
+        Binary binary = new LazyBinary(digest, blobProviderId, null);
+        Blob blob = new BinaryBlob(binary, digest, filename, mimeType, encoding, digest, length);
         Batch batch = getBatch(batchId);
         batch.addFile(fileIndex, blob, filename, mimeType);
 
