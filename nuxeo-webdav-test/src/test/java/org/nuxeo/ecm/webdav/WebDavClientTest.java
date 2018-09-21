@@ -504,7 +504,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
         String tempName = "foo.tmp";
         byte[] newBytesContent = "123456".getBytes(UTF_8);
-        doTestPutFile(tempName, newBytesContent, wordMimeType, expectedNuxeoType);
+        doTestPutFile(tempName, newBytesContent, octetStreamMimeType, expectedNuxeoType);
 
         // rename it to a temp file
         String origTempName = "bar.tmp";
