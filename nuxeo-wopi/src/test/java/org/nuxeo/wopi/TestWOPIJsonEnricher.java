@@ -92,6 +92,8 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         // blob with an extension not supported by WOPI
         Blob blob = Blobs.createBlob("dummy content");
         blob.setFilename("content.txt");
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+        session.saveDocument(doc);
         json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
         json = json.has("contextParameters").isObject();
         json.properties(0);
