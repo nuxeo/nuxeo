@@ -50,7 +50,7 @@ public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
 
     @Override
     public void writeEntityBody(BulkStatus entity, JsonGenerator jg) throws IOException {
-        jg.writeStringField(BULK_ID, entity.getId());
+        jg.writeStringField(BULK_ID, entity.getCommandId());
         jg.writeStringField(BULK_STATE, entity.getState() != null ? entity.getState().toString() : null);
         jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
         jg.writeNumberField(BULK_COUNT, entity.getCount());

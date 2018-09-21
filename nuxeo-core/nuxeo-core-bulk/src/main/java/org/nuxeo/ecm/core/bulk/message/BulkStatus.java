@@ -59,7 +59,7 @@ public class BulkStatus implements Serializable {
 
     }
 
-    protected String id;
+    protected String commandId;
 
     protected State state;
 
@@ -84,8 +84,8 @@ public class BulkStatus implements Serializable {
      *
      * @return the id
      */
-    public String getId() {
-        return id;
+    public String getCommandId() {
+        return commandId;
     }
 
     /**
@@ -93,8 +93,8 @@ public class BulkStatus implements Serializable {
      *
      * @param id the id
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setCommandId(String id) {
+        this.commandId = id;
     }
 
     /**

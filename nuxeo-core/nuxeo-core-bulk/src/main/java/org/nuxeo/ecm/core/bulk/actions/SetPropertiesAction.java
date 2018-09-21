@@ -50,7 +50,7 @@ public class SetPropertiesAction extends AbstractBulkAction {
     public static class SetPropertyComputation extends AbstractBulkComputation {
 
         public SetPropertyComputation(int batchSize, int batchThresholdMs) {
-            super(ACTION_NAME, 1, 1, batchSize, batchThresholdMs);
+            super(ACTION_NAME, batchSize, batchThresholdMs);
         }
 
         @Override

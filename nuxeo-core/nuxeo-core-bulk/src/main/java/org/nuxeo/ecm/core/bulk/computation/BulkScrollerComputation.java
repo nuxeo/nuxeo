@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.bulk.computation;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
@@ -41,7 +42,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
-import org.nuxeo.ecm.core.bulk.BulkProcessor;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -54,8 +54,18 @@ import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Reads command and execute NXQL to materializes a document set for a command. It outputs the bucket of document ids in
- * the action input streams.
+ * Materializes the document set for a command.
+ * <p>
+ * Inputs:
+ * <ul>
+ * <li>i1: Reads a stream of {@link BulkCommand} sharded by action</li>
+ * </ul>
+ * <p>
+ * Outputs:
+ * <ul>
+ * <li>- "actionName": Writes {@link BulkBucket} into the action stream</li>
+ * <li>- "status": Writes {@link BulkStatus} into the action stream</li>
+ * </ul>
  *
  * @since 10.2
  */
@@ -78,8 +88,8 @@ public class BulkScrollerComputation extends AbstractComputation {
      * @param scrollKeepAliveSeconds the scroll lifetime
      * @param bucketSize the number of document to send per bucket
      */
-    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize,
-                                   int scrollKeepAliveSeconds, int bucketSize) {
+    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
+            int bucketSize) {
         super(name, 1, nbOutputStreams);
         this.scrollBatchSize = scrollBatchSize;
         this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
@@ -95,8 +105,8 @@ public class BulkScrollerComputation extends AbstractComputation {
     protected void processRecord(ComputationContext context, Record record) {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
         try {
-            String commandId = record.getKey();
             BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
+            String commandId = command.getId();
             BulkStatus currentStatus = BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS));
             if (!SCHEDULED.equals(currentStatus.getState())) {
                 log.error("Discard record: " + record + " because it's already building");
@@ -104,8 +114,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                 return;
             }
             currentStatus.setState(SCROLLING_RUNNING);
-            context.produceRecord(BulkProcessor.KVWRITER_ACTION_NAME, commandId,
-                    BulkCodecs.getStatusCodec().encode(currentStatus));
+            context.produceRecord(STATUS_STREAM, commandId, BulkCodecs.getStatusCodec().encode(currentStatus));
 
             LoginContext loginContext;
             try {
@@ -116,16 +125,12 @@ public class BulkScrollerComputation extends AbstractComputation {
                     ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
                             scrollKeepAliveSeconds);
                     long documentCount = 0;
-                    long bucketNumber = 0;
+                    long bucketNumber = 1;
                     while (scroll.hasResults()) {
                         List<String> docIds = scroll.getResults();
                         documentIds.addAll(docIds);
                         while (documentIds.size() >= bucketSize) {
-                            // we use number of sent document to make record key unique
-                            // key are prefixed with commandId:, suffix are:
-                            // bucketSize / 2 * bucketSize / ... / total document count
-                            bucketNumber++;
-                            produceBucket(context, command.getAction(), commandId, bucketNumber);
+                            produceBucket(context, command.getAction(), commandId, bucketNumber++);
                         }
 
                         documentCount += docIds.size();
@@ -138,9 +143,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     // send remaining document ids
                     // there's at most one record because we loop while scrolling
                     if (!documentIds.isEmpty()) {
-                        produceBucket(context, command.getAction(), commandId, documentCount);
-                    } else {
-                        context.askForCheckpoint();
+                        produceBucket(context, command.getAction(), commandId, bucketNumber++);
                     }
 
                     Instant scrollEndTime = Instant.now();
@@ -149,8 +152,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     currentStatus.setScrollEndTime(scrollEndTime);
                     currentStatus.setState(RUNNING);
                     currentStatus.setCount(documentCount);
-                    context.produceRecord(BulkProcessor.KVWRITER_ACTION_NAME, commandId,
-                            BulkCodecs.getStatusCodec().encode(currentStatus));
+                    context.produceRecord(STATUS_STREAM, commandId, BulkCodecs.getStatusCodec().encode(currentStatus));
 
                 } finally {
                     loginContext.logout();
@@ -161,6 +163,7 @@ public class BulkScrollerComputation extends AbstractComputation {
         } catch (NuxeoException e) {
             log.error("Discard invalid record: " + record, e);
         }
+        context.askForCheckpoint();
     }
 
     /**
@@ -171,7 +174,6 @@ public class BulkScrollerComputation extends AbstractComputation {
         BulkBucket bucket = new BulkBucket(commandId, ids);
         context.produceRecord(action, commandId + ":" + Long.toString(bucketNumber),
                 BulkCodecs.getBucketCodec().encode(bucket));
-        context.askForCheckpoint();
         ids.clear(); // this clear the documentIds part that has been sent
     }
 

@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.bulk;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.COUNTER_STREAM;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.COUNTER_ACTION_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.KVWRITER_ACTION_NAME;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -55,7 +55,7 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
 
-    protected static final String DOCUMENTSET_ACTION_NAME = "documentSet";
+    protected static final String COMMAND_STREAM = "command";
 
     public static final String COMMAND = ":command";
 
@@ -70,30 +70,25 @@ public class BulkServiceImpl implements BulkService {
         if (isEmpty(command.getRepository()) || isEmpty(command.getQuery()) || isEmpty(command.getAction())) {
             throw new IllegalArgumentException("Missing mandatory values");
         }
-        // create the command id and status
-        String commandId = UUID.randomUUID().toString();
-
-        byte[] commandAsBytes = BulkCodecs.getCommandCodec().encode(command);
 
         // store the bulk command and status in the key/value store
         KeyValueStore keyValueStore = getKvStore();
 
         BulkStatus status = new BulkStatus();
-        status.setId(commandId);
+        status.setCommandId(command.getId());
         status.setState(SCHEDULED);
         status.setSubmitTime(Instant.now());
 
+        byte[] commandAsBytes = BulkCodecs.getCommandCodec().encode(command);
         byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(status);
+        keyValueStore.put(command.getId() + COMMAND, commandAsBytes);
+        keyValueStore.put(command.getId() + STATUS, statusAsBytes);
 
-        keyValueStore.put(commandId + COMMAND, commandAsBytes);
-        keyValueStore.put(commandId + STATUS, statusAsBytes);
-
-        // send it to nuxeo-stream
+        // send command to bulk processor
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
-        LogAppender<Record> logAppender = logManager.getAppender(DOCUMENTSET_ACTION_NAME);
-        logAppender.append(commandId, Record.of(commandId, commandAsBytes));
-
-        return commandId;
+        LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM);
+        logAppender.append(command.getAction(), Record.of(command.getAction(), commandAsBytes));
+        return command.getId();
     }
 
     @Override

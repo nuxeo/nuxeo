@@ -48,6 +48,17 @@ import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * Base class for bulk action computation.
+ * <p>
+ * Inputs:
+ * <ul>
+ * <li>i1: Reads {@link BulkBucket}</li>
+ * </ul>
+ * Outputs
+ * <ul>
+ * <li>o1: Writes {@link BulkCounter}</li>
+ * </ul>
+ *
  * @since 10.2
  */
 abstract class AbstractBulkComputation extends AbstractComputation {
@@ -62,8 +73,8 @@ abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected BulkCommand currentCommand;
 
-    public AbstractBulkComputation(String name, int nbInputStreams, int nbOutputStreams, int size, int timer) {
-        super(name, nbInputStreams, nbOutputStreams);
+    public AbstractBulkComputation(String name, int size, int timer) {
+        super(name, 1, 1);
         this.documentIds = new ArrayList<>(size);
         this.timer = timer;
         this.size = size;

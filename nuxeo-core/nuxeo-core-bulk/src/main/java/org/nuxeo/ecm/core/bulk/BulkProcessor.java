@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DOCUMENTSET_ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_STREAM;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,9 +47,15 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(BulkProcessor.class);
 
-    public static final String COUNTER_ACTION_NAME = "counter";
+    public static final String COUNTER_STREAM = "counter";
 
-    public static final String KVWRITER_ACTION_NAME = "keyValueWriter";
+    public static final String STATUS_STREAM = "status";
+
+    public static final String SCROLLER_NAME = "scroller";
+
+    public static final String COUNTER_NAME = "counter";
+
+    public static final String STATUS_NAME = "status";
 
     public static final String SCROLL_BATCH_SIZE_OPT = "scrollBatchSize";
 
@@ -67,6 +73,8 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     public static final int DEFAULT_COUNTER_THRESHOLD_MS = 30000;
 
+
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         // retrieve options
@@ -80,23 +88,23 @@ public class BulkProcessor implements StreamProcessorTopology {
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         List<String> actions = service.getActions();
         List<String> mapping = new ArrayList<>();
-        mapping.add("i1:" + DOCUMENTSET_ACTION_NAME);
+        mapping.add("i1:" + COMMAND_STREAM);
         int i = 1;
         for (String action : actions) {
             mapping.add(String.format("o%s:%s", i, action));
             i++;
         }
-        mapping.add(String.format("o%s:%s", i, KVWRITER_ACTION_NAME));
+        mapping.add(String.format("o%s:%s", i, STATUS_STREAM));
 
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkScrollerComputation(DOCUMENTSET_ACTION_NAME, mapping.size(),
+                               () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1,
                                        scrollBatchSize, scrollKeepAliveSeconds, bucketSize), //
                                mapping)
-                       .addComputation(() -> new BulkCounterComputation(COUNTER_ACTION_NAME, counterThresholdMs),
-                               Arrays.asList("i1:" + COUNTER_ACTION_NAME, "o1:" + KVWRITER_ACTION_NAME))
-                       .addComputation(() -> new BulkStatusComputation(KVWRITER_ACTION_NAME),
-                               Collections.singletonList("i1:" + KVWRITER_ACTION_NAME))
+                       .addComputation(() -> new BulkCounterComputation(COUNTER_NAME, counterThresholdMs),
+                               Arrays.asList("i1:" + COUNTER_STREAM, "o1:" + STATUS_STREAM))
+                       .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
+                               Collections.singletonList("i1:" + STATUS_STREAM))
                        .build();
     }
 
