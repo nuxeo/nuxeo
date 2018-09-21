@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,6 +63,10 @@ public class SimpleBackend extends AbstractCoreBackend {
     public static final String SOURCE_EDIT_KEYWORD = "source-edit";
 
     public static final String ALWAYS_CREATE_FILE_PROP = "nuxeo.webdav.always-create-file";
+
+    public static final String TMP_EXTENSION = "tmp";
+
+    public static final String MSOFFICE_TMP_PREFIX = "~$";
 
     protected String backendDisplayName;
 
@@ -285,10 +290,19 @@ public class SimpleBackend extends AbstractCoreBackend {
     public void removeItem(DocumentRef ref) {
         DocumentModel doc = getSession().getDocument(ref);
         if (doc != null) {
-            getTrashService().trashDocuments(Arrays.asList(doc));
+            if (isTemporaryFile(doc)) {
+                session.removeDocument(ref);
+            } else {
+                getTrashService().trashDocuments(Arrays.asList(doc));
+            }
         } else {
             log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
         }
+    }
+
+    protected boolean isTemporaryFile(DocumentModel doc) {
+        String name = doc.getName();
+        return FilenameUtils.getExtension(name).equalsIgnoreCase(TMP_EXTENSION) || name.startsWith(MSOFFICE_TMP_PREFIX);
     }
 
     @Override
