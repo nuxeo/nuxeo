@@ -70,6 +70,10 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     // 10 MB is the max size to allow full file scan
     public static final long MAX_SIZE_FOR_SCAN = 10 * 1024 * 1024;
 
+    public static final String TMP_EXTENSION = "tmp";
+
+    public static final String MSOFFICE_TMP_PREFIX = "~$";
+
     private static final Log log = LogFactory.getLog(MimetypeRegistryService.class);
 
     protected Map<String, MimetypeEntry> mimetypeByNormalisedRegistry;
@@ -286,6 +290,9 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         if (filename == null) {
             throw new MimetypeNotFoundException("filename is null");
         }
+        if (isTemporaryFile(filename)) {
+            return DEFAULT_MIMETYPE;
+        }
         String extension = FilenameUtils.getExtension(filename);
         if (StringUtils.isBlank(extension)) {
             throw new MimetypeNotFoundException(filename + "has no extension");
@@ -333,6 +340,11 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         } catch (MimetypeNotFoundException e) {
             return defaultMimetype;
         }
+    }
+
+    protected boolean isTemporaryFile(String filename) {
+        return FilenameUtils.getExtension(filename).equalsIgnoreCase(TMP_EXTENSION)
+                || FilenameUtils.getName(filename).startsWith(MSOFFICE_TMP_PREFIX);
     }
 
     @Override
