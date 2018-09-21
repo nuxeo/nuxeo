@@ -20,6 +20,7 @@ package org.nuxeo.cap.bench
 object Constants {
   val API_PATH = "/api/v1/path"
   val API_QUERY = "/api/v1/query"
+  val API_SEARCH = "/api/v1/search"
   val AUTOMATION_PATH = "/site/automation"
   val ROOT_WORKSPACE_PATH = "/default-domain/workspaces"
   val NX_PATH = "/nxpath/default"
