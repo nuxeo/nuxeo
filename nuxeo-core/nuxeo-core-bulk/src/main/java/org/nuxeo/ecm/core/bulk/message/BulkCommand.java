@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -49,6 +50,8 @@ public class BulkCommand implements Serializable {
 
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
+
+    protected String id = UUID.randomUUID().toString();
 
     public BulkCommand() {
         params = new HashMap<>();
@@ -125,5 +128,13 @@ public class BulkCommand implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

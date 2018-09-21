@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.computation;
 
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -28,11 +30,15 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
-
 /**
- * Reads status and save them to a key value store.
+ * Saves the status into a key value store.
+ * <p>
+ * Inputs:
+ * <ul>
+ * <li>i1: Reads {@link BulkStatus} sharded by command id</li>
+ * </ul>
+ * Ouptuts: none
+ * </p>
  *
  * @since 10.2
  */
@@ -46,7 +52,7 @@ public class BulkStatusComputation extends AbstractComputation {
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
         BulkStatus status = BulkCodecs.getStatusCodec().decode(record.getData());
-        kvStore.put(status.getId() + STATUS, record.getData());
+        kvStore.put(status.getCommandId() + STATUS, record.getData());
         context.askForCheckpoint();
     }
 }

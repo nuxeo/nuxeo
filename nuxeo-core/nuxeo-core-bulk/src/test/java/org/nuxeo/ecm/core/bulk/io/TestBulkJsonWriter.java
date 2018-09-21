@@ -54,7 +54,7 @@ public class TestBulkJsonWriter extends AbstractJsonWriterTest.Local<BulkJsonWri
         String instant = "2018-06-21T12:37:08.172Z";
 
         BulkStatus status = new BulkStatus();
-        status.setId(zeroId);
+        status.setCommandId(zeroId);
         status.setState(State.SCHEDULED);
         status.setSubmitTime(Instant.parse(instant));
         status.setResult(Collections.singletonMap("result", "test"));
@@ -62,7 +62,7 @@ public class TestBulkJsonWriter extends AbstractJsonWriterTest.Local<BulkJsonWri
         JsonAssert json = jsonAssert(status);
         json.properties(7);
         json.has(ENTITY_FIELD_NAME).isEquals(BULK_ENTITY_TYPE);
-        json.has(BULK_ID).isEquals(status.getId());
+        json.has(BULK_ID).isEquals(status.getCommandId());
         json.has(BULK_STATE).isEquals(status.getState().toString());
         json.has(BULK_SUBMIT).isEquals(instant);
         json.has(BULK_COUNT).isEquals(0);

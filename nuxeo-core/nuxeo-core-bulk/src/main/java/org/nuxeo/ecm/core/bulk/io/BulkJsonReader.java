@@ -57,7 +57,7 @@ public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
         BulkStatus status = new BulkStatus();
 
         String id = jn.get(BULK_ID).asText();
-        status.setId(id);
+        status.setCommandId(id);
 
         String state = getStringField(jn, BULK_STATE);
         if (isNotEmpty(state)) {

@@ -79,7 +79,7 @@ public class BulkActionObject extends DefaultObject {
         String commandId = Framework.getService(BulkService.class).submit(command);
 
         BulkStatus status = new BulkStatus();
-        status.setId(commandId);
+        status.setCommandId(commandId);
         return Response.status(Response.Status.ACCEPTED).entity(status).build();
     }
 

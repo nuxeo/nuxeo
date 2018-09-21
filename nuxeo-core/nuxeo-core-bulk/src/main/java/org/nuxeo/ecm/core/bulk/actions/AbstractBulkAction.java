@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.COUNTER_ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.COUNTER_STREAM;
 
 import java.util.Arrays;
 import java.util.List;

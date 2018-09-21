@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
@@ -28,9 +29,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkProcessor;
 import org.nuxeo.ecm.core.bulk.message.BulkCounter;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.bulk.BulkProcessor;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -39,7 +41,16 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
- * Aggregates action's counter message and output command status.
+ * Aggregates action's counter and output command status.
+ * <p>
+ * Inputs:
+ * <ul>
+ * <li>i1: Reads {@link BulkCounter} sharded by command id</li>
+ * </ul>
+ * Outputs:
+ * <ul>
+ * <li>o1: Writes {@link BulkStatus}</li>
+ * </ul>
  *
  * @since 10.2
  */
@@ -59,7 +70,7 @@ public class BulkCounterComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
-        log.debug(String.format("Starting computation: %s, threshold: %dms", BulkProcessor.COUNTER_ACTION_NAME,
+        log.debug(String.format("Starting computation: %s, threshold: %dms", BulkProcessor.COUNTER_STREAM,
                 counterThresholdMs));
         context.setTimer("counter", System.currentTimeMillis() + counterThresholdMs);
     }
@@ -68,11 +79,12 @@ public class BulkCounterComputation extends AbstractComputation {
     public void processTimer(ComputationContext context, String key, long timestamp) {
         if (!counters.isEmpty()) {
             KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
+            Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
             counters.entrySet()
                     .stream()
                     .map(entry -> getStatusAndUpdate(kvStore, entry.getKey(), entry.getValue()))
-                    .map(BulkCodecs.getStatusCodec()::encode)
-                    .forEach(status -> context.produceRecord(BulkProcessor.KVWRITER_ACTION_NAME, key, status));
+                    .forEach(status -> context.produceRecord("o1", status.getCommandId(),
+                            codec.encode(status)));
             counters.clear();
             context.askForCheckpoint();
         }

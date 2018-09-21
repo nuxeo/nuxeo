@@ -49,7 +49,7 @@ public class TestBulkJsonReader extends AbstractJsonReaderTest.Local<BulkJsonRea
     public void testDefault() throws Exception {
         File file = FileUtils.getResourceFileFromContext("bulk-status-test-default.json");
         BulkStatus status = asObject(file);
-        assertEquals("00000000-0000-0000-0000-000000000000", status.getId());
+        assertEquals("00000000-0000-0000-0000-000000000000", status.getCommandId());
         assertEquals(State.SCHEDULED, status.getState());
         assertEquals(Instant.parse("2018-06-21T12:37:08.172Z"), status.getSubmitTime());
         Map<String, Serializable> result = status.getResult();
