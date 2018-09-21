@@ -31,6 +31,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.wopi.FileInfo;
+import org.nuxeo.wopi.Helpers;
 import org.nuxeo.wopi.exception.NotFoundException;
 import org.nuxeo.wopi.lock.LockHelper;
 
@@ -62,8 +63,7 @@ public class WOPIRoot extends ModuleRoot {
     }
 
     protected Blob getBlob(DocumentModel doc, String xpath) {
-        // TODO check cloud services blob provider?
-        Blob blob = (Blob) doc.getPropertyValue(xpath);
+        Blob blob = Helpers.getEditableBlob(doc, xpath);
         if (blob == null) {
             throw new NotFoundException();
         }

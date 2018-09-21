@@ -66,7 +66,7 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             return;
         }
 
-        Blob blob = (Blob) document.getPropertyValue(FILE_CONTENT_PROPERTY);
+        Blob blob = Helpers.getEditableBlob(document, FILE_CONTENT_PROPERTY);
         if (blob == null) {
             return;
         }

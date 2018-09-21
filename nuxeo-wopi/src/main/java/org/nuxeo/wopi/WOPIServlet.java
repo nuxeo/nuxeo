@@ -147,9 +147,9 @@ public class WOPIServlet extends HttpServlet {
             }
 
             DocumentModel doc = session.getDocument(ref);
-            Blob blob = getBlob(doc, xpath);
+            Blob blob = Helpers.getEditableBlob(doc, xpath);
             if (blob == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob on document");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "No editable blob on document");
                 return;
             }
 
@@ -174,8 +174,4 @@ public class WOPIServlet extends HttpServlet {
         }
     }
 
-    protected Blob getBlob(DocumentModel doc, String xpath) {
-        // TODO check cloud services blob provider?
-        return (Blob) doc.getPropertyValue(xpath);
-    }
 }
