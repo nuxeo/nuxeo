@@ -130,8 +130,13 @@ public interface LogManager extends AutoCloseable {
      * @since 10.2
      */
     default <M extends Externalizable> LogTailer<M> createTailer(String group, String name, Codec<M> codec) {
+        int partitions = size(name);
+        if (partitions <= 0) {
+            System.out.println(this);
+            throw new IllegalArgumentException("Log name: " + name + " not found");
+        }
         return createTailer(group,
-                IntStream.range(0, size(name)).boxed().map(partition -> new LogPartition(name, partition)).collect(
+                IntStream.range(0, partitions).boxed().map(partition -> new LogPartition(name, partition)).collect(
                         Collectors.toList()),
                 codec);
     }
