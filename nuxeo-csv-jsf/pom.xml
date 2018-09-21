@@ -2,7 +2,7 @@
   <parent>
     <artifactId>nuxeo-csv-parent</artifactId>
     <groupId>org.nuxeo.ecm.csv</groupId>
-    <version>9.10-HF18-SNAPSHOT</version>
+    <version>9.10-HF19-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
