@@ -129,6 +129,10 @@ Create the folder layout, using the rest API as listed in Redis `imp:folder`.
 
 Perform a bulk action (setProperties) on all the documents.
 
+## Sim20CsvExport: CSV Export
+
+Export documents in a CSV file.
+
 ## Sim20CreateDocuments: Create documents
 
 Create the documents, using the rest API as listed in Redis `imp:doc`

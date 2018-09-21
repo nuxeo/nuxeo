@@ -37,6 +37,14 @@ object NuxeoBulk {
     )
   }
 
+  def bulkCsvExport(query: String) = {
+    http("Export documents in CSV file")
+      .post(Constants.API_SEARCH + "/bulk/csvExport")
+      .basicAuth("${adminId}", "${adminPassword}")
+      .headers(Headers.base)
+      .queryParam("query", query)
+  }
+
   def waitForAction(commandId: String) = {
     http("Wait for action to be completed")
       .post(Constants.AUTOMATION_PATH + "/Bulk.WaitForAction")
