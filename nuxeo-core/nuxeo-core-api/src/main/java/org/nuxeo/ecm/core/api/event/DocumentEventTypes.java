@@ -139,6 +139,24 @@ public final class DocumentEventTypes {
     public static final String BINARYTEXT_UPDATED = "binaryTextUpdated";
 
     /**
+     * The event property containing the system property updated.
+     * <p>
+     * Available for the event {@link #BINARYTEXT_UPDATED}.
+     *
+     * @since 10.3
+     */
+    public static final String SYSTEM_PROPERTY = "systemProperty";
+
+    /**
+     * The event property containing the value of the system property updated.
+     * <p>
+     * Available for the event {@link #BINARYTEXT_UPDATED}.
+     *
+     * @since 10.3
+     */
+    public static final String SYSTEM_PROPERTY_VALUE = "systemPropertyValue";
+
+    /**
      * @since 6.0
      */
     public static final String DOCUMENT_TAG_UPDATED = "documentTagUpdated";

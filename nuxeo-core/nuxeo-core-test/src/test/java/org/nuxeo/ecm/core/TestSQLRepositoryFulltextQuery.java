@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -987,7 +988,7 @@ public class TestSQLRepositoryFulltextQuery {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        // 3 = 1 main save + 1 index
+        // 2 = 1 main save + 1 index
         assertEventSet("sessionSaved=2", "binaryTextUpdated=1");
 
         // delete
@@ -997,6 +998,40 @@ public class TestSQLRepositoryFulltextQuery {
         session.save();
         waitForFulltextIndexing();
         assertEventSet("sessionSaved=1");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
+    public void testGetBinaryFulltextUpdatedEvent() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        waitForFulltextIndexing();
+
+        // modify binary
+        Blob blob = Blobs.createBlob("Hello world!");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+        DummyTestListener.clear();
+        session.save();
+        waitForFulltextIndexing();
+
+        // 2 = 1 main save + 1 index
+        assertEventSet("sessionSaved=2", "binaryTextUpdated=1");
+
+        // check content of "binaryTextUpdated" event
+        boolean found = false;
+        for (Event event : DummyTestListener.EVENTS_RECEIVED) {
+            if (DocumentEventTypes.BINARYTEXT_UPDATED.equals(event.getName())) {
+                found = true;
+                Map<String, Serializable> props = event.getContext().getProperties();
+                assertEquals(Boolean.TRUE, props.get("fulltextBinary")); // deprecated, not very useful
+                assertEquals("fulltextBinary", props.get(DocumentEventTypes.SYSTEM_PROPERTY));
+                String string = (String) props.get(DocumentEventTypes.SYSTEM_PROPERTY_VALUE);
+                assertEquals("Hello world!", string); // original text, unparsed
+            }
+        }
+        assertTrue("binaryTextUpdated event not found", found);
     }
 
     @Test
