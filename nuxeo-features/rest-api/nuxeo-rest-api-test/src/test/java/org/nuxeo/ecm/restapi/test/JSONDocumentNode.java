@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,33 +37,37 @@ public class JSONDocumentNode {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * @param in
-     * @throws IOException
-     */
     public JSONDocumentNode(InputStream in) throws IOException {
         node = (ObjectNode) mapper.readTree(in);
 
     }
 
     /**
-     * Update a property value on the JSON object
+     * Update a string property value on the JSON object.
      *
-     * @param key
-     * @param value
      * @since 5.7.2
      */
     public void setPropertyValue(String key, String value) {
         ObjectNode on = (ObjectNode) node.findValue("properties");
         on.put(key, value);
-        node.put("properties", on);
+        node.set("properties", on);
+
+    }
+
+    /**
+     * Update a property value on the JSON object.
+     *
+     * @since 10.3
+     */
+    public void setPropertyValue(String key, JsonNode jsonNode) {
+        ObjectNode on = (ObjectNode) node.findValue("properties");
+        on.set(key, jsonNode);
+        node.set("properties", on);
     }
 
     /**
      * Put a json array a a property.
      *
-     * @param key
-     * @param values
      * @since 5.9.2
      */
     public void setPropertyArray(String key, String... values) {
@@ -71,14 +76,22 @@ public class JSONDocumentNode {
         for (String value : values) {
             array.add(value);
         }
-        node.put("properties", on);
+        node.set("properties", on);
     }
 
     /**
-     * Return the object as JSON
+     * Returns a property as a {@link JsonNode} object.
      *
-     * @return
-     * @throws IOException
+     * @since 10.3
+     */
+    public JsonNode getPropertyAsJsonNode(String key) {
+        ObjectNode on = (ObjectNode) node.findValue("properties");
+        return on.get(key);
+    }
+
+    /**
+     * Return the object as JSON.
+     *
      * @since 5.7.2
      */
     public String asJson() throws IOException {

@@ -473,7 +473,6 @@ public class TestDownloadService {
     public void testResolveBlobFromDownloadUrl() throws IOException {
         String repositoryName = "test";
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName)) {
-            Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
             DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
             doc.setProperty("dublincore", "title", "Diamonds are forever");
 
@@ -490,9 +489,8 @@ public class TestDownloadService {
             doc = session.createDocument(doc);
             session.save();
 
-            String url = "http://localhost:8080/nuxeo/nxfile/" + repositoryName + "/" + doc.getId()
-                    + "/files:files/0/file/" + blobFilename;
-            Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(url);
+            String path = "nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/" + blobFilename;
+            Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(path);
             assertEquals(blob, resolvedBlob);
         }
     }

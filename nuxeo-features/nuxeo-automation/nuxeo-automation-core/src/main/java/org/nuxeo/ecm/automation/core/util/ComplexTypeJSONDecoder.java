@@ -56,6 +56,7 @@ public class ComplexTypeJSONDecoder {
     static {
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         blobDecoders.add(new JSONStringBlobDecoder());
+        blobDecoders.add(new JSONObjectBlobDecoder());
         blobDecoders.add(new JSONManagedBlobDecoder());
     }
 

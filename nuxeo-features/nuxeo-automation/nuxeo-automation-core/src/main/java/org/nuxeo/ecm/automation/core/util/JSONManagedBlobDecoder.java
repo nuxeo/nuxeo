@@ -29,9 +29,21 @@ import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
+ * Blob decoder resolving a blob from a given blob provider and a blob key.
+ * <p>
+ * Format is:
+ *
+ * <pre>
+ * {
+ *     "providerId": "PROVIDER_ID", <-- the blob provider id
+ *     "key": "BLOB_KEY" <-- the blob key
+ * }
+ * </pre>
+ *
  * @since 10.2
  */
 public class JSONManagedBlobDecoder implements JSONBlobDecoder {

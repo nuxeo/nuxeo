@@ -27,6 +27,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Very basic implementation of a Blob decoder Only usable for StringBlobs
+ * <p>
+ * Format is:
+ *
+ * <pre>
+ * {
+ *     "filename": "mydoc.txt",
+ *     "name": "mydoc.txt", <-- if filename is null, read name
+ *     "encoding": "UTF-8", <-- defaults to UTF-8
+ *     "mime-type": "text/plain", <- defaults to text/plain
+ *     "data": "my data",
+ *     "content": "my data" <-- if data is not present, read content
+ * }
+ * </pre>
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
