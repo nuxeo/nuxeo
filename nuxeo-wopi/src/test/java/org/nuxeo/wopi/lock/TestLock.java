@@ -54,14 +54,13 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.wopi.FileInfo;
+import org.nuxeo.wopi.WOPIFeature;
 
 /**
  * Lock related tests.
@@ -69,9 +68,7 @@ import org.nuxeo.wopi.FileInfo;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.wopi")
+@Features(WOPIFeature.class)
 public class TestLock {
 
     @Inject

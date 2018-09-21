@@ -40,9 +40,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.wopi.lock.LockHelper;
@@ -52,9 +50,7 @@ import org.nuxeo.wopi.lock.LockHelper;
  *
  * @since 10.3
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.wopi")
+@Features(WOPIFeature.class)
 public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public TestWOPIJsonEnricher() {

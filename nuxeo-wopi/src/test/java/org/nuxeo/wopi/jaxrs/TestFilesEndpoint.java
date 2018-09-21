@@ -76,7 +76,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.jwt.JWTService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -89,6 +88,7 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Operation;
+import org.nuxeo.wopi.WOPIFeature;
 import org.nuxeo.wopi.lock.LockHelper;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -104,9 +104,8 @@ import com.sun.jersey.api.client.WebResource;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, RestServerFeature.class })
+@Features({ WOPIFeature.class, RestServerFeature.class })
 @Deploy("org.nuxeo.ecm.jwt")
-@Deploy("org.nuxeo.wopi")
 @Deploy("org.nuxeo.wopi:test-jwt-contrib.xml")
 @ServletContainer(port = 18090)
 public class TestFilesEndpoint {
