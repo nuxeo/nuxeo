@@ -60,6 +60,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestMimetypeRegistryService {
 
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
     @Inject
     private MimetypeRegistry mimetypeRegistry;
 
@@ -210,6 +212,17 @@ public class TestMimetypeRegistryService {
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml",
                 Blobs.createBlob(""), "default/mimetype");
         assertEquals("default/mimetype", mimetype);
+
+        // test temporary file, extension .tmp
+        Blob blob = Blobs.createBlob("", "foo/bar");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("myfile.TMP", blob, "default/mimetype");
+        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
+
+        // test MS Office temporary file, starting with tilde-dollar (~$)
+        blob = Blobs.createBlob("", "foo/bar");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("~$sample-docx.docx", blob,
+                "default/mimetype");
+        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
     }
 
     @Test
