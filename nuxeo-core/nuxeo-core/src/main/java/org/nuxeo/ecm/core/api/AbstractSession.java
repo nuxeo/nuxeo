@@ -2439,7 +2439,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
             DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<>();
-            options.put(systemProperty, value != null);
+            options.put(systemProperty, value != null); // deprecated, not very useful
+            options.put(DocumentEventTypes.SYSTEM_PROPERTY, systemProperty);
+            options.put(DocumentEventTypes.SYSTEM_PROPERTY_VALUE, value);
+            // note: event is sent "inline", so never available to async processing (because it's big)
             notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
         doc.setSystemProp(systemProperty, value);
