@@ -18,6 +18,8 @@
  */
 package org.nuxeo.wopi.lock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class UnlockListener implements EventListener {
 
+    private static final Log log = LogFactory.getLog(UnlockListener.class);
+
     @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
@@ -39,7 +43,13 @@ public class UnlockListener implements EventListener {
         }
         DocumentEventContext context = (DocumentEventContext) ctx;
         DocumentModel doc = context.getSourceDocument();
-        LockHelper.removeLocks(doc.getRepositoryName(), doc.getId());
+        String repositoryName = doc.getRepositoryName();
+        String docId = doc.getId();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Document %s/%s was unlocked in Nuxeo, removing related WOPI locks.",
+                    repositoryName, docId));
+        }
+        LockHelper.removeLocks(repositoryName, docId);
     }
 
 }
