@@ -168,13 +168,15 @@ public interface DownloadService {
     String getDownloadUrl(String storeKey);
 
     /**
-     * Finds a document's blob given the URL to use to download the blob.
+     * Finds a document's blob given the download URL returned by {@link #getDownloadUrl}.
+     * <p>
+     * The permissions are check whether the user can download the blob or not.
      *
-     * @param url the URL to use to download the blob
-     * @return the blob, or {@code null} if not found
+     * @param downloadURL the URL to use to download the blob
+     * @return the blob, or {@code null} if not found or if the user has no permission to download it
      * @since 9.1
      */
-    Blob resolveBlobFromDownloadUrl(String url);
+    Blob resolveBlobFromDownloadUrl(String downloadURL);
 
     /**
      * Handles the download of a document.

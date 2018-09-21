@@ -24,10 +24,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.After;
@@ -36,13 +42,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -61,11 +70,21 @@ public class TestComplexTypeJSONDecoder {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    protected static final String OBJECT_BLOB_JSON = "{ \"data\": \"%s\" }";
+
+    protected static final String BASE_URL = "http://localhost:8080/nuxeo/";
+
+    @Inject
+    protected CoreSession session;
+
     @Inject
     protected ClientLoginFeature loginFeature;
 
     @Inject
     protected UserManager userManager;
+
+    @Inject
+    protected DownloadService downloadService;
 
     @Before
     public void setUp() throws Exception {
@@ -159,6 +178,62 @@ public class TestComplexTypeJSONDecoder {
 
         } finally {
             loginFeature.logout();
+        }
+    }
+
+    @Test
+    public void testDecodeBlobObject() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "File");
+        Blob blob = createBlob("foo");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getServerName()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8080);
+        when(request.getScheme()).thenReturn("http");
+        new RequestContext(request, null); // set RequestContext.getActiveContext()
+
+        String downloadURL = BASE_URL + downloadService.getDownloadUrl(doc, "file:content", null);
+        String json = String.format(OBJECT_BLOB_JSON, downloadURL);
+        Blob resolvedBlob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+        assertEquals("foo", resolvedBlob.getString());
+    }
+
+    @Test
+    public void testDecodeUnknownBlobObject() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getServerName()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8080);
+        when(request.getScheme()).thenReturn("http");
+        new RequestContext(request, null); // set RequestContext.getActiveContext()
+
+        // fake url
+        String fakeURL = "http://fakeurl.com/nuxeo/foo/bar";
+        String json = String.format(OBJECT_BLOB_JSON, fakeURL);
+        assertDecodeBlobObjectFail(json);
+
+        // unknown document
+        String downloadURL = BASE_URL + downloadService.getDownloadUrl("test", "1", "file:content", "foo.txt");;
+        json = String.format(OBJECT_BLOB_JSON, downloadURL);
+        assertDecodeBlobObjectFail(json);
+
+        // document with no blob
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "File");
+        doc = session.createDocument(doc);
+        downloadURL = BASE_URL + downloadService.getDownloadUrl(doc, "file:content", null);
+        json = String.format(OBJECT_BLOB_JSON, downloadURL);
+        assertDecodeBlobObjectFail(json);
+    }
+
+    protected void assertDecodeBlobObjectFail(String json) throws IOException {
+        try {
+            ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            fail();
+        } catch (NuxeoException e) {
+            assertEquals(400, e.getStatusCode());
         }
     }
 

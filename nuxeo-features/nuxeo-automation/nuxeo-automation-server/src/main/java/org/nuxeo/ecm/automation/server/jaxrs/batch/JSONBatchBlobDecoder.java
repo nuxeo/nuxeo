@@ -28,7 +28,16 @@ import org.nuxeo.runtime.api.Framework;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Uses a JSON definition to retrive a Blob uploaded in a batch
+ * Uses a JSON definition to retrieve a Blob uploaded in a batch.
+ * <p>
+ * Format is:
+ *
+ * <pre>
+ * {
+ *     "upload-batch": "BATCH_ID", <-- the batch id
+ *     "upload-fileId": "FILE_ID" <-- the file id
+ * }
+ * </pre>
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */

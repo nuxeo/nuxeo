@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.api.download.test.permissions">
+
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="permissions">
+    <permission name="noadmin">
+      <script>
+        function run() {
+          if (CurrentUser.getName() === "Administrator") {
+            return false;
+          }
+          return true;
+        }
+      </script>
+    </permission>
+  </extension>
+
+</component>
