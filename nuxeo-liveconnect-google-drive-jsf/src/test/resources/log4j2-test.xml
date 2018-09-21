@@ -11,7 +11,7 @@
     </File>
   </Appenders>
   <Loggers>
-    <Logger name="org.nuxeo" level="debug" />
+    <Logger name="org.nuxeo" level="info" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
