@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
-    <version>9.10-HF18-SNAPSHOT</version>
+    <version>9.10-HF19-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
