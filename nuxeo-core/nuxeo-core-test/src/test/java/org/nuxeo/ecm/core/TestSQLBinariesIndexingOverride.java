@@ -121,14 +121,14 @@ public class TestSQLBinariesIndexingOverride {
         res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
         assertEquals(1, res.size());
         Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
-        assertTrue(map.containsValue("test"));
+        assertTrue(map.containsValue(" test "));
         StorageConfiguration database = coreFeature.getStorageConfiguration();
         if (!(database.isVCSMySQL() || database.isVCSSQLServer())) {
             // we have 2 binaries field
             assertTrue(map.containsKey("binarytext"));
             assertTrue(map.containsKey("binarytext_binaries"));
-            assertEquals("test", map.get("binarytext"));
-            assertEquals("test", map.get("binarytext_binaries"));
+            assertEquals(" test ", map.get("binarytext"));
+            assertEquals(" test ", map.get("binarytext_binaries"));
         }
     }
 

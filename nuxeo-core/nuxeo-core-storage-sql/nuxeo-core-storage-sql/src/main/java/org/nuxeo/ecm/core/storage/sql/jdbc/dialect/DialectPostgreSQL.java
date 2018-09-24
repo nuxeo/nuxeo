@@ -676,7 +676,7 @@ public class DialectPostgreSQL extends Dialect {
             if (ft.op == Op.NOTWORD) {
                 buf.append(" NOT");
             }
-            buf.append(" LIKE '% ");
+            buf.append(" ILIKE '% ");
             String word = ft.word.toLowerCase();
             // SQL escaping
             word = word.replace("'", "''");
