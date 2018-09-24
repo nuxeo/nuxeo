@@ -21,11 +21,15 @@
 package org.nuxeo.wopi.jaxrs;
 
 import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
+import static org.nuxeo.wopi.Constants.ACTION_EDIT;
+import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 import static org.nuxeo.wopi.Constants.BASE_FILE_NAME;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_NAME;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_URL;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_NAME;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_URL;
+import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
@@ -51,6 +55,7 @@ import static org.nuxeo.wopi.Constants.USER_CAN_WRITE;
 import static org.nuxeo.wopi.Constants.USER_FRIENDLY_NAME;
 import static org.nuxeo.wopi.Constants.USER_ID;
 import static org.nuxeo.wopi.Constants.VERSION;
+import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
@@ -140,6 +145,8 @@ public class FilesEndpoint extends DefaultObject {
 
     protected String fileId;
 
+    protected String baseURL;
+
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 4;
@@ -148,6 +155,7 @@ public class FilesEndpoint extends DefaultObject {
         blob = (Blob) args[2];
         xpath = (String) args[3];
         fileId = FileInfo.computeFileId(doc, xpath);
+        baseURL = VirtualHostHelper.getBaseURL(request);
     }
 
     /**
@@ -345,8 +353,7 @@ public class FilesEndpoint extends DefaultObject {
         String newFileName = relativeTarget;
         if (StringUtils.isNotEmpty(suggestedTarget)) {
             newFileName = suggestedTarget.startsWith(".")
-                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget
-                    : suggestedTarget;
+                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget : suggestedTarget;
         }
 
         DocumentModel parent = session.getDocument(parentRef);
@@ -360,11 +367,10 @@ public class FilesEndpoint extends DefaultObject {
         newDoc = session.createDocument(newDoc);
 
         String token = Helpers.createJWTToken();
-        String baseURL = VirtualHostHelper.getBaseURL(request);
         String newFileId = FileInfo.computeFileId(newDoc, FILE_CONTENT_PROPERTY);
-        String wopiSrc = String.format("%ssite/wopi/files/%s?access_token=%s", baseURL, newFileId, token);
-        String hostViewUrl = String.format("%swopi/%s/default/%s", baseURL, "view", newDoc.getId());
-        String hostEditUrl = String.format("%swopi/%s/default/%s", baseURL, "edit", newDoc.getId());
+        String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN, token);
+        String hostViewUrl = getActionURL(ACTION_VIEW, newDoc, FILE_CONTENT_PROPERTY);
+        String hostEditUrl = getActionURL(ACTION_EDIT, newDoc, FILE_CONTENT_PROPERTY);
 
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, newFileName);
@@ -447,9 +453,7 @@ public class FilesEndpoint extends DefaultObject {
             throw new NotImplementedException();
         }
 
-        String baseURL = VirtualHostHelper.getBaseURL(request);
-        String shareURL = String.format("%swopi/%s/%s/%s/%s", baseURL,
-                urlType.equals(SHARE_URL_READ_ONLY) ? "view" : "edit", doc.getRepositoryName(), doc.getId(), xpath);
+        String shareURL = getActionURL(urlType.equals(SHARE_URL_READ_ONLY) ? ACTION_VIEW : ACTION_EDIT, doc, xpath);
         Map<String, Serializable> map = new HashMap<>();
         map.put(SHARE_URL, shareURL);
         return Response.ok(map).type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -571,19 +575,18 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected Map<String, Serializable> buildCheckFileInfoMap() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
         Map<String, Serializable> map = new HashMap<>();
-        addRequiredProperties(map, doc, blob, principal);
+        addRequiredProperties(map);
         addHostCapabilitiesProperties(map);
-        addUserMetadataProperties(map, principal);
-        addUserPermissionsProperties(map, session, doc);
+        addUserMetadataProperties(map);
+        addUserPermissionsProperties(map);
         addFileURLProperties(map);
-        addBreadcrumbProperties(map, session, doc, VirtualHostHelper.getBaseURL(request));
+        addBreadcrumbProperties(map);
         return map;
     }
 
-    protected static void addRequiredProperties(Map<String, Serializable> map, DocumentModel doc, Blob blob,
-            NuxeoPrincipal principal) {
+    protected void addRequiredProperties(Map<String, Serializable> map) {
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
         map.put(BASE_FILE_NAME, blob.getFilename());
         map.put(OWNER_ID, doc.getPropertyValue("dc:creator"));
         map.put(SIZE, blob.getLength());
@@ -591,22 +594,22 @@ public class FilesEndpoint extends DefaultObject {
         map.put(VERSION, doc.getVersionLabel());
     }
 
-    protected static void addHostCapabilitiesProperties(Map<String, Serializable> map) {
+    protected void addHostCapabilitiesProperties(Map<String, Serializable> map) {
         map.put(SUPPORTS_EXTENDED_LOCK_LENGTH, true);
         map.put(SUPPORTS_LOCKS, true);
         map.put(SUPPORTS_RENAME, true);
         map.put(SUPPORTS_UPDATE, true);
         map.put(SUPPORTS_DELETE_FILE, true);
-        map.put(SUPPORTED_SHARE_URL_TYPES, new String[] { "ReadOnly", "ReadWrite" });
+        map.put(SUPPORTED_SHARE_URL_TYPES, new String[] { SHARE_URL_READ_ONLY, SHARE_URL_READ_WRITE });
     }
 
-    protected static void addUserMetadataProperties(Map<String, Serializable> map, NuxeoPrincipal principal) {
+    protected void addUserMetadataProperties(Map<String, Serializable> map) {
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
         map.put(IS_ANONYMOUS_USER, principal.isAnonymous());
         map.put(USER_FRIENDLY_NAME, Helpers.principalFullName(principal));
     }
 
-    protected static void addUserPermissionsProperties(Map<String, Serializable> map, CoreSession session,
-            DocumentModel doc) {
+    protected void addUserPermissionsProperties(Map<String, Serializable> map) {
         boolean hasAddChildren = session.exists(doc.getParentRef())
                 && session.hasPermission(doc.getParentRef(), SecurityConstants.ADD_CHILDREN);
         boolean hasWriteProperties = session.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
@@ -620,8 +623,7 @@ public class FilesEndpoint extends DefaultObject {
         // TODO
     }
 
-    protected static void addBreadcrumbProperties(Map<String, Serializable> map, CoreSession session, DocumentModel doc,
-            String baseURL) {
+    protected void addBreadcrumbProperties(Map<String, Serializable> map) {
         map.put(BREADCRUMB_BRAND_NAME, Framework.getProperty(Environment.PRODUCT_NAME));
         map.put(BREADCRUMB_BRAND_URL, baseURL);
 
@@ -629,14 +631,14 @@ public class FilesEndpoint extends DefaultObject {
         if (session.exists(parentRef)) {
             DocumentModel parent = session.getDocument(parentRef);
             map.put(BREADCRUMB_FOLDER_NAME, parent.getTitle());
-            String url = getDocumentURL(parent, baseURL);
+            String url = getDocumentURL(parent);
             if (url != null) {
                 map.put(BREADCRUMB_FOLDER_URL, url);
             }
         }
     }
 
-    protected static String getDocumentURL(DocumentModel doc, String baseURL) {
+    protected String getDocumentURL(DocumentModel doc) {
         TypeInfo adapter = doc.getAdapter(TypeInfo.class);
         if (adapter != null) {
             DocumentLocation docLoc = new DocumentLocationImpl(doc);
@@ -645,6 +647,11 @@ public class FilesEndpoint extends DefaultObject {
                             .getUrlFromDocumentView(NOTIFICATION_DOCUMENT_ID_CODEC_NAME, docView, true, baseURL);
         }
         return null;
+    }
+
+    protected String getActionURL(String action, DocumentModel doc, String xpath) {
+        return String.format("%s%s/%s/%s/%s/%s", baseURL, WOPI_SERVLET_PATH, action, doc.getRepositoryName(),
+                doc.getId(), xpath);
     }
 
 }

@@ -855,7 +855,7 @@ public class TestFilesEndpoint {
         assertTrue(node.has(HOST_EDIT_URL));
         String hostViewUrl = node.get(HOST_VIEW_URL).asText();
         String[] split = hostViewUrl.split("/");
-        String docId = split[split.length - 1];
+        String docId = split[split.length - 2];
 
         transactionalFeature.nextTransaction();
         DocumentModel newDoc = session.getDocument(new IdRef(docId));

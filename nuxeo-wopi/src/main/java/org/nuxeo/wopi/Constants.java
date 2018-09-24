@@ -36,6 +36,8 @@ public class Constants {
 
     public static final String ACTION_VIEW = "view";
 
+    public static final String FILES_ENDPOINT_PATH = "site/wopi/files/";
+
     public static final String FILE_SCHEMA = "file";
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
