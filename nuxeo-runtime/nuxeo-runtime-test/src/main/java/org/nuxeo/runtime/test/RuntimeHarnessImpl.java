@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,8 +42,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
@@ -77,7 +79,7 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
  */
 public class RuntimeHarnessImpl implements RuntimeHarness {
 
-    protected static final Log log = LogFactory.getLog(RuntimeHarnessImpl.class);
+    protected static final Logger log = LogManager.getLogger();
 
     protected static URL[] introspectClasspath() {
         return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
@@ -135,7 +137,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
             bundleLoader.installBundle(bundleFile);
             bundle = bundleLoader.getOSGi().getRegistry().getBundle(name);
         } else {
-            log.info(String.format("A bundle with name %s has been found. Deploy is ignored.", name));
+            log.info("A bundle with name {} has been found. Deploy is ignored.", name);
         }
         if (runtime.getContext(bundle) == null) {
             runtime.createContext(bundle);
@@ -175,7 +177,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
             try {
                 deployPartialComponent(ctx, targetExtensions, component);
             } catch (IOException e) {
-                log.error("PartialBundle: " + name + " failed to load: " + component, e);
+                log.error("PartialBundle: {} failed to load: {}", name, component, e);
             }
         });
         return ctx;
@@ -285,7 +287,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
         wipeRuntime();
         if (workingDir != null) {
             if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
-                log.warn("Cannot delete " + workingDir);
+                log.warn("Cannot delete {}", workingDir);
             }
             workingDir = null;
         }
@@ -326,7 +328,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                            .filter(e -> targets.contains(TargetExtensions.newTargetExtension(
                                    e.getTargetComponent().getName(), e.getExtensionPoint())))
                            .map(Extension::toXML)
-                           .collect(Collectors.joining());
+                           .collect(joining());
 
         InlineURLFactory.install();
         ctx.deploy(new InlineRef(name, String.format("<component name=\"%s\">%s</component>", name, ext)));
@@ -377,15 +379,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
      */
     protected void initUrls() {
         urls = introspectClasspath();
-        if (log.isDebugEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("URLs on the classpath: ");
-            for (URL url : urls) {
-                sb.append(url.toString());
-                sb.append('\n');
-            }
-            log.debug(sb.toString());
-        }
+        log.debug("URLs on the classpath:\n{}", () -> Stream.of(urls).map(URL::toString).collect(joining("\n")));
         readUris = new HashSet<>();
         bundles = new HashMap<>();
     }
@@ -400,7 +394,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     protected Stream<URL> listBundleComponents(Bundle bundle) {
         String list = OSGiRuntimeService.getComponentsList(bundle);
         String name = bundle.getSymbolicName();
-        log.debug("PartialBundle: " + name + " components: " + list);
+        log.debug("PartialBundle: {} components: {}", name, list);
         if (list == null) {
             return Stream.empty();
         } else {
@@ -439,7 +433,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
             }
             String symbolicName = readSymbolicName(bundleFile);
             if (symbolicName != null) {
-                log.info(String.format("Bundle '%s' has URL %s", symbolicName, url));
+                log.debug("Bundle '{}' has URL {}", symbolicName, url);
                 bundles.put(symbolicName, bundleFile);
             }
             if (bundleName.equals(symbolicName)) {
@@ -505,7 +499,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                                         .collect(Collectors.toList());
         emptyProps.forEach(System::clearProperty);
         if (log.isDebugEnabled()) {
-            emptyProps.forEach(property -> log.debug("Removed empty test system property: " + property));
+            emptyProps.forEach(property -> log.debug("Removed empty test system property: {}", property));
         }
     }
 
