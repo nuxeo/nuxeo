@@ -24,7 +24,6 @@ import org.apache.avro.Schema;
 import org.apache.avro.message.BadHeaderException;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.BinaryMessageEncoder;
-import org.apache.avro.message.SchemaStore;
 import org.apache.avro.reflect.ReflectData;
 
 /**
@@ -45,9 +44,12 @@ public class AvroMessageCodec<T> implements Codec<T> {
 
     protected final BinaryMessageDecoder<T> decoder;
 
-    public AvroMessageCodec(Class<T> messageClass, SchemaStore store) {
+    public AvroMessageCodec(Class<T> messageClass, AvroSchemaStore store) {
         this.messageClass = messageClass;
         schema = ReflectData.get().getSchema(messageClass);
+        if (store != null) {
+            store.addSchema(schema);
+        }
         encoder = new BinaryMessageEncoder<>(ReflectData.get(), schema);
         decoder = new BinaryMessageDecoder<>(ReflectData.get(), schema, store);
     }

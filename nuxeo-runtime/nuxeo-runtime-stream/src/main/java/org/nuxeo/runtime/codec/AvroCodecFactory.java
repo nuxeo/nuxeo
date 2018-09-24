@@ -64,7 +64,7 @@ public class AvroCodecFactory implements CodecFactory {
             return new AvroConfluentCodec<>(objectClass, schemaRegistryUrls);
         case "message":
         default:
-            return new AvroMessageCodec<>(objectClass, Framework.getService(AvroService.class));
+            return new AvroMessageCodec<>(objectClass, Framework.getService(AvroService.class).getSchemaStore());
         }
     }
 }

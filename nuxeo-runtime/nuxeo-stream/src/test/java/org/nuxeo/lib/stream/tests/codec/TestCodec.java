@@ -33,16 +33,19 @@ import java.nio.file.Paths;
 import java.util.EnumSet;
 
 import org.apache.avro.message.MissingSchemaException;
-import org.apache.avro.message.SchemaStore;
 import org.apache.avro.reflect.ReflectData;
 import org.junit.Assume;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
 import org.nuxeo.lib.stream.codec.AvroConfluentCodec;
 import org.nuxeo.lib.stream.codec.AvroJsonCodec;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.computation.Record;
 
@@ -50,6 +53,8 @@ import org.nuxeo.lib.stream.computation.Record;
  * @since 10.2
  */
 public class TestCodec {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     protected static final int MAX_DATA_SIZE = 1000;
 
@@ -70,7 +75,7 @@ public class TestCodec {
     }
 
     @Test
-    public void testAvroEvolution() {
+    public void testAvroEvolution() throws IOException {
         Codec<MessageV1> codec1 = new AvroMessageCodec<>(MessageV1.class);
         Codec<MessageV2> codec2 = new AvroMessageCodec<>(MessageV2.class);
         Codec<MessageV3> codec3 = new AvroMessageCodec<>(MessageV3.class);
@@ -98,7 +103,7 @@ public class TestCodec {
         }
 
         // project MessageV1 to MessageV2 with a schema store
-        SchemaStore.Cache store = new SchemaStore.Cache();
+        AvroSchemaStore store = new FileAvroSchemaStore(folder.newFolder().toPath());
         store.addSchema(ReflectData.get().getSchema(MessageV1.class));
         store.addSchema(ReflectData.get().getSchema(MessageV2.class));
         Codec<MessageV2> codec2Store = new AvroMessageCodec<>(MessageV2.class, store);

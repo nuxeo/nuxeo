@@ -19,21 +19,21 @@
 package org.nuxeo.runtime.avro;
 
 import org.apache.avro.Schema;
-import org.apache.avro.message.SchemaStore;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 
 /**
  * This service allows to create a {@link AvroSchemaFactoryContext}.
  *
  * @since 10.2
  */
-public interface AvroService extends SchemaStore {
+public interface AvroService {
 
     /**
-     * Registers the schema into the SchemaStore.
+     * Gets the Schema store
      *
-     * @param schema to be registered
+     * @since 10.3
      */
-    void addSchema(Schema schema);
+    AvroSchemaStore getSchemaStore();
 
     /**
      * Creates the Avro schema from an object.<br>

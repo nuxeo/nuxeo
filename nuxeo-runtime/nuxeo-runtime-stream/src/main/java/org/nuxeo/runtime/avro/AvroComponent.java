@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.avro.Schema;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -98,13 +99,15 @@ public class AvroComponent extends DefaultComponent {
         impl.setMappers(mappers);
         List<AvroSchemaDescriptor> schemaDescs = getDescriptors(XP_SCHEMA);
         // schemas are registered through the SchemaService interface
+        AvroSchemaStore schemaStore = impl.getSchemaStore();
         for (AvroSchemaDescriptor descriptor : schemaDescs) {
             URL url = context.getRuntimeContext().getResource(descriptor.file);
             try (InputStream stream = url == null ? null : url.openStream()) {
                 if (stream == null) {
                     throw new RuntimeServiceException("Could not load stream for file " + descriptor.file);
                 }
-                impl.addSchema(new Schema.Parser().parse(stream));
+
+                schemaStore.addSchema(new Schema.Parser().parse(stream));
             } catch (IOException e) {
                 throw new RuntimeServiceException(e);
             }
