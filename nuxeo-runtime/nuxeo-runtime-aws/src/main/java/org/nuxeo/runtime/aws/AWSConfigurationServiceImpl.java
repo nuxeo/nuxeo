@@ -42,11 +42,6 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
     }
 
     @Override
-    protected String getName() {
-        return "org.nuxeo.runtime.aws.AWSConfigurationService";
-    }
-
-    @Override
     public AWSCredentials getAWSCredentials() {
         AWSConfigurationDescriptor descriptor = getDescriptor();
         if (descriptor != null) {

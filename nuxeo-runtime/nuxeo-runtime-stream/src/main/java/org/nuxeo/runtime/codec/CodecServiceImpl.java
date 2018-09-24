@@ -30,19 +30,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class CodecServiceImpl extends DefaultComponent implements CodecService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.codec.service";
-
     public static final String XP_CODEC = "codec";
 
     protected final Map<String, CodecFactory> codecFactories = new HashMap<>();
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public void start(ComponentContext context) {

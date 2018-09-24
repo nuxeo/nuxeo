@@ -31,11 +31,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class KeyValueServiceImpl extends DefaultComponent implements KeyValueService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.kv.KeyValueService";
-
     public static final String XP_CONFIG = "configuration";
 
     public static final String DEFAULT_STORE_ID = "default";
@@ -45,11 +40,6 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
     protected Map<String, KeyValueStoreProvider> providers = new ConcurrentHashMap<>();
 
     protected KeyValueStore defaultStore = new MemKeyValueStore();
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public int getApplicationStartedOrder() {

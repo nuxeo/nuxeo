@@ -51,11 +51,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     /**
      * @since 10.3
      */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.cache.CacheService";
-
-    /**
-     * @since 10.3
-     */
     public static final String XP_CACHES = "caches";
 
     protected static final Random RANDOM = new Random();
@@ -165,11 +160,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         protected Cache getCache(String name) {
             return CacheServiceImpl.this.getCache(name);
         }
-    }
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
     }
 
     @Override

@@ -32,11 +32,6 @@ import org.nuxeo.runtime.model.Descriptor;
  */
 public class BulkComponent extends DefaultComponent implements BulkAdminService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.bulk";
-
     public static final String BULK_LOG_MANAGER_NAME = "bulk";
 
     public static final String BULK_KV_STORE_NAME = "bulk";
@@ -44,11 +39,6 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     public static final String XP_ACTIONS = "actions";
 
     protected BulkService bulkService;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     @SuppressWarnings("unchecked")

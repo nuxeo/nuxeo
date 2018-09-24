@@ -41,11 +41,6 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     /**
      * @since 10.3
      */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.server.AutomationServer";
-
-    /**
-     * @since 10.3
-     */
     public static final String XP_BINDINGS = "bindings";
 
     /**
@@ -56,11 +51,6 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     protected List<Class<? extends MessageBodyWriter<?>>> writers = new ArrayList<>();
 
     protected List<Class<? extends MessageBodyReader<?>>> readers = new ArrayList<>();
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public void start(ComponentContext context) {

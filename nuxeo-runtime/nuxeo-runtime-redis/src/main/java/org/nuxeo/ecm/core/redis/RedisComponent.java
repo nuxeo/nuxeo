@@ -45,11 +45,6 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     /**
      * @since 10.3
      */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.redis";
-
-    /**
-     * @since 10.3
-     */
     public static final String XP_CONFIG = "configuration";
 
     private static final String DEFAULT_PREFIX = "nuxeo:";
@@ -57,11 +52,6 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     protected volatile RedisExecutor executor;
 
     protected String delsha;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public RedisPoolDescriptor getConfig() {
@@ -77,7 +67,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         }
         this.executor = config.newExecutor();
         try {
-            delsha = load(COMPONENT_NAME, "del-keys");
+            delsha = load("org.nuxeo.runtime.redis", "del-keys");
         } catch (RuntimeException cause) {
             this.executor = null;
             throw new RuntimeException("Cannot activate redis executor", cause);

@@ -39,11 +39,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class AvroComponent extends DefaultComponent {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.avro";
-
     public static final String XP_SCHEMA = "schema";
 
     public static final String XP_MAPPER = "mapper";
@@ -53,11 +48,6 @@ public class AvroComponent extends DefaultComponent {
     public static final String XP_REPLACEMENT = "replacement";
 
     protected AvroService avroService;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     @SuppressWarnings("unchecked")

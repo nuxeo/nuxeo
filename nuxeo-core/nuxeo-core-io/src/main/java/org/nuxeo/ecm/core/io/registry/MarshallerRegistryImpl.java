@@ -50,11 +50,6 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     /**
      * @since 10.3
      */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.io.MarshallerRegistry";
-
-    /**
-     * @since 10.3
-     */
     public static final String XP_MARSHALLERS = "marshallers";
 
     /**
@@ -81,11 +76,6 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
      * {@link MarshallerInspector} organized by their managed {@link Marshaller} class.
      */
     private static final Map<Class<?>, MarshallerInspector> marshallersByType = new ConcurrentHashMap<>();
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public void deactivate(ComponentContext context) {

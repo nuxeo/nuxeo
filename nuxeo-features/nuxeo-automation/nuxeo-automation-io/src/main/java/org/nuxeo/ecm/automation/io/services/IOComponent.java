@@ -35,21 +35,11 @@ public class IOComponent extends DefaultComponent {
     /**
      * @since 10.3
      */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.io.services.IOComponent";
-
-    /**
-     * @since 10.3
-     */
     public static final String XP_CODECS = "codecs";
 
     private JsonFactoryManager jsonFactoryManager;
 
     private ObjectCodecService codecs;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {

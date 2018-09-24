@@ -45,8 +45,6 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     public static final String CONFIGURATION_EP = "configuration";
 
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.config";
-
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
@@ -130,11 +128,6 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
             }
             super.unregisterContribution(contribution, extensionPoint, contributor);
         }
-    }
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
     }
 
     @Override

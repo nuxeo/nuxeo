@@ -30,6 +30,16 @@ import org.nuxeo.runtime.service.TimestampedService;
 public interface Component extends Extensible, TimestampedService {
 
     /**
+     * Sets the name for this component, as it was defined in its XML.
+     * <p>
+     * This is called once after construction by the runtime framework.
+     *
+     * @param name the name
+     * @since 10.3
+     */
+    void setName(String name);
+
+    /**
      * Activates the component.
      * <p>
      * This method is called by the runtime when a component is activated.

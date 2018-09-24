@@ -111,9 +111,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected boolean active = true;
 
+    public WorkManagerImpl() {
+        // make subclasses (StreamWorkManager) use the same registry
+        super.setName(NAME);
+    }
+
     @Override
-    protected String getName() {
-        return NAME;
+    public void setName(String name) {
+        // do nothing: name is hardcoded and does not depend on XML configuration
     }
 
     /**

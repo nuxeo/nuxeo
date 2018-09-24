@@ -84,11 +84,16 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     protected Object createInstance() {
+        Object object;
         try {
-            return ri.getContext().loadClass(ri.getImplementation()).newInstance();
+            object = ri.getContext().loadClass(ri.getImplementation()).newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeServiceException(e);
         }
+        if (object instanceof Component) {
+            ((Component) object).setName(ri.getName().getName());
+        }
+        return object;
     }
 
     @Override
@@ -116,7 +121,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
         try {
             if (instance instanceof Component) {
                 ((Component) instance).activate(this);
-            } else { // try by reflection
+            } else if (instance != this) {
+                // try by reflection
                 Method meth = instance.getClass().getDeclaredMethod("activate", ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
@@ -137,7 +143,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             unregisterServices();
             if (instance instanceof Component) {
                 ((Component) instance).deactivate(this);
-            } else {
+            } else if (instance != this) {
                 // try by reflection
                 Method meth = instance.getClass().getDeclaredMethod("deactivate", ComponentContext.class);
                 meth.setAccessible(true);
