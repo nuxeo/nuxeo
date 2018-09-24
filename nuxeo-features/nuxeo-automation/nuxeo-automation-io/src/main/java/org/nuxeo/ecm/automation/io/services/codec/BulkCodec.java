@@ -20,7 +20,7 @@ package org.nuxeo.ecm.automation.io.services.codec;
 
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
 
-import org.nuxeo.ecm.core.bulk.BulkStatus;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.io.BulkJsonReader;
 import org.nuxeo.ecm.core.bulk.io.BulkJsonWriter;
 

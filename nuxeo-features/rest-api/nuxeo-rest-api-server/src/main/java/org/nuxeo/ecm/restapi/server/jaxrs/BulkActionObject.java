@@ -33,10 +33,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.bulk.BulkCommand;
-import org.nuxeo.ecm.core.bulk.BulkParameters;
 import org.nuxeo.ecm.core.bulk.BulkService;
-import org.nuxeo.ecm.core.bulk.BulkStatus;
+import org.nuxeo.ecm.core.bulk.io.BulkParameters;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;

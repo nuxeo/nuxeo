@@ -16,7 +16,7 @@
  * Contributors:
  *       Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ecm.core.bulk.io;
+package org.nuxeo.ecm.core.bulk.message;
 
 import static java.util.Collections.emptyMap;
 

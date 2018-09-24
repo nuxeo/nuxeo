@@ -17,7 +17,7 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.bulk;
+package org.nuxeo.ecm.core.bulk.io;
 
 import java.io.IOException;
 import java.io.Serializable;

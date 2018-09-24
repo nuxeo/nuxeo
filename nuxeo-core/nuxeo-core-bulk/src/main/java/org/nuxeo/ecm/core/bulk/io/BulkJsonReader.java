@@ -34,9 +34,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.bulk.BulkParameters;
-import org.nuxeo.ecm.core.bulk.BulkStatus;
-import org.nuxeo.ecm.core.bulk.BulkStatus.State;
+import org.nuxeo.ecm.core.bulk.io.BulkParameters;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus.State;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -72,12 +72,12 @@ public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
 
         Long count = getLongField(jn, BULK_COUNT);
         if (count != null) {
-            status.setCount(count.longValue());
+            status.setCount(count);
         }
 
         Long processed = getLongField(jn, BULK_PROCESSED);
         if (processed != null) {
-            status.setProcessed(processed.longValue());
+            status.setProcessed(processed);
         }
 
         Map<String, Serializable> result = emptyMap();

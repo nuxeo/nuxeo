@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -35,6 +35,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -89,7 +91,7 @@ public class TestSetPropertiesAction {
 
         List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
         assertEquals(1, statuses.size());
-        assertEquals(status.getId(), statuses.get(0).getId());
+        assertEquals(status.getCommandId(), statuses.get(0).getCommandId());
 
         List<BulkStatus> emptyStatuses = service.getStatuses("toto");
         assertEquals(0, emptyStatuses.size());

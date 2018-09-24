@@ -31,8 +31,8 @@ import java.time.Instant;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.bulk.BulkStatus;
-import org.nuxeo.ecm.core.bulk.BulkStatus.State;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus.State;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
