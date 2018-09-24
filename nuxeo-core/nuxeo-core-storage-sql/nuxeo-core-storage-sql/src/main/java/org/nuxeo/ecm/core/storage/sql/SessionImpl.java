@@ -375,6 +375,13 @@ public class SessionImpl implements Session, XAResource {
         Set<Serializable> dirtyStrings = new HashSet<>();
         Set<Serializable> dirtyBinaries = new HashSet<>();
         context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
+        if (model.getFulltextConfiguration().fulltextSearchDisabled) {
+            // We only need to update dirty simple strings if fulltext search is not disabled
+            // because in that case Elasticsearch will do its own extraction/indexing.
+            // We need to detect dirty binary strings in all cases, because Elasticsearch
+            // will need them even if the repository itself doesn't use them for search.
+            dirtyStrings = Collections.emptySet();
+        }
         Set<Serializable> dirtyIds = new HashSet<>();
         dirtyIds.addAll(dirtyStrings);
         dirtyIds.addAll(dirtyBinaries);
