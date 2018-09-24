@@ -483,7 +483,7 @@ public class TestSQLRepositoryFulltextQuery {
 
         createDocs();
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
-        file1.setPropertyValue("dc:title", "hello world citizens");
+        file1.setPropertyValue("dc:title", "Hello World Citizens");
         session.saveDocument(file1);
         session.save();
         waitForFulltextIndexing();
@@ -1028,7 +1028,7 @@ public class TestSQLRepositoryFulltextQuery {
                 assertEquals(Boolean.TRUE, props.get("fulltextBinary")); // deprecated, not very useful
                 assertEquals("fulltextBinary", props.get(DocumentEventTypes.SYSTEM_PROPERTY));
                 String string = (String) props.get(DocumentEventTypes.SYSTEM_PROPERTY_VALUE);
-                assertEquals("Hello world!", string); // original text, unparsed
+                assertEquals(" Hello world! ", string); // original text, unparsed, with spaces at ends
             }
         }
         assertTrue("binaryTextUpdated event not found", found);

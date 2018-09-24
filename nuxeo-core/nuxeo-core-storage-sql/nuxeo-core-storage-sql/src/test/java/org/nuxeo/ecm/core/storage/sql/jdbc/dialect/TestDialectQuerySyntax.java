@@ -251,17 +251,17 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testPostgreSQLLikeSql() throws Exception {
-        assertPGLikeSql("?? LIKE '% foo %'", "foo");
-        assertPGLikeSql("?? LIKE '% foo %'", "FOO");
-        assertPGLikeSql("?? LIKE '% caf\u00e9 %'", "CAF\u00c9");
-        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar %')", "foo bar");
-        assertPGLikeSql("?? LIKE '% foo bar %'", "\"foo bar\"");
-        assertPGLikeSql("(?? LIKE '% foo bar %' AND ?? LIKE '% baz %')", "\"foo bar\" baz");
-        assertPGLikeSql("(?? LIKE '% foo %' AND ?? LIKE '% bar baz %')", "foo \"bar baz\"");
-        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% baz %')", "\"foo bar\" OR baz");
-        assertPGLikeSql("(?? LIKE '% foo bar %' OR ?? LIKE '% gee man %')", "\"foo bar\" OR \"gee man\"");
-        assertPGLikeSql("(?? LIKE '% foo %' AND ?? NOT LIKE '% bar baz %')", "foo -\"bar baz\"");
-        assertPGLikeSql("?? LIKE '% foo %'", "foo OR -\"bar baz\"");
+        assertPGLikeSql("?? ILIKE '% foo %'", "foo");
+        assertPGLikeSql("?? ILIKE '% foo %'", "FOO");
+        assertPGLikeSql("?? ILIKE '% caf\u00e9 %'", "CAF\u00c9");
+        assertPGLikeSql("(?? ILIKE '% foo %' AND ?? ILIKE '% bar %')", "foo bar");
+        assertPGLikeSql("?? ILIKE '% foo bar %'", "\"foo bar\"");
+        assertPGLikeSql("(?? ILIKE '% foo bar %' AND ?? ILIKE '% baz %')", "\"foo bar\" baz");
+        assertPGLikeSql("(?? ILIKE '% foo %' AND ?? ILIKE '% bar baz %')", "foo \"bar baz\"");
+        assertPGLikeSql("(?? ILIKE '% foo bar %' OR ?? ILIKE '% baz %')", "\"foo bar\" OR baz");
+        assertPGLikeSql("(?? ILIKE '% foo bar %' OR ?? ILIKE '% gee man %')", "\"foo bar\" OR \"gee man\"");
+        assertPGLikeSql("(?? ILIKE '% foo %' AND ?? NOT ILIKE '% bar baz %')", "foo -\"bar baz\"");
+        assertPGLikeSql("?? ILIKE '% foo %'", "foo OR -\"bar baz\"");
     }
 
     @Test
@@ -282,20 +282,20 @@ public class TestDialectQuerySyntax {
         assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
         assertDialectFT("((bar & ! foo) | baz)", "-foo bar OR baz");
         assertDialectFT("((foo & ! bar) | baz)", "foo -bar OR baz");
-        assertDialectFT("(foo & bar) @#AND#@ ?? LIKE '% foo bar %'", "\"foo bar\"");
-        assertDialectFT("(foo & bar & baz) @#AND#@ ?? LIKE '% foo bar %'", "\"foo bar\" baz");
-        assertDialectFT("(foo & bar & baz) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+        assertDialectFT("(foo & bar) @#AND#@ ?? ILIKE '% foo bar %'", "\"foo bar\"");
+        assertDialectFT("(foo & bar & baz) @#AND#@ ?? ILIKE '% foo bar %'", "\"foo bar\" baz");
+        assertDialectFT("(foo & bar & baz) @#AND#@ (?? ILIKE '% foo bar %' AND ?? NOT ILIKE '% gee man %')",
                 "\"foo bar\" baz -\"gee man\"");
-        assertDialectFT("((foo & bar) | baz) @#AND#@ (?? LIKE '% foo bar %' OR ?? LIKE '% baz %')",
+        assertDialectFT("((foo & bar) | baz) @#AND#@ (?? ILIKE '% foo bar %' OR ?? ILIKE '% baz %')",
                 "\"foo bar\" OR baz");
         assertDialectFT(
-                "((foo & bar & baz) | (gee & man)) @#AND#@ ((?? LIKE '% foo bar %' AND ?? LIKE '% baz %') OR ?? LIKE '% gee man %')",
+                "((foo & bar & baz) | (gee & man)) @#AND#@ ((?? ILIKE '% foo bar %' AND ?? ILIKE '% baz %') OR ?? ILIKE '% gee man %')",
                 "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT("(foo & bar) @#AND#@ (?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %')",
+        assertDialectFT("(foo & bar) @#AND#@ (?? ILIKE '% foo bar %' AND ?? NOT ILIKE '% gee man %')",
                 "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo:*", "foo*");
         assertDialectFT("(foo & bar:*)", "foo bar*");
-        assertDialectFT("(foo & bar:*) @#AND#@ ?? LIKE '% foo bar%'", "\"foo bar*\"");
+        assertDialectFT("(foo & bar:*) @#AND#@ ?? ILIKE '% foo bar%'", "\"foo bar*\"");
     }
 
     @Test

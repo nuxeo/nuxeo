@@ -204,7 +204,8 @@ public class FulltextExtractorWork extends AbstractWork {
             List<String> strings = new StringsExtractor().findStrings(document, includedPaths, excludedPaths);
             // transform to text (remove HTML and entities)
             // we do this here rather than in the indexing backend (Elasticsearch) because it's more efficient here
-            String text = strings.stream().map(this::stringToText).collect(Collectors.joining("\n"));
+            // add space at beginning and end for simulated phrase search using LIKE "% foo bar %"
+            String text = strings.stream().map(this::stringToText).collect(Collectors.joining(" ", " ", " "));
             // limit size
             text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
             String property = getFulltextPropertyName(SYSPROP_FULLTEXT_SIMPLE, indexName);
@@ -234,7 +235,8 @@ public class FulltextExtractorWork extends AbstractWork {
                 String string = blobsText.computeIfAbsent(blob, this::blobToText);
                 strings.add(string);
             }
-            String text = String.join("\n\n", strings);
+            // add space at beginning and end for simulated phrase search using LIKE "% foo bar %"
+            String text = " " + String.join(" ", strings) + " ";
             text = limitStringSize(text, fulltextConfiguration.fulltextFieldSizeLimit);
             String property = getFulltextPropertyName(SYSPROP_FULLTEXT_BINARY, indexName);
             for (DocumentRef docRef : docsToUpdate) {
