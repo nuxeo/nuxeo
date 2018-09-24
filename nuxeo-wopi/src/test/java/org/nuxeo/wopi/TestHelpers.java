@@ -20,7 +20,7 @@ package org.nuxeo.wopi;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
+import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;

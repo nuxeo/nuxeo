@@ -32,7 +32,6 @@ import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_URL;
 import static org.nuxeo.wopi.Constants.CLOSE_URL;
 import static org.nuxeo.wopi.Constants.DOWNLOAD_URL;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
-import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.FILE_VERSION_URL;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
@@ -226,7 +225,8 @@ public class FilesEndpoint extends DefaultObject {
         String oldLock = getHeader(OLD_LOCK, true);
 
         boolean isLocked = doc.isLocked();
-        if (!isLocked) {
+        // document not locked or locked with another WOPI lock
+        if (!isLocked || LockHelper.hasOtherLock(fileId)) {
             if (!StringUtils.isEmpty(oldLock)) {
                 // cannot unlock and relock
                 response.addHeader(LOCK, "");
@@ -234,8 +234,10 @@ public class FilesEndpoint extends DefaultObject {
             }
 
             checkWritePropertiesPermission();
-            // lock
-            doc.setLock();
+            // lock if needed
+            if (!isLocked) {
+                doc.setLock();
+            }
             LockHelper.addLock(fileId, lock);
 
             response.addHeader(ITEM_VERSION, doc.getVersionLabel());
@@ -314,9 +316,12 @@ public class FilesEndpoint extends DefaultObject {
         if (lock.equals(currentLock)) {
             checkWritePropertiesPermission();
             if (unlock) {
-                // unlock
-                doc.removeLock();
+                // remove WOPI lock
                 LockHelper.removeLock(fileId);
+                if (!LockHelper.isLocked(doc.getRepositoryName(), doc.getId())) {
+                    // no more WOPI lock on the document, unlock the doc
+                    doc.removeLock();
+                }
                 response.addHeader(ITEM_VERSION, doc.getVersionLabel());
             } else {
                 // refresh lock
@@ -359,7 +364,8 @@ public class FilesEndpoint extends DefaultObject {
         String newFileName = relativeTarget;
         if (StringUtils.isNotEmpty(suggestedTarget)) {
             newFileName = suggestedTarget.startsWith(".")
-                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget : suggestedTarget;
+                    ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget
+                    : suggestedTarget;
         }
 
         DocumentModel parent = session.getDocument(parentRef);
@@ -369,14 +375,14 @@ public class FilesEndpoint extends DefaultObject {
         newDoc.setPropertyValue("dc:title", newFileName);
 
         Blob newBlob = createBlobFromRequestBody(newFileName, null);
-        newDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) newBlob);
+        newDoc.setPropertyValue(xpath, (Serializable) newBlob);
         newDoc = session.createDocument(newDoc);
 
         String token = Helpers.createJWTToken();
-        String newFileId = FileInfo.computeFileId(newDoc, FILE_CONTENT_PROPERTY);
+        String newFileId = FileInfo.computeFileId(newDoc, xpath);
         String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN, token);
-        String hostViewUrl = getActionURL(ACTION_VIEW, newDoc, FILE_CONTENT_PROPERTY);
-        String hostEditUrl = getActionURL(ACTION_EDIT, newDoc, FILE_CONTENT_PROPERTY);
+        String hostViewUrl = getActionURL(ACTION_VIEW, newDoc, xpath);
+        String hostEditUrl = getActionURL(ACTION_EDIT, newDoc, xpath);
 
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, newFileName);
@@ -418,7 +424,7 @@ public class FilesEndpoint extends DefaultObject {
         String extension = FilenameUtils.getExtension(blob.getFilename());
         String fullFilename = requestedName + (extension != null ? "." + extension : "");
         blob.setFilename(fullFilename);
-        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+        doc.setPropertyValue(xpath, (Serializable) blob);
         doc.putContextData(SOURCE, WOPI_SOURCE);
         session.saveDocument(doc);
 
@@ -506,7 +512,7 @@ public class FilesEndpoint extends DefaultObject {
      */
     protected Response updateBlob() {
         Blob newBlob = createBlobFromRequestBody(blob.getFilename(), blob.getMimeType());
-        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) newBlob);
+        doc.setPropertyValue(xpath, (Serializable) newBlob);
         doc.putContextData(SOURCE, WOPI_SOURCE);
         doc = session.saveDocument(doc);
         response.addHeader(ITEM_VERSION, doc.getVersionLabel());

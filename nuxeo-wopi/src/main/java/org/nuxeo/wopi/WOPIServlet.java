@@ -24,12 +24,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
-import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.FORM_URL;
 import static org.nuxeo.wopi.Constants.WOPI_SRC;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -124,14 +124,14 @@ public class WOPIServlet extends HttpServlet {
             throws ServletException, IOException {
         String path = request.getPathInfo();
         if (path == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path: " + path);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Null path");
             return;
         }
         // remove first /
-        path = path.substring(1, path.length());
+        path = path.substring(1);
         String[] parts = path.split("/");
         int length = parts.length;
-        if (length < 3) {
+        if (length < 4) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path: " + path);
             return;
         }
@@ -139,7 +139,7 @@ public class WOPIServlet extends HttpServlet {
         String action = parts[0];
         String repository = parts[1];
         String docId = parts[2];
-        String xpath = parts.length == 4 ? parts[3] : FILE_CONTENT_PROPERTY;
+        String xpath = String.join("/", Arrays.asList(parts).subList(3, length));
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
             DocumentRef ref = new IdRef(docId);
             if (!session.exists(ref)) {

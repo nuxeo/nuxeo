@@ -40,8 +40,6 @@ public class Constants {
 
     public static final String FILE_SCHEMA = "file";
 
-    public static final String FILE_CONTENT_PROPERTY = "file:content";
-
     public static final String FORM_URL = "formURL";
 
     public static final int JWT_TOKEN_TTL = 60 * 60; // 1h

@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
-import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.FILE_SCHEMA;
 import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 
@@ -66,7 +65,7 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             return;
         }
 
-        Blob blob = Helpers.getEditableBlob(document, FILE_CONTENT_PROPERTY);
+        Blob blob = Helpers.getEditableBlob(document, "file:content");
         if (blob == null) {
             return;
         }

@@ -102,6 +102,25 @@ public class LockHelper {
     }
 
     /**
+     * Checks if a WOPI lock is stored for another file id than the given one.
+     * <p>
+     * Repository name and document id are extracted from the given file id.
+     */
+    public static boolean hasOtherLock(String fileId) {
+        FileInfo fileInfo = new FileInfo(fileId);
+        return callPriviledgedOnLockDirectory(session -> {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put(LOCK_DIRECTORY_REPOSITORY, fileInfo.repositoryName);
+            filter.put(LOCK_DIRECTORY_DOC_ID, fileInfo.docId);
+            return !session.query(filter)
+                           .stream()
+                           .filter(e -> !e.getId().equals(fileId))
+                           .collect(Collectors.toList())
+                           .isEmpty();
+        });
+    }
+
+    /**
      * Updates the WOPI lock stored for the given file id with the given lock and a fresh timestamp.
      */
     public static void updateLock(String fileId, String lock) {

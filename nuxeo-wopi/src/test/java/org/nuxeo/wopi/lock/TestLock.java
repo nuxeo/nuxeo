@@ -26,12 +26,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
-import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_FILE_ID;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_TIMESTAMP;
 import static org.nuxeo.wopi.Constants.LOCK_EXPIRATION_EVENT;
 import static org.nuxeo.wopi.Constants.LOCK_TTL;
+import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
 
 import java.util.List;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class TestLock {
     }
 
     @Test
-    public void testLockDirectory() throws InterruptedException {
+    public void testLockDirectory() {
         // get unknown lock
         assertNull(LockHelper.getLock("unknownFileId"));
 
@@ -257,6 +257,31 @@ public class TestLock {
         doc.removeLock();
         assertFalse(doc.isLocked());
         assertNull(LockHelper.getLock(fileId));
+    }
+
+    @Test
+    public void testHasOtherLock() {
+        LockHelper.addLock(fileId, "wopiLock");
+        assertEquals("wopiLock", LockHelper.getLock(fileId));
+        assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+        assertFalse(LockHelper.hasOtherLock(fileId));
+
+        String otherFileId = FileInfo.computeFileId(doc, "other:xpath");
+        LockHelper.addLock(otherFileId, "otherWopiLock");
+        assertEquals("otherWopiLock", LockHelper.getLock(otherFileId));
+        assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+        assertTrue(LockHelper.hasOtherLock(fileId));
+        assertTrue(LockHelper.hasOtherLock(otherFileId));
+
+        LockHelper.removeLock(fileId);
+        assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+        assertTrue(LockHelper.hasOtherLock(fileId));
+        assertFalse(LockHelper.hasOtherLock(otherFileId));
+
+        LockHelper.removeLock(otherFileId);
+        assertFalse(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+        assertFalse(LockHelper.hasOtherLock(fileId));
+        assertFalse(LockHelper.hasOtherLock(otherFileId));
     }
 
     protected void fireLockExpirationEvent() {
