@@ -68,11 +68,6 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  */
 public class MigrationServiceImpl extends DefaultComponent implements MigrationService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.migration.MigrationService";
-
     public static final String KEYVALUE_STORE_NAME = "migration";
 
     public static final String XP_CONFIG = "configuration";
@@ -154,11 +149,6 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         KeyValueService service = Framework.getService(KeyValueService.class);
         Objects.requireNonNull(service, "Missing KeyValueService");
         return service.getKeyValueStore(KEYVALUE_STORE_NAME);
-    }
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
     }
 
     public Collection<MigrationDescriptor> getMigrationDescriptors() {

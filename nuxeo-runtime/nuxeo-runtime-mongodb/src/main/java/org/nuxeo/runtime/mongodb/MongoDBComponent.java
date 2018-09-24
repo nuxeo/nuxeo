@@ -49,11 +49,6 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     private final Map<String, MongoClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
     public void start(ComponentContext context) {
         super.start(context);
         Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);

@@ -91,11 +91,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     private static final Log log = LogFactory.getLog(DownloadServiceImpl.class);
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.core.io.download.DownloadService";
-
     public static final String XP_PERMISSIONS = "permissions";
 
     public static final String XP_REDIRECT_RESOLVER = "redirectResolver";
@@ -119,11 +114,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
     protected RedirectResolver redirectResolver;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public void start(ComponentContext context) {

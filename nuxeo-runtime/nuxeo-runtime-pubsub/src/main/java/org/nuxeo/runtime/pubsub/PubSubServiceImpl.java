@@ -35,11 +35,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PubSubServiceImpl extends DefaultComponent implements PubSubService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.pubsub.PubSubService";
-
     public static final String XP_CONFIG = "configuration";
 
     /** The currently-configured provider. */
@@ -49,11 +44,6 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     protected Map<String, List<BiConsumer<String, byte[]>>> subscribers = new ConcurrentHashMap<>();
 
     protected Map<String, String> options;
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public void deactivate(ComponentContext context) {

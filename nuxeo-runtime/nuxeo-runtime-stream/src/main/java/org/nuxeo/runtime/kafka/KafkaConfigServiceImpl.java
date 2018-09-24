@@ -31,21 +31,11 @@ import org.nuxeo.runtime.model.Descriptor;
 
 public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaConfigService {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.runtime.stream.kafka.service";
-
     public static final String XP_KAFKA_CONFIG = "kafkaConfig";
 
     public static final int APPLICATION_STARTED_ORDER = -600;
 
     protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public int getApplicationStartedOrder() {

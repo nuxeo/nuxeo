@@ -50,11 +50,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class StreamServiceImpl extends DefaultComponent implements StreamService {
 
-    /**
-     * @since 10.3
-     */
-    private static final String COMPONENT_NAME = "org.nuxeo.runtime.stream.service";
-
     public static final String NUXEO_STREAM_DIR_PROP = "nuxeo.stream.chronicle.dir";
 
     public static final String NUXEO_STREAM_RET_DURATION_PROP = "nuxeo.stream.chronicle.retention.duration";
@@ -66,11 +61,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     protected final Map<String, LogManager> managers = new HashMap<>();
 
     protected final Map<String, StreamProcessor> processors = new HashMap<>();
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
-    }
 
     @Override
     public int getApplicationStartedOrder() {

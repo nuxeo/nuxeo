@@ -60,11 +60,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BatchManagerComponent extends DefaultComponent implements BatchManager {
 
-    /**
-     * @since 10.3
-     */
-    public static final String COMPONENT_NAME = "org.nuxeo.ecm.automation.server.BatchManager";
-
     protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
 
     public static final String CLIENT_BATCH_ID_FLAG = "allowClientGeneratedBatchId";
@@ -85,11 +80,6 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     static {
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
-    }
-
-    @Override
-    protected String getName() {
-        return COMPONENT_NAME;
     }
 
     @Override

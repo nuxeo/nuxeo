@@ -19,7 +19,8 @@
 
 package org.nuxeo.runtime.model;
 
-import java.util.Collections;
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -33,12 +34,20 @@ import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
  */
 public class DefaultComponent implements Component, Adaptable {
 
+    /** @since 10.3 */
+    protected String name;
+
     /**
      * @since 5.6
      */
     protected Long lastModified;
 
     private DescriptorRegistry registry;
+
+    @Override
+    public void setName(String name) {
+        this.name = requireNonNull(name);
+    }
 
     @Override
     public void activate(ComponentContext context) {
@@ -81,16 +90,16 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     public void registerContribution(Object contribution, String xp, ComponentInstance component) {
-        if (contribution instanceof Descriptor && getName() != null) {
+        if (contribution instanceof Descriptor) {
             Descriptor descriptor = (Descriptor) contribution;
-            getRegistry().register(getName(), xp, descriptor);
+            getRegistry().register(name, xp, descriptor);
         }
     }
 
     public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
-        if (contribution instanceof Descriptor && getName() != null) {
+        if (contribution instanceof Descriptor) {
             Descriptor descriptor = (Descriptor) contribution;
-            getRegistry().unregister(getName(), xp, descriptor);
+            getRegistry().unregister(name, xp, descriptor);
         }
     }
 
@@ -131,13 +140,6 @@ public class DefaultComponent implements Component, Adaptable {
     /**
      * @since 10.3
      */
-    protected String getName() {
-        return null;
-    }
-
-    /**
-     * @since 10.3
-     */
     protected Log getLog() {
         return LogFactory.getLog(getClass());
     }
@@ -153,34 +155,28 @@ public class DefaultComponent implements Component, Adaptable {
      * @since 10.3
      */
     protected boolean register(String xp, Descriptor descriptor) {
-        return getRegistry().register(getName(), xp, descriptor);
+        return getRegistry().register(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
      */
     protected boolean unregister(String xp, Descriptor descriptor) {
-        return getRegistry().unregister(getName(), xp, descriptor);
+        return getRegistry().unregister(name, xp, descriptor);
     }
 
     /**
      * @since 10.3
      */
     protected <T extends Descriptor> T getDescriptor(String xp, String id) {
-        if (getName() == null) {
-            return null;
-        }
-        return getRegistry().getDescriptor(getName(), xp, id);
+        return getRegistry().getDescriptor(name, xp, id);
     }
 
     /**
      * @since 10.3
      */
     protected <T extends Descriptor> List<T> getDescriptors(String xp) {
-        if (getName() == null) {
-            return Collections.emptyList();
-        }
-        return getRegistry().getDescriptors(getName(), xp);
+        return getRegistry().getDescriptors(name, xp);
     }
 
 }
