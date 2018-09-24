@@ -18,5 +18,9 @@
   "UserCanNotWriteRelative": true,
   "BreadcrumbBrandName": "WOPI Test",
   "BreadcrumbBrandUrl": "http://localhost:18090/",
-  "BreadcrumbFolderName": "wopi"
+  "BreadcrumbFolderName": "wopi",
+  "DownloadUrl": "http://localhost:18090/nxfile/${REPOSITORY}/${DOC_ID}/${XPATH}/${FILENAME}?changeToken=${CHANGE_TOKEN}",
+  "HostEditUrl": "http://localhost:18090/wopi/edit/${REPOSITORY}/${DOC_ID}/${XPATH}",
+  "HostViewUrl": "http://localhost:18090/wopi/view/${REPOSITORY}/${DOC_ID}/${XPATH}",
+  "SignoutUrl": "http://localhost:18090/logout"
 }

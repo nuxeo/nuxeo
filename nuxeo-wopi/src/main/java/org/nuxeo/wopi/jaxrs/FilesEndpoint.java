@@ -29,8 +29,11 @@ import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_NAME;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_BRAND_URL;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_NAME;
 import static org.nuxeo.wopi.Constants.BREADCRUMB_FOLDER_URL;
+import static org.nuxeo.wopi.Constants.CLOSE_URL;
+import static org.nuxeo.wopi.Constants.DOWNLOAD_URL;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
 import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
+import static org.nuxeo.wopi.Constants.FILE_VERSION_URL;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
@@ -41,6 +44,7 @@ import static org.nuxeo.wopi.Constants.READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_WRITE;
+import static org.nuxeo.wopi.Constants.SIGNOUT_URL;
 import static org.nuxeo.wopi.Constants.SIZE;
 import static org.nuxeo.wopi.Constants.SUPPORTED_SHARE_URL_TYPES;
 import static org.nuxeo.wopi.Constants.SUPPORTS_DELETE_FILE;
@@ -99,7 +103,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -619,8 +625,19 @@ public class FilesEndpoint extends DefaultObject {
         map.put(USER_CAN_NOT_WRITE_RELATIVE, !hasAddChildren);
     }
 
-    protected static void addFileURLProperties(Map<String, Serializable> map) {
-        // TODO
+    protected void addFileURLProperties(Map<String, Serializable> map) {
+        String docURL = getDocumentURL(doc);
+        if (docURL != null) {
+            map.put(CLOSE_URL, docURL);
+            map.put(FILE_VERSION_URL, docURL);
+        }
+        String downloadURL = baseURL
+                + Framework.getService(DownloadService.class).getDownloadUrl(doc, xpath, blob.getFilename());
+        map.put(DOWNLOAD_URL, downloadURL);
+        map.put(HOST_EDIT_URL, getActionURL(ACTION_EDIT, doc, xpath));
+        map.put(HOST_VIEW_URL, getActionURL(ACTION_VIEW, doc, xpath));
+        String signoutURL = baseURL + NXAuthConstants.LOGOUT_PAGE;
+        map.put(SIGNOUT_URL, signoutURL);
     }
 
     protected void addBreadcrumbProperties(Map<String, Serializable> map) {

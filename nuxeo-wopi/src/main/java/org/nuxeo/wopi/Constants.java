@@ -122,6 +122,20 @@ public class Constants {
 
     public static final String USER_CAN_NOT_WRITE_RELATIVE = "UserCanNotWriteRelative";
 
+    // -------- File URL properties ---------------
+
+    public static final String CLOSE_URL = "CloseUrl";
+
+    public static final String DOWNLOAD_URL = "DownloadUrl";
+
+    public static final String FILE_VERSION_URL = "FileVersionUrl";
+
+    public static final String HOST_EDIT_URL = "HostEditUrl";
+
+    public static final String HOST_VIEW_URL = "HostViewUrl";
+
+    public static final String SIGNOUT_URL = "SignoutUrl";
+
     // -------- Breadcrumb properties ---------------
 
     public static final String BREADCRUMB_BRAND_NAME = "BreadcrumbBrandName";
@@ -139,10 +153,6 @@ public class Constants {
     public static final String NAME = "Name";
 
     public static final String URL = "Url";
-
-    public static final String HOST_VIEW_URL = "HostViewUrl";
-
-    public static final String HOST_EDIT_URL = "HostEditUrl";
 
     // -------- End Rename and PutRelativeFile ---------------
 

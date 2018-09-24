@@ -241,13 +241,19 @@ public class TestFilesEndpoint {
         checkGetNotFound();
 
         // success - john has write access
+        Map<String, String> toReplace = new HashMap<>();
+        toReplace.put("REPOSITORY", blobDoc.getRepositoryName());
+        toReplace.put("DOC_ID", blobDoc.getId());
+        toReplace.put("XPATH", FILE_CONTENT_PROPERTY);
+        toReplace.put("FILENAME", "test-file.txt");
+        toReplace.put("CHANGE_TOKEN", "2-0");
         try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
-            checkJSONResponse(response, "json/CheckFileInfo-john-write.json");
+            checkJSONResponse(response, "json/CheckFileInfo-john-write.json", toReplace);
         }
 
         // success - joe has read access
         try (CloseableClientResponse response = get(joeToken, blobDocFileId)) {
-            checkJSONResponse(response, "json/CheckFileInfo-joe-read.json");
+            checkJSONResponse(response, "json/CheckFileInfo-joe-read.json", toReplace);
         }
     }
 
