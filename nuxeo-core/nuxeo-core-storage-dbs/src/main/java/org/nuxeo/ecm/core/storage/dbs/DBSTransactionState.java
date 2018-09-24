@@ -1009,6 +1009,13 @@ public class DBSTransactionState {
         Set<String> docsWithDirtyStrings = new HashSet<>();
         Set<String> docsWithDirtyBinaries = new HashSet<>();
         findDirtyDocuments(docsWithDirtyStrings, docsWithDirtyBinaries);
+        if (repository.getFulltextConfiguration().fulltextSearchDisabled) {
+            // We only need to update dirty simple strings if fulltext search is not disabled
+            // because in that case Elasticsearch will do its own extraction/indexing.
+            // We need to detect dirty binary strings in all cases, because Elasticsearch
+            // will need them even if the repository itself doesn't use them for search.
+            docsWithDirtyStrings = Collections.emptySet();
+        }
         Set<String> dirtyIds = new HashSet<>();
         dirtyIds.addAll(docsWithDirtyStrings);
         dirtyIds.addAll(docsWithDirtyBinaries);
