@@ -16,7 +16,7 @@
  * Contributors:
  *       Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ecm.core.bulk;
+package org.nuxeo.ecm.core.bulk.message;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -27,16 +27,15 @@ import org.apache.avro.reflect.AvroEncode;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.nuxeo.ecm.core.bulk.io.MapAsJsonAsStringEncoding;
 
 /**
- * A command to execute by {@link BulkService}.
+ * A message representing a bulk command
  *
  * @since 10.2
  */
 public class BulkCommand implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 20181021L;
 
     /** The username which run the bulk command. */
     protected String username;

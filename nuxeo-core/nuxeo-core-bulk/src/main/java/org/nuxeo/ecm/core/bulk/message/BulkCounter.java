@@ -17,20 +17,20 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.bulk;
+package org.nuxeo.ecm.core.bulk.message;
 
 import java.io.Serializable;
 
 /**
- * Object representing the number of processed documents by an action.
- * 
+ * A message representing the number of processed documents by an action.
+ *
  * @since 10.2
  */
 public class BulkCounter implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 20181021L;
 
-    protected String bulkId;
+    protected String commandId;
 
     protected long processedDocuments;
 
@@ -38,17 +38,17 @@ public class BulkCounter implements Serializable {
         // Empty constructor for Avro decoder
     }
 
-    public BulkCounter(String bulkId, int processedDocuments) {
-        this(bulkId, (long) processedDocuments);
+    public BulkCounter(String commandId, int processedDocuments) {
+        this(commandId, (long) processedDocuments);
     }
 
-    public BulkCounter(String bulkId, long processedDocuments) {
-        this.bulkId = bulkId;
+    public BulkCounter(String commandId, long processedDocuments) {
+        this.commandId = commandId;
         this.processedDocuments = processedDocuments;
     }
 
-    public String getBulkId() {
-        return bulkId;
+    public String getCommandId() {
+        return commandId;
     }
 
     public long getProcessedDocuments() {

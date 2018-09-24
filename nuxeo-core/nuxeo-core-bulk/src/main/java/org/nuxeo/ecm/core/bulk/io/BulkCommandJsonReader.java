@@ -32,8 +32,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.nuxeo.ecm.core.bulk.BulkCommand;
-import org.nuxeo.ecm.core.bulk.BulkParameters;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 

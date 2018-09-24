@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+
 import java.time.Duration;
 import java.util.List;
 
