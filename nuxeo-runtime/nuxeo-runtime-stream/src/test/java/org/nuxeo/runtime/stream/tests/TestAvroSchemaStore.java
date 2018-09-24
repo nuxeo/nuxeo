@@ -31,6 +31,7 @@ import org.apache.avro.SchemaNormalization;
 import org.apache.avro.message.SchemaStore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.avro.AvroService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -55,14 +56,14 @@ public class TestAvroSchemaStore {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream("data/avro-schema-example.json")) {
             Schema schema = new Schema.Parser().parse(stream);
             long fingerprint = SchemaNormalization.parsingFingerprint64(schema);
-            Schema retrieved = service.findByFingerprint(fingerprint);
+            Schema retrieved = service.getSchemaStore().findByFingerprint(fingerprint);
             assertEquals(schema, retrieved);
         }
     }
 
     @Test
     public void testSchemaStoreRetrieval() {
-        assertNotNull(Framework.getService(SchemaStore.class));
+        assertNotNull(Framework.getService(AvroService.class).getSchemaStore());
     }
 
 }

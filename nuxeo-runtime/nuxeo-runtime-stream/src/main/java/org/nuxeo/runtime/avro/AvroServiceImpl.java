@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.avro;
 
 import java.lang.reflect.Constructor;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,13 +31,16 @@ import java.util.Map.Entry;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.message.SchemaStore;
+import org.nuxeo.common.Environment;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
+import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 10.2
  */
-public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
+public class AvroServiceImpl implements AvroService {
 
     private static final AvroMapper<Object, Object> NULL = new AvroMapper<Object, Object>(null) {
 
@@ -56,15 +60,29 @@ public class AvroServiceImpl extends SchemaStore.Cache implements AvroService {
 
     protected final List<AvroReplacementDescriptor> replacements;
 
+    protected final AvroSchemaStore schemaStore;
+
     protected Map<Class<?>, AvroMapper<?, ?>> mappers;
 
     public AvroServiceImpl(Collection<AvroReplacementDescriptor> replacements,
             Map<Class<?>, Class<AvroSchemaFactory<?>>> factories) {
         this.replacements = new ArrayList<>(replacements);
         this.factories = new HashMap<>(factories);
+        String dataDir = Framework.getProperty(Environment.NUXEO_DATA_DIR);
+        if (dataDir != null) {
+            this.schemaStore = new FileAvroSchemaStore(Paths.get(dataDir, "avro"));
+        } else {
+            this.schemaStore = new FileAvroSchemaStore(
+                    Paths.get(Framework.getRuntime().getHome().getAbsolutePath(), "data", "avro"));
+        }
         Collections.sort(this.replacements);
         // assert at creation that factories are valid
         createContext();
+    }
+
+    @Override
+    public AvroSchemaStore getSchemaStore() {
+        return schemaStore;
     }
 
     @Override
