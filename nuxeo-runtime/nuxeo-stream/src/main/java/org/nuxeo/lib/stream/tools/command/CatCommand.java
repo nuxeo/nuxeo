@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.apache.commons.cli.CommandLine;
@@ -35,6 +36,8 @@ import org.nuxeo.lib.stream.tools.renderer.Renderer;
  * @since 9.3
  */
 public class CatCommand extends Command {
+
+    protected static final String NUXEO_SCHEMA_STORE = "nxserver/data/avro";
 
     protected static final String NAME = "cat";
 
@@ -64,7 +67,12 @@ public class CatCommand extends Command {
                                 .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
-
+        options.addOption(Option.builder()
+                .longOpt("schema-store")
+                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
+                .hasArg()
+                .argName("SCHEMA_STORE_PATH")
+                .build());
     }
 
     @Override
@@ -74,7 +82,11 @@ public class CatCommand extends Command {
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         String codec = cmd.getOptionValue("codec");
-        cat(manager, name, group, limit, getRecordRenderer(render), codec);
+        String avroSchemaStorePath  = cmd.getOptionValue("schema-store");
+        if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
+            avroSchemaStorePath = NUXEO_SCHEMA_STORE;
+        }
+        cat(manager, name, group, limit, getRecordRenderer(render, avroSchemaStorePath), codec);
         return true;
     }
 

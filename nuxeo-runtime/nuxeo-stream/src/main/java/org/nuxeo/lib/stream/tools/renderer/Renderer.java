@@ -18,13 +18,19 @@
  */
 package org.nuxeo.lib.stream.tools.renderer;
 
-import static java.lang.Math.min;
-
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.message.BinaryMessageDecoder;
+import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -38,6 +44,8 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
 
     public abstract void footer();
 
+    public static final byte[] AVRO_MESSAGE_V1_HEADER = new byte[] { (byte) 0xC3, (byte) 0x01 };
+
     protected String watermarkString(long watermark) {
         if (watermark == 0) {
             return "0";
@@ -48,12 +56,46 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
                 wm.isCompleted() ? " completed" : "");
     }
 
-    protected String binaryString(byte[] data) {
-        String overview = "";
-        if (data != null) {
-            overview += new String(data, StandardCharsets.UTF_8).substring(0, min(data.length, 512));
-            overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
+    protected String tryToRenderAvroData(AvroSchemaStore store, Record record) {
+        String errorMessage;
+        try {
+            return renderAvroMessage(store, record);
+        } catch (IllegalArgumentException e) {
+            errorMessage = "";
+        } catch (IllegalStateException e) {
+            errorMessage = e.getMessage() + " data: ";
         }
-        return overview;
+        return errorMessage + record.dataOverview(256);
+
+    }
+    protected String renderAvroMessage(AvroSchemaStore store, Record record) {
+        if (store == null || !isAvroMessage(record.getData())) {
+            throw new IllegalArgumentException("Not avro encoded");
+        }
+        long fp = getFingerPrint(record.getData());
+        Schema schema = store.findByFingerprint(fp);
+        if (schema == null) {
+            throw new IllegalStateException(String.format("Not found schema: 0x%08X", fp));
+        }
+        GenericData genericData = new GenericData();
+        BinaryMessageDecoder<GenericRecord> decoder = new BinaryMessageDecoder<>(genericData, schema);
+        try {
+            GenericRecord avroRecord = decoder.decode(record.getData(), null);
+            return avroRecord.toString();
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("Error: %s decoding with schema: 0x%08X", e.getMessage(), fp));
+        }
+    }
+
+    protected long getFingerPrint(byte[] data) {
+        byte[] fingerPrintBytes = Arrays.copyOfRange(data, 2, 10);
+        return ByteBuffer.wrap(fingerPrintBytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
+    }
+
+    protected boolean isAvroMessage(byte[] data) {
+        if (data.length >= 10 && data[0] == AVRO_MESSAGE_V1_HEADER[0] && data[1] == AVRO_MESSAGE_V1_HEADER[1]) {
+            return true;
+        }
+        return false;
     }
 }

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.apache.commons.cli.CommandLine;
@@ -30,6 +31,8 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
+
+import static org.nuxeo.lib.stream.tools.command.CatCommand.NUXEO_SCHEMA_STORE;
 
 /**
  * Output the last records on a Log.
@@ -78,6 +81,12 @@ public class TailCommand extends Command {
                                 .hasArg()
                                 .argName("TIMEOUT")
                                 .build());
+        options.addOption(Option.builder()
+                .longOpt("schema-store")
+                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
+                .hasArg()
+                .argName("SCHEMA_STORE_PATH")
+                .build());
     }
 
     @Override
@@ -87,10 +96,14 @@ public class TailCommand extends Command {
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         String codec = cmd.getOptionValue("codec");
+        String avroSchemaStorePath  = cmd.getOptionValue("schema-store");
+        if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
+            avroSchemaStorePath = NUXEO_SCHEMA_STORE;
+        }
         int timeout = Integer.parseInt(cmd.getOptionValue("timeout", "120"));
-        tail(manager, name, group, lines, getRecordRenderer(render), codec);
+        tail(manager, name, group, lines, getRecordRenderer(render, avroSchemaStorePath), codec);
         if (cmd.hasOption("follow")) {
-            follow(manager, name, group, getRecordRenderer(render), timeout, codec);
+            follow(manager, name, group, getRecordRenderer(render, avroSchemaStorePath), timeout, codec);
         }
         return true;
     }

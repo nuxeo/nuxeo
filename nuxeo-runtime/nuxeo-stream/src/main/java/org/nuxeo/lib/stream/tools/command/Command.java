@@ -43,11 +43,11 @@ public abstract class Command {
 
     public abstract boolean run(LogManager manager, CommandLine cmd) throws InterruptedException;
 
-    protected Renderer getRecordRenderer(String render) {
+    protected Renderer getRecordRenderer(String render, String avroSchemaStorePath) {
         if ("markdown".equals(render)) {
-            return new MarkdownRenderer();
+            return new MarkdownRenderer(avroSchemaStorePath);
         } else {
-            return new TextRenderer();
+            return new TextRenderer(avroSchemaStorePath);
         }
     }
 
