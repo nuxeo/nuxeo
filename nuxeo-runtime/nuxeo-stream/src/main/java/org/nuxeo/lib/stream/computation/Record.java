@@ -142,20 +142,24 @@ public class Record implements Externalizable {
 
     @Override
     public String toString() {
-        String overview = "";
         String wmDate = "";
-        if (data != null && data.length > 0) {
-            String dataAsString = new String(data, StandardCharsets.UTF_8);
-            overview = ", data=\"" + dataAsString.substring(0, min(dataAsString.length(), 127)) + '"';
-            overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
-        }
         if (watermark > 0) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             Watermark wm = Watermark.ofValue(watermark);
             wmDate = ", wmDate=" + dateFormat.format(new Date(wm.getTimestamp()));
         }
         return "Record{" + "watermark=" + watermark + wmDate + ", flags=" + getFlags() + ", key='" + key + '\''
-                + ", data.length=" + ((data == null) ? 0 : data.length) + overview + '}';
+                + ", data.length=" + ((data == null) ? 0 : data.length) + ", data=\"" + dataOverview(127) + "\"}";
+    }
+
+    public String dataOverview(int maxLength) {
+        String overview = "";
+        if (data != null && data.length > 0) {
+            String dataAsString = new String(data, StandardCharsets.UTF_8);
+            overview = dataAsString.substring(0, min(dataAsString.length(), maxLength));
+            overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
+        }
+        return overview;
     }
 
     @Override

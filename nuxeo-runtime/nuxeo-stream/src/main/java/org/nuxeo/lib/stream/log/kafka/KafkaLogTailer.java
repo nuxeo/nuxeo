@@ -400,7 +400,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @Override
     public void close() {
         if (consumer != null) {
-            log.info("Closing tailer: " + id);
+            log.debug("Closing tailer: " + id);
             try {
                 // calling wakeup enable to terminate consumer blocking on poll call
                 consumer.close();

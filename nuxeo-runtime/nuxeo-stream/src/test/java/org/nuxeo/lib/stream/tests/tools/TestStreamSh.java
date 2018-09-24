@@ -30,7 +30,10 @@ public class TestStreamSh {
 
     @Test
     public void runACommand() {
-        // run(String.format("tail --chronicle %s -l %s", "/nxserver/data/stream/audit", "audit"));
+        // String nuxeoRoot = "/home/ben/tmp/tomcat";
+        // run(String.format("tail --chronicle %s/nxserver/data/stream/audit -l audit", nuxeoRoot));
+        // run(String.format("cat -n 20 --kafka %s/nxserver/config/kafka-config.xml --schema-store %s/nxserver/data/avro
+        // -l bulk-counter", nuxeoRoot, nuxeoRoot));
         run("help cat");
     }
 

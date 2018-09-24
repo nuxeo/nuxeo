@@ -18,8 +18,11 @@
  */
 package org.nuxeo.lib.stream.tools.renderer;
 
+import java.nio.file.Paths;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogRecord;
 
@@ -31,12 +34,22 @@ public class MarkdownRenderer extends Renderer {
 
     protected static final String MD_DATA = "```";
 
+    protected final FileAvroSchemaStore schemaStore;
+
+    public MarkdownRenderer(String avroSchemaStorePath) {
+        if (avroSchemaStorePath != null) {
+            schemaStore = new FileAvroSchemaStore(Paths.get(avroSchemaStorePath));
+        } else {
+            schemaStore = null;
+        }
+    }
+
     @Override
     public void accept(LogRecord<Record> record) {
         Record rec = record.message();
         log.info(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.getKey(),
                 watermarkString(rec.getWatermark()), rec.getData().length, rec.getFlags()));
-        log.info(MD_DATA + binaryString(rec.getData()) + MD_DATA);
+        log.info(MD_DATA + tryToRenderAvroData(schemaStore, rec) + MD_DATA);
     }
 
     @Override
