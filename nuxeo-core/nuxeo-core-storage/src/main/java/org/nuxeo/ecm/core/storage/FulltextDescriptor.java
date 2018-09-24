@@ -84,7 +84,7 @@ public class FulltextDescriptor {
         }
     }
 
-    public static final int FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT = 0;
+    public static final int FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT = 128 * 1024; // 128 K
 
     private Integer fulltextFieldSizeLimit;
 
