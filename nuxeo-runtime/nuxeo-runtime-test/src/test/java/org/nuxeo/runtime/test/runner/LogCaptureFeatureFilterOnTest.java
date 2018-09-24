@@ -26,7 +26,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
@@ -39,6 +38,8 @@ public class LogCaptureFeatureFilterOnTest {
 
     private static final Log log2 = LogFactory.getLog("loggerTwo");
 
+    private static final Log log3 = LogFactory.getLog(LogCaptureFeatureFilterOnTest.class);
+
     @Inject
     LogCaptureFeature.Result logCaptureResult;
 
@@ -47,10 +48,11 @@ public class LogCaptureFeatureFilterOnTest {
     public void testLogLevel() throws NoLogCaptureFilterException {
         generateTestLogs();
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
-        assertEquals(2, events.size());
-        assertEquals("Testing loggerOne", events.get(0).getMessage());
-        assertEquals("Testing loggerTwo", events.get(1).getMessage());
+        List<String> events = logCaptureResult.getCaughtEventMessages();
+        assertEquals(3, events.size());
+        assertEquals("Testing loggerOne", events.get(0));
+        assertEquals("Testing loggerTwo", events.get(1));
+        assertEquals("Testing loggerThree", events.get(2));
     }
 
     @Test
@@ -58,10 +60,21 @@ public class LogCaptureFeatureFilterOnTest {
     public void testLoggerName() throws NoLogCaptureFilterException {
         generateTestLogs();
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertEquals(2, events.size());
-        assertEquals("Testing loggerOne", events.get(0).getMessage());
-        assertEquals("Another testing of loggerOne", events.get(1).getMessage());
+        assertEquals("Testing loggerOne", events.get(0));
+        assertEquals("Another testing of loggerOne", events.get(1));
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(loggerClass = LogCaptureFeatureFilterOnTest.class)
+    public void testLoggerClass() throws NoLogCaptureFilterException {
+        generateTestLogs();
+        logCaptureResult.assertHasEvent();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
+        assertEquals(2, events.size());
+        assertEquals("Testing loggerThree", events.get(0));
+        assertEquals("This is another test for loggerThree", events.get(1));
     }
 
     @Test
@@ -69,9 +82,19 @@ public class LogCaptureFeatureFilterOnTest {
     public void testLogLevelAndLoggerName() throws NoLogCaptureFilterException {
         generateTestLogs();
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, events.size());
-        assertEquals("This is another test for loggerTwo", events.get(0).getMessage());
+        assertEquals("This is another test for loggerTwo", events.get(0));
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = LogCaptureFeatureFilterOnTest.class)
+    public void testLogLevelAndLoggerClass() throws NoLogCaptureFilterException {
+        generateTestLogs();
+        logCaptureResult.assertHasEvent();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, events.size());
+        assertEquals("This is another test for loggerThree", events.get(0));
     }
 
     private void generateTestLogs() {
@@ -80,6 +103,9 @@ public class LogCaptureFeatureFilterOnTest {
 
         log2.fatal("Testing loggerTwo");
         log2.warn("This is another test for loggerTwo");
+
+        log3.fatal("Testing loggerThree");
+        log3.warn("This is another test for loggerThree");
     }
 
 }

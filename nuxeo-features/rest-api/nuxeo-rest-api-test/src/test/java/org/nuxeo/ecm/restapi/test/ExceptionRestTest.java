@@ -26,8 +26,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,8 +39,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -96,7 +94,7 @@ public class ExceptionRestTest extends BaseTest {
     }
 
     @Test
-    @LogCaptureFeature.FilterWith(ExceptionLogFilter.class)
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = WebEngineExceptionMapper.class)
     public void testNotFoundEndpoint() throws IOException {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/notfound")) {
             assertEquals(404, r.getStatus());
@@ -106,13 +104,13 @@ public class ExceptionRestTest extends BaseTest {
                     "com.sun.jersey.api.NotFoundException: null for uri: http://localhost:18090/api/v1/foo/notfound",
                     node.get("message").textValue());
 
-            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(0, caughtEvents.size());
         }
     }
 
     @Test
-    @LogCaptureFeature.FilterWith(ExceptionLogFilter.class)
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = WebEngineExceptionMapper.class)
     public void testEndpointWithException() throws IOException {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/exception")) {
             assertEquals(500, r.getStatus());
@@ -120,18 +118,9 @@ public class ExceptionRestTest extends BaseTest {
             assertEquals(500, node.get("status").numberValue());
             assertEquals("foo", node.get("message").textValue());
 
-            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
-            LoggingEvent loggingEvent = caughtEvents.get(0);
-            assertEquals("org.nuxeo.ecm.core.api.NuxeoException: foo", loggingEvent.getRenderedMessage());
-        }
-    }
-
-    public static class ExceptionLogFilter implements LogCaptureFeature.Filter {
-        @Override
-        public boolean accept(LoggingEvent event) {
-            return event.getLevel().isGreaterOrEqual(Level.ERROR)
-                    && (event.getLoggerName().contains(WebEngineExceptionMapper.class.getSimpleName()));
+            assertEquals("org.nuxeo.ecm.core.api.NuxeoException: foo", caughtEvents.get(0));
         }
     }
 }
