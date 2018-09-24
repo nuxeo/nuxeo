@@ -1047,9 +1047,9 @@ public class DBSTransactionState {
      * Finds the documents having dirty text or dirty binaries that have to be reindexed as fulltext.
      *
      * @param docsWithDirtyStrings set of ids, updated by this method
-     * @param docWithDirtyBinaries set of ids, updated by this method
+     * @param docsWithDirtyBinaries set of ids, updated by this method
      */
-    protected void findDirtyDocuments(Set<String> docsWithDirtyStrings, Set<String> docWithDirtyBinaries) {
+    protected void findDirtyDocuments(Set<String> docsWithDirtyStrings, Set<String> docsWithDirtyBinaries) {
         for (DBSDocumentState docState : transientStates.values()) {
             State originalState = docState.getOriginalState();
             State state = docState.getState();
@@ -1091,7 +1091,7 @@ public class DBSTransactionState {
                 docsWithDirtyStrings.add(docState.getId());
             }
             if (dirtyBinaries) {
-                docWithDirtyBinaries.add(docState.getId());
+                docsWithDirtyBinaries.add(docState.getId());
             }
         }
     }
