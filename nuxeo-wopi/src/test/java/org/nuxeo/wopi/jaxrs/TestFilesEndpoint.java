@@ -246,7 +246,7 @@ public class TestFilesEndpoint {
         toReplace.put("DOC_ID", blobDoc.getId());
         toReplace.put("XPATH", FILE_CONTENT_PROPERTY);
         toReplace.put("FILENAME", "test-file.txt");
-        toReplace.put("CHANGE_TOKEN", "2-0");
+        toReplace.put("CHANGE_TOKEN", "1-0");
         try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
             checkJSONResponse(response, "json/CheckFileInfo-john-write.json", toReplace);
         }

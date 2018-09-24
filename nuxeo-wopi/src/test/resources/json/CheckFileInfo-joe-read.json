@@ -1,5 +1,5 @@
 {
-  "BaseFileName": "test-file.txt",
+  "BaseFileName": "${FILENAME}",
   "OwnerId": "john",
   "Size": 25,
   "UserId": "joe",

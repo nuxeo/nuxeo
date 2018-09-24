@@ -1,5 +1,5 @@
 {
-  "BaseFileName": "test-file.txt",
+  "BaseFileName": "${FILENAME}",
   "OwnerId": "john",
   "Size": 25,
   "UserId": "john",
@@ -19,7 +19,7 @@
   "BreadcrumbBrandName": "WOPI Test",
   "BreadcrumbBrandUrl": "http://localhost:18090/",
   "BreadcrumbFolderName": "wopi",
-  "DownloadUrl": "http://localhost:18090/nxfile/${REPOSITORY}/${DOC_ID}/${XPATH}/test-file.txt?changeToken=${CHANGE_TOKEN}",
+  "DownloadUrl": "http://localhost:18090/nxfile/${REPOSITORY}/${DOC_ID}/${XPATH}/${FILENAME}?changeToken=${CHANGE_TOKEN}",
   "HostEditUrl": "http://localhost:18090/wopi/edit/${REPOSITORY}/${DOC_ID}/${XPATH}",
   "HostViewUrl": "http://localhost:18090/wopi/view/${REPOSITORY}/${DOC_ID}/${XPATH}",
   "SignoutUrl": "http://localhost:18090/logout"
