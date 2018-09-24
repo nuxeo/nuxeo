@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.impl.AbstractProperty;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,10 +45,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-deprecated-types-contrib.xml")
-@LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = TestDocumentModelWithDeprecatedProperty.LOGGER_NAME)
+@LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = AbstractProperty.class)
 public class TestDocumentModelWithDeprecatedProperty {
-
-    public static final String LOGGER_NAME = "org.nuxeo.ecm.core.api.model.impl.AbstractProperty";
 
     protected static final String DEPRECATED_SCHEMA = "deprecated";
 

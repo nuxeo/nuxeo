@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.event")
-@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.work.api.WorkSchedulePath")
+@LogCaptureFeature.FilterOn(loggerClass = WorkSchedulePath.class)
 public class WorkErrorsAreTracableTest {
 
     protected static class Fail extends AbstractWork {

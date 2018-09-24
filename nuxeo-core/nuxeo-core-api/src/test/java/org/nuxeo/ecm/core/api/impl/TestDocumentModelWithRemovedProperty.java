@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.RemovedProperty;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -49,10 +50,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-removed-types-contrib.xml")
-@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerName = TestDocumentModelWithRemovedProperty.LOGGER_NAME)
+@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = RemovedProperty.class)
 public class TestDocumentModelWithRemovedProperty {
-
-    public static final String LOGGER_NAME = "org.nuxeo.ecm.core.api.model.impl.RemovedProperty";
 
     protected static final String REMOVED_SCHEMA = "removed";
 
