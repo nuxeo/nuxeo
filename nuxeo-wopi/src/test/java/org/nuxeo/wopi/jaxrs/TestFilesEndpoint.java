@@ -33,7 +33,6 @@ import static org.nuxeo.wopi.Constants.FILE_CONTENT_PROPERTY;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.NAME;
-import static org.nuxeo.wopi.Constants.SHARE_URL;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_WRITE;
 import static org.nuxeo.wopi.Constants.URL;
@@ -51,6 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -65,6 +65,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -867,7 +868,7 @@ public class TestFilesEndpoint {
     }
 
     @Test
-    public void testGetShareUrl() throws IOException {
+    public void testGetShareUrl() throws IOException, JSONException {
         Map<String, String> headers = new HashMap<>();
         headers.put(OVERRIDE, Operation.GET_SHARE_URL.name());
 
@@ -883,19 +884,19 @@ public class TestFilesEndpoint {
         }
 
         headers.put(URL_TYPE, SHARE_URL_READ_ONLY);
+        Map<String, String> toReplace = new HashMap<>();
+        toReplace.put("REPOSITORY", blobDoc.getRepositoryName());
+        toReplace.put("DOC_ID", blobDoc.getId());
+        toReplace.put("XPATH", FILE_CONTENT_PROPERTY);
         try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
             assertEquals(200, response.getStatus());
-            JsonNode jsonNode = mapper.readTree(response.getEntityInputStream());
-            assertEquals(String.format("http://localhost:18090/wopi/view/test/%s/%s", blobDoc.getId(),
-                    FILE_CONTENT_PROPERTY), jsonNode.get(SHARE_URL).textValue());
+            checkJSONResponse(response, "json/GetShareUrl-read-only.json", toReplace);
         }
 
         headers.put(URL_TYPE, SHARE_URL_READ_WRITE);
         try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
             assertEquals(200, response.getStatus());
-            JsonNode jsonNode = mapper.readTree(response.getEntityInputStream());
-            assertEquals(String.format("http://localhost:18090/wopi/edit/test/%s/%s", blobDoc.getId(),
-                    FILE_CONTENT_PROPERTY), jsonNode.get(SHARE_URL).textValue());
+            checkJSONResponse(response, "json/GetShareUrl-read-write.json", toReplace);
         }
     }
 
@@ -933,11 +934,21 @@ public class TestFilesEndpoint {
 
     protected void checkJSONResponse(ClientResponse response, String expectedJSONFile)
             throws IOException, JSONException {
+        checkJSONResponse(response, expectedJSONFile, Collections.emptyMap());
+    }
+
+    protected void checkJSONResponse(ClientResponse response, String expectedJSONFile, Map<String, String> toReplace)
+            throws IOException, JSONException {
         assertEquals(200, response.getStatus());
         String json = response.getEntity(String.class);
         File file = FileUtils.getResourceFileFromContext(expectedJSONFile);
-        String expected = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
+        String expected = readFile(file, toReplace);
         JSONAssert.assertEquals(expected, json, true);
+    }
+
+    protected String readFile(File file, Map<String, String> toReplace) throws IOException {
+        final String rawString = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
+        return StringUtils.expandVars(rawString, toReplace);
     }
 
     protected CloseableClientResponse get(String token, String... path) {
