@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -51,6 +53,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@SuppressWarnings("AutoBoxing")
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-framework.xml")
@@ -58,8 +61,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml")
 public class TestService {
 
+    private static final Logger log = LogManager.getLogger();
+
     @Before
-    public void postSetUp() throws Exception {
+    public void postSetUp() {
         PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
@@ -87,12 +92,12 @@ public class TestService {
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 20);
 
         assertNotNull(tiles);
-        assertFalse(tiles.getZoomfactor() == 0);
+        assertNotEquals(0, tiles.getZoomfactor(), 0.0);
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-adapter-contrib.xml")
-    public void testAdapter() throws Exception {
+    public void testAdapter() {
         // do nothing
     }
 
@@ -108,16 +113,14 @@ public class TestService {
         image.setFilename("slow.jpg");
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 20, 0, 0, false);
         assertNotNull(tiles);
-        assertFalse(tiles.getZoomfactor() == 0);
-        // System.out.println("ExecTime="
-        // + tiles.getInfo().get("JavaProcessExecTime"));
+        assertNotEquals(0, tiles.getZoomfactor(), 0.0);
+        log.debug("ExecTime={}", tiles.getInfo().get("JavaProcessExecTime"));
 
         image.setFilename("quick.jpg");
         PictureTiles tiles2 = pts.getTiles(new BlobResource(image), 255, 255, 20, 0, 0, false);
         assertNotNull(tiles2);
-        assertFalse(tiles2.getZoomfactor() == 0);
-        // System.out.println("ExecTime="
-        // + tiles2.getInfo().get("JavaProcessExecTime"));
+        assertNotEquals(0, tiles2.getZoomfactor(), 0.0);
+        log.debug("ExecTime={}", tiles2.getInfo().get("JavaProcessExecTime"));
     }
 
     @Test
@@ -159,7 +162,7 @@ public class TestService {
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 3);
 
         assertNotNull(tiles);
-        assertFalse(tiles.getZoomfactor() == 0);
+        assertNotEquals(0, tiles.getZoomfactor(), 0.0);
     }
 
     @Test
@@ -176,7 +179,7 @@ public class TestService {
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 5);
 
         assertNotNull(tiles);
-        assertFalse(tiles.getZoomfactor() == 0);
+        assertNotEquals(0, tiles.getZoomfactor(), 0.0);
     }
 
     /*
@@ -196,7 +199,6 @@ public class TestService {
         assertNotNull(tiles);
 
         tiles.getTile(0, 1);
-
     }
 
     @Test
@@ -210,7 +212,6 @@ public class TestService {
         assertNotNull(tiles);
 
         tiles.getTile(0, 1);
-
     }
 
     protected void benchTiler(PictureTilingService pts, PictureTiler tiler) throws Exception {
@@ -237,23 +238,18 @@ public class TestService {
                     long t1 = System.currentTimeMillis();
                     Blob tile = tiles.getTile(i, j);
                     long t2 = System.currentTimeMillis();
-
-                    // System.out.println("maxTile=" + maxTiles + " " + i + "-"
-                    // + j + " :" + (t2 - t1));
+                    log.debug("maxTile={}, {}-{} = {}", maxTiles, i, j, t2 - t1);
                 }
             }
             nb = nb + nbt;
             long tt1 = System.currentTimeMillis();
-            // System.out.println("maxTile=" + maxTiles
-            // + " total generation time :" + (tt1 - tt0));
-            // System.out.println("speed " + (nbt + 0.0) / ((tt1 - tt0) / 1000));
+            log.debug("maxTitle={} total generation time : {}", maxTiles, tt1 - tt0);
+            log.debug("speed {}", (nbt + 0.0) / ((tt1 - tt0) / 1000));
         }
 
         long t3 = System.currentTimeMillis();
-
-        // System.out.println("complete run for tiler : " + tiler.getName() +
-        // " :" + (t3 - t0));
-        // System.out.println("speed " + (nb + 0.0) / ((t3 - t0) / 1000));
+        log.debug("complete run for tiler : {} : {}", tiler.getName(), t3 - t0);
+        log.debug("speed {}", (nb + 0.0) / ((t3 - t0) / 1000));
     }
 
     @Test
@@ -266,12 +262,11 @@ public class TestService {
         testMagick2();
         testMagick2();
         long cacheSize = PictureTilingCacheGCManager.getCacheSizeInKBs();
-        // System.out.println("CacheSize = " + cacheSize + "KB");
+        log.debug("CacheSize = {}KB", cacheSize);
         assertTrue(cacheSize > 0);
 
         int reduceSize = 500;
-        // System.out.println("performing GC with " + reduceSize
-        // + " KB target reduction");
+        log.debug("performing GC with {}KB target reduction", reduceSize);
         PictureTilingCacheGCManager.doGC(reduceSize);
 
         int gcRuns2 = PictureTilingCacheGCManager.getGCRuns();
@@ -279,9 +274,8 @@ public class TestService {
         assertEquals(1, gcRuns2 - gcRuns);
 
         long newCacheSize = PictureTilingCacheGCManager.getCacheSizeInKBs();
-        // System.out.println("new cacheSize = " + newCacheSize + "KB");
-        // System.out.println("effective delta = " + (cacheSize - newCacheSize)
-        // + "KB");
+        log.debug("new cacheSize = {}KB", newCacheSize);
+        log.debug("effective delta = {}KB", cacheSize - newCacheSize);
         assertTrue(cacheSize - newCacheSize > reduceSize);
 
     }
@@ -305,21 +299,21 @@ public class TestService {
         assertNotNull(pts);
         benchTiler(pts, new MagickTiler());
 
-        // System.out.println("Tiling run 1");
+        log.debug("Tiling run 1");
         testMagick2();
-        // System.out.println("Tiling run 2");
+        log.debug("Tiling run 2");
         testMagick2();
-        // System.out.println("Tiling run 3");
+        log.debug("Tiling run 3");
         testMagick2();
 
         long cacheSize = PictureTilingCacheGCManager.getCacheSizeInKBs();
-        // System.out.println("CacheSize = " + cacheSize + "KB");
+        log.debug("CacheSize = {}KB", cacheSize);
         assertTrue(cacheSize > 0);
 
         GCTask.setGCIntervalInMinutes(-100);
         PictureTilingComponent.startGC();
 
-        // System.out.println("waiting for GC to run");
+        log.debug("waiting for GC to run");
         Thread.sleep(600);
 
         int gcRuns2 = PictureTilingCacheGCManager.getGCRuns();
@@ -327,8 +321,8 @@ public class TestService {
 
         int runs = gcRuns2 - gcRuns;
         int calls = gcCalls2 - gcCalls;
-        // System.out.println("GC runs = " + runs);
-        // System.out.println("GC calls = " + calls);
+        log.debug("GC runs = {}", runs);
+        log.debug("GC calls = {}", calls);
 
         assertTrue(runs > 0);
         assertTrue(calls > 2);
@@ -336,9 +330,8 @@ public class TestService {
         PictureTilingComponent.endGC();
 
         long newCacheSize = PictureTilingCacheGCManager.getCacheSizeInKBs();
-        // System.out.println("new cacheSize = " + newCacheSize + "KB");
-        // System.out.println("effective delta = " + (cacheSize - newCacheSize)
-        // + "KB");
+        log.debug("new cacheSize = {}KB", newCacheSize);
+        log.debug("effective delta = {}KB", cacheSize - newCacheSize);
         assertTrue(cacheSize - newCacheSize > reduceSize);
 
         PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
@@ -346,7 +339,7 @@ public class TestService {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml")
-    public void testParametersContrib() throws Exception {
+    public void testParametersContrib() {
         String cacheSize = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 "ERROR");
         assertEquals("50000", cacheSize);
