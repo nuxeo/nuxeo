@@ -43,6 +43,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -74,8 +75,10 @@ public class TestS3DirectBatchHandler {
 
     @BeforeClass
     public static void beforeClass() {
-        envId = System.getenv(S3BinaryManager.AWS_ID_ENV);
-        envSecret = System.getenv(S3BinaryManager.AWS_SECRET_ENV);
+        envId = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
+        envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
         System.setProperty(S3DIRECT_PREIX + S3BinaryManager.AWS_ID_PROPERTY, envId);
         System.setProperty(S3DIRECT_PREIX + S3BinaryManager.AWS_SECRET_PROPERTY, envSecret);
