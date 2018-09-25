@@ -40,8 +40,8 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+import static org.nuxeo.ecm.core.api.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
-import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -99,7 +99,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
@@ -2142,7 +2141,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 }
                 docModel = readModel(doc);
                 docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
-                docModel.putContextData(BulkTrashedStateChangeListener.SKIP_CHILDREN_PROCESSING_KEY, Boolean.TRUE);
                 if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
                     trashService.trashDocument(docModel);
                 } else {

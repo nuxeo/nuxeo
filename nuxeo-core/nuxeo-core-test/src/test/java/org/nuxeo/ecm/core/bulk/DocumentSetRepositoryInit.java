@@ -28,15 +28,47 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
  */
 public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
 
-    private static final int SIZE = 10;
+    public static final String ROOT = "/default-domain/workspaces/test";
+
+    public static final int SIZE = 3;
+
+    public static final int DOC_BY_LEVEL = SIZE * 2;
+
+    public static int created_non_proxy;
+
+    public static int created_proxy;
+
+    public static int created_total;
+
+    static {
+        // with SIZE = 3, 9 + 27 + 81 = 117 documents are created
+        for (int i = 1; i <= SIZE; i++) {
+            created_total += 3 * Math.pow(SIZE, i);
+        }
+        created_proxy = created_total / 3;
+        created_non_proxy = created_total / 3 * 2;
+    }
 
     @Override
     public void populate(CoreSession session) {
         super.populate(session);
-        DocumentModel test = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        for (int i = 0; i < SIZE; i++) {
-            DocumentModel doc = session.createDocumentModel(test.getPathAsString(), "doc " + i, "ComplexDoc");
-            session.createDocument(doc);
+        DocumentModel test = session.getDocument(new PathRef(ROOT));
+        createChildren(session, test, SIZE);
+    }
+
+    private void createChildren(CoreSession s, DocumentModel p, int depth) {
+        if (depth > 0) {
+            for (int i = 0; i < SIZE; i++) {
+                DocumentModel child = s.createDocumentModel(p.getPathAsString(), p.getName() + "doc" + i, "ComplexDoc");
+                child = s.createDocument(child);
+                s.saveDocument(child);
+                s.createProxy(child.getRef(), p.getRef());
+                s.saveDocument(child);
+                DocumentModel folder = s.createDocumentModel(p.getPathAsString(), p.getName() + "folder" + i, "Folder");
+                folder = s.createDocument(folder);
+                s.saveDocument(folder);
+                createChildren(s, folder, depth - 1);
+            }
         }
     }
 }

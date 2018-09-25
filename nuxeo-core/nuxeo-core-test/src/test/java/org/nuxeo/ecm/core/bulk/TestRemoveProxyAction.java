@@ -22,12 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.bulk.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.DOC_BY_LEVEL;
-import static org.nuxeo.ecm.core.bulk.actions.SetPropertiesAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_non_proxy;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_proxy;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_total;
+import static org.nuxeo.ecm.core.bulk.actions.RemoveProxyAction.ACTION_NAME;
 
-import java.io.Serializable;
 import java.time.Duration;
-import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -41,13 +41,12 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
-public class TestSetPropertiesAction {
+public class TestRemoveProxyAction {
 
     @Inject
     public BulkService service;
@@ -55,46 +54,29 @@ public class TestSetPropertiesAction {
     @Inject
     public CoreSession session;
 
-    @Inject
-    public TransactionalFeature txFeature;
-
     @Test
-    public void testSetProperties() throws Exception {
+    public void testRemoveProxy() throws Exception {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
-        String title = "test title";
-        String description = "test description";
-        String foo = "test foo";
-        String bar = "test bar";
-
-        HashMap<String, Serializable> complex = new HashMap<>();
-        complex.put("foo", foo);
-        complex.put("bar", bar);
+        assertEquals(created_proxy, session.query(nxql + " and ecm:isProxy=1").size());
+        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
 
         String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
                                                            .withUsername(session.getPrincipal().getName())
                                                            .withQuery(nxql)
-                                                           .withAction(ACTION_NAME)
-                                                           .withParam("dc:title", title)
-                                                           .withParam("dc:description", description)
-                                                           .withParam("cpx:complex", complex));
+                                                           .withAction(ACTION_NAME));
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(created_total, status.getProcessed());
 
-        txFeature.nextTransaction();
+        assertEquals(0, session.query(nxql + " and ecm:isProxy=1").size());
+        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
 
-        for (DocumentModel child : session.query(nxql)) {
-            assertEquals(title, child.getTitle());
-            assertEquals(description, child.getPropertyValue("dc:description"));
-            assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));
-            assertEquals(bar, child.getPropertyValue("cpx:complex/bar"));
-        }
     }
 }

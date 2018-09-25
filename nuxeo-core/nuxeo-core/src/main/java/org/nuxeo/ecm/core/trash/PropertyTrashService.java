@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.trash;
 
-import static org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener.SKIP_CHILDREN_PROCESSING_KEY;
+import static org.nuxeo.ecm.core.bulk.actions.SetSystemPropertiesAction.SetSystemPropertyComputation.NOTIFY;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +30,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.bulk.BulkCommand;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.actions.RemoveProxyAction;
+import org.nuxeo.ecm.core.bulk.actions.SetSystemPropertiesAction;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A {@link TrashService} implementation relying on {@code ecm:isTrashed}.
@@ -82,6 +87,10 @@ public class PropertyTrashService extends AbstractTrashService {
                 }
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
                 notifyEvent(session, DOCUMENT_TRASHED, docForEvent);
+                if (session.hasChildren(doc.getRef())) {
+                    removeProxies(doc);
+                    setTrashPropertyToChildren(doc, Boolean.TRUE);
+                }
             }
         }
     }
@@ -90,13 +99,13 @@ public class PropertyTrashService extends AbstractTrashService {
     public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) {
         Set<DocumentRef> docRefs = new HashSet<>();
         for (DocumentModel doc : docs) {
-            docRefs.addAll(doUntrashDocument(doc));
+            docRefs.addAll(doUntrashDocument(doc, true));
         }
         docs.stream().map(DocumentModel::getCoreSession).findFirst().ifPresent(CoreSession::save);
         return docRefs;
     }
 
-    protected Set<DocumentRef> doUntrashDocument(DocumentModel doc) {
+    protected Set<DocumentRef> doUntrashDocument(DocumentModel doc, boolean processChildren) {
         CoreSession session = doc.getCoreSession();
         DocumentRef docRef = doc.getRef();
 
@@ -114,6 +123,9 @@ public class PropertyTrashService extends AbstractTrashService {
         }
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
         notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent);
+        if (processChildren && session.hasChildren(doc.getRef())) {
+            setTrashPropertyToChildren(doc, Boolean.FALSE);
+        }
 
         Set<DocumentRef> docRefs = new HashSet<>();
         docRefs.add(docRef);
@@ -121,11 +133,37 @@ public class PropertyTrashService extends AbstractTrashService {
         // now untrash the parent if needed
         if (parentRef != null && session.isTrashed(parentRef)) {
             DocumentModel parent = session.getDocument(parentRef);
-            parent.putContextData(SKIP_CHILDREN_PROCESSING_KEY, Boolean.TRUE);
-            Set<DocumentRef> ancestorDocRefs = doUntrashDocument(parent);
+            Set<DocumentRef> ancestorDocRefs = doUntrashDocument(parent, false);
             docRefs.addAll(ancestorDocRefs);
         }
         return docRefs;
+    }
+
+    protected void setTrashPropertyToChildren(DocumentModel model, Boolean value) {
+        String eventId = value ? DOCUMENT_TRASHED : DOCUMENT_UNTRASHED;
+        String currentTrashValue = value ? "0" : "1";
+        CoreSession session = model.getCoreSession();
+        BulkService service = Framework.getService(BulkService.class);
+        String nxql = String.format(
+                "SELECT * from Document where ecm:isProxy = 0 AND ecm:isTrashed = %s AND ecm:ancestorId='%s'",
+                currentTrashValue, model.getId());
+        service.submit(new BulkCommand().withRepository(session.getRepositoryName())
+                                        .withUsername(session.getPrincipal().getName())
+                                        .withQuery(nxql)
+                                        .withAction(SetSystemPropertiesAction.ACTION_NAME)
+                                        .withParam(SYSPROP_IS_TRASHED, value)
+                                        .withParam(NOTIFY, eventId));
+    }
+
+    protected void removeProxies(DocumentModel model) {
+        CoreSession session = model.getCoreSession();
+        BulkService service = Framework.getService(BulkService.class);
+        String nxql = String.format("SELECT * from Document where ecm:isProxy=1 AND ecm:ancestorId='%s'",
+                model.getId());
+        service.submit(new BulkCommand().withRepository(session.getRepositoryName())
+                                        .withUsername(session.getPrincipal().getName())
+                                        .withAction(RemoveProxyAction.ACTION_NAME)
+                                        .withQuery(nxql));
     }
 
     @Override
