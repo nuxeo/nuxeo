@@ -1,0 +1,12 @@
+{
+  "contextParameters": {
+    "wopi": {
+      "file:content": {
+        "appName": "Word",
+        "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/file:content",
+        "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/file:content"
+      },
+      "locked": true
+    }
+  }
+}

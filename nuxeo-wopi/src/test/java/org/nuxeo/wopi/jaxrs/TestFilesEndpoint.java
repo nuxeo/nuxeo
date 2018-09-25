@@ -19,7 +19,6 @@
  */
 package org.nuxeo.wopi.jaxrs;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +43,13 @@ import static org.nuxeo.wopi.Headers.RELATIVE_TARGET;
 import static org.nuxeo.wopi.Headers.REQUESTED_NAME;
 import static org.nuxeo.wopi.Headers.SUGGESTED_TARGET;
 import static org.nuxeo.wopi.Headers.URL_TYPE;
+import static org.nuxeo.wopi.JSONHelper.readFile;
+import static org.nuxeo.wopi.TestConstants.CHANGE_TOKEN_VAR;
+import static org.nuxeo.wopi.TestConstants.DOC_ID_VAR;
+import static org.nuxeo.wopi.TestConstants.FILENAME_VAR;
 import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
+import static org.nuxeo.wopi.TestConstants.REPOSITORY_VAR;
+import static org.nuxeo.wopi.TestConstants.XPATH_VAR;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -66,7 +71,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -114,17 +118,7 @@ public class TestFilesEndpoint {
 
     public static final String BASE_URL = "http://localhost:18090/wopi/files";
 
-    public static final String CHANGE_TOKEN_VAR = "CHANGE_TOKEN";
-
     public static final String CONTENTS_PATH = "contents";
-
-    public static final String DOC_ID_VAR = "DOC_ID";
-
-    public static final String FILENAME_VAR = "FILENAME";
-
-    public static final String REPOSITORY_VAR = "REPOSITORY";
-
-    public static final String XPATH_VAR = "XPATH";
 
     @Inject
     protected UserManager userManager;
@@ -1097,11 +1091,6 @@ public class TestFilesEndpoint {
         File file = FileUtils.getResourceFileFromContext(expectedJSONFile);
         String expected = readFile(file, toReplace);
         JSONAssert.assertEquals(expected, json, true);
-    }
-
-    protected String readFile(File file, Map<String, String> toReplace) throws IOException {
-        final String rawString = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
-        return StringUtils.expandVars(rawString, toReplace);
     }
 
     protected CloseableClientResponse get(String token, String... path) {

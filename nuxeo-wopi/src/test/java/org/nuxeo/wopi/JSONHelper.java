@@ -19,24 +19,25 @@
 
 package org.nuxeo.wopi;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
+import org.nuxeo.common.utils.StringUtils;
+
 /**
  * @since 10.3
  */
-public class TestConstants {
+public class JSONHelper {
 
-    public static final String CHANGE_TOKEN_VAR = "CHANGE_TOKEN";
+    public static String readFile(File file, Map<String, String> toReplace) throws IOException {
+        final String rawString = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
+        return StringUtils.expandVars(rawString, toReplace);
+    }
 
-    public static final String DOC_ID_VAR = "DOC_ID";
-
-    public static final String FILE_CONTENT_PROPERTY = "file:content";
-
-    public static final String FILENAME_VAR = "FILENAME";
-
-    public static final String REPOSITORY_VAR = "REPOSITORY";
-
-    public static final String XPATH_VAR = "XPATH";
-
-    private TestConstants() {
-        // constants class
+    private JSONHelper() {
+        // helper class
     }
 }

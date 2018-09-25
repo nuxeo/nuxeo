@@ -1,0 +1,22 @@
+{
+  "contextParameters": {
+    "wopi": {
+      "file:content": {
+        "appName": "PowerPoint",
+        "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/file:content",
+        "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/file:content"
+      },
+      "files:files/0/file": {
+        "appName": "Word",
+        "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/files:files/0/file",
+        "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/files:files/0/file"
+      },
+      "files:files/2/file": {
+        "appName": "Excel",
+        "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/files:files/2/file",
+        "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/files:files/2/file"
+      },
+      "locked": false
+    }
+  }
+}
