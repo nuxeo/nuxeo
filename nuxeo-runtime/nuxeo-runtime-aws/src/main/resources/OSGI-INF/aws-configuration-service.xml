@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.aws.AWSConfigurationService">
+
+  <documentation>Manages AWS configuration.</documentation>
+
+  <implementation class="org.nuxeo.runtime.aws.AWSConfigurationServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      Used to configure AWS. Example:
+      <code>
+        <configuration>
+          <accessKeyId>MY_ACCESS_KEY</accessKeyId>
+          <secretKey>MY_SECRET_KEY</secretKey>
+          <region>MY_REGION</region>
+        </configuration>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.runtime.aws.AWSConfigurationDescriptor" />
+  </extension-point>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.aws.AWSConfigurationService" />
+  </service>
+
+</component>

@@ -1,0 +1,29 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="aws.config" version="1.0">
+
+  <extension target="org.nuxeo.runtime.aws.AWSConfigurationService" point="configuration">
+    <configuration>
+<#if (nuxeo.aws.accessKeyId)?has_content>
+      <accessKeyId>${nuxeo.aws.accessKeyId}</accessKeyId>
+<#elseif (nuxeo.s3storage.awsid)?has_content>
+      <accessKeyId>${nuxeo.s3storage.awsid}</accessKeyId>
+</#if>
+<#if (nuxeo.aws.secretKey)?has_content>
+      <secretKey>${nuxeo.aws.secretKey}</secretKey>
+<#elseif (nuxeo.s3storage.awssecret)?has_content>
+      <secretKey>${nuxeo.s3storage.awssecret}</secretKey>
+</#if>
+<#if (nuxeo.aws.sessionToken)?has_content>
+      <sessionToken>${nuxeo.aws.sessionToken}</sessionToken>
+</#if>
+<#if (nuxeo.aws.region)?has_content>
+      <region>${nuxeo.aws.region}</region>
+<#elseif (nuxeo.s3storage.region)?has_content>
+      <region>${nuxeo.s3storage.region}</region>
+</#if>
+    </configuration>
+  </extension>
+
+</component>
+</#escape>
