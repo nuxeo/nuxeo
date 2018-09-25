@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.aws.core.test">
+
+  <extension target="org.nuxeo.runtime.aws.AWSConfigurationService" point="configuration">
+    <configuration>
+      <accessKeyId>XML_ACCESS_KEY_ID</accessKeyId>
+      <secretKey>XML_SECRET_KEY</secretKey>
+      <sessionToken>XML_SESSION_TOKEN</sessionToken>
+      <region>XML_REGION</region>
+    </configuration>
+  </extension>
+
+</component>
