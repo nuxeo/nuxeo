@@ -67,7 +67,7 @@ public class DescriptorRegistry {
     }
 
     public boolean register(String target, String xp, Descriptor descriptor) {
-        log.trace("Register {} to {}/{}", descriptor.getId(), target, xp);
+        log.debug("Register {} to {}/{}", descriptor.getId(), target, xp);
         return descriptors.computeIfAbsent(target, k -> new HashMap<>())
                           .computeIfAbsent(xp, k -> new LinkedHashMap<>())
                           .computeIfAbsent(descriptor.getId(), k -> new ArrayList<>())
@@ -76,7 +76,7 @@ public class DescriptorRegistry {
     }
 
     public boolean unregister(String target, String xp, Descriptor descriptor) {
-        log.trace("Register {} to {}/{}", descriptor.getId(), target, xp);
+        log.debug("Unregister {} from {}/{}", descriptor.getId(), target, xp);
         return descriptors.getOrDefault(target, Collections.emptyMap())
                           .getOrDefault(xp, Collections.emptyMap())
                           .getOrDefault(descriptor.getId(), Collections.emptyList())

@@ -91,8 +91,10 @@ public class LogCaptureFeature implements RunnerFeature {
     }
 
     /**
-     * Default Nuxeo filter which takes a logger name and a log level to accept only events matching both. <br />
-     * Null or empty criteria are converted to match all of them. <br/>
+     * Default Nuxeo filter which takes a logger name and a log level to accept only events matching both.
+     * <p>
+     * Null or empty criteria are converted to match all of them.
+     * <p>
      * For instance, filter will match all loggers if given logger name is null or empty.
      *
      * @since 8.10
@@ -177,7 +179,6 @@ public class LogCaptureFeature implements RunnerFeature {
             if (currentFilter == null) {
                 myResult.noFilterFlag = true;
             } else if (currentFilter.accept(event)) {
-                // System.out.println("Append Event=" + event.toString());
                 myResult.caughtEvents.add(event);
             }
         }
