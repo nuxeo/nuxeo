@@ -156,12 +156,12 @@ public class WOPIServlet extends HttpServlet {
 
             String extension = FilenameUtils.getExtension(blob.getFilename());
             Pair<String, String> pair = ACTIONS_TO_URLS.get(Pair.of(action, extension));
-            String url = pair.getRight();
-            if (url == null) {
+            if (pair == null) {
                 // TODO http code?
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot open file with Office Online");
                 return;
             }
+            String url = pair.getRight();
 
             String token = Helpers.createJWTToken();
             request.setAttribute(ACCESS_TOKEN, token);
