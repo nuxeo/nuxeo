@@ -20,19 +20,17 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static java.lang.Math.min;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.aws.NuxeoAWSCredentialsProvider;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
@@ -167,23 +165,15 @@ public class S3Utils {
     /**
      * Gets the credentials providers for the given AWS key and secret.
      *
-     * @param awsSecretKeyId the AWS key id
-     * @param awsSecretAccessKey the secret
+     * @param accessKeyId the AWS access key id
+     * @param secretKey the secret key
      */
-    public static AWSCredentialsProvider getAWSCredentialsProvider(String awsSecretKeyId, String awsSecretAccessKey) {
-        AWSCredentialsProvider awsCredentialsProvider;
-        if (isBlank(awsSecretKeyId) || isBlank(awsSecretAccessKey)) {
-            awsCredentialsProvider = InstanceProfileCredentialsProvider.getInstance();
-            try {
-                awsCredentialsProvider.getCredentials();
-            } catch (AmazonClientException e) {
-                throw new NuxeoException("Missing AWS credentials and no instance role found", e);
-            }
-        } else {
-            awsCredentialsProvider = new AWSStaticCredentialsProvider(
-                    new BasicAWSCredentials(awsSecretKeyId, awsSecretAccessKey));
+    public static AWSCredentialsProvider getAWSCredentialsProvider(String accessKeyId, String secretKey) {
+        if (isNotBlank(accessKeyId) && isNotBlank(secretKey)) {
+            // explicit values from service-specific Nuxeo configuration
+            return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretKey));
         }
-        return awsCredentialsProvider;
+        return NuxeoAWSCredentialsProvider.getInstance();
     }
 
 }

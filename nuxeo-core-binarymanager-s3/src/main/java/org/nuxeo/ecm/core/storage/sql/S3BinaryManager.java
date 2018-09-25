@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -115,14 +116,17 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String BUCKET_REGION_PROPERTY = "region";
 
+    // unused
     public static final String DEFAULT_BUCKET_REGION = "us-east-1"; // US East
 
     public static final String AWS_ID_PROPERTY = "awsid";
 
+    // unused
     public static final String AWS_ID_ENV = "AWS_ACCESS_KEY_ID";
 
     public static final String AWS_SECRET_PROPERTY = "awssecret";
 
+    // unused
     public static final String AWS_SECRET_ENV = "AWS_SECRET_ACCESS_KEY";
 
     /** AWS ClientConfiguration default 50 */
@@ -217,7 +221,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         bucketNamePrefix = StringUtils.defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         String bucketRegion = getProperty(BUCKET_REGION_PROPERTY);
         if (isBlank(bucketRegion)) {
-            bucketRegion = DEFAULT_BUCKET_REGION;
+            bucketRegion = NuxeoAWSRegionProvider.getInstance().getRegion();
         }
         String awsID = getProperty(AWS_ID_PROPERTY);
         String awsSecret = getProperty(AWS_SECRET_PROPERTY);
@@ -242,14 +246,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         if (isNotBlank(sseprop)) {
             useServerSideEncryption = Boolean.parseBoolean(sseprop);
             serverSideKMSKeyID = getProperty(SERVERSIDE_ENCRYPTION_KMS_KEY_PROPERTY);
-        }
-
-        // Fallback on default env keys for ID and secret
-        if (isBlank(awsID)) {
-            awsID = System.getenv(AWS_ID_ENV);
-        }
-        if (isBlank(awsSecret)) {
-            awsSecret = System.getenv(AWS_SECRET_ENV);
         }
 
         if (isBlank(bucketName)) {

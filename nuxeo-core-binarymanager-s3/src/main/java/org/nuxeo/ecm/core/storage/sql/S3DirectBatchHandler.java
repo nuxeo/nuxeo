@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
+import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -75,6 +76,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     public static final String POLICY_TEMPLATE_PROPERTY = "policyTemplate";
 
+    // unused
     protected static final List<String> MANDATORY_PROPERTIES = Arrays.asList( //
             AWS_ID_PROPERTY, //
             AWS_SECRET_PROPERTY, //
@@ -118,13 +120,14 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
-        for (String property : MANDATORY_PROPERTIES) {
-            if (isEmpty(properties.get(property))) {
-                throw new NuxeoException("Missing configuration property: " + property);
-            }
-        }
         region = properties.get(BUCKET_REGION_PROPERTY);
+        if (isBlank(region)) {
+            region = NuxeoAWSRegionProvider.getInstance().getRegion();
+        }
         bucket = properties.get(BUCKET_NAME_PROPERTY);
+        if (isBlank(bucket)) {
+            throw new NuxeoException("Missing configuration property: " + BUCKET_NAME_PROPERTY);
+        }
         bucketPrefix = defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         accelerateModeEnabled = Boolean.parseBoolean(properties.get(ACCELERATE_MODE_ENABLED_PROPERTY));
         String awsSecretKeyId = properties.get(AWS_ID_PROPERTY);
