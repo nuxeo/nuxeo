@@ -386,8 +386,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                     log.debug(String.format(
                             "Cannot adapt parent document of %s as a FileSystemItem, skipping descendant document",
                             doc.getPathAsString()));
-                    continue;
                 }
+                continue;
             }
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
             FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(doc, parent, false, false,
