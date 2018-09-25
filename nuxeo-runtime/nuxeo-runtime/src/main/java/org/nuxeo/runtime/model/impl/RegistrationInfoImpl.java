@@ -381,7 +381,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     ((Component) ci).start(component);
                 }
             }
-            log.trace("Component started: {}", name);
+            log.debug("Component started: {}", name);
             state = STARTED;
             manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STARTED, this));
         } catch (RuntimeException e) {
@@ -409,7 +409,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ((Component) ci).stop(component);
             }
         }
-        log.trace("Component stopped: {}", name);
+        log.debug("Component stopped: {}", name);
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STOPPED, this));
     }
@@ -426,7 +426,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
         // activate component
         component.activate();
-        log.trace("Component activated: {}", name);
+        log.debug("Component activated: {}", name);
 
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
@@ -508,7 +508,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         component.deactivate();
-        log.trace("Component deactivated: {}", name);
+        log.debug("Component deactivated: {}", name);
 
         component = null;
 
