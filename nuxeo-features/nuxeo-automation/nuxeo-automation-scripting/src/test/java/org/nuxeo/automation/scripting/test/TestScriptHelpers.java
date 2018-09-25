@@ -56,7 +56,7 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature.FilterOn;
  * @since 7.10
  */
 // this test needs "org.nuxeo.automation.scripting.helper.Console" logger to have level == WARN, see log4j2-test.xml
-// because we test scripting log which has logic depending on logger's level, wee Console class
+// because we test scripting log which has logic depending on logger's level, see Console class
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)

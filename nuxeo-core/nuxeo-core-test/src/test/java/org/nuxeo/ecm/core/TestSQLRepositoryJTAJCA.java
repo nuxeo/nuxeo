@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
 
-    public static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+    private static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
     @SuppressWarnings("deprecation")
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
