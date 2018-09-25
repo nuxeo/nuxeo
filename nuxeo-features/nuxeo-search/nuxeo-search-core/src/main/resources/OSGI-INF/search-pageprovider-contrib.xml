@@ -84,14 +84,6 @@
             <range key="huge" from="104857601" />
           </ranges>
         </aggregate>
-        <aggregate id="dc_created_agg" type="date_histogram" parameter="dc:created">
-          <field schema="default_search" name="dc_created_agg" />
-          <properties>
-            <property name="interval">month</property>
-            <property name="format">MM-yyyy</property>
-            <property name="order">key desc</property>
-          </properties>
-        </aggregate>
         <aggregate id="dc_modified_agg" type="date_range" parameter="dc:modified">
           <field schema="default_search" name="dc_modified_agg" />
           <properties>
