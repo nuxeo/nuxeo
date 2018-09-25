@@ -48,7 +48,7 @@ Contributors:
         xpath: String,
         appName: {
           type: String,
-          computed: '_appName(document)'
+          computed: '_appName(document, xpath)'
         },
         url: {
           type: String,
@@ -58,7 +58,8 @@ Contributors:
 
       _appName() {
         return this.document.contextParameters && this.document.contextParameters.wopi
-          && this.document.contextParameters.wopi.appName && this.document.contextParameters.wopi.appName.toLowerCase();
+          && this.document.contextParameters.wopi[this.xpath] && this.document.contextParameters.wopi[this.xpath].appName
+          && this.document.contextParameters.wopi[this.xpath].appName.toLowerCase();
       },
 
       _isAvailable() {
@@ -74,16 +75,13 @@ Contributors:
       },
 
       _wopiURL() {
-        var wopi = this.document.contextParameters && this.document.contextParameters.wopi;
-        if (!wopi) {
+        var blobInfo = this.document.contextParameters && this.document.contextParameters.wopi
+          && this.document.contextParameters.wopi[this.xpath];
+        if (!blobInfo) {
           return null;
         }
 
-        var url = wopi.edit ? wopi.edit : wopi.view;
-        return [
-          url,
-          this.xpath
-        ].join('/');
+        return blobInfo.edit ? blobInfo.edit : blobInfo.view;
       }
     });
   </script>
