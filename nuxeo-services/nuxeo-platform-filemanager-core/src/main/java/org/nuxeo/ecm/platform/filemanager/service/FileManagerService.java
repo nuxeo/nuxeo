@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -304,7 +305,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof UnicityExtension) {
-                    registerUnicityOptions((UnicityExtension) contrib, extension);
+                    registerUnicityOptions((UnicityExtension) contrib);
                 }
             }
         } else if (extension.getExtensionPoint().equals("versioning")) {
@@ -352,6 +353,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 }
             }
         } else if (extension.getExtensionPoint().equals("unicity")) {
+            // nothing to do
 
         } else if (extension.getExtensionPoint().equals("versioning")) {
             // set to default value
@@ -362,7 +364,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-    private void registerUnicityOptions(UnicityExtension unicityExtension, Extension extension) {
+    private void registerUnicityOptions(UnicityExtension unicityExtension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
@@ -395,7 +397,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(className).newInstance()
                         : oldPlugin;
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             }
             if (pluginExtension.isMerge()) {
                 mergeFileImporters(oldPlugin, newPlugin, pluginExtension);
@@ -409,7 +411,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             try {
                 plugin = (FileImporter) extension.getContext().loadClass(className).newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             }
             fillImporterWithDescriptor(plugin, pluginExtension);
             fileImporters.put(name, plugin);
@@ -420,8 +422,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-    private void mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin,
-            FileImporterDescriptor desc) {
+    private void mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin, FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
             List<String> oldFilters = oldPlugin.getFilters();
@@ -468,7 +469,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         try {
             folderImporter = (FolderImporter) extension.getContext().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         folderImporter.setName(name);
         folderImporter.setFileManagerService(this);
@@ -501,7 +502,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         try {
             provider = (CreationContainerListProvider) extension.getContext().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         provider.setName(name);
         provider.setDocTypes(docTypes);

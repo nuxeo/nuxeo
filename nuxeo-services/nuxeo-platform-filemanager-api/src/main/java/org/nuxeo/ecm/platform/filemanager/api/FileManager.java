@@ -134,7 +134,7 @@ public interface FileManager {
      *
      * @since 5.7
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     * behaviors from importers
+     *             behaviors from importers
      */
     @Deprecated
     VersioningOption getVersioningOption();
@@ -144,7 +144,7 @@ public interface FileManager {
      *
      * @since 5.7
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     * behaviors from importers
+     *             behaviors from importers
      */
     @Deprecated
     boolean doVersioningAfterAdd();

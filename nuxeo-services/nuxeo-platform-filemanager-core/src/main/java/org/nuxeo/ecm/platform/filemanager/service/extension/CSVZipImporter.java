@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -149,9 +150,9 @@ public class CSVZipImporter extends AbstractFileImporter {
 
                     // update doc properties
                     DocumentType targetDocType = targetDoc.getDocumentType();
-                    for (String fname : stringValues.keySet()) {
-
-                        String stringValue = stringValues.get(fname);
+                    for (Map.Entry<String, String> entry : stringValues.entrySet()) {
+                        String fname = entry.getKey();
+                        String stringValue = entry.getValue();
                         Field field = null;
                         boolean usePrefix = false;
                         String schemaName = null;
@@ -236,19 +237,17 @@ public class CSVZipImporter extends AbstractFileImporter {
                 log.warn(String.format("Unsupported field type '%s'", type));
                 return null;
             }
-        } else if (type.isComplexType()) {
-            if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
-                ZipEntry blobIndex = zip.getEntry(stringValue);
-                if (blobIndex != null) {
-                    Blob blob;
-                    try {
-                        blob = Blobs.createBlob(zip.getInputStream(blobIndex));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    blob.setFilename(stringValue);
-                    fieldValue = (Serializable) blob;
+        } else if (type.isComplexType() && TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
+            ZipEntry blobIndex = zip.getEntry(stringValue);
+            if (blobIndex != null) {
+                Blob blob;
+                try {
+                    blob = Blobs.createBlob(zip.getInputStream(blobIndex));
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
                 }
+                blob.setFilename(stringValue);
+                fieldValue = (Serializable) blob;
             }
         }
 
