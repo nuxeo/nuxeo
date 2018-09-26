@@ -11,12 +11,11 @@
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- Processor used by BulkService to scroll DB -->
-    <streamProcessor name="bulkDocumentScroller" class="org.nuxeo.ecm.core.bulk.BulkProcessor"
-                     logConfig="bulk" defaultConcurrency="1" defaultPartitions="1">
+    <streamProcessor name="bulkDocumentScroller" class="org.nuxeo.ecm.core.bulk.BulkProcessor" logConfig="bulk"
+      defaultConcurrency="1" defaultPartitions="1">
       <option name="scrollBatchSize">100</option>
       <option name="scrollKeepAlive">60</option>
       <option name="bucketSize">50</option>
-      <option name="counterThresholdMs">500</option>
     </streamProcessor>
 
     <!-- SetProperty processor -->

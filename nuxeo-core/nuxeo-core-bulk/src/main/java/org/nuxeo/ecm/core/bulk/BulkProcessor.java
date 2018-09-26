@@ -21,14 +21,12 @@ package org.nuxeo.ecm.core.bulk;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_STREAM;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.bulk.computation.BulkCounterComputation;
 import org.nuxeo.ecm.core.bulk.computation.BulkScrollerComputation;
 import org.nuxeo.ecm.core.bulk.computation.BulkStatusComputation;
 import org.nuxeo.lib.stream.computation.Topology;
@@ -37,9 +35,9 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
  * Stream Processor that runs the Bulk Action service. It reads commands and uses a scroller to materialize the document
- * set into buckets of document ids. The action is a distinct processor runs on document set and produces counter to
- * signal his progress. A counter computation aggregates the counter messages and produce command status message that
- * are written to a key value store.
+ * set into buckets of document ids. The action is a distinct processor runs on document set and produces status update
+ * to signal his progress. A status computation aggregates status update and update the command status into a key value
+ * store.
  *
  * @since 10.2
  */
@@ -47,13 +45,9 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(BulkProcessor.class);
 
-    public static final String COUNTER_STREAM = "counter";
-
     public static final String STATUS_STREAM = "status";
 
     public static final String SCROLLER_NAME = "scroller";
-
-    public static final String COUNTER_NAME = "counter";
 
     public static final String STATUS_NAME = "status";
 
@@ -63,17 +57,11 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     public static final String BUCKET_SIZE_OPT = "bucketSize";
 
-    public static final String COUNTER_THRESHOLD_MS_OPT = "counterThresholdMs";
-
     public static final int DEFAULT_SCROLL_BATCH_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEPALIVE_SECONDS = 60;
 
     public static final int DEFAULT_BUCKET_SIZE = 50;
-
-    public static final int DEFAULT_COUNTER_THRESHOLD_MS = 30000;
-
-
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -82,7 +70,6 @@ public class BulkProcessor implements StreamProcessorTopology {
         int scrollKeepAliveSeconds = getOptionAsInteger(options, SCROLL_KEEP_ALIVE_SECONDS_OPT,
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
         int bucketSize = getOptionAsInteger(options, BUCKET_SIZE_OPT, DEFAULT_BUCKET_SIZE);
-        int counterThresholdMs = getOptionAsInteger(options, COUNTER_THRESHOLD_MS_OPT, DEFAULT_COUNTER_THRESHOLD_MS);
 
         // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
@@ -98,11 +85,9 @@ public class BulkProcessor implements StreamProcessorTopology {
 
         return Topology.builder()
                        .addComputation( //
-                               () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1,
-                                       scrollBatchSize, scrollKeepAliveSeconds, bucketSize), //
+                               () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
+                                       scrollKeepAliveSeconds, bucketSize), //
                                mapping)
-                       .addComputation(() -> new BulkCounterComputation(COUNTER_NAME, counterThresholdMs),
-                               Arrays.asList("i1:" + COUNTER_STREAM, "o1:" + STATUS_STREAM))
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Collections.singletonList("i1:" + STATUS_STREAM))
                        .build();

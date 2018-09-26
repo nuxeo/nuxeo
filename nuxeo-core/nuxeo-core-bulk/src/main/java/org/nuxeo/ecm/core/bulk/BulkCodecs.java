@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.bulk;
 
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkCounter;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.runtime.api.Framework;
@@ -46,10 +45,6 @@ public class BulkCodecs {
 
     public static Codec<BulkStatus> getStatusCodec() {
         return Framework.getService(CodecService.class).getCodec(DEFAULT_CODEC, BulkStatus.class);
-    }
-
-    public static Codec<BulkCounter> getCounterCodec() {
-        return Framework.getService(CodecService.class).getCodec(DEFAULT_CODEC, BulkCounter.class);
     }
 
     public static Codec<BulkBucket> getBucketCodec() {

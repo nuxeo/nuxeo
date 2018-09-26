@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkCounter;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -56,7 +56,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * </ul>
  * Outputs
  * <ul>
- * <li>o1: Writes {@link BulkCounter}</li>
+ * <li>o1: Writes {@link BulkStatus} updates</li>
  * </ul>
  *
  * @since 10.2
@@ -143,11 +143,16 @@ abstract class AbstractBulkComputation extends AbstractComputation {
                     throw new NuxeoException(e);
                 }
             });
-            BulkCounter counter = new BulkCounter(currentCommandId, documentIds.size());
-            context.produceRecord("o1", currentCommandId, BulkCodecs.getCounterCodec().encode(counter));
+            updateStatusProcessed(context);
             documentIds.clear();
             context.askForCheckpoint();
         }
+    }
+
+    protected void updateStatusProcessed(ComputationContext context) {
+        BulkStatus delta = BulkStatus.deltaOf(currentCommandId);
+        delta.setProcessed(documentIds.size());
+        context.produceRecord("o1", currentCommandId, BulkCodecs.getStatusCodec().encode(delta));
     }
 
     protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);
