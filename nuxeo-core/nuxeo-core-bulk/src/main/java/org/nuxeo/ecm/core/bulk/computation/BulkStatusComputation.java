@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -51,8 +52,17 @@ public class BulkStatusComputation extends AbstractComputation {
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        BulkStatus status = BulkCodecs.getStatusCodec().decode(record.getData());
-        kvStore.put(status.getCommandId() + STATUS, record.getData());
+        Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
+        BulkStatus recordStatus = codec.decode(record.getData());
+        String key = recordStatus.getCommandId() + STATUS;
+        BulkStatus status;
+        if (recordStatus.isDelta()) {
+            status = codec.decode(kvStore.get(key));
+            status.merge(recordStatus);
+        } else {
+            status = recordStatus;
+        }
+        kvStore.put(key, codec.encode(status));
         context.askForCheckpoint();
     }
 }

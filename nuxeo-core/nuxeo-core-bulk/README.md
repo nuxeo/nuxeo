@@ -38,7 +38,7 @@ This computation scrolls the database to retreive the document ids and groups th
 The computation is also in charge of updating the scrolling status by sending it through the `keyValueWriter` stream to the `KeyValueWriter` computation.
 
 Each action is run by a stream processor defining a single computation which executes the action on the documents contained in the bucket.
-The number of processed documents is then sent through a stream to the `Counter` computation which computes and sends the updated command status through the `keyValueWriter` stream to the `KeyValueWriter` computation.
+The number of processed documents is then sent through a stream to the `Status` computation that save the consolided status into the `keyValueWriter`.
 
 The BulkService can also, with a command id, retrieve its status by reading the key/value store.
 

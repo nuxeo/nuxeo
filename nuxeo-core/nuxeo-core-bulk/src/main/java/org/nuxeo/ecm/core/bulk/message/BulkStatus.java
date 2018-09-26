@@ -26,14 +26,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.avro.reflect.AvroEncode;
+import org.apache.avro.reflect.Nullable;
 import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
-import org.nuxeo.ecm.core.bulk.message.MapAsJsonAsStringEncoding;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 
 /**
- * A message representing a command status.
- * <p/>
- * This aggregates status and metrics of documentSet creation and action computation.
+ * A message representing a command status or a change of status (delta).
  *
  * @since 10.2
  */
@@ -61,6 +58,9 @@ public class BulkStatus implements Serializable {
 
     protected String commandId;
 
+    protected boolean delta;
+
+    @Nullable
     protected State state;
 
     @AvroEncode(using = InstantAsLongEncoding.class)
@@ -72,12 +72,62 @@ public class BulkStatus implements Serializable {
     @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant scrollEndTime;
 
-    protected long processed;
+    @Nullable
+    protected Long processed;
 
-    protected long count;
+    @Nullable
+    protected Long count;
 
+    @Nullable
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> result = new HashMap<>();
+
+    /**
+     * Creates a delta status for a command.
+     */
+    public static BulkStatus deltaOf(String commandId) {
+        BulkStatus ret = new BulkStatus();
+        ret.setCommandId(commandId);
+        ret.delta = true;
+        return ret;
+    }
+
+    /**
+     * Updates the status with the provided update.
+     *
+     * @since 10.3
+     */
+    public void merge(BulkStatus update) {
+        if (!update.isDelta()) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot merge an a full status: %s with %s", this, update));
+        }
+        if (update.getState() != null) {
+            setState(update.getState());
+        }
+        if (update.processed != null) {
+            setProcessed(getProcessed() + update.getProcessed());
+        }
+        if (update.getScrollStartTime() != null) {
+            setScrollStartTime(update.getScrollStartTime());
+        }
+        if (update.getScrollEndTime() != null) {
+            setScrollEndTime(update.getScrollEndTime());
+        }
+        if (update.getSubmitTime() != null) {
+            setSubmitTime(update.getSubmitTime());
+        }
+        if (update.count != null) {
+            setCount(update.getCount());
+        }
+        checkForCompletedState();
+    }
+
+    protected void checkForCompletedState() {
+        if (!isDelta() && getCount() > 0 && getProcessed() >= getCount()) {
+            setState(State.COMPLETED);
+        }
+    }
 
     /**
      * Gets command id.
@@ -175,6 +225,9 @@ public class BulkStatus implements Serializable {
      * @return the number of processed elements
      */
     public long getProcessed() {
+        if (processed == null) {
+            return 0;
+        }
         return processed;
     }
 
@@ -193,6 +246,9 @@ public class BulkStatus implements Serializable {
      * @return the number of element
      */
     public long getCount() {
+        if (count == null) {
+            return 0;
+        }
         return count;
     }
 
@@ -207,7 +263,7 @@ public class BulkStatus implements Serializable {
 
     /**
      * Gets action result.
-     * 
+     *
      * @return the action result
      * @since 10.3
      */
@@ -217,12 +273,21 @@ public class BulkStatus implements Serializable {
 
     /**
      * Sets action result.
-     * 
+     *
      * @param result the action result
      * @since 10.3
      */
     public void setResult(Map<String, Serializable> result) {
         this.result = result;
+    }
+
+    /**
+     * This is an update of a status containing only partial information.
+     *
+     * @since 10.3
+     */
+    public boolean isDelta() {
+        return delta;
     }
 
 }

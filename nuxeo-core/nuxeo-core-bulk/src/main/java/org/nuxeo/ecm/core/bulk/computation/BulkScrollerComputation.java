@@ -21,11 +21,8 @@ package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
-import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
 
 import java.time.Instant;
@@ -48,9 +45,8 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -103,25 +99,15 @@ public class BulkScrollerComputation extends AbstractComputation {
     }
 
     protected void processRecord(ComputationContext context, Record record) {
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
         try {
             BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
             String commandId = command.getId();
-            BulkStatus currentStatus = BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS));
-            if (!SCHEDULED.equals(currentStatus.getState())) {
-                log.error("Discard record: " + record + " because it's already building");
-                context.askForCheckpoint();
-                return;
-            }
-            currentStatus.setState(SCROLLING_RUNNING);
-            context.produceRecord(STATUS_STREAM, commandId, BulkCodecs.getStatusCodec().encode(currentStatus));
-
+            updateStatusAsScrolling(context, commandId);
             LoginContext loginContext;
             try {
                 loginContext = Framework.loginAsUser(command.getUsername());
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
                     // scroll documents
-                    Instant scrollStartTime = Instant.now();
                     ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
                             scrollKeepAliveSeconds);
                     long documentCount = 0;
@@ -139,21 +125,12 @@ public class BulkScrollerComputation extends AbstractComputation {
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
                     }
-
                     // send remaining document ids
                     // there's at most one record because we loop while scrolling
                     if (!documentIds.isEmpty()) {
                         produceBucket(context, command.getAction(), commandId, bucketNumber++);
                     }
-
-                    Instant scrollEndTime = Instant.now();
-
-                    currentStatus.setScrollStartTime(scrollStartTime);
-                    currentStatus.setScrollEndTime(scrollEndTime);
-                    currentStatus.setState(RUNNING);
-                    currentStatus.setCount(documentCount);
-                    context.produceRecord(STATUS_STREAM, commandId, BulkCodecs.getStatusCodec().encode(currentStatus));
-
+                    updateStatusAsRunning(context, commandId, documentCount);
                 } finally {
                     loginContext.logout();
                 }
@@ -164,6 +141,23 @@ public class BulkScrollerComputation extends AbstractComputation {
             log.error("Discard invalid record: " + record, e);
         }
         context.askForCheckpoint();
+    }
+
+    protected void updateStatusAsScrolling(ComputationContext context, String commandId) {
+        BulkStatus delta = BulkStatus.deltaOf(commandId);
+        delta.setState(SCROLLING_RUNNING);
+        delta.setScrollStartTime(Instant.now());
+        ((ComputationContextImpl) context).produceRecordImmediate(STATUS_STREAM, commandId,
+                BulkCodecs.getStatusCodec().encode(delta));
+    }
+
+    protected void updateStatusAsRunning(ComputationContext context, String commandId, long documentCount) {
+        BulkStatus delta = BulkStatus.deltaOf(commandId);
+        delta.setState(RUNNING);
+        delta.setScrollEndTime(Instant.now());
+        delta.setCount(documentCount);
+        ((ComputationContextImpl) context).produceRecordImmediate(STATUS_STREAM, commandId,
+                BulkCodecs.getStatusCodec().encode(delta));
     }
 
     /**
