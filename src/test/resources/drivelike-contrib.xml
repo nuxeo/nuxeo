@@ -1,0 +1,7 @@
+<component name="test.fsexporter.plugin.drivelike">
+
+	<extension target="org.nuxeo.io.fsexporter.FSExporter"
+		point="exportLogic">
+		<exportLogic class="org.nuxeo.io.fsexporter.DriveLikeExporterPlugin" />
+	</extension>
+</component>
