@@ -184,6 +184,11 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     @Override
+    public boolean isOneToMany() {
+        return false;
+    }
+
+    @Override
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
             TypeManager typeService) throws IOException {
         path = getNearestContainerPath(session, path);

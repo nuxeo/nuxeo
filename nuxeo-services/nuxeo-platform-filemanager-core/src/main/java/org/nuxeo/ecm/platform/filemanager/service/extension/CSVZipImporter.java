@@ -92,6 +92,11 @@ public class CSVZipImporter extends AbstractFileImporter {
     }
 
     @Override
+    public boolean isOneToMany() {
+        return true;
+    }
+
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
             String filename, TypeManager typeService) throws IOException {
         ZipFile zip = null;

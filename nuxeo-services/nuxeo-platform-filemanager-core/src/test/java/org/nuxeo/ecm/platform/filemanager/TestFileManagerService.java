@@ -450,6 +450,48 @@ public class TestFileManagerService {
         assertEquals("france", doc.getPropertyValue("sf:country"));
     }
 
+    @Test
+    public void testExcludeOneToManyFileImporters() throws Exception {
+        // .doc input, don't exclude oneToMany importers, expecting a new document holding the file
+        File file = getTestFile("test-data/hello.doc");
+        Blob input = Blobs.createBlob(file, "application/msword");
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "hello.doc", true, false);
+        assertNotNull(doc);
+        assertEquals(workspace.getRef(), doc.getParentRef());
+        assertEquals("File", doc.getType());
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("hello.doc", blob.getFilename());
+
+        // .doc input, exclude oneToMany importers, still expecting a new document holding the file
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true, "hello.doc",
+                true, true);
+        assertNotNull(doc);
+        assertEquals(workspace.getRef(), doc.getParentRef());
+        assertEquals("File", doc.getType());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("hello.doc", blob.getFilename());
+
+        // .zip input, don't exclude oneToMany importers, expecting the target folder
+        file = getTestFile("test-data/testCSVArchive.zip");
+        input = Blobs.createBlob(file, "application/zip");
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "testCSVArchive.zip", true, false);
+        assertNotNull(doc);
+        assertEquals(workspace.getRef(), doc.getRef());
+        assertEquals("Workspace", doc.getType());
+
+        // .zip input, exclude oneToMany importers, expecting a new document holding the ZIP file (DefaultFileImporter
+        // selected instead of CSVZipImporter)
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+                "testCSVArchive.zip", true, true);
+        assertNotNull(doc);
+        assertEquals(workspace.getRef(), doc.getParentRef());
+        assertEquals("File", doc.getType());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("testCSVArchive.zip", blob.getFilename());
+    }
+
     private Object getMimeType(DocumentModel doc) {
         return ((Blob) doc.getProperty("file", "content")).getMimeType();
     }

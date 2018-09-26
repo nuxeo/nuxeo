@@ -136,4 +136,12 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
      */
     void setOrder(Integer order);
 
+    /**
+     * Returns {@code true} if {@link #create(CoreSession, Blob, String, boolean, String, TypeManager)} creates more
+     * than one document for the given blob, {@code false} otherwise.
+     *
+     * @since 10.3
+     */
+    boolean isOneToMany();
+
 }
