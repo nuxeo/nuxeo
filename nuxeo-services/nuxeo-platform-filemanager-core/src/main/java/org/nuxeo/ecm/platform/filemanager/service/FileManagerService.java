@@ -247,6 +247,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Override
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck) throws IOException {
+        return createDocumentFromBlob(documentManager, input, path, overwrite, fullName, noMimeTypeCheck, false);
+    }
+
+    @Override
+    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
+            String fullName, boolean noMimeTypeCheck, boolean excludeOneToMany) throws IOException {
 
         // check mime type to be able to select the best importer plugin
         if (!noMimeTypeCheck) {
@@ -255,10 +261,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         List<FileImporter> importers = new ArrayList<>(fileImporters.values());
         Collections.sort(importers);
-        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(input.getMimeType()).getNormalized();
+        String mimeType = input.getMimeType();
+        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(mimeType).getNormalized();
         for (FileImporter importer : importers) {
-            if (importer.isEnabled()
-                    && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
+            if (isImporterAvailable(importer, normalizedMimeType, mimeType, excludeOneToMany)) {
                 DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName,
                         getTypeService());
                 if (doc != null) {
@@ -267,6 +273,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             }
         }
         return null;
+    }
+
+    protected boolean isImporterAvailable(FileImporter importer, String normalizedMimeType, String mimeType,
+            boolean excludeOneToMany) {
+        return importer.isEnabled() && !(importer.isOneToMany() && excludeOneToMany)
+                && (importer.matches(normalizedMimeType) || importer.matches(mimeType));
     }
 
     @Override
