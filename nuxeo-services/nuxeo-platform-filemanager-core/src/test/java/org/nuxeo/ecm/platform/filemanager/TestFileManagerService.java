@@ -51,7 +51,6 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -66,30 +65,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-contribs.xml")
 public class TestFileManagerService {
 
-    protected FileManager service;
-
-    protected DocumentModel root;
-
     protected DocumentModel workspace;
 
     @Inject
     protected CoreSession coreSession;
 
+    @Inject
+    protected FileManager fileManager;
+
     @Before
     public void setUp() throws Exception {
-        service = Framework.getService(FileManager.class);
-        root = coreSession.getRootDocument();
-        createWorkspaces();
-    }
-
-    private void createWorkspaces() {
-        DocumentModel workspace = coreSession.createDocumentModel(root.getPathAsString(), "workspace", "Workspace");
-        coreSession.createDocument(workspace);
-        this.workspace = workspace;
+        workspace = coreSession.createDocumentModel("/", "workspace", "Workspace");
+        workspace = coreSession.createDocument(workspace);
     }
 
     protected File getTestFile(String relativePath) {
-        return new File(FileUtils.getResourcePathFromContext(relativePath));
+        return FileUtils.getResourceFileFromContext(relativePath);
     }
 
     @Test
@@ -97,7 +88,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.doc");
         Blob input = Blobs.createBlob(file, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
         assertNotNull(doc);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
@@ -109,7 +100,7 @@ public class TestFileManagerService {
         // let's make the same test but this time without mime-type checking
         // because the blob already carries a mime-type that matches the file name
         // using mime-type check on or off should yield the same result
-        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello2.doc", true);
         assertNotNull(doc);
         assertEquals("hello2.doc", doc.getProperty("dublincore", "title"));
@@ -126,7 +117,7 @@ public class TestFileManagerService {
         // but only if we use mime-type check
         File file = getTestFile("test-data/hello.doc");
         Blob input = Blobs.createBlob(file, "application/sometype");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello3.doc");
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
@@ -136,7 +127,7 @@ public class TestFileManagerService {
         assertEquals("hello3.doc", blob.getFilename());
 
         input = Blobs.createBlob(file, "application/sometype");
-        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello3.doc", true);
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
@@ -152,7 +143,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.doc");
         Blob input = Blobs.createBlob(file, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
@@ -163,7 +154,7 @@ public class TestFileManagerService {
         assertEquals("hello.doc", blob.getFilename());
 
         // create again with same file
-        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
         assertNotNull(doc);
 
@@ -181,7 +172,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.doc");
         Blob input = Blobs.createBlob(file, "application/msword");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
@@ -192,7 +183,7 @@ public class TestFileManagerService {
         assertEquals("hello.doc", blob.getFilename());
 
         // update it with another file with same name
-        doc = service.updateDocumentFromBlob(coreSession, input, workspace.getPathAsString(),
+        doc = fileManager.updateDocumentFromBlob(coreSession, input, workspace.getPathAsString(),
                 "test-data/update/hello.doc");
         assertNotNull(doc);
 
@@ -214,7 +205,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.html");
         Blob input = Blobs.createBlob(file, "text/html");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
@@ -237,7 +228,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.html");
         Blob input = Blobs.createBlob(file, "text/html");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         DocumentRef docRef = doc.getRef();
 
@@ -256,7 +247,7 @@ public class TestFileManagerService {
         assertEquals(expectedNoteTest, noteText);
 
         // create again with same file
-        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         assertNotNull(doc);
         DocumentRef newDocRef = doc.getRef();
@@ -273,7 +264,7 @@ public class TestFileManagerService {
 
     @Test
     public void testFileImporterDocType() {
-        FileManagerService fileManagerService = (FileManagerService) service;
+        FileManagerService fileManagerService = (FileManagerService) fileManager;
         FileImporter plugin = fileManagerService.getPluginByName("plug");
         assertNotNull(plugin);
         assertNull(plugin.getDocType());
@@ -286,7 +277,7 @@ public class TestFileManagerService {
     @Test
     @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-override.xml")
     public void testFileImportersMerge() {
-        FileManagerService fileManagerService = (FileManagerService) service;
+        FileManagerService fileManagerService = (FileManagerService) fileManager;
 
         FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType4merge");
         assertNotNull(plugin);
@@ -312,7 +303,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.xls");
         Blob blob = Blobs.createBlob(file);
         blob.setMimeType("text/plain");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
                 "test-data/hello.xls");
         assertNotNull(doc);
         assertEquals("application/vnd.ms-excel", blob.getMimeType());
@@ -324,7 +315,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.xml");
         Blob blob = Blobs.createBlob(file);
         blob.setMimeType("text/plain");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
                 "test-data/hello.xml");
         assertNotNull(doc);
         assertEquals("text/plain", blob.getMimeType());
@@ -338,7 +329,7 @@ public class TestFileManagerService {
         Blob blob = Blobs.createBlob(file);
         blob.setFilename("hello.plouf");
         blob.setMimeType("text/plain");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
                 "test-data/hello.plouf");
         assertNotNull(doc);
         assertEquals("text/plain", blob.getMimeType());
@@ -351,7 +342,7 @@ public class TestFileManagerService {
         Blob blob = Blobs.createBlob(file);
         blob.setFilename("hello.plouf");
         blob.setMimeType("pif/paf");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
                 "test-data/hello.plouf");
         assertNotNull(doc);
         assertEquals("File", doc.getType());
@@ -363,7 +354,7 @@ public class TestFileManagerService {
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
         String nfdNormalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFD);
         Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfdNormalizedFileName);
-        service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfdNormalizedFileName);
+        fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfdNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
                 nfdNormalizedFileName));
         // Check existing doc with NFC normalized filename
@@ -378,7 +369,7 @@ public class TestFileManagerService {
         String fileName = "ÜÜÜ ÓÓÓ.rtf";
         String nfcNormalizedFileName = Normalizer.normalize(fileName, Form.NFC);
         Blob blob = Blobs.createBlob("Test content", "text/rtf", null, nfcNormalizedFileName);
-        service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
+        fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true, nfcNormalizedFileName);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession, workspace.getPathAsString(),
                 nfcNormalizedFileName));
         // Check existing doc with non NFC (NFD) normalized filename
@@ -414,7 +405,7 @@ public class TestFileManagerService {
         // update the with a file that matches the same importer
         file = getTestFile("test-data/hello.html");
         input = Blobs.createBlob(file, "text/html");
-        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+        doc = fileManager.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.html");
         assertNotNull(doc);
 
@@ -429,12 +420,15 @@ public class TestFileManagerService {
 
     @Test
     public void testCreateFolder() throws IOException {
-        DocumentModel testFolder = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), true);
+        DocumentModel testFolder = fileManager.createFolder(coreSession, "testFolder", workspace.getPathAsString(),
+                true);
         // Overwrite existing folder
-        DocumentModel testFolder2 = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), true);
+        DocumentModel testFolder2 = fileManager.createFolder(coreSession, "testFolder", workspace.getPathAsString(),
+                true);
         assertEquals(testFolder.getId(), testFolder2.getId());
         // Create a new folder
-        DocumentModel testFolder3 = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), false);
+        DocumentModel testFolder3 = fileManager.createFolder(coreSession, "testFolder", workspace.getPathAsString(),
+                false);
         assertNotEquals(testFolder.getId(), testFolder3.getId());
     }
 
@@ -447,7 +441,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.doc");
         Blob blob = Blobs.createBlob(file);
         blob.setMimeType("application/msword");
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
         assertNotNull(doc);
         assertEquals("application/msword", blob.getMimeType());

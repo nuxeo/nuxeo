@@ -79,6 +79,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
         }
     }
 
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
             String filename, TypeManager typeService) throws IOException {
         try (CloseableFile source = content.getCloseableFile()) {

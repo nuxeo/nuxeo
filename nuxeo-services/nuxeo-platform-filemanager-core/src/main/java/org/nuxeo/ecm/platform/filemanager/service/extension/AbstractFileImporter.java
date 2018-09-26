@@ -59,9 +59,9 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     protected String docType;
 
-    protected List<String> filters = new ArrayList<>();
+    protected transient List<String> filters = new ArrayList<>();
 
-    protected List<Pattern> patterns;
+    protected transient List<Pattern> patterns;
 
     protected boolean enabled = true;
 
@@ -74,12 +74,18 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     // to be used by plugin implementation to gain access to standard file
     // creation utility methods without having to lookup the service
-    protected FileManagerService fileManagerService;
+    /**
+     * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
+     */
+    @Deprecated
+    protected transient FileManagerService fileManagerService;
 
+    @Override
     public List<String> getFilters() {
         return filters;
     }
 
+    @Override
     public void setFilters(List<String> filters) {
         this.filters = filters;
         patterns = new ArrayList<>();
@@ -88,6 +94,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
     }
 
+    @Override
     public boolean matches(String mimeType) {
         for (Pattern pattern : patterns) {
             if (pattern.matcher(mimeType).matches()) {
@@ -97,18 +104,22 @@ public abstract class AbstractFileImporter implements FileImporter {
         return false;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDocType() {
         return docType;
     }
 
+    @Override
     public void setDocType(String docType) {
         this.docType = docType;
     }
@@ -116,7 +127,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * Gets the doc type to use in the given container.
      */
-    public String getDocType(DocumentModel container) {
+    protected String getDocType(DocumentModel container) { // NOSONAR
         return getDocType(); // use XML configuration
     }
 
@@ -125,7 +136,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * To implement when the default {@link #create} method is used.
      */
-    public String getDefaultDocType() {
+    protected String getDefaultDocType() {
         throw new UnsupportedOperationException();
     }
 
@@ -134,7 +145,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * To implement when the default {@link #create} method is used.
      */
-    public boolean isOverwriteByTitle() {
+    protected boolean isOverwriteByTitle() {
         throw new UnsupportedOperationException();
     }
 
@@ -143,7 +154,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * Default implementation sets the title.
      */
-    public void createDocument(DocumentModel doc, Blob content, String title) {
+    protected void createDocument(DocumentModel doc, String title) {
         doc.setPropertyValue("dc:title", title);
     }
 
@@ -154,7 +165,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      *
      * @since 7.1
      */
-    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
+    protected boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
         updateDocument(doc, content);
         return true;
     }
@@ -164,11 +175,11 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * Default implementation sets the content.
      */
-    public void updateDocument(DocumentModel doc, Blob content) {
+    protected void updateDocument(DocumentModel doc, Blob content) {
         doc.getAdapter(BlobHolder.class).setBlob(content);
     }
 
-    public Blob getBlob(DocumentModel doc) {
+    protected Blob getBlob(DocumentModel doc) {
         return doc.getAdapter(BlobHolder.class).getBlob();
     }
 
@@ -177,11 +188,11 @@ public abstract class AbstractFileImporter implements FileImporter {
             TypeManager typeService) throws IOException {
         path = getNearestContainerPath(session, path);
         DocumentModel container = session.getDocument(new PathRef(path));
-        String docType = getDocType(container); // from override or descriptor
-        if (docType == null) {
-            docType = getDefaultDocType();
+        String targetDocType = getDocType(container); // from override or descriptor
+        if (targetDocType == null) {
+            targetDocType = getDefaultDocType();
         }
-        doSecurityCheck(session, path, docType, typeService);
+        doSecurityCheck(session, path, targetDocType, typeService);
         String filename = FileManagerUtils.fetchFileName(fullname);
         String title = FileManagerUtils.fetchTitle(filename);
         content.setFilename(filename);
@@ -215,8 +226,8 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc = doc.getCoreSession().saveDocument(doc);
         } else {
             // create document model
-            doc = session.createDocumentModel(docType);
-            createDocument(doc, content, title);
+            doc = session.createDocumentModel(targetDocType);
+            createDocument(doc, title);
             // set path
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
             doc.setPathInfo(path, pss.generatePathSegment(doc));
@@ -235,37 +246,51 @@ public abstract class AbstractFileImporter implements FileImporter {
      * before putting the real file. But we don't want this first placeholder to cause a versioning event.
      *
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     * behaviors from importers
+     *             behaviors from importers
      */
     @Deprecated
     protected boolean skipCheckInForBlob(Blob blob) {
         return blob == null || blob.getLength() == 0;
     }
 
+    /**
+     * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
+     */
+    @Deprecated
     public FileManagerService getFileManagerService() {
         return fileManagerService;
     }
 
+    /**
+     * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
+     */
+    @Deprecated
+    @Override
     public void setFileManagerService(FileManagerService fileManagerService) {
         this.fileManagerService = fileManagerService;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public Integer getOrder() {
         return order;
     }
 
+    @Override
     public void setOrder(Integer order) {
         this.order = order;
     }
 
+    @Override
     public int compareTo(FileImporter other) {
         Integer otherOrder = other.getOrder();
         if (order == null && otherOrder == null) {
@@ -293,21 +318,19 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     /**
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     * behaviors from importers
+     *             behaviors from importers
      */
     @Deprecated
     protected void checkIn(DocumentModel doc) {
         VersioningOption option = fileManagerService.getVersioningOption();
-        if (option != null && option != VersioningOption.NONE) {
-            if (doc.isCheckedOut()) {
-                doc.checkIn(option, null);
-            }
+        if (option != null && option != VersioningOption.NONE && doc.isCheckedOut()) {
+            doc.checkIn(option, null);
         }
     }
 
     /**
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     * behaviors from importers
+     *             behaviors from importers
      */
     @Deprecated
     protected void checkInAfterAdd(DocumentModel doc) {
@@ -316,8 +339,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
     }
 
-    protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService)
-            throws DocumentSecurityException {
+    protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService) {
         // perform the security checks
         PathRef containerRef = new PathRef(path);
         if (!documentManager.hasPermission(containerRef, READ_PROPERTIES)

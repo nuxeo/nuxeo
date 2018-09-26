@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * FileManagerServiceCommon plugin default interface.
@@ -97,7 +98,9 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
      * methods in specific plugin implementations.
      *
      * @param fileManagerService instance where the Plugin is registered as a contribution
+     * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
      */
+    @Deprecated
     void setFileManagerService(FileManagerService fileManagerService);
 
     /**
