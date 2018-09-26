@@ -19,6 +19,7 @@
 
 package org.nuxeo.io.fsexporter;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,12 +57,12 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
 
     private void serializeStructure(CoreSession session, String fsPath, DocumentModel doc, String PageProvider)
             throws IOException {
-        exporter.serialize(session, doc, fsPath);
+        File serialized = exporter.serialize(session, doc, fsPath);
 
         if (doc.isFolder()) {
             DocumentModelList children = exporter.getChildren(session, doc, PageProvider);
             for (DocumentModel child : children) {
-                serializeStructure(session, fsPath + "/" + doc.getName(), child, PageProvider);
+                serializeStructure(session, serialized.getAbsolutePath(), child, PageProvider);
             }
         }
     }
