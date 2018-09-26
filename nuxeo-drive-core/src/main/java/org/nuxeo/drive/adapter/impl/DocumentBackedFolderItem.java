@@ -498,7 +498,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public FileItem createFile(Blob blob, boolean overwrite) {
         String fileName = blob.getFilename();
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, overwrite, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, overwrite, fileName,
+                    false, true);
             if (file == null) {
                 throw new NuxeoException(String.format(
                         "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",

@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Calendar;
@@ -41,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -55,6 +58,7 @@ import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -1137,6 +1141,16 @@ public class DefaultFileSystemItemFactoryFixture {
         FileItem fileItem = folderItem.createFile(blob);
         FileItem fileItem2 = folderItem.createFile(blob);
         assertNotEquals(fileItem.getId(), fileItem2.getId());
+    }
+
+    @Test
+    public void testExcludeOneToManyFileImporters() throws IOException {
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        File csvImport = FileUtils.getResourceFileFromContext("csv-import.zip");
+        Blob blob = Blobs.createBlob(csvImport);
+        FileItem fileItem = folderItem.createFile(blob, false);
+        assertNotNull(fileItem);
+        assertEquals("csv-import.zip", fileItem.getName());
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
