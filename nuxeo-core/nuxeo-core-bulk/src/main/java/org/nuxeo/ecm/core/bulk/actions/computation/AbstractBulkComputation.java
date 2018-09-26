@@ -16,7 +16,7 @@
  * Contributors:
  *     Funsho David
  */
-package org.nuxeo.ecm.core.bulk.actions;
+package org.nuxeo.ecm.core.bulk.actions.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
@@ -54,14 +54,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <ul>
  * <li>i1: Reads {@link BulkBucket}</li>
  * </ul>
- * Outputs
+ * Outputs for the last computation of the processor
  * <ul>
- * <li>o1: Writes {@link BulkStatus} updates</li>
+ * <li>o1: Writes {@link BulkStatus} delta</li>
  * </ul>
  *
  * @since 10.2
  */
-abstract class AbstractBulkComputation extends AbstractComputation {
+public abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected final List<String> documentIds;
 
@@ -143,16 +143,27 @@ abstract class AbstractBulkComputation extends AbstractComputation {
                     throw new NuxeoException(e);
                 }
             });
-            updateStatusProcessed(context);
+            processBatchHook(context);
             documentIds.clear();
             context.askForCheckpoint();
         }
     }
 
-    protected void updateStatusProcessed(ComputationContext context) {
-        BulkStatus delta = BulkStatus.deltaOf(currentCommandId);
-        delta.setProcessed(documentIds.size());
-        context.produceRecord("o1", currentCommandId, BulkCodecs.getStatusCodec().encode(delta));
+    /**
+     * This should be called by the last computation of the action's topology to inform on the progress of the command.
+     */
+    public static void updateStatusProcessed(ComputationContext context, String commandId, long processed) {
+        BulkStatus delta = BulkStatus.deltaOf(commandId);
+        delta.setProcessed(processed);
+        context.produceRecord("o1", commandId, BulkCodecs.getStatusCodec().encode(delta));
+    }
+
+    /**
+     * Override this method to run other computations, the last computation must call
+     * {@link #updateStatusProcessed(ComputationContext, String, long)}.
+     */
+    public void processBatchHook(ComputationContext context) {
+        updateStatusProcessed(context, currentCommandId, documentIds.size());
     }
 
     protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);

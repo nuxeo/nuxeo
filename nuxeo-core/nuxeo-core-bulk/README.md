@@ -30,7 +30,7 @@ BulkCommand command = new BulkCommand().withRepository("myRepository")
 
 ## Execution flow
 
-![baf](baf.png)
+![baf](bulk-overview.png)
 
 The entry point is the [BulkService](https://github.com/nuxeo/nuxeo/blob/master/nuxeo-core/nuxeo-core-bulk/src/main/java/org/nuxeo/ecm/core/bulk/BulkService.java) that takes a bulk command as an input. The service submits this command, meaning it is sent to the `documentSet` stream, which is the input of the `Scroller` computation.
 
@@ -38,7 +38,7 @@ This computation scrolls the database to retreive the document ids and groups th
 The computation is also in charge of updating the scrolling status by sending it through the `keyValueWriter` stream to the `KeyValueWriter` computation.
 
 Each action is run by a stream processor defining a single computation which executes the action on the documents contained in the bucket.
-The number of processed documents is then sent through a stream to the `Status` computation that save the consolided status into the `keyValueWriter`.
+The number of processed documents is then sent through a stream to the `Status` computation that save the consolidated status into the `keyValueWriter`.
 
 The BulkService can also, with a command id, retrieve its status by reading the key/value store.
 

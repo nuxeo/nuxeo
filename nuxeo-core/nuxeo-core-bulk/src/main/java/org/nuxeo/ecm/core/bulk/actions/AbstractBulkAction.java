@@ -19,14 +19,10 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.lib.stream.computation.Topology.Builder;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**

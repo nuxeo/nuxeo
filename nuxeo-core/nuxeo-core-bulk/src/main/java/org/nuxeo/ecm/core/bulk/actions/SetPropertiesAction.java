@@ -19,19 +19,19 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.bulk.actions.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology.Builder;
 
 /**
@@ -44,7 +44,7 @@ public class SetPropertiesAction extends AbstractBulkAction {
     @Override
     protected Builder addComputations(Builder builder, int size, int threshold) {
         return builder.addComputation(() -> new SetPropertyComputation(size, threshold),
-                Arrays.asList("i1:" + ACTION_NAME, "o1:" + COUNTER_ACTION_NAME));
+                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
     }
 
     public static class SetPropertyComputation extends AbstractBulkComputation {
@@ -55,10 +55,7 @@ public class SetPropertiesAction extends AbstractBulkAction {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            DocumentRef[] docRefs = ids.stream()
-                                       .map(IdRef::new)
-                                       .collect(Collectors.toList())
-                                       .toArray(new DocumentRef[0]);
+            DocumentRef[] docRefs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
             DocumentModelList docs = session.getDocuments(docRefs);
             docs.forEach(doc -> properties.forEach(doc::setPropertyValue));
             session.saveDocuments(docs.toArray(new DocumentModel[0]));

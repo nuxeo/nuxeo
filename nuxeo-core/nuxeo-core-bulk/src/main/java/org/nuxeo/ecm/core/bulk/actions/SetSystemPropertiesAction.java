@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.actions;
 
-import static org.nuxeo.ecm.core.bulk.StreamBulkProcessor.COUNTER_ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.bulk.actions.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology.Builder;
 
 /**
@@ -40,7 +41,7 @@ public class SetSystemPropertiesAction extends AbstractBulkAction {
     @Override
     protected Builder addComputations(Builder builder, int size, int threshold) {
         return builder.addComputation(() -> new SetSystemPropertyComputation(size, threshold),
-                Arrays.asList("i1:" + ACTION_NAME, "o1:" + COUNTER_ACTION_NAME));
+                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
     }
 
     public static class SetSystemPropertyComputation extends AbstractBulkComputation {
