@@ -28,6 +28,8 @@ import java.util.Objects;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
@@ -40,6 +42,8 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected final Map<String, Long> timers;
 
+    protected final LogManager manager;
+
     protected boolean checkpointFlag;
 
     protected long lowWatermark;
@@ -48,10 +52,15 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected LogOffset lastOffset;
 
-    public ComputationContextImpl(ComputationMetadataMapping metadata) {
+    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata) {
+        this.manager = logManager;
         this.metadata = metadata;
         this.timers = new HashMap<>();
         this.streamRecords = new HashMap<>();
+    }
+
+    public ComputationContextImpl(ComputationMetadataMapping computationMetadataMapping) {
+        this(null, computationMetadataMapping);
     }
 
     public List<Record> getRecords(String streamName) {
@@ -80,6 +89,26 @@ public class ComputationContextImpl implements ComputationContext {
             throw new IllegalArgumentException("Stream not registered as output: " + targetStream + ":" + streamName);
         }
         streamRecords.computeIfAbsent(targetStream, key -> new ArrayList<>()).add(record);
+    }
+
+    /**
+     * Writes to an output stream immediately. This will creates systematically duplicates on errors, always use
+     * {@link #produceRecord(String, Record)} when possible.
+     */
+    public LogOffset produceRecordImmediate(String streamName, Record record) {
+        if (manager == null) {
+            throw new IllegalStateException("No logManager provided in context");
+        }
+        String targetStream = metadata.map(streamName);
+        if (!metadata.outputStreams().contains(targetStream)) {
+            throw new IllegalArgumentException("Stream not registered as output: " + targetStream + ":" + streamName);
+        }
+        LogAppender<Record> appender = manager.getAppender(targetStream);
+        return appender.append(record.getKey(), record);
+    }
+
+    public void produceRecordImmediate(String streamName, String key, byte[] data) {
+        produceRecordImmediate(streamName, Record.of(key, data));
     }
 
     @Override
@@ -126,5 +155,4 @@ public class ComputationContextImpl implements ComputationContext {
     public boolean requireTerminate() {
         return terminateFlag;
     }
-
 }
