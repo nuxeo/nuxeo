@@ -42,7 +42,6 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void activate(ComponentContext context) {
-        getLog().debug("Activating component " + getName());
         registry = ((ComponentManagerImpl) context.getRuntimeContext()
                                                   .getRuntime()
                                                   .getComponentManager()).getDescriptors();
@@ -51,7 +50,6 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void deactivate(ComponentContext context) {
-        getLog().debug("Deactivating component " + getName());
         if (getRegistry() != null) {
             getRegistry().clear();
         }
@@ -86,7 +84,6 @@ public class DefaultComponent implements Component, Adaptable {
         if (contribution instanceof Descriptor && getName() != null) {
             Descriptor descriptor = (Descriptor) contribution;
             getRegistry().register(getName(), xp, descriptor);
-            getLog().debug(String.format("Registered %s to %s.%s", descriptor.getId(), getName(), xp));
         }
     }
 
@@ -94,7 +91,6 @@ public class DefaultComponent implements Component, Adaptable {
         if (contribution instanceof Descriptor && getName() != null) {
             Descriptor descriptor = (Descriptor) contribution;
             getRegistry().unregister(getName(), xp, descriptor);
-            getLog().debug(String.format("Unregistered %s from %s.%s", descriptor.getId(), getName(), xp));
         }
     }
 
@@ -105,14 +101,12 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void start(ComponentContext context) {
-        getLog().debug("Starting component " + getName());
         // delegate for now to applicationStarted
         applicationStarted(context);
     }
 
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
-        getLog().debug("Stopping component " + getName());
     }
 
     /**

@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.web.resources.api.Processor;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.web.resources.api.ResourceContext;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
+import org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.web.resources.core")
 @Deploy("org.nuxeo.web.resources.core:webresources-test-config.xml")
-@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl", logLevel = "ERROR")
+@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = WebResourceManagerImpl.class)
 public class TestWebResourceService {
 
     @Inject
@@ -145,11 +145,11 @@ public class TestWebResourceService {
         assertTrue(r.getResources().isEmpty());
         assertEquals("myFaultyApp", r.getName());
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, events.size());
         assertEquals("Some resources references were null or blank while setting myFaultyApp and have been supressed. "
                 + "This probably happened because some <resource> tags were empty in the xml declaration. "
-                + "The correct form is <resource>resource name</resource>.", events.get(0).getMessage());
+                + "The correct form is <resource>resource name</resource>.", events.get(0));
     }
 
     @Test

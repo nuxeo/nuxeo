@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -34,13 +34,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.event")
-@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.work.api.WorkSchedulePath")
+@LogCaptureFeature.FilterOn(loggerClass = WorkSchedulePath.class)
 public class WorkErrorsAreTracableTest {
 
     protected static class Fail extends AbstractWork {
@@ -87,10 +86,8 @@ public class WorkErrorsAreTracableTest {
     @Inject
     protected LogCaptureFeature.Result result;
 
-    protected boolean beforeCapturePath;
-
     @Test
-    public void captureSimple() throws InterruptedException, NoLogCaptureFilterException {
+    public void captureSimple() throws InterruptedException {
         Fail work = new Fail();
         manager.schedule(work);
         WorkSchedulePath.Trace error = awaitFailure(work);
@@ -98,7 +95,7 @@ public class WorkErrorsAreTracableTest {
     }
 
     @Test
-    public void captureChained() throws InterruptedException, NoLogCaptureFilterException {
+    public void captureChained() throws InterruptedException {
         Nest work = new Nest();
         manager.schedule(work);
         WorkSchedulePath.Trace error = awaitFailure(work);
@@ -106,12 +103,12 @@ public class WorkErrorsAreTracableTest {
         assertEquals(work.getSchedulePath(), cause.path());
     }
 
-    protected WorkSchedulePath.Trace awaitFailure(Work work) throws InterruptedException, NoLogCaptureFilterException {
+    protected WorkSchedulePath.Trace awaitFailure(Work work) throws InterruptedException {
         boolean completed = manager.awaitCompletion(1000, TimeUnit.MILLISECONDS);
         assertTrue(completed);
         result.assertHasEvent();
-        LoggingEvent loggingEvent = result.getCaughtEvents().get(0);
-        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace) loggingEvent.getThrowableInformation().getThrowable();
+        LogEvent loggingEvent = result.getCaughtEvents().get(0);
+        WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace) loggingEvent.getThrown();
         assertIsRootWork(work, trace);
         return trace;
     }

@@ -67,7 +67,7 @@ public class JettyConfigurator extends ServerConfigurator {
 
     @Override
     public File getLogConfFile() {
-        return new File(getConfigDir(), "log4j.xml");
+        return new File(getConfigDir(), "log4j2.xml");
     }
 
     @Override

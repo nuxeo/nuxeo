@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@
  */
 package org.nuxeo.runtime.osgi;
 
-import java.util.IllegalFormatException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -39,7 +38,7 @@ import org.osgi.framework.SynchronousBundleListener;
  */
 public class OSGiComponentLoader implements SynchronousBundleListener {
 
-    private static final Log log = LogFactory.getLog(OSGiComponentLoader.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final OSGiRuntimeService runtime;
 
@@ -57,11 +56,11 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             String name = bundle.getSymbolicName();
             runtime.bundles.put(name, bundle);
             int state = bundle.getState();
-            bundleDebug("Install bundle: %s " + bundleStateAsString(state), name);
+            log.debug("Install bundle: {} {}", () -> name, () -> bundleStateAsString(state));
             if ((state & mask) != 0) { // check only resolved bundles
                 if (OSGiRuntimeService.getComponentsList(bundle) != null) {
-                    bundleDebug("Install bundle: %s component list: " + OSGiRuntimeService.getComponentsList(bundle),
-                            name);
+                    log.debug("Install bundle: {} component list: {}", name,
+                            OSGiRuntimeService.getComponentsList(bundle));
                     // check only bundles containing nuxeo comp.
                     try {
                         runtime.createContext(bundle);
@@ -71,10 +70,10 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                         log.warn("Failed to load components for bundle: " + name, e);
                     }
                 } else {
-                    bundleDebug("Install bundle: %s has no components", name);
+                    log.debug("Install bundle: {} has no components", name);
                 }
             } else {
-                bundleDebug("Install bundle: %s is not STARTING " + "or ACTIVE, so no context was created", name);
+                log.debug("Install bundle: {} is not STARTING or ACTIVE, so no context was created", name);
             }
         }
     }
@@ -88,7 +87,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         String name = event.getBundle().getSymbolicName();
         int type = event.getType();
 
-        bundleDebug("Bundle changed: %s " + bundleEventAsString(type), name);
+        log.trace("Bundle changed: {} {}", () -> name, () -> bundleEventAsString(type));
         try {
             Bundle bundle = event.getBundle();
             String componentsList = OSGiRuntimeService.getComponentsList(bundle);
@@ -102,19 +101,19 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             case BundleEvent.STARTING:
             case BundleEvent.LAZY_ACTIVATION:
                 if (componentsList != null) {
-                    bundleDebug("Bundle changed: %s STARTING with components: " + componentsList, name);
+                    log.trace("Bundle changed: {} STARTING with components: ", name, componentsList);
                     runtime.createContext(bundle);
                 } else {
-                    bundleDebug("Bundle changed: %s STARTING with no components", name);
+                    log.trace("Bundle changed: {} STARTING with no components", name);
                 }
                 break;
             case BundleEvent.STOPPED:
             case BundleEvent.UNRESOLVED:
                 if (componentsList != null) {
-                    bundleDebug("Bundle changed: %s STOPPING with components: " + componentsList, name);
+                    log.trace("Bundle changed: {} STOPPING with components: ", name, componentsList);
                     runtime.destroyContext(bundle);
                 } else {
-                    bundleDebug("Bundle changed: %s STOPPING with no components", name);
+                    log.trace("Bundle changed: {} STOPPING with no components", name);
                 }
                 break;
             }
@@ -182,23 +181,6 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             return "STOPPING";
         default:
             return "UNKNOWN_OSGI_EVENT_TYPE_" + eventType;
-        }
-    }
-
-    /**
-     * Prints out a debug message for debugging bundles.
-     *
-     * @param msg the debug message with a %s in it which will be replaced by the component name
-     * @param name the component name
-     */
-    public static void bundleDebug(String msg, String name) {
-        if (log.isDebugEnabled()) {
-            try {
-                msg = String.format(msg, name);
-            } catch (IllegalFormatException e) {
-                // don't fail for this
-            }
-            log.debug(msg);
         }
     }
 

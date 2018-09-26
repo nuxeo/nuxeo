@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
- *
  */
-
 package org.nuxeo.launcher.config;
 
 import java.io.BufferedReader;
@@ -29,7 +27,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -42,11 +39,10 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -57,6 +53,7 @@ import org.nuxeo.launcher.info.DistributionInfo;
 import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.launcher.info.KeyValueInfo;
 import org.nuxeo.launcher.info.PackageInfo;
+import org.nuxeo.log4j.Log4JHelper;
 
 import freemarker.template.TemplateException;
 
@@ -131,10 +128,10 @@ public abstract class ServerConfigurator {
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
-        templateParser.setTextParsingExtensions(config.getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
-        templateParser.setFreemarkerParsingExtensions(config.getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
+        templateParser.setTextParsingExtensions(
+                config.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
+        templateParser.setFreemarkerParsingExtensions(
+                config.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
 
         deleteTemplateFiles();
         // add included templates directories
@@ -145,7 +142,7 @@ public abstract class ServerConfigurator {
                 String templateName = includedTemplate.getName();
                 log.debug(String.format("Parsing %s... %s", templateName, Arrays.toString(listFiles)));
                 // Check for deprecation
-                Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName + ".deprecated"));
+                boolean isDeprecated = Boolean.parseBoolean(config.getProperty(templateName + ".deprecated"));
                 if (isDeprecated) {
                     log.warn("WARNING: Template " + templateName + " is deprecated.");
                     String deprecationMessage = config.getProperty(templateName + ".deprecation");
@@ -155,8 +152,9 @@ public abstract class ServerConfigurator {
                 }
                 // Retrieve optional target directory if defined
                 String outputDirectoryStr = config.getProperty(templateName + ".target");
-                File outputDirectory = (outputDirectoryStr != null) ? new File(generator.getNuxeoHome(),
-                        outputDirectoryStr) : getOutputDirectory();
+                File outputDirectory = (outputDirectoryStr != null)
+                        ? new File(generator.getNuxeoHome(), outputDirectoryStr)
+                        : getOutputDirectory();
                 for (File in : listFiles) {
                     // copy template(s) directories parsing properties
                     newFilesList.addAll(templateParser.processDirectory(in, new File(outputDirectory, in.getName())));
@@ -175,9 +173,7 @@ public abstract class ServerConfigurator {
         if (!newFiles.exists()) {
             return;
         }
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(newFiles));
+        try (BufferedReader reader = new BufferedReader(new FileReader(newFiles))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.endsWith(".bak")) {
@@ -188,17 +184,15 @@ public abstract class ServerConfigurator {
                         FileUtils.copyFile(backup, original);
                         backup.delete();
                     } catch (IOException e) {
-                        throw new ConfigurationException(String.format("Failed to restore %s from %s\nEdit or "
-                                + "delete %s to bypass that error.", line.substring(0, line.length() - 4), line,
-                                newFiles), e);
+                        throw new ConfigurationException(String.format(
+                                "Failed to restore %s from %s\nEdit or " + "delete %s to bypass that error.",
+                                line.substring(0, line.length() - 4), line, newFiles), e);
                     }
                 } else {
                     log.debug("Remove " + line);
                     new File(generator.getNuxeoHome(), line).delete();
                 }
             }
-        } finally {
-            IOUtils.closeQuietly(reader);
         }
         newFiles.delete();
     }
@@ -208,18 +202,15 @@ public abstract class ServerConfigurator {
      * {@link #deleteTemplateFiles()}
      */
     private void storeNewFilesList(List<String> newFilesList) throws IOException {
-        BufferedWriter writer = null;
-        try {
+        File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(newFiles, false), "UTF-8"))) {
             // Store new files listing
-            File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newFiles, false),"UTF-8"));
             int index = generator.getNuxeoHome().getCanonicalPath().length() + 1;
             for (String filepath : newFilesList) {
                 writer.write(new File(filepath).getCanonicalPath().substring(index));
                 writer.newLine();
             }
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
     }
 
@@ -291,22 +282,18 @@ public abstract class ServerConfigurator {
      */
     public void initLogs() {
         File logFile = getLogConfFile();
-        try {
-            String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
-            if (logDirectory == null) {
-                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-            }
-            if (logFile == null || !logFile.exists()) {
-                System.out.println("No logs configuration, will setup a basic one.");
-                BasicConfigurator.configure();
-            } else {
-                System.out.println("Try to configure logs with " + logFile);
-                DOMConfigurator.configure(logFile.toURI().toURL());
-            }
-            log.info("Logs successfully configured.");
-        } catch (MalformedURLException e) {
-            log.error("Could not initialize logs with " + logFile, e);
+        String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+        if (logDirectory == null) {
+            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         }
+        if (logFile == null || !logFile.exists()) {
+            System.out.println("No logs configuration, will setup a basic one.");
+            Configurator.initialize(new DefaultConfiguration());
+        } else {
+            System.out.println("Try to configure logs with " + logFile);
+            Configurator.initialize(Log4JHelper.newConfiguration(logFile));
+        }
+        log.info("Logs successfully configured.");
     }
 
     /**
@@ -336,8 +323,8 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
-        File badInstanceClid = new File(generator.getNuxeoHome(), getDefaultDataDir() + File.separator
-                + "instance.clid");
+        File badInstanceClid = new File(generator.getNuxeoHome(),
+                getDefaultDataDir() + File.separator + "instance.clid");
         if (badInstanceClid.exists() && !getDataDir().equals(badInstanceClid.getParentFile())) {
             log.warn(String.format("Moving %s to %s.", badInstanceClid, getDataDir()));
             try {
@@ -514,16 +501,12 @@ public abstract class ServerConfigurator {
     public void dumpProperties(CryptoProperties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
         File dumpedFile = generator.getDumpedConfig();
-        OutputStreamWriter os = null;
-        try {
-            os = new OutputStreamWriter(new FileOutputStream(dumpedFile, false), "UTF-8");
+        try (OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dumpedFile, false), "UTF-8")) {
             dumpedProperties.store(os, "Generated by " + getClass());
         } catch (FileNotFoundException e) {
             log.error(e);
         } catch (IOException e) {
             log.error("Could not dump properties to " + dumpedFile, e);
-        } finally {
-            IOUtils.closeQuietly(os);
         }
     }
 
@@ -583,7 +566,7 @@ public abstract class ServerConfigurator {
      *
      * @since 5.7
      */
-    protected void addServerSpecificParameters(Map<String, String> parametersmigration) {
+    protected void addServerSpecificParameters(Map<String, String> parametersMigration) {
         // Nothing to do
     }
 
@@ -650,8 +633,8 @@ public abstract class ServerConfigurator {
             if (pkgTemplates.contains(template)) {
                 nxInstance.config.pkgtemplates.add(template);
             } else {
-                File testBase = new File(generator.getNuxeoHome(), ConfigurationGenerator.TEMPLATES
-                        + File.separator + template);
+                File testBase = new File(generator.getNuxeoHome(),
+                        ConfigurationGenerator.TEMPLATES + File.separator + template);
                 if (testBase.exists()) {
                     nxInstance.config.basetemplates.add(template);
                 } else {

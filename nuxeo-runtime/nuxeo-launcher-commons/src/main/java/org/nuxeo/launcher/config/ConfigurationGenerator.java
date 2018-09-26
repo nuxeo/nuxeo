@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
+
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -78,9 +83,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.text.StrSubstitutor;
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.NullEnumeration;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -92,9 +96,6 @@ import org.nuxeo.log4j.Log4JHelper;
 import freemarker.core.ParseException;
 import freemarker.template.TemplateException;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 /**
  * Builder for server configuration and datasource files from templates and properties.
  *
@@ -163,12 +164,12 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default", "mongodb","postgresql", "oracle", "mysql", "mariadb",
+    public static final List<String> DB_LIST = asList("default", "mongodb", "postgresql", "oracle", "mysql", "mariadb",
             "mssql", "db2");
 
-    public static final List<String> DB_SECONDARY_LIST = Arrays.asList("none", "marklogic");
+    public static final List<String> DB_SECONDARY_LIST = asList("none", "marklogic");
 
-    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none", "mongodb");
+    public static final List<String> DB_EXCLUDE_CHECK_LIST = asList("default", "none", "mongodb");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
@@ -246,7 +247,7 @@ public class ConfigurationGenerator {
      *
      * @since 8.1
      */
-    public static final List<String> SECRET_KEYS = Arrays.asList(PARAM_DB_PWD, "mailservice.password",
+    public static final List<String> SECRET_KEYS = asList(PARAM_DB_PWD, "mailservice.password",
             "mail.transport.password", "nuxeo.http.proxy.password", "nuxeo.ldap.bindpassword",
             "nuxeo.user.emergency.password");
 
@@ -430,7 +431,7 @@ public class ConfigurationGenerator {
         } else {
             serverConfigurator = new UnknownServerConfigurator(this);
         }
-        if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
+        if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
             serverConfigurator.initLogs();
         }
         backingServicesConfigurator = new BackingServiceConfigurator(this);
@@ -722,7 +723,7 @@ public class ConfigurationGenerator {
      * @see Environment#SERVER_STATUS_KEY
      * @since 5.5
      */
-    private void evalServerStatusKey(Map<String, String> newParametersToSave) throws ConfigurationException {
+    private void evalServerStatusKey(Map<String, String> newParametersToSave) {
         if (userConfig.getProperty(Environment.SERVER_STATUS_KEY) == null) {
             newParametersToSave.put(Environment.SERVER_STATUS_KEY, UUID.randomUUID().toString().substring(0, 8));
         }
@@ -1188,7 +1189,8 @@ public class ConfigurationGenerator {
      * @since 8.1
      */
     public String extractSecondaryDatabaseTemplateName() {
-        return extractDbTemplateName(DB_SECONDARY_LIST, PARAM_TEMPLATE_DBSECONDARY_TYPE, PARAM_TEMPLATE_DBSECONDARY_NAME, null);
+        return extractDbTemplateName(DB_SECONDARY_LIST, PARAM_TEMPLATE_DBSECONDARY_TYPE,
+                PARAM_TEMPLATE_DBSECONDARY_NAME, null);
     }
 
     private String extractDbTemplateName(List<String> knownDbList, String paramTemplateDbType,
@@ -1533,10 +1535,10 @@ public class ConfigurationGenerator {
      *         one.
      * @since 5.4.2
      */
-    public ArrayList<String> getLogFiles() {
+    public List<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
         System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
-        return Log4JHelper.getFileAppendersFiles(log4jConfFile);
+        return Log4JHelper.getFileAppendersFileNames(log4jConfFile);
     }
 
     /**
@@ -1561,8 +1563,7 @@ public class ConfigurationGenerator {
      * @see #changeTemplates(String)
      */
     public String rebuildTemplatesStr(String dbTemplate) {
-        List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(templates.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesList = new ArrayList<>(asList(templates.split(TEMPLATE_SEPARATOR)));
         String currentDBTemplate = null;
         if (DB_LIST.contains(dbTemplate)) {
             currentDBTemplate = userConfig.getProperty(PARAM_TEMPLATE_DBNAME);
@@ -1661,7 +1662,7 @@ public class ConfigurationGenerator {
      */
     public void addTemplate(String templatesToAdd) throws ConfigurationException {
         List<String> templatesList = getTemplateList();
-        List<String> templatesToAddList = Arrays.asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
+        List<String> templatesToAddList = asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
         if (templatesList.addAll(templatesToAddList)) {
             String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
             HashMap<String, String> parametersToSave = new HashMap<>();
@@ -1692,7 +1693,7 @@ public class ConfigurationGenerator {
      */
     public void rmTemplate(String templatesToRm) throws ConfigurationException {
         List<String> templatesList = getTemplateList();
-        List<String> templatesToRmList = Arrays.asList(templatesToRm.split(TEMPLATE_SEPARATOR));
+        List<String> templatesToRmList = asList(templatesToRm.split(TEMPLATE_SEPARATOR));
         if (templatesList.removeAll(templatesToRmList)) {
             String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
             Map<String, String> parametersToSave = new HashMap<>();
@@ -1800,8 +1801,7 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
-            String dbHost, String dbPort)
-                    throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
+            String dbHost, String dbPort) throws IOException, DatabaseDriverException, SQLException {
         File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
         Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
@@ -1846,7 +1846,7 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     private Driver lookupDriver(String databaseTemplate, File databaseTemplateDir, String classname)
-            throws IOException, DatabaseDriverException {
+            throws DatabaseDriverException {
         File[] files = (File[]) ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
@@ -1908,7 +1908,7 @@ public class ConfigurationGenerator {
      * @return String with the charset encoding for this file
      */
     public static Charset checkFileCharset(File propsFile) throws IOException {
-        List<Charset> charsetsToBeTested = Arrays.asList(US_ASCII, UTF_8, ISO_8859_1);
+        List<Charset> charsetsToBeTested = asList(US_ASCII, UTF_8, ISO_8859_1);
         for (Charset charsetTest : charsetsToBeTested) {
             CharsetDecoder decoder = charsetTest.newDecoder();
             decoder.reset();
@@ -1925,14 +1925,12 @@ public class ConfigurationGenerator {
                     }
                 }
             }
-            if (identified == true){
+            if (identified) {
                 return charsetTest;
             }
         }
         return null;
     }
-
-
 
     /**
      * @since 5.6
@@ -1942,10 +1940,10 @@ public class ConfigurationGenerator {
     public static Properties loadTrimmedProperties(File propsFile) throws IOException {
         Properties props = new Properties();
         Charset charset = checkFileCharset(propsFile);
-        log.debug("Opening " + propsFile.getName() + " in " + charset.name());
         if (charset == null) {
-            throw new IOException("Can't identify input file charset");
+            throw new IOException("Can't identify input file charset for " + propsFile.getName());
         }
+        log.debug("Opening " + propsFile.getName() + " in " + charset.name());
         try (InputStreamReader propsIS = new InputStreamReader(new FileInputStream(propsFile), charset)) {
             loadTrimmedProperties(props, propsIS);
         }
@@ -2071,7 +2069,7 @@ public class ConfigurationGenerator {
      */
     public List<String> getJavaOpts(Function<String, String> mapper) {
         return Arrays.stream(JAVA_OPTS_PATTERN.split(System.getProperty(JAVA_OPTS_PROP, "")))
-                     .map(option -> StrSubstitutor.replace(option, getUserConfig()))
+                     .map(option -> StringSubstitutor.replace(option, getUserConfig()))
                      .map(mapper)
                      .collect(Collectors.toList());
     }

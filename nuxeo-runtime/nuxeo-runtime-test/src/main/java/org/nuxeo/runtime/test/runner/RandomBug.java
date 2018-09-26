@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -199,9 +199,9 @@ public class RandomBug {
      * </ul>
      * Could be set by the environment using the <em>nuxeo.tests.random.mode</em>T system property.
      */
-    public static enum Mode {
+    public enum Mode {
         BYPASS, STRICT, RELAX
-    };
+    }
 
     /**
      * The default mode if {@link #MODE_PROPERTY} is not set.
@@ -222,12 +222,12 @@ public class RandomBug {
 
         protected final RunListener listener = new RunListener() {
             @Override
-            public void testStarted(Description desc) throws Exception {
+            public void testStarted(Description desc) {
                 log.debug(displayName(desc) + " STARTED");
-            };
+            }
 
             @Override
-            public void testFailure(Failure failure) throws Exception {
+            public void testFailure(Failure failure) {
                 gotFailure = true;
                 log.debug(displayName(failure.getDescription()) + " FAILURE");
                 log.trace(failure, failure.getException());
@@ -240,14 +240,14 @@ public class RandomBug {
             }
 
             @Override
-            public void testIgnored(Description desc) throws Exception {
+            public void testIgnored(Description desc) {
                 log.debug(displayName(desc) + " IGNORED");
-            };
+            }
 
             @Override
-            public void testFinished(Description desc) throws Exception {
+            public void testFinished(Description desc) {
                 log.debug(displayName(desc) + " FINISHED");
-            };
+            }
         };
 
         protected final Statement base;
@@ -272,16 +272,17 @@ public class RandomBug {
             return displayName;
         }
 
-        protected void onEnter(int aSerial) {
-            MDC.put("fRepeat", serial = aSerial);
+        protected void onEnter(int serial) {
+            this.serial = serial;
+            ThreadContext.put("fRepeat", Integer.toString(serial));
         }
 
         protected void onLeave() {
-            MDC.remove("fRepeat");
+            ThreadContext.remove("fRepeat");
         }
 
         @Override
-        public void evaluate() throws Throwable {
+        public void evaluate() {
             Error error = error();
             notifier.addListener(listener);
             try {
@@ -293,12 +294,12 @@ public class RandomBug {
                         log.debug(displayName(description) + " retry " + retry);
                         base.evaluate();
                     } catch (AssumptionViolatedException cause) {
-                        Throwable t = new Throwable("On retry " + retry).initCause(cause);
+                        Throwable t = new Throwable("On retry " + retry, cause);
                         error.addSuppressed(t);
                         notifier.fireTestAssumptionFailed(new Failure(description, t));
                     } catch (Throwable cause) {
                         // Repeat annotation is on method (else the Throwable is not raised up to here)
-                        Throwable t = new Throwable("On retry " + retry).initCause(cause);
+                        Throwable t = new Throwable("On retry " + retry, cause);
                         error.addSuppressed(t);
                         if (returnOnFailure()) {
                             notifier.fireTestFailure(new Failure(description, t));
@@ -346,8 +347,10 @@ public class RandomBug {
 
         @Override
         protected Error error() {
-            return new AssertionError(String.format("No success after %d tries. Either the bug is not random "
-                    + "or you should increase the 'onFailure' value.\n" + "Issue: %s", params.onFailure(), issue));
+            return new AssertionError(String.format(
+                    "No success after %d tries. Either the bug is not random "
+                            + "or you should increase the 'onFailure' value.\n" + "Issue: %s",
+                    params.onFailure(), issue));
         }
 
         @Override
@@ -374,9 +377,10 @@ public class RandomBug {
 
         @Override
         protected Error error() {
-            return new AssertionError(String.format("No failure after %d tries. Either the bug is fixed "
-                    + "or you should increase the 'onSuccess' value.\n" + "Issue: %s", params.onSuccess(),
-                    params.issue()));
+            return new AssertionError(String.format(
+                    "No failure after %d tries. Either the bug is fixed "
+                            + "or you should increase the 'onSuccess' value.\n" + "Issue: %s",
+                    params.onSuccess(), params.issue()));
         }
 
         @Override
@@ -401,7 +405,7 @@ public class RandomBug {
         }
 
         @Override
-        public void evaluate() throws Throwable {
+        public void evaluate() {
             notifier.fireTestIgnored(description);
         }
 

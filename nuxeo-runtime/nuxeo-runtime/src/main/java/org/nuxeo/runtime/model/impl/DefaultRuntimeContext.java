@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -70,7 +70,7 @@ import org.osgi.framework.Bundle;
  */
 public class DefaultRuntimeContext implements RuntimeContext {
 
-    private static final Log log = LogFactory.getLog(RuntimeContext.class);
+    private static final Logger log = LogManager.getLogger();
 
     protected RuntimeService runtime;
 
@@ -104,7 +104,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
 
     @Override
     public ComponentName[] getComponents() {
-        return components.toArray(new ComponentName[components.size()]);
+        return components.toArray(new ComponentName[0]);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
             // not parsed correctly, e.g., faces-config.xml
             return null;
         }
-        log.debug("Deploying component from url " + name);
+        log.debug("Deploying component from url {}", name);
         ri.sourceId = name;
         ri.context = this;
         ri.xmlFileUrl = ref.asURL();
@@ -200,7 +200,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         if (url != null) {
             return isDeployed(url);
         } else {
-            log.warn("No local resources was found with this name: " + location);
+            log.warn("No local resources was found with this name: {}", location);
             return false;
         }
     }

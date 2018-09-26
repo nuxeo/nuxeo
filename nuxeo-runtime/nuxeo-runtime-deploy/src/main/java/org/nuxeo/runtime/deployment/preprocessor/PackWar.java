@@ -78,6 +78,7 @@ public class PackWar {
             // WSS
             "nuxeo-wss-front", //
             // Commons and logging
+            // TODO need to update it ?
             "log4j", //
             "commons-logging", //
             "commons-lang", //
@@ -209,7 +210,7 @@ public class PackWar {
             zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver, "lib"), false, zout);
             zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"), MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
-            zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"), zout, null);
+            zipFile(ZIP_LIB + "log4j2.xml", newFile(tomcat, "lib/log4j2.xml"), zout, null);
             zout.finish();
         }
     }

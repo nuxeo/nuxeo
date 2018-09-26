@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
+
+    private static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
     @SuppressWarnings("deprecation")
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
@@ -94,7 +92,7 @@ public class TestSQLRepositoryJTAJCA {
      * Test that connection sharing allows use of several sessions at the same time.
      */
     @Test
-    public void testSessionSharing() throws Exception {
+    public void testSessionSharing() {
         String repositoryName = session.getRepositoryName();
         Repository repo = repositoryService.getRepository(repositoryName);
         session.getRootDocument(); // use the session at least once
@@ -123,57 +121,20 @@ public class TestSQLRepositoryJTAJCA {
         // let commit do an implicit save
         nextTransaction();
 
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    TransactionHelper.startTransaction();
-                    try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
-                        assertTrue(session2.exists(new PathRef("/doc")));
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                } catch (Exception e) {
-                    fail(e.toString());
+        Thread t = new Thread(() -> {
+            try {
+                TransactionHelper.startTransaction();
+                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                    assertTrue(session2.exists(new PathRef("/doc")));
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
+            } catch (Exception e) {
+                fail(e.toString());
             }
-        };
+        });
         t.start();
         t.join();
-    }
-
-    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
-
-    protected static class TxWarnChecker extends AppenderSkeleton {
-
-        boolean seenWarn;
-
-        @Override
-        public void close() {
-
-        }
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi. LoggingEvent)
-         */
-        @Override
-        protected void append(LoggingEvent event) {
-            if (!Level.WARN.equals(event.getLevel())) {
-                return;
-            }
-            Object msg = event.getMessage();
-            if (msg instanceof String
-                    && (((String) msg).startsWith("Session invoked in a container without a transaction active"))) {
-                seenWarn = true;
-            }
-        }
-
     }
 
     /**
@@ -182,8 +143,6 @@ public class TestSQLRepositoryJTAJCA {
     @Test
     public void testAccessWithoutTx() {
         TransactionHelper.commitOrRollbackTransaction();
-        TxWarnChecker checker = new TxWarnChecker();
-        Logger.getRootLogger().addAppender(checker);
         try {
             session.getRootDocument();
             fail("should throw");
@@ -217,25 +176,22 @@ public class TestSQLRepositoryJTAJCA {
         doc = session.getDocument(ref);
         doc.getProperty("dc:title").setValue("first");
         session.saveDocument(doc);
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    TransactionHelper.startTransaction();
-                    try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
-                        DocumentModel doc = session2.getDocument(ref);
-                        doc.getProperty("dc:title").setValue("second update");
-                        session2.saveDocument(doc);
-                    } catch (Exception e) {
-                        log.error("Catched error while setting title", e);
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
+        Thread t = new Thread(() -> {
+            try {
+                TransactionHelper.startTransaction();
+                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                    DocumentModel doc1 = session2.getDocument(ref);
+                    doc1.getProperty("dc:title").setValue("second update");
+                    session2.saveDocument(doc1);
                 } catch (Exception e) {
-                    fail(e.toString());
+                    log.error("Catched error while setting title", e);
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
+            } catch (Exception e) {
+                fail(e.toString());
             }
-        };
+        });
         t.start();
         t.join();
         try {
@@ -248,7 +204,7 @@ public class TestSQLRepositoryJTAJCA {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.storage.sql.test:OSGI-INF/test-listeners-async-retry-contrib.xml")
-    public void testAsyncListenerRetry() throws Exception {
+    public void testAsyncListenerRetry() {
         DummyAsyncRetryListener.clear();
 
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
@@ -263,7 +219,7 @@ public class TestSQLRepositoryJTAJCA {
     }
 
     @Test
-    public void testAcquireThroughSessionId() throws Exception {
+    public void testAcquireThroughSessionId() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         session.save();
@@ -272,7 +228,7 @@ public class TestSQLRepositoryJTAJCA {
     }
 
     @Test
-    public void testReconnectAfterClose() throws Exception {
+    public void testReconnectAfterClose() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         session.save();
@@ -289,7 +245,7 @@ public class TestSQLRepositoryJTAJCA {
     }
 
     @Test
-    public void testReconnectAfterCommit() throws Exception {
+    public void testReconnectAfterCommit() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         session.save();
@@ -303,7 +259,7 @@ public class TestSQLRepositoryJTAJCA {
     }
 
     @Test
-    public void testReconnectAfterCloseNoTx() throws Exception {
+    public void testReconnectAfterCloseNoTx() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         session.save();
@@ -330,7 +286,7 @@ public class TestSQLRepositoryJTAJCA {
      * DocumentModel.getCoreSession cannot reconnect through a sid that does not exist anymore.
      */
     @Test
-    public void testReconnectAfterCloseThroughSessionId() throws Exception {
+    public void testReconnectAfterCloseThroughSessionId() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         session.save();
@@ -345,21 +301,18 @@ public class TestSQLRepositoryJTAJCA {
         assertNotNull(session.getRootDocument());
 
         final CoreSession finalSession = session;
-        Thread t = new Thread() {
-            @Override
-            public void run() {
+        Thread t = new Thread(() -> {
+            try {
+                TransactionHelper.startTransaction();
                 try {
-                    TransactionHelper.startTransaction();
-                    try {
-                        assertNotNull(finalSession.getRootDocument());
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                } catch (Exception e) {
-                    fail(e.toString());
+                    assertNotNull(finalSession.getRootDocument());
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
+            } catch (Exception e) {
+                fail(e.toString());
             }
-        };
+        });
         t.start();
         t.join();
 
@@ -372,17 +325,14 @@ public class TestSQLRepositoryJTAJCA {
 
         final CoreSession finalSession = session;
         final Exception[] threadException = new Exception[1];
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    // no tx
-                    finalSession.getRootDocument();
-                } catch (Exception e) {
-                    threadException[0] = e;
-                }
+        Thread t = new Thread(() -> {
+            try {
+                // no tx
+                finalSession.getRootDocument();
+            } catch (Exception e) {
+                threadException[0] = e;
             }
-        };
+        });
         t.start();
         t.join();
         Exception e = threadException[0];
@@ -394,16 +344,13 @@ public class TestSQLRepositoryJTAJCA {
     public void testCloseFromOtherTx() throws Exception {
         assertNotNull(session.getRootDocument());
 
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    coreFeature.releaseCoreSession();
-                } catch (Exception e) {
-                    fail(e.toString());
-                }
+        Thread t = new Thread(() -> {
+            try {
+                coreFeature.releaseCoreSession();
+            } catch (Exception e) {
+                fail(e.toString());
             }
-        };
+        });
         t.start();
         t.join();
         session = coreFeature.createCoreSession();

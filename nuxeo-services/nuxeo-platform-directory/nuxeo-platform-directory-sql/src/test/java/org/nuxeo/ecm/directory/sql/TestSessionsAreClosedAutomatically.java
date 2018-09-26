@@ -20,8 +20,8 @@ package org.nuxeo.ecm.directory.sql;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,18 +48,15 @@ public class TestSessionsAreClosedAutomatically {
     public static class CloseSessionFilter implements LogCaptureFeature.Filter {
 
         @Override
-        public boolean accept(LoggingEvent event) {
-            if (!SQLDirectory.class.getName().equals(event.getLogger().getName())) {
+        public boolean accept(LogEvent event) {
+            if (!SQLDirectory.class.getName().equals(event.getLoggerName())) {
                 return false;
             }
             if (!Level.WARN.equals(event.getLevel())) {
                 return false;
             }
-            String msg = event.getMessage().toString();
-            if (!msg.startsWith("Closing a sql directory session")) {
-                return false;
-            }
-            return true;
+            String msg = event.getMessage().getFormattedMessage();
+            return msg.startsWith("Closing a sql directory session");
         }
 
     }

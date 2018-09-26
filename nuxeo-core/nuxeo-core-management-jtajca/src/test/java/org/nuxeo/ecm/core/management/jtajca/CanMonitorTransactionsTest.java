@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.management.jtajca;
 
+import static java.lang.Boolean.TRUE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -33,10 +34,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
-import org.slf4j.MDC;
 
 /**
  * @author matic
@@ -116,7 +116,7 @@ public class CanMonitorTransactionsTest {
             assertThat(monitor.getActiveCount(), is(activeCount));
             assertThat(monitor.getTotalRollbacks(), is(totalRollbacks + 1));
 
-            return Boolean.TRUE;
+            return TRUE;
         }
 
     }
@@ -126,7 +126,7 @@ public class CanMonitorTransactionsTest {
         assertThat(monitor.getActiveCount(), is(1L));
         FutureTask<Boolean> rollback = new FutureTask<>(new TestTotalRollbacks());
         executor.execute(rollback);
-        assertThat(rollback.get(), is(true));
+        assertThat(rollback.get(), is(TRUE));
     }
 
     protected class TestTotalCommits implements Callable<Boolean> {
@@ -137,7 +137,7 @@ public class CanMonitorTransactionsTest {
             begin();
             commit();
             assertThat(monitor.getTotalCommits(), is(totalCommits + 1));
-            return Boolean.TRUE;
+            return TRUE;
         }
 
     }
@@ -146,7 +146,7 @@ public class CanMonitorTransactionsTest {
     public void isTotalCommitsCorrect() throws InterruptedException, ExecutionException {
         FutureTask<Boolean> commit = new FutureTask<>(new TestTotalCommits());
         executor.execute(commit);
-        assertThat(commit.get(), is(true));
+        assertThat(commit.get(), is(TRUE));
     }
 
     protected class TestCollectStatistics implements Callable<Boolean> {
@@ -167,7 +167,7 @@ public class CanMonitorTransactionsTest {
                         cause);
             }
 
-            return Boolean.TRUE;
+            return TRUE;
         }
 
     }
@@ -176,7 +176,7 @@ public class CanMonitorTransactionsTest {
     public void isActiveStatisticsCollected() throws InterruptedException, ExecutionException {
         FutureTask<Boolean> task = new FutureTask<>(new TestCollectStatistics());
         executor.execute(task);
-        assertThat(task.get(), is(true));
+        assertThat(task.get(), is(TRUE));
     }
 
     @Inject
@@ -187,34 +187,27 @@ public class CanMonitorTransactionsTest {
     public void logContainsRollbackTrace() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<>(new TestLogRollbackTrace());
         executor.execute(task);
-        assertThat(task.get(), is(true));
+        assertThat(task.get(), is(TRUE));
         logCaptureResults.assertHasEvent();
     }
 
     protected class TestLogRollbackTrace implements Callable<Boolean> {
         @Override
-        public Boolean call() throws Exception {
+        public Boolean call() {
             begin();
             rollback();
-            return true;
+            return TRUE;
         }
     }
 
     public static class LogRollbackTraceFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             if (event.getLevel() != Level.TRACE) {
                 return false;
             }
-            Object msg = event.getMessage();
-            if (!(msg instanceof TransactionStatistics)) {
-                return false;
-            }
-            TransactionStatistics stats = (TransactionStatistics) msg;
-            if (!TransactionStatistics.Status.ROLLEDBACK.equals(stats.getStatus())) {
-                return false;
-            }
-            return true;
+            String msg = event.getMessage().getFormattedMessage();
+            return msg.contains("and was in status " + TransactionStatistics.Status.ROLLEDBACK);
         }
     }
 
@@ -223,26 +216,14 @@ public class CanMonitorTransactionsTest {
     public void logContainsTxKey() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<>(new TestLogRollbackTrace());
         executor.execute(task);
-        assertThat(task.get(), is(true));
+        assertThat(task.get(), is(TRUE));
         logCaptureResults.assertHasEvent();
     }
 
     public static class LogMessageFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
-            return MDC.get("tx") != null;
-        }
-    }
-
-    protected class TestLogMessage implements Callable<Boolean> {
-        protected final Log log = LogFactory.getLog(TestLogMessage.class);
-
-        @Override
-        public Boolean call() throws Exception {
-            begin();
-            log.warn("logging with active tx");
-            rollback();
-            return true;
+        public boolean accept(LogEvent event) {
+            return ThreadContext.get("tx") != null;
         }
     }
 

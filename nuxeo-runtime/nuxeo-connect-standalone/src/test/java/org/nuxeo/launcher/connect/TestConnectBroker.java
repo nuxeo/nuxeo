@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@
 package org.nuxeo.launcher.connect;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.connect.ConnectBroker.LAUNCHER_CHANGED_PROPERTY;
@@ -30,12 +33,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -45,8 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.After;
@@ -63,9 +64,9 @@ import org.nuxeo.launcher.connect.fake.LocalConnectFakeConnector;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * @since 8.4
@@ -93,8 +94,8 @@ public class TestConnectBroker {
 
     public static class PkgRequestLogFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
-            return event.getLevel().isGreaterOrEqual(Level.INFO) && (event.getLoggerName().contains("ConnectBroker")
+        public boolean accept(LogEvent event) {
+            return event.getLevel().isMoreSpecificThan(Level.INFO) && (event.getLoggerName().contains("ConnectBroker")
                     || event.getLoggerName().contains("PackagePersistence")
                     || event.getLoggerName().contains("PackageManagerImpl")
                     || event.getLoggerName().contains("MessageInfo")
@@ -132,8 +133,8 @@ public class TestConnectBroker {
         String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"), UTF_8);
         String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"), UTF_8);
         String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"), UTF_8);
-        NuxeoConnectClient.getConnectGatewayComponent().setTestConnector(
-                new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON));
+        NuxeoConnectClient.getConnectGatewayComponent()
+                          .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON));
 
         // build env
         Environment.setDefault(null);
@@ -171,8 +172,8 @@ public class TestConnectBroker {
         File uninstallFile = new File(testStore, "uninstall.xml");
 
         // Copy all zip from testStore
-        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false).forEachRemaining(
-                pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
+        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false)
+                 .forEachRemaining(pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
         // Copy only installed packages from testStore/local-only
         copyPackageToStore(nuxeoStore, uninstallFile, new File(TEST_LOCAL_ONLY_PATH, "K-1.0.0-SNAPSHOT.zip"));
 
@@ -203,7 +204,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgRequest(null, Arrays.asList("NXP-24507-A-1.0.0"), null, null, true, false);
+            connectBroker.pkgRequest(null, singletonList("NXP-24507-A-1.0.0"), null, null, true, false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -224,7 +225,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgRequest(null, Arrays.asList(pkgA, pkgB), null, null, true, false);
+            connectBroker.pkgRequest(null, asList(pkgA, pkgB), null, null, true, false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -248,7 +249,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgInstall(Arrays.asList("NXP-24507-A-1.0.0"), false);
+            connectBroker.pkgInstall(singletonList("NXP-24507-A-1.0.0"), false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -269,7 +270,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgInstall(Arrays.asList("NXP-24507-A-1.0.0", "B", "C"), false);
+            connectBroker.pkgInstall(asList("NXP-24507-A-1.0.0", "B", "C"), false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -291,7 +292,7 @@ public class TestConnectBroker {
 
         // When handling the uninstall request
         try {
-            connectBroker.pkgUninstall(Arrays.asList("NXP-24507-A-1.0.0"));
+            connectBroker.pkgUninstall(singletonList("NXP-24507-A-1.0.0"));
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -313,7 +314,7 @@ public class TestConnectBroker {
 
         // When handling the uninstall request
         try {
-            connectBroker.pkgUninstall(Arrays.asList(pkgA, pkgB));
+            connectBroker.pkgUninstall(asList(pkgA, pkgB));
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -331,7 +332,7 @@ public class TestConnectBroker {
         assertThat(path).doesNotExist();
 
         // When persist new pending commands
-        Arrays.asList("L1", "L2").forEach(connectBroker::persistCommand);
+        asList("L1", "L2").forEach(connectBroker::persistCommand);
 
         // Then the file is created: new commands are present
         assertThat(Files.readAllLines(path)).containsExactly("L1", "L2");
@@ -341,10 +342,10 @@ public class TestConnectBroker {
     public void testPersistPendingCommand_appendExistingFile() throws Exception {
         // Given an existing path for pending commands
         Path path = connectBroker.getPendingFile();
-        Files.write(path, Arrays.asList("L1", "L2"));
+        Files.write(path, asList("L1", "L2"));
 
         // When persist new pending commands
-        Arrays.asList("L3", "L4").forEach(connectBroker::persistCommand);
+        asList("L3", "L4").forEach(connectBroker::persistCommand);
 
         // Then the file is created: both old and new commands are present
         assertThat(Files.readAllLines(path)).containsExactly("L1", "L2", "L3", "L4");
@@ -370,7 +371,7 @@ public class TestConnectBroker {
     public void testExecutePending_resumeCommands() throws Exception {
         // Given an exiting path for pending commands
         Path path = connectBroker.getPendingFile();
-        Files.write(path, Arrays.asList("install A-1.2.0", "install B-1.0.1"));
+        Files.write(path, asList("install A-1.2.0", "install B-1.0.1"));
 
         // When executing the pending changes
         connectBroker.executePending(path.toFile(), true, true, false);
@@ -386,7 +387,7 @@ public class TestConnectBroker {
         String pkgA = "NXP-24507-A-1.0.0";
         String pkgB = "NXP-24507-B-1.0.0";
         Path path = connectBroker.getPendingFile();
-        Files.write(path, Arrays.asList("install " + pkgA, "install " + pkgB));
+        Files.write(path, asList("install " + pkgA, "install " + pkgB));
 
         // When executing the pending changes
         try {
@@ -426,12 +427,12 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testDownloadUnknownPackage() throws Exception {
+    public void testDownloadUnknownPackage() {
         // GIVEN a non existing package
         checkPackagesState(null, "unknown-package");
 
         // WHEN trying to download it
-        boolean isSuccessful = connectBroker.downloadPackages(Arrays.asList("unknown-package"));
+        boolean isSuccessful = connectBroker.downloadPackages(singletonList("unknown-package"));
         assertThat(isSuccessful).isFalse();
 
         // THEN it fails and the package is still unknown
@@ -444,27 +445,28 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testInstallPackageRequest() throws Exception {
+    public void testInstallPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // B-1.0.2 is not available on platform version server-8.3
-        assertThat(
-                connectBroker.pkgRequest(null, Arrays.asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isFalse();
+        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -477,15 +479,14 @@ public class TestConnectBroker {
         connectBroker.setRelax("true");
         // restriction on target platform must be ignored and B-1.0.2 must be installed before A-1.2.0 because of
         // optional dependencies
-        assertThat(
-                connectBroker.pkgRequest(null, Arrays.asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.0", "B-1.0.2", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.0", "B-1.0.2", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
                         "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -508,15 +509,14 @@ public class TestConnectBroker {
 
         // SNAPSHOTS must be replaced in local cache before installation and D-1.0.4-SNAPSHOT must be installed after
         // C-1.0.2-SNAPSHOT because of optional dependencies
-        assertThat(connectBroker.pkgRequest(null,
-                Arrays.asList("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"), null, null, true,
-                false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.2-SNAPSHOT, B-1.0.2, C-1.0.2-SNAPSHOT, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.2-SNAPSHOT", "B-1.0.2",
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.2-SNAPSHOT", "B-1.0.2",
                 "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.0", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT", "B-1.0.1",
                         "C-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -563,22 +563,24 @@ public class TestConnectBroker {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // L-1.0.2 is missing hfB not available on platform version server-8.4
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("L-1.0.2"), null, null, true, false)).isFalse();
+        assertThat(connectBroker.pkgRequest(null, singletonList("L-1.0.2"), null, null, true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -589,13 +591,14 @@ public class TestConnectBroker {
         logCaptureResult.clear();
 
         // L-1.0.3 (last version of L) depends on hfD which is missing hfB not available on platform version server-8.4
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("L"), null, null, true, false)).isFalse();
+        assertThat(connectBroker.pkgRequest(null, singletonList("L"), null, null, true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -607,28 +610,30 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testInstallLocalPackageRequest() throws Exception {
+    public void testInstallLocalPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // F-1.0.0-SNAPSHOT is not available on platform version server-8.3
         assertThat(connectBroker.pkgRequest(null,
-                Arrays.asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null,
-                null, true, false)).isFalse();
+                asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
+                true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT", "E-1.0.1",
                         "F-1.0.0-SNAPSHOT"),
@@ -647,15 +652,15 @@ public class TestConnectBroker {
 
         connectBroker.setRelax("true");
         assertThat(connectBroker.pkgRequest(null,
-                Arrays.asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null,
-                null, true, false)).isTrue();
+                asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
+                true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1-SNAPSHOT,
         // F-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "E-1.0.1", "F-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "E-1.0.1", "F-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -678,26 +683,28 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testReInstallPackageRequest() throws Exception {
+    public void testReInstallPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // A-1.0.0 and C-1.0.0 are releases and are already installed
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("A-1.0.0", "C"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList("A-1.0.0", "C"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -711,14 +718,14 @@ public class TestConnectBroker {
 
         // B-1.0.1-SNAPSHOT and D-1.0.2-SNAPSHOT must be uninstalled then reinstalled as they are SNAPSHOTS
         // C-1.0.0 must be reinstalled as it has an optional dependency on D
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("B-1.0.1-SNAPSHOT", "D"), null, null, true,
-                false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList("B-1.0.1-SNAPSHOT", "D"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -753,27 +760,29 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testReInstallLocalPackageRequest() throws Exception {
+    public void testReInstallLocalPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // A-1.0.0 is a release and is already installed
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList(TEST_STORE_PATH + "/A-1.0.0.zip"), null, null, true,
+        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_STORE_PATH + "/A-1.0.0.zip"), null, null, true,
                 false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -787,14 +796,15 @@ public class TestConnectBroker {
 
         // B-1.0.1-SNAPSHOT must be uninstalled then reinstalled as it is a SNAPSHOT
         // it must be replaced in local cache because a new file is provided
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList(TEST_STORE_PATH + "/B-1.0.1-SNAPSHOT.zip"), null, null,
+        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_STORE_PATH + "/B-1.0.1-SNAPSHOT.zip"), null, null,
                 true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -816,14 +826,14 @@ public class TestConnectBroker {
 
         // K-1.0.0-SNAPSHOT must be uninstalled then reinstalled as it is a SNAPSHOT, even if not available remotely
         // it must be replaced in local cache because a new file is provided
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList(TEST_LOCAL_ONLY_PATH + "/K-1.0.0-SNAPSHOT.zip"), null,
+        assertThat(connectBroker.pkgRequest(null, singletonList(TEST_LOCAL_ONLY_PATH + "/K-1.0.0-SNAPSHOT.zip"), null,
                 null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, K-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -845,13 +855,13 @@ public class TestConnectBroker {
 
         // K-1.0.0-SNAPSHOT must be uninstalled then reinstalled as it is a SNAPSHOT, even if not available remotely
         // it must not be replaced in local cache because no new file is provided
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("K"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, singletonList("K"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, K-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -882,11 +892,10 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -897,14 +906,12 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.2, B-1.0.2, C-1.0.0, D-1.0.4-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.2", "B-1.0.2",
-                "C-1.0.0", "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.2", "B-1.0.2", "C-1.0.0",
+                "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
-                        "A-1.0.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.0", "A-1.2.3-SNAPSHOT",
-                        "B-1.0.1-SNAPSHOT", "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT",
-                        "D-1.0.3-SNAPSHOT"),
+                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.0", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
+                        "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
@@ -952,11 +959,10 @@ public class TestConnectBroker {
         connectBroker.setRelax("true");
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -967,13 +973,13 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.3-SNAPSHOT, B-1.0.2, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT]
         checkPackagesState(
-                connectBroker, Arrays.asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.3-SNAPSHOT", "B-1.0.2",
+                connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.3-SNAPSHOT", "B-1.0.2",
                         "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
-                        "A-1.0.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.0", "B-1.0.1-SNAPSHOT",
-                        "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
+                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.0", "B-1.0.1-SNAPSHOT", "B-1.0.1",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
@@ -1013,15 +1019,14 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testUpgradePackageRequestWithTargetPlatform() throws Exception {
+    public void testUpgradePackageRequestWithTargetPlatform() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1031,14 +1036,12 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgUpgrade()).isTrue();
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.0, B-1.0.1, C-1.0.0, D-1.0.3-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.0", "B-1.0.1",
-                "C-1.0.0", "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.0", "B-1.0.1", "C-1.0.0",
+                "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
-                        "A-1.0.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT",
-                        "B-1.0.1-SNAPSHOT", "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT",
-                        "D-1.0.4-SNAPSHOT"),
+                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
+                        "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
@@ -1077,15 +1080,14 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testUpgradePackageRequestWithTargetPlatformAndSnapshot() throws Exception {
+    public void testUpgradePackageRequestWithTargetPlatformAndSnapshot() {
         connectBroker.setAllowSNAPSHOT(true);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1096,13 +1098,13 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.1-SNAPSHOT, B-1.0.1, C-1.0.1-SNAPSHOT, D-1.0.3-SNAPSHOT]
         checkPackagesState(
-                connectBroker, Arrays.asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.1-SNAPSHOT", "B-1.0.1",
+                connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.1-SNAPSHOT", "B-1.0.1",
                         "C-1.0.1-SNAPSHOT", "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
-                        "A-1.0.0", "A-1.2.0", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
-                        "B-1.0.2", "C-1.0.0", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                        "A-1.2.0", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT", "B-1.0.2",
+                        "C-1.0.0", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
@@ -1142,14 +1144,15 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testHotfixPackageRequest() throws Exception {
+    public void testHotfixPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1157,10 +1160,10 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgHotfix()).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "A-1.0.0",
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "A-1.0.0",
                 "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1184,10 +1187,10 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, hfC-1.0.0-SNAPSHOT, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0,
         // D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                 "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "A-1.2.0", "A-1.2.1-SNAPSHOT",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "A-1.2.0", "A-1.2.1-SNAPSHOT",
                         "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT",
                         "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1210,31 +1213,29 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testReInstallPackageRequestWithOptionalDependencies() throws Exception {
+    public void testReInstallPackageRequestWithOptionalDependencies() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // G-1.0.1-SNAPSHOT and H-1.0.1-SNAPSHOT are snapshots and must be replaced
         // J-1.0.1 has optional dependencies on G and H and must be reinstalled in last position
-        assertThat(connectBroker.pkgRequest(null, Arrays.asList("H", "G"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, asList("H", "G"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1269,30 +1270,29 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testUninstallLocalPackageRequest() throws Exception {
+    public void testUninstallLocalPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+        checkPackagesState(
+                connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
                         "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1", "K-1.0.0-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // K-1.0.0-SNAPSHOT must be uninstalled even if not available remotely
-        assertThat(connectBroker.pkgRequest(null, null, Arrays.asList("K"), null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, null, singletonList("K"), null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT",
                         "K-1.0.0-SNAPSHOT"),
@@ -1311,28 +1311,27 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testUninstallPackageRequestWithOptionalDependencies() throws Exception {
+    public void testUninstallPackageRequestWithOptionalDependencies() {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // J-1.0.1 has optional dependencies on G and H and must be reinstalled after uninstalling G and H
-        assertThat(connectBroker.pkgRequest(null, null, Arrays.asList("H", "G"), null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, null, asList("H", "G"), null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
-                "C-1.0.0", "D-1.0.2-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT",
                         "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT"),
@@ -1356,7 +1355,7 @@ public class TestConnectBroker {
     }
 
     protected void checkPackagesState(PackageState expectedState, String... packageIds) {
-        checkPackagesState(connectBroker, Arrays.asList(packageIds), expectedState);
+        checkPackagesState(connectBroker, asList(packageIds), expectedState);
     }
 
     private void checkPackagesState(ConnectBroker connectBrocker, List<String> packageIdList,
@@ -1386,8 +1385,7 @@ public class TestConnectBroker {
     }
 
     protected static String logOf(LogCaptureFeature.Result logCaptureResult) {
-        return logCaptureResult.getCaughtEvents().stream().map(LoggingEvent::getRenderedMessage).collect(
-                Collectors.joining("\n"));
+        return String.join("\n", logCaptureResult.getCaughtEventMessages());
     }
 
 }

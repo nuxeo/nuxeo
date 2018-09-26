@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,7 @@ import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.apache.geronimo.transaction.manager.XidImpl;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
@@ -114,9 +112,9 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
     public static String id(Object key) {
         if (key instanceof XidImpl) {
             byte[] globalId = ((XidImpl) key).getGlobalTransactionId();
-            StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < globalId.length; i++) {
-                buffer.append(Integer.toHexString(globalId[i]));
+            StringBuilder buffer = new StringBuilder();
+            for (byte aGlobalId : globalId) {
+                buffer.append(Integer.toHexString(aGlobalId));
             }
             return buffer.toString().replaceAll("0*$", "");
         }
@@ -131,7 +129,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
     public void threadAssociated(Transaction tx) {
         long now = System.currentTimeMillis();
         Object key = tm.getTransactionKey();
-        MDC.put("tx", id(key));
+        ThreadContext.put("tx", id(key));
         Stopwatch sw = SimonManager.getStopwatch("tx");
         final Thread thread = Thread.currentThread();
         DefaultTransactionStatistics info = new DefaultTransactionStatistics(key);
@@ -175,19 +173,14 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
                 lastRollbackedStatistics = stats;
             }
         } finally {
-            MDC.remove("tx");
+            ThreadContext.remove("tx");
         }
     }
 
     @Override
     public List<TransactionStatistics> getActiveStatistics() {
         List<TransactionStatistics> l = new ArrayList<>(activeStatistics.values());
-        Collections.sort(l, new Comparator<TransactionStatistics>() {
-            @Override
-            public int compare(TransactionStatistics o1, TransactionStatistics o2) {
-                return o1.getStartDate().compareTo(o2.getEndDate());
-            }
-        });
+        l.sort((o1, o2) -> o1.getStartDate().compareTo(o2.getEndDate()));
         return l;
     }
 

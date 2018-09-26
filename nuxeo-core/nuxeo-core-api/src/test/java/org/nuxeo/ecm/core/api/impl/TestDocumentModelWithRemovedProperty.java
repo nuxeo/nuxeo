@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.RemovedProperty;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,10 +50,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-removed-types-contrib.xml")
-@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerName = TestDocumentModelWithRemovedProperty.LOGGER_NAME)
+@LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = RemovedProperty.class)
 public class TestDocumentModelWithRemovedProperty {
-
-    public static final String LOGGER_NAME = "org.nuxeo.ecm.core.api.model.impl.RemovedProperty";
 
     protected static final String REMOVED_SCHEMA = "removed";
 
@@ -300,7 +298,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertyWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertyWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // First create a valid object
         doc.setProperty(REMOVED_SCHEMA, "list",
@@ -312,7 +310,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertyValueWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertyValueWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // First create a valid object
         doc.setProperty(REMOVED_SCHEMA, "list",
@@ -324,7 +322,7 @@ public class TestDocumentModelWithRemovedProperty {
     }
 
     @Test
-    public void testSetRemovedScalarOnListPropertiesWithFallbackInsideList() throws Exception {
+    public void testSetRemovedScalarOnListPropertiesWithFallbackInsideList() {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc.setProperties(REMOVED_SCHEMA, Collections.singletonMap("list",
                 Collections.singletonList(Collections.singletonMap("renamed", "test scalar"))));
@@ -351,7 +349,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getProperty(REMOVED_SCHEMA, fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
     }
 
@@ -371,7 +369,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getPropertyValue(fallbackXPath));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
         logCaptureResult.clear();
 
@@ -384,7 +382,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getPropertyValue(fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
     }
 
@@ -393,7 +391,7 @@ public class TestDocumentModelWithRemovedProperty {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         // compat on set not work alright if Blob is null in the first place (cannot set value on null blob), still
         // works alright on get:
-        assertNull(((Blob) doc.getPropertyValue("file:filename")));
+        assertNull(doc.getPropertyValue("file:filename"));
         assertNull(doc.getPropertyValue("file:content"));
 
         // fill value
@@ -432,7 +430,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertNull(doc.getProperty(REMOVED_SCHEMA, removedProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, events);
     }
 
@@ -448,7 +446,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertNull(doc.getPropertyValue(xpath));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, events);
         logCaptureResult.clear();
 
@@ -458,7 +456,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertNull(doc.getPropertyValue(removedProperty));
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, events);
     }
 
@@ -475,7 +473,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getProperty(REMOVED_SCHEMA, fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
     }
 
@@ -495,7 +493,7 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getPropertyValue(fallbackXPath));
 
         logCaptureResult.assertHasEvent();
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<String> events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
         logCaptureResult.clear();
 
@@ -506,35 +504,32 @@ public class TestDocumentModelWithRemovedProperty {
         assertEquals(value, doc.getPropertyValue(fallbackProperty));
 
         logCaptureResult.assertHasEvent();
-        events = logCaptureResult.getCaughtEvents();
+        events = logCaptureResult.getCaughtEventMessages();
         assertLogMessages(removedProperty, fallbackProperty, events);
     }
 
-    protected void assertLogMessages(String removedProperty, List<LoggingEvent> events) {
+    protected void assertLogMessages(String removedProperty, List<String> events) {
         // 3 logs:
         // - a set is basically one get then one set if value are different
         // - a get to assert property
         assertEquals(3, events.size());
         int index = removedProperty.indexOf("Rem/");
         if (index == -1) {
-            assertEquals(String.format(GET_VALUE_LOG, removedProperty, REMOVED_SCHEMA),
-                    events.get(0).getRenderedMessage());
-            assertEquals(String.format(SET_VALUE_LOG, removedProperty, REMOVED_SCHEMA),
-                    events.get(1).getRenderedMessage());
-            assertEquals(String.format(GET_VALUE_LOG, removedProperty, REMOVED_SCHEMA),
-                    events.get(2).getRenderedMessage());
+            assertEquals(String.format(GET_VALUE_LOG, removedProperty, REMOVED_SCHEMA), events.get(0));
+            assertEquals(String.format(SET_VALUE_LOG, removedProperty, REMOVED_SCHEMA), events.get(1));
+            assertEquals(String.format(GET_VALUE_LOG, removedProperty, REMOVED_SCHEMA), events.get(2));
         } else {
             String removedParent = removedProperty.substring(0, index + 3);
             assertEquals(String.format(GET_VALUE_PARENT_LOG, removedProperty, REMOVED_SCHEMA, removedParent),
-                    events.get(0).getRenderedMessage());
+                    events.get(0));
             assertEquals(String.format(SET_VALUE_PARENT_LOG, removedProperty, REMOVED_SCHEMA, removedParent),
-                    events.get(1).getRenderedMessage());
+                    events.get(1));
             assertEquals(String.format(GET_VALUE_PARENT_LOG, removedProperty, REMOVED_SCHEMA, removedParent),
-                    events.get(2).getRenderedMessage());
+                    events.get(2));
         }
     }
 
-    protected void assertLogMessages(String removedProperty, String fallbackProperty, List<LoggingEvent> events) {
+    protected void assertLogMessages(String removedProperty, String fallbackProperty, List<String> events) {
         // 3 logs:
         // - a set is basically one get then one set if value are different
         // - a get to assert property
@@ -542,19 +537,19 @@ public class TestDocumentModelWithRemovedProperty {
         int index = removedProperty.indexOf('/');
         if (index == -1) {
             assertEquals(String.format(GET_VALUE_FALLBACK_LOG, removedProperty, REMOVED_SCHEMA, fallbackProperty),
-                    events.get(0).getRenderedMessage());
+                    events.get(0));
             assertEquals(String.format(SET_VALUE_FALLBACK_LOG, removedProperty, REMOVED_SCHEMA, fallbackProperty),
-                    events.get(1).getRenderedMessage());
+                    events.get(1));
             assertEquals(String.format(GET_VALUE_FALLBACK_LOG, removedProperty, REMOVED_SCHEMA, fallbackProperty),
-                    events.get(2).getRenderedMessage());
+                    events.get(2));
         } else {
             String removedParentParent = removedProperty.substring(0, index);
             assertEquals(String.format(GET_VALUE_FALLBACK_PARENT_LOG, removedProperty, REMOVED_SCHEMA,
-                    removedParentParent, fallbackProperty), events.get(0).getRenderedMessage());
+                    removedParentParent, fallbackProperty), events.get(0));
             assertEquals(String.format(SET_VALUE_FALLBACK_PARENT_LOG, removedProperty, REMOVED_SCHEMA,
-                    removedParentParent, fallbackProperty), events.get(1).getRenderedMessage());
+                    removedParentParent, fallbackProperty), events.get(1));
             assertEquals(String.format(GET_VALUE_FALLBACK_PARENT_LOG, removedProperty, REMOVED_SCHEMA,
-                    removedParentParent, fallbackProperty), events.get(2).getRenderedMessage());
+                    removedParentParent, fallbackProperty), events.get(2));
         }
     }
 

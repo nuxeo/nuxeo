@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -56,7 +56,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     private static final long serialVersionUID = -4135715215018199522L;
 
-    private static final Log log = LogFactory.getLog(RegistrationInfoImpl.class);
+    private static final Logger log = LogManager.getLogger(ComponentManager.class);
 
     // Note: some of these instance variables are accessed directly from other
     // classes in this package.
@@ -313,7 +313,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
             break;
         case ACTIVATED:
-            this.state = ACTIVATED;
             componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
             break;
         case STARTING:
@@ -382,6 +381,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     ((Component) ci).start(component);
                 }
             }
+            log.debug("Component started: {}", name);
             state = STARTED;
             manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STARTED, this));
         } catch (RuntimeException e) {
@@ -409,6 +409,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ((Component) ci).stop(component);
             }
         }
+        log.debug("Component stopped: {}", name);
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STOPPED, this));
     }
@@ -425,7 +426,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
         // activate component
         component.activate();
-        log.info("Component activated: " + name);
+        log.debug("Component activated: {}", name);
 
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
@@ -507,6 +508,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         component.deactivate();
+        log.debug("Component deactivated: {}", name);
 
         component = null;
 

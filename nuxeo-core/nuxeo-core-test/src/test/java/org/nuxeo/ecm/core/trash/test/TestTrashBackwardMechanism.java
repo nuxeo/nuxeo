@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -111,11 +111,11 @@ public class TestTrashBackwardMechanism {
         coreFeature.waitForAsyncCompletion();
 
         // assert that only BulkLifeCycleChangeListener has been called
-        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
         assertEquals(1, events.size());
-        LoggingEvent event = events.get(0);
+        LogEvent event = events.get(0);
         assertEquals(BulkLifeCycleChangeListener.class.getName(), event.getLoggerName());
-        assertEquals("Processing lifecycle change in async listener", event.getMessage());
+        assertEquals("Processing lifecycle change in async listener", event.getMessage().getFormattedMessage());
     }
 
     public static class BulkListenersFilter implements LogCaptureFeature.Filter {
@@ -124,7 +124,7 @@ public class TestTrashBackwardMechanism {
                 BulkTrashedStateChangeListener.class).map(Class::getName).collect(Collectors.toSet());
 
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             return Level.DEBUG.equals(event.getLevel()) && bulkListenerNames.contains(event.getLoggerName());
         }
     }

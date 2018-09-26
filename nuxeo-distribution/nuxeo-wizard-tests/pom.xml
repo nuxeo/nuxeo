@@ -7,7 +7,6 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-wizard-tests</artifactId>
   <name>Nuxeo Startup Wizard WebDriver tests</name>
   <description>WebDriver tests on Nuxeo Startup Wizard</description>
@@ -51,7 +50,7 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/main/resources/log4j.xml
+              <argLine>-Dlog4j.configurationFile=${file.uri.prefix}${basedir}/src/test/resources/log4j2-test.xml
                 -Dnuxeo.log.dir=${project.build.directory}
                 -DconnectPassword=${connect.password}
                 ${it.failsafe.argLine}

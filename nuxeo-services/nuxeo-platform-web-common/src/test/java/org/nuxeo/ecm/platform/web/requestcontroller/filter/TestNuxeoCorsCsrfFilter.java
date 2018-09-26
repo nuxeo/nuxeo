@@ -48,7 +48,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpTrace;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,12 +64,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, MockitoFeature.class, LogFeature.class, LogCaptureFeature.class })
-@LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = TestNuxeoCorsCsrfFilter.LOGGER_NAME)
+@LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = NuxeoCorsCsrfFilter.class)
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/cors-configuration.xml")
 public class TestNuxeoCorsCsrfFilter {
-
-    protected static final String LOGGER_NAME = "org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsCsrfFilter";
 
     protected static final String NUXEO_VIRTUAL_HOST = "nuxeo-virtual-host";
 
@@ -442,9 +439,9 @@ public class TestNuxeoCorsCsrfFilter {
             assertEquals(HttpServletResponse.SC_FORBIDDEN, arguments[0]); // 403
             assertEquals("CSRF check failure", arguments[1]);
 
-            List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+            List<String> events = logCaptureResult.getCaughtEventMessages();
             assertFalse("Expected WARN", events.isEmpty());
-            String warn = events.get(events.size() - 1).getRenderedMessage();
+            String warn = events.get(events.size() - 1);
             String originInMessage = origin.equals("null") ? "privacy-sensitive:///" : origin;
             assertEquals("CSRF check failure: source: " + originInMessage
                     + " does not match target: http://example.com:8080/ and not allowed by CORS config", warn);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.sql.Statement;
 import javax.inject.Inject;
 
 import org.apache.geronimo.connector.outbound.GeronimoConnectionEventListener;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
 import org.junit.Assert;
@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.test.runner.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -58,9 +57,9 @@ public class TestValidateConnection {
     PooledDataSourceRegistry registry;
 
     @Test
-    public void testNoValidation() throws SQLException, ReportException, InterruptedException {
+    public void testNoValidation() throws SQLException {
         try {
-            testPooled("no-valid", CaughtSite.onUse);
+            testPooled("no-valid");
             throw new AssertionError("didn't caught connection error");
         } catch (ReportException cause) {
             Assert.assertEquals(cause.site, CaughtSite.onUse);
@@ -70,28 +69,22 @@ public class TestValidateConnection {
     public static class CaptureValidationErrors implements LogCaptureFeature.Filter {
 
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             return acceptValidationError(event) || acceptConnectionErrors(event);
         }
 
-        boolean acceptValidationError(LoggingEvent event) {
-            if (event.getLevel().toInt() != Level.ERROR.toInt()) {
+        boolean acceptValidationError(LogEvent event) {
+            if (event.getLevel() != Level.ERROR) {
                 return false;
             }
-            if (!event.getLoggerName().equals(NuxeoValidationSupport.class.getName())) {
-                return false;
-            }
-            return true;
+            return event.getLoggerName().equals(NuxeoValidationSupport.class.getName());
         }
 
-        boolean acceptConnectionErrors(LoggingEvent event) {
-            if (event.getLevel().toInt() != Level.WARN.toInt()) {
+        boolean acceptConnectionErrors(LogEvent event) {
+            if (event.getLevel() != Level.WARN) {
                 return false;
             }
-            if (!event.getLoggerName().equals(GeronimoConnectionEventListener.class.getName())) {
-                return false;
-            }
-            return true;
+            return event.getLoggerName().equals(GeronimoConnectionEventListener.class.getName());
         }
     }
 
@@ -99,16 +92,16 @@ public class TestValidateConnection {
     LogCaptureFeature.Result events;
 
     @Test
-    public void testSQLValidation() throws SQLException, ReportException, NoLogCaptureFilterException, InterruptedException {
-        testPooled("sql-valid", CaughtSite.onBorrow);
+    public void testSQLValidation() throws SQLException, ReportException {
+        testPooled("sql-valid");
     }
 
     @Test
-    public void testQuerySQLValidation() throws SQLException, ReportException, InterruptedException, NoLogCaptureFilterException {
-        testPooled("query-valid", CaughtSite.onBorrow);
+    public void testQuerySQLValidation() throws SQLException, ReportException {
+        testPooled("query-valid");
     }
 
-    public void testPooled(String name, CaughtSite site) throws ReportException, SQLException, InterruptedException {
+    protected void testPooled(String name) throws ReportException, SQLException {
         Server server = Server.createTcpServer("-tcpAllowOthers").start();
         String jdbcName = "jdbc/".concat(name);
         PooledDataSource ds = registry.getPool(jdbcName, PooledDataSource.class);
@@ -128,7 +121,7 @@ public class TestValidateConnection {
 
         enum CaughtSite {
             onBorrow, onUse, onReturn
-        };
+        }
 
         final CaughtSite site;
 
@@ -138,7 +131,7 @@ public class TestValidateConnection {
         }
     }
 
-    protected void checkPooledConnection(PooledDataSource ds) throws ReportException, InterruptedException {
+    protected void checkPooledConnection(PooledDataSource ds) throws ReportException {
         TransactionHelper.startTransaction();
         try (Connection connection = ds.getConnection()) {
             try (Statement statement = connection.createStatement()) {

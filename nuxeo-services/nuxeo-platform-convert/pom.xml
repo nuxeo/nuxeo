@@ -83,11 +83,6 @@
       <artifactId>xpp3</artifactId>
       <classifier>clean</classifier>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

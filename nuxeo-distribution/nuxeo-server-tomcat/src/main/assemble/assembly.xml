@@ -145,10 +145,6 @@ install nuxeo-jsf-ui
         <include name="tomcat-dbcp-*" />
         <include name="tomcat-jasper-*" /> <!-- provided by Tomcat as jasper.jar -->
       </fileset>
-      <!-- replaced by sl4j bridge -->
-      <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="commons-logging*" />
-      </fileset>
       <!-- provided through templates -->
       <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="derby-*" />
@@ -167,6 +163,7 @@ install nuxeo-jsf-ui
         <include name="nuxeo-runtime-*" />
         <include name="commons-lang-*" />
         <include name="commons-lang3-*" />
+        <include name="commons-logging-*" />
         <include name="freemarker-*" />
         <include name="javax.activation-*" />
         <include name="mail-*" />
@@ -174,8 +171,7 @@ install nuxeo-jsf-ui
         <include name="xml-apis-*" />
         <!-- install sl4j bridge in container classpath -->
         <include name="slf4j*" />
-        <include name="jcl-over-slf4j*" />
-        <include name="log4j-*" />
+        <include name="log4j-*" /> <!-- log4j2 / bridges: jcl, slf4j, log4j -->
         <include name="json-smart-*" />
         <include name="jsonevent-layout-*" />
       </fileset>

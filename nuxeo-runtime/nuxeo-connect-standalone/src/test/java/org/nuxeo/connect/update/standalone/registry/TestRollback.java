@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.nuxeo.connect.update.PackageDef;
 import org.nuxeo.connect.update.PackageType;
@@ -105,7 +105,7 @@ public class TestRollback extends SharedFilesTest {
     public class HotFixPackage1Corrupted extends HotFixPackage1 {
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
@@ -134,7 +134,7 @@ public class TestRollback extends SharedFilesTest {
     public class HotFixPackage2Corrupted extends HotFixPackage2 {
 
         @Override
-        protected void writeInstallCommands(XmlWriter writer) throws Exception {
+        protected void writeInstallCommands(XmlWriter writer) {
             writer.start("update");
             writer.attr("file", "${package.root}/bundles");
             writer.attr("todir", "${env.bundles}");
@@ -176,7 +176,7 @@ public class TestRollback extends SharedFilesTest {
 
     public static class RegistryCorruptionLogFilter implements LogCaptureFeature.Filter {
         @Override
-        public boolean accept(LoggingEvent event) {
+        public boolean accept(LogEvent event) {
             return event.getLevel().equals(Level.WARN)
                     && (event.getLoggerName().contains("UpdateManager") || event.getLoggerName().contains("Copy"));
         }
@@ -192,11 +192,11 @@ public class TestRollback extends SharedFilesTest {
      */
     @Test
     public void testHotfixUninstall() throws Exception {
-        final String BASEFILENAME = JARNAME + "-5.6.jar";
-        FileUtils.writeStringToFile(new File(bundles, BASEFILENAME), BASEFILENAME, UTF_8);
+        final String baseFilename = JARNAME + "-5.6.jar";
+        FileUtils.writeStringToFile(new File(bundles, baseFilename), baseFilename, UTF_8);
         UpdateManager mgr = getManager();
         assertEquals(0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
         File bak = new File(mgr.getBackupRoot(), "bundles");
         if (bak.isDirectory()) {
             assertEquals(0, bak.list().length);
@@ -216,7 +216,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.uninstall();
         mgr.load();
         assertEquals("Registry size", 0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
 
         hotfix1.install();
         mgr.load();
@@ -246,7 +246,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.uninstall();
         mgr.load();
         assertEquals("Registry size", 0, mgr.getRegistry().size());
-        ensureFiles(BASEFILENAME);
+        ensureFiles(baseFilename);
     }
 
     /**
@@ -326,17 +326,17 @@ public class TestRollback extends SharedFilesTest {
         ensureFiles();
 
         // check logs
-        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(3, caughtEvents.size());
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(0).getRenderedMessage());
+                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(0));
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(1).getRenderedMessage());
+                JARNAME + "-5.6.0-HF01.jar"), caughtEvents.get(1));
         assertEquals(String.format(
                 "Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : bundles%s",
-                File.separator + JARNAME), caughtEvents.get(2).getRenderedMessage());
+                File.separator + JARNAME), caughtEvents.get(2));
     }
 
     /**
@@ -446,16 +446,16 @@ public class TestRollback extends SharedFilesTest {
         ensureFiles();
 
         // check logs
-        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(3, caughtEvents.size());
         assertEquals(String.format(
                 "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(0).getRenderedMessage());
+                JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(0));
         assertEquals(String.format(
                 "Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : bundles%s",
-                File.separator + JARNAME), caughtEvents.get(1).getRenderedMessage());
+                File.separator + JARNAME), caughtEvents.get(1));
         assertEquals(String.format("Could not rollback version bundles%s since the backup file was not found",
-                File.separator + JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(2).getRenderedMessage());
+                File.separator + JARNAME + "-5.6.0-HF02.jar"), caughtEvents.get(2));
 
     }
 

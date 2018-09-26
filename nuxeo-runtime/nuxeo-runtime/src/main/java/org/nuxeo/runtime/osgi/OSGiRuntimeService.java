@@ -40,10 +40,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.utils.TextTemplate;
@@ -89,7 +90,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     public static final Version VERSION = Version.parseString("1.4.0");
 
-    private static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
+    private static final Logger log = LogManager.getLogger();
 
     private final BundleContext bundleContext;
 
@@ -119,7 +120,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
         }
         String homeDir = getProperty(PROP_HOME_DIR);
-        log.debug("Home directory: " + homeDir);
+        log.debug("Home directory: {}", homeDir);
         if (homeDir != null) {
             workingDir = new File(homeDir);
         } else {
@@ -135,7 +136,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }
         workingDir.mkdirs();
         persistence = new ComponentPersistence(this);
-        log.debug("Working directory: " + workingDir);
+        log.debug("Working directory: {}", workingDir);
     }
 
     @Override
@@ -207,21 +208,22 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
         String list = getComponentsList(bundle);
         String name = bundle.getSymbolicName();
-        log.debug("Bundle: " + name + " components: " + list);
         if (list == null) {
+            log.debug("Bundle {} doesn't have components", name);
             return;
         }
+        log.trace("Load Bundle: {} / Components: {}", name, list);
         StringTokenizer tok = new StringTokenizer(list, ", \t\n\r\f");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
             URL url = bundle.getEntry(path);
-            log.debug("Loading component for: " + name + " path: " + path + " url: " + url);
             if (url != null) {
+                log.trace("Load component {} [{}]", name, url);
                 try {
                     ctx.deploy(url);
                 } catch (IOException e) {
                     // just log error to know where is the cause of the exception
-                    log.error("Error deploying resource: " + url);
+                    log.error("Error deploying resource: {}", url);
                     throw new RuntimeServiceException("Cannot deploy: " + url, e);
                 }
             } else {
@@ -268,7 +270,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     protected void loadConfig() throws IOException {
         Environment env = Environment.getDefault();
         if (env != null) {
-            log.debug("Configuration: host application: " + env.getHostApplicationName());
+            log.debug("Configuration: host application: {}", env.getHostApplicationName());
         } else {
             log.warn("Configuration: no host application");
             return;
@@ -290,9 +292,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
         if (configDir != null && configDir.contains(":/")) { // an url of a config file
-            log.debug("Configuration: " + configDir);
             URL url = new URL(configDir);
-            log.debug("Configuration:   loading properties url: " + configDir);
+            log.debug("Configuration: loading properties from: {}", configDir);
             loadProperties(url);
             return;
         }
@@ -306,7 +307,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         String[] names = dir.list();
         if (names != null) {
             Arrays.sort(names, String::compareToIgnoreCase);
-            printDeploymentOrderInfo(names);
+            log.debug("Deployment order of configuration files: {}",
+                    () -> Stream.of(names).reduce((n1, n2) -> n1 + "\n\t" + n2).map(n -> "\n\t" + n).orElse(""));
             for (String name : names) {
                 if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
                     // TODO because of some dep bugs (regarding the deployment of demo-ds.xml), we cannot let the
@@ -314,7 +316,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     // until fixing this we deploy config dir from NuxeoDeployer
                     if (isNotJBoss4) {
                         File file = new File(dir, name);
-                        log.debug("Configuration: deploy config component: " + name);
+                        log.trace("Configuration: deploy config component: {}", name);
                         try {
                             context.deploy(file.toURI().toURL());
                         } catch (IOException e) {
@@ -323,30 +325,20 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     }
                 } else if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
                     File file = new File(dir, name);
-                    log.debug("Configuration: loading properties: " + name);
+                    log.trace("Configuration: loading properties: {}", name);
                     loadProperties(file);
                 } else {
-                    log.debug("Configuration: ignoring: " + name);
+                    log.trace("Configuration: ignoring: {}", name);
                 }
             }
         } else if (dir.isFile()) { // a file - load it
-            log.debug("Configuration: loading properties: " + dir);
+            log.debug("Configuration: loading properties: {}", dir);
             loadProperties(dir);
         } else {
             log.debug("Configuration: no configuration file found");
         }
 
         loadDefaultConfig();
-    }
-
-    protected static void printDeploymentOrderInfo(String[] fileNames) {
-        if (log.isDebugEnabled()) {
-            StringBuilder buf = new StringBuilder();
-            for (String fileName : fileNames) {
-                buf.append("\n\t").append(fileName);
-            }
-            log.debug("Deployment order of configuration files: " + buf.toString());
-        }
     }
 
     @Override
@@ -388,13 +380,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     public void loadProperties(URL url) throws IOException {
-        InputStream in = url.openStream();
-        try {
+        try (InputStream in = url.openStream()) {
             loadProperties(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -498,7 +485,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     public Bundle findHostBundle(Bundle bundle) {
         String hostId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
-        log.debug("Looking for host bundle: " + bundle.getSymbolicName() + " host id: " + hostId);
+        log.debug("Looking for host bundle: {} host id: {}", bundle.getSymbolicName(), hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any
@@ -506,10 +493,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             }
             RuntimeContext ctx = contexts.get(hostId);
             if (ctx != null) {
-                log.debug("Context was found for host id: " + hostId);
+                log.debug("Context was found for host id: {}", hostId);
                 return ctx.getBundle();
             } else {
-                log.warn("No context found for host id: " + hostId);
+                log.warn("No context found for host id: {}", hostId);
 
             }
         }
@@ -544,13 +531,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         String name = bundle.getSymbolicName();
 
         if ("Eclipse".equals(vendor)) { // equinox framework
-            log.debug("getBundleFile (Eclipse): " + name + "->" + location);
+            log.debug("getBundleFile (Eclipse): {}->{}", name, location);
             return getEclipseBundleFileUsingReflection(bundle);
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = org.nuxeo.common.utils.FileUtils.urlToFile(location);
             } catch (MalformedURLException e) {
-                log.error("getBundleFile: Unable to create " + " for bundle: " + name + " as URI: " + location);
+                log.error("getBundleFile: Unable to create file for bundle name: {} as URI: {}", name, location);
                 return null;
             }
         } else { // may be a file path - this happens when using
@@ -558,10 +545,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             file = new File(location);
         }
         if (file.exists()) {
-            log.debug("getBundleFile: " + name + " bound to file: " + file);
+            log.debug("getBundleFile: {} bound to file: {}", name, file);
             return file;
         } else {
-            log.debug("getBundleFile: " + name + " cannot bind to nonexistent file: " + file);
+            log.debug("getBundleFile: {} cannot bind to nonexistent file: {}", name, file);
             return null;
         }
     }

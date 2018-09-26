@@ -21,26 +21,25 @@
 package org.nuxeo.log4j;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Appender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Hierarchy;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.DefaultRepositorySelector;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggerRepository;
-import org.apache.log4j.spi.RootLogger;
-import org.apache.log4j.varia.LevelRangeFilter;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 
 /**
  * Provides helper methods for working with log4j
@@ -51,176 +50,109 @@ import org.apache.log4j.xml.DOMConfigurator;
 public class Log4JHelper {
     private static final Log log = LogFactory.getLog(Log4JHelper.class);
 
-    public static final String CONSOLE_APPENDER_NAME = "CONSOLE";
-
-    protected static final String FULL_PATTERN_LAYOUT = "%d{HH:mm:ss,SSS} %-5p [%l] %m%n";
-
-    protected static final String LIGHT_PATTERN_LAYOUT = "%m%n";
-
     /**
-     * Returns list of files produced by {@link FileAppender}s defined in a given {@link LoggerRepository}. There's no
+     * Returns list of files produced by {@link FileAppender}s defined in a given {@link Configuration}. There's no
      * need for the log4j configuration corresponding to this repository of being active.
      *
-     * @param loggerRepository {@link LoggerRepository} to browse looking for {@link FileAppender}
-     * @return {@link FileAppender}s configured in loggerRepository
+     * @param configuration the {@link Configuration} to browse looking for {@link FileAppender}
+     * @return {@link FileAppender}s present in configuration
+     * @since 10.3
      */
-    public static ArrayList<String> getFileAppendersFiles(LoggerRepository loggerRepository) {
-        ArrayList<String> logFiles = new ArrayList<>();
-        for (Enumeration<Appender> appenders = loggerRepository.getRootLogger().getAllAppenders(); appenders.hasMoreElements();) {
-            Appender appender = appenders.nextElement();
+    public static List<String> getFileAppendersFileNames(Configuration configuration) {
+        List<String> names = new ArrayList<>();
+        for (Appender appender : configuration.getAppenders().values()) {
             if (appender instanceof FileAppender) {
-                FileAppender fileAppender = (FileAppender) appender;
-                logFiles.add(fileAppender.getFile());
+                names.add(((FileAppender) appender).getFileName());
+            } else if (appender instanceof RollingFileAppender) {
+                names.add(((RollingFileAppender) appender).getFileName());
             }
         }
-        Enumeration<Logger> currentLoggers = loggerRepository.getCurrentLoggers();
-        while (currentLoggers.hasMoreElements()) {
-            Logger logger = (currentLoggers.nextElement());
-            for (Enumeration<Appender> appenders = logger.getAllAppenders(); appenders.hasMoreElements();) {
-                Appender appender = appenders.nextElement();
-                if (appender instanceof FileAppender) {
-                    FileAppender fileAppender = (FileAppender) appender;
-                    logFiles.add(fileAppender.getFile());
-                }
-            }
-        }
-        return logFiles;
+        return names;
     }
 
     /**
-     * Creates a {@link LoggerRepository} initialized with given log4j configuration file without making this
+     * Creates a {@link Configuration} initialized with given log4j configuration file without making this
      * configuration active.
      *
-     * @param log4jConfigurationFile XML Log4J configuration file to load.
-     * @return {@link LoggerRepository} initialized with log4jConfigurationFile
+     * @param log4jConfigurationFile the XML configuration file to load
+     * @return {@link Configuration} initialized with log4jConfigurationFile
+     * @since 10.3
      */
-    public static LoggerRepository getNewLoggerRepository(File log4jConfigurationFile) {
-        LoggerRepository loggerRepository = null;
-        try {
-            loggerRepository = new DefaultRepositorySelector(new Hierarchy(new RootLogger(Level.DEBUG))).getLoggerRepository();
-            if (log4jConfigurationFile == null || !log4jConfigurationFile.exists()) {
-                log.error("Missing Log4J configuration: " + log4jConfigurationFile);
-            } else {
-                new DOMConfigurator().doConfigure(log4jConfigurationFile.toURI().toURL(), loggerRepository);
-                log.debug("Log4j configuration " + log4jConfigurationFile + " successfully loaded.");
-            }
-        } catch (MalformedURLException e) {
-            log.error("Could not load " + log4jConfigurationFile, e);
+    public static Configuration newConfiguration(File log4jConfigurationFile) {
+        if (log4jConfigurationFile == null || !log4jConfigurationFile.exists()) {
+            throw new IllegalArgumentException("Missing Log4J configuration: " + log4jConfigurationFile);
+        } else {
+            XmlConfiguration configuration = new XmlConfiguration(null,
+                    ConfigurationSource.fromUri(log4jConfigurationFile.toURI()));
+            configuration.initialize();
+            log.debug("Log4j configuration " + log4jConfigurationFile + " successfully loaded.");
+            return configuration;
         }
-        return loggerRepository;
     }
 
     /**
-     * @see #getFileAppendersFiles(LoggerRepository)
-     * @param log4jConfigurationFile
+     * @see #getFileAppendersFileNames(Configuration)
+     * @param log4jConfigurationFile the XML configuration file to load
      * @return {@link FileAppender}s defined in log4jConfigurationFile
+     * @since 10.3
      */
-    public static ArrayList<String> getFileAppendersFiles(File log4jConfigurationFile) {
-        return getFileAppendersFiles(getNewLoggerRepository(log4jConfigurationFile));
+    public static List<String> getFileAppendersFileNames(File log4jConfigurationFile) {
+        return getFileAppendersFileNames(newConfiguration(log4jConfigurationFile));
     }
 
     /**
-     * Set DEBUG level on the given category and the children categories. Also change the pattern layout of the given
-     * appenderName.
+     * Set DEBUG level on the given logger.
      *
-     * @since 5.6
-     * @param categories Log4J categories for which to switch debug log level (comma separated values)
-     * @param debug set debug log level to true or false
-     * @param includeChildren Also set/unset debug mode on children categories
-     * @param appenderNames Appender names on which to set a detailed pattern layout. Ignored if null.
+     * @param loggerNames the logger names to change level
+     * @param level the level to set
+     * @param includeChildren whether or not to change children levels
+     * @since 10.3
      */
-    public static void setDebug(String categories, boolean debug, boolean includeChildren, String[] appenderNames) {
-        setDebug(categories.split(","), debug, includeChildren, appenderNames);
-    }
-
-    /**
-     * @param categories
-     * @param debug
-     * @param includeChildren
-     * @param appenderNames
-     * @since 7.4
-     */
-    public static void setDebug(String[] categories, boolean debug, boolean includeChildren, String[] appenderNames) {
-        Level newLevel = debug ? Level.DEBUG : Level.INFO;
-
-        // Manage categories
-        for (String category : categories) { // Create non existing loggers
-            Logger logger = Logger.getLogger(category);
-            logger.setLevel(newLevel);
-            log.info("Log level set to " + newLevel + " for: " + logger.getName());
-        }
-        if (includeChildren) { // Also change children categories' level
-            for (Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
-                Logger logger = loggers.nextElement();
-                if (logger.getLevel() == newLevel) {
-                    continue;
-                }
-                for (String category : categories) {
-                    if (logger.getName().startsWith(category)) {
-                        logger.setLevel(newLevel);
-                        log.info("Log level set to " + newLevel + " for: " + logger.getName());
-                        break;
+    public static void setLevel(String[] loggerNames, Level level, boolean includeChildren) {
+        if (includeChildren) {
+            // don't use Configurator.setAllLevels(String, Level) in order to reload configuration only once
+            LoggerContext loggerContext = LoggerContext.getContext(false);
+            Configuration config = loggerContext.getConfiguration();
+            boolean set = false;
+            for (String parentLogger : loggerNames) {
+                set |= setLevel(parentLogger, level, config);
+                for (final Map.Entry<String, LoggerConfig> entry : config.getLoggers().entrySet()) {
+                    if (entry.getKey().startsWith(parentLogger)) {
+                        set |= setLevel(entry.getValue(), level);
                     }
                 }
             }
-        }
-
-        // Manage appenders
-        if (ArrayUtils.isEmpty(appenderNames)) {
-            return;
-        }
-        for (String appenderName : appenderNames) {
-            Appender consoleAppender = Logger.getRootLogger().getAppender(appenderName);
-            if (consoleAppender != null) {
-                Filter filter = consoleAppender.getFilter();
-                while (filter != null && !(filter instanceof LevelRangeFilter)) {
-                    filter = filter.getNext();
-                }
-                if (filter != null) {
-                    LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
-                    levelRangeFilter.setLevelMin(newLevel);
-                    log.debug(String.format("Log level filter set to %s for appender %s", newLevel, appenderName));
-                }
-                String patternLayout = debug ? FULL_PATTERN_LAYOUT : LIGHT_PATTERN_LAYOUT;
-                consoleAppender.setLayout(new PatternLayout(patternLayout));
-                log.info(String.format("Set pattern layout of %s to %s", appenderName, patternLayout));
+            if (set) {
+                loggerContext.updateLoggers();
             }
+        } else {
+            Configurator.setLevel(Stream.of(loggerNames).collect(Collectors.toMap(Function.identity(), l -> level)));
         }
     }
 
-    /**
-     * Set DEBUG level on the given category and change pattern layout of {@link #CONSOLE_APPENDER_NAME} if defined.
-     * Children categories are unchanged.
-     *
-     * @since 5.5
-     * @param category Log4J category for which to switch debug log level
-     * @param debug set debug log level to true or false
-     * @see #setDebug(String, boolean, boolean, String[])
-     */
-    public static void setDebug(String category, boolean debug) {
-        setDebug(category, debug, false, new String[] { CONSOLE_APPENDER_NAME });
+    // Copied from org.apache.logging.log4j.core.config.Configurator
+    private static boolean setLevel(final String loggerName, final Level level, final Configuration config) {
+        boolean set;
+        LoggerConfig loggerConfig = config.getLoggerConfig(loggerName);
+        if (!loggerName.equals(loggerConfig.getName())) {
+            // TODO Should additivity be inherited?
+            loggerConfig = new LoggerConfig(loggerName, level, true);
+            config.addLogger(loggerName, loggerConfig);
+            loggerConfig.setLevel(level);
+            set = true;
+        } else {
+            set = setLevel(loggerConfig, level);
+        }
+        return set;
     }
 
-    /**
-     * Set "quiet" mode: set log level to WARN for the given Log4J appender.
-     *
-     * @param appenderName Log4J appender to switch to WARN
-     * @since 5.5
-     */
-    public static void setQuiet(String appenderName) {
-        Appender appender = Logger.getRootLogger().getAppender(appenderName);
-        if (appender == null) {
-            return;
+    // Copied from org.apache.logging.log4j.core.config.Configurator
+    private static boolean setLevel(final LoggerConfig loggerConfig, final Level level) {
+        final boolean set = !loggerConfig.getLevel().equals(level);
+        if (set) {
+            loggerConfig.setLevel(level);
         }
-        Filter filter = appender.getFilter();
-        while (filter != null && !(filter instanceof LevelRangeFilter)) {
-            filter = filter.getNext();
-        }
-        if (filter != null) {
-            LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
-            levelRangeFilter.setLevelMin(Level.WARN);
-            log.debug("Log level filter set to WARN for appender " + appenderName);
-        }
+        return set;
     }
 
 }

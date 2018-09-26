@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,28 @@
  *
  * Contributors:
  *     Thomas Roger
- *
  */
-
 package org.nuxeo.runtime.test.runner;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.ConsoleAppender.Target;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
 
 /**
  * @since 9.3
  */
 public class LogFeature implements RunnerFeature {
 
-    protected static final String CONSOLE_APPENDER_NAME = "CONSOLE";
+    protected static final String CONSOLE_APPENDER = "CONSOLE";
 
-    protected Priority consoleThresold;
+    protected static final String CONSOLE_LOG_FEATURE_APPENDER = "CONSOLE_LOG_FEATURE";
+
+    protected ConsoleAppender consoleAppender;
+
+    protected ConsoleAppender hiddenAppender;
 
     public void hideWarningFromConsoleLog() {
         setConsoleLogThreshold(Level.ERROR.toString());
@@ -49,25 +53,34 @@ public class LogFeature implements RunnerFeature {
      * @since 9.10
      */
     public void setConsoleLogThreshold(String level) {
-        if (consoleThresold != null) {
+        if (consoleAppender != null) {
             return;
         }
 
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender(CONSOLE_APPENDER_NAME);
-        consoleThresold = consoleAppender.getThreshold();
-        consoleAppender.setThreshold(Level.toLevel(level));
+        Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
+        consoleAppender = (ConsoleAppender) rootLogger.getAppenders().get(CONSOLE_APPENDER);
+        rootLogger.removeAppender(consoleAppender);
+        ConsoleAppender newAppender = ConsoleAppender.newBuilder()
+                                                     .withName(CONSOLE_LOG_FEATURE_APPENDER)
+                                                     .setTarget(Target.SYSTEM_OUT)
+                                                     .withFilter(ThresholdFilter.createFilter(Level.toLevel(level),
+                                                             null, null))
+                                                     .build();
+        newAppender.start();
+        rootLogger.addAppender(newAppender);
+        hiddenAppender = newAppender;
     }
 
     public void restoreConsoleLog() {
-        if (consoleThresold == null) {
+        if (consoleAppender == null) {
             return;
         }
 
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender(CONSOLE_APPENDER_NAME);
-        consoleAppender.setThreshold(consoleThresold);
-        consoleThresold = null;
+        Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
+        rootLogger.removeAppender(hiddenAppender);
+        rootLogger.addAppender(consoleAppender);
+        consoleAppender = null;
+        hiddenAppender = null;
     }
 
 }

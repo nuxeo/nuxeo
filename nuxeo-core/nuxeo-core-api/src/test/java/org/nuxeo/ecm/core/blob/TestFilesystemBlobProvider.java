@@ -36,7 +36,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,9 +151,9 @@ public class TestFilesystemBlobProvider {
             logFeature.restoreConsoleLog();
         }
         assertEquals(0, bytes.length);
-        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
-        assertEquals("Failed to access file: testfs:/NO_SUCH_FILE_EXISTS", caughtEvents.get(0).getRenderedMessage());
+        assertEquals("Failed to access file: testfs:/NO_SUCH_FILE_EXISTS", caughtEvents.get(0));
     }
 
     @Test
@@ -209,9 +208,9 @@ public class TestFilesystemBlobProvider {
                 logFeature.restoreConsoleLog();
             }
             assertEquals(0, bytes.length);
-            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(1, caughtEvents.size());
-            assertEquals("Failed to access file: testfs2:../foo", caughtEvents.get(0).getRenderedMessage());
+            assertEquals("Failed to access file: testfs2:../foo", caughtEvents.get(0));
         } finally {
             ((BlobManagerComponent) blobManager).unregisterBlobProvider(descr);
         }

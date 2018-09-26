@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
+    </Console>
+    <File name="FILE" fileName="target/trace.log" append="false">
+      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
+    </File>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.apache" level="warn" />
+    <Logger name="kafka" level="warn" />
+    <Logger name="org.quartz" level="warn" />
+    <!-- debug to debug chronicle queue -->
+    <Logger name="net.openhft.chronicle" level="warn" />
+    <!-- debug to view schema registry request -->
+    <Logger name="io.confluent.kafka" level="info" />
+    <!-- Hide perf warnings -->
+    <Logger name="net.openhft.chronicle.queue.impl.single.SCQIndexing" level="error" />
+    <Logger name="org.nuxeo" level="warn" />
+    <Logger name="org.nuxeo.lib.stream" level="warn" />
+    <Logger name="org.nuxeo.lib.stream.tools" level="info" />
+    <Logger name="org.nuxeo.lib.stream.log.kafka" level="warn" />
+    <Logger name="org.nuxeo.lib.stream.computation" level="warn" />
+    <Logger name="org.nuxeo.lib.stream.tests.computation" level="warn" />
+    <Root>
+      <AppenderRef ref="CONSOLE" />
+      <AppenderRef ref="FILE" />
+    </Root>
+  </Loggers>
+</Configuration>
