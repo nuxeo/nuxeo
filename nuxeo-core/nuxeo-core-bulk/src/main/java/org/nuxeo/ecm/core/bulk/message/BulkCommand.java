@@ -57,6 +57,7 @@ public class BulkCommand implements Serializable {
         params = new HashMap<>();
     }
 
+    // TODO: Use a true builder pattern for BulkCommand
     public BulkCommand withUsername(String username) {
         this.username = username;
         return this;

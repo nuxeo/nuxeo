@@ -1,0 +1,122 @@
+@startuml
+
+title Nuxeo Bulk Action
+
+skinparam defaultFontName Courier
+skinparam handwritten true
+
+skinparam queueBackgroundColor LightYellow
+skinparam componentBackgroundColor Azure
+
+skinparam component {
+  BorderColor black
+  ArrowColor #CC6655
+}
+
+database Repository [
+
+Repository
+
+]
+
+database KeyValue [
+
+KeyValue
+Store
+
+]
+
+
+frame core-bulk {
+  card BulkService
+  frame Processor {
+
+    component Scroller [Scroller
+    ----
+    concurrency: 1, n]
+
+    component Status [Status
+    ----
+    concurrency: 1, n]
+
+    queue command [stream: command
+    ----
+    msg: BulkCommand
+    key: actionName
+    partitions: 1, n]
+
+    queue status [stream: status
+    ----
+    msg: BulkStatus Delta
+    key: commandId
+    partitions: 1, n]
+
+    queue done [stream: done
+    ----
+    msg: BulkStatus
+    key: commandId
+    partitions: 1]
+  }
+}
+
+frame Actions {
+
+  frame ProcessorActionA {
+    component CA1[ComputationA1
+    ----
+    concurrency: 1, n]
+
+    queue actionA [stream: actionA
+    ----
+    msg: BulkBucket
+    key: round robin
+    partitions: 1, n]
+  }
+
+  frame ProcessorActionB {
+    component CB1[ComputationB1
+    ----
+    concurrency: 1, n]
+
+    component CBn[ComputationB<n>
+    ----
+    concurrency: 1, n]
+
+    queue actionB [stream: actionB
+    ----
+    msg: BulkBucket
+    key: round robin
+    partitions: 1, n]
+
+    cloud CBk [Custom ActionB
+    topology]
+  }
+
+}
+
+
+BulkService==>command
+
+command==>Scroller
+Scroller==>actionA
+Scroller==>actionB
+
+actionA==>CA1
+CA1==>status
+
+actionB==>CB1
+CB1==>CBk
+CBk==>CBn
+CBn==>status
+
+status==>Status
+Status==>done
+
+Status<-->KeyValue
+Scroller<-->Repository
+
+Scroller==>status
+
+BulkService<-->KeyValue
+
+@enduml

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.bulk.computation;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
 
@@ -130,7 +131,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     if (!documentIds.isEmpty()) {
                         produceBucket(context, command.getAction(), commandId, bucketNumber++);
                     }
-                    updateStatusAsRunning(context, commandId, documentCount);
+                    updateStatusAfterScroll(context, commandId, documentCount);
                 } finally {
                     loginContext.logout();
                 }
@@ -151,9 +152,13 @@ public class BulkScrollerComputation extends AbstractComputation {
                 BulkCodecs.getStatusCodec().encode(delta));
     }
 
-    protected void updateStatusAsRunning(ComputationContext context, String commandId, long documentCount) {
+    protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount) {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
-        delta.setState(RUNNING);
+        if (documentCount == 0) {
+            delta.setState(COMPLETED);
+        } else {
+            delta.setState(RUNNING);
+        }
         delta.setScrollEndTime(Instant.now());
         delta.setCount(documentCount);
         ((ComputationContextImpl) context).produceRecordImmediate(STATUS_STREAM, commandId,
