@@ -30,7 +30,9 @@ import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
@@ -63,11 +65,23 @@ public class TestService {
 
     private static final Logger log = LogManager.getLogger();
 
+    @Rule
+    public final TestName testName = new TestName();
+
     @Before
     public void postSetUp() {
         PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
+        // set a dedicated tiling cache working dir by tests
+        String workingDir = Environment.getDefault()
+                                       .getData()
+                                       .toPath()
+                                       .resolve("nuxeo-tiling-cache")
+                                       .resolve(testName.getMethodName())
+                                       .toAbsolutePath()
+                                       .toString();
+        Framework.getService(PictureTilingService.class).setWorkingDirPath(workingDir);
     }
 
     @After
@@ -101,7 +115,6 @@ public class TestService {
         // do nothing
     }
 
-    @Ignore("NXP-25718")
     @Test
     public void testTilingSpead() throws Exception {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
