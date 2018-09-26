@@ -105,7 +105,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         this.supplier = supplier;
         this.metadata = metadata;
         this.logManager = logManager;
-        this.context = new ComputationContextImpl(metadata);
+        this.context = new ComputationContextImpl(logManager, metadata);
         this.inputCodec = inputCodec;
         this.outputCodec = outputCodec;
         if (metadata.inputStreams().isEmpty()) {
@@ -395,7 +395,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         lastReadTime = System.currentTimeMillis();
         setThreadName("rebalance assigned");
         // reset the context
-        this.context = new ComputationContextImpl(metadata);
+        this.context = new ComputationContextImpl(logManager, metadata);
         log.debug(metadata.name() + ": Init");
         computation.init(context);
         lastReadTime = System.currentTimeMillis();
