@@ -6,21 +6,14 @@
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
     </Console>
     <File name="FILE" fileName="target/trace.log" append="false">
-      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
-      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
-    </File>
-    <File name="REDIS" fileName="target/redis.log" append="false">
+      <ThresholdFilter level="TRACE" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
     </File>
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
-    <Logger name="org.nuxeo.ecm.core.redis.embedded" level="trace" additivity="false">
-      <AppenderRef ref="REDIS" />
-    </Logger>
-    <Logger name="org.nuxeo.ecm.core.work" level="trace" additivity="false">
-      <AppenderRef ref="REDIS" />
-    </Logger>
+    <Logger name="org.nuxeo.elasticsearch" level="trace" />
+    <Logger name="org.nuxeo.drive" level="trace" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
