@@ -18,12 +18,14 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.auth;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import javax.ws.rs.core.HttpHeaders;
 
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
-import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
@@ -44,7 +46,7 @@ public class BasicAuthInterceptor extends RequestInterceptor {
 
     public void setAuth(String username, String password) {
         String info = username + ":" + password;
-        token = "Basic " + Base64.encode(info);
+        token = "Basic " + Base64.encodeBase64String(info.getBytes(UTF_8));
     }
 
     @Override
