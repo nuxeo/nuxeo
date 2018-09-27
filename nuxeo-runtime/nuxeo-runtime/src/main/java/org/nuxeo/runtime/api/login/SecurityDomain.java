@@ -21,14 +21,8 @@
 
 package org.nuxeo.runtime.api.login;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -46,14 +40,12 @@ import org.nuxeo.runtime.api.LoginModuleWrapper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("domain")
-public class SecurityDomain implements Serializable {
-
-    private static final long serialVersionUID = 5770889355854831093L;
+public class SecurityDomain {
 
     @XNode("@name")
     private String name;
 
-    private transient AppConfigurationEntry[] entries;
+    private AppConfigurationEntry[] entries;
 
     public SecurityDomain() {
     }
@@ -152,40 +144,6 @@ public class SecurityDomain implements Serializable {
             return LoginModuleControlFlag.REQUISITE;
         }
         throw new IllegalArgumentException("Not a supported LoginModuleControlFlag: " + flag);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-        in.defaultReadObject();
-        // read app config entries
-        int size = in.readInt();
-        entries = new AppConfigurationEntry[size];
-        for (int i = 0; i < size; i++) {
-            String name = (String) in.readObject();
-            String ctrlFlag = (String) in.readObject();
-            LoginModuleControlFlag flag = controlFlagFromString(ctrlFlag);
-            Map<String, ?> opts = (Map<String, ?>) in.readObject();
-            entries[i] = new AppConfigurationEntry(name, flag, opts);
-        }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        // write app config entries
-        if (entries == null) {
-            out.writeInt(0);
-        } else {
-            out.writeInt(entries.length);
-            for (AppConfigurationEntry entry : entries) {
-                out.writeObject(entry.getLoginModuleName());
-                out.writeObject(controlFlagToString(entry.getControlFlag()));
-                Map<String, ?> opts = entry.getOptions();
-                if (!(opts instanceof Serializable)) {
-                    opts = new HashMap<String, Object>(opts);
-                }
-                out.writeObject(opts);
-            }
-        }
     }
 
 }
