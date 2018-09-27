@@ -164,7 +164,13 @@ public class EasyShare extends ModuleRoot {
 
   private boolean checkIfShareIsValid(DocumentModel docShare) {
     Date today = new Date();
-    if (today.after(docShare.getProperty("dc:expired").getValue(Date.class))) {
+    Date expired = docShare.getProperty("dc:expired").getValue(Date.class);
+    if (expired == null) {
+      log.error("Invalid null dc:expired for share: " + docShare.getTitle() + " (" + docShare.getId() + ")");
+      // consider the share as expired
+      return false;
+    }
+    if (today.after(expired)) {
 
       //Email notification
       Map<String, Object> mail = new HashMap<>();
