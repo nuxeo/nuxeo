@@ -21,6 +21,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_AUTHENTICATION_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_CONNECTION_FAILED;
@@ -76,6 +77,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
@@ -145,6 +148,9 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     /** Used internally as a marker. */
     protected static final Principal DIRECTORY_ERROR_PRINCIPAL = new PrincipalImpl("__DIRECTORY_ERROR__\0\0\0");
+
+    /** The Seam conversation id query parameter. */
+    protected static final String CONVERSATION_ID = "conversationId";
 
     private static String anonymous;
 
@@ -774,19 +780,25 @@ public class NuxeoAuthenticationFilter implements Filter {
         return false;
     }
 
-    public static String getRequestedUrl(HttpServletRequest httpRequest) {
-        String completeURI = httpRequest.getRequestURI();
-        String qs = httpRequest.getQueryString();
-        String context = httpRequest.getContextPath() + '/';
-        String requestPage = completeURI.substring(context.length());
-        if (qs != null && qs.length() > 0) {
-            // remove conversationId if present
-            if (qs.contains("conversationId")) {
-                qs = qs.replace("conversationId", "old_conversationId");
+    /**
+     * The requested URL is like the requested page but also includes the query string, except without conversation id.
+     */
+    public static String getRequestedUrl(HttpServletRequest request) {
+        String path = getRequestedPage(request);
+        String qs = request.getQueryString();
+        if (StringUtils.isNotEmpty(qs)) {
+            // strip conversation id
+            if (qs.contains(CONVERSATION_ID)) {
+                List<NameValuePair> list = URLEncodedUtils.parse(qs, UTF_8);
+                if (list.removeIf(pair -> pair.getName().equals(CONVERSATION_ID))) {
+                    qs = URLEncodedUtils.format(list, UTF_8);
+                }
             }
-            requestPage = requestPage + '?' + qs;
+            if (!qs.isEmpty()) {
+                path = path + '?' + qs;
+            }
         }
-        return requestPage;
+        return path;
     }
 
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {

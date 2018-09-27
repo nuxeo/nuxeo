@@ -72,4 +72,29 @@ public class TestNuxeoAuthenticationFilter {
         assertEquals("foo/bar.xhtml", page);
     }
 
+    @Test
+    public void testGetRequestedUrl() {
+        doTestGetRequestedUrl("", null);
+        doTestGetRequestedUrl("", "");
+        doTestGetRequestedUrl("?gee=moo", "gee=moo");
+        doTestGetRequestedUrl("?gee=moo&abc=def", "gee=moo&abc=def");
+        // strip conversationId
+        doTestGetRequestedUrl("?gee=moo", "gee=moo&conversationId=1234");
+        doTestGetRequestedUrl("?gee=moo", "conversationId=1234&gee=moo");
+        doTestGetRequestedUrl("", "conversationId=1234");
+    }
+
+    protected void doTestGetRequestedUrl(String expected, String queryString) {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        // here we use info that a servlet container would provide, based on parsing per the servlet spec
+        when(request.getRequestURI()).thenReturn("/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123");
+        when(request.getContextPath()).thenReturn("/nuxeo");
+        when(request.getServletPath()).thenReturn("/foo");
+        when(request.getPathInfo()).thenReturn("/bar.xhtml");
+        when(request.getQueryString()).thenReturn(queryString);
+
+        String url = NuxeoAuthenticationFilter.getRequestedUrl(request);
+        assertEquals("foo/bar.xhtml" + expected, url);
+    }
+
 }
