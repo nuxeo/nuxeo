@@ -25,8 +25,8 @@ import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LockExpirationListener implements PostCommitEventListener {
 
-    private static final Log log = LogFactory.getLog(LockExpirationListener.class);
+    private static final Logger log = LogManager.getLogger(LockExpirationListener.class);
 
     @Override
     public void handleEvent(EventBundle eventBundle) {
@@ -65,11 +65,8 @@ public class LockExpirationListener implements PostCommitEventListener {
 
     protected void handleExpiredLock(CoreSession session, Session directorySession, DocumentModel entry) {
         String docId = (String) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_DOC_ID);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "WOPI lock expired for document %s/%s, unlocking document and removing lock from directory.",
-                    session.getRepositoryName(), docId));
-        }
+        log.debug("WOPI lock expired for document {}/{}, unlocking document and removing lock from directory.",
+                session::getRepositoryName, () -> docId);
         // unlock document
         session.removeLock(new IdRef(docId));
         // remove WOPI lock from directory

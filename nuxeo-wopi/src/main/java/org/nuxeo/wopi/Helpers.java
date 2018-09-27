@@ -26,8 +26,8 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Helpers {
 
-    private static final Log log = LogFactory.getLog(Helpers.class);
+    private static final Logger log = LogManager.getLogger(Helpers.class);
 
     public static final Charset UTF_7 = new com.beetstra.jutf7.CharsetProvider().charsetForName("UTF-7");
 
@@ -81,21 +81,17 @@ public class Helpers {
             // prevent server error
         }
         if (blob == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Cannot find blob with xpath=%s for document %s/%s.", xpath,
-                        doc.getRepositoryName(), doc.getId()));
-            }
+            log.debug("Cannot find blob with xpath={} for document {}/{}.", () -> xpath, doc::getRepositoryName,
+                    doc::getId);
             return null;
         }
         // ignore external blob providers
         BlobManager blobManager = Framework.getService(BlobManager.class);
         BlobProvider blobProvider = blobManager.getBlobProvider(blob);
         if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Ignoring blob with xpath=%s for document %s/%s as is is backed by a BlobProvider preventing updates.",
-                        xpath, doc.getRepositoryName(), doc.getId()));
-            }
+            log.debug(
+                    "Ignoring blob with xpath={} for document {}/{} as is is backed by a BlobProvider preventing updates.",
+                    () -> xpath, doc::getRepositoryName, doc::getId);
             return null;
         }
         return blob;
