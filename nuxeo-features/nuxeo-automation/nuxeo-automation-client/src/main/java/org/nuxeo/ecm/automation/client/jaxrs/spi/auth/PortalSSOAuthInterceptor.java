@@ -27,10 +27,10 @@ import java.util.Random;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
-import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
@@ -72,7 +72,7 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
             throw new RuntimeException("Cannot compute token", e);
         }
 
-        String base64HashedToken = Base64.encode(hashedToken);
+        String base64HashedToken = Base64.encodeBase64String(hashedToken);
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("NX_TS", String.valueOf(ts));
         headers.put("NX_RD", String.valueOf(random));

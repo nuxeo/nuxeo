@@ -22,7 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,7 +36,7 @@ public abstract class Blob implements OperationInput {
     }
 
     public static Blob fromBase64String(String fileName, String content, String mimeType) {
-        return new StreamBlob(new ByteArrayInputStream(Base64.decode(content)), fileName, mimeType);
+        return new StreamBlob(new ByteArrayInputStream(Base64.decodeBase64(content)), fileName, mimeType);
     }
 
     protected String mimeType;
