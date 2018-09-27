@@ -21,12 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.model.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +35,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ListDiff;
@@ -131,21 +126,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
             return null;
         }
         if (template instanceof Serializable) {
-            try {
-                Serializable serializableTemplate = (Serializable) template;
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(out);
-                oos.writeObject(serializableTemplate);
-                oos.close();
-                // deserialize to make sure it is not the same instance
-                byte[] pickled = out.toByteArray();
-                InputStream in = new ByteArrayInputStream(pickled);
-                ObjectInputStream ois = new ObjectInputStream(in);
-                Object newTemplate = ois.readObject();
-                return newTemplate;
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            return SerializationUtils.clone((Serializable) template);
         } else {
             log.warn("Template is not serializable, cannot clone " + "to add unreferenced value into model.");
             return template;

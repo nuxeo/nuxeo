@@ -21,11 +21,9 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Deep copy utils.
@@ -45,25 +43,7 @@ public final class DeepCopy {
     }
 
     public static Object deepCopy(Object object) {
-        Object copy;
-        try {
-            // Write the object out to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(object);
-            out.flush();
-            out.close();
-
-            // Make an input stream from the byte array and read
-            // a copy of the object back in.
-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-            copy = in.readObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException cnfe) {
-            throw new RuntimeException(cnfe);
-        }
-        return copy;
+        return SerializationUtils.clone((Serializable) object);
     }
 
 }
