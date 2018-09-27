@@ -27,7 +27,16 @@ properties([
                 [$class: 'StringParameterDefinition', name: 'BRANCH', description: '', defaultValue: 'master'],
                 [$class: 'StringParameterDefinition', name: 'PARENT_BRANCH', description: '', defaultValue: 'master'],
                 [$class: 'BooleanParameterDefinition', name: 'CLEAN', description: '', defaultValue: true],
-        ]]])
+        ]],
+        pipelineTriggers([
+            triggers: [
+                [
+                    $class          : 'ReverseBuildTrigger',
+                    upstreamProjects: "/master/nuxeo-distribution-master",
+                    threshold       : hudson.model.Result.SUCCESS
+                ]
+            ]
+        ])])
 
 node('SLAVE') {
     tool name: 'ant-1.9', type: 'ant'
