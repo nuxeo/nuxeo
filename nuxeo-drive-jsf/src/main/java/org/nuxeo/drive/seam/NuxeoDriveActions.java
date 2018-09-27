@@ -44,7 +44,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -92,18 +91,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     public static final String NXDRIVE_PROTOCOL = "nxdrive";
 
     public static final String PROTOCOL_COMMAND_EDIT = "edit";
-
-    /**
-     * @deprecated Use {@link NuxeoDriveConstants#UPDATE_SITE_URL_PROP_KEY} instead
-     */
-    @Deprecated
-    public static final String UPDATE_SITE_URL_PROP_KEY = NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY;
-
-    /**
-     * @deprecated Since 7.10. Use {@link Environment} properties
-     */
-    @Deprecated
-    public static final String SERVER_VERSION_PROP_KEY = Environment.PRODUCT_VERSION;
 
     /**
      * @deprecated since 10.2

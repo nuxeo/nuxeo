@@ -28,7 +28,6 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
-import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -215,19 +214,6 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             }
             return null;
         }
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) {
-        // Parse id, expecting
-        // pattern:fileSystemItemFactoryName#repositoryName#docId
-        String[] idFragments = parseFileSystemId(id);
-        String repositoryName = idFragments[1];
-        String docId = idFragments[2];
-        CoreSession session = Framework.getService(FileSystemItemManager.class).getSession(repositoryName,
-                principal);
-        return getDocumentById(docId, session);
     }
 
     /*--------------------------- Protected ---------------------------------*/

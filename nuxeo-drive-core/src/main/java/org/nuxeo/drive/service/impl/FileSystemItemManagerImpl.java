@@ -18,18 +18,8 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,12 +31,8 @@ import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Default implementation of the {@link FileSystemItemManager}.
@@ -56,67 +42,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     private static final Log log = LogFactory.getLog(FileSystemItemManagerImpl.class);
-
-    /*------------- Opened sessions against each repository ----------------*/
-    protected final ThreadLocal<Map<String, CloseableCoreSession>> openedSessions = new ThreadLocal<Map<String, CloseableCoreSession>>() {
-        @Override
-        protected Map<String, CloseableCoreSession> initialValue() {
-            return new HashMap<>();
-        }
-    };
-
-    @Deprecated
-    @Override
-    public CoreSession getSession(String repositoryName, Principal principal) {
-        final String sessionKey = repositoryName + "/" + principal.getName();
-        CoreSession session = openedSessions.get().get(sessionKey);
-        if (session == null) {
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put("principal", (Serializable) principal);
-            final CloseableCoreSession newSession = CoreInstance.openCoreSession(repositoryName, principal);
-            openedSessions.get().put(sessionKey, newSession);
-            try {
-                Transaction t = TransactionHelper.lookupTransactionManager().getTransaction();
-                if (t == null) {
-                    throw new RuntimeException("FileSystemItemManagerImpl requires an active transaction.");
-                }
-                t.registerSynchronization(new SessionCloser(newSession, sessionKey));
-            } catch (SystemException | NamingException | RollbackException e) {
-                throw new NuxeoException(e);
-            }
-            session = newSession;
-        }
-        return session;
-    }
-
-    /**
-     * Closer for a {@link CoreSession} object held by {@link #openedSessions}. It is synchronized with the transaction
-     * within which the {@link CoreSession} was opened.
-     */
-    protected class SessionCloser implements Synchronization {
-
-        protected final CloseableCoreSession session;
-
-        protected final String sessionKey;
-
-        protected SessionCloser(CloseableCoreSession session, String sessionKey) {
-            this.session = session;
-            this.sessionKey = sessionKey;
-        }
-
-        @Override
-        public void beforeCompletion() {
-            session.close();
-        }
-
-        @Override
-        public void afterCompletion(int status) {
-            openedSessions.get().remove(sessionKey);
-            if (status != Status.STATUS_COMMITTED) {
-                session.close();
-            }
-        }
-    }
 
     /*------------- Read operations ----------------*/
     @Override

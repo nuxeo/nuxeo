@@ -221,15 +221,4 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal);
 
-    /**
-     * Gets the {@link DocumentModel} bound to the given {@link FileSystemItem} id using a core session fetched with the
-     * given principal.
-     *
-     * @deprecated since 7.2
-     * @return the {@link DocumentModel}
-     * @since 6.0
-     */
-    @Deprecated
-    DocumentModel getDocumentByFileSystemId(String id, Principal principal);
-
 }

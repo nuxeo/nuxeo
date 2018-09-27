@@ -553,12 +553,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return changeFinder;
     }
 
-    @Override
-    @Deprecated
-    public void setChangeFinder(FileSystemChangeFinder changeFinder) {
-        this.changeFinder = changeFinder;
-    }
-
     /**
      * @since 5.9.5
      */

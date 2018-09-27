@@ -142,14 +142,6 @@ public interface NuxeoDriveManager {
     public FileSystemChangeFinder getChangeFinder();
 
     /**
-     * Sets the {@link FileSystemChangeFinder} member.
-     *
-     * @deprecated since 7.3, use {@code changeFinder} extension point instead
-     */
-    @Deprecated
-    public void setChangeFinder(FileSystemChangeFinder changeFinder);
-
-    /**
      * Invalidate the synchronization roots cache for a given user so as to query the repository next time
      * {@link #getSynchronizationRoots(Principal)} is called.
      *
