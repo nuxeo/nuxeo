@@ -174,7 +174,7 @@ if [ $cygwin = false ]; then
 fi
 
 ## java.util.logging configuration
-JUL_CONFIG="-Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties"
+JUL_CONFIG="-Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties -Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"
 JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 
 ## Jigsaw modules

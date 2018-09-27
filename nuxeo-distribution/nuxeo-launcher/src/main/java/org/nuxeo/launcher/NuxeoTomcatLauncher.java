@@ -44,7 +44,6 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     @Override
     protected Collection<? extends String> getServerProperties() {
         ArrayList<String> serverProperties = new ArrayList<>();
-        serverProperties.add("-Djava.util.logging.manager=" + "org.apache.juli.ClassLoaderLogManager");
         File home = configurationGenerator.getNuxeoHome();
         serverProperties.add("-Dcatalina.base=" + home.getPath());
         serverProperties.add("-Dcatalina.home=" + home.getPath());
