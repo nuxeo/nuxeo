@@ -87,7 +87,7 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         json = json.has("contextParameters").isObject();
         json.properties(0);
 
-        // blob with an extension not supported by WOPI
+        // blob with an unsupported extension
         Blob blob = createBlob("dummy content");
         blob.setFilename("content.txt");
         doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
@@ -96,7 +96,7 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         json = json.has("contextParameters").isObject();
         json.properties(0);
 
-        // blob with an extension supported by WOPI
+        // blob with a supported extension
         blob.setFilename("content.docx");
         doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         session.saveDocument(doc);
@@ -105,23 +105,20 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(DOC_ID_VAR, doc.getId());
 
         try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            // read access only, expecting view action URL only
             // document not locked
             doc = joeSession.getDocument(doc.getRef());
             json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
 
-            File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-read.json");
+            File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-unlocked.json");
             String expected = readFile(file, toReplace);
             JSONAssert.assertEquals(expected, json.toString(), false);
 
-            // write access, expecting view and edit action URLs
-            // lock the document, expecting locked to be true
-            setPermission(rootDocument, SecurityConstants.READ_WRITE);
+            // add lock, expecting locked to be true
             String fileId = FileInfo.computeFileId(doc, FILE_CONTENT_PROPERTY);
             LockHelper.addLock(fileId, "wopiLock");
             json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
 
-            file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-write.json");
+            file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-locked.json");
             expected = readFile(file, toReplace);
             JSONAssert.assertEquals(expected, json.toString(), false);
         }
@@ -131,7 +128,7 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
     public void testMultipleBlobsWOPIJsonEnricher() throws Exception {
         // create test doc with 4 blobs
         DocumentModel doc = session.createDocumentModel("/", "wopiDoc", "File");
-        Blob blob = createBlob("dummy content", null, null, "content.pptx");
+        Blob blob = createBlob("dummy content", null, null, "content.rtf");
         doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         List<Blob> blobs = Arrays.asList(createBlob("one", null, null, "one.docx"),
                 createBlob("two", null, null, "two.bin"), createBlob("three", null, null, "three.xlsx"));
@@ -150,7 +147,6 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(DOC_ID_VAR, doc.getId());
 
         try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            // read access only, expecting view action URL only
             // document not locked
             doc = joeSession.getDocument(doc.getRef());
             JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());

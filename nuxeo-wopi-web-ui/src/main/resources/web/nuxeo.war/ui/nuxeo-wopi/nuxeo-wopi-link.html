@@ -41,7 +41,7 @@ Contributors:
     Polymer({
       is: 'nuxeo-wopi-link',
 
-      behaviors: [Nuxeo.I18nBehavior],
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
 
       properties: {
         document: Object,
@@ -81,7 +81,7 @@ Contributors:
           return null;
         }
 
-        return blobInfo.edit ? blobInfo.edit : blobInfo.view;
+        return blobInfo.edit && this.hasPermission(this.document, 'WriteProperties') ? blobInfo.edit : blobInfo.view;
       }
     });
   </script>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sample extracted from https://onenote.officeapps-df.live.com/hosting/discovery -->
+<wopi-discovery>
+  <net-zone name="external-https">
+    <app name="Excel" favIconUrl="https://excel.officeapps-df.live.com/x/_layouts/resources/FavIcon_Excel.ico" bootstrapperUrl="https://c1-excel-df.cdn.office.net/x/s/_layouts/app_scripts/excel-boot.min.js" staticResourceOrigin="https://c1-excel-df.cdn.office.net" checkLicense="true">
+      <action name="view" ext="xlsx" default="true" urlsrc="https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+      <action name="edit" ext="xlsx" requires="update" urlsrc="https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?edit=1&amp;&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+    </app>
+    <app name="Word" favIconUrl="https://word-view.officeapps-df.live.com/wv/resources/1033/FavIcon_Word.ico" bootstrapperUrl="https://c1-word-view-df.cdn.office.net/wv/s/App_Scripts/word.boot.js" staticResourceOrigin="https://c1-word-view-df.cdn.office.net" checkLicense="true">
+      <action name="view" ext="docx" default="true" urlsrc="https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+      <action name="edit" ext="rtf" requires="locks,update" urlsrc="https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+    </app>
+  </net-zone>
+</wopi-discovery>

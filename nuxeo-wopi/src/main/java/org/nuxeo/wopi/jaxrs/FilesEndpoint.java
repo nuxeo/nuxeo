@@ -58,7 +58,6 @@ import static org.nuxeo.wopi.Constants.USER_CAN_WRITE;
 import static org.nuxeo.wopi.Constants.USER_FRIENDLY_NAME;
 import static org.nuxeo.wopi.Constants.USER_ID;
 import static org.nuxeo.wopi.Constants.VERSION;
-import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
@@ -381,8 +380,8 @@ public class FilesEndpoint extends DefaultObject {
         String token = Helpers.createJWTToken();
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
         String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN, token);
-        String hostViewUrl = getActionURL(ACTION_VIEW, newDoc, xpath);
-        String hostEditUrl = getActionURL(ACTION_EDIT, newDoc, xpath);
+        String hostViewUrl = Helpers.getWOPIURL(baseURL, ACTION_VIEW, newDoc, xpath);
+        String hostEditUrl = Helpers.getWOPIURL(baseURL, ACTION_EDIT, newDoc, xpath);
 
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, newFileName);
@@ -465,7 +464,8 @@ public class FilesEndpoint extends DefaultObject {
             throw new NotImplementedException();
         }
 
-        String shareURL = getActionURL(urlType.equals(SHARE_URL_READ_ONLY) ? ACTION_VIEW : ACTION_EDIT, doc, xpath);
+        String shareURL = Helpers.getWOPIURL(baseURL, urlType.equals(SHARE_URL_READ_ONLY) ? ACTION_VIEW : ACTION_EDIT,
+                doc, xpath);
         Map<String, Serializable> map = new HashMap<>();
         map.put(SHARE_URL, shareURL);
         return Response.ok(map).type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -640,8 +640,8 @@ public class FilesEndpoint extends DefaultObject {
         String downloadURL = baseURL
                 + Framework.getService(DownloadService.class).getDownloadUrl(doc, xpath, blob.getFilename());
         map.put(DOWNLOAD_URL, downloadURL);
-        map.put(HOST_EDIT_URL, getActionURL(ACTION_EDIT, doc, xpath));
-        map.put(HOST_VIEW_URL, getActionURL(ACTION_VIEW, doc, xpath));
+        map.put(HOST_EDIT_URL, Helpers.getWOPIURL(baseURL, ACTION_EDIT, doc, xpath));
+        map.put(HOST_VIEW_URL, Helpers.getWOPIURL(baseURL, ACTION_VIEW, doc, xpath));
         String signoutURL = baseURL + NXAuthConstants.LOGOUT_PAGE;
         map.put(SIGNOUT_URL, signoutURL);
     }
@@ -670,11 +670,6 @@ public class FilesEndpoint extends DefaultObject {
                             .getUrlFromDocumentView(NOTIFICATION_DOCUMENT_ID_CODEC_NAME, docView, true, baseURL);
         }
         return null;
-    }
-
-    protected String getActionURL(String action, DocumentModel doc, String xpath) {
-        return String.format("%s%s/%s/%s/%s/%s", baseURL, WOPI_SERVLET_PATH, action, doc.getRepositoryName(),
-                doc.getId(), xpath);
     }
 
 }

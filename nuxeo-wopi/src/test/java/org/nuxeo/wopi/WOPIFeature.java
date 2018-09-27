@@ -18,9 +18,21 @@
  */
 package org.nuxeo.wopi;
 
+import static org.nuxeo.wopi.WOPIServiceImpl.DISCOVERY_XML;
+import static org.nuxeo.wopi.WOPIServiceImpl.WOPI_DIR;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
@@ -31,4 +43,27 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.wopi")
 public class WOPIFeature implements RunnerFeature {
 
+    public static final String TEST_DISCOVERY_NAME = "test-discovery.xml";
+
+    @Override
+    public void start(FeaturesRunner runner) {
+        Path discoveryPath = Paths.get(Environment.getDefault().getData().getAbsolutePath(), WOPI_DIR, DISCOVERY_XML);
+        if (Files.exists(discoveryPath)) {
+            return;
+        }
+
+        InputStream is = getTestDiscovery();
+        if (is != null) {
+            try {
+                Files.createDirectories(discoveryPath.getParent());
+                Files.copy(is, discoveryPath);
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
+        }
+    }
+
+    private static InputStream getTestDiscovery() {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(TEST_DISCOVERY_NAME);
+    }
 }

@@ -21,6 +21,7 @@ package org.nuxeo.wopi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.wopi.Constants.JWT_TOKEN_TTL;
+import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -95,6 +96,11 @@ public class Helpers {
             return null;
         }
         return blob;
+    }
+
+    public static String getWOPIURL(String baseURL, String action, DocumentModel doc, String xpath) {
+        return String.format("%s%s/%s/%s/%s/%s", baseURL, WOPI_SERVLET_PATH, action, doc.getRepositoryName(),
+                doc.getId(), xpath);
     }
 
     protected static String userDisplayName(String id, String first, String last) {

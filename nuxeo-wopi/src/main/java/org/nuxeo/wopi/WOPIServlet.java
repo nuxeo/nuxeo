@@ -30,8 +30,6 @@ import static org.nuxeo.wopi.Constants.WOPI_SRC;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -39,8 +37,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -48,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 10.3
@@ -55,67 +52,6 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 public class WOPIServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
-    public static final String WORD_APP_NAME = "Word";
-
-    public static final String WORD_VIEW_URL = "https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?";
-
-    public static final String WORD_EDIT_URL = "https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?";
-
-    public static final String EXCEL_APP_NAME = "Excel";
-
-    public static final String EXCEL_VIEW_URL = "https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?";
-
-    public static final String EXCEL_EDIT_URL = EXCEL_VIEW_URL + "edit=1&";
-
-    public static final String POWERPOINT_APP_NAME = "PowerPoint";
-
-    public static final String POWERPOINT_VIEW_URL = "https://powerpoint.officeapps-df.live.com/p/PowerPointFrame.aspx?PowerPointView=ReadingView&";
-
-    public static final String POWERPOINT_EDIT_URL = "https://powerpoint.officeapps-df.live.com/p/PowerPointFrame.aspx?PowerPointView=EditView&";
-
-    public static final String WOPITEST_VIEW_URL = "https://onenote.officeapps-df.live.com/hosting/WopiTestFrame.aspx?";
-
-    protected static final Map<Pair<String, String>, Pair<String, String>> ACTIONS_TO_URLS = new HashMap<>();
-
-    static {
-        ACTIONS_TO_URLS.put(Pair.of("view", "doc"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docm"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "dot"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "dotm"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "docx"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "odt"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "rtf"), Pair.of(WORD_APP_NAME, WORD_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docm"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "docx"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odt"), Pair.of(WORD_APP_NAME, WORD_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "csv"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ods"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xls"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsb"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsm"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "xlsx"), Pair.of(EXCEL_APP_NAME, EXCEL_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ods"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsb"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsm"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "xlsx"), Pair.of(EXCEL_APP_NAME, EXCEL_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "odp"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pot"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "potm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "potx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pps"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppsx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "ppt"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptm"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("view", "pptx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_VIEW_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "odp"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "ppsx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
-        ACTIONS_TO_URLS.put(Pair.of("edit", "pptx"), Pair.of(POWERPOINT_APP_NAME, POWERPOINT_EDIT_URL));
-        // for testing
-        ACTIONS_TO_URLS.put(Pair.of("view", "wopitest"), Pair.of("WopiTest", WOPITEST_VIEW_URL));
-    }
 
     public static final String WOPI_JSP = "/wopi.jsp";
 
@@ -133,6 +69,12 @@ public class WOPIServlet extends HttpServlet {
         int length = parts.length;
         if (length < 4) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path: " + path);
+            return;
+        }
+
+        WOPIService wopiService = Framework.getService(WOPIService.class);
+        if (!wopiService.isEnabled()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "WOPI not enabled");
             return;
         }
 
@@ -154,14 +96,12 @@ public class WOPIServlet extends HttpServlet {
                 return;
             }
 
-            String extension = FilenameUtils.getExtension(blob.getFilename());
-            Pair<String, String> pair = ACTIONS_TO_URLS.get(Pair.of(action, extension));
-            if (pair == null) {
+            String actionURL = wopiService.getActionURL(blob, action);
+            if (actionURL == null) {
                 // TODO http code?
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot open file with Office Online");
                 return;
             }
-            String url = pair.getRight();
 
             String token = Helpers.createJWTToken();
             request.setAttribute(ACCESS_TOKEN, token);
@@ -170,7 +110,7 @@ public class WOPIServlet extends HttpServlet {
             String fileId = FileInfo.computeFileId(doc, xpath);
             String wopiSrc = URLEncoder.encode(String.format("%s%s%s", baseURL, FILES_ENDPOINT_PATH, fileId),
                     UTF_8.name());
-            request.setAttribute(FORM_URL, url + WOPI_SRC + "=" + wopiSrc);
+            request.setAttribute(FORM_URL, String.format("%s%s=%s", actionURL, WOPI_SRC, wopiSrc));
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(WOPI_JSP);
             requestDispatcher.forward(request, response);
         }

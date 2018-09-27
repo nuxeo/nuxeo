@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.WOPIService">
+
+  <implementation class="org.nuxeo.wopi.WOPIServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.wopi.WOPIService" />
+  </service>
+
+</component>
