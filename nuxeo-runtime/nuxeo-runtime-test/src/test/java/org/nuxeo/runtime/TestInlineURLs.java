@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Stephane Lacoin
  */
@@ -53,7 +53,7 @@ public class TestInlineURLs {
 
     @Test
     public void hasCorrectContent() throws IOException {
-        String inlinedContent = InlineURLFactory.newObject(String.class, inlineURL);
+        String inlinedContent = InlineURLFactory.newString(inlineURL);
         assertThat(inlinedContent, equalTo(info));
     }
 
