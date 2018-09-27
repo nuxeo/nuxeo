@@ -22,8 +22,6 @@
 
 package org.nuxeo.launcher.connect;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -186,12 +183,12 @@ public class ConnectBroker {
     }
 
     public PackageManager getPackageManager() {
-        return NuxeoConnectClient.getPackageManager();
+        return NuxeoConnectClient.getPackageManager(targetPlatform);
     }
 
     public void refreshCache() {
         getPackageManager().flushCache();
-        NuxeoConnectClient.getPackageManager().listAllPackages();
+        getPackageManager().listAllPackages();
     }
 
     public CommandSetInfo getCommandSet() {
@@ -226,8 +223,7 @@ public class ConnectBroker {
     }
 
     protected boolean isRemotePackageId(String pkgId) {
-        return PackageUtils.isValidPackageId(pkgId)
-                && NuxeoConnectClient.getPackageManager().getRemotePackage(pkgId) != null;
+        return PackageUtils.isValidPackageId(pkgId) && getPackageManager().getRemotePackage(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName, List<? extends Package> pkgList) {
@@ -276,7 +272,7 @@ public class ConnectBroker {
     }
 
     protected String getRemotePackageIdFromName(String pkgName) {
-        return getBestIdForNameInList(pkgName, NuxeoConnectClient.getPackageManager().findRemotePackages(pkgName));
+        return getBestIdForNameInList(pkgName, getPackageManager().findRemotePackages(pkgName));
     }
 
     /**
@@ -487,7 +483,7 @@ public class ConnectBroker {
 
     public void pkgListAll() {
         log.info("All packages:");
-        pkgList(NuxeoConnectClient.getPackageManager().listAllPackages());
+        pkgList(getPackageManager().listAllPackages());
     }
 
     public void pkgList(List<? extends Package> packagesList) {
@@ -496,7 +492,7 @@ public class ConnectBroker {
             if (packagesList.isEmpty()) {
                 log.info("None");
             } else {
-                NuxeoConnectClient.getPackageManager().sort(packagesList);
+                getPackageManager().sort(packagesList);
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
@@ -1452,7 +1448,8 @@ public class ConnectBroker {
                     if (uninstallResolution.isFailed()) {
                         return false;
                     }
-                    LinkedList<String> newPackageIdsToRemove = new LinkedList<>(uninstallResolution.getOrderedPackageIdsToRemove());
+                    LinkedList<String> newPackageIdsToRemove = new LinkedList<>(
+                            uninstallResolution.getOrderedPackageIdsToRemove());
                     packagesIdsToReInstall = new LinkedList<>(newPackageIdsToRemove);
                     packagesIdsToReInstall.removeAll(packageIdsToRemove);
                     packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
