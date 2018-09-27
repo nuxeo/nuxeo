@@ -189,8 +189,8 @@ public class TestPermissionHierarchy {
         session2 = coreFeature.openCoreSession("user2");
 
         // Create user workspace for each user
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
-        userWorkspace2 = userWorkspaceService.getCurrentUserPersonalWorkspace(session2, null);
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
+        userWorkspace2 = userWorkspaceService.getCurrentUserPersonalWorkspace(session2);
 
         userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId();
         userWorkspace1ItemPath = "/" + TOP_LEVEL_ID + "/" + userWorkspace1ItemId;

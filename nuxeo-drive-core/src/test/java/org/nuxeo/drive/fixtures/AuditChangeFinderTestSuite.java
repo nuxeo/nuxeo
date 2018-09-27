@@ -52,8 +52,8 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
@@ -907,7 +907,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             doc2 = session.createDocument(doc2);
             nuxeoDriveManager.addToLocallyEditedCollection(session, doc1);
             nuxeoDriveManager.addToLocallyEditedCollection(session, doc2);
-            DocumentModel userCollections = collectionManager.getUserDefaultCollections(folder1, session);
+            DocumentModel userCollections = collectionManager.getUserDefaultCollections(session);
             DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
                     NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
             locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);

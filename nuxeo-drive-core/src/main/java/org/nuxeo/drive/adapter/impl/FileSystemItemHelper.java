@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 

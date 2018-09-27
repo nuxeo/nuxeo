@@ -55,11 +55,11 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -160,10 +160,8 @@ public class TestNuxeoDriveManager {
         user1Session = coreFeature.openCoreSession(userManager.getPrincipal("user1"));
         user2Session = coreFeature.openCoreSession(userManager.getPrincipal("user2"));
 
-        user1Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user1Session,
-                user1Session.getDocument(new PathRef("/default-domain"))).getRef();
-        user2Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user2Session,
-                user2Session.getDocument(new PathRef("/default-domain"))).getRef();
+        user1Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user1Session).getRef();
+        user2Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user2Session).getRef();
     }
 
     @After
@@ -463,7 +461,7 @@ public class TestNuxeoDriveManager {
         // document is member of it and the collection is registered as a
         // synchronization root
         CollectionManager cm = Framework.getService(CollectionManager.class);
-        DocumentModel userCollections = cm.getUserDefaultCollections(doc1, session);
+        DocumentModel userCollections = cm.getUserDefaultCollections(session);
         DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
                 NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
         assertTrue(session.exists(locallyEditedCollectionRef));

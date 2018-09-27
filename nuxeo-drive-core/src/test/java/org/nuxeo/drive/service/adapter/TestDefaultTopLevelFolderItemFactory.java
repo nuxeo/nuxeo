@@ -160,13 +160,13 @@ public class TestDefaultTopLevelFolderItemFactory {
             assertEquals(topLevelFolderItem.getPath() + '/' + child.getId(), child.getPath());
         }
         try {
-            topLevelFolderItem.createFile(new StringBlob("Child file content."));
+            topLevelFolderItem.createFile(new StringBlob("Child file content."), false);
             fail("Should not be able to create a file in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot create a file in a virtual folder item.", e.getMessage());
         }
         try {
-            topLevelFolderItem.createFolder("subFolder");
+            topLevelFolderItem.createFolder("subFolder", false);
             fail("Should not be able to create a folder in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot create a folder in a virtual folder item.", e.getMessage());

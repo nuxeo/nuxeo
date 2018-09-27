@@ -150,7 +150,7 @@ public class TestCollectionSyncRootFolderItemFactory {
 
         log.trace("Check FolderItem#createFolder");
         try {
-            collectionFSItem.createFolder("Child folder");
+            collectionFSItem.createFolder("Child folder", false);
             fail("Should not be able to create a folder in a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot create a folder in a collection synchronization root.", e.getMessage());

@@ -73,9 +73,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -774,14 +774,14 @@ public class DefaultFileSystemItemFactoryFixture {
         // Note
         Blob childBlob = new StringBlob("This is the Note child.");
         childBlob.setFilename("Note child.txt");
-        folderItem.createFile(childBlob);
+        folderItem.createFile(childBlob, false);
         // File
         childBlob = new StringBlob("This is the File child.");
         childBlob.setFilename("File child.odt");
         childBlob.setMimeType("application/vnd.oasis.opendocument.text");
-        folderItem.createFile(childBlob);
+        folderItem.createFile(childBlob, false);
         // Folder
-        folderItem.createFolder("Sub-folder");
+        folderItem.createFolder("Sub-folder", false);
 
         DocumentModelList children = session.query(String.format(
                 "select * from Document where ecm:parentId = '%s' order by ecm:primaryType asc", folder.getId()));
@@ -1033,7 +1033,7 @@ public class DefaultFileSystemItemFactoryFixture {
         log.trace(
                 "Add a document to a new collection \"testCollection\" created in \"/default-domain/UserWorkspaces/Administrator/Collections\"");
         collectionManager.addToNewCollection("testCollection", null, file, session);
-        DocumentModel userCollections = collectionManager.getUserDefaultCollections(null, session);
+        DocumentModel userCollections = collectionManager.getUserDefaultCollections(session);
         DocumentModel userWorkspace = session.getParentDocument(userCollections.getRef());
 
         log.trace("Create \"testFolder\" in \"/default-domain/UserWorkspaces/Administrator\"");
@@ -1128,8 +1128,8 @@ public class DefaultFileSystemItemFactoryFixture {
     @Test
     public void testCreateFoldersWithSameName() {
         FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-        FolderItem subFolderItem = folderItem.createFolder("subfolder01");
-        FolderItem subFolderItem2 = folderItem.createFolder("subfolder01");
+        FolderItem subFolderItem = folderItem.createFolder("subfolder01", false);
+        FolderItem subFolderItem2 = folderItem.createFolder("subfolder01", false);
         assertNotEquals(subFolderItem.getId(), subFolderItem2.getId());
     }
 
@@ -1138,8 +1138,8 @@ public class DefaultFileSystemItemFactoryFixture {
         FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         Blob blob = new StringBlob("This is a blob.");
         blob.setFilename("File01.txt");
-        FileItem fileItem = folderItem.createFile(blob);
-        FileItem fileItem2 = folderItem.createFile(blob);
+        FileItem fileItem = folderItem.createFile(blob, false);
+        FileItem fileItem2 = folderItem.createFile(blob, false);
         assertNotEquals(fileItem.getId(), fileItem2.getId());
     }
 

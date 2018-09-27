@@ -580,7 +580,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         // Add document to "Locally Edited" collection, creating if if not
         // exists
         CollectionManager cm = Framework.getService(CollectionManager.class);
-        DocumentModel userCollections = cm.getUserDefaultCollections(doc, session);
+        DocumentModel userCollections = cm.getUserDefaultCollections(session);
         DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
                 LOCALLY_EDITED_COLLECTION_NAME);
         DocumentModel locallyEditedCollection = null;

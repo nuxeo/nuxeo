@@ -99,12 +99,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     }
 
     @Override
-    public FolderItem createFolder(String name) {
+    public FolderItem createFolder(String name, boolean overwrite) {
         throw new UnsupportedOperationException("Cannot create a folder in a collection synchronization root.");
     }
 
     @Override
-    public FileItem createFile(Blob blob) {
+    public FileItem createFile(Blob blob, boolean overwrite) {
         throw new UnsupportedOperationException("Cannot create a file in a collection synchronization root.");
     }
 

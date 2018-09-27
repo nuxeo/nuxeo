@@ -43,11 +43,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFactory;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
-import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
-import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -141,17 +139,12 @@ public class TestPermissionHierarchyFileSystemChanges {
         principal2 = session2.getPrincipal();
 
         // Create personal workspace for user1
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
         userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         // Wait for personal workspace creation event to be logged in the audit
         eventService.waitForAsyncCompletion();
-
-        // Make sure to set ordered active factories
-        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(
-                FileSystemItemAdapterService.class);
-        fileSystemItemAdapterService.setActiveFactories();
     }
 
     @After

@@ -178,7 +178,7 @@ public class TestUserWorkspaceHierarchy {
         session1 = coreFeature.openCoreSession("user1");
 
         // Create user workspace for test user
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
 
         userWorkspace1ItemId = TOP_LEVEL_ID_PREFIX + userWorkspace1.getId();
         userWorkspace1ItemPath = "/" + userWorkspace1ItemId;
