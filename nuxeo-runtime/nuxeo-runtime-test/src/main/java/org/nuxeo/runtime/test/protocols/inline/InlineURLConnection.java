@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.protocols.inline;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,12 +27,12 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class InlineURLConnection extends URLConnection {;
-    protected final Object content;
+    protected final String content;
 
     protected InlineURLConnection(URL url) {
         super(url);
         try {
-            content = InlineURLFactory.newObject(Object.class, url);
+            content = InlineURLFactory.newString(url);
         } catch (IOException e) {
             throw new RuntimeException("Cannot decode data from " + url, e);
         }
@@ -42,7 +44,7 @@ public class InlineURLConnection extends URLConnection {;
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return new ByteArrayInputStream(content.toString().getBytes());
+        return new ByteArrayInputStream(content.getBytes(UTF_8));
     }
 
 }

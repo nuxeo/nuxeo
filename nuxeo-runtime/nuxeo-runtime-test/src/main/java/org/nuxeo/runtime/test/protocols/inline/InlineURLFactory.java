@@ -18,21 +18,18 @@
  */
 package org.nuxeo.runtime.test.protocols.inline;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 
 public class InlineURLFactory {
+
+    public static final String INLINE_PREFIX = "inline:";
 
     public static void install() {
         shf = new InlineURLStreamHandlerFactory();
@@ -56,48 +53,18 @@ public class InlineURLFactory {
 
     }
 
-    public static <T> byte[] marshall(T content) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(content);
-        return bos.toByteArray();
+    public static URL newURL(String content) throws IOException {
+        byte[] data = content.getBytes(UTF_8);
+        return new URL(INLINE_PREFIX + Base64.encodeBase64String(data));
     }
 
-    public static <T> T unmarshall(Class<T> clazz, byte[] data) throws IOException {
-        InputStream is = new ByteArrayInputStream(data);
-        ObjectInputStream ois = new ObjectInputStream(is);
-        try {
-            return clazz.cast(ois.readObject());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot decode, object is not of class " + clazz.getSimpleName(), e);
+    public static String newString(URL url) throws IOException {
+        String extUrl = url.toExternalForm();
+        if (!extUrl.startsWith(INLINE_PREFIX)) {
+            throw new IllegalArgumentException("'" + url + "' should be 'inline:base64content'");
         }
-    }
-
-    public static <T> URL newURL(T content) throws IOException {
-        byte[] data = marshall(content);
-        return newURL("application/java", data);
-    }
-
-    public static URL newURL(String mimetype, byte[] data) throws IOException {
-        return new URL("inline:".concat(mimetype).concat(";base64,".concat(Base64.encodeBase64String(data))));
-    }
-
-    public static <T> T newObject(Class<T> clazz, URL url) throws IOException {
-        byte[] data = getBytes(url);
-        return unmarshall(clazz, data);
-    }
-
-    protected static final Pattern pattern = Pattern.compile("inline:(.*);base64,(.*)");
-
-    public static byte[] getBytes(URL url) throws IOException {
-        Matcher matcher = pattern.matcher(url.toExternalForm());
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("'" + url + "' should be 'inline:mimetype;base64,content'");
-        }
-        @SuppressWarnings("unused")
-        String mimetype = matcher.group(1);
-        String data = matcher.group(2);
-        return Base64.decodeBase64(data);
+        byte[] data = Base64.decodeBase64(extUrl.substring(INLINE_PREFIX.length()));
+        return new String(data, UTF_8);
     }
 
 }
