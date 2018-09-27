@@ -6,13 +6,13 @@
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%c{1}] %m%n" />
     </Console>
     <Console name="stdout" target="SYSTEM_OUT">
-      <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" />
+      <LevelRangeFilter minLevel="INFO" maxLevel="DEBUG" />
       <PatternLayout pattern="%m%n" />
     </Console>
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo.lib.stream.tools" level="info" />
-    <Root>
+    <Root level="warn">
       <AppenderRef ref="stderr" />
       <AppenderRef ref="stdout" />
     </Root>
