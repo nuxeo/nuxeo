@@ -485,8 +485,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
-        IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL);
-        try {
+        try (IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL)) {
             for (Map<String, Serializable> result : results) {
                 IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
                 try {
@@ -503,8 +502,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                             session.getPrincipal().getName(), docRef));
                 }
             }
-        } finally {
-            results.close();
         }
         SynchronizationRoots repoSyncRoots = new SynchronizationRoots(session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);

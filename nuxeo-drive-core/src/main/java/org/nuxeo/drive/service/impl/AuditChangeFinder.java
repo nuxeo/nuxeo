@@ -266,8 +266,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return now - (now % 1000);
     }
 
-    /**
-     * Return the last available log id in the audit log table (primary key) to be used as the upper bound of the event
+     * Returns the last available log id in the audit log table (primary key) to be used as the upper bound of the event
      * log id range clause in the change query.
      */
     @Override

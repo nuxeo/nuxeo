@@ -19,7 +19,6 @@
 package org.nuxeo.drive.listener;
 
 import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
-import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -209,8 +208,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
     protected FileSystemItem getFileSystemItem(DocumentModel doc, String eventName) {
         try {
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-            return Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc, true, true,
-                    false);
+            return Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc, true, true, false);
         } catch (RootlessItemException e) {
             // can happen when deleting a folder under and unregistered root:
             // nothing to do

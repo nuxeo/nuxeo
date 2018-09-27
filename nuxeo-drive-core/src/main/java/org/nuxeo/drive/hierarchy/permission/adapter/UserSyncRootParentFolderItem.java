@@ -35,7 +35,6 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -54,17 +53,18 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     protected boolean isUserWorkspaceSyncRoot = false;
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName) {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
+            String folderName) {
         this(factoryName, doc, parentItem, folderName, false);
     }
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
-            String folderName, boolean relaxSyncRootConstraint) {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName,
+            boolean relaxSyncRootConstraint) {
         this(factoryName, doc, parentItem, folderName, relaxSyncRootConstraint, true);
     }
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
-            String folderName, boolean relaxSyncRootConstraint, boolean getLockInfo) {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         name = folderName;
         canRename = false;
@@ -126,8 +126,8 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                         // principal)
                         if (session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
                             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this,
-                                    false, false, false);
+                            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
+                                    false, false);
                             if (child == null) {
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format(

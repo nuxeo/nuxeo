@@ -400,8 +400,7 @@ public class TestUserWorkspaceHierarchy {
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1File2.txt", "user1", "user1");
         // user1Folder1
-        DocumentBackedFolderItem folderItem = readValue(topLevelChildrenNodes[2],
-                DocumentBackedFolderItem.class);
+        DocumentBackedFolderItem folderItem = readValue(topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1Folder1", "user1", "user1");
         Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)

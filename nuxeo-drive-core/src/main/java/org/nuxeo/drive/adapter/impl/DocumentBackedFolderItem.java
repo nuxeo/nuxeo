@@ -217,7 +217,6 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize, long keepAlive) {
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 

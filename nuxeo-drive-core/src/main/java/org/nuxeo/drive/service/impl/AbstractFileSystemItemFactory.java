@@ -56,7 +56,8 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     public abstract void handleParameters(Map<String, String> parameters);
 
     @Override
-    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
+    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint);
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
@@ -97,7 +98,8 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, true);
     }
 
@@ -253,18 +255,17 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         // fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = id.split(AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
-                            id, name));
+            throw new IllegalArgumentException(String.format(
+                    "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
+                    id, name));
         }
 
         // Check if factory name matches
         String factoryName = idFragments[0];
         if (!name.equals(factoryName)) {
-            throw new IllegalArgumentException(String.format(
-                    "Factoy name [%s] parsed from id %s does not match the actual factory name [%s].", factoryName, id,
-                    name));
+            throw new IllegalArgumentException(
+                    String.format("Factoy name [%s] parsed from id %s does not match the actual factory name [%s].",
+                            factoryName, id, name));
         }
         return idFragments;
     }

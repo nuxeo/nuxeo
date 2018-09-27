@@ -192,7 +192,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @see #getDriveEditURL(DocumentModel)
      */
     public String getDriveEditURL() {
-        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getDriveEditURL(currentDocument);
     }
@@ -208,7 +207,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      *         /protocol/server[:port]/webappName/[user/userName/]repo/repoName/nxdocid/docId/filename/fileName[/
      *         downloadUrl/downloadUrl]"
      */
-    public String getDriveEditURL(@SuppressWarnings("hiding") DocumentModel currentDocument) {
+    public String getDriveEditURL(DocumentModel currentDocument) {
         if (currentDocument == null) {
             return null;
         }
@@ -255,7 +254,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canSynchronizeCurrentDocument")
     public boolean canSynchronizeCurrentDocument() {
-        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -265,7 +263,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
     public boolean canUnSynchronizeCurrentDocument() {
-        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -283,7 +280,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
     public boolean canNavigateToCurrentSynchronizationRoot() {
-        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -301,7 +297,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
     public boolean isCurrentDocumentUserWorkspace() {
-        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -405,8 +400,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
         // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-        FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class)
-                                                 .getFileSystemItem(doc, null, false, false, false);
+        FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
+                null, false, false, false);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.", doc.getPathAsString(),

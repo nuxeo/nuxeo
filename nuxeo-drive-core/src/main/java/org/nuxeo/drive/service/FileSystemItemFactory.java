@@ -65,16 +65,16 @@ public interface FileSystemItemFactory {
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a {@link FileSystemItem}. If
-     * {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in
-     * this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns false.
+     * {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this state
+     * it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns false.
      */
     boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted);
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a {@link FileSystemItem}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is
-     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns false.
+     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this
+     * state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns false.
      * <p>
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.
@@ -93,8 +93,8 @@ public interface FileSystemItemFactory {
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If {@code includeDeleted} is true no filter
-     * is applied on the "trashed" state, else if the document is in the trash it is not considered as
-     * adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * is applied on the "trashed" state, else if the document is in the trash it is not considered as adaptable as a
+     * {@link FileSystemItem}, thus the method returns null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
@@ -105,8 +105,8 @@ public interface FileSystemItemFactory {
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is
-     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this
+     * state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
      * <p>
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.
@@ -120,8 +120,8 @@ public interface FileSystemItemFactory {
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is
-     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this
+     * state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
      * <p>
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.
@@ -149,9 +149,9 @@ public interface FileSystemItemFactory {
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
-     * {@code parentItem}. If {@code includeDeleted} is true no filter is applied on the "trashed" state,
-     * else if the document is in the trash it is not considered as adaptable as a {@link FileSystemItem}, thus the
-     * method returns null.
+     * {@code parentItem}. If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the
+     * document is in the trash it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns
+     * null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
@@ -162,8 +162,8 @@ public interface FileSystemItemFactory {
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
      * {@code parentItem}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is
-     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this
+     * state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
      * <p>
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.
@@ -178,8 +178,8 @@ public interface FileSystemItemFactory {
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
      * {@code parentItem}.
      * <p>
-     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is
-     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * If {@code includeDeleted} is true no filter is applied on the "trashed" state, else if the document is in this
+     * state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
      * <p>
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.

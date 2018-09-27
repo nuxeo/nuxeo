@@ -45,7 +45,7 @@ public final class FileSystemItemHelper {
     /**
      * @since 8.3
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this parameter is not used anymore
+     *             drive level, this parameter is not used anymore
      */
     @Deprecated
     public static final String NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY = "nuxeo.drive.force.versioning";
@@ -57,14 +57,16 @@ public final class FileSystemItemHelper {
     /**
      * @since 7.4
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
-    public static void versionIfNeeded(VersioningFileSystemItemFactory factory, DocumentModel doc, CoreSession session) {
+    public static void versionIfNeeded(VersioningFileSystemItemFactory factory, DocumentModel doc,
+            CoreSession session) {
         if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);
-        } else if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY)) {
+        } else if (Framework.getService(ConfigurationService.class)
+                            .isBooleanPropertyTrue(NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         }
     }
