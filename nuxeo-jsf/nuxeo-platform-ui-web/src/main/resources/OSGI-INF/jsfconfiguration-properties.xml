@@ -53,4 +53,13 @@
     <property name="nuxeo.jsf.debug.log_min_duration_ms">-1</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows an alternative management of missing rows in an EditableModel object.
+
+      @since 10.3
+    </documentation>
+    <property name="nuxeo.jsf.skipMissingRow">false</property>
+  </extension>
+
 </component>
