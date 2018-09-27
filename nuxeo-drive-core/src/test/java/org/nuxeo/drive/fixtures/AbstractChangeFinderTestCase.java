@@ -166,8 +166,8 @@ public abstract class AbstractChangeFinderTestCase {
     protected FileSystemChangeSummary getChangeSummary(Principal principal) throws InterruptedException {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
                 lastSyncActiveRootDefinitions);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
-                lastSyncActiveRootRefs, lastEventLogId);
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal, lastSyncActiveRootRefs,
+                lastEventLogId);
         assertNotNull(changeSummary);
         lastEventLogId = changeSummary.getUpperBound();
         lastSyncActiveRootDefinitions = changeSummary.getActiveSynchronizationRootDefinitions();

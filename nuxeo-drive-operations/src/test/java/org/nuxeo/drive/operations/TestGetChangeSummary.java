@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,7 +71,7 @@ public class TestGetChangeSummary {
     @Inject
     protected Session clientSession;
 
-    protected long lastSyncDate;
+    protected long lastEventLogId;
 
     protected DocumentModel folder1;
 
@@ -85,7 +84,7 @@ public class TestGetChangeSummary {
     @Before
     public void init() throws Exception {
 
-        lastSyncDate = Calendar.getInstance().getTimeInMillis();
+        lastEventLogId = 0;
         lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
@@ -147,13 +146,13 @@ public class TestGetChangeSummary {
 
     /**
      * Gets the changes summary for the user bound to the {@link #session} using the {@link NuxeoDriveGetChangeSummary}
-     * automation operation and updates the {@link #lastSyncDate} date.
+     * automation operation and updates the {@link #lastEventLogId}.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob changeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
-                                                     .set("lastSyncDate", lastSyncDate)
+                                                     .set("lowerBound", lastEventLogId)
                                                      .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
                                                      .execute();
         assertNotNull(changeSummaryJSON);
@@ -162,7 +161,7 @@ public class TestGetChangeSummary {
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
-        lastSyncDate = changeSummary.getSyncDate();
+        lastEventLogId = changeSummary.getUpperBound();
         lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }

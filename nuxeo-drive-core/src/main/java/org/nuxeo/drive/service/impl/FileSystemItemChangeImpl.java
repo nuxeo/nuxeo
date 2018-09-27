@@ -55,7 +55,6 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
         this.eventId = eventId;
         this.eventDate = eventDate;
 
-        // To be deprecated once the client uses the new filesystem API
         this.repositoryId = repositoryId;
         this.docUuid = docUuid;
 

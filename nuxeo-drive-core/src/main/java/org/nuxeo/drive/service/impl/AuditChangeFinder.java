@@ -66,34 +66,10 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         this.parameters.putAll(parameters);
     }
 
-    /**
-     * To be deprecated (in fact make throw {@link UnsupportedOperationException}), keeping old method based on log date
-     * for backward compatibility.
-     * <p>
-     * Now using event log id for lower and upper bounds to ensure consistency.
-     *
-     * @see https://jira.nuxeo.com/browse/NXP-14826
-     * @see #getFileSystemChangesIntegerBounds(CoreSession, Set, SynchronizationRoots, Set, long, long, int)
-     */
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyChangesException {
-        return getFileSystemChanges(session, lastActiveRootRefs, activeRoots, null, lastSuccessfulSyncDate, syncDate,
-                false, limit);
-    }
-
-    @Override
-    public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session,
-            Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds,
-            long lowerBound, long upperBound, int limit) throws TooManyChangesException {
-        return getFileSystemChanges(session, lastActiveRootRefs, activeRoots, collectionSyncRootMemberIds, lowerBound,
-                upperBound, true, limit);
-    }
-
-    protected List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
-            boolean integerBounds, int limit) throws TooManyChangesException {
+            int limit) throws TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
@@ -108,7 +84,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // linked to the un-registration or deletion of formerly synchronized
         // roots
         List<LogEntry> entries = queryAuditEntries(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
-                upperBound, integerBounds, limit);
+                upperBound, limit);
 
         // First pass over the entries to check if a "NuxeoDrive" event has
         // occurred during that period.
@@ -138,7 +114,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 Set<String> updatedCollectionSyncRootMemberIds = driveManager.getCollectionSyncRootMemberIds(
                         session.getPrincipal()).get(session.getRepositoryName());
                 entries = queryAuditEntries(session, updatedActiveRoots, updatedCollectionSyncRootMemberIds, lowerBound,
-                        upperBound, integerBounds, limit);
+                        upperBound, limit);
                 break;
             }
         }
@@ -250,22 +226,6 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     /**
-     * To be deprecated (in fact make throw {@link UnsupportedOperationException}), keeping for backward compatibility.
-     * <p>
-     * Return the current time to query the logDate field of the audit log. This time intentionally truncated to 0
-     * milliseconds to have a consistent behavior across databases.
-     * <p>
-     * Should now use last available log id in the audit log table as upper bound.
-     *
-     * @see https://jira.nuxeo.com/browse/NXP-14826
-     * @see #getUpperBound()
-     */
-    @Override
-    public long getCurrentDate() {
-        long now = System.currentTimeMillis();
-        return now - (now % 1000);
-    }
-
      * Returns the last available log id in the audit log table (primary key) to be used as the upper bound of the event
      * log id range clause in the change query.
      */
@@ -349,8 +309,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     @SuppressWarnings("unchecked")
     protected List<LogEntry> queryAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
-            int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
         AuditReader auditService = Framework.getService(AuditReader.class);
         // Set fixed query parameters
         Map<String, Object> params = new HashMap<String, Object>();
@@ -393,7 +352,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append("' and log.eventId != 'rootUnregistered'");
         auditQuerySb.append(")");
         auditQuerySb.append(") and (");
-        auditQuerySb.append(getJPARangeClause(lowerBound, upperBound, integerBounds, params));
+        auditQuerySb.append(getJPARangeClause(lowerBound, upperBound, params));
         // we intentionally sort by eventDate even if the range filtering is
         // done on the log id: eventDate is useful to reflect the ordering of
         // events occurring inside the same transaction while the
@@ -450,21 +409,12 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     /**
-     * Now using event log id to ensure consistency, see https://jira.nuxeo.com/browse/NXP-14826.
-     * <p>
-     * Keeping ability to use old clause based on log date for backward compatibility, to be deprecated.
+     * Using event log id to ensure consistency, see https://jira.nuxeo.com/browse/NXP-14826.
      */
-    protected String getJPARangeClause(long lowerBound, long upperBound, boolean integerBounds,
-            Map<String, Object> params) {
-        if (integerBounds) {
-            params.put("lowerBound", lowerBound);
-            params.put("upperBound", upperBound);
-            return "log.id > :lowerBound and log.id <= :upperBound";
-        } else {
-            params.put("lastSuccessfulSyncDate", new Date(lowerBound));
-            params.put("syncDate", new Date(upperBound));
-            return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
-        }
+    protected String getJPARangeClause(long lowerBound, long upperBound, Map<String, Object> params) {
+        params.put("lowerBound", lowerBound);
+        params.put("upperBound", upperBound);
+        return "log.id > :lowerBound and log.id <= :upperBound";
     }
 
     protected FileSystemItemChange getFileSystemItemChange(CoreSession session, DocumentRef docRef, LogEntry entry,

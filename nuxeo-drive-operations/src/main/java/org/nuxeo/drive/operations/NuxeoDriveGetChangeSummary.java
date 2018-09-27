@@ -49,9 +49,6 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "lastSyncDate", required = false)
-    protected Long lastSyncDate = -1L;
-
     @Param(name = "lowerBound", required = false)
     protected Long lowerBound = -1L;
 
@@ -66,12 +63,7 @@ public class NuxeoDriveGetChangeSummary {
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
                 lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary;
-        if (lastSyncDate >= 0) {
-            docChangeSummary = driveManager.getChangeSummary(ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
-        } else {
-            docChangeSummary = driveManager.getChangeSummaryIntegerBounds(ctx.getPrincipal(), lastActiveRootRefs,
-                    lowerBound);
-        }
+        docChangeSummary = driveManager.getChangeSummary(ctx.getPrincipal(), lastActiveRootRefs, lowerBound);
         return Blobs.createJSONBlobFromValue(docChangeSummary);
     }
 

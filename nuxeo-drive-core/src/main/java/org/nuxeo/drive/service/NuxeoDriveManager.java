@@ -88,31 +88,6 @@ public interface NuxeoDriveManager {
     public void handleFolderDeletion(IdRef ref);
 
     /**
-     * Gets a summary of document changes in all repositories for the given user's synchronization roots, since the
-     * user's device last successful synchronization date.
-     * <p>
-     * The summary includes:
-     * <ul>
-     * <li>The list of sync root paths</li>
-     * <li>A list of document changes</li>
-     * <li>The document models that have changed</li>
-     * <li>A status code</li>
-     * </ul>
-     *
-     * @param principal
-     * @param lastSyncRootRefs the map keyed by repository names of document refs for the synchronization roots that
-     *            were active during last synchronization
-     * @param lastSuccessfulSync the last successful synchronization date of the user's device. This time is expected to
-     *            be in milliseconds since 1970-01-01 UTC as measured on the Nuxeo server clock, typically set to the
-     *            value returned by {@link FileSystemChangeSummary#getSyncDate()} of the previous call to
-     *            {@link NuxeoDriveManager#getChangeSummary(Principal, Map, long)} or 0 for catching every event since
-     *            the repository initialization.
-     * @return the summary of document changes
-     */
-    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
-            long lastSuccessfulSync);
-
-    /**
      * Gets a summary of document changes in all repositories for the given user's synchronization roots, from the lower
      * bound sent by the user's device.
      * <p>
@@ -129,12 +104,12 @@ public interface NuxeoDriveManager {
      *            were active during last synchronization
      * @param lowerBound the lower bound sent by the user's device. Typically set to the value returned by
      *            {@link FileSystemChangeSummary#getUpperBound()} of the previous call to
-     *            {@link NuxeoDriveManager#getChangeSummaryIntegerBounds(Principal, Map, long)} or 0 for catching every
-     *            event since the repository initialization.
+     *            {@link NuxeoDriveManager#getChangeSummary(Principal, Map, long)} or 0 for catching every event since
+     *            the repository initialization.
      * @return the summary of document changes
      */
-    public FileSystemChangeSummary getChangeSummaryIntegerBounds(Principal principal,
-            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound);
+    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+            long lowerBound);
 
     /**
      * Gets the {@link FileSystemChangeFinder} member.

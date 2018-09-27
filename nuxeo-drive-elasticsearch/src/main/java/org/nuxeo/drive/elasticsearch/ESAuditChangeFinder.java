@@ -89,15 +89,14 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     public static final Log log = LogFactory.getLog(ESAuditChangeFinder.class);
 
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
-            int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
 
         SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
                                                                    .searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
-                upperBound, integerBounds, limit);
+                upperBound, limit);
         SearchSourceBuilder source = new SearchSourceBuilder().query(
                 QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
         source.sort("repositoryId", SortOrder.ASC).sort("eventDate", SortOrder.DESC);
@@ -119,8 +118,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected QueryBuilder buildFilterClauses(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
-            int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
         BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
 
         // from LogEntry log where log.repositoryId = :repositoryId
@@ -293,10 +291,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     protected List<LogEntry> queryAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
-            int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
         List<LogEntry> entries = queryESAuditEntries(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
-                upperBound, integerBounds, limit);
+                upperBound, limit);
         // Post filter the output to remove (un)registration that are unrelated
         // to the current user.
         // TODO move this to the ES query

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +79,7 @@ public class TestGetChangeSummaryMultiRepo {
 
     protected CloseableCoreSession otherSession;
 
-    protected long lastSyncDate;
+    protected long lastEventLogId;
 
     protected String lastSyncActiveRoots;
 
@@ -97,7 +96,7 @@ public class TestGetChangeSummaryMultiRepo {
 
         otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
-        lastSyncDate = Calendar.getInstance().getTimeInMillis();
+        lastEventLogId = 0;
         lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
@@ -186,7 +185,7 @@ public class TestGetChangeSummaryMultiRepo {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
-                                                        .set("lastSyncDate", lastSyncDate)
+                                                        .set("lowerBound", lastEventLogId)
                                                         .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
                                                         .execute();
         assertNotNull(docChangeSummaryJSON);
@@ -195,7 +194,7 @@ public class TestGetChangeSummaryMultiRepo {
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
-        lastSyncDate = changeSummary.getSyncDate();
+        lastEventLogId = changeSummary.getUpperBound();
         lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }

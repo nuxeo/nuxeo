@@ -328,23 +328,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     /**
-     * Uses the {@link AuditChangeFinder} to get the summary of document changes for the given user and last successful
-     * synchronization date.
-     * <p>
-     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as a limit of document changes to fetch
-     * from the audit logs. Default value is 1000. If {@code lastSuccessfulSync} is missing (i.e. set to a negative
-     * value), the filesystem change summary is empty but the returned sync date is set to the actual server timestamp
-     * so that the client can reuse it as a starting timestamp for a future incremental diff request.
-     */
-    @Override
-    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
-            long lastSuccessfulSync) {
-        Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
-        return getChangeSummary(principal, lastSyncRootRefs, roots, new HashMap<String, Set<String>>(),
-                lastSuccessfulSync, false);
-    }
-
-    /**
      * Uses the {@link AuditChangeFinder} to get the summary of document changes for the given user and lower bound.
      * <p>
      * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as a limit of document changes to fetch
@@ -353,40 +336,29 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * client can reuse it as a starting id for a future incremental diff request.
      */
     @Override
-    public FileSystemChangeSummary getChangeSummaryIntegerBounds(Principal principal,
-            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound) {
+    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+            long lowerBound) {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         Map<String, Set<String>> collectionSyncRootMemberIds = getCollectionSyncRootMemberIds(principal);
-        return getChangeSummary(principal, lastSyncRootRefs, roots, collectionSyncRootMemberIds, lowerBound, true);
-    }
-
-    protected FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastActiveRootRefs,
-            Map<String, SynchronizationRoots> roots, Map<String, Set<String>> collectionSyncRootMemberIds,
-            long lowerBound, boolean integerBounds) {
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
         // Compute the list of all repositories to consider for the aggregate summary
         Set<String> allRepositories = new TreeSet<String>();
         allRepositories.addAll(roots.keySet());
-        allRepositories.addAll(lastActiveRootRefs.keySet());
+        allRepositories.addAll(lastSyncRootRefs.keySet());
         allRepositories.addAll(collectionSyncRootMemberIds.keySet());
         long syncDate;
         long upperBound;
-        if (integerBounds) {
-            upperBound = changeFinder.getUpperBound(allRepositories);
-            // Truncate sync date to 0 milliseconds
-            syncDate = System.currentTimeMillis();
-            syncDate = syncDate - (syncDate % 1000);
-        } else {
-            upperBound = changeFinder.getCurrentDate();
-            syncDate = upperBound;
-        }
+        upperBound = changeFinder.getUpperBound(allRepositories);
+        // Truncate sync date to 0 milliseconds
+        syncDate = System.currentTimeMillis();
+        syncDate = syncDate - (syncDate % 1000);
         Boolean hasTooManyChanges = Boolean.FALSE;
         int limit = Integer.parseInt(Framework.getProperty(DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
         if (!allRepositories.isEmpty() && lowerBound >= 0 && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                     // Get document changes
-                    Set<IdRef> lastRefs = lastActiveRootRefs.get(repositoryName);
+                    Set<IdRef> lastRefs = lastSyncRootRefs.get(repositoryName);
                     if (lastRefs == null) {
                         lastRefs = Collections.emptySet();
                     }
@@ -404,13 +376,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                                 repositoryName, principal.getName(), lowerBound, upperBound, activeRoots.getPaths()));
                     }
                     List<FileSystemItemChange> changes;
-                    if (integerBounds) {
-                        changes = changeFinder.getFileSystemChangesIntegerBounds(session, lastRefs, activeRoots,
-                                repoCollectionSyncRootMemberIds, lowerBound, upperBound, limit);
-                    } else {
-                        changes = changeFinder.getFileSystemChanges(session, lastRefs, activeRoots, lowerBound,
-                                upperBound, limit);
-                    }
+                    changes = changeFinder.getFileSystemChanges(session, lastRefs, activeRoots,
+                            repoCollectionSyncRootMemberIds, lowerBound, upperBound, limit);
                     allChanges.addAll(changes);
                 } catch (TooManyChangesException e) {
                     hasTooManyChanges = Boolean.TRUE;

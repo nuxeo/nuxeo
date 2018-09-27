@@ -64,15 +64,15 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyChangesException {
+            SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
+            int limit) throws TooManyChangesException {
 
         List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
         if (!activeRoots.paths.isEmpty()) {
             StringBuilder querySb = new StringBuilder();
             querySb.append("SELECT * FROM Document WHERE (%s) AND (%s) ORDER BY dc:modified DESC");
             String query = String.format(querySb.toString(), getRootPathClause(activeRoots.paths),
-                    getDateClause(lastSuccessfulSyncDate, syncDate));
+                    getDateClause(lowerBound, upperBound));
             if (log.isDebugEnabled()) {
                 log.debug("Querying repository for document changes: " + query);
             }
@@ -86,14 +86,6 @@ public class MockChangeFinder implements FileSystemChangeFinder {
             }
         }
         return docChanges;
-    }
-
-    @Override
-    public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session,
-            Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds,
-            long lowerBound, long upperBound, int limit) throws TooManyChangesException {
-        throw new UnsupportedOperationException(
-                "Using MockChangeFinder with integer bounds is not implemented, please call #getFileSystemChanges.");
     }
 
     protected String getRootPathClause(Set<String> rootPaths) {
@@ -134,15 +126,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     }
 
     @Override
-    public long getCurrentDate() {
+    public long getUpperBound() {
         long now = System.currentTimeMillis();
         return now - (now % 1000);
-    }
-
-    @Override
-    public long getUpperBound() {
-        throw new UnsupportedOperationException(
-                "Using MockChangeFinder with integer bounds is not implemented, please call #getCurrentDate.");
     }
 
     @Override

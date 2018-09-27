@@ -527,7 +527,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal,
                 Collections.<String, Set<IdRef>> emptyMap(), lastEventLogId);
         assertNotNull(changeSummary);
         lastEventLogId = changeSummary.getUpperBound();
