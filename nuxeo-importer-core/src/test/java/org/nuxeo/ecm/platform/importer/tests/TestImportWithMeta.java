@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -54,6 +55,9 @@ public class TestImportWithMeta {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     public void testMDImport() throws Exception {
@@ -72,6 +76,8 @@ public class TestImportWithMeta {
         assertTrue(createdDocs > 0);
 
         session.save();
+        txFeature.nextTransaction();
+
         DocumentModel doc1 = session.getDocument(new PathRef(targetPath + "import-src/hello.pdf"));
         assertEquals("src1", doc1.getPropertyValue("dc:source").toString());
 

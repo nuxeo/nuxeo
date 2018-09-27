@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -53,6 +54,9 @@ public class TestDefaultImporterServiceWithMeta {
     @Inject
     protected DefaultImporterService importerService;
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
     public void testImporterContribution() throws Exception {
         File source = FileUtils.getResourceFileFromContext("import-src-with-metadatas");
@@ -62,6 +66,7 @@ public class TestDefaultImporterServiceWithMeta {
         assertEquals(true, importerService.getEnablePerfLogging());
 
         session.save();
+        txFeature.nextTransaction();
 
         DocumentModel docContainer = session.getDocument(new PathRef(
                 "/default-domain/workspaces/import-src-with-metadata"));
