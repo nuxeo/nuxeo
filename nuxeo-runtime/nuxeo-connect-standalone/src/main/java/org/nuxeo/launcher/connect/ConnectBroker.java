@@ -183,12 +183,12 @@ public class ConnectBroker {
     }
 
     public PackageManager getPackageManager() {
-        return NuxeoConnectClient.getPackageManager();
+        return NuxeoConnectClient.getPackageManager(targetPlatform);
     }
 
     public void refreshCache() {
         getPackageManager().flushCache();
-        NuxeoConnectClient.getPackageManager().listAllPackages();
+        getPackageManager().listAllPackages();
     }
 
     public CommandSetInfo getCommandSet() {
@@ -223,8 +223,7 @@ public class ConnectBroker {
     }
 
     protected boolean isRemotePackageId(String pkgId) {
-        return PackageUtils.isValidPackageId(pkgId)
-                && NuxeoConnectClient.getPackageManager().getRemotePackage(pkgId) != null;
+        return PackageUtils.isValidPackageId(pkgId) && getPackageManager().getRemotePackage(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName, List<? extends Package> pkgList) {
@@ -273,7 +272,7 @@ public class ConnectBroker {
     }
 
     protected String getRemotePackageIdFromName(String pkgName) {
-        return getBestIdForNameInList(pkgName, NuxeoConnectClient.getPackageManager().findRemotePackages(pkgName));
+        return getBestIdForNameInList(pkgName, getPackageManager().findRemotePackages(pkgName));
     }
 
     /**
@@ -497,8 +496,13 @@ public class ConnectBroker {
     }
 
     public void pkgListAll() {
-        log.info("All packages:");
-        pkgList(NuxeoConnectClient.getPackageManager().listAllPackages());
+        if(Boolean.parseBoolean(relax)) {
+            log.info("All packages (all platforms):");
+            pkgList(getPackageManager().getAllPackages(getPackageManager().getAllSources(), null, null));
+        } else {
+            log.info("All packages:");
+            pkgList(getPackageManager().listAllPackages());
+        }
     }
 
     public void pkgList(List<? extends Package> packagesList) {
@@ -507,7 +511,7 @@ public class ConnectBroker {
             if (packagesList.isEmpty()) {
                 log.info("None");
             } else {
-                NuxeoConnectClient.getPackageManager().sort(packagesList);
+                getPackageManager().sort(packagesList);
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
