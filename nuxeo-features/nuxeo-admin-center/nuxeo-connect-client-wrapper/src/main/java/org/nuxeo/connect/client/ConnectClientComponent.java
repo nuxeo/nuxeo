@@ -21,12 +21,14 @@
 
 package org.nuxeo.connect.client;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.ConnectConnector;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -54,6 +56,7 @@ public class ConnectClientComponent extends DefaultComponent {
     }
 
     // Wrap connect client services as Nuxeo Services
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
 
         if (adapter.getCanonicalName().equals(ConnectConnector.class.getCanonicalName())) {
@@ -69,7 +72,11 @@ public class ConnectClientComponent extends DefaultComponent {
         }
 
         if (adapter.getCanonicalName().equals(PackageManager.class.getCanonicalName())) {
-            return adapter.cast(NuxeoConnectClient.getPackageManager());
+            String distribName = Framework.getProperty(Environment.DISTRIBUTION_NAME);
+            String distribVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
+            String targetPlatform = (distribName != null && distribVersion != null) ? distribName + "-" + distribVersion
+                    : null;
+            return adapter.cast(NuxeoConnectClient.getPackageManager(targetPlatform));
         }
 
         if (adapter.getCanonicalName().equals(PackageUpdateService.class.getCanonicalName())) {
