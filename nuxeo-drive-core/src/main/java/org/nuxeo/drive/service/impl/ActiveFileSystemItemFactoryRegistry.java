@@ -18,17 +18,12 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -101,16 +96,7 @@ public class ActiveFileSystemItemFactoryRegistry extends
         if (log.isTraceEnabled()) {
             log.trace(String.format("Cloning contribution %s.", orig));
         }
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(orig);
-            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bis);
-            return (ActiveFileSystemItemFactoriesDescriptor) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new NuxeoException(String.format("Cannot clone contribution %s.", orig), e);
-        }
+        return SerializationUtils.clone(orig);
     }
 
     @Override
