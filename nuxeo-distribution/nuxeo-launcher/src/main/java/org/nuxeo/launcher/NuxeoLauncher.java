@@ -565,7 +565,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl stop [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
             + "        nuxeoctl start|restart|console|startbg|restartbg [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--strict|-hdw]\n\n"
             + "        nuxeoctl mp-show [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
-            + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
+            + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--relax <true|false|yes|no>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n"
