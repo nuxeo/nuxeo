@@ -54,6 +54,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     public static final String NUXEO_STREAM_RET_DURATION_PROP = "nuxeo.stream.chronicle.retention.duration";
 
+    public static final String DEFAULT_CODEC = "avro";
+
     protected static final String XP_LOG_CONFIG = "logConfig";
 
     protected static final String XP_STREAM_PROCESSOR = "streamProcessor";
@@ -165,13 +167,15 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected Settings getSettings(StreamProcessorDescriptor descriptor) {
         CodecService codecService = Framework.getService(CodecService.class);
-        Codec<Record> actualCodec = descriptor.defaultCodec == null ? null
+        Codec<Record> actualCodec = descriptor.defaultCodec == null ? codecService.getCodec(DEFAULT_CODEC, Record.class)
                 : codecService.getCodec(descriptor.defaultCodec, Record.class);
         Settings settings = new Settings(descriptor.defaultConcurrency, descriptor.defaultPartitions, actualCodec);
         descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
         descriptor.streams.forEach(stream -> settings.setPartitions(stream.name, stream.partitions));
-        descriptor.streams.stream().filter(stream -> Objects.nonNull(stream.codec)).forEach(
-                stream -> settings.setCodec(stream.name, codecService.getCodec(stream.codec, Record.class)));
+        descriptor.streams.stream()
+                          .filter(stream -> Objects.nonNull(stream.codec))
+                          .forEach(stream -> settings.setCodec(stream.name,
+                                  codecService.getCodec(stream.codec, Record.class)));
         return settings;
     }
 
