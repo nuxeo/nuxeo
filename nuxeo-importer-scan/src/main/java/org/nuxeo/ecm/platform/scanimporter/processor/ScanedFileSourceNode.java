@@ -54,7 +54,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
 
     protected ScanFileBlobHolder bh;
 
-    public static boolean useXMLMapping = true;
+    protected static boolean useXMLMapping = true;
 
     public ScanedFileSourceNode(File file) {
         super(file);
