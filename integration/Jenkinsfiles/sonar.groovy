@@ -43,6 +43,12 @@ node('SLAVE') {
         println "Using BRANCH_NAME parameter: $env.BRANCH_NAME"
         BRANCH_TO_TEST = env.BRANCH_NAME
     }
+    // Workaround waiting for missing CHANGE_BRANCH introduced with branch-api-2.0.0 (JENKINS-41104, JENKINS-47617, JENKINS-43507)
+    if (BRANCH_TO_TEST ==~ /^PR-\d+$/) { // we are in a PR and need to find the branch name
+        println "Retrieving BRANCH_NAME parameter from CHANGE_ID: $env.CHANGE_ID"
+        BRANCH_TO_TEST = sh(returnStdout: true, script: "curl -s -XGET \"https://api.github.com/repos/nuxeo/nuxeo/pulls/${env.CHANGE_ID}\"|jq -r .head.ref").trim()
+    }
+
     if (env.CHANGE_TARGET) {
         println "Using CHANGE_TARGET parameter: $env.CHANGE_TARGET"
         BRANCH_TO_TARGET = env.CHANGE_TARGET
