@@ -43,7 +43,7 @@ import com.unboundid.scim.sdk.SCIMException;
  * @since 7.4
  */
 @Provider
-@Produces({ "application/xml", "application/json" })
+@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 public class ResourcesWriter implements MessageBodyWriter<Resources<BaseResource>> {
 
     @Override

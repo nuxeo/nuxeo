@@ -376,7 +376,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     protected HttpServletResponse response;
 
     @POST
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{batchId}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(OPERATION_ID) String operationId,
             ExecutionRequest xreq) {
@@ -384,7 +384,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @POST
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{batchId}/{fileIdx}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
             @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq) {

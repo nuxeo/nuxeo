@@ -38,7 +38,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces({ "application/json", "application/json+nxautomation" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxautomation" })
 public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInfo> {
 
     @Context

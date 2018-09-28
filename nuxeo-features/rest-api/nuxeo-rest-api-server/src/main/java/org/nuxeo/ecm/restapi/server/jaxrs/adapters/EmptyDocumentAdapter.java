@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * @since 9.3
  */
 @WebAdapter(name = EmptyDocumentAdapter.NAME, type = "emptyDocumentAdapter")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class EmptyDocumentAdapter extends DefaultAdapter {
 
     public static final String NAME = "emptyWithDefault";

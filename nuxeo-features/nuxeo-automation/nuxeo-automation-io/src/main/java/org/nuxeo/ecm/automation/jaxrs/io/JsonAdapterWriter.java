@@ -36,7 +36,7 @@ import org.nuxeo.ecm.automation.jaxrs.JsonAdapter;
  * @author bstefanescu
  */
 @Provider
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class JsonAdapterWriter implements MessageBodyWriter<JsonAdapter> {
 
     @Override

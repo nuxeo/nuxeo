@@ -36,7 +36,7 @@ import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
 
     @Override
