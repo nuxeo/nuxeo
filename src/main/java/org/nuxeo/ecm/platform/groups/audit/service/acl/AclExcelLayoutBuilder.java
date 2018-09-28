@@ -82,11 +82,11 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     protected IExcelBuilder excel = new ExcelBuilder();
 
-    protected static int CELL_WIDTH_UNIT = 256;
+    protected static final int CELL_WIDTH_UNIT = 256;
 
-    public static int STATUS_ROW = 0;
+    public static final int STATUS_ROW = 0;
 
-    public static int STATUS_COL = 0;
+    public static final int STATUS_COL = 0;
 
     /* layout */
     protected ReportLayoutSettings layoutSettings;

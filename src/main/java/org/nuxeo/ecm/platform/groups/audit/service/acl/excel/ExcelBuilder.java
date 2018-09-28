@@ -68,20 +68,20 @@ public class ExcelBuilder implements IExcelBuilder {
     /**
      * The max number of columns supported by an excel sheet (256="IV" column header)
      */
-    public static int MAX_COLUMN = 256;
+    public static final int MAX_COLUMN = 256;
 
     /** The max number of rows supported by an excel sheet */
-    public static int MAX_ROW = 65536;
+    public static int MAX_ROW = 65536; // NOSONAR (not final for tests)
 
-    public static int LAST_COLUMN = MAX_COLUMN - 1;
+    public static final int LAST_COLUMN = MAX_COLUMN - 1;
 
-    public static int LAST_ROW = MAX_ROW - 1;
+    public static final int LAST_ROW = MAX_ROW - 1;
 
     /**
      * States if the builder should throw an IllegalArgumentException or simply warn with a log once a cell index exceed
      * max number of columns or row.
      */
-    public static boolean CRASH_ON_CELL_OVERFLOW = false;
+    public static final boolean CRASH_ON_CELL_OVERFLOW = false;
 
     public enum Type {
         XLS, XLSX

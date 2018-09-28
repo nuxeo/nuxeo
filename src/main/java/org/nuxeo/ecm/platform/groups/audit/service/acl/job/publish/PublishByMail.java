@@ -55,9 +55,9 @@ public class PublishByMail implements IResultPublisher {
 
     public static final String PROPERTY_MAIL_BODY = "message.acl.audit.mail.body";
 
-    public static String OUTPUT_FILE_NAME = "permissions.xls";
+    public static final String OUTPUT_FILE_NAME = "permissions.xls";
 
-    public static String FROM = "noreply@nuxeo.com";
+    public static final String FROM = "noreply@nuxeo.com";
 
     protected String repositoryName;
 

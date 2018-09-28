@@ -20,15 +20,15 @@
 package org.nuxeo.ecm.platform.groups.audit.service.acl.excel;
 
 public class ByteColor {
-    public static ByteColor BLACK = new ByteColor((byte) 0x00, (byte) 0x00, (byte) 0x00);
+    public static final ByteColor BLACK = new ByteColor((byte) 0x00, (byte) 0x00, (byte) 0x00);
 
-    public static ByteColor WHITE = new ByteColor((byte) 0xFF, (byte) 0xFF, (byte) 0xFF);
+    public static final ByteColor WHITE = new ByteColor((byte) 0xFF, (byte) 0xFF, (byte) 0xFF);
 
-    public static ByteColor GREEN = new ByteColor((byte) 0x00, (byte) 0xFF, (byte) 0x00);
+    public static final ByteColor GREEN = new ByteColor((byte) 0x00, (byte) 0xFF, (byte) 0x00);
 
-    public static ByteColor RED = new ByteColor((byte) 0xFF, (byte) 0x00, (byte) 0x00);
+    public static final ByteColor RED = new ByteColor((byte) 0xFF, (byte) 0x00, (byte) 0x00);
 
-    public static ByteColor BLUE = new ByteColor((byte) 0x00, (byte) 0x00, (byte) 0xFF);
+    public static final ByteColor BLUE = new ByteColor((byte) 0x00, (byte) 0x00, (byte) 0xFF);
 
     public ByteColor(byte r, byte g, byte b) {
         this.r = r;

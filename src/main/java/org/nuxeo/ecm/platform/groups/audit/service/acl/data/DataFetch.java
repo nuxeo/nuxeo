@@ -40,9 +40,9 @@ import org.nuxeo.runtime.api.Framework;
 public class DataFetch {
     private static Log log = LogFactory.getLog(DataFetch.class);
 
-    public static int DEFAULT_PAGE_SIZE = 100;
+    public static final int DEFAULT_PAGE_SIZE = 100;
 
-    public static boolean ORDERBY_PATH = true;
+    public static final boolean ORDERBY_PATH = true;
 
     public DocumentModelList getAllChildren(CoreSession session, DocumentModel doc) throws IOException {
         String request = getChildrenDocQuery(doc, ORDERBY_PATH);

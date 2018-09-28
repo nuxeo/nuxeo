@@ -30,13 +30,13 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 public class DataProcessorPaginated extends DataProcessor {
-    public static int MAX_DOCUMENTS = ExcelBuilder.MAX_ROW - 2;
+    public static final int MAX_DOCUMENTS = ExcelBuilder.MAX_ROW - 2;
 
-    public static int DEFAULT_PAGE_SIZE = 1000;
+    public static final int DEFAULT_PAGE_SIZE = 1000;
 
-    public static int EXCEL_RENDERING_RESERVED_TIME = 90; // seconds
+    public static final int EXCEL_RENDERING_RESERVED_TIME = 90; // seconds
 
-    protected static int UNBOUNDED_PROCESS_TIME = -1;
+    protected static final int UNBOUNDED_PROCESS_TIME = -1;
 
     protected int pageSize = DEFAULT_PAGE_SIZE;
 
