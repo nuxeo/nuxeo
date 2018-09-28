@@ -198,7 +198,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             source = source.substring(0, source.indexOf(' '));
         }
         try {
-            return new URI(source);
+            return new URI(source); // NOSONAR (URI is not opened as a stream)
         } catch (URISyntaxException e) {
             return null;
         }
@@ -211,7 +211,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             return null;
         }
         try {
-            return new URI(baseURL);
+            return new URI(baseURL); // NOSONAR (URI is not opened as a stream)
         } catch (URISyntaxException e) {
             return null;
         }
@@ -249,7 +249,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
         URI uri;
         try {
-            uri = new URI(origin);
+            uri = new URI(origin); // NOSONAR (URI is not opened as a stream)
         } catch (URISyntaxException e) {
             return request;
         }
