@@ -48,6 +48,7 @@ public class WOPIRoot extends ModuleRoot {
         context.setRepositoryName(fileInfo.repositoryName);
         CoreSession session = context.getCoreSession();
         // flag the session's principal as a WOPI user for locking policy purpose
+        // TODO find a better way, see NXP-25855
         LockHelper.markAsWOPIUser(session.getPrincipal());
         DocumentModel doc = getDocument(session, fileInfo.docId);
         Blob blob = getBlob(doc, fileInfo.xpath);

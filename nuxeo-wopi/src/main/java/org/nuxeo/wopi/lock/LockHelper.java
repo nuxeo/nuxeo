@@ -174,7 +174,7 @@ public class LockHelper {
      */
     public static void markAsWOPIUser(Principal principal) {
         if (principal instanceof NuxeoPrincipal) {
-            synchronized (principal) {
+            synchronized (principal) { // NOSONAR
                 ((NuxeoPrincipal) principal).getModel().putContextData(WOPI_USER, true);
             }
         }
@@ -187,7 +187,7 @@ public class LockHelper {
         if (!(principal instanceof NuxeoPrincipal)) {
             return false;
         }
-        synchronized (principal) {
+        synchronized (principal) { // NOSONAR
             return ((NuxeoPrincipal) principal).getModel().getContextData(WOPI_USER) != null;
         }
     }
