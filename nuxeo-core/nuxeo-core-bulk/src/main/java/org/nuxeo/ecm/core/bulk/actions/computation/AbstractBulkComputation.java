@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.bulk.actions.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_SUFFIX;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -125,7 +125,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     protected void loadCurrentBulkCommandContext(String commandId) {
         currentCommandId = commandId;
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        currentCommand = BulkCodecs.getCommandCodec().decode(kvStore.get(commandId + COMMAND));
+        currentCommand = BulkCodecs.getCommandCodec().decode(kvStore.get(commandId + COMMAND_SUFFIX));
     }
 
     protected void processBatch(ComputationContext context) {
