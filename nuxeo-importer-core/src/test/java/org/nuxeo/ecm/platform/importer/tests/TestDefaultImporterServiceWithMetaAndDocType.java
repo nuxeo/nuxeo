@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @author Thibaud Arguillere
@@ -64,6 +65,9 @@ public class TestDefaultImporterServiceWithMetaAndDocType {
     @Inject
     protected DefaultImporterService importerService;
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
     public void testImporterContribution() throws Exception {
         File source = FileUtils.getResourceFileFromContext(kIMPORT_FOLDER_NAME);
@@ -72,6 +76,7 @@ public class TestDefaultImporterServiceWithMetaAndDocType {
         importerService.importDocuments(targetPath, source.getPath(), false, 5, 5);
 
         session.save();
+        txFeature.nextTransaction();
 
         DocumentModel docContainer = session.getDocument(new PathRef(kIMPORT_FOLDER_PATH));
         assertNotNull(docContainer);
