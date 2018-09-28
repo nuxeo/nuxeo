@@ -55,8 +55,8 @@ node('SLAVE') {
             try {
                 stage('clone') {
                     // Check remote branch existence and effective checkouted branch
-                    sh 'git ls-remote --exit-code git://github.com/nuxeo/nuxeo.git $BRANCH'
-                    git branch: '$BRANCH', url: 'git://github.com/nuxeo/nuxeo.git'
+                    sh "git ls-remote --exit-code git://github.com/nuxeo/nuxeo.git $BRANCH"
+                    git branch: "$BRANCH", url: 'git://github.com/nuxeo/nuxeo.git'
                     sh """#!/bin/bash -xe
                         ./clone.py $BRANCH -f $PARENT_BRANCH
                         source scripts/gitfunctions.sh
@@ -70,8 +70,8 @@ node('SLAVE') {
                         try {
                             withEnv(['MAVEN_OPTS=-Xms4g -Xmx8g -XX:-UseGCOverheadLimit -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$WORKSPACE/target/gcOoO.hprof']) {
                                 withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
-                                    if (params.BRANCH != params.PARENT_BRANCH) {
-                                        TARGET_OPTION="-Dsonar.branch.target=${params.PARENT_BRANCH}"
+                                    if (BRANCH != PARENT_BRANCH) {
+                                        TARGET_OPTION="-Dsonar.branch.target=${PARENT_BRANCH}"
                                     } else {
                                         TARGET_OPTION=""
                                     }
