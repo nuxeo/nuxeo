@@ -18,7 +18,13 @@
  */
 package org.nuxeo.ecm.platform.contentview.json;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -26,13 +32,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,7 +53,6 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
-import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -131,7 +140,7 @@ public class JSONContentViewState {
 
         // encoding
         if (encode) {
-            String encodedValues = Base64.encodeBytes(jsonString.getBytes(), Base64.GZIP | Base64.DONT_BREAK_LINES);
+            String encodedValues = base64GZIPEncoder(jsonString);
             jsonString = URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
         }
         return jsonString;
@@ -151,7 +160,7 @@ public class JSONContentViewState {
         // decoding
         if (decode) {
             String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
-            json = new String(Base64.decode(decodedValues));
+            json = base64GZIPDecoder(decodedValues);
         }
 
         if (log.isDebugEnabled()) {
@@ -212,6 +221,23 @@ public class JSONContentViewState {
         }
 
         return state;
+    }
+
+    protected static String base64GZIPEncoder(String value) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (OutputStream b64os = Base64.getEncoder().wrap(baos); //
+                OutputStream gzos = new GZIPOutputStream(b64os)) {
+            IOUtils.write(value, gzos, UTF_8);
+        }
+        return new String(baos.toByteArray(), UTF_8);
+    }
+
+    protected static String base64GZIPDecoder(String value) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(value.getBytes(UTF_8));
+        try (InputStream b64is = Base64.getDecoder().wrap(bais); //
+                InputStream gzis = new GZIPInputStream(b64is)) {
+            return IOUtils.toString(gzis, UTF_8);
+        }
     }
 
     protected static JSONObject getSortInfoToJSON(SortInfo sortInfo) {

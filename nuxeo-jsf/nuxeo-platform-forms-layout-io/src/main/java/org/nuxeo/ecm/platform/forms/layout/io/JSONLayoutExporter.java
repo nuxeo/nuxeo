@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -25,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +90,7 @@ public class JSONLayoutExporter {
      * @since 10.1
      */
     public static String encode(String json) throws UnsupportedEncodingException {
-        String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP | Base64.DONT_BREAK_LINES);
+        String encodedValues = Base64.getEncoder().encodeToString(json.getBytes(UTF_8));
         return URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
     }
 
@@ -98,7 +101,7 @@ public class JSONLayoutExporter {
 
     public static JSONObject decode(String json) throws UnsupportedEncodingException {
         String decodedValues = URLDecoder.decode(json, ENCODED_VALUES_ENCODING);
-        json = new String(Base64.decode(decodedValues));
+        json = new String(Base64.getDecoder().decode(decodedValues), UTF_8);
         return JSONObject.fromObject(json);
     }
 
