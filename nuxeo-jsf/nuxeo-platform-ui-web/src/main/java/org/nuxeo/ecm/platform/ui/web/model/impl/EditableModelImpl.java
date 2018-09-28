@@ -46,6 +46,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.util.DeepCopy;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Editable data model that handles value changes.
@@ -79,6 +81,18 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
 
     protected Object template;
 
+    /**
+     * Allows to have an alternative management of missing rows.
+     * It will apply when the row index value is -1.
+     * <p>
+     * Default value is to keep the current behavior.
+     *
+     * @since 10.3
+     */
+    public static final String SKIP_MISSING_ROW = "nuxeo.jsf.skipMissingRow";
+
+    protected boolean skipMissingRow;
+
     public EditableModelImpl(Object value, Object template) {
         if (value != null) {
             if (!(value instanceof List) && !(value instanceof Object[])) {
@@ -91,6 +105,8 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         keyMap = new HashMap<Integer, Integer>();
         initializeData(value);
         this.template = template;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        skipMissingRow = configurationService.isBooleanPropertyTrue(SKIP_MISSING_ROW);
     }
 
     protected void initializeData(Object originalData) {
@@ -274,7 +290,12 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         if (data == null) {
             return null;
         } else if (!isRowAvailable()) {
-            throw new IllegalArgumentException("No row available on " + this);
+            String message = "No row available on " + this;
+            if (index == -1 && skipMissingRow) {
+                log.warn(message);
+                return null;
+            }
+            throw new IllegalArgumentException(message);
         } else {
             if (index == -2) {
                 // XXX return template instead (?)
