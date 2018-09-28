@@ -87,7 +87,6 @@ import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.google.common.base.MoreObjects;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
@@ -214,7 +213,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     protected void setupCloudClient() throws IOException {
         // Get settings from the configuration
         bucketName = getProperty(BUCKET_NAME_PROPERTY);
-        bucketNamePrefix = MoreObjects.firstNonNull(getProperty(BUCKET_PREFIX_PROPERTY), StringUtils.EMPTY);
+        // as bucket prefix is optional we don't want to use the fallback mechanism
+        bucketNamePrefix = StringUtils.defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         String bucketRegion = getProperty(BUCKET_REGION_PROPERTY);
         if (isBlank(bucketRegion)) {
             bucketRegion = DEFAULT_BUCKET_REGION;
@@ -360,7 +360,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             s3Builder = s3Builder.withRegion(bucketRegion);
         }
 
-        amazonS3 = (AmazonS3) s3Builder.build();
+        amazonS3 = s3Builder.build();
 
         try {
             if (!amazonS3.doesBucketExist(bucketName)) {
@@ -409,7 +409,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     protected static boolean isMissingKey(AmazonClientException e) {
         if (e instanceof AmazonServiceException) {
             AmazonServiceException ase = (AmazonServiceException) e;
-            return (ase.getStatusCode() == 404) || "NoSuchKey".equals(ase.getErrorCode())
+            return ase.getStatusCode() == 404 || "NoSuchKey".equals(ase.getErrorCode())
                     || "Not Found".equals(e.getMessage());
         }
         return false;
@@ -538,8 +538,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     if (useServerSideEncryption) {
                         ObjectMetadata objectMetadata = new ObjectMetadata();
                         if (isNotBlank(serverSideKMSKeyID)) {
-                            SSEAwsKeyManagementParams keyManagementParams =
-                                new SSEAwsKeyManagementParams(serverSideKMSKeyID);
+                            SSEAwsKeyManagementParams keyManagementParams = new SSEAwsKeyManagementParams(
+                                    serverSideKMSKeyID);
                             request = request.withSSEAwsKeyManagementParams(keyManagementParams);
                         } else {
                             objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);

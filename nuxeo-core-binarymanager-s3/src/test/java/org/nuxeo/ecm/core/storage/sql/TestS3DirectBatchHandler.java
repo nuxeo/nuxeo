@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
@@ -143,7 +146,11 @@ public class TestS3DirectBatchHandler {
         metadata.setContentLength(content.length);
 
         String bucket = (String) batch.getProperties().get(S3DirectBatchHandler.INFO_BUCKET);
-        tm.upload(new PutObjectRequest(bucket, key, new ByteArrayInputStream(content), metadata))
+        String prefix = (String) batch.getProperties().get(S3DirectBatchHandler.INFO_BASE_KEY);
+
+        String prefixedKey = prefix + key;
+
+        tm.upload(new PutObjectRequest(bucket, prefixedKey, new ByteArrayInputStream(content), metadata))
           .waitForUploadResult();
 
         // create priviledged client
@@ -153,14 +160,14 @@ public class TestS3DirectBatchHandler {
         AmazonS3 priviledgedS3Client = createS3Client(properties);
 
         // check the initial upload has been succesfull
-        Assert.assertNotNull(priviledgedS3Client.getObject(bucket, key));
-        BatchFileInfo info = new BatchFileInfo(key, name, "text/plain", content.length, null);
-        Assert.assertTrue(handler.completeUpload(batch.getKey(), key, info));
+        assertNotNull(priviledgedS3Client.getObject(bucket, prefixedKey));
+        BatchFileInfo info = new BatchFileInfo(prefixedKey, name, "text/plain", content.length, null);
+        assertTrue(handler.completeUpload(batch.getKey(), key, info));
 
         // check the object has been renamed to its etag
         try {
-            priviledgedS3Client.getObject(bucket, key);
-            Assert.fail("should throw 404");
+            priviledgedS3Client.getObject(bucket, prefixedKey);
+            fail("should throw 404");
         } catch (AmazonS3Exception e) {
             Assert.assertTrue(e.getMessage().contains("404"));
         }
@@ -170,7 +177,7 @@ public class TestS3DirectBatchHandler {
         String lastEtag = digest.substring(digest.lastIndexOf(":") + 1);
 
         // check the s3 object has been renamed to correct etag
-        Assert.assertNotNull(priviledgedS3Client.getObject(bucket, lastEtag));
+        assertNotNull(priviledgedS3Client.getObject(bucket, prefix + lastEtag));
 
         // cleanup
         priviledgedS3Client.deleteObject(bucket, lastEtag);
