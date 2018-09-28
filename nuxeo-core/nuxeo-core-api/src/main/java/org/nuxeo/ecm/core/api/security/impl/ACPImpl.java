@@ -47,7 +47,7 @@ public class ACPImpl implements ACP {
      *
      * @since 10.2
      */
-    public static String LEGACY_BEHAVIOR_PROPERTY = "nuxeo.security.acl.legacyBehavior";
+    public static final String LEGACY_BEHAVIOR_PROPERTY = "nuxeo.security.acl.legacyBehavior";
 
     private static final long serialVersionUID = 1L;
 
