@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Florent Munch
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -31,14 +32,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
+    private static final Log log = LogFactory.getLog(PortalAuthenticator.class);
+
     public static final String SECRET_KEY_NAME = "secret";
 
     public static final String MAX_AGE_KEY_NAME = "maxAge";
+
+    /** @since 10.3 */
+    public static final String DIGEST_ALGORITHM_KEY_NAME = "digestAlgorithm";
+
+    public static final String DIGEST_ALGORITHM_DEFAULT = "MD5";
 
     private static final String TS_HEADER = "NX_TS";
 
@@ -55,6 +66,8 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
     // one hour by default
     private long maxAge = 60 * 60;
+
+    protected String digestAlgorithm = DIGEST_ALGORITHM_DEFAULT;
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -93,6 +106,12 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
                 maxAge = Long.parseLong(maxAgeStr);
             }
         }
+        if (parameters.containsKey(DIGEST_ALGORITHM_KEY_NAME)) {
+            String algo = parameters.get(DIGEST_ALGORITHM_KEY_NAME);
+            if (StringUtils.isNotBlank(algo)) {
+                digestAlgorithm = algo;
+            }
+        }
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
@@ -105,8 +124,9 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
         byte[] hashedToken;
         try {
-            hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
+            hashedToken = MessageDigest.getInstance(digestAlgorithm).digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
+            log.error("Invalid algorithm: " + digestAlgorithm);
             return false;
         }
         String base64HashedToken = Base64.getEncoder().encodeToString(hashedToken);
