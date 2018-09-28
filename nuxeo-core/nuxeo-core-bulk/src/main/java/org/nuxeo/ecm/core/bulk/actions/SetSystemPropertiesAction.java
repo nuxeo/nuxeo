@@ -39,7 +39,7 @@ public class SetSystemPropertiesAction extends AbstractBulkAction {
     public static final String ACTION_NAME = "setSystemProperties";
 
     @Override
-    protected Builder addComputations(Builder builder, int size, int threshold) {
+    protected Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options) {
         return builder.addComputation(() -> new SetSystemPropertyComputation(size, threshold),
                 Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
     }

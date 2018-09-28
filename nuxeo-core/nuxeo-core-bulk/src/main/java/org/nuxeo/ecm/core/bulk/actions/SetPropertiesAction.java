@@ -42,7 +42,7 @@ public class SetPropertiesAction extends AbstractBulkAction {
     public static final String ACTION_NAME = "setProperties";
 
     @Override
-    protected Builder addComputations(Builder builder, int size, int threshold) {
+    protected Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options) {
         return builder.addComputation(() -> new SetPropertyComputation(size, threshold),
                 Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
     }

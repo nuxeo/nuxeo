@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk.actions;
 import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.actions.computation.CSVProjection;
 import org.nuxeo.ecm.core.bulk.actions.computation.ExposeBlob;
@@ -37,7 +38,7 @@ public class CSVExportAction extends AbstractBulkAction {
     public static final String ACTION_NAME = "csvExport";
 
     @Override
-    protected Builder addComputations(Builder builder, int size, int threshold) {
+    protected Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options) {
         return builder.addComputation(() -> new CSVProjection(size, threshold),
                 Arrays.asList("i1:" + ACTION_NAME, "o1:" + MakeBlob.NAME))
                       .addComputation(MakeBlob::new, Arrays.asList("i1:" + MakeBlob.NAME, "o1:" + SortBlob.NAME))
