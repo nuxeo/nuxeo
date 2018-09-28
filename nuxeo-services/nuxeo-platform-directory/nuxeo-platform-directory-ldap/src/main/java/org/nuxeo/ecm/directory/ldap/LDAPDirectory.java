@@ -354,7 +354,7 @@ public class LDAPDirectory extends AbstractDirectory {
          */
         public TrustingSSLSocketFactory() {
             try {
-                SSLContext sslContext = SSLContext.getInstance("TLS");
+                SSLContext sslContext = SSLContext.getDefault();
                 sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() }, new SecureRandom());
                 factory = sslContext.getSocketFactory();
             } catch (NoSuchAlgorithmException nsae) {
@@ -419,13 +419,11 @@ public class LDAPDirectory extends AbstractDirectory {
         private class TrustingX509TrustManager implements X509TrustManager {
 
             @Override
-            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                return;
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) { // NOSONAR (NXP-10253)
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-                return;
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) { // NOSONAR (NXP-10253)
             }
 
             @Override
