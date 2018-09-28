@@ -2457,7 +2457,7 @@ public abstract class NuxeoLauncher {
      */
     protected static void setQuiet() {
         quiet = true;
-        Log4JHelper.setLevel(new String[] { ROOT_LOGGER_NAME }, Level.WARN, false);
+        Log4JHelper.setLevel(new String[] { ROOT_LOGGER_NAME }, Level.WARN, true);
     }
 
     /**
