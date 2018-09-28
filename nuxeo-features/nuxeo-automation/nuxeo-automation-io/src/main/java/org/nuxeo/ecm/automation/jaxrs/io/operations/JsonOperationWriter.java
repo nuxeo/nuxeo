@@ -39,7 +39,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class JsonOperationWriter implements MessageBodyWriter<OperationDocumentation> {
 
     @Context

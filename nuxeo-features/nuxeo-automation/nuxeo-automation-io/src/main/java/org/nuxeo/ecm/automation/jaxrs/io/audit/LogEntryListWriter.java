@@ -40,7 +40,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @Deprecated
 @Provider
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class LogEntryListWriter extends EntityListWriter<LogEntry> {
 
     @Override

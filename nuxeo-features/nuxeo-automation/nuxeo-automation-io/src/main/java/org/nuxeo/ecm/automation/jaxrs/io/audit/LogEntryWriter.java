@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.joda.time.DateTime;
@@ -42,7 +43,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @Deprecated
 @Provider
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class LogEntryWriter extends EntityWriter<LogEntry> {
 
     public static final String ENTITY_TYPE = "logEntry";

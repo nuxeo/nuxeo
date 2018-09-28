@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author bstefanescu
  */
 @Provider
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
 
     @Context

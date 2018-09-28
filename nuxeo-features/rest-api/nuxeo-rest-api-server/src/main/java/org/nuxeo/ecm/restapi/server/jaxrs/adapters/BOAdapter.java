@@ -31,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.automation.core.util.Paginable;
@@ -54,7 +55,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = BOAdapter.NAME, type = "BOService", targetType = "Document")
-@Produces({ "application/json+nxentity", "application/json+esentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity",
+        MediaType.APPLICATION_JSON + "+esentity" })
 public class BOAdapter extends DefaultAdapter {
 
     public static final String NAME = "bo";

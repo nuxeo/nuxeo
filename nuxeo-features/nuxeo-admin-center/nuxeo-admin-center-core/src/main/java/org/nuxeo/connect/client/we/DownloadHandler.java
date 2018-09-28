@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +63,7 @@ public class DownloadHandler extends DefaultObject {
     }
 
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = "progressAsJSON")
     public String getDownloadsProgress() {
         ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
@@ -151,7 +152,7 @@ public class DownloadHandler extends DefaultObject {
     }
 
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = "startDownloads")
     public String startDownloads(@QueryParam("pkgList") String pkgList) {
         if (RequestHelper.isInternalLink(getContext())) {

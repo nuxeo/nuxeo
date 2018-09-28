@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 @WebAdapter(name = AuditAdapter.NAME, type = "AuditService")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class AuditAdapter extends PaginableAdapter<LogEntry> {
 
     private static Log log = LogFactory.getLog(AuditAdapter.class);
