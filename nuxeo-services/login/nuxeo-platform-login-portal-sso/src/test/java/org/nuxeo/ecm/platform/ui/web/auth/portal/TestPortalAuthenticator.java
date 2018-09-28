@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Florent Munch
  */
 package org.nuxeo.ecm.platform.ui.web.auth.portal;
 
@@ -24,29 +25,91 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.login.portal")
 public class TestPortalAuthenticator {
+
+    private static final String SOME_TS = "1538167025822";
+
+    private static final String SOME_RANDOM = "31415abcdef";
+
+    private static final String SOME_USER = "bob";
 
     private static final String SOME_SECRET = "some_secret";
 
     @Test
-    public void testValidateToken() {
+    public void testValidateTokenWithDefaultDigestAlgorithm() {
+        doTestValidateToken(Boolean.FALSE, null, SOME_TS, SOME_RANDOM, SOME_USER, "q0kweBvLv2/fPAuCrJkBmQ==");
+        doTestValidateToken(Boolean.TRUE, null, SOME_TS, SOME_RANDOM, SOME_USER, "13/PMDal0Bzq3LnyICLcfQ==");
+    }
+
+    @Test
+    public void testValidateTokenWithMd5() {
+        doTestValidateToken(Boolean.FALSE, "MD5", SOME_TS, SOME_RANDOM, SOME_USER, "q0kweBvLv2/fPAuCrJkBmQ==");
+        doTestValidateToken(Boolean.TRUE, "MD5", SOME_TS, SOME_RANDOM, SOME_USER, "13/PMDal0Bzq3LnyICLcfQ==");
+    }
+
+    @Test
+    public void testValidateTokenWithSha() {
+        doTestValidateToken(Boolean.FALSE, "SHA", SOME_TS, SOME_RANDOM, SOME_USER, "w7/p23JaEIg1aUWPl/3UUnlJLio=");
+        doTestValidateToken(Boolean.TRUE, "SHA", SOME_TS, SOME_RANDOM, SOME_USER, "0d2699yAx8Oz8jKq3m/ntI+Nhgs=");
+    }
+
+    @Test
+    public void testValidateTokenWithSha256() {
+        doTestValidateToken(Boolean.FALSE, "SHA-256", SOME_TS, SOME_RANDOM, SOME_USER,
+                "8SZI0nZmEThFUifkr5X0VFixaMbQIIZQuMUAFPwqYbw=");
+        doTestValidateToken(Boolean.TRUE, "SHA-256", SOME_TS, SOME_RANDOM, SOME_USER,
+                "aQWWi7TPe9HOT/Hws7WfPvNuiDzgsiluVbloZWvvl2E=");
+    }
+
+    @Test
+    public void testValidateTokenWithSha512() {
+        doTestValidateToken(Boolean.FALSE, "SHA-512", SOME_TS, SOME_RANDOM, SOME_USER,
+                "AxpXhL2+mG7DmfdE1xQ1b2LIH1HGpDqTLMGaX9B8zBhGfHHbm80u7NbhliQne4UU/Z1A2L6iuOUn+NtfTcxg7w==");
+        doTestValidateToken(Boolean.TRUE, "SHA-512", SOME_TS, SOME_RANDOM, SOME_USER,
+                "yS+e7Gb/FK9cxFjPyrxXLHfm6BLtXESO0xk+lTGWbcReqXvQZq4/bKtvBoGKR8VIw4KDlehnNzD/zICnw5JCKg==");
+    }
+
+    @Test
+    public void testValidateTokenWithMaxAge() {
         doTestValidateTokenWithMaxAge(Boolean.TRUE, String.valueOf(Long.MAX_VALUE));
         doTestValidateTokenWithMaxAge(Boolean.FALSE, "3600");
     }
 
+    public void doTestValidateToken(Boolean expected, String digestAlgorithm, String ts, String random, String user,
+            String token) {
+        PortalAuthenticator portalAuthenticator = getPortalAuthenticator(String.valueOf(Long.MAX_VALUE),
+                digestAlgorithm);
+
+        assertEquals(expected, portalAuthenticator.validateToken(ts, random, token, user));
+    }
+
     public void doTestValidateTokenWithMaxAge(Boolean expected, String maxAge) {
+        PortalAuthenticator portalAuthenticator = getPortalAuthenticator(maxAge, null);
+
+        String ts = "0"; // in the far past
+        String token = "A1A27eeSJo8bigVhWB6mMw==";
+        assertEquals(expected, portalAuthenticator.validateToken(ts, SOME_RANDOM, token, SOME_USER));
+    }
+
+    private PortalAuthenticator getPortalAuthenticator(String maxAge, String digestAlgorithm) {
         PortalAuthenticator portalAuthenticator = new PortalAuthenticator();
         Map<String, String> params = new HashMap<>();
         params.put(PortalAuthenticator.SECRET_KEY_NAME, SOME_SECRET);
         params.put(PortalAuthenticator.MAX_AGE_KEY_NAME, maxAge);
+        if (digestAlgorithm != null) {
+            params.put(PortalAuthenticator.DIGEST_ALGORITHM_KEY_NAME, digestAlgorithm);
+        }
         portalAuthenticator.initPlugin(params);
-
-        String ts = "0"; // in the far past
-        String random = "31415abcdef";
-        String userName = "bob";
-        String token = "A1A27eeSJo8bigVhWB6mMw==";
-        assertEquals(expected, portalAuthenticator.validateToken(ts, random, token, userName));
+        return portalAuthenticator;
     }
 
 }
