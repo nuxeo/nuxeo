@@ -197,19 +197,21 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         if (isEmpty(etag)) {
             return false;
         }
+        String newFileKey = bucketPrefix + etag;
         String mimeType = metadata.getContentType();
         String encoding = metadata.getContentEncoding();
 
         ObjectMetadata newMetadata;
         if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
-            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, etag, true);
+            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, true);
         } else {
-            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, etag, true);
+            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, true);
             boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(etag).find();
             if (isMultipartUpload) {
-                String previousEtag = etag;
                 etag = newMetadata.getETag();
-                newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, previousEtag, bucket, etag, true);
+                String previousFileKey = newFileKey;
+                newFileKey = bucketPrefix + etag;
+                newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, previousFileKey, bucket, newFileKey, true);
             }
         }
 

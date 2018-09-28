@@ -88,7 +88,6 @@ import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.google.common.base.MoreObjects;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
@@ -209,7 +208,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     protected void setupCloudClient() throws IOException {
         // Get settings from the configuration
         bucketName = getProperty(BUCKET_NAME_PROPERTY);
-        bucketNamePrefix = MoreObjects.firstNonNull(getProperty(BUCKET_PREFIX_PROPERTY), StringUtils.EMPTY);
+        // as bucket prefix is optional we don't want to use the fallback mechanism
+        bucketNamePrefix = StringUtils.defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         String bucketRegion = getProperty(BUCKET_REGION_PROPERTY);
         if (isBlank(bucketRegion)) {
             bucketRegion = NuxeoAWSRegionProvider.getInstance().getRegion();
@@ -347,7 +347,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             s3Builder = s3Builder.withRegion(bucketRegion);
         }
 
-        amazonS3 = (AmazonS3) s3Builder.build();
+        amazonS3 = s3Builder.build();
 
         try {
             if (!amazonS3.doesBucketExist(bucketName)) {
@@ -422,6 +422,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     /**
      * Gets the AWSCredentialsProvider.
+     *
      * @since 10.2
      */
     public AWSCredentialsProvider getAwsCredentialsProvider() {
@@ -430,6 +431,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     /**
      * Gets AmazonS3.
+     *
      * @since 10.2
      */
     public AmazonS3 getAmazonS3() {
@@ -541,8 +543,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     if (useServerSideEncryption) {
                         ObjectMetadata objectMetadata = new ObjectMetadata();
                         if (isNotBlank(serverSideKMSKeyID)) {
-                            SSEAwsKeyManagementParams keyManagementParams =
-                                new SSEAwsKeyManagementParams(serverSideKMSKeyID);
+                            SSEAwsKeyManagementParams keyManagementParams = new SSEAwsKeyManagementParams(
+                                    serverSideKMSKeyID);
                             request = request.withSSEAwsKeyManagementParams(keyManagementParams);
                         } else {
                             objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
