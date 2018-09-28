@@ -65,8 +65,8 @@ public final class NuxeoDriveIntegrationTestsHelper {
         UserManager userManager = Framework.getService(UserManager.class);
         DocumentModelList testUsers = userManager.searchUsers(TEST_USER_NAME_PREFIX);
         for (DocumentModel testUser : testUsers) {
-            String testUserName = (String) testUser.getPropertyValue(userManager.getUserSchemaName() + ":"
-                    + userManager.getUserIdField());
+            String testUserName = (String) testUser.getPropertyValue(
+                    userManager.getUserSchemaName() + ":" + userManager.getUserIdField());
             if (userManager.getPrincipal(testUserName) != null) {
                 userManager.deleteUser(testUserName);
             }
@@ -114,7 +114,8 @@ public final class NuxeoDriveIntegrationTestsHelper {
     }
 
     public static void checkOperationAllowed() {
-        if (!(Framework.isDevModeSet() || Framework.isTestModeSet() || Framework.getProperty("org.nuxeo.ecm.tester.name") != null)) {
+        if (!(Framework.isDevModeSet() || Framework.isTestModeSet()
+                || Framework.getProperty("org.nuxeo.ecm.tester.name") != null)) {
             throw new UnsupportedOperationException("This operation cannot be run unless test mode is set.");
         }
     }

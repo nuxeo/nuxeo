@@ -142,7 +142,8 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      * Force parent using {@link #getParentItem(DocumentModel)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint);
     }
 

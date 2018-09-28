@@ -69,19 +69,17 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
         String userSyncRootParentFactoryParam = parameters.get(USER_SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(userSyncRootParentFactoryParam)) {
-            throw new NuxeoException(
-                    String.format(
-                            "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the user's synchronization roots.",
-                            getName(), USER_SYNC_ROOT_PARENT_FACTORY_PARAM));
+            throw new NuxeoException(String.format(
+                    "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the user's synchronization roots.",
+                    getName(), USER_SYNC_ROOT_PARENT_FACTORY_PARAM));
         }
         userSyncRootParentFactoryName = userSyncRootParentFactoryParam;
 
         String sharedSyncRootParentFactoryParam = parameters.get(SHARED_SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(sharedSyncRootParentFactoryParam)) {
-            throw new NuxeoException(
-                    String.format(
-                            "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the user's shared synchronization roots.",
-                            getName(), SHARED_SYNC_ROOT_PARENT_FACTORY_PARAM));
+            throw new NuxeoException(String.format(
+                    "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the user's shared synchronization roots.",
+                    getName(), SHARED_SYNC_ROOT_PARENT_FACTORY_PARAM));
         }
         sharedSyncRootParentFactoryName = sharedSyncRootParentFactoryParam;
     }
@@ -130,18 +128,18 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
             FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(userSyncRootParentFactoryName)
                                                              .getVirtualFolderItem(principal);
             if (parent == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
-                        userSyncRootParentFactoryName));
+                throw new NuxeoException(
+                        String.format("Cannot find the parent of document %s: virtual folder from factory %s.",
+                                doc.getId(), userSyncRootParentFactoryName));
             }
             return parent;
         } else {
             FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(
                     sharedSyncRootParentFactoryName).getVirtualFolderItem(principal);
             if (parent == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
-                        sharedSyncRootParentFactoryName));
+                throw new NuxeoException(
+                        String.format("Cannot find the parent of document %s: virtual folder from factory %s.",
+                                doc.getId(), sharedSyncRootParentFactoryName));
             }
             return parent;
         }

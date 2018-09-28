@@ -61,11 +61,13 @@ public class ESSyncRootFolderItem extends DefaultSyncRootFolderItem {
     }
 
     @Override
-    protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session, long keepAlive) {
+    protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session,
+            long keepAlive) {
 
         ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
 
-        StringBuilder sb = new StringBuilder(String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'", docId));
+        StringBuilder sb = new StringBuilder(
+                String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'", docId));
         sb.append(" AND ecm:isTrashed = 0");
         sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
         sb.append(" AND ecm:isVersion = 0");

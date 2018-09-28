@@ -32,8 +32,8 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
-public class ActiveFileSystemItemFactoryRegistry extends
-        ContributionFragmentRegistry<ActiveFileSystemItemFactoriesDescriptor> {
+public class ActiveFileSystemItemFactoryRegistry
+        extends ContributionFragmentRegistry<ActiveFileSystemItemFactoriesDescriptor> {
 
     private static final Log log = LogFactory.getLog(ActiveFileSystemItemFactoryRegistry.class);
 

@@ -35,8 +35,8 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
-public class TopLevelFolderItemFactoryRegistry extends
-        ContributionFragmentRegistry<TopLevelFolderItemFactoryDescriptor> {
+public class TopLevelFolderItemFactoryRegistry
+        extends ContributionFragmentRegistry<TopLevelFolderItemFactoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(TopLevelFolderItemFactoryRegistry.class);
 
