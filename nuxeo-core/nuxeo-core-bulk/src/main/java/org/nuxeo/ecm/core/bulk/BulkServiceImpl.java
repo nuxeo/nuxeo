@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkProcessor.COMMAND_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 
@@ -52,11 +53,9 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
 
-    protected static final String COMMAND_STREAM = "command";
+    public static final String COMMAND_SUFFIX = ":command";
 
-    public static final String COMMAND = ":command";
-
-    public static final String STATUS = ":status";
+    public static final String STATUS_SUFFIX = ":status";
 
     @Override
     public String submit(BulkCommand command) {
@@ -78,8 +77,8 @@ public class BulkServiceImpl implements BulkService {
 
         byte[] commandAsBytes = BulkCodecs.getCommandCodec().encode(command);
         byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(status);
-        keyValueStore.put(command.getId() + COMMAND, commandAsBytes);
-        keyValueStore.put(command.getId() + STATUS, statusAsBytes);
+        keyValueStore.put(command.getId() + COMMAND_SUFFIX, commandAsBytes);
+        keyValueStore.put(command.getId() + STATUS_SUFFIX, statusAsBytes);
 
         // send command to bulk processor
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
@@ -92,7 +91,7 @@ public class BulkServiceImpl implements BulkService {
     public BulkStatus getStatus(String commandId) {
         // retrieve values from KeyValueStore
         KeyValueStore keyValueStore = getKvStore();
-        byte[] statusAsBytes = keyValueStore.get(commandId + STATUS);
+        byte[] statusAsBytes = keyValueStore.get(commandId + STATUS_SUFFIX);
         return BulkCodecs.getStatusCodec().decode(statusAsBytes);
     }
 
@@ -101,7 +100,8 @@ public class BulkServiceImpl implements BulkService {
         long deadline = System.currentTimeMillis() + duration.toMillis();
         KeyValueStore kvStore = getKvStore();
         do {
-            if (COMPLETED.equals(BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS)).getState())) {
+            if (COMPLETED.equals(
+                    BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS_SUFFIX)).getState())) {
                 return true;
             }
             Thread.sleep(100);
@@ -118,8 +118,8 @@ public class BulkServiceImpl implements BulkService {
     public boolean await(Duration duration) throws InterruptedException {
         KeyValueStoreProvider kv = (KeyValueStoreProvider) getKvStore();
         Set<String> commandIds = kv.keyStream()
-                                   .filter(k -> k.endsWith(STATUS))
-                                   .map(k -> k.replaceFirst(STATUS, ""))
+                                   .filter(k -> k.endsWith(STATUS_SUFFIX))
+                                   .map(k -> k.replaceFirst(STATUS_SUFFIX, ""))
                                    .collect(Collectors.toSet());
         // nanoTime is always monotonous
         long deadline = System.nanoTime() + duration.toNanos();
@@ -138,9 +138,9 @@ public class BulkServiceImpl implements BulkService {
     public List<BulkStatus> getStatuses(String username) {
         KeyValueStoreProvider kv = (KeyValueStoreProvider) getKvStore();
         return kv.keyStream()
-                 .filter(key -> key.endsWith(COMMAND)
+                 .filter(key -> key.endsWith(COMMAND_SUFFIX)
                          && username.equals(BulkCodecs.getCommandCodec().decode(kv.get(key)).getUsername()))
-                 .map(key -> BulkCodecs.getStatusCodec().decode(kv.get(key.replace(COMMAND, STATUS))))
+                 .map(key -> BulkCodecs.getStatusCodec().decode(kv.get(key.replace(COMMAND_SUFFIX, STATUS_SUFFIX))))
                  .collect(Collectors.toList());
     }
 }

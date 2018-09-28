@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
 
 import java.time.Duration;
 
@@ -29,7 +31,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogRecord;
+import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -46,14 +54,34 @@ public class TestBulkProcessor {
     @Inject
     public CoreSession session;
 
+    @Inject
+    public StreamService stream;
+
     @Test
     public void testEmptyQuery() throws InterruptedException {
-        String nxql = "SELECT * from Document where ecm:parentId='tutu'";
-        assertEquals(0, session.query(nxql).size());
-        service.submit(new BulkCommand().withRepository(session.getRepositoryName())
-                                        .withUsername(session.getPrincipal().getName())
-                                        .withQuery(nxql)
-                                        .withAction("setProperties"));
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+        LogManager logManager = stream.getLogManager(BULK_LOG_MANAGER_NAME);
+        try (LogTailer<Record> tailer = logManager.createTailer("test", BulkProcessor.DONE_STREAM)) {
+            tailer.toLastCommitted();
+
+            String nxql = "SELECT * from Document where ecm:parentId='nonExistentId'";
+            assertEquals(0, session.query(nxql).size());
+
+            String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
+                                                               .withUsername(session.getPrincipal().getName())
+                                                               .withQuery(nxql)
+                                                               .withAction("setProperties"));
+            assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+
+            BulkStatus status = service.getStatus(commandId);
+            assertEquals(commandId, status.getCommandId());
+            assertEquals(BulkStatus.State.COMPLETED, status.getState());
+            assertEquals(0, status.getCount());
+
+            LogRecord<Record> record = tailer.read(Duration.ofSeconds(10));
+            assertNotNull("No done status found", record);
+            BulkStatus doneStatus = BulkCodecs.getStatusCodec().decode(record.message().getData());
+            assertEquals(status, doneStatus);
+        }
+
     }
 }

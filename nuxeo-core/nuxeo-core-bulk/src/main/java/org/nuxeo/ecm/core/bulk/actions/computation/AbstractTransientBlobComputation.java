@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.bulk.actions.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -78,7 +78,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
 
     protected long getLinesCount(String commandId) {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        BulkStatus status = BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS));
+        BulkStatus status = BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS_SUFFIX));
         return status.getCount();
     }
 

@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
 
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -38,7 +38,10 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  * <ul>
  * <li>i1: Reads {@link BulkStatus} sharded by command id</li>
  * </ul>
- * Ouptuts: none
+ * Ouptuts:
+ * <ul>
+ * <li>o1: Write {@link BulkStatus} full into the done stream.</li>
+ * </ul>
  * </p>
  *
  * @since 10.2
@@ -46,7 +49,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
 public class BulkStatusComputation extends AbstractComputation {
 
     public BulkStatusComputation(String name) {
-        super(name, 1, 0);
+        super(name, 1, 1);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class BulkStatusComputation extends AbstractComputation {
         KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
         Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
         BulkStatus recordStatus = codec.decode(record.getData());
-        String key = recordStatus.getCommandId() + STATUS;
+        String key = recordStatus.getCommandId() + STATUS_SUFFIX;
         BulkStatus status;
         if (recordStatus.isDelta()) {
             status = codec.decode(kvStore.get(key));
@@ -62,7 +65,11 @@ public class BulkStatusComputation extends AbstractComputation {
         } else {
             status = recordStatus;
         }
-        kvStore.put(key, codec.encode(status));
+        byte[] statusAsByte = codec.encode(status);
+        kvStore.put(key, statusAsByte);
+        if (BulkStatus.State.COMPLETED.equals(status.getState())) {
+            context.produceRecord("o1", status.getCommandId(), statusAsByte);
+        }
         context.askForCheckpoint();
     }
 }

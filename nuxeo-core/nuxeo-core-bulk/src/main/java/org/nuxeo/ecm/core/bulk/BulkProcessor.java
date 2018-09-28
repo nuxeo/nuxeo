@@ -18,10 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_STREAM;
-
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +43,11 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     private static final Log log = LogFactory.getLog(BulkProcessor.class);
 
+    public static final String COMMAND_STREAM = "command";
+
     public static final String STATUS_STREAM = "status";
+
+    public static final String DONE_STREAM = "done";
 
     public static final String SCROLLER_NAME = "scroller";
 
@@ -89,7 +91,7 @@ public class BulkProcessor implements StreamProcessorTopology {
                                        scrollKeepAliveSeconds, bucketSize), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
-                               Collections.singletonList("i1:" + STATUS_STREAM))
+                               Arrays.asList("i1:" + STATUS_STREAM, "o1:" + DONE_STREAM))
                        .build();
     }
 

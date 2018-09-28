@@ -116,6 +116,14 @@ public class BulkCommand implements Serializable {
         return (T) params.get(key);
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -129,13 +137,5 @@ public class BulkCommand implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }
