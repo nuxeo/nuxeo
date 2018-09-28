@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.platform.spreadsheet;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.Base64;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -31,7 +33,6 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
-import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
@@ -53,7 +54,7 @@ public class SpreadsheetActions implements Serializable {
         ContentViewState state = contentViewService.saveContentView(contentView);
         if (state != null) {
             String json = JSONContentViewState.toJSON(state, false);
-            String encoded = Base64.encodeBytes(json.getBytes(), Base64.DONT_BREAK_LINES);
+            String encoded = Base64.getEncoder().encodeToString(json.getBytes(UTF_8));
             cv = URLEncoder.encode(encoded, "UTF-8");
         }
 
