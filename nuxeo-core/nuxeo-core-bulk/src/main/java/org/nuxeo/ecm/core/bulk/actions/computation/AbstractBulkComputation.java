@@ -73,8 +73,12 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected BulkCommand currentCommand;
 
-    public AbstractBulkComputation(String name, int size, int timer) {
-        super(name, 1, 1);
+    public AbstractBulkComputation(String name, int size, int threshold) {
+        this(name, size, threshold, 1);
+    }
+
+    public AbstractBulkComputation(String name, int size, int timer, int nbOutputStreams) {
+        super(name, 1, nbOutputStreams);
         this.documentIds = new ArrayList<>(size);
         this.timer = timer;
         this.size = size;

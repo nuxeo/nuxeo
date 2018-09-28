@@ -42,10 +42,10 @@ public abstract class AbstractBulkAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         int size = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
         int threshold = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
-        return addComputations(Topology.builder(), size, threshold).build();
+        return addComputations(Topology.builder(), size, threshold, options).build();
     }
 
-    protected abstract Builder addComputations(Builder builder, int size, int threshold);
+    protected abstract Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options);
 
     protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
         String value = options.get(option);
