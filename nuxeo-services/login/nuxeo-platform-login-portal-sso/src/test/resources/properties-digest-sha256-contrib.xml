@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.portal.properties.digest.sha256.test">
+
+  <require>org.nuxeo.ecm.platform.login.portal.properties</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.auth.portal.digest.algorithm">SHA-256</property>
+
+  </extension>
+
+</component>
