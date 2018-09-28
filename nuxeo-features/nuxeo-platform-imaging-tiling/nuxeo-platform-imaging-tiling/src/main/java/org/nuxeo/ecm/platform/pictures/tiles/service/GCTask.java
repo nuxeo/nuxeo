@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class GCTask implements Runnable {
 
-    public static volatile boolean GCEnabled = false;
+    protected static volatile boolean GCEnabled = false;
 
     private static final String GCINTERVAL_KEY = "GCInterval";
 

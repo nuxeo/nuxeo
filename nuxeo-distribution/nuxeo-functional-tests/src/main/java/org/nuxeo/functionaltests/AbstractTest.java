@@ -189,7 +189,7 @@ public abstract class AbstractTest {
     public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
                                                  .replaceAll("/$", "");
 
-    public static RemoteWebDriver driver;
+    public static RemoteWebDriver driver; // NOSONAR (public static but not final, ok for tests)
 
     protected static ProxyManager proxyManager;
 
