@@ -20,8 +20,8 @@ package org.nuxeo.drive.operations;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move")
 public class NuxeoDriveCanMove {
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveCanMove.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveCanMove.class);
 
     public static final String ID = "NuxeoDrive.CanMove";
 
@@ -66,9 +66,7 @@ public class NuxeoDriveCanMove {
         } catch (RootlessItemException e) {
             // can happen if srcId or destId no longer match a document under an
             // active sync root: just return false in that case.
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Cannot move %s to %s: %s", srcId, destId, e.getMessage()), e);
-            }
+            log.debug("Cannot move {} to {}: {}", () -> srcId, () -> destId, e::getMessage, () -> e);
         }
         return Blobs.createJSONBlobFromValue(canMove);
     }

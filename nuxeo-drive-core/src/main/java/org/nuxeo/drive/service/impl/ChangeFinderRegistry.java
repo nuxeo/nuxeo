@@ -19,8 +19,8 @@
 package org.nuxeo.drive.service.impl;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFinderDescriptor> {
 
-    private static final Log log = LogFactory.getLog(ChangeFinderRegistry.class);
+    private static final Logger log = LogManager.getLogger(ChangeFinderRegistry.class);
 
     protected static final String CONTRIBUTION_ID = "changeFinderContrib";
 
@@ -48,9 +48,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
     @Override
     public void contributionUpdated(String id, ChangeFinderDescriptor contrib, ChangeFinderDescriptor newOrigContrib) {
         try {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Updating change finder contribution %s.", contrib));
-            }
+            log.trace("Updating change finder contribution {}.", contrib);
             changeFinder = contrib.getChangeFinder();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new NuxeoException("Cannot update changeFinder contribution.", e);
@@ -65,9 +63,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
 
     @Override
     public ChangeFinderDescriptor clone(ChangeFinderDescriptor orig) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Cloning contribution %s.", orig));
-        }
+        log.trace("Cloning contribution {}.", orig);
         ChangeFinderDescriptor clone = new ChangeFinderDescriptor();
         clone.changeFinderClass = orig.changeFinderClass;
         clone.parameters = orig.parameters;
@@ -76,9 +72,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
 
     @Override
     public void merge(ChangeFinderDescriptor src, ChangeFinderDescriptor dst) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Merging contribution %s to contribution %s.", src, dst));
-        }
+        log.trace("Merging contribution {} to contribution {}.", src, dst);
         // Class
         if (src.getChangeFinderClass() != null && !src.getChangeFinderClass().equals(dst.getChangeFinderClass())) {
             dst.setChangeFinderClass(src.getChangeFinderClass());

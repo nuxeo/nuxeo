@@ -22,8 +22,8 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(PermissionSyncRootFactory.class);
+    private static final Logger log = LogManager.getLogger(PermissionSyncRootFactory.class);
 
     protected static final String REQUIRED_PERMISSION_PARAM = "requiredPermission";
 
@@ -103,11 +103,9 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
         CoreSession session = doc.getCoreSession();
         boolean hasRequiredPermission = session.hasPermission(doc.getRef(), requiredPermission);
         if (!hasRequiredPermission) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Required permission %s is not granted on document %s to user %s, it cannot be adapted as a FileSystemItem.",
-                        requiredPermission, doc.getId(), session.getPrincipal().getName()));
-            }
+            log.debug(
+                    "Required permission {} is not granted on document {} to user {}, it cannot be adapted as a FileSystemItem.",
+                    () -> requiredPermission, doc::getId, session::getPrincipal);
             return false;
         }
         return super.isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint) && hasRequiredPermission;

@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<FileSystemItemFactoryDescriptor> {
 
-    private static final Log log = LogFactory.getLog(FileSystemItemFactoryRegistry.class);
+    private static final Logger log = LogManager.getLogger(FileSystemItemFactoryRegistry.class);
 
     protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<>();
 
@@ -57,34 +57,25 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
     @Override
     public void contributionUpdated(String id, FileSystemItemFactoryDescriptor contrib,
             FileSystemItemFactoryDescriptor newOrigContrib) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Putting contribution %s with id %s in factory registry", contrib, id));
-        }
+        log.trace("Putting contribution {} with id {} in factory registry", contrib, id);
         factoryDescriptors.put(id, contrib);
     }
 
     @Override
     public void contributionRemoved(String id, FileSystemItemFactoryDescriptor origContrib) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Removing contribution with id %s from factory registry", id));
-        }
+        log.trace("Removing contribution with id {} from factory registry", id);
         factoryDescriptors.remove(id);
     }
 
     @Override
     public FileSystemItemFactoryDescriptor clone(FileSystemItemFactoryDescriptor orig) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Cloning contribution with id %s", orig.getName()));
-        }
+        log.trace("Cloning contribution with id {}", orig::getName);
         return SerializationUtils.clone(orig);
     }
 
     @Override
     public void merge(FileSystemItemFactoryDescriptor src, FileSystemItemFactoryDescriptor dst) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Merging contribution with id %s to contribution with id %s", src.getName(),
-                    dst.getName()));
-        }
+        log.trace("Merging contribution with id {} to contribution with id {}", src::getName, dst::getName);
         // Order
         int srcOrder = src.getOrder();
         if (srcOrder > 0 && srcOrder != dst.getOrder()) {

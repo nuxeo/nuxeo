@@ -21,8 +21,8 @@ package org.nuxeo.drive.service.impl;
 import java.security.Principal;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSystemItemFactory {
 
-    private static final Log log = LogFactory.getLog(AbstractSyncRootFolderItemFactory.class);
+    private static final Logger log = LogManager.getLogger(AbstractSyncRootFolderItemFactory.class);
 
     /**
      * Returns the parent {@link FileSystemItem}.
@@ -54,9 +54,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
             throw new IllegalArgumentException(
                     "Parameter map is not empty whereas no parameters are contributed to the factory.");
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Factory %s has no parameters to handle.", getName()));
-        }
+        log.debug("Factory {} has no parameters to handle.", this::getName);
     }
 
     /**
@@ -75,42 +73,28 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
 
         // Check Folderish
         if (!doc.isFolder()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is not Folderish, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check version
         if (doc.isVersion()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is a version, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is a version, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check proxy
         if (doc.isProxy()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is a proxy, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is HiddenInNavigation, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check if document is in the trash
         if (!includeDeleted && doc.isTrashed()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is in the trash, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+
+            log.debug("Document {} is in the trash, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         if (!relaxSyncRootConstraint) {
@@ -119,11 +103,9 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
             Principal principal = doc.getCoreSession().getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
-                            doc.getId(), principal.getName()));
-                }
+                log.debug(
+                        "Document {} is not a registered synchronization root for user {}, it cannot be adapted as a FileSystemItem.",
+                        doc::getId, principal::getName);
                 return false;
             }
         }

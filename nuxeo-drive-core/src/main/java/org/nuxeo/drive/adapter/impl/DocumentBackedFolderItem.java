@@ -31,8 +31,8 @@ import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -68,7 +68,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemItem implements FolderItem {
 
-    private static final Log log = LogFactory.getLog(DocumentBackedFolderItem.class);
+    private static final Logger log = LogManager.getLogger(DocumentBackedFolderItem.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -191,25 +191,16 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         Semaphore semaphore = Framework.getService(FileSystemItemAdapterService.class).getScrollBatchSemaphore();
         try {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Thread [%s] acquiring scroll batch semaphore",
-                        Thread.currentThread().getName()));
-            }
+            log.trace("Thread [{}] acquiring scroll batch semaphore", Thread::currentThread);
             semaphore.acquire();
             try {
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(
-                            "Thread [%s] acquired scroll batch semaphore, available permits reduced to %d",
-                            Thread.currentThread().getName(), semaphore.availablePermits()));
-                }
+                log.trace("Thread [{}] acquired scroll batch semaphore, available permits reduced to {}",
+                        Thread::currentThread, semaphore::availablePermits);
                 return doScrollDescendants(scrollId, batchSize, keepAlive);
             } finally {
                 semaphore.release();
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(
-                            "Thread [%s] released scroll batch semaphore, available permits increased to %d",
-                            Thread.currentThread().getName(), semaphore.availablePermits()));
-                }
+                log.trace("Thread [{}] released scroll batch semaphore, available permits increased to {}",
+                        Thread::currentThread, semaphore::availablePermits);
             }
         } catch (InterruptedException cause) {
             Thread.currentThread().interrupt();
@@ -233,10 +224,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
             // Adapt documents as FileSystemItems
             List<FileSystemItem> descendants = adaptDocuments(descendantDocsBatch, session);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved %d descendants of FolderItem %s (batchSize = %d)",
-                        descendants.size(), docPath, batchSize));
-            }
+            log.debug("Retrieved {} descendants of FolderItem {} (batchSize = {})", descendants::size, () -> docPath,
+                    () -> batchSize);
             return new ScrollFileSystemItemListImpl(newScrollId, descendants);
         }
     }
@@ -271,10 +260,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             // Don't need to add ecm:isVersion = 0 because versions are already excluded by the
             // ecm:ancestorId clause since they have no path
             String query = sb.toString();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Executing initial query to scroll through the descendants of %s: %s", docPath,
-                        query));
-            }
+            log.debug("Executing initial query to scroll through the descendants of {}: {}", docPath, query);
             try (IterableQueryResult res = session.queryAndFetch(sb.toString(), NXQL.NXQL)) {
                 Iterator<Map<String, Serializable>> it = res.iterator();
                 while (it.hasNext()) {
@@ -283,11 +269,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             }
             // Generate a scroll id
             newScrollId = UUID.randomUUID().toString();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Put initial query result list (search context) in the %s cache at key (scrollId) %s",
-                        DESCENDANTS_SCROLL_CACHE, newScrollId));
-            }
+            log.debug("Put initial query result list (search context) in the {} cache at key (scrollId) {}",
+                    DESCENDANTS_SCROLL_CACHE, newScrollId);
             scrollingCache.put(newScrollId, (Serializable) descendantIds);
         } else {
             // Get the descendant ids from the cache
@@ -362,9 +345,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         }
         sb.append(")");
         String query = sb.toString();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetching %d documents from VCS: %s", docCount, query));
-        }
+        log.debug("Fetching {} documents from VCS: {}", docCount, query);
         return session.query(query);
     }
 
@@ -374,19 +355,14 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
      */
     protected List<FileSystemItem> adaptDocuments(DocumentModelList docs, CoreSession session) {
         Map<DocumentRef, FolderItem> ancestorCache = new HashMap<>();
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
-        }
+        log.trace("Caching current FolderItem for doc {}: {}", () -> docPath, this::getPath);
         ancestorCache.put(new IdRef(docId), this);
         List<FileSystemItem> descendants = new ArrayList<>(docs.size());
         for (DocumentModel doc : docs) {
             FolderItem parent = populateAncestorCache(ancestorCache, doc, session, false);
             if (parent == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Cannot adapt parent document of %s as a FileSystemItem, skipping descendant document",
-                            doc.getPathAsString()));
-                }
+                log.debug("Cannot adapt parent document of {} as a FileSystemItem, skipping descendant document",
+                        doc::getPathAsString);
                 continue;
             }
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
@@ -394,10 +370,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                     false);
             if (descendant != null) {
                 if (descendant.isFolder()) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Caching descendant FolderItem for doc %s: %s", doc.getPathAsString(),
-                                descendant.getPath()));
-                    }
+                    log.trace("Caching descendant FolderItem for doc {}: {}", doc::getPathAsString,
+                            descendant::getPath);
                     ancestorCache.put(doc.getRef(), (FolderItem) descendant);
                 }
                 descendants.add(descendant);
@@ -415,25 +389,17 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
         FolderItem parentItem = cache.get(parentDocRef);
         if (parentItem != null) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Found parent FolderItem in cache for doc %s: %s", doc.getPathAsString(),
-                        parentItem.getPath()));
-            }
+            log.trace("Found parent FolderItem in cache for doc {}: {}", doc::getPathAsString, parentItem::getPath);
             return getFolderItem(cache, doc, parentItem, cacheItem);
         }
 
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
-                    doc.getPathAsString()));
-        }
+        log.trace("No parent FolderItem found in cache for doc {}, computing ancestor cache", doc::getPathAsString);
         DocumentModel parentDoc = null;
         try {
             parentDoc = session.getDocument(parentDocRef);
         } catch (DocumentSecurityException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s has no READ access on parent of document %s (%s).",
-                        principal.getName(), doc.getPathAsString(), doc.getId()), e);
-            }
+            log.debug("User {} has no READ access on parent of document {} ({}).", principal::getName,
+                    doc::getPathAsString, doc::getId, () -> e);
             return null;
         }
         parentItem = populateAncestorCache(cache, parentDoc, session, true);
@@ -450,18 +416,13 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             FileSystemItem fsItem = getFileSystemItemAdapterService().getFileSystemItem(doc, parentItem, true, false,
                     false);
             if (fsItem == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Reached document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
-                            doc.getPathAsString()));
-                }
+                log.debug(
+                        "Reached document {} that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
+                        doc::getPathAsString);
                 return null;
             }
             FolderItem folderItem = (FolderItem) fsItem;
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Caching FolderItem for doc %s: %s", doc.getPathAsString(),
-                        folderItem.getPath()));
-            }
+            log.trace("Caching FolderItem for doc {}: {}", doc::getPathAsString, folderItem::getPath);
             cache.put(doc.getRef(), folderItem);
             return folderItem;
         } else {

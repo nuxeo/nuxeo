@@ -35,8 +35,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
@@ -83,7 +83,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriveManager {
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveManagerImpl.class);
 
     public static final String CHANGE_FINDER_EP = "changeFinder";
 
@@ -125,34 +125,26 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     protected void clearCache() {
-        if (log.isDebugEnabled()) {
-            log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
-        }
+        log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
         syncRootCache.invalidateAll();
         collectionSyncRootMemberCache.invalidateAll();
     }
 
     @Override
     public void invalidateSynchronizationRootsCache(String userName) {
-        if (log.isDebugEnabled()) {
-            log.debug("Invalidating synchronization root cache for user: " + userName);
-        }
+        log.debug("Invalidating synchronization root cache for user: {}", userName);
         getSyncRootCache().invalidate(userName);
     }
 
     @Override
     public void invalidateCollectionSyncRootMemberCache(String userName) {
-        if (log.isDebugEnabled()) {
-            log.debug("Invalidating collection sync root member cache for user: " + userName);
-        }
+        log.debug("Invalidating collection sync root member cache for user: {}", userName);
         getCollectionSyncRootMemberCache().invalidate(userName);
     }
 
     @Override
     public void invalidateCollectionSyncRootMemberCache() {
-        if (log.isDebugEnabled()) {
-            log.debug("Invalidating collection sync root member cache for all users");
-        }
+        log.debug("Invalidating collection sync root member cache for all users");
         getCollectionSyncRootMemberCache().invalidateAll();
     }
 
@@ -160,9 +152,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void registerSynchronizationRoot(Principal principal, final DocumentModel newRootContainer,
             CoreSession session) {
         final String userName = principal.getName();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Registering synchronization root %s for %s", newRootContainer, userName));
-        }
+        log.debug("Registering synchronization root {} for {}", newRootContainer, userName);
+
         // If new root is child of a sync root, ignore registration, except for
         // the 'Locally Edited' collection: it is under the personal workspace
         // and we want to allow both the personal workspace and the 'Locally
@@ -267,9 +258,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void unregisterSynchronizationRoot(Principal principal, final DocumentModel rootContainer,
             CoreSession session) {
         final String userName = principal.getName();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Unregistering synchronization root %s for %s", rootContainer, userName));
-        }
+        log.debug("Unregistering synchronization root {} for {}", rootContainer, userName);
         checkCanUpdateSynchronizationRoot(rootContainer, session);
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
@@ -370,11 +359,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     if (repoCollectionSyncRootMemberIds == null) {
                         repoCollectionSyncRootMemberIds = Collections.emptySet();
                     }
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Start: getting FileSystemItem changes for repository %s / user %s between %s and %s with activeRoots = %s",
-                                repositoryName, principal.getName(), lowerBound, upperBound, activeRoots.getPaths()));
-                    }
+                    log.debug(
+                            "Start: getting FileSystemItem changes for repository {} / user {} between {} and {} with activeRoots = {}",
+                            () -> repositoryName, principal::getName, () -> lowerBound, () -> upperBound,
+                            activeRoots::getPaths);
                     List<FileSystemItemChange> changes;
                     changes = changeFinder.getFileSystemChanges(session, lastRefs, activeRoots,
                             repoCollectionSyncRootMemberIds, lowerBound, upperBound, limit);
@@ -396,12 +384,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         }
         FileSystemChangeSummary summary = new FileSystemChangeSummaryImpl(allChanges, activeRootRefs, syncDate,
                 upperBound, hasTooManyChanges);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "End: getting %d FileSystemItem changes for user %s between %s and %s with activeRoots = %s -> %s",
-                    allChanges.size(), principal.getName(), lowerBound, upperBound, roots, summary));
-        }
+        log.debug("End: getting {} FileSystemItem changes for user {} between {} and {} with activeRoots = {} -> {}",
+                allChanges::size, principal::getName, () -> lowerBound, () -> upperBound, () -> roots, () -> summary);
         return summary;
+
     }
 
     @Override
@@ -460,13 +446,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     references.add(docRef);
                     paths.add(doc.getPathAsString());
                 } catch (DocumentNotFoundException e) {
-                    log.warn(String.format(
-                            "Document %s not found, not adding it to the list of synchronization roots for user %s.",
-                            docRef, session.getPrincipal().getName()));
+                    log.warn("Document {} not found, not adding it to the list of synchronization roots for user {}.",
+                            () -> docRef, session::getPrincipal);
                 } catch (DocumentSecurityException e) {
-                    log.warn(String.format(
-                            "User %s cannot access document %s, not adding it to the list of synchronization roots.",
-                            session.getPrincipal().getName(), docRef));
+                    log.warn("User {} cannot access document {}, not adding it to the list of synchronization roots.",
+                            session::getPrincipal, () -> docRef);
                 }
             }
         }
@@ -568,7 +552,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         if (CHANGE_FINDER_EP.equals(extensionPoint)) {
             changeFinderRegistry.addContribution((ChangeFinderDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point {}", extensionPoint);
         }
     }
 
@@ -577,7 +561,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         if (CHANGE_FINDER_EP.equals(extensionPoint)) {
             changeFinderRegistry.removeContribution((ChangeFinderDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point {}", extensionPoint);
         }
     }
 

@@ -22,8 +22,8 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory implements TopLevelFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(UserWorkspaceTopLevelFactory.class);
+    private static final Logger log = LogManager.getLogger(UserWorkspaceTopLevelFactory.class);
 
     protected static final String FOLDER_NAME_PARAM = "folderName";
 
@@ -65,18 +65,18 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
         if (!StringUtils.isEmpty(folderNameParam)) {
             folderName = folderNameParam;
         } else {
-            log.info(String.format(
-                    "Factory %s has no %s parameter, you can provide one in the factory contribution to avoid using the default value '%s'.",
-                    getName(), FOLDER_NAME_PARAM, DEFAULT_FOLDER_NAME));
+            log.info(
+                    "Factory {} has no {} parameter, you can provide one in the factory contribution to avoid using the default value '{}'.",
+                    this::getName, () -> FOLDER_NAME_PARAM, () -> DEFAULT_FOLDER_NAME);
         }
         // Look for the "syncRootParentFactory" parameter
         String syncRootParentFactoryParam = parameters.get(SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (!StringUtils.isEmpty(syncRootParentFactoryParam)) {
             syncRootParentFactoryName = syncRootParentFactoryParam;
         } else {
-            log.warn(String.format(
-                    "Factory %s has no %s parameter, please provide one in the factory contribution to set the name of the synchronization root parent factory.",
-                    getName(), SYNC_ROOT_PARENT_FACTORY_PARAM));
+            log.warn(
+                    "Factory {} has no {} parameter, please provide one in the factory contribution to set the name of the synchronization root parent factory.",
+                    this::getName, () -> SYNC_ROOT_PARENT_FACTORY_PARAM);
         }
     }
 
@@ -85,10 +85,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.", doc.getId()));
-            }
+            log.trace("Document {} is not a user workspace, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         return true;

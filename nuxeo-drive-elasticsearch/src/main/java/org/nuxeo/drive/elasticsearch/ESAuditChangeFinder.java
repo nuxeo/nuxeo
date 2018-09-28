@@ -28,8 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -86,7 +86,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Log log = LogFactory.getLog(ESAuditChangeFinder.class);
+    public static final Logger log = LogManager.getLogger(ESAuditChangeFinder.class);
 
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
@@ -305,11 +305,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                 // ignore event that only impact other users
                 continue;
             }
-            if (log.isDebugEnabled()) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Change detected: %s", entry));
-                }
-            }
+            log.debug("Change detected: {}", entry);
             postFilteredEntries.add(entry);
         }
         return postFilteredEntries;
@@ -325,16 +321,11 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected void logSearchRequest(SearchRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Elasticsearch search request: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                    getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, request.toString()));
-        }
+        log.debug("Elasticsearch search request: curl -XGET 'http://localhost:9200/{}/{}/_search?pretty' -d '{}'",
+                this::getESIndexName, () -> ElasticSearchConstants.ENTRY_TYPE, () -> request);
     }
 
     protected void logSearchResponse(SearchResponse response) {
-        if (log.isDebugEnabled()) {
-            log.debug("Elasticsearch search response: " + response.toString());
-        }
+        log.debug("Elasticsearch search response: {}", response);
     }
 }

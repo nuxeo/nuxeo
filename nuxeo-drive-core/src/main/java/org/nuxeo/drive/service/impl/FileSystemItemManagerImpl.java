@@ -21,8 +21,8 @@ package org.nuxeo.drive.service.impl;
 import java.security.Principal;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
-    private static final Log log = LogFactory.getLog(FileSystemItemManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(FileSystemItemManagerImpl.class);
 
     /*------------- Read operations ----------------*/
     @Override
@@ -65,11 +65,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     principal);
         } catch (RootlessItemException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "RootlessItemException thrown while trying to get file system item with id %s, returning null.",
-                        id));
-            }
+            log.debug("RootlessItemException thrown while trying to get file system item with id {}, returning null.",
+                    id);
             return null;
         }
     }
@@ -80,11 +77,9 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     parentId, principal);
         } catch (RootlessItemException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "RootlessItemException thrown while trying to get file system item with id %s and parent id %s, returning null.",
-                        id, parentId));
-            }
+            log.debug(
+                    "RootlessItemException thrown while trying to get file system item with id {} and parent id {}, returning null.",
+                    id, parentId);
             return null;
         }
     }

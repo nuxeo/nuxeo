@@ -22,8 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class ActiveFileSystemItemFactoryRegistry
         extends ContributionFragmentRegistry<ActiveFileSystemItemFactoriesDescriptor> {
 
-    private static final Log log = LogFactory.getLog(ActiveFileSystemItemFactoryRegistry.class);
+    private static final Logger log = LogManager.getLogger(ActiveFileSystemItemFactoryRegistry.class);
 
     protected static final String CONTRIBUTION_ID = "activeFileSystemItemFactoriesContrib";
 
@@ -49,36 +49,26 @@ public class ActiveFileSystemItemFactoryRegistry
     @Override
     public void contributionUpdated(String id, ActiveFileSystemItemFactoriesDescriptor contrib,
             ActiveFileSystemItemFactoriesDescriptor newOrigContrib) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Updating activeFileSystemItemFactories contribution %s.", contrib));
-        }
+        log.trace("Updating activeFileSystemItemFactories contribution {}.", contrib);
         if (contrib.isMerge()) {
             // Merge active factories
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
                 if (activeFactories.contains(factory.getName()) && !factory.isEnabled()) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Removing factory %s from active factories.", factory.getName()));
-                    }
+                    log.trace("Removing factory {} from active factories.", factory::getName);
                     activeFactories.remove(factory.getName());
                 }
                 if (!activeFactories.contains(factory.getName()) && factory.isEnabled()) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Adding factory %s to active factories.", factory.getName()));
-                    }
+                    log.trace("Adding factory {} to active factories.", factory::getName);
                     activeFactories.add(factory.getName());
                 }
             }
         } else {
             // No merge, reset active factories
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Clearing active factories as contribution %s doesn't merge.", contrib));
-            }
+            log.trace("Clearing active factories as contribution {} doesn't merge.", contrib);
             activeFactories.clear();
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
                 if (factory.isEnabled()) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Adding factory %s to active factories.", factory.getName()));
-                    }
+                    log.trace("Adding factory {} to active factories.", factory::getName);
                     activeFactories.add(factory.getName());
                 }
             }
@@ -93,17 +83,13 @@ public class ActiveFileSystemItemFactoryRegistry
 
     @Override
     public ActiveFileSystemItemFactoriesDescriptor clone(ActiveFileSystemItemFactoriesDescriptor orig) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Cloning contribution %s.", orig));
-        }
+        log.trace("Cloning contribution {}.", orig);
         return SerializationUtils.clone(orig);
     }
 
     @Override
     public void merge(ActiveFileSystemItemFactoriesDescriptor src, ActiveFileSystemItemFactoriesDescriptor dst) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Merging contribution %s to contribution %s.", src, dst));
-        }
+        log.trace("Merging contribution {} to contribution {}.", src, dst);
         // Merge
         if (src.isMerge() != dst.isMerge()) {
             dst.setMerge(src.isMerge());

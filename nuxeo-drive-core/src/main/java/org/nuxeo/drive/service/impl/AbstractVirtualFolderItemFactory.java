@@ -22,8 +22,8 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(AbstractVirtualFolderItemFactory.class);
+    private static final Logger log = LogManager.getLogger(AbstractVirtualFolderItemFactory.class);
 
     protected static final String FOLDER_NAME_PARAM = "folderName";
 
@@ -68,9 +68,9 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
         if (!StringUtils.isEmpty(folderNameParam)) {
             folderName = folderNameParam;
         } else {
-            log.info(String.format(
-                    "Factory %s has no %s parameter, you can provide one in the factory contribution to avoid using the default value '%s'.",
-                    getName(), FOLDER_NAME_PARAM, DEFAULT_FOLDER_NAME));
+            log.info(
+                    "Factory {} has no {} parameter, you can provide one in the factory contribution to avoid using the default value '{}'.",
+                    this::getName, () -> FOLDER_NAME_PARAM, () -> DEFAULT_FOLDER_NAME);
         }
     }
 

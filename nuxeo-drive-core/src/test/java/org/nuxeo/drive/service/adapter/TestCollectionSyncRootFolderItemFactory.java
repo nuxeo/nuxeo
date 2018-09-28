@@ -28,8 +28,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -58,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(NuxeoDriveFeature.class)
 public class TestCollectionSyncRootFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(TestCollectionSyncRootFolderItemFactory.class);
+    private static final Logger log = LogManager.getLogger(TestCollectionSyncRootFolderItemFactory.class);
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 

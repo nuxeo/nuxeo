@@ -19,8 +19,9 @@
 package org.nuxeo.drive.operations.test;
 
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class NuxeoDriveIntegrationTestsHelper {
 
-    static final Log log = LogFactory.getLog(NuxeoDriveIntegrationTestsHelper.class);
+    static final Logger log = LogManager.getLogger(NuxeoDriveIntegrationTestsHelper.class);
 
     public static final String TEST_USER_NAME_PREFIX = "drive";
 
@@ -100,16 +101,11 @@ public final class NuxeoDriveIntegrationTestsHelper {
             throw new NuxeoException(String.format("Found no domains in repository %s", session.getRepositoryName()));
         }
         if (results.size() > 1) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Found more than one domain in repository %s, using first one.",
-                        session.getRepositoryName()));
-            }
+            log.debug("Found more than one domain in repository {}, using first one.", session::getRepositoryName);
         }
         DocumentModel defaultDomain = results.get(0);
         String defaultDomainPath = defaultDomain.getPathAsString();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Using default domain %s", defaultDomainPath));
-        }
+        log.debug("Using default domain {}", defaultDomainPath);
         return defaultDomainPath;
     }
 

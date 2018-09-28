@@ -21,8 +21,8 @@ package org.nuxeo.drive.hierarchy.userworkspace.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
@@ -56,7 +56,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(UserWorkspaceTopLevelFolderItem.class);
+    private static final Logger log = LogManager.getLogger(UserWorkspaceTopLevelFolderItem.class);
 
     protected DocumentModel userWorkspace;
 
@@ -124,12 +124,9 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
         // Add synchronization root parent folder
         if (syncRootParentFactoryName == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "No synchronization root parent factory name parameter for factory %s, the synchronization roots won't be synchronized client side.",
-                        factoryName));
-            }
-
+            log.debug(
+                    "No synchronization root parent factory name parameter for factory {}, the synchronization roots won't be synchronized client side.",
+                    factoryName);
         } else {
             VirtualFolderItemFactory syncRootParentFactory = getFileSystemItemAdapterService().getVirtualFolderItemFactory(
                     syncRootParentFactoryName);

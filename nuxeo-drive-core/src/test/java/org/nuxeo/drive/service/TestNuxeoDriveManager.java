@@ -35,8 +35,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +80,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class TestNuxeoDriveManager {
 
-    private static final Log log = LogFactory.getLog(TestNuxeoDriveManager.class);
+    private static final Logger log = LogManager.getLogger(TestNuxeoDriveManager.class);
 
     @Inject
     CoreSession session;

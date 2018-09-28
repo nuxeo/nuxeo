@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoDriveVirtualEventLogger implements PostCommitFilteringEventListener {
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveVirtualEventLogger.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveVirtualEventLogger.class);
 
     @Override
     public boolean acceptEvent(Event event) {

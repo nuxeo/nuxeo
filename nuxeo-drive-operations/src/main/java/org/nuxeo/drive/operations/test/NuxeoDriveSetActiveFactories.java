@@ -20,8 +20,8 @@ package org.nuxeo.drive.operations.test;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
@@ -41,7 +41,7 @@ public class NuxeoDriveSetActiveFactories {
 
     public static final String ID = "NuxeoDrive.SetActiveFactories";
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveSetActiveFactories.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveSetActiveFactories.class);
 
     @Param(name = "profile")
     protected String profile;
@@ -58,7 +58,7 @@ public class NuxeoDriveSetActiveFactories {
         } else if ("permission".equals(profile)) {
             contrib = "/OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml";
         } else {
-            log.warn(String.format("No active file system item factory contribution for profile '%s'.", profile));
+            log.warn("No active file system item factory contribution for profile '{}'.", profile);
             return false;
         }
         URL url = NuxeoDriveSetActiveFactories.class.getResource(contrib);

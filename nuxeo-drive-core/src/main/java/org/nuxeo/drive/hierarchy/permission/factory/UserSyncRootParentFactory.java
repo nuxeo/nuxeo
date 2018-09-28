@@ -22,8 +22,8 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory implements VirtualFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(UserSyncRootParentFactory.class);
+    private static final Logger log = LogManager.getLogger(UserSyncRootParentFactory.class);
 
     protected static final String FOLDER_NAME_PARAM = "folderName";
 
@@ -71,18 +71,12 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format(
-                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.", doc.getId()));
-            }
+            log.trace("Document {} is not a user workspace, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check trashed state
         if (!includeDeleted && doc.isTrashed()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is in the trash, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is in the trash, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         return true;

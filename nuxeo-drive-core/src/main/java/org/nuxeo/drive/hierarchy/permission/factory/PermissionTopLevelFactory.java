@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -39,7 +39,7 @@ import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
  */
 public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory implements TopLevelFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(PermissionTopLevelFactory.class);
+    private static final Logger log = LogManager.getLogger(PermissionTopLevelFactory.class);
 
     protected static final String CHILDREN_FACTORIES_PARAM = "childrenFactories";
 
@@ -54,9 +54,9 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory 
         if (!StringUtils.isEmpty(childrenFactoriesParam)) {
             childrenFactoryNames.addAll(Arrays.asList(childrenFactoriesParam.split(",")));
         } else {
-            log.warn(String.format(
-                    "Factory %s has no %s parameter, please provide one in the factory contribution using a comma separated list to set the children factory names.",
-                    getName(), CHILDREN_FACTORIES_PARAM));
+            log.warn(
+                    "Factory {} has no {} parameter, please provide one in the factory contribution using a comma separated list to set the children factory names.",
+                    this::getName, () -> CHILDREN_FACTORIES_PARAM);
         }
     }
 

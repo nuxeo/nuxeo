@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.NuxeoDriveContribException;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class FileSystemItemAdapterServiceImpl extends DefaultComponent implements FileSystemItemAdapterService {
 
-    private static final Log log = LogFactory.getLog(FileSystemItemAdapterServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(FileSystemItemAdapterServiceImpl.class);
 
     public static final String FILE_SYSTEM_ITEM_FACTORY_EP = "fileSystemItemFactory";
 
@@ -92,7 +92,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                         (ActiveFileSystemItemFactoriesDescriptor) contribution);
             }
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point {}", extensionPoint);
         }
     }
 
@@ -111,7 +111,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                         (ActiveFileSystemItemFactoriesDescriptor) contribution);
             }
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point {}", extensionPoint);
         }
     }
 
@@ -278,9 +278,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                 return factory;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("No fileSystemItemFactory named %s, returning null.", name));
-        }
+        log.debug("No fileSystemItemFactory named {}, returning null.", name);
         return null;
     }
 
@@ -325,22 +323,19 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         if (fileSystemItem != null) {
             return fileSystemItem;
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "The topLevelFolderItemFactory is not able to adapt document %s as a FileSystemItem => trying fileSystemItemFactories.",
-                        doc.getId()));
-            }
+            log.debug(
+                    "The topLevelFolderItemFactory is not able to adapt document {} as a FileSystemItem => trying fileSystemItemFactories.",
+                    doc::getId);
         }
 
         // Try the fileSystemItemFactories
         FileSystemItemFactoryWrapper matchingFactory = null;
+
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Trying to adapt document %s (path: %s) as a FileSystemItem with factory %s",
-                        doc.getId(), doc.getPathAsString(), factory.getFactory().getName()));
-            }
+            log.debug("Trying to adapt document {} (path: {}) as a FileSystemItem with factory {}", doc::getId,
+                    doc::getPathAsString, () -> factory.getFactory().getName());
             if (generalFactoryMatches(factory) || docTypeFactoryMatches(factory, doc)
                     || facetFactoryMatches(factory, doc, relaxSyncRootConstraint)) {
                 matchingFactory = factory;
@@ -362,45 +357,38 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                             doc.getTitle(), doc.getPathAsString(), factory.getFactory().getName()), e);
                 }
                 if (fileSystemItem != null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Adapted document '%s' (path: %s) to item with path %s with factory %s",
-                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(),
-                                factory.getFactory().getName()));
-                    }
+                    log.debug("Adapted document '{}' (path: {}) to item with path {} with factory {}", doc::getTitle,
+                            doc::getPathAsString, fileSystemItem::getPath, () -> factory.getFactory().getName());
                     return fileSystemItem;
                 }
             }
         }
 
         if (matchingFactory == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "None of the fileSystemItemFactories matches document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
-                        doc.getId()));
-            }
+            log.debug(
+                    "None of the fileSystemItemFactories matches document {} => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                    doc::getId);
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "None of the fileSystemItemFactories matching document %s were able to adapt this document as a FileSystemItem => returning null.",
-                        doc.getId()));
-            }
+            log.debug(
+                    "None of the fileSystemItemFactories matching document {} were able to adapt this document as a FileSystemItem => returning null.",
+                    doc::getId);
         }
         return fileSystemItem;
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {
         boolean matches = StringUtils.isEmpty(factory.getDocType()) && StringUtils.isEmpty(factory.getFacet());
-        if (log.isTraceEnabled() && matches) {
-            log.trace(String.format("General factory %s matches", factory));
+        if (matches) {
+            log.trace("General factory {} matches", factory);
         }
         return matches;
     }
 
     protected boolean docTypeFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc) {
         boolean matches = !StringUtils.isEmpty(factory.getDocType()) && factory.getDocType().equals(doc.getType());
-        if (log.isTraceEnabled() && matches) {
-            log.trace(String.format("DocType factory %s matches for doc %s (path: %s)", factory, doc.getId(),
-                    doc.getPathAsString()));
+        if (matches) {
+            log.trace("DocType factory {} matches for doc {} (path: {})", () -> factory, doc::getId,
+                    doc::getPathAsString);
         }
         return matches;
     }
@@ -413,16 +401,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                     // Handle synchronization root case
                     if (NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET.equals(docFacet)) {
                         boolean matches = syncRootFactoryMatches(doc, relaxSyncRootConstraint);
-                        if (log.isTraceEnabled() && matches) {
-                            log.trace(String.format("Facet factory %s matches for doc %s (path: %s)", factory,
-                                    doc.getId(), doc.getPathAsString()));
+                        if (matches) {
+                            log.trace("Facet factory {} matches for doc {} (path: {})", () -> factory, doc::getId,
+                                    doc::getPathAsString);
                         }
                         return matches;
                     } else {
-                        if (log.isTraceEnabled()) {
-                            log.trace(String.format("Facet factory %s matches for doc %s (path: %s)", factory,
-                                    doc.getId(), doc.getPathAsString()));
-                        }
+                        log.trace("Facet factory {} matches for doc {} (path: {})", () -> factory, doc::getId,
+                                doc::getPathAsString);
                         return true;
                     }
                 }
@@ -439,18 +425,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         for (Map<String, Object> subscription : subscriptions) {
             if (Boolean.TRUE.equals(subscription.get("enabled"))) {
                 if (userName.equals(subscription.get("username"))) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Doc %s (path: %s) registered as a sync root for user %s", doc.getId(),
-                                doc.getPathAsString(), userName));
-                    }
+                    log.trace("Doc {} (path: {}) registered as a sync root for user {}", doc::getId,
+                            doc::getPathAsString, () -> userName);
                     return true;
                 }
                 if (relaxSyncRootConstraint) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format(
-                                "Doc %s (path: %s) registered as a sync root for at least one user (relaxSyncRootConstraint is true)",
-                                doc.getId(), doc.getPathAsString()));
-                    }
+                    log.trace(
+                            "Doc {} (path: {}) registered as a sync root for at least one user (relaxSyncRootConstraint is true)",
+                            doc::getId, doc::getPathAsString);
                     return true;
                 }
             }

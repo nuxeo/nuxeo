@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
-    private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);
+    private static final Logger log = LogManager.getLogger(AuditChangeFinderClusteringEnabledTestSuite.class);
 
     @Test
     public void testClusteringEnabled() throws Exception {

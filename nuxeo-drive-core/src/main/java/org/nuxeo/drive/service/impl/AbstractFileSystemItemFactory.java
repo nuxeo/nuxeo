@@ -21,8 +21,8 @@ package org.nuxeo.drive.service.impl;
 import java.security.Principal;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItemFactory implements FileSystemItemFactory {
 
-    private static final Log log = LogFactory.getLog(AbstractFileSystemItemFactory.class);
+    private static final Logger log = LogManager.getLogger(AbstractFileSystemItemFactory.class);
 
     protected String name;
 
@@ -135,7 +135,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try {
             parseFileSystemId(id);
         } catch (IllegalArgumentException e) {
-            log.trace(e.getMessage());
+            log.trace(e::getMessage);
             return false;
         }
         return true;
@@ -156,14 +156,10 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             DocumentModel doc = getDocumentById(docId, session);
             return isFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning false.", docId));
-            }
+            log.debug("No doc related to id {}, returning false.", docId);
             return false;
         } catch (DocumentSecurityException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot access doc %s, returning false.", principal.getName(), docId));
-            }
+            log.debug("User {} cannot access doc {}, returning false.", principal, docId);
             return false;
         }
     }
@@ -177,14 +173,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning null.", docId));
-            }
+
+            log.debug("No doc related to id {}, returning null.", docId);
             return null;
         } catch (DocumentSecurityException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot access doc %s, returning null.", principal.getName(), docId));
-            }
+            log.debug("User {} cannot access doc {}, returning null.", principal, docId);
             return null;
         }
     }
@@ -204,16 +197,13 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc, (FolderItem) parentItem);
         } catch (DocumentNotFoundException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning null.", docId));
-            }
+            log.debug("No doc related to id {}, returning null.", docId);
             return null;
         } catch (DocumentSecurityException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot access doc %s, returning null.", principal.getName(), docId));
-            }
+            log.debug("User {} cannot access doc {}, returning null.", principal, docId);
             return null;
         }
+
     }
 
     /*--------------------------- Protected ---------------------------------*/
@@ -226,10 +216,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Document %s cannot be adapted as a FileSystemItem => returning null.",
-                        doc.getId()));
-            }
+            log.trace("Document {} cannot be adapted as a FileSystemItem => returning null.", doc::getId);
             return null;
         }
         return adaptDocument(doc, forceParentItem, parentItem, relaxSyncRootConstraint, getLockInfo);

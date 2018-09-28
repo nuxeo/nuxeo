@@ -38,8 +38,8 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +94,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml")
 public class DefaultFileSystemItemFactoryFixture {
 
-    private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
+    private static final Logger log = LogManager.getLogger(DefaultFileSystemItemFactoryFixture.class);
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 

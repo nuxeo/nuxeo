@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
@@ -79,7 +79,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveFileSystemDeletionListener.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveFileSystemDeletionListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -111,10 +111,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("NuxeoDriveFileSystemDeletionListener handling %s event for %s", event.getName(),
-                    doc));
-        }
+        log.debug("NuxeoDriveFileSystemDeletionListener handling {} event for {}", event::getName, () -> doc);
         // Virtual event name
         String virtualEventName;
         if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())
@@ -215,11 +212,9 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             return null;
         } catch (NuxeoDriveContribException e) {
             // Nuxeo Drive contributions missing or component not ready
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Either Nuxeo Drive contributions are missing or the FileSystemItemAdapterService component is not ready (application has nor started yet) => ignoring event '%s'.",
-                        eventName));
-            }
+            log.debug(
+                    "Either Nuxeo Drive contributions are missing or the FileSystemItemAdapterService component is not ready (application has nor started yet) => ignoring event '{}'.",
+                    eventName);
             return null;
         }
     }

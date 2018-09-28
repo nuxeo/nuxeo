@@ -33,8 +33,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -79,7 +79,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NuxeoDriveActions.class);
+    private static final Logger log = LogManager.getLogger(NuxeoDriveActions.class);
 
     /** @since 9.3 */
     public static final String NUXEO_DRIVE_APPLICATION_NAME = "Nuxeo Drive";
@@ -346,18 +346,12 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             String packageName = DESKTOP_PACKAGE_PREFIX + DMG_EXTENSION;
             String packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName, OSX_PLATFORM));
-            if (log.isDebugEnabled()) {
-                log.debug(
-                        String.format("Added %s to the list of desktop packages available for download.", packageURL));
-            }
+            log.debug("Added {} to the list of desktop packages available for download.", packageURL);
             // Windows
             packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
             packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName, WINDOWS_PLATFORM));
-            if (log.isDebugEnabled()) {
-                log.debug(
-                        String.format("Added %s to the list of desktop packages available for download.", packageURL));
-            }
+            log.debug("Added {} to the list of desktop packages available for download.", packageURL);
         }
         // Debian / Ubuntu
         // TODO: remove when Debian package is available
@@ -390,10 +384,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
                 null, false, false, false);
         if (fileSystemItem == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.", doc.getPathAsString(),
-                        doc.getId()));
-            }
+            log.debug("Document {} ({}) is not adaptable as a FileSystemItem.", doc::getPathAsString, doc::getId);
         }
         return fileSystemItem;
     }

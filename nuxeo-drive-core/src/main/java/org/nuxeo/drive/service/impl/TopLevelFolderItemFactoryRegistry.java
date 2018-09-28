@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class TopLevelFolderItemFactoryRegistry
         extends ContributionFragmentRegistry<TopLevelFolderItemFactoryDescriptor> {
 
-    private static final Log log = LogFactory.getLog(TopLevelFolderItemFactoryRegistry.class);
+    private static final Logger log = LogManager.getLogger(TopLevelFolderItemFactoryRegistry.class);
 
     protected Map<String, TopLevelFolderItemFactory> factories = new HashMap<>();
 
@@ -55,10 +55,7 @@ public class TopLevelFolderItemFactoryRegistry
     public void contributionUpdated(String id, TopLevelFolderItemFactoryDescriptor contrib,
             TopLevelFolderItemFactoryDescriptor newOrigContrib) {
         try {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Putting contribution with class name %s in factory registry.",
-                        contrib.getName()));
-            }
+            log.trace("Putting contribution with class name {} in factory registry.", contrib::getName);
             factories.put(id, contrib.getFactory());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new NuxeoException("Cannot update topLevelFolderItemFactory contribution.", e);
@@ -67,17 +64,13 @@ public class TopLevelFolderItemFactoryRegistry
 
     @Override
     public void contributionRemoved(String id, TopLevelFolderItemFactoryDescriptor origContrib) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Removing contribution with class name %s in factory registry.", id));
-        }
+        log.trace("Removing contribution with class name {} in factory registry.", id);
         factories.remove(id);
     }
 
     @Override
     public TopLevelFolderItemFactoryDescriptor clone(TopLevelFolderItemFactoryDescriptor orig) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Cloning contribution with class name %s.", orig.getName()));
-        }
+        log.trace("Cloning contribution with class name {}.", orig::getName);
         TopLevelFolderItemFactoryDescriptor clone = new TopLevelFolderItemFactoryDescriptor();
         clone.factoryClass = orig.factoryClass;
         clone.parameters = orig.parameters;
@@ -86,10 +79,8 @@ public class TopLevelFolderItemFactoryRegistry
 
     @Override
     public void merge(TopLevelFolderItemFactoryDescriptor src, TopLevelFolderItemFactoryDescriptor dst) {
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Merging contribution with class name %s to contribution with class name %s",
-                    src.getName(), dst.getName()));
-        }
+        log.trace("Merging contribution with class name {} to contribution with class name {}", src::getName,
+                dst::getName);
         // Class
         if (src.getFactoryClass() != null && !src.getFactoryClass().equals(dst.getFactoryClass())) {
             dst.setFactoryClass(src.getFactoryClass());

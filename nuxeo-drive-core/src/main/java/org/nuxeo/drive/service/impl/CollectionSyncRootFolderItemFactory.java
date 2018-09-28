@@ -20,8 +20,8 @@ package org.nuxeo.drive.service.impl;
 
 import java.security.Principal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.CollectionSyncRootFolderItem;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(CollectionSyncRootFolderItemFactory.class);
+    private static final Logger log = LogManager.getLogger(CollectionSyncRootFolderItemFactory.class);
 
     public static final String FACTORY_NAME = "collectionSyncRootFolderItemFactory";
 
@@ -58,26 +58,17 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
 
         // Check Collection
         if (!Framework.getService(CollectionManager.class).isCollection(doc)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is not a Collection, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is not a Collection, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is HiddenInNavigation, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         // Check is document is in the trash
         if (!includeDeleted && doc.isTrashed()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is in the trash, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
+            log.debug("Document {} is in the trash, it cannot be adapted as a FileSystemItem.", doc::getId);
             return false;
         }
         if (!relaxSyncRootConstraint) {
@@ -86,11 +77,9 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
             Principal principal = doc.getCoreSession().getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
-                            doc.getId(), principal.getName()));
-                }
+                log.debug(
+                        "Document {} is not a registered synchronization root for user {}, it cannot be adapted as a FileSystemItem.",
+                        doc::getId, principal::getName);
                 return false;
             }
         }

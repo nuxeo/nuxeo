@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
@@ -49,7 +49,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(SharedSyncRootParentFolderItem.class);
+    private static final Logger log = LogManager.getLogger(SharedSyncRootParentFolderItem.class);
 
     public SharedSyncRootParentFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
             String folderName) {
@@ -76,11 +76,9 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                     // change, for now need to check permission
                     // See https://jira.nuxeo.com/browse/NXP-11146
                     if (!session.hasPermission(idRef, SecurityConstants.READ)) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "User %s has no READ access on synchronization root %s, not including it in children.",
-                                    session.getPrincipal().getName(), idRef));
-                        }
+                        log.debug(
+                                "User {} has no READ access on synchronization root {}, not including it in children.",
+                                session::getPrincipal, () -> idRef);
                         continue;
                     }
                     DocumentModel doc = session.getDocument(idRef);
@@ -93,16 +91,12 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                         FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
                                 false, false);
                         if (child == null) {
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "Synchronization root %s cannot be adapted as a FileSystemItem, maybe because user %s doesn't have the required permission on it (default required permission is ReadWrite). Not including it in children.",
-                                        idRef, session.getPrincipal().getName()));
-                            }
+                            log.debug(
+                                    "Synchronization root {} cannot be adapted as a FileSystemItem, maybe because user {} doesn't have the required permission on it (default required permission is ReadWrite). Not including it in children.",
+                                    () -> idRef, session::getPrincipal);
                             continue;
                         }
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Including synchronization root %s in children.", idRef));
-                        }
+                        log.debug("Including synchronization root {} in children.", idRef);
                         children.add(child);
                     }
                 }

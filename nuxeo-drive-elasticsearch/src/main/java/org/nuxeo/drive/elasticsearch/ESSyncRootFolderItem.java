@@ -19,8 +19,8 @@
 package org.nuxeo.drive.elasticsearch;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.ScrollDocumentModelList;
@@ -40,7 +40,7 @@ public class ESSyncRootFolderItem extends DefaultSyncRootFolderItem {
 
     private static final long serialVersionUID = 1020938498677864484L;
 
-    private static final Log log = LogFactory.getLog(ESSyncRootFolderItem.class);
+    private static final Logger log = LogManager.getLogger(ESSyncRootFolderItem.class);
 
     public ESSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         super(factoryName, parentItem, doc);
@@ -78,18 +78,13 @@ public class ESSyncRootFolderItem extends DefaultSyncRootFolderItem {
 
         EsScrollResult res;
         if (StringUtils.isEmpty(scrollId)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Executing Elasticsearch initial search request to scroll through the descendants of %s with batchSize = %d and keepAlive = %d: %s",
-                        docPath, batchSize, keepAlive, query));
-            }
+            log.debug(
+                    "Executing Elasticsearch initial search request to scroll through the descendants of {} with batchSize = {} and keepAlive = {}: {}",
+                    docPath, batchSize, keepAlive, query);
             res = ess.scroll(queryBuilder, keepAlive);
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Scrolling through the descendants of %s with scrollId = %s, batchSize = %s and keepAlive = %s",
-                        docPath, scrollId, batchSize, keepAlive));
-            }
+            log.debug("Scrolling through the descendants of {} with scrollId = {}, batchSize = {} and keepAlive = {}",
+                    docPath, scrollId, batchSize, keepAlive);
             res = ess.scroll(new EsScrollResult(queryBuilder, scrollId, keepAlive));
         }
         return new ScrollDocumentModelList(res.getScrollId(), res.getDocuments());

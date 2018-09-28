@@ -30,8 +30,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  */
 public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
 
-    private static final Log log = LogFactory.getLog(GroupChangesTestSuite.class);
+    private static final Logger log = LogManager.getLogger(GroupChangesTestSuite.class);
 
     @Inject
     protected UserManager userManager;
@@ -239,7 +239,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             throws Exception {
         List<FileSystemItemChange> changes;
         try {
-            log.trace("Remove user from " + groupName);
+            log.trace("Remove user from {}", groupName);
             updateGroup(groupName, Collections.emptyList(), null);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -254,7 +254,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             assertNull(change.getFileSystemItem());
             assertNull(change.getFileSystemItemName());
 
-            log.trace("Add user to " + groupName);
+            log.trace("Add user to {}", groupName);
             updateGroup(groupName, Arrays.asList("user"), null);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -269,7 +269,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             assertNotNull(change.getFileSystemItem());
             assertEquals(doc.getTitle(), change.getFileSystemItemName());
 
-            log.trace("Delete " + groupName);
+            log.trace("Delete {}", groupName);
             deleteGroup(groupName);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -284,7 +284,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             assertNull(change.getFileSystemItem());
             assertNull(change.getFileSystemItemName());
 
-            log.trace("Create " + groupName);
+            log.trace("Create {}", groupName);
             createGroup(groupName, Arrays.asList("user"), null);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -295,7 +295,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
                 // No events since the newly created group has not been added yet as a subgroup of parentGroup
                 assertTrue(changes.isEmpty());
 
-                log.trace("Add " + groupName + " as a subgroup of parentGroup");
+                log.trace("Add {} as a subgroup of parentGroup", groupName);
                 updateGroup("parentGroup", null, Arrays.asList(groupName));
 
             } finally {
@@ -324,7 +324,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         DocumentModel syncRoot;
         try {
             syncRoot = session.createDocument(session.createDocumentModel("/", "syncRoot", "Folder"));
-            log.trace("Grant ReadWrite to " + ancestorGroup + " on syncRoot");
+            log.trace("Grant ReadWrite to {} on syncRoot", ancestorGroup);
             setPermissions(syncRoot, new ACE(ancestorGroup, SecurityConstants.READ_WRITE));
             nuxeoDriveManager.registerSynchronizationRoot(userSession.getPrincipal(), syncRoot, userSession);
         } finally {
