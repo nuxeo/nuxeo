@@ -38,6 +38,8 @@
 
     <!-- Reset ${nuxeo.ctl} for using `catalina.sh` instead -->
     <var name="nuxeo.ctl" unset="true" />
+    <!-- as nuxeo.log.dir is not injected by nuxeoctl replace it manually -->
+    <replace file="${nuxeo.home}/lib/log4j2.xml" token="${sys:nuxeo.log.dir}" value="${nuxeo.home}/logs/"/>
     <condition property="nuxeo.ctl" value="${tomcat.home}/bin/catalina.sh" else="${tomcat.home}/bin/catalina.bat">
       <isset property="osfamily-unix" />
     </condition>
