@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Nuno Cunha <ncunha@nuxeo.com>
  *
  * $Id$
  */
@@ -181,10 +182,23 @@ public interface CommentManager {
      *
      * @param session the core session
      * @param documentId the document id
-     * @return the list of comments, or an em pty list if no comment is found
+     * @return the list of comments, ordered ascending by comment's creation date, or an empty list if no comment is
+     *         found
      * @since 10.3
      */
     List<Comment> getComments(CoreSession session, String documentId);
+
+    /**
+     * Gets all comments for a document.
+     *
+     * @param session the core session
+     * @param documentId the document id
+     * @param sortAscending whether to sort ascending or descending
+     * @return the list of comments, ordered by comment's creation date and according to sortAscending parameter, or an
+     *         empty list if no comment is found
+     * @since 10.3
+     */
+    List<Comment> getComments(CoreSession session, String documentId, boolean sortAscending);
 
     /**
      * Gets all comments for a document.
@@ -193,10 +207,26 @@ public interface CommentManager {
      * @param documentId the document id
      * @param pageSize the page size to query, give null or 0 to disable pagination
      * @param currentPageIndex the page index to query, give null or 0 to disable pagination
-     * @return the list of comments, or an empty list if no comment is found
+     * @return the list of comments, ordered ascending by comment's creation date, or an empty list if no comment is
+     *         found
      * @since 10.3
      */
     PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex);
+
+    /**
+     * Gets all comments for a document.
+     *
+     * @param session the core session
+     * @param documentId the document id
+     * @param pageSize the page size to query, give null or 0 to disable pagination
+     * @param currentPageIndex the page index to query, give null or 0 to disable pagination
+     * @param sortAscending whether to sort ascending or descending
+     * @return the list of comments, ordered by comment's creation date and according to sortAscending parameter, or an
+     *         empty list if no comment is found
+     * @since 10.3
+     */
+    PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex,
+            boolean sortAscending);
 
     /**
      * Updates a comment.
@@ -238,8 +268,7 @@ public interface CommentManager {
      * @param comment the comment containing the modifications
      * @since 10.3
      */
-    void updateExternalComment(CoreSession session, String entityId, Comment comment)
-            throws IllegalArgumentException;
+    void updateExternalComment(CoreSession session, String entityId, Comment comment) throws IllegalArgumentException;
 
     /**
      * Deletes an external comment.

@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Funsho David
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment.impl;
@@ -22,6 +23,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -73,7 +76,18 @@ public abstract class AbstractCommentManager implements CommentManager {
 
     @Override
     public List<Comment> getComments(CoreSession session, String documentId) {
-        return getComments(session, documentId, 0L, 0L);
+        return getComments(session, documentId, 0L, 0L, true);
+    }
+
+    @Override
+    public List<Comment> getComments(CoreSession session, String documentId, boolean sortAscending) {
+        return getComments(session, documentId, 0L, 0L, sortAscending);
+    }
+
+    @Override
+    public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
+            Long currentPageIndex) {
+        return getComments(session, documentId, pageSize, currentPageIndex, true);
     }
 
     protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentedDoc,

@@ -145,7 +145,7 @@ public class CommentAdapterTest extends BaseTest {
         queryParamsPage1.add("currentPageIndex", 0);
         JsonNode entriesPage1 = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment",
                 queryParamsPage1).get("entries");
-        expectedIds = new HashSet<>(asList(comment1Id, comment2Id));
+        expectedIds = new HashSet<>(asList(comment5Id, comment4Id));
         actualIds = new HashSet<>(entriesPage1.findValuesAsText("id"));
         assertEquals(expectedIds, actualIds);
 
@@ -154,7 +154,7 @@ public class CommentAdapterTest extends BaseTest {
         queryParamsPage2.add("currentPageIndex", 1);
         JsonNode entriesPage2 = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment",
                 queryParamsPage2).get("entries");
-        expectedIds = new HashSet<>(asList(comment3Id, comment4Id));
+        expectedIds = new HashSet<>(asList(comment3Id, comment2Id));
         actualIds = new HashSet<>(entriesPage2.findValuesAsText("id"));
         assertEquals(expectedIds, actualIds);
 
@@ -163,7 +163,7 @@ public class CommentAdapterTest extends BaseTest {
         queryParamsPage3.add("currentPageIndex", 2);
         JsonNode entriesPage3 = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment",
                 queryParamsPage3).get("entries");
-        expectedIds = new HashSet<>(singletonList(comment5Id));
+        expectedIds = new HashSet<>(singletonList(comment1Id));
         actualIds = new HashSet<>(entriesPage3.findValuesAsText("id"));
         assertEquals(expectedIds, actualIds);
     }

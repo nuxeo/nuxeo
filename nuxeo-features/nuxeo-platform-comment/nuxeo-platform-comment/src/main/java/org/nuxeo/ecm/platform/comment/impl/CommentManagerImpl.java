@@ -427,7 +427,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex) {
+            Long currentPageIndex, boolean sortAscending) {
         DocumentRef docRef = new IdRef(documentId);
         if (!session.exists(docRef)) {
             return new PartialList<>(Collections.emptyList(), 0);

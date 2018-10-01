@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Funsho David
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment.api;
@@ -22,6 +23,9 @@ package org.nuxeo.ecm.platform.comment.api;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * @since 10.3
@@ -146,5 +150,16 @@ public class CommentImpl implements Comment, ExternalEntity {
     @Override
     public void setEntity(String entity) {
         this.entity = entity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, parentId, ancestorIds, author, text, creationDate, modificationDate, entityId, origin,
+                entity);
     }
 }
