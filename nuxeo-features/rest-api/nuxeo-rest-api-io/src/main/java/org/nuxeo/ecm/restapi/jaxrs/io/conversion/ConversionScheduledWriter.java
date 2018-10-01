@@ -33,7 +33,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 7.4
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class ConversionScheduledWriter extends EntityWriter<ConversionScheduled> {
 
     public static final String ENTITY_TYPE = "conversionScheduled";

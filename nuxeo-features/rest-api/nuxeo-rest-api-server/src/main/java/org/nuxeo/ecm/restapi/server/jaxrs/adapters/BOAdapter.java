@@ -55,8 +55,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = BOAdapter.NAME, type = "BOService", targetType = "Document")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity",
-        MediaType.APPLICATION_JSON + "+esentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+esentity" })
 public class BOAdapter extends DefaultAdapter {
 
     public static final String NAME = "bo";
@@ -104,7 +103,7 @@ public class BOAdapter extends DefaultAdapter {
 
     @PUT
     @Path("{adapterName}")
-    @Consumes({ "application/json+nxentity", "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Object doPostAdapter(@PathParam("adapterName") String adapterName, BusinessAdapter input) {
         ctx.getCoreSession().saveDocument(input.getDocument());
 

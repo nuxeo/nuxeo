@@ -135,7 +135,7 @@ Examples
 1. Invoking a simple operation:
 
 POST /automation/Document.Fetch HTTP/1.1
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 Content-Type: application/json+nxrequest; charset=UTF-8
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 Host: localhost:8080
@@ -149,7 +149,7 @@ Here is an example on invoking Blob.Attach operation on a document given by its 
 
 
 POST /automation/Blob.Attach HTTP/1.1
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 Content-Type: multipart/related;
     boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
@@ -177,10 +177,10 @@ Content-ID: input
 -------------------------------
 
 In both examples you can see that the following Accept header is used:
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 
 This header is important since is is specifying that the client accept as a response either a JSON encoded entity, either a blob that may have any type (in case of blob download).
-The application/json+nxentity is the first content type to help the server choose the format of the response when returning an encoded object.
+The application/json is the first content type to help the server choose the format of the response when returning an encoded object.
 
 
 
@@ -198,17 +198,17 @@ Apart these possible outputs of an operation - you can have an operation which i
 
 All these cases are represented using the following HTTP responses:
 
-1. document  -> a JSON object describing the document is returned. The used Content-Type is "application/json+nxentity"
-2. documents -> a JSON object describing the document list is returned. The used Content-Type is "application/json+nxentity"
+1. document  -> a JSON object describing the document is returned. The used Content-Type is "application/json"
+2. documents -> a JSON object describing the document list is returned. The used Content-Type is "application/json"
 3. blob      -> The blob raw content is returned. The used Content-Type will be the same as the blob mime-type.
 4. blobs     -> A Multipart/Mixed content is returned. Each part will be a blob from the list (order is preserved). Each part will use the right Content-Type as given by the blob mime-type.
 5. void      -> HTTP 204 is returned. No content and no Content-Type is returned.
 6. exception -> A status code > 400 is returned and the content will be the server exception encoded as a JSON object.
-                The used Content-Type is "application/json+nxentity".
+                The used Content-Type is "application/json".
                 In the case of an exception the server try to do this best to return a meaningful status code.
                 If no suitable status code is found a generic 500 code (server error) will be used.
 
-You noticed that each time when return objects are encoded as JSON objects the "application/json+nxentity" Content-Type will be used.
+You noticed that each time when return objects are encoded as JSON objects the "application/json" Content-Type will be used.
 We also saw that only document, documents and exception objects are encoded as JSON.
 Here we will discuss the JSON format used to encode these objects
 
@@ -228,7 +228,7 @@ All the other document properties are contained within a "properties" map using 
 the top level entries.
 Complex properties are represented as embedded JSON objects and list properties as embedded JSON arrays.
 
-*Note* All "application/json+nxentity" JSON entities always contains a required top level property: "entity-type"
+*Note* All "application/json" JSON entities always contains a required top level property: "entity-type"
 This property is used to identity which type of object is described. There are 3 possible entity types:
 - document
 - documents
@@ -337,7 +337,7 @@ X-NXVoidOperation: true
 Example:
 
 POST /automation/Blob.Attach HTTP/1.1
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 Content-Type: multipart/related;
     boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
@@ -548,7 +548,7 @@ Content-Type: application/json+nxautomation
 REQUEST:
 
 POST /automation/Blob.Attach HTTP/1.1
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 Content-Type: multipart/related;
     boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
@@ -583,7 +583,7 @@ RESPONSE: 204
 REQUEST:
 
 POST /automation/Document.Fetch HTTP/1.1
-Accept: application/json+nxentity, */*
+Accept: application/json, */*
 Content-Type: application/json+nxrequest; charset=UTF-8
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 X-NXDocumentProperties: *
@@ -596,7 +596,7 @@ Host: localhost:8080
 RESPONSE:
 
 HTTP/1.1 200 OK
-Content-Type: application/json+nxentity
+Content-Type: application/json
 Content-Length: 1121
 
 {

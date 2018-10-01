@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 @WebObject(type = "users")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
 
     public static final String PAGE_PROVIDER_NAME = "nuxeo_principals_listing";

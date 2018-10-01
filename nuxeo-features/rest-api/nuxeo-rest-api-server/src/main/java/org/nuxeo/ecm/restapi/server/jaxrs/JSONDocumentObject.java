@@ -55,11 +55,8 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 
 @WebObject(type = "Document")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity",
-        MediaType.APPLICATION_JSON + "+esentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+esentity" })
 public class JSONDocumentObject extends DocumentObject {
-
-    private static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
 
     protected static final Log log = LogFactory.getLog(JSONDocumentObject.class);
 
@@ -75,7 +72,7 @@ public class JSONDocumentObject extends DocumentObject {
      * @return the document or the last version document in case of versioning handled
      */
     @PUT
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
         DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
@@ -92,7 +89,7 @@ public class JSONDocumentObject extends DocumentObject {
     }
 
     @POST
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response doPost(DocumentModel inputDoc) {
         CoreSession session = ctx.getCoreSession();
 

@@ -38,6 +38,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonParser;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.StringBlob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -143,19 +145,19 @@ public class Request extends HashMap<String, String> {
         }
         // Handle result
         String lctype = ctype.toLowerCase();
-        if (lctype.startsWith(CTYPE_ENTITY)) {
-            return JsonMarshalling.readEntity(IOUtils.read(stream));
-        } else if (lctype.startsWith(CTYPE_AUTOMATION)) {
+        if (lctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
-        } else if (lctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of
-                                                               // blobs
+        } else if (lctype.startsWith(CTYPE_ENTITY)) {
+            String body = IOUtils.read(stream);
+            try {
+                return JsonMarshalling.readEntity(body);
+            } catch (IOException | RuntimeException e) {
+                return readStringBlob(ctype, getFileName(disp), body);
+            }
+        } else if (lctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of blobs
             return readBlobs(ctype, stream);
         } else { // a blob?
-            String fname = null;
-            if (disp != null) {
-                fname = getFileName(disp);
-            }
-            return readBlob(ctype, fname, stream);
+            return readBlob(ctype, getFileName(disp), stream);
         }
     }
 
@@ -189,7 +191,15 @@ public class Request extends HashMap<String, String> {
         return blob;
     }
 
+    protected static Blob readStringBlob(String ctype, String fileName, String content) {
+        return new StringBlob(fileName, content, ctype);
+    }
+
     protected static String getFileName(String ctype) {
+        if (ctype == null) {
+            return null;
+        }
+
         Matcher m = RFC2231_ATTR_PATTERN.matcher(ctype);
         if (m.find()) {
             try {

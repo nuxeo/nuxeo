@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
  * @since 5.7.3
  */
 @WebObject(type = "user")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
 
     // match everything until:

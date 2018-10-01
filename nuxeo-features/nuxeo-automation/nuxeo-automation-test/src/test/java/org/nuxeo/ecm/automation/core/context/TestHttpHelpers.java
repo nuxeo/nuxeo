@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +82,7 @@ public class TestHttpHelpers {
     public void canUseHttpHelperPOST() throws OperationException, IOException {
         String data = "{\"entity-type\": \"document\",\"type\": \"Workspace\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
         Map<String, String> headers = new HashMap<>();
-        headers.put("Content-type", "application/json+nxentity");
+        headers.put("Content-type", MediaType.APPLICATION_JSON);
         Map<String, Object> params = new HashMap<>();
         OperationContext ctx = new OperationContext(session);
         ctx.put("data", data);

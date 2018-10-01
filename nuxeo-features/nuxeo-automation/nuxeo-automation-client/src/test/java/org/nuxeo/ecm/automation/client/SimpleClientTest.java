@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.client.model.Documents;
 
+import javax.ws.rs.core.MediaType;
+
 /**
  * @author dmetzler
  */
@@ -40,7 +42,7 @@ public class SimpleClientTest {
 
     @Test
     public void callingAutomationSendsAnHttpRequest() throws Exception {
-        client.setResponse("application/json+nxentity", HttpResponses.DOC_WORKSPACE);
+        client.setResponse(MediaType.APPLICATION_JSON, HttpResponses.DOC_WORKSPACE);
 
         Session session = client.getSession("Administrator", "Administrator");
         Documents docs = (Documents) session.newRequest("Document.Query").set("query", "SELECT * FROM Document").execute();
@@ -52,7 +54,7 @@ public class SimpleClientTest {
     @Test
     public void returningADocWitNoPathShouldNotThrowError() throws Exception {
         // NXP-6777
-        client.setResponse("application/json+nxentity", HttpResponses.DOC_NOPATH);
+        client.setResponse(MediaType.APPLICATION_JSON, HttpResponses.DOC_NOPATH);
 
         Session session = client.getSession("Administrator", "Administrator");
         Documents docs = (Documents) session.newRequest("Document.Query").set("query", "SELECT * FROM Document").execute();

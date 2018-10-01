@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 @WebAdapter(name = ConvertAdapter.NAME, type = "convertAdapter")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class ConvertAdapter extends DefaultAdapter {
 
     public static final String NAME = "convert";

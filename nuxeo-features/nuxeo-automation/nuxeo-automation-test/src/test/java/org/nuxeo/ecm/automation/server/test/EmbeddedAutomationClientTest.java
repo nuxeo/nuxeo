@@ -199,7 +199,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testBlobSummaries() throws Exception {
         Blob blob = (Blob) session.newRequest(TestDataCapsule.ID).execute();
-        assertEquals("TestDataCapsule - application/json - 25 B", blob.toString());
+        assertEquals("TestDataCapsule", blob.getFileName());
+        assertEquals("application/json", blob.getMimeType());
+        assertEquals(25, blob.getLength());
     }
 
     @Test
