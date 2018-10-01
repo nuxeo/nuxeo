@@ -43,7 +43,7 @@ import org.nuxeo.targetplatforms.io.JSONExporter;
  * @since 5.9.3
  */
 @Provider
-@Produces({ "application/json", "text/plain" })
+@Produces({ MediaType.APPLICATION_JSON, "text/plain" })
 public class JsonWriter implements MessageBodyWriter<Object> {
 
     @Context
