@@ -46,7 +46,7 @@ object NuxeoImporter {
       .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
-      .header("content-type", "application/json+nxrequest")
+      .header("content-type", "application/json")
       .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
   }
 

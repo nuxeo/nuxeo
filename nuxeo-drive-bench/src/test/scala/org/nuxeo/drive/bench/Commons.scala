@@ -210,7 +210,7 @@ object Actions {
     http("Synchronyze a folder")
       .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .basicAuth("${user}", "${password}")
       .body(StringBody("""{"params":{"enable": "true"}}""".stripMargin))
       .check(status.in(200))
@@ -220,7 +220,7 @@ object Actions {
     http("Synchronyze a folder")
       .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .basicAuth("${user}", "${password}")
       .body(StringBody("""{"params":{"enable": "false"}}""".stripMargin))
       .check(status.in(200))
@@ -283,7 +283,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params":{}}"""))
       .check(status.in(200)).check(regex("serverVersion").exists)
   }
@@ -296,7 +296,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params":{}}"""))
       .check(status.in(200)).check(regex("canCreateChild").exists)
   }
@@ -309,7 +309,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params": {"id": """" + id + """"}}""".stripMargin))
       .check(status.in(200))
   }
@@ -339,7 +339,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params": """ + params.toString + "}".stripMargin))
       .check(status.in(200))
   }
@@ -352,7 +352,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params": {"id": """" + id + """"}}""".stripMargin))
       .check(status.in(200))
   }
@@ -376,7 +376,7 @@ object Actions {
       .header("X-Device-Id", "${deviceId}")
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
-      .header("Content-Type", "application/json+nxrequest")
+      .header("Content-Type", "application/json")
       .body(StringBody("""{"params": """ + params.toString + "}".stripMargin))
       .check(status.in(200))
   }
