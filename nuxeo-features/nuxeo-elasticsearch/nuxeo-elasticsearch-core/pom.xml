@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
-    <version>8.10-HF37-SNAPSHOT</version>
+    <version>8.10-HF37</version>
   </parent>
   <artifactId>nuxeo-elasticsearch-core</artifactId>
   <name>Elasticsearch Connector implementation</name>
