@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.function.Function;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
@@ -36,42 +38,32 @@ public class TestNuxeoAuthenticationFilter {
 
     /**
      * Computation of the requested page based on request info.
-     * <p>
-     * Case of a servlet mapped with {@code <url-pattern>*.xhtml</url-pattern>}
      */
     @Test
-    public void testRequestedPageMatchExtension() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        // here we use info that a servlet container would provide, based on parsing per the servlet spec
-        when(request.getRequestURI()).thenReturn("/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123?gee=moo");
-        when(request.getContextPath()).thenReturn("/nuxeo");
-        when(request.getServletPath()).thenReturn("/foo/bar.xhtml");
-        when(request.getPathInfo()).thenReturn(null);
-        when(request.getQueryString()).thenReturn("gee=moo");
+    public void testGetRequestedPage() throws Exception {
+        // case of a servlet mapped with <url-pattern>*.xhtml</url-pattern>
+        doTestGetRequestedPage("foo/bar.xhtml", "/nuxeo/foo/bar.xhtml", "/nuxeo", "/foo/bar.xhtml", null, null);
+        doTestGetRequestedPage("foo/bar.xhtml", "/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123?gee=moo", "/nuxeo",
+                "/foo/bar.xhtml", null, "gee=moo");
+        // case of a servlet mapped with <url-pattern>/foo/*</url-pattern>
+        doTestGetRequestedPage("foo/bar.xhtml", "/nuxeo/foo/bar.xhtml", "/nuxeo", "/foo", "/bar.xhtml", null);
+        doTestGetRequestedPage("foo/bar.xhtml", "/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123?gee=moo", "/nuxeo",
+                "/foo", "/bar.xhtml", "gee=moo");
+        // index.jsp requested
+        doTestGetRequestedPage("ui/index.jsp", "/nuxeo/ui/index.jsp", "/nuxeo", "/ui/index.jsp", null, null);
+        // index.jsp not in the request uri but present in the servlet path (welcome file)
+        doTestGetRequestedPage("ui/", "/nuxeo/ui/", "/nuxeo", "/ui/index.jsp", null, null);
+    }
 
-        String page = NuxeoAuthenticationFilter.getRequestedPage(request);
-        assertEquals("foo/bar.xhtml", page);
+    protected static void doTestGetRequestedPage(String expected, String requestURI, String contextPath,
+            String servletPath, String pathInfo, String queryString) {
+        doTestMockRequest(NuxeoAuthenticationFilter::getRequestedPage, expected, requestURI, contextPath, servletPath,
+                pathInfo, queryString);
     }
 
     /**
-     * Computation of the requested page based on request info.
-     * <p>
-     * Case of a servlet mapped with {@code <url-pattern>/foo/*</url-pattern>}
+     * Computation of the requested URL based on request info.
      */
-    @Test
-    public void testRequestedPageMatchPath() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        // here we use info that a servlet container would provide, based on parsing per the servlet spec
-        when(request.getRequestURI()).thenReturn("/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123?gee=moo");
-        when(request.getContextPath()).thenReturn("/nuxeo");
-        when(request.getServletPath()).thenReturn("/foo");
-        when(request.getPathInfo()).thenReturn("/bar.xhtml");
-        when(request.getQueryString()).thenReturn("gee=moo");
-
-        String page = NuxeoAuthenticationFilter.getRequestedPage(request);
-        assertEquals("foo/bar.xhtml", page);
-    }
-
     @Test
     public void testGetRequestedUrl() {
         doTestGetRequestedUrl("", null);
@@ -84,17 +76,36 @@ public class TestNuxeoAuthenticationFilter {
         doTestGetRequestedUrl("", "conversationId=1234");
     }
 
-    protected void doTestGetRequestedUrl(String expected, String queryString) {
-        HttpServletRequest request = mock(HttpServletRequest.class);
+    protected static void doTestGetRequestedUrl(String expectedSuffix, String queryString) {
+        doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/foo/bar.xhtml", "/nuxeo", "/foo/bar.xhtml",
+                null, queryString);
+        doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/foo/bar.xhtml", "/nuxeo", "/foo", "/bar.xhtml",
+                queryString);
         // here we use info that a servlet container would provide, based on parsing per the servlet spec
-        when(request.getRequestURI()).thenReturn("/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123");
-        when(request.getContextPath()).thenReturn("/nuxeo");
-        when(request.getServletPath()).thenReturn("/foo");
-        when(request.getPathInfo()).thenReturn("/bar.xhtml");
-        when(request.getQueryString()).thenReturn(queryString);
+        doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123",
+                "/nuxeo", "/foo", "/bar.xhtml", queryString);
+        // index.jsp requested
+        doTestGetRequestedUrl("ui/index.jsp" + expectedSuffix, "/nuxeo/ui/index.jsp", "/nuxeo", "/ui/index.jsp", null,
+                queryString);
+        // index.jsp not in the request uri but present in the servlet path (welcome file)
+        doTestGetRequestedUrl("ui/" + expectedSuffix, "/nuxeo/ui/", "/nuxeo", "/ui/index.jsp", null, queryString);
+    }
 
-        String url = NuxeoAuthenticationFilter.getRequestedUrl(request);
-        assertEquals("foo/bar.xhtml" + expected, url);
+    protected static void doTestGetRequestedUrl(String expected, String requestURI, String contextPath,
+            String servletPath, String pathInfo, String queryString) {
+        doTestMockRequest(NuxeoAuthenticationFilter::getRequestedUrl, expected, requestURI, contextPath, servletPath,
+                pathInfo, queryString);
+    }
+
+    protected static void doTestMockRequest(Function<HttpServletRequest, String> function, String expected,
+            String requestURI, String contextPath, String servletPath, String pathInfo, String queryString) {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURI()).thenReturn(requestURI);
+        when(request.getContextPath()).thenReturn(contextPath);
+        when(request.getServletPath()).thenReturn(servletPath);
+        when(request.getPathInfo()).thenReturn(pathInfo);
+        when(request.getQueryString()).thenReturn(queryString);
+        assertEquals(expected, function.apply(request));
     }
 
 }
