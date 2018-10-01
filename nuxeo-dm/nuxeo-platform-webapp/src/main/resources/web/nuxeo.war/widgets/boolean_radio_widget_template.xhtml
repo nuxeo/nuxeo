@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
   <c:if test="#{widget.mode == 'edit' }">
-    <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox">
+    <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox" required="#{widgetProperty_required}">
       <f:selectItem itemValue="#{true}" itemLabel="#{messages['label.yes']}" />
       <f:selectItem itemValue="#{false}" itemLabel="#{messages['label.no']}" />
     </h:selectOneRadio>
