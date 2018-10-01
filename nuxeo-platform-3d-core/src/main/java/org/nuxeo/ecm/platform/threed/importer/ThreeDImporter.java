@@ -74,10 +74,8 @@ public class ThreeDImporter extends AbstractFileImporter {
     protected String getModelFilename(final Blob zipContent) throws IOException {
         /* Extract ZIP contents */
         ZipEntry zipEntry;
-        ZipInputStream zipInputStream = null;
         String threeDFilename = null;
-        try {
-            zipInputStream = new ZipInputStream(zipContent.getStream());
+        try (ZipInputStream zipInputStream = new ZipInputStream(zipContent.getStream())) {
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 // skip if the entry is a directory, if it's not a supported extension or if it's hidden (by convention)
                 boolean isSupported = SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(zipEntry.getName()));
@@ -86,14 +84,6 @@ public class ThreeDImporter extends AbstractFileImporter {
                 }
                 threeDFilename = FileManagerUtils.fetchTitle(zipEntry.getName());
                 break;
-            }
-        } finally {
-            try {
-                if (zipInputStream != null) {
-                    zipInputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return threeDFilename;
