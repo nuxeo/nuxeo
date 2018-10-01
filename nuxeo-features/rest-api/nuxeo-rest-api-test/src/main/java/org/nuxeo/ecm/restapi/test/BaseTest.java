@@ -59,7 +59,7 @@ public class BaseTest {
     protected static final String REST_API_URL = "http://localhost:18090/api/v1/";
 
     protected static enum RequestType {
-        GET, POST, DELETE, PUT, POSTREQUEST, GETES
+        GET, POST, DELETE, PUT, POSTREQUEST
     }
 
     protected ObjectMapper mapper;
@@ -148,11 +148,7 @@ public class BaseTest {
             wr = wr.queryParams(queryParams);
         }
         Builder builder;
-        if (requestType == RequestType.GETES) {
-            builder = wr.accept("application/json+esentity");
-        } else {
-            builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
-        }
+        builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
 
         // Adding some headers if needed
         if (headers != null && !headers.isEmpty()) {
@@ -163,7 +159,6 @@ public class BaseTest {
         ClientResponse response = null;
         switch (requestType) {
         case GET:
-        case GETES:
             response = builder.get(ClientResponse.class);
             break;
         case POST:

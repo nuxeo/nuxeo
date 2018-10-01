@@ -20,7 +20,7 @@ package org.nuxeo.elasticsearch.config;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 
 /**
  * @since 7.2

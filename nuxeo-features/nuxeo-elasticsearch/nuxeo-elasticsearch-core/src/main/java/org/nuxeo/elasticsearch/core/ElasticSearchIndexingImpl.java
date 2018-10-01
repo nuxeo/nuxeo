@@ -54,7 +54,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.nuxeo.common.logging.SequenceTracer;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;

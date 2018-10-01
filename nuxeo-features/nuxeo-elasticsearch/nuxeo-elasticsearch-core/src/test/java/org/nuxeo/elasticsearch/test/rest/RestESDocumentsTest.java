@@ -101,22 +101,6 @@ public class RestESDocumentsTest extends BaseTest {
     AutomationService automationService;
 
     @Test
-    public void iCanBrowseTheRepoByItsId() throws Exception {
-        // Given a document
-        DocumentModel doc = RestServerInit.getNote(0, session);
-
-        // When i do a GET Request
-        try (CloseableClientResponse response = getResponse(RequestType.GETES, "id/" + doc.getId())) {
-
-            // Then I get the document as Json will all the properties
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            // System.err.println(node.toString());
-            assertEquals("Note 0", node.get("note:note").textValue());
-        }
-    }
-
-    @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
         // wait for async jobs
         waitForAsync();

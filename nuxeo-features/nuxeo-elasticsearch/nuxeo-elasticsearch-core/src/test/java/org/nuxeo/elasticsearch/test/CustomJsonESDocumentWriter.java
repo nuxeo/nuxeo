@@ -23,7 +23,7 @@ import java.io.IOException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
 
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -31,8 +31,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 /**
  * Custom writer to index the content of a note as a raw json
  */
-@Provider
-@Produces({ JsonESDocumentWriter.MIME_TYPE })
 public class CustomJsonESDocumentWriter extends JsonESDocumentWriter {
 
     @Override
