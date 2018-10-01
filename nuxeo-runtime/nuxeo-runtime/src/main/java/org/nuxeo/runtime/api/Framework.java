@@ -513,40 +513,6 @@ public final class Framework {
     }
 
     /**
-     * Since 5.6, this method stops the application if property {@link #NUXEO_STRICT_RUNTIME_SYSTEM_PROP} is set to
-     * true, and one of the following errors occurred during startup.
-     * <ul>
-     * <li>Component XML parse error.
-     * <li>Contribution to an unknown extension point.
-     * <li>Component with an unknown implementation class (the implementation entry exists in the XML descriptor but
-     * cannot be resolved to a class).
-     * <li>Uncatched exception on extension registration / unregistration (either in framework or user component code)
-     * <li>Uncatched exception on component activation / deactivation (either in framework or user component code)
-     * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be resolved to a resource)
-     * </ul>
-     * <p>
-     * Before 5.6, this method stopped the application if development mode was enabled (i.e. org.nuxeo.dev system
-     * property is set) but this is not the case anymore to handle a dev mode that does not stop the runtime framework
-     * when using hot reload.
-     *
-     * @param t the exception or null if none
-     * @deprecated since 9.1 DON'T USE THIS METHOD ANYMORE, its behavior is not documented. It also seems to not work.
-     *             If you want to stop server startup add error messages to {@link RuntimeService#getMessageHandler()}.
-     */
-    @Deprecated
-    public static void handleDevError(Throwable t) {
-        if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
-            System.err.println("Fatal error caught in strict runtime mode => exiting.");
-            if (t != null) {
-                t.printStackTrace();
-            }
-            System.exit(1);
-        } else if (t != null) {
-            log.error(t, t);
-        }
-    }
-
-    /**
      * @see FileEventTracker
      * @param aFile The file to delete
      * @param aMarker the marker Object

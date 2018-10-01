@@ -30,6 +30,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.unboundid.scim.data.UserResource;
 import com.unboundid.scim.marshal.Unmarshaller;
 import com.unboundid.scim.marshal.xml.XmlUnmarshaller;
@@ -45,6 +48,8 @@ import com.unboundid.scim.sdk.InvalidResourceException;
 @Provider
 @Consumes({ "application/xml", "application/json" })
 public class UserResourceReader implements MessageBodyReader<UserResource> {
+
+    private static final Log log = LogFactory.getLog(UserResourceReader.class);
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -67,8 +72,7 @@ public class UserResourceReader implements MessageBodyReader<UserResource> {
          try {
             return unmarshaller.unmarshal(entityStream, CoreSchema.USER_DESCRIPTOR, UserResource.USER_RESOURCE_FACTORY);
         } catch (InvalidResourceException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

@@ -45,7 +45,7 @@ public class DownloadDescriptorParser {
         try {
             document = reader.read(in);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return document;
     }

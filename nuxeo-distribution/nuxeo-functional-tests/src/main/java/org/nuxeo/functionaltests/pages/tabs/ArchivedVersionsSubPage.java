@@ -22,6 +22,8 @@ package org.nuxeo.functionaltests.pages.tabs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -44,6 +46,8 @@ import static org.junit.Assert.fail;
  * Representation of a Archived versions sub tab page.
  */
 public class ArchivedVersionsSubPage extends DocumentBasePage {
+
+    private static final Log log = LogFactory.getLog(ArchivedVersionsSubPage.class);
 
     private static final String DELETE_ACTION_ID = "CURRENT_VERSION_SELECTION_DELETE";
 
@@ -133,7 +137,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             }
         } catch (NotFoundException nfe) {
             if (canExecute) {
-                nfe.printStackTrace();
+                log.error(nfe, nfe);
                 fail(actionId + " action should be enabled because there is at least one version selected.");
             }
         }
