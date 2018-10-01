@@ -24,7 +24,7 @@ Automation operations are exposed to run producers and consumers.
 
 1. Run a random producers of document messages, these message represent Folder and File document a blob. The total number of document created is: `nbThreads * nbDocuments`.
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomDocumentProducers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomDocumentProducers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"nbDocuments": 100, "nbThreads": 5}}'
 ```
 
@@ -41,7 +41,7 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 
 2. Run consumers of document messages creating Nuxeo documents, the concurrency will match the previous nbThreads producers parameters
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"rootFolder": "/default-domain/workspaces"}}'
 ```
 
@@ -66,7 +66,7 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocu
 
 1. Run producers of random blob messages
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomBlobProducers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomBlobProducers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"nbBlobs": 100, "nbThreads": 5}}'
 ```
 
@@ -82,7 +82,7 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 
 2. Run consumers of blob messages importing into the Nuxeo binary store, saving blob information into a new Log.
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"blobProviderName": "default", "logBlobInfo": "blob-info"}}'
 ```
 
@@ -98,14 +98,14 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlob
 
 3. Run producers of random Nuxeo document messages which use produced blobs created in step 2
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomDocumentProducers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRandomDocumentProducers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"nbDocuments": 200, "nbThreads": 5, "logBlobInfo": "blob-info"}}'
 ```
 Same params listed in the previous previous runRandomDocumentProducers call, here we set the `logBlobInfo` parameter.
 
 4. Run consumers of document messages
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"rootFolder": "/default-domain/workspaces"}}'
 ```
 
@@ -117,7 +117,7 @@ Create a file containing the list of files to import then:
 
 1. Generate blob messages corresponding to the files, dispatch the messages into 4 partitions:
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runFileBlobProducers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runFileBlobProducers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"listFile": "/tmp/my-file-list.txt", "logSize": 4}}'
 ```
 
@@ -153,7 +153,7 @@ added to the blob before importing it.
 
 2. Run consumers of blob messages adding watermark to file and importing into the Nuxeo binary store, saving blob information into a new Log.
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlobConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"watermark": "foo"}}'
 ```
 
@@ -183,7 +183,7 @@ To do this instead of the document creationg step 4 we do:
 
 4. Run Redis consumers of document messages
   ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRedisDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' \
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRedisDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
   -d '{"params":{"rootFolder": "/default-domain/workspaces"}}'
 ```
 
