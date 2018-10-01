@@ -117,7 +117,7 @@
       Must extend the JsonESDocumentWriter class.
 
       <code>
-        <writer class="org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter" />
+        <writer class="org.nuxeo.elasticsearch.io.JsonESDocumentWriter" />
       </code>
 
     </documentation>

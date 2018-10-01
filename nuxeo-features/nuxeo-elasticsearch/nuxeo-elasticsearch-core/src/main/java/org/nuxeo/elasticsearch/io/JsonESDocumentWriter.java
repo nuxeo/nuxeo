@@ -17,16 +17,13 @@
  *     Benoit Delbosc
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.automation.jaxrs.io.documents;
+package org.nuxeo.elasticsearch.io;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,18 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -68,50 +56,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *
  * @since 5.9.3
  */
-@Provider
-@Produces({ JsonESDocumentWriter.MIME_TYPE })
-public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
-
-    public static final String MIME_TYPE = "application/json+esentity";
-
-    public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
-
-    @Context
-    protected HttpHeaders headers;
-
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return DocumentModel.class.isAssignableFrom(type) && MIME_TYPE.equals(mediaType.toString());
-    }
-
-    @Override
-    public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
-        return -1L;
-    }
-
-    @Override
-    public void writeTo(DocumentModel doc, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-                    throws IOException, WebApplicationException {
-        // schema names: dublincore, file, ... or *
-        List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
-        String[] schemas = null;
-        if (props != null && !props.isEmpty()) {
-            schemas = StringUtils.split(props.get(0), ", ");
-        }
-        writeDocument(entityStream, doc, schemas, null);
-    }
-
-    public void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers) throws IOException {
-
-        jg.writeStartObject();
-        writeSystemProperties(jg, doc);
-        writeSchemas(jg, doc, schemas);
-        writeContextParameters(jg, doc, contextParameters);
-        jg.writeEndObject();
-        jg.flush();
-    }
+public class JsonESDocumentWriter {
 
     /**
      * @since 7.2
@@ -228,14 +173,14 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas,
-            Map<String, String> contextParameters) throws IOException {
-        writeDoc(JsonHelper.createJsonGenerator(out), doc, schemas, contextParameters, headers);
-    }
-
     public void writeESDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
             Map<String, String> contextParameters) throws IOException {
-        writeDoc(jg, doc, schemas, contextParameters, null);
+        jg.writeStartObject();
+        writeSystemProperties(jg, doc);
+        writeSchemas(jg, doc, schemas);
+        writeContextParameters(jg, doc, contextParameters);
+        jg.writeEndObject();
+        jg.flush();
     }
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema, ServletRequest request)
