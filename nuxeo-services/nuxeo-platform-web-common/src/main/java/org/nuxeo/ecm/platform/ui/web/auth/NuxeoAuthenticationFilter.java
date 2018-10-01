@@ -149,6 +149,10 @@ public class NuxeoAuthenticationFilter implements Filter {
     /** Used internally as a marker. */
     protected static final Principal DIRECTORY_ERROR_PRINCIPAL = new PrincipalImpl("__DIRECTORY_ERROR__\0\0\0");
 
+    protected static final String INDEX_JSP = "index.jsp";
+
+    protected static final String SLASH_INDEX_JSP = "/" + INDEX_JSP;
+
     /** The Seam conversation id query parameter. */
     protected static final String CONVERSATION_ID = "conversationId";
 
@@ -998,6 +1002,13 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static String getRequestedPage(HttpServletRequest httpRequest) {
         String path = httpRequest.getServletPath(); // use decoded and normalized servlet path
+        if (path.endsWith(SLASH_INDEX_JSP)) {
+            // the welcome file (index.jsp) is present in the servlet path
+            if (!httpRequest.getRequestURI().contains(SLASH_INDEX_JSP)) {
+                // remove it if it was not specified explicitly
+                path = path.substring(0, path.length() - INDEX_JSP.length());
+            }
+        }
         String info = httpRequest.getPathInfo();
         if (info != null) {
             path = path + info;
