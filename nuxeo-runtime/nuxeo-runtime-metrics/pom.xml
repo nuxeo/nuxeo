@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>8.10-HF37-SNAPSHOT</version>
+    <version>8.10-HF38-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
