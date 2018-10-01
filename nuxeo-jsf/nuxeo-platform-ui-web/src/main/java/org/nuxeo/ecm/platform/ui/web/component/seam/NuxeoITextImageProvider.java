@@ -63,7 +63,11 @@ public class NuxeoITextImageProvider implements ImageProvider {
         // pass jsession id for authentication propagation
         String uriPath = URIUtils.getURIPath(src);
         src = uriPath + ";jsessionid=" + DocumentModelFunctions.extractJSessionId(request);
-        URI uri = URI.create(src);
+        if (!src.startsWith("http")) {
+            // sanity double check
+            throw new RuntimeException("Invalid source: " + src);
+        }
+        URI uri = URI.create(src); // NOSONAR (only HTTP/HTTPS URIs allowed)
         String uriQuery = uri.getQuery();
         if (uriQuery != null && uriQuery.length() > 0) {
             src = src + '?' + uriQuery;
