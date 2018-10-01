@@ -95,8 +95,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             try {
                 httpResponse.flushBuffer();
             } catch (IOException e) {
-                log.error("Error while flushing buffer:" + e.getMessage());
-                e.printStackTrace();
+                log.error("Error while flushing buffer:" + e.getMessage(), e);
             }
             return true;
         } else {
