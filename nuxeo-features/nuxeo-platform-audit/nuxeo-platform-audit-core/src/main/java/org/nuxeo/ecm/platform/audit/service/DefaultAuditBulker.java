@@ -135,7 +135,14 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
         lock.lock();
         try {
             isFilled.signalAll();
-            return isEmpty.await(time, unit);
+            long nanos = unit.toNanos(time);
+            while (!queue.isEmpty()) {
+                if (nanos <= 0) {
+                    return false;
+                }
+                nanos = isEmpty.awaitNanos(nanos);
+            }
+            return true;
         } finally {
             lock.unlock();
         }
@@ -161,7 +168,7 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
             while (!stopped) {
                 lock.lock();
                 try {
-                    isFilled.await(timeout, TimeUnit.MILLISECONDS);
+                    isFilled.await(timeout, TimeUnit.MILLISECONDS); // NOSONAR (spurious wakeups don't matter)
                     if (queue.isEmpty()) {
                         continue;
                     }
