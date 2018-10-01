@@ -85,7 +85,6 @@ public class PackWar {
             "commons-lang3", //
             "jcl-over-slf4j", //
             "slf4j-api", //
-            "slf4j-log4j12", //
             "tomcat-juli-adapters", //
             // JDBC
             "derby", // Derby
