@@ -15,6 +15,7 @@
  *
  * Contributors:
  *       Kevin Leturc <kleturc@nuxeo.com>
+ *       Nuno Cunha <ncunha@nuxeo.com>
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
@@ -59,7 +60,8 @@ public class CommentAdapter extends DefaultAdapter {
             @QueryParam("currentPageIndex") @DefaultValue("0") Long currentPageIndex) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        return commentManager.getComments(getContext().getCoreSession(), doc.getId(), pageSize, currentPageIndex);
+        return commentManager.getComments(getContext().getCoreSession(), doc.getId(), pageSize, currentPageIndex,
+                false);
     }
 
     @GET

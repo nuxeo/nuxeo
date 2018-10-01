@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Funsho David
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment.impl;
@@ -25,8 +26,9 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -69,15 +71,14 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
     protected static final String COMMENT_NAME = "comment";
 
-
     @Override
     @SuppressWarnings("unchecked")
     public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), null, null,
-                props, docModel.getId());
+                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo(COMMENT_CREATION_DATE, true)), null,
+                null, props, docModel.getId());
         return pageProvider.getCurrentPage();
     }
 
@@ -132,8 +133,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public DocumentModel getThreadForComment(DocumentModel comment) {
         CoreSession session = comment.getCoreSession();
         DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
-        while (COMMENT_DOC_TYPE.equals(parent.getType())) {
-            comment = getThreadForComment(parent);
+        if (COMMENT_DOC_TYPE.equals(parent.getType())) {
+            return getThreadForComment(parent);
         }
         return comment;
     }
@@ -193,15 +194,18 @@ public class PropertyCommentManager extends AbstractCommentManager {
     @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex) {
+            Long currentPageIndex, boolean sortAscending) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo("dc:created", true)), pageSize,
-                currentPageIndex, props, documentId);
+                GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME,
+                singletonList(new SortInfo(COMMENT_CREATION_DATE, sortAscending)), pageSize, currentPageIndex, props,
+                documentId);
         List<DocumentModel> commentList = pageProvider.getCurrentPage();
-        return commentList.stream().map(Comments::newComment).collect(
-                collectingAndThen(toList(), list -> new PartialList<>(list, pageProvider.getResultsCount())));
+        return commentList.stream()
+                          .map(Comments::newComment)
+                          .collect(collectingAndThen(toList(),
+                                  list -> new PartialList<>(list, pageProvider.getResultsCount())));
     }
 
     @Override

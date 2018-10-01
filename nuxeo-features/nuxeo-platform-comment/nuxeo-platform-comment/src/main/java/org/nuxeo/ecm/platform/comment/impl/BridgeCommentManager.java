@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -125,9 +126,10 @@ public class BridgeCommentManager extends AbstractCommentManager {
 
     @Override
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex) {
-        List<Comment> firstComments = first.getComments(session, documentId, pageSize, currentPageIndex);
-        List<Comment> secondComments = second.getComments(session, documentId, pageSize, currentPageIndex);
+            Long currentPageIndex, boolean sortAscending) {
+        List<Comment> firstComments = first.getComments(session, documentId, pageSize, currentPageIndex, sortAscending);
+        List<Comment> secondComments = second.getComments(session, documentId, pageSize, currentPageIndex,
+                sortAscending);
         List<Comment> allComments = Stream.concat(firstComments.stream(), secondComments.stream())
                                           .distinct()
                                           .collect(Collectors.toList());
