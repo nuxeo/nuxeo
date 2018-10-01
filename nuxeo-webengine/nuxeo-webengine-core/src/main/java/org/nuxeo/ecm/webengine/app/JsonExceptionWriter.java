@@ -39,7 +39,7 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 @Deprecated
 @Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class JsonExceptionWriter implements MessageBodyWriter<WebException> {
 
     @Override

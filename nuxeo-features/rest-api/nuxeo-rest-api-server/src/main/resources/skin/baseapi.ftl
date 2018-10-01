@@ -5,8 +5,7 @@
   "basePath": "${Context.serverURL}${Context.modulePath}",
   "resourcePath":"/${resource}",
   "produces": [
-  "application/json",
-  "application/json+nxentity"
+  "application/json"
   ],
   "apis": [
     <@block name="apis" />

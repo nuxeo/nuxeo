@@ -75,8 +75,6 @@ import com.google.api.client.auth.oauth2.Credential;
 @WebObject(type = "oauth2")
 public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
 
-    public static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
-
     public static final String TOKEN_DIR = "oauth2Tokens";
 
     /**
@@ -106,7 +104,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @POST
     @Path("provider")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response addProvider(@Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider) {
         checkPermission(null);
         Framework.doPrivileged(() -> {
@@ -125,7 +123,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @PUT
     @Path("provider/{providerId}")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request,
             NuxeoOAuth2ServiceProvider provider) {
         checkPermission(null);
@@ -232,7 +230,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @PUT
     @Path("token/provider/{providerId}/user/{nxuser}")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
                                         @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission(nxuser);
@@ -251,7 +249,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Deprecated
     @PUT
     @Path("token/{providerId}/{nxuser}")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
                                 @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         return updateProviderToken(providerId, nxuser, request, token);
@@ -336,7 +334,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @PUT
     @Path("token/client/{clientId}/user/{nxuser}")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
                                 @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission(nxuser);

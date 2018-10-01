@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 8.2
  */
 @WebAdapter(name = GroupMemberUsersAdapter.NAME, type = "GroupMemberUsers")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class GroupMemberUsersAdapter extends PaginableAdapter<NuxeoPrincipal> {
 
     public static final String NAME = "users";

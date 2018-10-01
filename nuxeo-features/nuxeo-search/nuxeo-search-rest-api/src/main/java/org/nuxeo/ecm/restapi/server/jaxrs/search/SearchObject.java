@@ -72,8 +72,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "search")
 public class SearchObject extends QueryExecutor {
 
-    private static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
-
     public static final String SAVED_SEARCHES_PAGE_PROVIDER = "SAVED_SEARCHES_ALL";
 
     public static final String SAVED_SEARCHES_PAGE_PROVIDER_PARAMS = "SAVED_SEARCHES_ALL_PAGE_PROVIDER";
@@ -173,7 +171,7 @@ public class SearchObject extends QueryExecutor {
 
     @POST
     @Path("saved")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response doSaveSearch(SavedSearchRequest request) {
         try {
             SavedSearch search = savedSearchService.createSavedSearch(ctx.getCoreSession(), request.getTitle(),
@@ -210,7 +208,7 @@ public class SearchObject extends QueryExecutor {
 
     @PUT
     @Path("saved/{id}")
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response doUpdateSavedSearch(SavedSearchRequest request, @PathParam("id") String id) {
         SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
@@ -344,7 +342,7 @@ public class SearchObject extends QueryExecutor {
 
     /**
      * Retrieves the query string from the page provider and/or the query parameters.
-     * 
+     *
      * @param pageProviderName the page provider name
      * @param queryParams the query parameters
      * @return the query string

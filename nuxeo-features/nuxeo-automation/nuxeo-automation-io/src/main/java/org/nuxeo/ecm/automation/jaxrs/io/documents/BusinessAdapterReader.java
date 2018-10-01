@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 5.7.2
  */
 @Provider
-@Consumes({ "application/json+nxentity", "application/json" })
+@Consumes(MediaType.APPLICATION_JSON)
 public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter> {
 
     @Context

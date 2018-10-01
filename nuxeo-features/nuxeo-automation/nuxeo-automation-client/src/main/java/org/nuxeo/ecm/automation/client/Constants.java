@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.client;
 
+import javax.ws.rs.core.MediaType;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -25,7 +27,7 @@ public class Constants {
 
     public static final String CTYPE_AUTOMATION = "application/json+nxautomation";
 
-    public static final String CTYPE_ENTITY = "application/json+nxentity";
+    public static final String CTYPE_ENTITY = MediaType.APPLICATION_JSON;
 
     public static final String CTYPE_MULTIPART_RELATED = "multipart/related"; // for
                                                                               // blobs

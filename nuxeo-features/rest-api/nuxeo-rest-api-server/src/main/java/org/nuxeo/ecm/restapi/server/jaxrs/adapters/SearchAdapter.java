@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 @WebAdapter(name = SearchAdapter.NAME, type = "SearchService")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity",
-        MediaType.APPLICATION_JSON + "+esentity" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+esentity" })
 public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";

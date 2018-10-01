@@ -74,7 +74,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @Deprecated
 @Provider
-@Consumes({ "application/json+nxentity", "application/json" })
+@Consumes(MediaType.APPLICATION_JSON)
 public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel> {
 
     // private static final String REQUEST_BATCH_ID = "batchId";

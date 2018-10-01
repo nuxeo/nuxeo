@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
  * @since 8.2
  */
 @WebAdapter(name = GroupMemberGroupsAdapter.NAME, type = "GroupMemberGroups")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class GroupMemberGroupsAdapter extends PaginableAdapter<NuxeoGroup> {
 
     public static final String NAME = "groups";

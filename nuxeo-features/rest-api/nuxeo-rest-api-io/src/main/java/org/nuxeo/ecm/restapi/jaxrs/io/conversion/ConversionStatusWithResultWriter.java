@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 7.4
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class ConversionStatusWithResultWriter extends EntityWriter<ConversionStatusWithResult> {
 
     public static final String ENTITY_TYPE = "conversionStatus";

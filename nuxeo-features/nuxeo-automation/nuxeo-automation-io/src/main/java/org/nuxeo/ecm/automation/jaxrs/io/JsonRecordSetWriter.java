@@ -50,7 +50,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 5.7
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
     protected static Log log = LogFactory.getLog(JsonRecordSetWriter.class);

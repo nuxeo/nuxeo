@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.client.model.Document;
 
+import javax.ws.rs.core.MediaType;
+
 /**
  * @author bjalon
  */
@@ -41,7 +43,7 @@ public class ClientMarshallingTest {
 
     @Test
     public void shouldFetchDocumentProperties() throws Exception {
-        client.setResponse("application/json+nxentity", HttpResponses.DOC_DEFAULT_DOMAIN);
+        client.setResponse(MediaType.APPLICATION_JSON, HttpResponses.DOC_DEFAULT_DOMAIN);
 
         Session session = client.getSession("Administrator", "Administrator");
         Document defaultDomain = (Document) session.newRequest("Document.Fetch").set("value", "/default-domain").execute();
@@ -66,7 +68,7 @@ public class ClientMarshallingTest {
 
     @Test
     public void shouldFetchVersionLabelAndLockInfo() throws Exception {
-        client.setResponse("application/json+nxentity", HttpResponses.DOC_LOCK_AND_VERSIONNED);
+        client.setResponse(MediaType.APPLICATION_JSON, HttpResponses.DOC_LOCK_AND_VERSIONNED);
 
         Session session = client.getSession("Administrator", "Administrator");
         Document file = (Document) session.newRequest("Document.Fetch").set("value", "/default-domain").execute();

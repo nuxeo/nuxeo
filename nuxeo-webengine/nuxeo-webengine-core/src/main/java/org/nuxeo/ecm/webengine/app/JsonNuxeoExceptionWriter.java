@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @since 9.3
  */
 @Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
+@Produces(MediaType.APPLICATION_JSON)
 public class JsonNuxeoExceptionWriter implements MessageBodyWriter<NuxeoException> {
 
     @Override
