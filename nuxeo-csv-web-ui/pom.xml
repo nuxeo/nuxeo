@@ -4,7 +4,7 @@
   <parent>
     <artifactId>nuxeo-csv-parent</artifactId>
     <groupId>org.nuxeo.ecm.csv</groupId>
-    <version>8.10-HF37-SNAPSHOT</version>
+    <version>8.10-HF38-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
