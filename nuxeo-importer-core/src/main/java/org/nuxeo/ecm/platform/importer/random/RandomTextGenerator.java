@@ -65,11 +65,10 @@ public class RandomTextGenerator {
 
     protected static final int NB_PAGE_PER_BLOC = 3;
 
-    protected Random generator;
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     public RandomTextGenerator(DictionaryHolder dictionary) {
         dictionaryHolder = dictionary;
-        generator = new Random(System.currentTimeMillis());
     }
 
     protected int getTargetPageMaxSizeB() {
@@ -90,7 +89,7 @@ public class RandomTextGenerator {
     }
 
     public String getRandomLine() {
-        int nbW = 10 + generator.nextInt(NB_WORDS_PER_LINE);
+        int nbW = 10 + RANDOM.nextInt(NB_WORDS_PER_LINE);
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < nbW; i++) {
@@ -101,7 +100,7 @@ public class RandomTextGenerator {
     }
 
     public String generateParagraph() {
-        int nbL = 10 + generator.nextInt(NB_LINES_PER_PARAGRAPH);
+        int nbL = 10 + RANDOM.nextInt(NB_LINES_PER_PARAGRAPH);
         StringBuffer sb = new StringBuffer();
 
         int maxSize = getTargetParagraphMaxSizeB();
@@ -141,8 +140,8 @@ public class RandomTextGenerator {
     }
 
     public String getRandomParagraph() {
-        int rand = generator.nextInt();
-        int idx = generator.nextInt(PARAGRAPH_CACHE_SIZE);
+        int rand = RANDOM.nextInt();
+        int idx = RANDOM.nextInt(PARAGRAPH_CACHE_SIZE);
         String paragraph = null;
         if (rand % PARAGRAPH_CACHE_HIT != 0) {
             paragraph = paragraphCache.get("P" + idx);
@@ -155,7 +154,7 @@ public class RandomTextGenerator {
     }
 
     public String generatePage() {
-        int nbL = generator.nextInt(NB_PARAGRAPH_PER_PAGE) + 1;
+        int nbL = RANDOM.nextInt(NB_PARAGRAPH_PER_PAGE) + 1;
         StringBuffer sb = new StringBuffer();
 
         int maxTargetPageSize = getTargetPageMaxSizeB();
@@ -170,8 +169,8 @@ public class RandomTextGenerator {
     }
 
     public String getRandomPage() {
-        int rand = generator.nextInt();
-        int idx = generator.nextInt(PAGE_CACHE_SIZE);
+        int rand = RANDOM.nextInt();
+        int idx = RANDOM.nextInt(PAGE_CACHE_SIZE);
         String page = null;
         if (rand % PAGE_CACHE_HIT != 0) {
             page = pageCache.get("P" + idx);
@@ -193,8 +192,8 @@ public class RandomTextGenerator {
     }
 
     public String getRandomBloc() {
-        int rand = generator.nextInt();
-        int idx = generator.nextInt(BLOC_CACHE_SIZE);
+        int rand = RANDOM.nextInt();
+        int idx = RANDOM.nextInt(BLOC_CACHE_SIZE);
         String bloc = null;
         if (rand % BLOC_CACHE_HIT != 0) {
             bloc = blockCache.get("B" + idx);
@@ -211,7 +210,7 @@ public class RandomTextGenerator {
             return "";
         }
         StringBuffer sb = new StringBuffer();
-        int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * generator.nextFloat()));
+        int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * RANDOM.nextFloat()));
         while (sb.length() < (minSize - BLOC_SIZE)) {
             String p = getRandomBloc();
             sb.append(p);
@@ -224,7 +223,7 @@ public class RandomTextGenerator {
     }
 
     public String getRandomText() {
-        int sizeK = generator.nextInt(500) + 1;
+        int sizeK = RANDOM.nextInt(500) + 1;
         return getRandomText(sizeK);
     }
 

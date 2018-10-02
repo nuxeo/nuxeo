@@ -43,7 +43,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     protected List<String> words = new ArrayList<>(INITIAL_SIZE);
 
-    protected Random generator;
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected int wordCount;
 
@@ -52,7 +52,6 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     public static final Log log = LogFactory.getLog(HunspellDictionaryHolder.class);
 
     public HunspellDictionaryHolder(String lang) {
-        generator = new Random(System.currentTimeMillis());
         if (lang != null) {
             // sanitize the input so we don't open a security breach.
             dicName = lang.replaceAll("\\W+", "") + ".dic";
@@ -104,7 +103,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     @Override
     public String getRandomWord() {
-        int idx = generator.nextInt(wordCount);
+        int idx = RANDOM.nextInt(wordCount);
         return words.get(idx);
     }
 }

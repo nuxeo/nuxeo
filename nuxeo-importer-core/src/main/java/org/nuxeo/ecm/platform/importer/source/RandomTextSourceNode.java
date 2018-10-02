@@ -87,7 +87,7 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static AtomicLong size;
 
-    protected Random hazard;
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected String name;
 
@@ -128,7 +128,6 @@ public class RandomTextSourceNode implements SourceNode {
 
     public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText, boolean withProperties) {
         this.folderish = folderish;
-        hazard = new Random();
         this.level = level;
         this.idx = idx;
         this.onlyText = onlyText;
@@ -206,12 +205,12 @@ public class RandomTextSourceNode implements SourceNode {
     protected Map<String, Serializable> getRandomProperties(String content) {
         Map<String, Serializable> ret = new HashMap<>();
         ret.put("dc:title", capitalize(getName()));
-        if (hazard.nextInt(10) == 1) {
+        if (RANDOM.nextInt(10) == 1) {
             String description;
             if (content != null && ! content.isEmpty()) {
                 description = content.substring(0, content.indexOf(' ', 40));
             } else {
-                description = gen.getRandomTitle(hazard.nextInt(5)+1);
+                description = gen.getRandomTitle(RANDOM.nextInt(5)+1);
             }
             ret.put("dc:description", capitalize(description));
         }
@@ -227,14 +226,14 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     protected String getGaussian(String[] words) {
-        double g = Math.abs(hazard.nextGaussian() / 4);
+        double g = Math.abs(RANDOM.nextGaussian() / 4);
         g = Math.min(g, 1);
         int i = (int) Math.floor(g * (words.length - 1));
         return words[ i ];
     }
 
     protected int getMidRandom(int target) {
-        return 1 + (target / 2) + hazard.nextInt(target);
+        return 1 + (target / 2) + RANDOM.nextInt(target);
     }
 
     /**
@@ -388,7 +387,7 @@ public class RandomTextSourceNode implements SourceNode {
     public String getName() {
         if (name == null) {
             if (withProperties) {
-                name = gen.getRandomTitle(hazard.nextInt(3)+1);
+                name = gen.getRandomTitle(RANDOM.nextInt(3)+1);
             }
             else {
                 if (folderish) {
@@ -397,7 +396,7 @@ public class RandomTextSourceNode implements SourceNode {
                     name = "file";
                 }
                 if (level == 0 && folderish) {
-                    name = name + "-" + (System.currentTimeMillis() % 10000) + hazard.nextInt(100);
+                    name = name + "-" + (System.currentTimeMillis() % 10000) + RANDOM.nextInt(100);
                 } else {
                     name = name + "-" + level + "-" + idx;
                 }
