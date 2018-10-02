@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -43,7 +46,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.bulk.actions.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.io.download.DownloadService;
@@ -69,29 +72,17 @@ public class TestCSVExportAction {
     public BulkService bulkService;
 
     @Test
-    public void test() throws Exception {
+    public void testSimple() throws Exception {
+        BulkCommand command = createCommand();
+        bulkService.submit(command);
+        assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
-        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
-
-        String commandId = bulkService.submit(new BulkCommand().withRepository(session.getRepositoryName())
-                                                               .withUsername(session.getPrincipal().getName())
-                                                               .withQuery(nxql)
-                                                               .withAction(CSVExportAction.ACTION_NAME));
-
-        assertTrue("Bulk action didn't finish", bulkService.await(commandId, Duration.ofSeconds(60)));
-
-        BulkStatus status = bulkService.getStatus(commandId);
-        assertNotNull(status);
+        BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(10, status.getProcessed());
+        assertEquals(10, status.getCount());
 
-        TransientStore download = Framework.getService(TransientStoreService.class)
-                                           .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
-
-        List<Blob> blobs = download.getBlobs(commandId);
-        Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
-
+        Blob blob = getBlob(command.getId());
         // file is ziped
         assertNotNull(blob);
         try (InputStream is = new FileInputStream(blob.getFile())) {
@@ -99,9 +90,8 @@ public class TestCSVExportAction {
         }
 
         // file has the correct number of lines
-        Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
-        ZipUtils.unzip(blob.getFile(), dir.toFile());
-        File file = new File(dir.toFile(), commandId + ".csv");
+        File file = getUnzipFile(command, blob);
+
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         assertEquals(10, lines.size());
 
@@ -109,5 +99,62 @@ public class TestCSVExportAction {
         List<String> sortedLines = new ArrayList<>(lines);
         Collections.sort(sortedLines);
         assertEquals(lines, sortedLines);
+    }
+
+    protected File getUnzipFile(BulkCommand command, Blob blob) throws IOException {
+        Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
+        ZipUtils.unzip(blob.getFile(), dir.toFile());
+        return new File(dir.toFile(), command.getId() + ".csv");
+    }
+
+    @Test
+    public void testMulti() throws Exception {
+        BulkCommand command1 = createCommand();
+        BulkCommand command2 = createCommand();
+        bulkService.submit(command1);
+        bulkService.submit(command2);
+
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+
+        BulkStatus status = bulkService.getStatus(command1.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(10, status.getProcessed());
+
+        status = bulkService.getStatus(command2.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(10, status.getProcessed());
+
+        Blob blob1 = getBlob(command1.getId());
+        Blob blob2 = getBlob(command2.getId());
+
+        // this produce the exact same content
+        HashCode hash1 = hash(getUnzipFile(command1, blob1));
+        HashCode hash2 = hash(getUnzipFile(command2, blob2));
+        assertEquals(hash1,  hash2);
+    }
+
+    private HashCode hash(File file) throws IOException {
+        return com.google.common.io.Files
+                .asByteSource(file).hash(Hashing.sha256());
+    }
+
+    protected BulkCommand createCommand() {
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        return new BulkCommand().withRepository(session.getRepositoryName())
+                                .withUsername(session.getPrincipal().getName())
+                                .withQuery(nxql)
+                                .withAction(CSVExportAction.ACTION_NAME);
+    }
+
+    protected Blob getBlob(String commandId) {
+        // the convention is that the blob is created in the download storage with the command id
+        TransientStore download = Framework.getService(TransientStoreService.class)
+                                           .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
+
+        List<Blob> blobs = download.getBlobs(commandId);
+        assertNotNull(blobs);
+        assertEquals(1, blobs.size());
+        return blobs.get(0);
     }
 }

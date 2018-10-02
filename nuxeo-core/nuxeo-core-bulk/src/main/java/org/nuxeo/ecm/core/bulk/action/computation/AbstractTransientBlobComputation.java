@@ -16,35 +16,40 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.actions.computation;
-
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
+package org.nuxeo.ecm.core.bulk.action.computation;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.bulk.BulkCodecs;
-import org.nuxeo.ecm.core.bulk.actions.CSVExportAction;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
+import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
  * @since 10.3
  */
 public abstract class AbstractTransientBlobComputation extends AbstractComputation {
+
+    private Path temp;
+
+    @Override
+    public void init(ComputationContext context) {
+        super.init(context);
+        try {
+            temp = Files.createTempDirectory(metadata().name());
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot create temp directory for " + this);
+        }
+    }
 
     public AbstractTransientBlobComputation(String name) {
         super(name, 1, 1);
@@ -54,7 +59,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         return metadata.name() + commandId;
     }
 
-    protected Blob getBlob(String key) {
+    public Blob getBlob(String key) {
         TransientStore store = Framework.getService(TransientStoreService.class).getStore(CSVExportAction.ACTION_NAME);
         List<Blob> blobs = store.getBlobs(key);
         Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
@@ -70,17 +75,10 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         store.setCompleted(getTransientStoreKey(commandId), true);
     }
 
-    protected Path createTemp(String commandId) throws IOException {
-        Path temp = Files.createTempFile(null, null);
-        temp = Files.move(temp, Paths.get(temp.getParent().toString(), commandId + ".csv"));
-        return temp;
+    protected Path createTemp(String commandId) {
+        return temp.resolve(commandId + ".csv");
     }
 
-    protected long getLinesCount(String commandId) {
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        BulkStatus status = BulkCodecs.getStatusCodec().decode(kvStore.get(commandId + STATUS_SUFFIX));
-        return status.getCount();
-    }
 
     protected Log getLog() {
         return LogFactory.getLog(getClass());

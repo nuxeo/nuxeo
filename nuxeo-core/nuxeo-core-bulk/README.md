@@ -7,13 +7,16 @@ This module provides the ability to execute actions asynchronously on a -possibl
 
 ## Definitions
 
-- __document set__: an ensemble of documents represented by their ids.
+
+- __document set__: an ensemble of documents represented by their ids and a their repository name.
+
+- __action__: an operation that can be applied to a document set.
 
 - __bulk command__: a set of parameters building a request to apply an action on a document set.
 
-- __bucket__: a sub-group of a document set.
+- __bucket__: a part of a document set that fits into a stream record.
 
-- __action__: an operation to be applied on a document set.
+- __batch__: a smaller (or equals) set of document where the action is applied within a transaction.
 
 ## Bulk Command
 
@@ -32,15 +35,41 @@ BulkCommand command = new BulkCommand().withRepository("myRepository")
 
 ![baf](bulk-overview.png)
 
-The entry point is the [BulkService](https://github.com/nuxeo/nuxeo/blob/master/nuxeo-core/nuxeo-core-bulk/src/main/java/org/nuxeo/ecm/core/bulk/BulkService.java) that takes a bulk command as an input. The service submits this command, meaning it is sent to the `documentSet` stream, which is the input of the `Scroller` computation.
+### The BulkService
+The entry point is the [BulkService](https://github.com/nuxeo/nuxeo/blob/master/nuxeo-core/nuxeo-core-bulk/src/main/java/org/nuxeo/ecm/core/bulk/BulkService.java) that takes a bulk command as an input. The service submits this command, meaning it is sent to the `command` stream.
 
-This computation scrolls the database to retreive the document ids and groups them into buckets for efficiency. Each bucket is sent to the action stream given in the command.
-The computation is also in charge of updating the scrolling status by sending it through the `keyValueWriter` stream to the `KeyValueWriter` computation.
+The BulkService can also returns the status of a command which is internally stored into a KeyValueStore.
 
-Each action is run by a stream processor defining a single computation which executes the action on the documents contained in the bucket.
-The number of processed documents is then sent through a stream to the `Status` computation that save the consolidated status into the `keyValueWriter`.
+### The Scroller computation
 
-The BulkService can also, with a command id, retrieve its status by reading the key/value store.
+The `command` stream is the input of the `Scroller` computation.
+
+This computation scrolls the database using a cursor to retrieve the document ids matching the NXQL query.
+The ids are grouped into a bucket that fit into a record.
+
+The bucket record is sent directly to the action stream given in the command.
+
+The scroller will also sent status update to inform that the scroll is in progress or terminated and to set the total number of document in the materialized document set.
+
+### Actions processors
+
+Each action is run its own stream processor (a topology of computation).
+
+The action contract is to send status update to inform on the number of document processed for a command.
+
+An abstract computation is provided to provide a Nuxeo session and transaction
+where it is easy to process part of the buckets (a batch).
+
+
+### The Status computation
+
+This computation reads from the `status` stream and aggregate status update to build the current status of command.
+The status is saved into a KeyValueStore.
+When the number of processed document is equals to the number of document in the set, the state is changed to completed.
+And the computation appends the final status to the `done` stream.
+
+This `done` stream can be used as an input by custom computation to execute other actions once a command is completed.
+
 
 ## How to contribute an action
 
@@ -48,15 +77,14 @@ You need to register a couple action / stream processor :
 
 ```xml
 <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-  <action name="myAction"/>
+  <action name="myAction" bulkSize="200" batchSize="20"/>
 </extension>
 ```
 
 ```xml
 <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-  <streamProcessor name="myAction" class="org.nuxeo.ecm.core.bulk.actions.MyActionProcessor" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1">
-  </streamProcessor>
+  <streamProcessor name="myAction" class="org.nuxeo.ecm.core.bulk.action.MyActionProcessor" logConfig="bulk"
+      defaultConcurrency="1" defaultPartitions="1" />
 </extension>
 ```
 

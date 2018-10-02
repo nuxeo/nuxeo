@@ -69,8 +69,16 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
 
     @Override
     public List<String> getActions() {
-        return getDescriptors(XP_ACTIONS).stream()
-                                         .map(Descriptor::getId)
-                                         .collect(Collectors.toList());
+        return getDescriptors(XP_ACTIONS).stream().map(Descriptor::getId).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getBucketSize(String action) {
+        return ((BulkActionDescriptor) getDescriptor(XP_ACTIONS, action)).getBucketSize();
+    }
+
+    @Override
+    public int getBatchSize(String action) {
+        return ((BulkActionDescriptor) getDescriptor(XP_ACTIONS, action)).getBatchSize();
     }
 }

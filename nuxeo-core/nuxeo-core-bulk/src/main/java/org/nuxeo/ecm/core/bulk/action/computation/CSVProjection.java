@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.actions.computation;
+package org.nuxeo.ecm.core.bulk.action.computation;
 
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
 
@@ -25,13 +25,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.bulk.actions.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -53,14 +52,14 @@ public class CSVProjection extends AbstractBulkComputation {
 
     protected ByteArrayOutputStream out;
 
-    public CSVProjection(int size, int timer) {
-        super(CSVExportAction.ACTION_NAME, size, timer);
+    public CSVProjection(int size) {
+        super(CSVExportAction.ACTION_NAME, size);
     }
 
     @Override
     protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
         out = new ByteArrayOutputStream();
-        DocumentRef[] refs = ids.stream().map(IdRef::new).collect(Collectors.toList()).toArray(new DocumentRef[0]);
+        DocumentRef[] refs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
         DocumentModelList list = session.getDocuments(refs);
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
         Writer<DocumentModelList> writer = registry.getWriter(null, DocumentModelList.class, TEXT_CSV_TYPE);
@@ -72,8 +71,8 @@ public class CSVProjection extends AbstractBulkComputation {
     }
 
     @Override
-    public void processBatchHook(ComputationContext context) {
-        Record record = Record.of(buildRecordKey(currentCommandId, documentIds.size()), out.toByteArray());
+    public void endBucket(ComputationContext context, int bucketSize) {
+        Record record = Record.of(buildRecordKey(command.getId(), bucketSize), out.toByteArray());
         context.produceRecord("o1", record);
         out = null;
     }

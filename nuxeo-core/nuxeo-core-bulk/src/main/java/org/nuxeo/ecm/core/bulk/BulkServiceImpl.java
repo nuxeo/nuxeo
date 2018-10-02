@@ -89,9 +89,14 @@ public class BulkServiceImpl implements BulkService {
 
     @Override
     public BulkStatus getStatus(String commandId) {
-        // retrieve values from KeyValueStore
         KeyValueStore keyValueStore = getKvStore();
         byte[] statusAsBytes = keyValueStore.get(commandId + STATUS_SUFFIX);
+        if (statusAsBytes == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Request status of unknown command: " + commandId);
+            }
+            return BulkStatus.unknownOf(commandId);
+        }
         return BulkCodecs.getStatusCodec().decode(statusAsBytes);
     }
 

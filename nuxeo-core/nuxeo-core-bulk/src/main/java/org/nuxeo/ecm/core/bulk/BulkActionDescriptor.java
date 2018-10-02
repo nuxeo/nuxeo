@@ -29,12 +29,29 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("action")
 public class BulkActionDescriptor implements Descriptor {
 
+    public static final Integer DEFAULT_BUCKET_SIZE = 100;
+
+    public static final Integer DEFAULT_BATCH_SIZE = 25;
+
     @XNode("@name")
     public String name;
+
+    @XNode("@bucketSize")
+    public Integer bucketSize = DEFAULT_BUCKET_SIZE;
+
+    @XNode("@batchSize")
+    public Integer batchSize = DEFAULT_BATCH_SIZE;
 
     @Override
     public String getId() {
         return name;
     }
 
+    public Integer getBucketSize() {
+        return bucketSize;
+    }
+
+    public Integer getBatchSize() {
+        return batchSize;
+    }
 }
