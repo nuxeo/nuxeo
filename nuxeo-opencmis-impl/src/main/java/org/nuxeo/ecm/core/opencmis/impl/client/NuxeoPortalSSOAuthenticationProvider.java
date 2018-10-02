@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new SecureRandom();
 
     public final static String SECRET_KEY = "NUXEO_PORTAL_SSO_SECRET";
 
