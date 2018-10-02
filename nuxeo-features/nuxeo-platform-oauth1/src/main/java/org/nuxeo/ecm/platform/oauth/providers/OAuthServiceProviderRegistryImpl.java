@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.oauth.providers;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
 
     public static final String DIRECTORY_NAME = "oauthServiceProviders";
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new SecureRandom();
 
     protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
 

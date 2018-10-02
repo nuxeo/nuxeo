@@ -58,7 +58,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     protected static final String DEFAULT_CODEC = "avroBinary";
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected String logConfig;
 

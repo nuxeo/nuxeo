@@ -18,6 +18,7 @@
  */
 package org.nuxeo.common.utils;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +36,7 @@ public final class IdUtils {
 
     public static final String UUID_TYPE_4_REGEXP = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
-    // TODO AT: dummy random, does not ensure uniqueness
-    private static final Random RANDOM = new Random(new Date().getTime());
+    private static final Random RANDOM = new SecureRandom();
 
     // This is an utility class.
     private IdUtils() {

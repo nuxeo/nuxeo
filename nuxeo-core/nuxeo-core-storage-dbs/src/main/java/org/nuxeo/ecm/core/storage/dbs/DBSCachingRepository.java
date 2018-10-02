@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class DBSCachingRepository implements DBSRepository {
 
     private static final Log log = LogFactory.getLog(DBSCachingRepository.class);
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private final DBSRepository repository;
 

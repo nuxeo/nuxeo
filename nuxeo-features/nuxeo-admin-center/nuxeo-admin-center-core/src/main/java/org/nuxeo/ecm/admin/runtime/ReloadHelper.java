@@ -91,7 +91,7 @@ public class ReloadHelper {
                 if (log.isTraceEnabled()) {
                     log.trace("Downloading studio snapshot package: " + packageId);
                 }
-                Thread.sleep(100);
+                Thread.sleep(100); // NOSONAR (we want the whole hot-reload to be synchronized)
             }
 
             log.info("Installing " + packageId);

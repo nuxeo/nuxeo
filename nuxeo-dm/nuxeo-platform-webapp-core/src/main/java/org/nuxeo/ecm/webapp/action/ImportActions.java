@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -94,8 +93,6 @@ public class ImportActions implements Serializable {
     public static final String LABEL_IMPORT_CANNOT_CREATE_ERROR = "label.bulk.import.documents.cannotCreateError";
 
     public static final String DOCUMENTS_IMPORTED = "documentImported";
-
-    protected static Random random = new Random();
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;

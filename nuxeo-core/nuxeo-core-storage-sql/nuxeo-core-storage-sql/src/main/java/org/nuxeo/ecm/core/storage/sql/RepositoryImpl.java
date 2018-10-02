@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Random;
@@ -60,7 +61,7 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
