@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
@@ -81,7 +82,7 @@ public class AppendCommand implements Command {
                 if (!parent.isDirectory()) {
                     parent.mkdirs();
                 }
-                dstFile.createNewFile();
+                Files.createFile(dstFile.toPath());
             } catch (IOException e) {
                 throw new IOException(
                         "Could not create '" + dstFile + "' when deploying bundle '" + ctx.get("bundle") + "'.", e);
