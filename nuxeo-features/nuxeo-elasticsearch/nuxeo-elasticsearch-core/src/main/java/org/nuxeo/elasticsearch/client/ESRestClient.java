@@ -47,13 +47,11 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.Response;
-import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -65,6 +63,8 @@ import org.nuxeo.elasticsearch.api.ESClient;
 public class ESRestClient implements ESClient {
     // TODO: add security sanitizer to make sure all parameters used to build requests are clean
     private static final Log log = LogFactory.getLog(ESRestClient.class);
+
+    public static final String CREATE_INDEX_TIMEOUT = "60s";
 
     protected RestClient lowLevelClient;
 
@@ -208,7 +208,8 @@ public class ESRestClient implements ESClient {
         HttpEntity entity = new NStringEntity(jsonSettings, ContentType.APPLICATION_JSON);
         Response response;
         try {
-            response = lowLevelClient.performRequest("PUT", "/" + indexName, emptyMap(), entity);
+            response = lowLevelClient.performRequest("PUT", "/" + indexName + "?timeout=" + CREATE_INDEX_TIMEOUT,
+                    emptyMap(), entity);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
