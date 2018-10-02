@@ -52,14 +52,13 @@ public class WOPIFeature implements RunnerFeature {
             return;
         }
 
-        InputStream is = getTestDiscovery();
-        if (is != null) {
-            try {
+        try (InputStream is = getTestDiscovery()) {
+            if (is != null) {
                 Files.createDirectories(discoveryPath.getParent());
                 Files.copy(is, discoveryPath);
-            } catch (IOException e) {
-                throw new NuxeoException(e);
             }
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
     }
 

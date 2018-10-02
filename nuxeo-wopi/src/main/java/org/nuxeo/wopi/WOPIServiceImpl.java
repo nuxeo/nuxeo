@@ -99,6 +99,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
                               .collect(Collectors.toList());
     }
 
+    @Override
     public String getActionURL(Blob blob, String action) {
         String extension = getExtension(blob);
         return extensionActionURLs.getOrDefault(extension, Collections.emptyMap()).get(action);

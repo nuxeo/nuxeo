@@ -153,7 +153,9 @@ public class FilesEndpoint extends DefaultObject {
 
     @Override
     public void initialize(Object... args) {
-        assert args != null && args.length == 4;
+        if (args == null || args.length != 4) {
+            throw new IllegalArgumentException("Invalid args: " + args);
+        }
         session = (CoreSession) args[0];
         doc = (DocumentModel) args[1];
         blob = (Blob) args[2];
