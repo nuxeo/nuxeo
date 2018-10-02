@@ -29,27 +29,29 @@ import java.util.stream.Collectors;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.bulk.actions.AbstractBulkAction;
-import org.nuxeo.ecm.core.bulk.actions.computation.AbstractBulkComputation;
-import org.nuxeo.lib.stream.computation.Topology.Builder;
+import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
  * @since 10.3
  */
-public class RemoveDocumentAction extends AbstractBulkAction {
+public class RemoveDocumentAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "removeDocuments";
 
     @Override
-    protected Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options) {
-        return builder.addComputation(() -> new DeleteComputation(size, threshold),
-                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
+    public Topology getTopology(Map<String, String> options) {
+        return Topology.builder()
+                       .addComputation(() -> new DeleteComputation(10),
+                               Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM))
+                       .build();
     }
 
     public static class DeleteComputation extends AbstractBulkComputation {
 
-        public DeleteComputation(int batchSize, int batchThresholdMs) {
-            super(ACTION_NAME, batchSize, batchThresholdMs);
+        public DeleteComputation(int size) {
+            super(ACTION_NAME, size);
         }
 
         @Override

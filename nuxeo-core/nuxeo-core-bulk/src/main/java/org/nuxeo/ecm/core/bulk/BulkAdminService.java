@@ -35,4 +35,7 @@ public interface BulkAdminService {
      */
     List<String> getActions();
 
+    int getBucketSize(String action);
+
+    int getBatchSize(String action);
 }

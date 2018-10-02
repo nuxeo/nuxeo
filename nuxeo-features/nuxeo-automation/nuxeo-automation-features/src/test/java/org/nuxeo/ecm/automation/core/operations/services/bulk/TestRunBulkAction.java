@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit;
-import org.nuxeo.ecm.core.bulk.actions.SetPropertiesAction;
+import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;

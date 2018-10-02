@@ -17,7 +17,7 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.bulk.actions;
+package org.nuxeo.ecm.core.bulk.action;
 
 import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 
@@ -31,26 +31,32 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.bulk.actions.computation.AbstractBulkComputation;
-import org.nuxeo.lib.stream.computation.Topology.Builder;
+import org.nuxeo.ecm.core.bulk.BulkAdminService;
+import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
  * @since 10.2
  */
-public class SetPropertiesAction extends AbstractBulkAction {
+public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "setProperties";
 
     @Override
-    protected Builder addComputations(Builder builder, int size, int threshold, Map<String, String> options) {
-        return builder.addComputation(() -> new SetPropertyComputation(size, threshold),
-                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM));
+    public Topology getTopology(Map<String, String> options) {
+        int batchSize = Framework.getService(BulkAdminService.class).getBatchSize(ACTION_NAME);
+        return Topology.builder()
+                       .addComputation(() -> new SetPropertyComputation(batchSize),
+                               Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM))
+                       .build();
     }
 
     public static class SetPropertyComputation extends AbstractBulkComputation {
 
-        public SetPropertyComputation(int batchSize, int batchThresholdMs) {
-            super(ACTION_NAME, batchSize, batchThresholdMs);
+        public SetPropertyComputation(int batchSize) {
+            super(ACTION_NAME, batchSize);
         }
 
         @Override

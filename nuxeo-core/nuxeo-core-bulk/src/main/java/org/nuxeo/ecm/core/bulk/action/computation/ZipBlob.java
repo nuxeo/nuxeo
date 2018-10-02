@@ -16,28 +16,25 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.actions.computation;
+package org.nuxeo.ecm.core.bulk.action.computation;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.utils.BlobUtils;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
-
-import com.google.code.externalsorting.ExternalSort;
 
 /**
  * @since 10.3
  */
-public class SortBlob extends AbstractTransientBlobComputation {
+public class ZipBlob extends AbstractTransientBlobComputation {
 
-    public static final String NAME = "sortBlob";
+    public static final String NAME = "zipBlob";
 
-    public SortBlob() {
+    public ZipBlob() {
         super(NAME);
     }
 
@@ -45,21 +42,14 @@ public class SortBlob extends AbstractTransientBlobComputation {
     public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
         String commandId = CSVProjection.getCommandIdFromKey(record.getKey());
         Blob blob = getBlob(new String(record.getData(), UTF_8));
-        blob = sort(blob, commandId);
+        try {
+            blob = BlobUtils.zip(blob, null);
+        } catch (IOException e) {
+            getLog().error(e, e);
+        }
         storeBlob(blob, commandId);
         context.produceRecord("o1", Record.of(record.getKey(), getTransientStoreKey(commandId).getBytes(UTF_8)));
         context.askForCheckpoint();
-    }
-
-    protected Blob sort(Blob blob, String commandId) {
-        try {
-            Path temp = createTemp(commandId);
-            ExternalSort.sort(blob.getFile(), temp.toFile());
-            return new FileBlob(temp.toFile());
-        } catch (IOException e) {
-            getLog().error(e, e);
-            return blob;
-        }
     }
 
 }

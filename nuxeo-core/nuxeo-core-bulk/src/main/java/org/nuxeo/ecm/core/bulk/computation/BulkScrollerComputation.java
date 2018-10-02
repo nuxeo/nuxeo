@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.bulk.computation;
 
-import static java.lang.Integer.max;
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -74,24 +74,27 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected final int scrollKeepAliveSeconds;
 
-    protected final int bucketSize;
-
     protected final List<String> documentIds;
+
+    private final boolean produceImmediate;
 
     /**
      * @param name the computation name
      * @param nbOutputStreams the number of registered bulk action streams
      * @param scrollBatchSize the batch size to scroll
      * @param scrollKeepAliveSeconds the scroll lifetime
-     * @param bucketSize the number of document to send per bucket
      */
+    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds) {
+        this(name, nbOutputStreams, scrollBatchSize, scrollKeepAliveSeconds, false);
+    }
+
     public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
-            int bucketSize) {
+            boolean produceImmediate) {
         super(name, 1, nbOutputStreams);
         this.scrollBatchSize = scrollBatchSize;
         this.scrollKeepAliveSeconds = scrollKeepAliveSeconds;
-        this.bucketSize = bucketSize;
-        documentIds = new ArrayList<>(max(scrollBatchSize, bucketSize));
+        this.produceImmediate = produceImmediate;
+        documentIds = new ArrayList<>(scrollBatchSize);
     }
 
     @Override
@@ -103,6 +106,12 @@ public class BulkScrollerComputation extends AbstractComputation {
         try {
             BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
             String commandId = command.getId();
+            int bucketSize = Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
+            if (bucketSize >= scrollBatchSize) {
+                log.warn(String.format("Bucket size: %d too big for action %s, reduce to scroll size: %d", bucketSize,
+                        command.getAction(), scrollBatchSize));
+                bucketSize = scrollBatchSize;
+            }
             updateStatusAsScrolling(context, commandId);
             LoginContext loginContext;
             try {
@@ -117,7 +126,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                         List<String> docIds = scroll.getResults();
                         documentIds.addAll(docIds);
                         while (documentIds.size() >= bucketSize) {
-                            produceBucket(context, command.getAction(), commandId, bucketNumber++);
+                            produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                         }
 
                         documentCount += docIds.size();
@@ -129,7 +138,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     // send remaining document ids
                     // there's at most one record because we loop while scrolling
                     if (!documentIds.isEmpty()) {
-                        produceBucket(context, command.getAction(), commandId, bucketNumber++);
+                        produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                     }
                     updateStatusAfterScroll(context, commandId, documentCount);
                 } finally {
@@ -168,11 +177,17 @@ public class BulkScrollerComputation extends AbstractComputation {
     /**
      * Produces a bucket as a record to appropriate bulk action stream.
      */
-    protected void produceBucket(ComputationContext context, String action, String commandId, long bucketNumber) {
+    protected void produceBucket(ComputationContext context, String action, String commandId, int bucketSize,
+            long bucketNumber) {
         List<String> ids = documentIds.subList(0, min(bucketSize, documentIds.size()));
         BulkBucket bucket = new BulkBucket(commandId, ids);
-        context.produceRecord(action, commandId + ":" + Long.toString(bucketNumber),
-                BulkCodecs.getBucketCodec().encode(bucket));
+        String key = commandId + ":" + Long.toString(bucketNumber);
+        Record record = Record.of(key, BulkCodecs.getBucketCodec().encode(bucket));
+        if (produceImmediate) {
+            ((ComputationContextImpl) context).produceRecordImmediate(action, record);
+        } else {
+            context.produceRecord(action, record);
+        }
         ids.clear(); // this clear the documentIds part that has been sent
     }
 

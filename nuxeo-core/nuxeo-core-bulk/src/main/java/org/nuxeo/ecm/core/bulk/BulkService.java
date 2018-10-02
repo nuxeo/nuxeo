@@ -40,7 +40,9 @@ public interface BulkService {
     String submit(BulkCommand command);
 
     /**
-     * @return the command status corresponding to the command identifier.
+     * Returns the status of a command.
+     * <p>
+     * If the command is not found it will return a status with an {@link BulkStatus.State#UNKNOWN} state.
      */
     BulkStatus getStatus(String commandId);
 
@@ -65,7 +67,7 @@ public interface BulkService {
 
     /**
      * Gets the list of action statuses triggered by the given user.
-     * 
+     *
      * @param username the user name
      * @return the list of statuses
      * @since 10.3

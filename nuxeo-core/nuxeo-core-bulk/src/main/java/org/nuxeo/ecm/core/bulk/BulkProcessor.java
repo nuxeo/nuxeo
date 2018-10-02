@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.computation.BulkScrollerComputation;
 import org.nuxeo.ecm.core.bulk.computation.BulkStatusComputation;
 import org.nuxeo.lib.stream.computation.Topology;
@@ -35,13 +33,12 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * Stream Processor that runs the Bulk Action service. It reads commands and uses a scroller to materialize the document
  * set into buckets of document ids. The action is a distinct processor runs on document set and produces status update
  * to signal his progress. A status computation aggregates status update and update the command status into a key value
- * store.
+ * store, it also detects the completion of the command and outputs the status into a 'done' stream.
  *
  * @since 10.2
  */
 public class BulkProcessor implements StreamProcessorTopology {
 
-    private static final Log log = LogFactory.getLog(BulkProcessor.class);
 
     public static final String COMMAND_STREAM = "command";
 
@@ -57,13 +54,11 @@ public class BulkProcessor implements StreamProcessorTopology {
 
     public static final String SCROLL_KEEP_ALIVE_SECONDS_OPT = "scrollKeepAlive";
 
-    public static final String BUCKET_SIZE_OPT = "bucketSize";
-
     public static final int DEFAULT_SCROLL_BATCH_SIZE = 100;
 
     public static final int DEFAULT_SCROLL_KEEPALIVE_SECONDS = 60;
 
-    public static final int DEFAULT_BUCKET_SIZE = 50;
+    public static final String PRODUCE_IMMEDIATE_OPTION = "produceImmediate";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -71,8 +66,7 @@ public class BulkProcessor implements StreamProcessorTopology {
         int scrollBatchSize = getOptionAsInteger(options, SCROLL_BATCH_SIZE_OPT, DEFAULT_SCROLL_BATCH_SIZE);
         int scrollKeepAliveSeconds = getOptionAsInteger(options, SCROLL_KEEP_ALIVE_SECONDS_OPT,
                 DEFAULT_SCROLL_KEEPALIVE_SECONDS);
-        int bucketSize = getOptionAsInteger(options, BUCKET_SIZE_OPT, DEFAULT_BUCKET_SIZE);
-
+        boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, false);
         // retrieve bulk actions to deduce output streams
         BulkAdminService service = Framework.getService(BulkAdminService.class);
         List<String> actions = service.getActions();
@@ -88,16 +82,20 @@ public class BulkProcessor implements StreamProcessorTopology {
         return Topology.builder()
                        .addComputation( //
                                () -> new BulkScrollerComputation(SCROLLER_NAME, actions.size() + 1, scrollBatchSize,
-                                       scrollKeepAliveSeconds, bucketSize), //
+                                       scrollKeepAliveSeconds, produceImmediate), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
                                Arrays.asList("i1:" + STATUS_STREAM, "o1:" + DONE_STREAM))
                        .build();
     }
 
-    // TODO copied from StreamAuditWriter - where can we put that ?
-    protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
+    public static int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
         String value = options.get(option);
         return value == null ? defaultValue : Integer.parseInt(value);
+    }
+
+    public static boolean getOptionAsBoolean(Map<String, String> options, String option, boolean defaultValue) {
+        String value = options.get(option);
+        return value == null ? defaultValue : Boolean.valueOf(value);
     }
 }

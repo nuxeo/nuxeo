@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.actions.computation;
+package org.nuxeo.ecm.core.bulk.action.computation;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -47,10 +47,10 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
         long documents = CSVProjection.getDocumentCountFromKey(record.getKey());
         Blob blob = getBlob(new String(record.getData(), UTF_8));
         // store it in download transient store
-        TransientStore download = Framework.getService(TransientStoreService.class)
+        TransientStore store = Framework.getService(TransientStoreService.class)
                                            .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
-        download.putBlobs(commandId, Collections.singletonList(blob));
-        download.setCompleted(commandId, true);
+        store.putBlobs(commandId, Collections.singletonList(blob));
+        store.setCompleted(commandId, true);
         // update the command status
         AbstractBulkComputation.updateStatusProcessed(context, commandId, documents);
         context.askForCheckpoint();

@@ -45,7 +45,6 @@ public class BulkCommand implements Serializable {
 
     protected String query;
 
-    /** The bulk action to execute. */
     protected String action;
 
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)

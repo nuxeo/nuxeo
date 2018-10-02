@@ -31,6 +31,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
+import org.omg.CORBA.UNKNOWN;
 
 /**
  * A message representing a command status or a change of status (delta).
@@ -45,6 +46,8 @@ public class BulkStatus implements Serializable {
      * Possible states of bulk execution.
      */
     public enum State {
+        UNKNOWN,
+
         /** The {@link BulkCommand} has been submitted to the system. */
         SCHEDULED,
 
@@ -56,7 +59,6 @@ public class BulkStatus implements Serializable {
 
         /** System has finished to scroll. */
         COMPLETED
-
     }
 
     protected String commandId;
@@ -92,6 +94,17 @@ public class BulkStatus implements Serializable {
         BulkStatus ret = new BulkStatus();
         ret.setCommandId(commandId);
         ret.delta = true;
+        return ret;
+    }
+
+    /**
+     * Creates a delta status for a command.
+     */
+    public static BulkStatus unknownOf(String commandId) {
+        BulkStatus ret = new BulkStatus();
+        ret.setCommandId(commandId);
+        ret.delta = true;
+        ret.setState(State.UNKNOWN);
         return ret;
     }
 
