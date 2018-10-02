@@ -94,7 +94,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     public static final String NODE_ID_PROP = "repository.clustering.id";
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected MigrationThreadPoolExecutor executor;
 
@@ -479,7 +479,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 }
             }
             try {
-                Thread.sleep((long) (Math.random() * 100 * i));
+                Thread.sleep((long) (RANDOM.nextInt(100) * i));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);

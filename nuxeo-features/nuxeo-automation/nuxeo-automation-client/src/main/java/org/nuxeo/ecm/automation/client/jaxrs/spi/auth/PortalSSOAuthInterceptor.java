@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 public class PortalSSOAuthInterceptor extends RequestInterceptor {
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new SecureRandom();
 
     protected final String secret;
 

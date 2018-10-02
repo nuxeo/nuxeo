@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_INDETERMINATE;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public abstract class AbstractWork implements Work {
 
     private static final Log log = LogFactory.getLog(AbstractWork.class);
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new SecureRandom();
 
     public static final String WORK_FAILED_EVENT = "workFailed";
 

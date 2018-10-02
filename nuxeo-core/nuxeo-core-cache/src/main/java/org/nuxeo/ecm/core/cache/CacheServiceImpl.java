@@ -53,7 +53,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      */
     public static final String XP_CACHES = "caches";
 
-    protected static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     /**
      * @since 8.2

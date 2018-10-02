@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.io.impl;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,7 +66,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ExportedDocumentImpl implements ExportedDocument {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     protected DocumentLocation srcLocation;
 
@@ -309,7 +310,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     protected final void readBlob(Element element, ComplexType ctype, Blob blob, boolean inlineBlobs)
             throws IOException {
-        String blobPath = Integer.toHexString(random.nextInt()) + ".blob";
+        String blobPath = Integer.toHexString(RANDOM.nextInt()) + ".blob";
         element.addElement(ExportConstants.BLOB_ENCODING).addText(blob.getEncoding() != null ? blob.getEncoding() : "");
         element.addElement(ExportConstants.BLOB_MIME_TYPE)
                .addText(blob.getMimeType() != null ? blob.getMimeType() : "");

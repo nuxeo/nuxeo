@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.login;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.security.acl.Group;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     private UserManager manager;
 
-    private Random random;
+    private static final Random RANDOM = new SecureRandom();
 
     private NuxeoPrincipal identity;
 
@@ -83,7 +84,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
 
         super.initialize(subject, callbackHandler, sharedState, options);
-        random = new Random(System.currentTimeMillis());
 
         manager = Framework.getService(UserManager.class);
         log.debug("NuxeoLoginModule initialized");
@@ -275,7 +275,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 }
             }
 
-            String principalId = String.valueOf(random.nextLong());
+            String principalId = String.valueOf(RANDOM.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
         } catch (NuxeoException | LoginException e) {

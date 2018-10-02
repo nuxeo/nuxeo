@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public class PackagePersistence {
 
     protected final File temp;
 
-    protected final Random random = new Random();
+    protected static final Random RANDOM = new SecureRandom();
 
     protected Map<String, PackageState> states;
 
@@ -298,7 +299,7 @@ public class PackagePersistence {
         File tmp;
         synchronized (temp) {
             do {
-                tmp = new File(temp, id + "-" + random.nextInt());
+                tmp = new File(temp, id + "-" + RANDOM.nextInt());
             } while (tmp.exists());
             tmp.mkdirs();
         }

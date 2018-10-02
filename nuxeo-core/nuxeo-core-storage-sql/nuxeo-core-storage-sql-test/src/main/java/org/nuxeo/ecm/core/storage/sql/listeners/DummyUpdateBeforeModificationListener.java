@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.listeners;
 
+import java.util.Random;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
@@ -25,6 +27,8 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class DummyUpdateBeforeModificationListener implements EventListener {
+
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     public static final String PERDORM_UPDATE_FLAG = DummyUpdateBeforeModificationListener.class.getName()
             + "-force-update";
@@ -35,7 +39,7 @@ public class DummyUpdateBeforeModificationListener implements EventListener {
             DocumentEventContext context = (DocumentEventContext) event.getContext();
             DocumentModel doc = context.getSourceDocument();
             if (Boolean.TRUE.equals(doc.getContextData(PERDORM_UPDATE_FLAG))) {
-                doc.setPropertyValue("dc:description", "auto" + Math.random());
+                doc.setPropertyValue("dc:description", "auto" + RANDOM.nextDouble());
             }
         }
     }
