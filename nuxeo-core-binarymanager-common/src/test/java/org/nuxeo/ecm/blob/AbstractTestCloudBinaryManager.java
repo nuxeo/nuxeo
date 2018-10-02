@@ -27,7 +27,6 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -83,7 +82,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     @Before
     public void setUp() throws IOException {
-        //assumeTrue("Cannot set Unlimited JCE Policy", setUnlimitedJCEPolicy());
         binaryManager = getBinaryManager();
         removeObjects();
     }
@@ -93,28 +91,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         return true;
     }
 
-    /**
-     * By default the JRE may ship with restricted key length. Instead of having administrators download the Java
-     * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
-     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
-     * using reflection.
-     * <p>
-     * This is not possible anymore since 8u102 and https://bugs.openjdk.java.net/browse/JDK-8149417
-     */
-    protected static boolean setUnlimitedJCEPolicy() {
-        try {
-            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
-            field.setAccessible(true);
-            if (Boolean.TRUE.equals(field.get(null))) {
-                log.info("Setting JCE Unlimited Strength");
-                field.set(null, Boolean.FALSE);
-            }
-            return true;
-        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
-            log.debug("Cannot check/set JCE Unlimited Strength", e);
-            return false;
-        }
-    }
     @Test
     public void testStoreFile() throws Exception {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
