@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import org.mockito.configuration.IMockitoConfiguration;
 import org.mockito.internal.configuration.GlobalConfiguration;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
@@ -32,7 +31,6 @@ public class MockitoFeature implements RunnerFeature {
 
     @Override
     public void start(FeaturesRunner runner) {
-        InlineURLFactory.install();
         provider.installSelf();
     }
 
@@ -49,7 +47,6 @@ public class MockitoFeature implements RunnerFeature {
 
     @Override
     public void stop(FeaturesRunner runner) {
-        InlineURLFactory.uninstall();
         provider.uninstallSelf();
     }
 

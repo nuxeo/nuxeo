@@ -28,10 +28,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.InlineRef;
-import org.nuxeo.runtime.test.protocols.inline.InlineURLsFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, InlineURLsFeature.class })
+@Features(RuntimeFeature.class)
 public class CanExpandVariablesInContributionTest {
 
     RuntimeService runtime = Framework.getRuntime();
