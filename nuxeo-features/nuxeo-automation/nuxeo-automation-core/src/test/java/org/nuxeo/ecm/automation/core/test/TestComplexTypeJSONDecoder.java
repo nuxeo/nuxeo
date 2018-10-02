@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -69,7 +70,6 @@ public class TestComplexTypeJSONDecoder {
     @Before
     public void setUp() throws Exception {
         loginFeature.login("Administrator");
-
     }
 
     @After
@@ -85,7 +85,6 @@ public class TestComplexTypeJSONDecoder {
         ManagedBlob managedBlob = (ManagedBlob) blob;
         assertEquals("testBlobProvider", managedBlob.getProviderId());
         assertEquals("testBlobProvider:testKey", managedBlob.getKey());
-
     }
 
     @Test
@@ -107,7 +106,7 @@ public class TestComplexTypeJSONDecoder {
         String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
         loginFeature.login("dummyName");
         try {
-            Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
             fail("The blob should not have been fetched");
         } catch (NuxeoException e) {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
@@ -118,7 +117,6 @@ public class TestComplexTypeJSONDecoder {
 
     @Test
     public void testDecodeManagedBlobWithAuthorizedUsers() throws Exception {
-
         String testUser1 = "testUser1";
         String testUser2 = "testUser2";
         String testUser3 = "testUser3";
@@ -132,7 +130,7 @@ public class TestComplexTypeJSONDecoder {
         createGroup(testGroup);
 
         NuxeoPrincipal principal = userManager.getPrincipal(testUser3);
-        principal.setGroups(Arrays.asList(testGroup));
+        principal.setGroups(Collections.singletonList(testGroup));
         userManager.updateUser(principal.getModel());
 
         String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
@@ -154,7 +152,7 @@ public class TestComplexTypeJSONDecoder {
 
             loginFeature.logout();
             loginFeature.login(testUser4);
-            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
 
         } catch (NuxeoException e) {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
