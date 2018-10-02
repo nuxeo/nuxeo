@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -31,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.BulkService;
@@ -69,13 +68,14 @@ public class BulkActionObject extends DefaultObject {
         String repository = getContext().getCoreSession().getRepositoryName();
         String username = getContext().getPrincipal().getName();
 
-        Map<String, Serializable> params = BulkParameters.paramsToMap(actionParams);
-
         BulkCommand command = new BulkCommand().withAction(actionId)
                                                .withRepository(repository)
                                                .withUsername(username)
-                                               .withQuery(query)
-                                               .withParams(params);
+                                               .withQuery(query);
+
+        if (StringUtils.isNotEmpty(actionParams)) {
+            command = command.withParams(BulkParameters.paramsToMap(actionParams));
+        }
         String commandId = Framework.getService(BulkService.class).submit(command);
 
         BulkStatus status = new BulkStatus();

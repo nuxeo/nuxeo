@@ -36,12 +36,13 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.actions.SetPropertiesAction;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.restapi.server.jaxrs.search.test.bulk.RemoveDocumentAction;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.ServletContainer;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -65,6 +67,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy("org.nuxeo.ecm.platform.search.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.server.search")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.restapi.test:bulk-actions-test-contrib.xml")
 public class BulkActionTest extends BaseTest {
 
     @Inject
@@ -97,6 +100,35 @@ public class BulkActionTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
         testExecuteBulkAction("search/pp/TEST_PP", queryParams);
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testExecuteBulkActionWithPageProviderAndEmptyParams() throws Exception {
+        try (CloseableClientResponse response = getResponse(RequestType.POST,
+                "search/pp/TEST_PP_ALL_NOTE/bulk/" + RemoveDocumentAction.ACTION_NAME, "", null, null, null)) {
+
+            assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String commandId = node.get("id").textValue();
+
+            assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(10)));
+
+            BulkStatus status = bulkService.getStatus(commandId);
+            assertNotNull(status);
+            assertEquals(COMPLETED, status.getState());
+        }
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "search/pp/TEST_PP_ALL_NOTE/execute")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> noteNodes = getLogEntries(node);
+            assertTrue(noteNodes.isEmpty());
+        }
     }
 
     @Test
