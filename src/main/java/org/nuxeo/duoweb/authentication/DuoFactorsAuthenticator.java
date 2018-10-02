@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 
 import java.io.IOException;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,8 @@ import com.google.common.cache.CacheBuilder;
 public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     private static final Log log = LogFactory.getLog(FormAuthenticator.class);
+
+    protected static final Random RANDOM = new SecureRandom();
 
     private static final String DUO_FACTOR_PAGE = "duofactors.jsp";
 
@@ -210,7 +213,6 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     public Principal createIdentity(String username) throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
-        Random random = new Random(System.currentTimeMillis());
         log.debug("createIdentity: " + username);
         try {
             NuxeoPrincipal principal;
@@ -222,7 +224,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                     throw new LoginException(String.format("principal %s does not exist", username));
                 }
             }
-            String principalId = String.valueOf(random.nextLong());
+            String principalId = String.valueOf(RANDOM.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
         } catch (LoginException e) {
