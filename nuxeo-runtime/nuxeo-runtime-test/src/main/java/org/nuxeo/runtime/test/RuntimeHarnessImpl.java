@@ -63,7 +63,6 @@ import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
-import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.TargetExtensions;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -330,7 +329,6 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                            .map(Extension::toXML)
                            .collect(joining());
 
-        InlineURLFactory.install();
         ctx.deploy(new InlineRef(name, String.format("<component name=\"%s\">%s</component>", name, ext)));
     }
 

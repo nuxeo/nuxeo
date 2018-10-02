@@ -26,8 +26,6 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.junit.runners.model.Statement;
-import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -121,20 +119,6 @@ public class RuntimeFeature implements RunnerFeature {
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         harness.stop();
-    }
-
-    @Rule
-    public MethodRule onCleanupURLStreamHandlers() {
-        return (base, method, target) -> new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    base.evaluate();
-                } finally {
-                    URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
-                }
-            }
-        };
     }
 
     @Rule
