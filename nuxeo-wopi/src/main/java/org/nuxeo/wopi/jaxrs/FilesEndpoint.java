@@ -93,6 +93,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -321,7 +322,10 @@ public class FilesEndpoint extends DefaultObject {
                 LockHelper.removeLock(fileId);
                 if (!LockHelper.isLocked(doc.getRepositoryName(), doc.getId())) {
                     // no more WOPI lock on the document, unlock the doc
-                    doc.removeLock();
+                    // use a privileged session since the document might have been locked by another user
+                    CoreInstance.doPrivileged(doc.getRepositoryName(), privilegedSession -> { // NOSONAR
+                        return privilegedSession.removeLock(doc.getRef());
+                    });
                 }
                 response.addHeader(ITEM_VERSION, doc.getVersionLabel());
             } else {

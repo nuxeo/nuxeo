@@ -197,11 +197,10 @@ public class TestFilesEndpoint {
     protected void createDocuments() throws IOException {
         DocumentModel folder = session.createDocumentModel("/", "wopi", "Folder");
         folder = session.createDocument(folder);
-        ACP acp = folder.getACP();
-        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        localACL.add(new ACE("john", READ_WRITE, true));
-        localACL.add(new ACE("joe", READ, true));
-        folder.setACP(acp, true);
+        Map<String, String> userPermissions = new HashMap<>();
+        userPermissions.put("john", READ_WRITE);
+        userPermissions.put("joe", READ);
+        setPermissions(folder, userPermissions);
 
         try (CloseableCoreSession johnSession = coreFeature.openCoreSession("john")) {
             blobDoc = johnSession.createDocumentModel("/wopi", "blobDoc", "File");
@@ -230,6 +229,13 @@ public class TestFilesEndpoint {
             noBlobDoc = johnSession.createDocument(noBlobDoc);
             noBlobDocFileId = FileInfo.computeFileId(noBlobDoc, FILE_CONTENT_PROPERTY);
         }
+    }
+
+    protected void setPermissions(DocumentModel doc, Map<String, String> userPermissions) {
+        ACP acp = doc.getACP();
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        userPermissions.forEach((user, permission) -> localACL.add(new ACE(user, permission, true)));
+        doc.setACP(acp, true);
     }
 
     @After
@@ -343,7 +349,15 @@ public class TestFilesEndpoint {
     }
 
     protected void assertLockResponseOKForJohn(Map<String, String> headers) {
-        try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
+        assertLockResponseOK(johnToken, headers);
+    }
+
+    protected void assertLockResponseOKForJoe(Map<String, String> headers) {
+        assertLockResponseOK(joeToken, headers);
+    }
+
+    protected void assertLockResponseOK(String userToken, Map<String, String> headers) {
+        try (CloseableClientResponse response = post(userToken, headers, blobDocFileId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
@@ -1042,6 +1056,32 @@ public class TestFilesEndpoint {
             transactionalFeature.nextTransaction();
             // document is now unlocked, no more WOPI lock set
             assertFalse(session.getDocument(doc.getRef()).isLocked());
+            String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
+            assertEquals("0.0", itemVersion);
+        }
+    }
+
+    @Test
+    public void testCanUnlockIfNotLastUser() {
+        // grant write access to joe
+        blobDoc = session.getDocument(blobDoc.getRef());
+        setPermissions(blobDoc, Collections.singletonMap("joe", READ_WRITE));
+
+        // lock file as john
+        Map<String, String> headers = new HashMap<>();
+        headers.put(OVERRIDE, Operation.LOCK.name());
+        headers.put(LOCK, "foo");
+        assertLockResponseOKForJohn(headers);
+
+        // refresh lock as joe
+        assertLockResponseOKForJoe(headers);
+
+        // unlock file as joe
+        headers.put(OVERRIDE, Operation.UNLOCK.name());
+        try (CloseableClientResponse response = post(joeToken, headers, blobDocFileId)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            assertFalse(session.getDocument(blobDoc.getRef()).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             assertEquals("0.0", itemVersion);
         }
