@@ -24,6 +24,7 @@ package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
@@ -85,10 +86,10 @@ public class MoveCommand implements Command {
         }
 
         if (dstFile.exists()) {
-            dstFile.delete();
+            Files.delete(dstFile.toPath());
         }
 
-        srcFile.renameTo(dstFile);
+        Files.move(srcFile.toPath(), dstFile.toPath());
     }
 
     @Override

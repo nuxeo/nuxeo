@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.nuxeo.common.Environment;
@@ -83,7 +84,7 @@ public class BlobToFile {
         // available.
         File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
         blob.transferTo(tmp);
-        tmp.renameTo(file);
+        Files.move(tmp.toPath(), file.toPath());
     }
 
     @OperationMethod(collector = BlobCollector.class)
