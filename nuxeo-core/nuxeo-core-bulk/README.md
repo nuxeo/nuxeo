@@ -8,15 +8,15 @@ This module provides the ability to execute actions asynchronously on a -possibl
 ## Definitions
 
 
-- __document set__: an ensemble of documents represented by their ids and a their repository name.
+- __document set__: a list of documents of a repository represented as a list of document identifiers.
 
 - __action__: an operation that can be applied to a document set.
 
 - __bulk command__: a set of parameters building a request to apply an action on a document set.
 
-- __bucket__: a part of a document set that fits into a stream record.
+- __bucket__: a portion of a document set that fits into a stream record.
 
-- __batch__: a smaller (or equals) set of document where the action is applied within a transaction.
+- __batch__: a smaller (or equals) portion of a bucket where the action is applied within a transaction.
 
 ## Bulk Command
 
@@ -55,10 +55,18 @@ The scroller will also sent status update to inform that the scroll is in progre
 
 Each action is run its own stream processor (a topology of computation).
 
-The action contract is to send status update to inform on the number of document processed for a command.
+The action to be part of the bulk service must respect the following contract:
 
-An abstract computation is provided to provide a Nuxeo session and transaction
-where it is easy to process part of the buckets (a batch).
+- action must send a status update to inform on the number of document processed for a command,
+  at some point these reported processed documents must match the total number of document in the set.
+
+- action that want to aggregate results per command must handle interleaved commands by maintaining a local state
+  per command, checkpoint must be done only when there are no aggregation in progress.
+
+An `AbstractBulkComputation` is provided so an action can be implemented easily with a single computation
+See `SetPropertiesAction` for a trivial example.
+
+See The `CSVExportAction` and particularly the `MakeBlob` computation for an advanced example.
 
 
 ### The Status computation
@@ -77,14 +85,14 @@ You need to register a couple action / stream processor :
 
 ```xml
 <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-  <action name="myAction" bulkSize="200" batchSize="20"/>
+  <action name="myAction" bucketSize="100" batchSize="20"/>
 </extension>
 ```
 
 ```xml
 <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
   <streamProcessor name="myAction" class="org.nuxeo.ecm.core.bulk.action.MyActionProcessor" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1" />
+      defaultConcurrency="2" defaultPartitions="4" />
 </extension>
 ```
 

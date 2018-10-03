@@ -18,12 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.utils.BlobUtils;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 
@@ -39,16 +40,20 @@ public class ZipBlob extends AbstractTransientBlobComputation {
     }
 
     @Override
-    public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
-        String commandId = CSVProjection.getCommandIdFromKey(record.getKey());
-        Blob blob = getBlob(new String(record.getData(), UTF_8));
+    public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket in = codec.decode(record.getData());
+
+        Blob blob = getBlob(in.getDataAsString());
         try {
             blob = BlobUtils.zip(blob, null);
         } catch (IOException e) {
             getLog().error(e, e);
         }
-        storeBlob(blob, commandId);
-        context.produceRecord("o1", Record.of(record.getKey(), getTransientStoreKey(commandId).getBytes(UTF_8)));
+        storeBlob(blob, in.getCommandId());
+
+        DataBucket out = new DataBucket(in.getCommandId(), in.getCount(), getTransientStoreKey(in.getCommandId()));
+        context.produceRecord("o1", Record.of(in.getCommandId(), codec.encode(out)));
         context.askForCheckpoint();
     }
 

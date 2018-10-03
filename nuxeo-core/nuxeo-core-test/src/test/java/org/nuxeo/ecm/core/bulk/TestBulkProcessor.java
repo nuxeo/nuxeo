@@ -21,7 +21,8 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
 
 import java.time.Duration;
 
@@ -60,7 +61,7 @@ public class TestBulkProcessor {
     @Test
     public void testEmptyQuery() throws InterruptedException {
         LogManager logManager = stream.getLogManager(BULK_LOG_MANAGER_NAME);
-        try (LogTailer<Record> tailer = logManager.createTailer("test", BulkProcessor.DONE_STREAM)) {
+        try (LogTailer<Record> tailer = logManager.createTailer("test", DONE_STREAM)) {
             tailer.toLastCommitted();
 
             String nxql = "SELECT * from Document where ecm:parentId='nonExistentId'";

@@ -4,6 +4,8 @@
   "repository": "myRepository",
   "query": "SELECT * FROM Document",
   "action": "myAction",
+  "bucket": 100,
+  "batch": 20,
   "params": {
     "actionParam": "mySpecificParameter",
     "boolean": true,

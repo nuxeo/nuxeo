@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_SUFFIX;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -42,8 +40,6 @@ import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.Lists;
@@ -64,24 +60,21 @@ import com.google.common.collect.Lists;
  */
 public abstract class AbstractBulkComputation extends AbstractComputation {
 
-    protected final int size;
-
     protected BulkCommand command;
 
-    public AbstractBulkComputation(String name, int size) {
-        this(name, size, 1);
+    public AbstractBulkComputation(String name) {
+        this(name, 1);
     }
 
-    public AbstractBulkComputation(String name, int size, int nbOutputStreams) {
+    public AbstractBulkComputation(String name, int nbOutputStreams) {
         super(name, 1, nbOutputStreams);
-        this.size = size;
     }
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
         fetchCommand(bucket.getCommandId());
-        for (List<String> batch : Lists.partition(bucket.getIds(), size)) {
+        for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
             processBatchOfDocuments(batch);
         }
         endBucket(context, bucket.getIds().size());
@@ -92,8 +85,11 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         if (command != null && command.getId().equals(commandId)) {
             return;
         }
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
-        command = BulkCodecs.getCommandCodec().decode(kvStore.get(commandId + COMMAND_SUFFIX));
+        command = Framework.getService(BulkService.class).getCommand(commandId);
+    }
+
+    public BulkCommand getCurrentCommand() {
+        return command;
     }
 
     protected void processBatchOfDocuments(List<String> batch) {

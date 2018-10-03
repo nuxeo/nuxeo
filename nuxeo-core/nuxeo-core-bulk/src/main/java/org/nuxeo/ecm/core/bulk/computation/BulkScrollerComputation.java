@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
@@ -107,8 +107,8 @@ public class BulkScrollerComputation extends AbstractComputation {
             BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
             String commandId = command.getId();
             int bucketSize = Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
-            if (bucketSize >= scrollBatchSize) {
-                log.warn(String.format("Bucket size: %d too big for action %s, reduce to scroll size: %d", bucketSize,
+            if (bucketSize > scrollBatchSize) {
+                log.warn(String.format("Bucket size: %d too big for action: %s, reduce to scroll size: %d", bucketSize,
                         command.getAction(), scrollBatchSize));
                 bucketSize = scrollBatchSize;
             }

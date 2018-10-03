@@ -30,7 +30,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -52,8 +54,8 @@ public class CSVProjection extends AbstractBulkComputation {
 
     protected ByteArrayOutputStream out;
 
-    public CSVProjection(int size) {
-        super(CSVExportAction.ACTION_NAME, size);
+    public CSVProjection() {
+        super(CSVExportAction.ACTION_NAME);
     }
 
     @Override
@@ -72,27 +74,11 @@ public class CSVProjection extends AbstractBulkComputation {
 
     @Override
     public void endBucket(ComputationContext context, int bucketSize) {
-        Record record = Record.of(buildRecordKey(command.getId(), bucketSize), out.toByteArray());
+        String commandId = getCurrentCommand().getId();
+        DataBucket dataBucket = new DataBucket(commandId, bucketSize, out.toByteArray());
+        Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
         context.produceRecord("o1", record);
         out = null;
-    }
-
-    public static String buildRecordKey(String commandId, long documentCount) {
-        return commandId + KEY_SEP + Long.toString(documentCount);
-    }
-
-    public static String getCommandIdFromKey(String key) {
-        if (key == null || !key.contains(KEY_SEP)) {
-            throw new IllegalArgumentException("Invalid key: " + key);
-        }
-        return key.split(KEY_SEP)[0];
-    }
-
-    public static int getDocumentCountFromKey(String key) {
-        if (key == null || !key.contains(KEY_SEP)) {
-            throw new IllegalArgumentException("Invalid key: " + key);
-        }
-        return Integer.parseInt(key.split(KEY_SEP)[1]);
     }
 
 }

@@ -18,27 +18,23 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * The bulk component.
  *
  * @since 10.2
  */
-public class BulkComponent extends DefaultComponent implements BulkAdminService {
-
-    public static final String BULK_LOG_MANAGER_NAME = "bulk";
-
-    public static final String BULK_KV_STORE_NAME = "bulk";
+public class BulkComponent extends DefaultComponent {
 
     public static final String XP_ACTIONS = "actions";
 
     protected BulkService bulkService;
+
+    protected BulkAdminService bulkAdminService;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -46,11 +42,7 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
         if (adapter.isAssignableFrom(BulkService.class)) {
             return (T) bulkService;
         } else if (adapter.isAssignableFrom(BulkAdminService.class)) {
-            // BulkAdminService is implemented by the component and not as a service like BulkService because
-            // StreamBulkScroller needs bulk configuration during its initialization. Its initialization happens during
-            // StreamService's start step which is before BulkComponent's start step, so at a moment where services are
-            // not yet created.
-            return (T) this;
+            return (T) bulkAdminService;
         }
         return null;
     }
@@ -58,27 +50,27 @@ public class BulkComponent extends DefaultComponent implements BulkAdminService 
     @Override
     public void start(ComponentContext context) {
         super.start(context);
+        bulkAdminService = new BulkAdminServiceImpl(getDescriptors(XP_ACTIONS));
         bulkService = new BulkServiceImpl();
+        new ComponentListener().install();
     }
 
-    @Override
-    public void stop(ComponentContext context) throws InterruptedException {
-        super.stop(context);
-        bulkService = null;
-    }
+    protected class ComponentListener implements ComponentManager.Listener {
+        @Override
+        public void afterStart(ComponentManager mgr, boolean isResume) {
+            // this is called once all components are started and ready
+            ((BulkAdminServiceImpl) bulkAdminService).afterStart();
+        }
 
-    @Override
-    public List<String> getActions() {
-        return getDescriptors(XP_ACTIONS).stream().map(Descriptor::getId).collect(Collectors.toList());
-    }
-
-    @Override
-    public int getBucketSize(String action) {
-        return ((BulkActionDescriptor) getDescriptor(XP_ACTIONS, action)).getBucketSize();
-    }
-
-    @Override
-    public int getBatchSize(String action) {
-        return ((BulkActionDescriptor) getDescriptor(XP_ACTIONS, action)).getBatchSize();
+        @Override
+        public void beforeStop(ComponentManager mgr, boolean isStandby) {
+            // this is called before components are stopped
+            if (bulkAdminService != null) {
+                ((BulkAdminServiceImpl) bulkAdminService).beforeStop();
+                bulkAdminService = null;
+            }
+            bulkService = null;
+            Framework.getRuntime().getComponentManager().removeListener(this);
+        }
     }
 }

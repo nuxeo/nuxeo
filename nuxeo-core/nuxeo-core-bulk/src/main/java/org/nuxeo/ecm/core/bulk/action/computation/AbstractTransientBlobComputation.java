@@ -79,7 +79,6 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         return temp.resolve(commandId + ".csv");
     }
 
-
     protected Log getLog() {
         return LogFactory.getLog(getClass());
     }

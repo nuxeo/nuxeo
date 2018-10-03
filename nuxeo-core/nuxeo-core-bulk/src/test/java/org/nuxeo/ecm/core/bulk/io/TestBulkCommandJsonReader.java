@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReaderTest;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -55,7 +55,7 @@ public class TestBulkCommandJsonReader extends AbstractJsonReaderTest.Local<Bulk
         assertEquals(4, command.getParams().size());
         assertEquals("mySpecificParameter", command.getParam("actionParam"));
         assertTrue(command.getParam("boolean"));
-        assertEquals(1200, command.<Long>getParam("long").longValue());
+        assertEquals(1200, command.<Long> getParam("long").longValue());
         Map<String, Serializable> complex = command.getParam("complex");
         assertFalse(complex.isEmpty());
         assertEquals("value", complex.get("key"));

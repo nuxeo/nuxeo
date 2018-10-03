@@ -35,9 +35,9 @@ import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.BulkServiceImpl;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.bulk.action.computation.CSVProjection;
 import org.nuxeo.ecm.core.bulk.action.computation.MakeBlob;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
@@ -84,11 +84,14 @@ public class TestMakeBlob {
 
         // check the output key
         Record output = context.getRecords("o1").get(0);
-        assertEquals(command, CSVProjection.getCommandIdFromKey(output.getKey()));
-        assertEquals(count, CSVProjection.getDocumentCountFromKey(output.getKey()));
+        assertEquals(command, output.getKey());
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket outData = codec.decode(output.getData());
+        assertEquals(command, outData.getCommandId());
+        assertEquals(count, outData.getCount());
 
         // check the output blob
-        String blobPath = new String(output.getData(), UTF_8);
+        String blobPath = codec.decode(output.getData()).getDataAsString();
         Blob blob = comp.getBlob(blobPath);
         assertBlobEquals("abcdef", blob);
 
@@ -154,23 +157,27 @@ public class TestMakeBlob {
         assertTrue(context.requireCheckpoint());
 
         // check the output key
-        assertEquals(command1, CSVProjection.getCommandIdFromKey(output1.getKey()));
-        assertEquals(count, CSVProjection.getDocumentCountFromKey(output1.getKey()));
-        assertEquals(command2, CSVProjection.getCommandIdFromKey(output2.getKey()));
-        assertEquals(count, CSVProjection.getDocumentCountFromKey(output2.getKey()));
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket data1 = codec.decode(output1.getData());
+        DataBucket data2 = codec.decode(output2.getData());
+        assertEquals(command1, data1.getCommandId());
+        assertEquals(count, data1.getCount());
+        assertEquals(command2, data2.getCommandId());
+        assertEquals(count, data2.getCount());
 
         // check the output blob
-        String blobPath = new String(output1.getData(), UTF_8);
+        String blobPath = codec.decode(output1.getData()).getDataAsString();
         assertBlobEquals("abcdef", comp.getBlob(blobPath));
-        blobPath = new String(output2.getData(), UTF_8);
+        blobPath = codec.decode(output2.getData()).getDataAsString();
         assertBlobEquals("mnopqr", comp.getBlob(blobPath));
 
         comp.destroy();
     }
 
     protected Record createRecord(String commandId, String content, long count) {
-        String key = CSVProjection.buildRecordKey(commandId, count);
-        return Record.of(key, content.getBytes(UTF_8));
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket data = new DataBucket(commandId, count, content);
+        return Record.of(commandId, codec.encode(data));
     }
 
     protected void createStatus(String commandId, int count) {

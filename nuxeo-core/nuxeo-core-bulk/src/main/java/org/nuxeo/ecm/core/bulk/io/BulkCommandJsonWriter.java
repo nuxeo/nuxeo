@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BATCH_SIZE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BUCKET_SIZE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
@@ -54,7 +56,8 @@ public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkComman
         jg.writeStringField(COMMAND_REPOSITORY, command.getRepository());
         jg.writeStringField(COMMAND_QUERY, command.getQuery());
         jg.writeStringField(COMMAND_ACTION, command.getAction());
-
+        jg.writeNumberField(COMMAND_BUCKET_SIZE, command.getBucketSize());
+        jg.writeNumberField(COMMAND_BATCH_SIZE, command.getBatchSize());
         Map<String, Serializable> params = command.getParams();
         if (!params.isEmpty()) {
             jg.writeObjectField(COMMAND_PARAMS, params);

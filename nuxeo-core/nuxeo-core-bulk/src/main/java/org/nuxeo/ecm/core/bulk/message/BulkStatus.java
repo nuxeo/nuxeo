@@ -31,7 +31,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
-import org.omg.CORBA.UNKNOWN;
 
 /**
  * A message representing a command status or a change of status (delta).

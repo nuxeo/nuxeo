@@ -18,14 +18,15 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.util.Collections;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
@@ -43,14 +44,18 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
 
     @Override
     public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
-        String commandId = CSVProjection.getCommandIdFromKey(record.getKey());
-        long documents = CSVProjection.getDocumentCountFromKey(record.getKey());
-        Blob blob = getBlob(new String(record.getData(), UTF_8));
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket in = codec.decode(record.getData());
+
+        String commandId = in.getCommandId();
+        long documents = in.getCount();
+        Blob blob = getBlob(in.getDataAsString());
         // store it in download transient store
         TransientStore store = Framework.getService(TransientStoreService.class)
-                                           .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
+                                        .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
         store.putBlobs(commandId, Collections.singletonList(blob));
         store.setCompleted(commandId, true);
+
         // update the command status
         AbstractBulkComputation.updateStatusProcessed(context, commandId, documents);
         context.askForCheckpoint();

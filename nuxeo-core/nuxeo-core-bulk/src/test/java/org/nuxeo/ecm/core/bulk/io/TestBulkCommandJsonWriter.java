@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.bulk.io;
 
 import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BATCH_SIZE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BUCKET_SIZE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
@@ -30,8 +32,8 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_N
 import java.util.HashMap;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.runtime.test.runner.Features;
@@ -52,17 +54,21 @@ public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<Bulk
                                                .withRepository("myRepository")
                                                .withQuery("SELECT * FROM Document")
                                                .withAction("myAction")
+                                               .withBucketSize(20)
+                                               .withBatchSize(10)
                                                .withParam("actionParam", "mySpecificParameter")
                                                .withParam("boolean", false)
                                                .withParam("long", 1200)
                                                .withParam("complex", new HashMap<>(singletonMap("key", "value")));
         JsonAssert json = jsonAssert(command);
-        json.properties(6);
+        json.properties(8);
         json.has(ENTITY_FIELD_NAME).isEquals(COMMAND_ENTITY_TYPE);
         json.has(COMMAND_USERNAME).isEquals("myUser");
         json.has(COMMAND_REPOSITORY).isEquals("myRepository");
         json.has(COMMAND_QUERY).isEquals("SELECT * FROM Document");
         json.has(COMMAND_ACTION).isEquals("myAction");
+        json.has(COMMAND_BUCKET_SIZE).isEquals(20);
+        json.has(COMMAND_BATCH_SIZE).isEquals(10);
         JsonAssert params = json.has(COMMAND_PARAMS).properties(4);
         params.has("actionParam").isEquals("mySpecificParameter");
         params.has("boolean").isEquals(false);
