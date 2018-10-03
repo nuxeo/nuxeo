@@ -262,6 +262,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (slash < 0) {
             return null;
         }
+
+        // remove query string if any
+        path = path.replaceFirst("\\?.*$", "");
+
         String type = path.substring(0, slash);
         String downloadPath = path.substring(slash + 1);
         switch (type) {
@@ -282,13 +286,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
-    public Blob resolveBlobFromDownloadUrl(String url) {
-        String nuxeoUrl = Framework.getProperty("nuxeo.url");
-        if (!url.startsWith(nuxeoUrl)) {
-            return null;
-        }
-        String path = url.substring(nuxeoUrl.length() + 1);
-        Pair<String, Action> pair = getDownloadPathAndAction(path);
+    public Blob resolveBlobFromDownloadUrl(String downloadURL) {
+        Pair<String, Action> pair = getDownloadPathAndAction(downloadURL);
         if (pair == null) {
             return null;
         }
@@ -301,7 +300,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     return null;
                 }
                 DocumentModel doc = session.getDocument(docRef);
-                return resolveBlob(doc, downloadBlobInfo.xpath);
+                Blob blob = resolveBlob(doc, downloadBlobInfo.xpath);
+                if (!checkPermission(doc, downloadBlobInfo.xpath, blob, null, null)) {
+                    return null;
+                }
+                return blob;
             }
         } catch (IllegalArgumentException e) {
             return null;

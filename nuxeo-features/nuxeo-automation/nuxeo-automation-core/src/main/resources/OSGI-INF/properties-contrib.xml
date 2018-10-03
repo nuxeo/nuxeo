@@ -20,6 +20,10 @@
           in Nuxeo automation. If allowed, Nuxeo server will not check the user existence during automation execution.
           Set this property to true if you use Nuxeo computed user or computed group.
         </li>
+        <li>
+          <strong>nuxeo.automation.object.blob.decoder.enabled</strong>: if true, allow to decode a JSON blob object using
+          JSONObjectBlobDecoder decoder. Defaults to false.
+        </li>
       </ul>
 
       @since 8.2
@@ -30,6 +34,8 @@
     <property name="nuxeo.automation.export.aliases">false</property>
 
     <property name="nuxeo.automation.allowVirtualUser">false</property>
+
+    <property name="nuxeo.automation.object.blob.decoder.enabled">false</property>
 
   </extension>
 
