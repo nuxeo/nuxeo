@@ -20,11 +20,9 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
-import java.util.Collection;
-
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -34,7 +32,7 @@ import org.nuxeo.ecm.platform.query.core.AggregateBase;
 /**
  * @since 6.0
  */
-public abstract class AggregateEsBase<B extends Bucket> extends AggregateBase<B> {
+public abstract class AggregateEsBase<A extends Aggregation, B extends Bucket> extends AggregateBase<B> {
 
     public static final char XPATH_SEP = '/';
 
@@ -57,9 +55,10 @@ public abstract class AggregateEsBase<B extends Bucket> extends AggregateBase<B>
     public abstract QueryBuilder getEsFilter();
 
     /**
-     * Extract the buckets from the Elasticsearch response
+     * Extract the aggregation from the Elasticsearch response
+     * @since 10.3
      */
-    public abstract void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets);
+    public abstract void parseAggregation(A aggregation);
 
     @Override
     public String getField() {

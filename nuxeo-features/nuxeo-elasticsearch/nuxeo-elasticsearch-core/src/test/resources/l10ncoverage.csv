@@ -1,6 +1,7 @@
 id, label_en, label_fr, parent, obsolete
 "europe","Europe","Europe","","0"
 "France","France","France","europe","0"
+"Spain","Spain","Spain","europe","0"
 "Coverage0","Coverage0","Coverage0","","0"
 "Coverage1","Coverage1","Coverage1","","0"
 "Coverage2","Coverage2","Coverage2","","0"

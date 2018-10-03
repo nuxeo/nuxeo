@@ -56,6 +56,20 @@ public final class ElasticSearchConstants {
 
     public static final String AGG_TYPE_TERMS = "terms";
 
+    public static final String AGG_CARDINALITY = "cardinality";
+
+    public static final String AGG_COUNT = "count";
+
+    public static final String AGG_SUM = "sum";
+
+    public static final String AGG_AVG = "avg";
+
+    public static final String AGG_MAX = "max";
+
+    public static final String AGG_MIN = "min";
+
+    public static final String AGG_MISSING = "missing";
+
     public static final String AGG_TYPE_SIGNIFICANT_TERMS = "significant_terms";
 
     public static final String AGG_TYPE_RANGE = "range";

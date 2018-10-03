@@ -21,7 +21,6 @@ package org.nuxeo.elasticsearch.test.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
@@ -44,6 +43,8 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -91,6 +92,8 @@ public class RestESDocumentsTest extends BaseTest {
 
     public static final String QUERY = "select * from Document where " + "ecm:isTrashed = 0";
 
+    public static final String TEST_MIME_TYPE = "text/plain";
+
     @Inject
     PageProviderService pageProviderService;
 
@@ -116,12 +119,7 @@ public class RestESDocumentsTest extends BaseTest {
     @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
         // wait for async jobs
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        WorkManager wm = Framework.getService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        esa.refresh();
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        waitForAsync();
         // Given a repository, when I perform a ESQL pageprovider on it
         try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_2")) {
 
@@ -197,14 +195,8 @@ public class RestESDocumentsTest extends BaseTest {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+        waitForAsync();
 
-        // wait for async jobs
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        WorkManager wm = Framework.getService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
-        esa.refresh();
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it
         try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_3", null,
                 null, null, headers)) {
@@ -263,5 +255,66 @@ public class RestESDocumentsTest extends BaseTest {
             assertNull(node.get("aggregations").get("path").get("buckets"));
         }
 
+    }
+
+    /**
+     * @since 10.3
+     */
+    protected void waitForAsync() throws InterruptedException {
+        // wait for async jobs
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        esa.refresh();
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void iCanQueryESQLPageProviderAndFetchVariousAggregates() throws Exception {
+
+        for (int i = 0; i < 50; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "aggTest" + 1, "File");
+            doc.setPropertyValue("dc:coverage", "europe/Spain");
+            doc.setPropertyValue("dc:title", "tight_" + i % 2);
+            if (i % 3 == 0) {
+                doc.setPropertyValue("dc:description", "subs"+ i % 4);
+            }
+            if (i % 5 == 0) {
+                Blob blob = Blobs.createBlob("My text isn't very long." + i, TEST_MIME_TYPE);
+                doc.setPropertyValue("file:content", (Serializable) blob);
+            }
+            doc = session.createDocument(doc);
+            session.saveDocument(doc);
+        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        waitForAsync();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("fetch." + AggregateJsonWriter.ENTITY_TYPE, AggregateJsonWriter.FETCH_KEY);
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_4", null,
+                null, null, headers)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode aggregations = node.get("aggregations");
+            assertEquals(258, aggregations.get("sum").get("value").intValue());
+            assertEquals("25.8", aggregations.get("avg").get("value").asText());
+            assertEquals("0.0", aggregations.get("min").get("value").asText());
+            assertEquals("0.0", aggregations.get("max").get("value").asText());
+            assertEquals(17, aggregations.get("count_desc").get("value").intValue());
+            assertEquals(50, aggregations.get("count_title").get("value").intValue());
+            assertEquals(40, aggregations.get("missing_content_length").get("value").intValue());
+            assertEquals(33, aggregations.get("missing_description").get("value").intValue());
+            assertEquals(0, aggregations.get("missing_title").get("value").intValue());
+            assertEquals(2, aggregations.get("cardinality_title").get("value").intValue());
+            assertEquals(4, aggregations.get("cardinality_description").get("value").intValue());
+        }
     }
 }

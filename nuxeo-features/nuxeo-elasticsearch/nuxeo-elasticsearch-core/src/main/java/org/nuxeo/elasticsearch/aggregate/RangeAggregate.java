@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @since 6.0
  */
-public class RangeAggregate extends AggregateEsBase<BucketRange> {
+public class RangeAggregate extends MultiBucketAggregate<BucketRange> {
 
     public RangeAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);

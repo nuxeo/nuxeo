@@ -295,6 +295,47 @@
       </aggregates>
     </genericPageProvider>
 
+    <genericPageProvider name="aggregates_4" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <property name="maxResults">10000</property>
+      <pageSize>20</pageSize>
+      <pattern>SELECT * FROM Document WHERE dc:coverage = 'europe/Spain'</pattern>
+      <aggregates>
+        <aggregate id="cardinality_title" parameter="dc:title" type="cardinality">
+          <field name="cardinality_title_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="cardinality_description" parameter="dc:description" type="cardinality">
+          <field name="cardinality_description_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="count_title" parameter="dc:title" type="count">
+          <field name="count_title_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="count_desc" parameter="dc:description" type="count">
+          <field name="count_desc_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="missing_title" parameter="dc:title" type="missing">
+          <field name="missing_title_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="missing_description" parameter="dc:description" type="missing">
+          <field name="missing_description_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="missing_content_length" parameter="file:content/length" type="missing">
+          <field name="missing_content_length_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="sum" parameter="file:content/length" type="sum">
+          <field name="sum_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="avg" parameter="file:content/length" type="avg">
+          <field name="avg_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="min" parameter="uid:minor_version" type="min">
+          <field name="min_agg" schema="advanced_search" />
+        </aggregate>
+        <aggregate id="max" parameter="uid:major_version" type="max">
+          <field name="max_agg" schema="advanced_search" />
+        </aggregate>
+      </aggregates>
+    </genericPageProvider>
     <coreQueryPageProvider name="TEST_PP">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND

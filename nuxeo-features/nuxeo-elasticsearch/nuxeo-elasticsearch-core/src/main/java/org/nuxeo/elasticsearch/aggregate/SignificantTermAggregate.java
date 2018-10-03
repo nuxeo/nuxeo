@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @since 6.0
  */
-public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
+public class SignificantTermAggregate extends MultiBucketAggregate<BucketTerm> {
 
     public SignificantTermAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);

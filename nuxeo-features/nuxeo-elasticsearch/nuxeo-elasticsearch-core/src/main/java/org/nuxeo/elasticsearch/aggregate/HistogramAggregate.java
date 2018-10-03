@@ -51,7 +51,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @since 6.0
  */
-public class HistogramAggregate extends AggregateEsBase<BucketRange> {
+public class HistogramAggregate extends MultiBucketAggregate<BucketRange> {
 
     private Integer interval;
 
