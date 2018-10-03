@@ -482,9 +482,8 @@ public class TestDownloadService {
         doc = session.createDocument(doc);
         session.save();
 
-        String url = "http://localhost:8080/nuxeo/nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/"
-                + blobFilename;
-        Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(url);
+        String path = "nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/" + blobFilename;
+        Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(path);
         assertEquals(blob, resolvedBlob);
         session.close();
     }
