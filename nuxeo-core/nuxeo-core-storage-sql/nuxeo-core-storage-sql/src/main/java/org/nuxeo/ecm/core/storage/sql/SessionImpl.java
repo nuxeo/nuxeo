@@ -354,10 +354,14 @@ public class SessionImpl implements Session, XAResource {
         if (!batch.isEmpty()) {
             log.debug("Saving session");
             // execute the batch
-            mapper.write(batch);
-            log.debug("End of save");
-            for (Fragment fragment : fragmentsToClearDirty) {
-                fragment.clearDirty();
+            try {
+                mapper.write(batch);
+                log.debug("End of save");
+            } finally {
+                // callers must never observe a DeltaLong in the fragments
+                for (Fragment fragment : fragmentsToClearDirty) {
+                    fragment.clearDirty();
+                }
             }
         }
     }
