@@ -5,8 +5,11 @@
   "submit": "2018-06-21T12:37:08.172Z",
   "count": 0,
   "processed": 0,
-  "result" : {
+  "result": {
     "result1": "o1",
-    "result2": ["o2", "o3"]
+    "result2": [
+      "o2",
+      "o3"
+    ]
   }
 }

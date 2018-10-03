@@ -28,9 +28,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus.State;
-import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReaderTest;
 import org.nuxeo.runtime.test.runner.Features;
 

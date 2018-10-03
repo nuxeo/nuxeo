@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-
 import java.time.Duration;
 import java.util.List;
+
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 
 /**
  * API to manage Bulk Computation.
@@ -45,6 +45,11 @@ public interface BulkService {
      * If the command is not found it will return a status with an {@link BulkStatus.State#UNKNOWN} state.
      */
     BulkStatus getStatus(String commandId);
+
+    /**
+     * Returns the command or null if not found.
+     */
+    BulkCommand getCommand(String commandId);
 
     /**
      * Waits for completion of given bulk command.

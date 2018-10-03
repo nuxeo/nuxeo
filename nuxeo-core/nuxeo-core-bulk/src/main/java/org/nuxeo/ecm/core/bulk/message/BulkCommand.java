@@ -47,6 +47,10 @@ public class BulkCommand implements Serializable {
 
     protected String action;
 
+    protected int bucketSize;
+
+    protected int batchSize;
+
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
 
@@ -110,6 +114,24 @@ public class BulkCommand implements Serializable {
         return this;
     }
 
+    public BulkCommand withBucketSize(int size) {
+        if (batchSize > 0 && batchSize > size) {
+            // TODO improve this with a builder pattern
+            throw new IllegalArgumentException("bucketSize must be greater or equal to batchSize");
+        }
+        this.bucketSize = size;
+        return this;
+    }
+
+    public BulkCommand withBatchSize(int size) {
+        if (bucketSize > 0 && size > bucketSize) {
+            // TODO improve this with a builder pattern
+            throw new IllegalArgumentException("bucketSize must be greater or equal to batchSize");
+        }
+        this.batchSize = size;
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getParam(String key) {
         return (T) params.get(key);
@@ -121,6 +143,14 @@ public class BulkCommand implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getBucketSize() {
+        return bucketSize;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
     }
 
     @Override

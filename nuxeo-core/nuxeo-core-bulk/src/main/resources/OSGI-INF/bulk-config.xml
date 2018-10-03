@@ -3,32 +3,50 @@
 
   <require>org.nuxeo.runtime.stream.service</require>
 
+  <!-- Initialize bulk streams before action processors -->
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="bulk">
+      <!-- command stream size sets the maximum concurrency for the scroller computation in the Nuxeo cluster -->
+      <log name="command" size="2" />
+      <!-- status stream size sets the maximum concurrency for the status computation in the Nuxeo cluster -->
+      <log name="status" size="1" />
+      <!-- done stream size sets the maximum concurrency for the triggers computations -->
+      <log name="done" size="1" />
+    </logConfig>
+  </extension>
+
+  <!-- Configure the bulk service for this nuxeo instance -->
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <!-- how many scroller thread in this instance, maximum is fixed by the number of partition of command stream -->
+    <property name="nuxeo.core.bulk.scroller.concurrency">2</property>
+    <property name="nuxeo.core.bulk.status.concurrency">1</property>
+    <property name="nuxeo.core.bulk.scroller.size">200</property>
+    <property name="nuxeo.core.bulk.scroller.timeoutSeconds">60</property>
+    <property name="nuxeo.core.bulk.scroller.produceImmediate">false</property>
+  </extension>
+
+
+  <!-- Defines some actions -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="setProperties" bulkSize="100" batchSize="25" />
-    <action name="setSystemProperties" bulkSize="100" batchSize="25" />
-    <action name="csvExport" bulkSize="100" batchSize="50" />
+    <action name="setProperties" bucketSize="100" batchSize="25" />
+    <action name="setSystemProperties" bucketSize="100" batchSize="25" />
+    <action name="csvExport" bucketSize="100" batchSize="50" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <!-- Processor used by BulkService to scroll DB -->
-    <streamProcessor name="bulkDocumentScroller" class="org.nuxeo.ecm.core.bulk.BulkProcessor" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1">
-      <option name="scrollBatchSize">200</option>
-      <option name="scrollKeepAlive">60</option>
-    </streamProcessor>
-
     <!-- SetProperty processor -->
     <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1" />
+      defaultConcurrency="2" defaultPartitions="2" />
 
     <!-- SetSystemProperty processor -->
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
-      logConfig="bulk" defaultConcurrency="1" defaultPartitions="1" />
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
-    <!-- SetSystemProperty processor -->
+    <!-- CSV exporter processor -->
     <streamProcessor name="csvExport" class="org.nuxeo.ecm.core.bulk.action.CSVExportAction" logConfig="bulk"
-      defaultConcurrency="1" defaultPartitions="1" />
-
+      defaultConcurrency="2" defaultPartitions="2">
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
   </extension>
 
 </component>

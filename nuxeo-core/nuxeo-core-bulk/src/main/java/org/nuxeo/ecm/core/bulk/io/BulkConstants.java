@@ -59,6 +59,10 @@ public class BulkConstants {
 
     public static final String COMMAND_PARAMS = "params";
 
+    public static final String COMMAND_BUCKET_SIZE = "bucket";
+
+    public static final String COMMAND_BATCH_SIZE = "batch";
+
     private BulkConstants() {
         // constants class
     }

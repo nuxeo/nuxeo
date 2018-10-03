@@ -19,9 +19,6 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_LOG_MANAGER_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.COMMAND_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 
@@ -53,9 +50,23 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
 
+    public static final String BULK_LOG_MANAGER_NAME = "bulk";
+
+    public static final String BULK_KV_STORE_NAME = "bulk";
+
+    public static final String COMMAND_STREAM = "command";
+
+    public static final String STATUS_STREAM = "status";
+
+    public static final String DONE_STREAM = "done";
+
+    public static final String RECORD_CODEC = "avro";
+
     public static final String COMMAND_SUFFIX = ":command";
 
     public static final String STATUS_SUFFIX = ":status";
+
+    public static final String PRODUCE_IMMEDIATE_OPTION = "produceImmediate";
 
     @Override
     public String submit(BulkCommand command) {
@@ -63,8 +74,19 @@ public class BulkServiceImpl implements BulkService {
             log.debug("Run action with command=" + command);
         }
         // check command
+        // TODO: check must be done on builder
         if (isEmpty(command.getRepository()) || isEmpty(command.getQuery()) || isEmpty(command.getAction())) {
             throw new IllegalArgumentException("Missing mandatory values");
+        }
+        // TODO: set default on command builder ?
+        if (command.getBucketSize() == 0 || command.getBatchSize() == 0) {
+            BulkAdminService adminService = Framework.getService(BulkAdminService.class);
+            if (command.getBucketSize() == 0) {
+                command.withBatchSize(adminService.getBatchSize(command.getAction()));
+            }
+            if (command.getBucketSize() == 0) {
+                command.withBucketSize(adminService.getBucketSize(command.getAction()));
+            }
         }
 
         // store the bulk command and status in the key/value store
@@ -98,6 +120,16 @@ public class BulkServiceImpl implements BulkService {
             return BulkStatus.unknownOf(commandId);
         }
         return BulkCodecs.getStatusCodec().decode(statusAsBytes);
+    }
+
+    @Override
+    public BulkCommand getCommand(String commandId) {
+        KeyValueStore keyValueStore = getKvStore();
+        byte[] statusAsBytes = keyValueStore.get(commandId + COMMAND_SUFFIX);
+        if (statusAsBytes == null) {
+            return null;
+        }
+        return BulkCodecs.getCommandCodec().decode(statusAsBytes);
     }
 
     @Override
@@ -148,4 +180,5 @@ public class BulkServiceImpl implements BulkService {
                  .map(key -> BulkCodecs.getStatusCodec().decode(kv.get(key.replace(COMMAND_SUFFIX, STATUS_SUFFIX))))
                  .collect(Collectors.toList());
     }
+
 }

@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.core.bulk.action;
 
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,10 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
@@ -46,17 +44,16 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     @Override
     public Topology getTopology(Map<String, String> options) {
-        int batchSize = Framework.getService(BulkAdminService.class).getBatchSize(ACTION_NAME);
         return Topology.builder()
-                       .addComputation(() -> new SetPropertyComputation(batchSize),
+                       .addComputation(SetPropertyComputation::new,
                                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM))
                        .build();
     }
 
     public static class SetPropertyComputation extends AbstractBulkComputation {
 
-        public SetPropertyComputation(int batchSize) {
-            super(ACTION_NAME, batchSize);
+        public SetPropertyComputation() {
+            super(ACTION_NAME);
         }
 
         @Override

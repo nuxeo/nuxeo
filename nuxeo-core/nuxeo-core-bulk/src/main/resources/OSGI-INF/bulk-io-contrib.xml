@@ -2,10 +2,10 @@
 <component name="org.nuxeo.ecm.core.bulk.io" version="1.0.0">
 
   <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-    <register class="org.nuxeo.ecm.core.bulk.io.BulkJsonReader" enable="true"/>
-    <register class="org.nuxeo.ecm.core.bulk.io.BulkJsonWriter" enable="true"/>
-    <register class="org.nuxeo.ecm.core.bulk.io.BulkCommandJsonReader" enable="true"/>
-    <register class="org.nuxeo.ecm.core.bulk.io.BulkCommandJsonWriter" enable="true"/>
+    <register class="org.nuxeo.ecm.core.bulk.io.BulkJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.io.BulkJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.io.BulkCommandJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.io.BulkCommandJsonWriter" enable="true" />
   </extension>
 
 </component>

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.bulk.io;
 
 import static java.util.Collections.emptyMap;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ACTION;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BATCH_SIZE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_BUCKET_SIZE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
@@ -57,11 +59,14 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         if (jn.has(COMMAND_PARAMS)) {
             params = BulkParameters.paramsToMap(jn.get(COMMAND_PARAMS));
         }
-
+        Integer batchSize = Integer.valueOf(getter.apply(COMMAND_BATCH_SIZE));
+        Integer bucketSize = Integer.valueOf(getter.apply(COMMAND_BUCKET_SIZE));
         return new BulkCommand().withUsername(getter.apply(COMMAND_USERNAME))
                                 .withRepository(getter.apply(COMMAND_REPOSITORY))
                                 .withQuery(getter.apply(COMMAND_QUERY))
                                 .withAction(getter.apply(COMMAND_ACTION))
+                                .withBucketSize(bucketSize)
+                                .withBatchSize(batchSize)
                                 .withParams(params);
     }
 

@@ -18,21 +18,18 @@
  */
 package org.nuxeo.ecm.core.bulk.action;
 
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.PRODUCE_IMMEDIATE_OPTION;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.getOptionAsBoolean;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.PRODUCE_IMMEDIATE_OPTION;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.action.computation.CSVProjection;
 import org.nuxeo.ecm.core.bulk.action.computation.ExposeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.MakeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.SortBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.ZipBlob;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
@@ -44,10 +41,9 @@ public class CSVExportAction implements StreamProcessorTopology {
 
     @Override
     public Topology getTopology(Map<String, String> options) {
-        int batchSize = Framework.getService(BulkAdminService.class).getBatchSize(ACTION_NAME);
         boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, false);
         return Topology.builder()
-                       .addComputation(() -> new CSVProjection(batchSize),
+                       .addComputation(() -> new CSVProjection(),
                                Arrays.asList("i1:" + ACTION_NAME, "o1:" + MakeBlob.NAME))
                        .addComputation(() -> new MakeBlob(produceImmediate),
                                Arrays.asList("i1:" + MakeBlob.NAME, "o1:" + SortBlob.NAME))
@@ -55,7 +51,11 @@ public class CSVExportAction implements StreamProcessorTopology {
                        .addComputation(ZipBlob::new, Arrays.asList("i1:" + ZipBlob.NAME, "o1:" + ExposeBlob.NAME))
                        .addComputation(ExposeBlob::new, Arrays.asList("i1:" + ExposeBlob.NAME, "o1:" + STATUS_STREAM))
                        .build();
+    }
 
+    public static boolean getOptionAsBoolean(Map<String, String> options, String option, boolean defaultValue) {
+        String value = options.get(option);
+        return value == null ? defaultValue : Boolean.valueOf(value);
     }
 
 }

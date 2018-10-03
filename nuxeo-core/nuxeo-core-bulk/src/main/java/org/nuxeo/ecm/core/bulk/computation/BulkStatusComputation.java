@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.computation;
 
-import static org.nuxeo.ecm.core.bulk.BulkComponent.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
 
 import org.nuxeo.ecm.core.bulk.BulkCodecs;

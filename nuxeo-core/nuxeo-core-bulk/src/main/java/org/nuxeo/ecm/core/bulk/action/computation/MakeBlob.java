@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
@@ -58,19 +59,34 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     @Override
     public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
-        String commandId = CSVProjection.getCommandIdFromKey(record.getKey());
-        int nbDocuments = CSVProjection.getDocumentCountFromKey(record.getKey());
-        appendToFile(commandId, record.getData());
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket in = codec.decode(record.getData());
+        String commandId = in.getCommandId();
+        long nbDocuments = in.getCount();
+
+        appendToFile(commandId, in.getData());
+
         if (counters.containsKey(commandId)) {
             counters.put(commandId, nbDocuments + counters.get(commandId));
         } else {
             counters.put(commandId, Long.valueOf(nbDocuments));
         }
-        if (counters.get(commandId) >= getTotal(commandId)) {
-            saveInTransientStore(context, commandId);
-            if (counters.isEmpty()) {
-                context.askForCheckpoint();
-            }
+        if (counters.get(commandId) < getTotal(commandId)) {
+            return;
+        }
+        // all docs for the command are processed
+        String value = saveInTransientStore(commandId);
+        DataBucket out = new DataBucket(commandId, totals.get(commandId), value);
+        if (produceImmediate) {
+            ((ComputationContextImpl) context).produceRecordImmediate("o1", Record.of(commandId, codec.encode(out)));
+        } else {
+            context.produceRecord("o1", Record.of(commandId, codec.encode(out)));
+        }
+        totals.remove(commandId);
+        counters.remove(commandId);
+        // we checkpoint only if there is not another command in progress
+        if (counters.isEmpty()) {
+            context.askForCheckpoint();
         }
     }
 
@@ -79,9 +95,8 @@ public class MakeBlob extends AbstractTransientBlobComputation {
             long total = Framework.getService(BulkService.class).getStatus(commandId).getCount();
             if (total == 0) {
                 return Long.MAX_VALUE;
-            } else {
-                totals.put(commandId, total);
             }
+            totals.put(commandId, total);
         }
         return totals.get(commandId);
     }
@@ -96,7 +111,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         }
     }
 
-    protected void saveInTransientStore(ComputationContext context, String commandId) {
+    protected String saveInTransientStore(String commandId) {
         Path path = createTemp(commandId);
         storeBlob(new FileBlob(path.toFile()), commandId);
         try {
@@ -104,15 +119,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         } catch (IOException e) {
             getLog().error(e, e);
         }
-        Record output = Record.of(CSVProjection.buildRecordKey(commandId, totals.get(commandId)),
-                getTransientStoreKey(commandId).getBytes(UTF_8));
-        if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate("o1", output);
-        } else {
-            context.produceRecord("o1", output);
-        }
-        totals.remove(commandId);
-        counters.remove(commandId);
+        return getTransientStoreKey(commandId);
     }
 
 }

@@ -18,13 +18,14 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.message.DataBucket;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 
@@ -42,12 +43,17 @@ public class SortBlob extends AbstractTransientBlobComputation {
     }
 
     @Override
-    public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
-        String commandId = CSVProjection.getCommandIdFromKey(record.getKey());
-        Blob blob = getBlob(new String(record.getData(), UTF_8));
+    public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        DataBucket in = codec.decode(record.getData());
+
+        String commandId = in.getCommandId();
+        Blob blob = getBlob(in.getDataAsString());
         blob = sort(blob, commandId);
         storeBlob(blob, commandId);
-        context.produceRecord("o1", Record.of(record.getKey(), getTransientStoreKey(commandId).getBytes(UTF_8)));
+
+        DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
+        context.produceRecord("o1", Record.of(commandId, codec.encode(out)));
         context.askForCheckpoint();
     }
 

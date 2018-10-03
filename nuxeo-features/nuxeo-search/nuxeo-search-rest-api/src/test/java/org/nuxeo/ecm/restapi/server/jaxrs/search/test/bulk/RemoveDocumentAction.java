@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.search.test.bulk;
 
-import static org.nuxeo.ecm.core.bulk.BulkProcessor.STATUS_STREAM;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 
 import java.io.Serializable;
 import java.util.Arrays;
