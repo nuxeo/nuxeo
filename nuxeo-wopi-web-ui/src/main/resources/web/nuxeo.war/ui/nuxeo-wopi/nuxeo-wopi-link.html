@@ -22,17 +22,19 @@ Contributors:
 -->
 <dom-module id="nuxeo-wopi-link">
   <template>
-    <style include="iron-flex iron-flex-alignment">
-      :host {
-        display: inline-block;
+    <style include="nuxeo-action-button-styles">
+      .action {
+        text-decoration: none;
+        color: var(--nuxeo-text-default);
       }
     </style>
 
     <template is="dom-if" if="[[_isAvailable(url)]]">
-      <a href="[[url]]" tabindex="-1" target="_blank">
+      <a class="action" href="[[url]]" tabindex="-1" target="_blank">
         <paper-icon-button src="[[_wopiIcon(appName)]]" id="wopiLink"></paper-icon-button>
+        <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
       </a>
-      <paper-tooltip for="wopiLink">[[_wopiTooltip(appName)]]</paper-tooltip>
+      <paper-tooltip for="wopiLink">[[_label]]</paper-tooltip>
     </template>
 
   </template>
@@ -53,6 +55,17 @@ Contributors:
         url: {
           type: String,
           computed: '_wopiURL(document, xpath)'
+        },
+        /**
+         * `true` if the action should display the label, `false` otherwise.
+         */
+        showLabel: {
+          type: Boolean,
+          value: false,
+        },
+        _label: {
+          type: String,
+          computed: '_wopiTooltip(appName, i18n)'
         }
       },
 
