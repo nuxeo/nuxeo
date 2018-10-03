@@ -50,7 +50,7 @@ AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
   var self = this;
   jQuery.ajax({
       type: 'POST',
-      contentType : 'application/json+nxrequest',
+      contentType : 'application/json',
       data: JSON.stringify(this.opts.automationParams),
       beforeSend : function (xhr) {
           xhr.setRequestHeader('X-NXVoidOperation', voidOp);
@@ -110,7 +110,7 @@ AutomationWrapper.prototype.executeGetBlob = function(successCB, failureCB, blob
     var repo = this.opts.repository;
     jQuery.ajax({
         type: 'POST',
-        contentType : 'application/json+nxrequest',
+        contentType : 'application/json',
         data: JSON.stringify(this.opts.automationParams),
         beforeSend : function (xhr) {
             xhr.setRequestHeader('CTYPE_MULTIPART_MIXED', blobOp);
@@ -172,7 +172,7 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
   var repo = this.opts.repository;
   jQuery.ajax({
       type: 'POST',
-      contentType : 'application/json+nxrequest',
+      contentType : 'application/json',
       data: JSON.stringify(this.opts.automationParams),
       beforeSend : function (xhr) {
           xhr.setRequestHeader('X-NXVoidOperation', voidOp);

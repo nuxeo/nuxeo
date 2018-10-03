@@ -42,9 +42,9 @@ public class Constants {
 
     public static final String REQUEST_ACCEPT_HEADER = CTYPE_ENTITY + ", */*";
 
-    public static final String CTYPE_REQUEST = "application/json+nxrequest; charset=UTF-8";
+    public static final String CTYPE_REQUEST_NOCHARSET = MediaType.APPLICATION_JSON;
 
-    public static final String CTYPE_REQUEST_NOCHARSET = "application/json+nxrequest";
+    public static final String CTYPE_REQUEST = CTYPE_REQUEST_NOCHARSET + "; charset=UTF-8";
 
     public static final String KEY_ENTITY_TYPE = "entity-type";
 

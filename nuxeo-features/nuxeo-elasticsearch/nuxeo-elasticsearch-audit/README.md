@@ -41,7 +41,7 @@ An Automation Operation is provided to trigger the migration Work.
 
 Sample call using curl :
 
-    curl -H 'Content-Type:application/json+nxrequest' -X POST -d '{"params":{"batchSize":5000}}' -u Administrator:Administrator http://127.0.0.1:8080/nuxeo/api/v1/automation/Audit.StartMigration
+    curl -H 'Content-Type:application/json' -X POST -d '{"params":{"batchSize":5000}}' -u Administrator:Administrator http://127.0.0.1:8080/nuxeo/api/v1/automation/Audit.StartMigration
     
 
 NB : Migration of 16 Millions entries on a C3.XLarge AWS instance with default PGSQL setup and default embedded Elasticsearch takes about 3h (1500 entries/s).

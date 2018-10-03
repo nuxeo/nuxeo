@@ -94,7 +94,7 @@ TODO: WWW-Authenticate is not yet implemented.
 
 The operations registry (loaded doing a GET on the automation service URL) contains the entire information you need to execute operations.
 To execute an operation you should build an operation request descriptor and post it on the operation URL.
-When sending an operation request you must use the "application/json+nxrequest" content type.
+When sending an operation request you must use the "application/json" content type.
 Also you need to authenticate (using Basic Authentication) your request since most of the operations are accessing the Nuxeo repository.
 An operation request is a JSON document having the following format:
 
@@ -123,7 +123,7 @@ Example: "docs:/default-domain/workspaces/myworkspace, /96bfb9cb-a13d-48a2-9bbd-
 When using blobs (files) as input you cannot refer them using a string locator since the blob is usually a file on the client file system or raw binary data.
 For example, let say you want to execute the Blob.Attach operation that takes as input a blob and set it on the given document (the document is specified through 'params').
 Because the file content you want to set is located on the client computer you cannot use a string reference.
-In that case you MUST use a multipart/related request that encapsulate as the root part your JSON request as an "application/json+nxrequest" content and the blob binary content in a related part.
+In that case you MUST use a multipart/related request that encapsulate as the root part your JSON request as an "application/json" content and the blob binary content in a related part.
 In case you want a list of blobs as input then you simply add one additional content part for each blob in the list.
 The only limitation (in both blob and blob list case) is to put the request content part as the first part in the multipart document.
 The order of the blob parts will be preserved and blobs will be processed in the same order.
@@ -136,7 +136,7 @@ Examples
 
 POST /automation/Document.Fetch HTTP/1.1
 Accept: application/json, */*
-Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 Host: localhost:8080
 
@@ -151,12 +151,12 @@ Here is an example on invoking Blob.Attach operation on a document given by its 
 POST /automation/Blob.Attach HTTP/1.1
 Accept: application/json, */*
 Content-Type: multipart/related;
-    boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
+    boundary="----=_Part_0_130438955.1274713628403"; type="application/json"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 Host: localhost:8080
 
 ------=_Part_0_130438955.1274713628403
-Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Content-ID: request
 Content-Length: 75
@@ -339,13 +339,13 @@ Example:
 POST /automation/Blob.Attach HTTP/1.1
 Accept: application/json, */*
 Content-Type: multipart/related;
-    boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
+    boundary="----=_Part_0_130438955.1274713628403"; type="application/json"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 X-NXVoidOperation: true
 Host: localhost:8080
 
 ------=_Part_0_130438955.1274713628403
-Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Content-ID: request
 Content-Length: 75
@@ -550,13 +550,13 @@ REQUEST:
 POST /automation/Blob.Attach HTTP/1.1
 Accept: application/json, */*
 Content-Type: multipart/related;
-    boundary="----=_Part_0_130438955.1274713628403"; type="application/json+nxrequest"; start="request"
+    boundary="----=_Part_0_130438955.1274713628403"; type="application/json"; start="request"
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 X-NXVoidOperation: true
 Host: localhost:8080
 
 ------=_Part_0_130438955.1274713628403
-Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Content-ID: request
 Content-Length: 75
@@ -584,7 +584,7 @@ REQUEST:
 
 POST /automation/Document.Fetch HTTP/1.1
 Accept: application/json, */*
-Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Type: application/json; charset=UTF-8
 Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y
 X-NXDocumentProperties: *
 Host: localhost:8080

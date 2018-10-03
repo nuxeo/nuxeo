@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Consumes({ "application/json", "application/json+nxrequest" })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxrequest" })
 public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     @Context
@@ -63,9 +63,11 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return SessionFactory.getSession(request);
     }
 
+    /**
+     * @deprecated since 10.3. only 'application/json' media type should be used.
+     */
+    @Deprecated
     public static final MediaType targetMediaTypeNXReq = new MediaType("application", "json+nxrequest");
-
-    public static final MediaType targetMediaType = new MediaType("application", "json");
 
     protected static final HashMap<String, InputResolver<?>> inputResolvers = new HashMap<String, InputResolver<?>>();
 
@@ -98,7 +100,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     @Override
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        return ((targetMediaTypeNXReq.isCompatible(arg3) || targetMediaType.isCompatible(arg3)) && ExecutionRequest.class.isAssignableFrom(arg0));
+        return ((targetMediaTypeNXReq.isCompatible(arg3) || MediaType.APPLICATION_JSON_TYPE.isCompatible(arg3))
+                && ExecutionRequest.class.isAssignableFrom(arg0));
     }
 
     @Override

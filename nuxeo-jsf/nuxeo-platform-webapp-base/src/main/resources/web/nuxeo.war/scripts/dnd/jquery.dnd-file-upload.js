@@ -67,7 +67,7 @@ if (!log) {
       targetUrl = targetUrl + "upload/" + opts.handler.batchStarted();
       jQuery.ajax({
         type: 'GET',
-        contentType: 'application/json+nxrequest',
+        contentType: 'application/json',
         url: targetUrl,
         timeout: 10000
       }).done(function (data, textStatus, xhr) {
