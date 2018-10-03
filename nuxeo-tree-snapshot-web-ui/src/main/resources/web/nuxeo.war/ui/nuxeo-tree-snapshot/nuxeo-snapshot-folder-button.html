@@ -24,10 +24,7 @@ Contributors:
 -->
 <dom-module id="nuxeo-snapshot-folder-button">
   <template>
-    <style>
-      :host {
-        display: inline-block;
-      }
+    <style include="nuxeo-action-button-styles">
       paper-dialog {
         width: 100%;
         height: 100%;
@@ -38,7 +35,10 @@ Contributors:
     <nuxeo-operation id="op" op="Document.CreateTreeSnapshot" input="[[document.uid]]"></nuxeo-operation>
 
     <template is="dom-if" if="[[_isAvailable(document)]]">
-      <paper-icon-button icon="[[icon]]" on-tap="_toggle" noink></paper-icon-button>
+      <div class="action" on-tap="_toggle">
+        <paper-icon-button icon="[[icon]]" noink></paper-icon-button>
+        <span class="label" hidden$="[[!showLabel]]">[[i18n('snapshotButton.tooltip')]]</span>
+      </div>
       <paper-tooltip>[[i18n('snapshotButton.tooltip')]]</paper-tooltip>
     </template>
 
@@ -55,7 +55,14 @@ Contributors:
         icon: {
           type: String,
           value: 'icons:line-style'
-        }
+        },
+        /**
+         * `true` if the action should display the label, `false` otherwise.
+         */
+        showLabel: {
+          type: Boolean,
+          value: false,
+        },
       },
       _isAvailable: function(document) {
         return document;
