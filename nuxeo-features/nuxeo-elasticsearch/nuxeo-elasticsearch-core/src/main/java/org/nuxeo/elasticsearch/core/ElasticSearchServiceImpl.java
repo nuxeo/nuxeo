@@ -34,7 +34,7 @@ import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -199,16 +199,16 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected List<Aggregate<Bucket>> getAggregates(NxQueryBuilder queryBuilder, SearchResponse response) {
-        for (AggregateEsBase<? extends Bucket> agg : queryBuilder.getAggregates()) {
+        for (AggregateEsBase<Aggregation, Bucket> agg : queryBuilder.getAggregates()) {
             Filter filter = response.getAggregations().get(NxQueryBuilder.getAggregateFilterId(agg));
             if (filter == null) {
                 continue;
             }
-            MultiBucketsAggregation mba = filter.getAggregations().get(agg.getId());
-            if (mba == null) {
+            Aggregation aggregation = filter.getAggregations().get(agg.getId());
+            if (aggregation == null) {
                 continue;
             }
-            agg.parseEsBuckets(mba.getBuckets());
+            agg.parseAggregation(aggregation);
         }
         @SuppressWarnings("unchecked")
         List<Aggregate<Bucket>> ret = (List<Aggregate<Bucket>>) (List<?>) queryBuilder.getAggregates();

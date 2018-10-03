@@ -19,6 +19,9 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,8 +72,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml")
@@ -109,6 +110,23 @@ public class TestAggregates {
         TransactionHelper.startTransaction();
     }
 
+    @Test
+    public void testCustomAggregates() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setId("cardinal");
+        aggDef.setType(AGG_CARDINALITY);
+        aggDef.setDocumentField("dc:source");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
+        aggDef.setProperty("minDocCount", "10");
+        aggDef.setProperty("size", "10");
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+                .addAggregate( AggregateFactory.create(aggDef, null));
+        SearchSourceBuilder request = new SearchSourceBuilder();
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"cardinal_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"cardinal\":{\"cardinality\":{\"field\":\"dc:source\"}}}}}}",
+                request.toString());
+    }
     @Test
     public void testAggregateTermsQuery() throws Exception {
         AggregateDefinition aggDef = new AggregateDescriptor();

@@ -35,6 +35,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -74,7 +75,7 @@ public class NxQueryBuilder {
 
     private final List<String> repositories = new ArrayList<>();
 
-    private final List<AggregateEsBase<? extends Bucket>> aggregates = new ArrayList<>();
+    private final List<AggregateEsBase<Aggregation, Bucket>> aggregates = new ArrayList<>();
 
     private int limit = DEFAULT_LIMIT;
 
@@ -200,14 +201,15 @@ public class NxQueryBuilder {
         return this;
     }
 
-    public NxQueryBuilder addAggregate(AggregateEsBase<? extends Bucket> aggregate) {
-        aggregates.add(aggregate);
+    @SuppressWarnings("unchecked")
+    public NxQueryBuilder addAggregate(AggregateEsBase<? extends Aggregation, ? extends Bucket> aggregate) {
+        aggregates.add((AggregateEsBase<Aggregation, Bucket>) aggregate);
         return this;
     }
 
-    public NxQueryBuilder addAggregates(List<AggregateEsBase<? extends Bucket>> aggregates) {
+    public NxQueryBuilder addAggregates(List<AggregateEsBase<? extends Aggregation, ? extends Bucket>> aggregates) {
         if (aggregates != null && !aggregates.isEmpty()) {
-            this.aggregates.addAll(aggregates);
+            aggregates.forEach(this::addAggregate);
         }
         return this;
     }
@@ -344,7 +346,7 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    public List<AggregateEsBase<? extends Bucket>> getAggregates() {
+    public List<AggregateEsBase<Aggregation, Bucket>> getAggregates() {
         return aggregates;
     }
 

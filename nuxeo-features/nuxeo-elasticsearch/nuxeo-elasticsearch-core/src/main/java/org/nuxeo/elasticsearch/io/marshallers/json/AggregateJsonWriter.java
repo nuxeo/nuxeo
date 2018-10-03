@@ -55,6 +55,8 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.BucketRange;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
+import org.nuxeo.elasticsearch.aggregate.SingleBucketAggregate;
+import org.nuxeo.elasticsearch.aggregate.SingleValueMetricAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -122,7 +124,12 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         jg.writeObjectField("ranges", agg.getRanges());
         jg.writeObjectField("selection", agg.getSelection());
         jg.writeObjectField("type", agg.getType());
-        if (!fetch || !(agg instanceof TermAggregate || agg instanceof SignificantTermAggregate)) {
+        if (agg instanceof SingleValueMetricAggregate) {
+            Double val = ((SingleValueMetricAggregate) agg).getValue();
+            jg.writeObjectField("value", Double.isFinite(val) ? val : null);
+        } else if (agg instanceof SingleBucketAggregate) {
+            jg.writeObjectField("value", ((SingleBucketAggregate) agg).getDocCount());
+        } else if (!fetch || !(agg instanceof TermAggregate || agg instanceof SignificantTermAggregate)) {
             jg.writeObjectField("buckets", agg.getBuckets());
             jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
         } else {

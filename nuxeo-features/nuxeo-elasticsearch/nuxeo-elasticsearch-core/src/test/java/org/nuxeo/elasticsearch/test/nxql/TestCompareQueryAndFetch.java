@@ -18,6 +18,9 @@
  */
 package org.nuxeo.elasticsearch.test.nxql;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_AVG;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,12 +43,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
+import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
+import org.nuxeo.elasticsearch.aggregate.SingleValueMetricAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -211,6 +218,30 @@ public class TestCompareQueryAndFetch {
             // the total number of docs that match for the query
             Assert.assertEquals(20, ((EsResultSetImpl) res).totalSize());
         }
+    }
+
+    @Test
+    public void testAggregates() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setId("cardinal");
+        aggDef.setType(AGG_CARDINALITY);
+        aggDef.setDocumentField("dc:title");
+
+        AggregateDefinition avggDef = new AggregateDescriptor();
+        avggDef.setId("average");
+        avggDef.setType(AGG_AVG);
+        avggDef.setDocumentField("dc:created");
+
+        SingleValueMetricAggregate cardinality = (SingleValueMetricAggregate) AggregateFactory.create(aggDef, null);
+        SingleValueMetricAggregate average = (SingleValueMetricAggregate) AggregateFactory.create(avggDef, null);
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+                                                       .limit(0)
+                                                       .addAggregate(cardinality)
+                                                       .addAggregate(average)
+                                                       .onlyElasticsearchResponse();
+        EsResult esRes = ess.queryAndAggregate(qb);
+        Assert.assertNotNull(cardinality.getValue());
     }
 
 }

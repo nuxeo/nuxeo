@@ -60,7 +60,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @since 6.0
  */
-public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
+public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate> {
 
     public DateHistogramAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);

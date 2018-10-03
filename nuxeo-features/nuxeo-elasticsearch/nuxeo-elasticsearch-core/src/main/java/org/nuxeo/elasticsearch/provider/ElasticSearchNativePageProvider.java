@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -130,11 +131,11 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         return currentPageDocuments;
     }
 
-    private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
-        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
+    private List<AggregateEsBase<? extends Aggregation, ? extends Bucket>> buildAggregates() {
+        ArrayList<AggregateEsBase<? extends Aggregation, ? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
         boolean skip = isSkipAggregates();
         for (AggregateDefinition def : getAggregateDefinitions()) {
-            AggregateEsBase<? extends Bucket> agg = AggregateFactory.create(def, getSearchDocumentModel());
+            AggregateEsBase<? extends Aggregation, ? extends Bucket> agg = AggregateFactory.create(def, getSearchDocumentModel());
             if (!skip || !agg.getSelection().isEmpty()) {
                 // if we want to skip aggregates but one is selected, it has to be computed to filter the result set
                 ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
