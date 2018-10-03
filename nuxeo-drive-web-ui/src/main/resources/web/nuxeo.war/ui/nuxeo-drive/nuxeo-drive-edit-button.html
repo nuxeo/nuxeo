@@ -24,16 +24,15 @@ Contributors:
 -->
 <dom-module id="nuxeo-drive-edit-button">
   <template>
-    <style include="iron-flex iron-flex-alignment">
-      :host {
-        display: inline-block;
-      }
-    </style>
+    <style include="nuxeo-action-button-styles"></style>
 
     <nuxeo-resource id="token" path="/token" params='{"application": "Nuxeo Drive"}'></nuxeo-resource>
 
     <template is="dom-if" if="[[_isAvailable(blob)]]">
-      <paper-icon-button noink icon="editor:mode-edit" id="driveBtn" on-tap="_go"></paper-icon-button>
+      <div class="action" on-tap="_go">
+        <paper-icon-button noink icon="editor:mode-edit" id="driveBtn"></paper-icon-button>
+        <span class="label" hidden$="[[!showLabel]]">[[i18n('driveEditButton.tooltip')]]</span>
+      </div>
       <paper-tooltip for="driveBtn">[[i18n('driveEditButton.tooltip')]]</paper-tooltip>
     </template>
 
@@ -55,7 +54,15 @@ Contributors:
       properties: {
         user: Object,
         document: Object,
-        blob: Object
+        blob: Object,
+        /**
+          * `true` if the action should display the label, `false` otherwise.
+          */
+        showLabel: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false,
+        }
       },
 
       _isAvailable: function(blob) {

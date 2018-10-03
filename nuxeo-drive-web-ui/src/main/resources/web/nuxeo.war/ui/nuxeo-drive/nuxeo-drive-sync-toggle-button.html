@@ -24,11 +24,7 @@ Contributors:
 -->
 <dom-module id="nuxeo-drive-sync-toggle-button">
   <template>
-    <style>
-      :host {
-        display: inline-block;
-      }
-
+    <style include="nuxeo-action-button-styles">
       ::slotted(iron-icon:hover) {
         fill: var(--nuxeo-link-hover-color);
       }
@@ -42,8 +38,11 @@ Contributors:
     <nuxeo-operation id="op" op="NuxeoDrive.SetSynchronization" input="[[document.uid]]"></nuxeo-operation>
 
     <template is="dom-if" if="[[_isAvailable(document, synchronizationRoot)]]">
-      <paper-icon-button id="syncBut" icon="[[_icon(synchronized)]]" on-tap="toggle"></paper-icon-button>
-      <paper-tooltip for="syncBut">[[_tooltip(synchronized)]]</paper-tooltip>
+      <div class="action" on-tap="toggle">
+        <paper-icon-button id="syncBut" icon="[[_icon(synchronized)]]"></paper-icon-button>
+        <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
+      </div>
+      <paper-tooltip for="syncBut">[[_label]]</paper-tooltip>
     </template>
   </template>
 
@@ -65,7 +64,19 @@ Contributors:
             notify: true,
             reflectToAttribute: true
           },
-          synchronizationRoot: String
+          synchronizationRoot: String,
+          /**
+           * `true` if the action should display the label, `false` otherwise.
+           */
+          showLabel: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value: false,
+          },
+          _label: {
+            type: String,
+            computed: '_computeLabel(synchronized, i18n)'
+          }
         },
 
         toggle: function() {
@@ -98,7 +109,7 @@ Contributors:
           return !isExcluded && isSyncRootCandidate && !this.synchronizationRoot;
         },
 
-        _tooltip: function(synchronized) {
+        _computeLabel: function(synchronized) {
           return synchronized ? this.i18n('driveSyncToggleButton.unsync','Unsynchronize')
                               : this.i18n('driveSyncToggleButton.sync','Synchronize');
         },
