@@ -759,30 +759,33 @@ public class DBSTransactionState {
             }
             StateDiff diff = docState.getStateChange();
             if (diff != null) {
-                if (undoLog != null) {
-                    if (!undoLog.containsKey(id)) {
-                        undoLog.put(id, StateHelper.deepCopy(docState.getOriginalState()));
+                try {
+                    if (undoLog != null) {
+                        if (!undoLog.containsKey(id)) {
+                            undoLog.put(id, StateHelper.deepCopy(docState.getOriginalState()));
+                        }
+                        // else there's already a create or an update in the undo log so original info is enough
                     }
-                    // else there's already a create or an update in the undo log so original info is enough
-                }
-                ChangeTokenUpdater changeTokenUpdater;
-                if (session.changeTokenEnabled) {
-                    // increment system change token
-                    Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
-                    docState.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
-                    diff.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
-                    // update change token if applicable (user change)
-                    if (userChangeIds.contains(id)) {
-                        changeTokenUpdater = new ChangeTokenUpdater(docState);
+                    ChangeTokenUpdater changeTokenUpdater;
+                    if (session.changeTokenEnabled) {
+                        // increment system change token
+                        Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
+                        docState.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
+                        diff.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
+                        // update change token if applicable (user change)
+                        if (userChangeIds.contains(id)) {
+                            changeTokenUpdater = new ChangeTokenUpdater(docState);
+                        } else {
+                            changeTokenUpdater = null;
+                        }
                     } else {
                         changeTokenUpdater = null;
                     }
-                } else {
-                    changeTokenUpdater = null;
+                    repository.updateState(id, diff, changeTokenUpdater);
+                } finally {
+                    docState.setNotDirty();
                 }
-                repository.updateState(id, diff, changeTokenUpdater);
             }
-            docState.setNotDirty();
         }
         transientCreated.clear();
         userChangeIds.clear();
