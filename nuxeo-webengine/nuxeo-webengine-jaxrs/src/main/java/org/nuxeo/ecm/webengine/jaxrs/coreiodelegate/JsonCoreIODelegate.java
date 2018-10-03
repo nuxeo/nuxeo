@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.io.registry.Writer;
  * @since 7.2
  */
 @Provider
-@Produces({ APPLICATION_JSON, APPLICATION_JSON + "+nxrequest" })
+@Produces(APPLICATION_JSON)
 public final class JsonCoreIODelegate extends PartialCoreIODelegate {
 
     @Override

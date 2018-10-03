@@ -23,7 +23,7 @@
       "method":"POST",
       "nickname":"executeOperation",
       <@params names = ["operationname","operationparams"]/>,
-      "consumes":["application/json+nxrequest"],
+      "consumes":["application/json"],
       "summary":"Execute an operation or a chain on a document",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>
@@ -48,7 +48,7 @@
       "method":"POST",
       "nickname":"executeOperationOnDocByPath",
       <@params names = ["docpath","operationname","operationparams"]/>,
-      "consumes":["application/json+nxrequest"],
+      "consumes":["application/json"],
       "summary":"Execute an operation or a chain on a document",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>
@@ -64,7 +64,7 @@
       "method":"POST",
       "nickname":"executeOperationOnDocByPath",
       <@params names = ["docpath","operationname","operationparams"]/>,
-      "consumes":["application/json+nxrequest"],
+      "consumes":["application/json"],
       "summary":"Execute an operation or a chain on the children of a document",
       "notes": "This works on every API endpoint that return DocumentList",
       <#include "views/doc/errorresponses.ftl"/>
