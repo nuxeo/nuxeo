@@ -220,8 +220,19 @@ public class LogStreamProcessor implements StreamProcessor {
 
     protected void initStreams() {
         log.debug("Initializing streams");
-        topology.streamsSet()
-                .forEach(streamName -> manager.createIfNotExists(streamName, settings.getPartitions(streamName)));
+        topology.streamsSet().forEach(streamName -> {
+            if (manager.exists(streamName)) {
+                int size = manager.size(streamName);
+                if (settings.getPartitions(streamName) != size) {
+                    log.debug(String.format(
+                            "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
+                            streamName, settings.getPartitions(streamName), size));
+                    settings.setPartitions(streamName, size);
+                }
+            } else {
+                manager.createIfNotExists(streamName, settings.getPartitions(streamName));
+            }
+        });
     }
 
     protected void initSourceAppenders() {
