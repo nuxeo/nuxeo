@@ -294,7 +294,7 @@ public class TestNuxeoDriveManager {
 
         // check deletion by lifecycle
         session.followTransition(doc("/default-domain/workspaces/workspace-2/folder-2-1").getRef(), "delete");
-        session.save();
+        txFeature.nextTransaction();
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 0);
 
@@ -391,6 +391,7 @@ public class TestNuxeoDriveManager {
         // Delete sync root => nuxeoDriveCacheInvalidationListener should
         // invalidate the cache
         trashService.trashDocument(workspace_2);
+        txFeature.nextTransaction();
         workspace_2 = session.getDocument(workspace_2.getRef());
         expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 1, expectedSyncRootPaths);
@@ -398,6 +399,7 @@ public class TestNuxeoDriveManager {
         // Undelete sync root => nuxeoDriveCacheInvalidationListener should
         // invalidate the cache
         trashService.untrashDocument(workspace_2);
+        txFeature.nextTransaction();
         expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 2, expectedSyncRootPaths);
 
