@@ -8,11 +8,11 @@ This module provides the ability to execute actions asynchronously on a -possibl
 ## Definitions
 
 
-- __document set__: a list of documents of a repository represented as a list of document identifiers.
+- __document set__: a list of documents from a repository represented as a list of document identifiers.
 
 - __action__: an operation that can be applied to a document set.
 
-- __bulk command__: a set of parameters building a request to apply an action on a document set.
+- __command__: a set of parameters building a request to apply an action on a document set.
 
 - __bucket__: a portion of a document set that fits into a stream record.
 
@@ -36,7 +36,8 @@ BulkCommand command = new BulkCommand().withRepository("myRepository")
 ![baf](bulk-overview.png)
 
 ### The BulkService
-The entry point is the [BulkService](https://github.com/nuxeo/nuxeo/blob/master/nuxeo-core/nuxeo-core-bulk/src/main/java/org/nuxeo/ecm/core/bulk/BulkService.java) that takes a bulk command as an input. The service submits this command, meaning it is sent to the `command` stream.
+The entry point is the [`BulkService`](./src/main/java/org/nuxeo/ecm/core/bulk/BulkService.java) that takes a bulk command as an input.
+The service submits this command, meaning it appends the `BulkCommand` to the `command` stream.
 
 The BulkService can also returns the status of a command which is internally stored into a KeyValueStore.
 
@@ -47,26 +48,30 @@ The `command` stream is the input of the `Scroller` computation.
 This computation scrolls the database using a cursor to retrieve the document ids matching the NXQL query.
 The ids are grouped into a bucket that fit into a record.
 
-The bucket record is sent directly to the action stream given in the command.
+The `BulkBucket` record is appended to the action's stream.
 
-The scroller will also sent status update to inform that the scroll is in progress or terminated and to set the total number of document in the materialized document set.
+The scroller send command status update to inform that the scroll is in progress or terminated and to set the total number of document in the materialized document set.
 
 ### Actions processors
 
-Each action is run its own stream processor (a topology of computation).
+Each action runs its own stream processor (a topology of computations).
 
-The action to be part of the bulk service must respect the following contract:
+The action processor must respect the following rules:
 
-- action must send a status update to inform on the number of document processed for a command,
-  at some point these reported processed documents must match the total number of document in the set.
+- action must send a status update containing the number of processed documents since the last update.
 
-- action that want to aggregate results per command must handle interleaved commands by maintaining a local state
-  per command, checkpoint must be done only when there are no aggregation in progress.
+- the total number of processed documents reported must match at some point the number of documents in the document set.
 
-An `AbstractBulkComputation` is provided so an action can be implemented easily with a single computation
-See `SetPropertiesAction` for a trivial example.
+- action that aggregates bucket records per command must handle interleaved commands.
+  This can be done by maintaining a local state for each command.
 
-See The `CSVExportAction` and particularly the `MakeBlob` computation for an advanced example.
+- action that aggregates bucket records per command should checkpoint only when there no other interleaved command in progress.
+  This is to prevent checkpoint while some records are not yet processed resulting in possible loss of record.
+
+An [`AbstractBulkComputation`](./src/main/java/org/nuxeo/ecm/core/bulk/action/computation/AbstractBulkComputation.java) is provided so an action can be implemented easily with a single computation
+See [`SetPropertiesAction`](./src/main/java/org/nuxeo/ecm/core/bulk/action/SetPropertiesAction.java) for a simple example.
+
+See The [`CSVExportAction`](./src/main/java/org/nuxeo/ecm/core/bulk/action/CSVExportAction.java) and particularly the [`MakeBlob`](./src/main/java/org/nuxeo/ecm/core/bulk/action/computation/MakeBlob.java) computation for an advanced example.
 
 
 ### The Status computation
