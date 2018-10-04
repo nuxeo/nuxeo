@@ -61,15 +61,19 @@ public class BulkAdminServiceImpl implements BulkAdminService {
 
     public static final String BULK_STATUS_CONCURRENCY_PROPERTY = "nuxeo.core.bulk.status.concurrency";
 
-    public static final String BULK_SCROLL_SIZE_PROPERTY = "nuxeo.core.bulk.scroller.size";
+    public static final String BULK_DONE_CONCURRENCY_PROPERTY = "nuxeo.core.bulk.done.concurrency";
 
-    public static final String BULK_SCROLL_KEEP_ALIVE_PROPERTY = "nuxeo.core.bulk.scroller.keepAliveSeconds";
+    public static final String BULK_SCROLL_SIZE_PROPERTY = "nuxeo.core.bulk.scroller.scroll.size";
+
+    public static final String BULK_SCROLL_KEEP_ALIVE_PROPERTY = "nuxeo.core.bulk.scroller.scroll.keepAliveSeconds";
 
     public static final String BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY = "nuxeo.core.bulk.scroller.produceImmediate";
 
     public static final String DEFAULT_SCROLLER_CONCURRENCY = "1";
 
     public static final String DEFAULT_STATUS_CONCURRENCY = "1";
+
+    public static final String DEFAULT_DONE_CONCURRENCY = "1";
 
     public static final String DEFAULT_SCROLL_SIZE = "100";
 
@@ -97,11 +101,14 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         streamProcessor = new LogStreamProcessor(service.getLogManager(BULK_LOG_MANAGER_NAME));
         CodecService codecService = Framework.getService(CodecService.class);
         Codec<Record> codec = codecService.getCodec(RECORD_CODEC, Record.class);
+        // we don't set any partitioning because it is already defined by logConfig contribution
         Settings settings = new Settings(1, 1, codec);
         settings.setConcurrency(SCROLLER_NAME, Integer.parseInt(
                 confService.getProperty(BULK_SCROLLER_CONCURRENCY_PROPERTY, DEFAULT_SCROLLER_CONCURRENCY)));
         settings.setConcurrency(STATUS_NAME, Integer.parseInt(
                 confService.getProperty(BULK_STATUS_CONCURRENCY_PROPERTY, DEFAULT_STATUS_CONCURRENCY)));
+        settings.setConcurrency(STATUS_NAME, Integer.parseInt(
+                confService.getProperty(BULK_DONE_CONCURRENCY_PROPERTY, DEFAULT_DONE_CONCURRENCY)));
         int scrollSize = Integer.parseInt(confService.getProperty(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE));
         int scrollKeepAlive = Integer.parseInt(
                 confService.getProperty(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE));

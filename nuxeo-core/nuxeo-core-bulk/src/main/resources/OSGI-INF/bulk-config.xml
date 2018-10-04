@@ -15,16 +15,15 @@
     </logConfig>
   </extension>
 
-  <!-- Configure the bulk service for this nuxeo instance -->
+  <!-- Configure the bulk service for this nuxeo instance, the max concurrency is define above in the logConfig -->
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <!-- how many scroller thread in this instance, maximum is fixed by the number of partition of command stream -->
     <property name="nuxeo.core.bulk.scroller.concurrency">2</property>
-    <property name="nuxeo.core.bulk.status.concurrency">1</property>
-    <property name="nuxeo.core.bulk.scroller.size">200</property>
-    <property name="nuxeo.core.bulk.scroller.timeoutSeconds">60</property>
+    <property name="nuxeo.core.bulk.scroller.scroll.size">200</property>
+    <property name="nuxeo.core.bulk.scroller.scroll.keepAliveSeconds">60</property>
     <property name="nuxeo.core.bulk.scroller.produceImmediate">false</property>
+    <property name="nuxeo.core.bulk.status.concurrency">1</property>
+    <property name="nuxeo.core.bulk.done.concurrency">1</property>
   </extension>
-
 
   <!-- Defines some actions -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
