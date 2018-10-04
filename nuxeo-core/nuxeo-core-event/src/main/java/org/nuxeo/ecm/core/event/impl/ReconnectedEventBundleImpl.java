@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
 import java.rmi.dgc.VMID;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -82,6 +84,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         this.listenerName = listenerName;
     }
 
+    /** @deprecated since 9.10-HF46 see NXP-29270. Use {@link #getReconnectedCoreSession(String, String)} instead */
+    @Deprecated
     protected CoreSession getReconnectedCoreSession(String repoName) {
         if (reconnectedCoreSession == null) {
             try {
@@ -102,13 +106,43 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         return reconnectedCoreSession;
     }
 
+    /** @since 9.10-HF46 see NXP-29270 */
+    protected CoreSession getReconnectedCoreSession(String repoName, String originatingUsername) {
+        if (reconnectedCoreSession == null) {
+            try {
+                loginCtx = Framework.login();
+            } catch (LoginException e) {
+                log.error("Cannot log in", e);
+                return null;
+            }
+            reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName, originatingUsername);
+        } else {
+            // Sanity Check
+            if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
+                if (repoName != null) {
+                    throw new IllegalStateException("Can no reconnected a Bundle tied to several Core instances !");
+                }
+            }
+        }
+        return reconnectedCoreSession;
+    }
+
     protected List<Event> getReconnectedEvents() {
         if (reconnectedEvents == null) {
             reconnectedEvents = new ArrayList<Event>();
             for (Event event : sourceEventBundle) {
                 EventContext ctx = event.getContext();
-                CoreSession session = ctx.getRepositoryName() == null ? null
-                        : getReconnectedCoreSession(ctx.getRepositoryName());
+                String repositoryName = ctx.getRepositoryName();
+                CoreSession session;
+                if (repositoryName == null) {
+                    session = null;
+                } else {
+                    Principal principal = ctx.getPrincipal();
+                    String originatingUsername = principal instanceof NuxeoPrincipal
+                            ? ((NuxeoPrincipal) principal).getActingUser()
+                            : null;
+                    session = getReconnectedCoreSession(repositoryName, originatingUsername);
+                }
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {

@@ -52,7 +52,7 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     protected List<Event> getReconnectedEvents() {
         if (sourceEventBundle == null) {
             try {
-                sourceEventBundle = jmsEventBundle.reconstructEventBundle(getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName()));
+                sourceEventBundle = jmsEventBundle.reconstructEventBundle(getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName(), null));
             } catch (SerializableEventBundle.CannotReconstruct e) {
                 log.error("Error while reconstructing Bundle from JMS", e);
                 return null;
