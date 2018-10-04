@@ -20,6 +20,8 @@ package org.nuxeo.wopi.lock;
 
 import java.security.Principal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -41,14 +43,21 @@ import org.nuxeo.ecm.core.security.LockSecurityPolicy;
  */
 public class WOPILockSecurityPolicy extends LockSecurityPolicy {
 
+    private static final Logger log = LogManager.getLogger(WOPILockSecurityPolicy.class);
+
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = super.checkPermission(doc, mergedAcp, principal, permission, resolvedPermissions,
                 additionalPrincipals);
-        if (Access.DENY.equals(access) && LockHelper.isLocked(doc.getSession().getRepositoryName(), doc.getUUID())
+        String repositoryName = doc.getSession().getRepositoryName();
+        String docUUID = doc.getUUID();
+        if (Access.DENY.equals(access) && LockHelper.isLocked(repositoryName, docUUID)
                 && LockHelper.isWOPIUser(principal)) {
             // locked by another user but WOPI lock and WOPI user, don't block
+            log.debug(
+                    "Security: repository={} docId={} user={} Document is locked by another user but it has a WOPI lock and the current user belongs to a WOPI session, don't block WRITE permission",
+                    repositoryName, docUUID, principal);
             return Access.UNKNOWN;
         }
         return access;

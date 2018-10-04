@@ -42,8 +42,13 @@ import org.nuxeo.wopi.lock.LockHelper;
 @WebObject(type = "wopi")
 public class WOPIRoot extends ModuleRoot {
 
+    protected static final String THREAD_NAME_PREFIX = "WOPI_";
+
     @Path("/files/{fileId}")
     public Object filesResource(@PathParam("fileId") FileInfo fileInfo) {
+        // prefix thread name for logging purpose
+        prefixThreadName();
+
         WebContext context = getContext();
         context.setRepositoryName(fileInfo.repositoryName);
         CoreSession session = context.getCoreSession();
@@ -53,6 +58,14 @@ public class WOPIRoot extends ModuleRoot {
         DocumentModel doc = getDocument(session, fileInfo.docId);
         Blob blob = getBlob(doc, fileInfo.xpath);
         return newObject("wopiFiles", session, doc, blob, fileInfo.xpath);
+    }
+
+    protected void prefixThreadName() {
+        Thread currentThread = Thread.currentThread();
+        String threadName = currentThread.getName();
+        if (!threadName.startsWith(THREAD_NAME_PREFIX)) {
+            currentThread.setName(THREAD_NAME_PREFIX + threadName);
+        }
     }
 
     protected DocumentModel getDocument(CoreSession session, String fileId) {

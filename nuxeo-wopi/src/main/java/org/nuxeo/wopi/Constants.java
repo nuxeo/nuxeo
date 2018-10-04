@@ -46,6 +46,28 @@ public class Constants {
 
     public static final String NOTIFICATION_DOCUMENT_ID_CODEC_NAME = "notificationDocId";
 
+    public static final String OPERATION_CHECK_FILE_INFO = "CheckFileInfo";
+
+    public static final String OPERATION_DELETE_FILE = "DeleteFile";
+
+    public static final String OPERATION_GET_FILE = "GetFile";
+
+    public static final String OPERATION_GET_LOCK = "GetLock";
+
+    public static final String OPERATION_GET_SHARE_URL = "GetShareUrl";
+
+    public static final String OPERATION_LOCK = "Lock";
+
+    public static final String OPERATION_PUT_FILE = "PutFile";
+
+    public static final String OPERATION_PUT_RELATIVE_FILE = "PutRelativeFile";
+
+    public static final String OPERATION_REFRESH_LOCK = "RefreshLock";
+
+    public static final String OPERATION_RENAME_FILE = "RenameFile";
+
+    public static final String OPERATION_UNLOCK = "Unlock";
+
     public static final String WOPI_SERVLET_PATH = "wopi";
 
     public static final String WOPI_SOURCE = "wopi";

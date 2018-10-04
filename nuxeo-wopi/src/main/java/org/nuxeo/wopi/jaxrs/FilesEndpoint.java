@@ -20,6 +20,11 @@
 
 package org.nuxeo.wopi.jaxrs;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
@@ -38,6 +43,17 @@ import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
 import static org.nuxeo.wopi.Constants.NAME;
 import static org.nuxeo.wopi.Constants.NOTIFICATION_DOCUMENT_ID_CODEC_NAME;
+import static org.nuxeo.wopi.Constants.OPERATION_CHECK_FILE_INFO;
+import static org.nuxeo.wopi.Constants.OPERATION_DELETE_FILE;
+import static org.nuxeo.wopi.Constants.OPERATION_GET_FILE;
+import static org.nuxeo.wopi.Constants.OPERATION_GET_LOCK;
+import static org.nuxeo.wopi.Constants.OPERATION_GET_SHARE_URL;
+import static org.nuxeo.wopi.Constants.OPERATION_LOCK;
+import static org.nuxeo.wopi.Constants.OPERATION_PUT_FILE;
+import static org.nuxeo.wopi.Constants.OPERATION_PUT_RELATIVE_FILE;
+import static org.nuxeo.wopi.Constants.OPERATION_REFRESH_LOCK;
+import static org.nuxeo.wopi.Constants.OPERATION_RENAME_FILE;
+import static org.nuxeo.wopi.Constants.OPERATION_UNLOCK;
 import static org.nuxeo.wopi.Constants.OWNER_ID;
 import static org.nuxeo.wopi.Constants.READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL;
@@ -69,13 +85,16 @@ import static org.nuxeo.wopi.Headers.RELATIVE_TARGET;
 import static org.nuxeo.wopi.Headers.REQUESTED_NAME;
 import static org.nuxeo.wopi.Headers.SUGGESTED_TARGET;
 import static org.nuxeo.wopi.Headers.URL_TYPE;
+import static org.nuxeo.wopi.Operation.PUT;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -90,7 +109,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -131,6 +153,8 @@ import org.nuxeo.wopi.lock.LockHelper;
  */
 @WebObject(type = "wopiFiles")
 public class FilesEndpoint extends DefaultObject {
+
+    private static final Logger log = LogManager.getLogger(FilesEndpoint.class);
 
     @Context
     protected HttpServletRequest request;
@@ -174,7 +198,12 @@ public class FilesEndpoint extends DefaultObject {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Object checkFileInfo() {
-        return buildCheckFileInfoMap();
+        logRequest(OPERATION_CHECK_FILE_INFO);
+
+        Map<String, Serializable> checkFileInfoMap = buildCheckFileInfoMap();
+
+        logResponse(OPERATION_CHECK_FILE_INFO, OK.getStatusCode(), checkFileInfoMap);
+        return checkFileInfoMap;
     }
 
     /**
@@ -186,11 +215,18 @@ public class FilesEndpoint extends DefaultObject {
     @Path("contents")
     public Object getFile(@HeaderParam(MAX_EXPECTED_SIZE) String maxExpectedSizeHeader) {
         int maxExpectedSize = getMaxExpectedSize(maxExpectedSizeHeader);
-        if (blob.getLength() > maxExpectedSize) {
+        logRequest(OPERATION_GET_FILE, MAX_EXPECTED_SIZE, maxExpectedSizeHeader);
+
+        long blobLength = blob.getLength();
+        if (blobLength > maxExpectedSize) {
+            logCondition(() -> "Blob length " + blobLength + " > max expected size " + maxExpectedSize);
+            logResponse(OPERATION_GET_FILE, PRECONDITION_FAILED.getStatusCode());
             throw new PreConditionFailedException();
         }
 
-        response.addHeader(ITEM_VERSION, doc.getVersionLabel());
+        String versionLabel = doc.getVersionLabel();
+        response.addHeader(ITEM_VERSION, versionLabel);
+        logResponse(OPERATION_GET_FILE, OK.getStatusCode(), ITEM_VERSION, versionLabel);
         return blob;
     }
 
@@ -224,46 +260,61 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopirest.readthedocs.io/en/latest/files/Lock.html"></a>.
      */
     protected Object lock() {
-        String lock = getHeader(LOCK);
-        String oldLock = getHeader(OLD_LOCK, true);
+        String lock = getHeader(OPERATION_LOCK, LOCK);
+        String oldLock = getHeader(OPERATION_LOCK, OLD_LOCK, true);
+        logRequest(OPERATION_LOCK, LOCK, lock, OLD_LOCK, oldLock);
 
         boolean isLocked = doc.isLocked();
         // document not locked or locked with another WOPI lock
         if (!isLocked || LockHelper.hasOtherLock(fileId)) {
+            logCondition("Document isn't locked or has another WOPI lock");
             if (!StringUtils.isEmpty(oldLock)) {
+                logCondition(() -> OLD_LOCK + " header is present");
                 // cannot unlock and relock
-                response.addHeader(LOCK, "");
+                String lockHeader = "";
+                response.addHeader(LOCK, lockHeader);
+                logResponse(OPERATION_LOCK, CONFLICT.getStatusCode(), LOCK, lockHeader);
                 throw new ConflictException();
             }
 
-            checkWritePropertiesPermission();
+            checkWritePropertiesPermission(OPERATION_LOCK);
             // lock if needed
             if (!isLocked) {
+                logCondition("Document isn't locked"); // NOSONAR
+                logNuxeoAction("Locking document");
                 doc.setLock();
             }
             LockHelper.addLock(fileId, lock);
 
-            response.addHeader(ITEM_VERSION, doc.getVersionLabel());
+            String versionLabel = doc.getVersionLabel();
+            response.addHeader(ITEM_VERSION, versionLabel);
+            logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
             return Response.ok().build();
         }
 
-        String currentLock = getCurrentLock();
+        String currentLock = getCurrentLock(OPERATION_LOCK);
         if (StringUtils.isEmpty(oldLock)) {
+            logCondition(() -> OLD_LOCK + " header is not present");
             if (lock.equals(currentLock)) {
+                logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
                 // refresh lock
                 LockHelper.refreshLock(fileId);
-                response.addHeader(ITEM_VERSION, doc.getVersionLabel());
+                String versionLabel = doc.getVersionLabel();
+                response.addHeader(ITEM_VERSION, versionLabel);
+                logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
                 return Response.ok().build();
             }
         } else {
             if (oldLock.equals(currentLock)) {
+                logCondition(() -> OLD_LOCK + " header is equal to current WOPI lock");
                 // unlock and relock
                 LockHelper.updateLock(fileId, lock);
+                logResponse(OPERATION_LOCK, OK.getStatusCode());
                 return Response.ok().build();
             }
         }
 
-        return buildConflictResponse(currentLock);
+        return buildConflictResponse(OPERATION_LOCK, currentLock);
     }
 
     /**
@@ -271,10 +322,12 @@ public class FilesEndpoint extends DefaultObject {
      * <p>
      * Must be called to check that a locked document is not locked by Nuxeo.
      */
-    protected String getCurrentLock() {
+    protected String getCurrentLock(String operation) {
         String currentLock = LockHelper.getLock(fileId);
         if (currentLock == null) {
+            logCondition("Current WOPI lock not found");
             // locked by Nuxeo
+            logResponse(operation, CONFLICT.getStatusCode());
             throw new ConflictException();
         }
         return currentLock;
@@ -285,10 +338,11 @@ public class FilesEndpoint extends DefaultObject {
      * <p>
      * Must be called to check that a document is locked by another WOPI client.
      */
-    protected Response buildConflictResponse(String currentLock) {
+    protected Response buildConflictResponse(String operation, String currentLock) {
         // locked by another WOPI client
         response.addHeader(LOCK, currentLock);
-        return Response.status(Response.Status.CONFLICT).build();
+        logResponse(operation, CONFLICT.getStatusCode(), LOCK, currentLock);
+        return Response.status(CONFLICT).build();
     }
 
     /**
@@ -297,46 +351,60 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetLock.html"></a>.
      */
     protected Object getLock() {
+        logRequest(OPERATION_GET_LOCK);
+
         if (!doc.isLocked()) {
-            response.addHeader(LOCK, "");
+            logCondition("Document isn't locked");
+            String lockHeader = "";
+            response.addHeader(LOCK, lockHeader);
+            logResponse(OPERATION_GET_LOCK, OK.getStatusCode(), LOCK, lockHeader);
             return Response.ok().build();
         }
 
-        String currentLock = getCurrentLock();
+        String currentLock = getCurrentLock(OPERATION_GET_LOCK);
         response.addHeader(LOCK, currentLock);
+        logResponse(OPERATION_GET_LOCK, OK.getStatusCode(), LOCK, currentLock);
         return Response.ok().build();
     }
 
-    protected Object unlockOrRefresh(String lock, boolean unlock) {
-        boolean isLocked = doc.isLocked();
-        if (!isLocked) {
+    protected Object unlockOrRefresh(String operation, String lock, boolean unlock) {
+        if (!doc.isLocked()) {
+            logCondition("Document isn't locked");
             // not locked
-            response.addHeader(LOCK, "");
+            String lockHeader = "";
+            response.addHeader(LOCK, lockHeader);
+            logResponse(operation, CONFLICT.getStatusCode(), LOCK, lockHeader);
             throw new ConflictException();
         }
 
-        String currentLock = getCurrentLock();
+        String currentLock = getCurrentLock(operation);
         if (lock.equals(currentLock)) {
-            checkWritePropertiesPermission();
+            logCondition(() -> LOCK + " header is equal to current WOPI lock");
+            checkWritePropertiesPermission(operation);
             if (unlock) {
                 // remove WOPI lock
                 LockHelper.removeLock(fileId);
                 if (!LockHelper.isLocked(doc.getRepositoryName(), doc.getId())) {
+                    logCondition("Found no WOPI lock");
                     // no more WOPI lock on the document, unlock the doc
                     // use a privileged session since the document might have been locked by another user
+                    logNuxeoAction("Unlocking document with a privileged session");
                     CoreInstance.doPrivileged(doc.getRepositoryName(), privilegedSession -> { // NOSONAR
                         return privilegedSession.removeLock(doc.getRef());
                     });
                 }
-                response.addHeader(ITEM_VERSION, doc.getVersionLabel());
+                String versionLabel = doc.getVersionLabel();
+                response.addHeader(ITEM_VERSION, versionLabel);
+                logResponse(operation, OK.getStatusCode(), ITEM_VERSION, versionLabel);
             } else {
                 // refresh lock
                 LockHelper.refreshLock(fileId);
+                logResponse(operation, OK.getStatusCode());
             }
             return Response.ok().build();
         }
 
-        return buildConflictResponse(currentLock);
+        return buildConflictResponse(operation, currentLock);
     }
 
     /**
@@ -348,34 +416,43 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutRelativeFile.html"></a>.
      */
     public Object putRelativeFile() {
-        String suggestedTarget = getHeader(SUGGESTED_TARGET, true);
+        String suggestedTarget = getHeader(OPERATION_PUT_RELATIVE_FILE, SUGGESTED_TARGET, true);
         if (suggestedTarget != null) {
             suggestedTarget = Helpers.readUTF7String(suggestedTarget);
         }
-        String relativeTarget = getHeader(RELATIVE_TARGET, true);
+        String relativeTarget = getHeader(OPERATION_PUT_RELATIVE_FILE, RELATIVE_TARGET, true);
         if (relativeTarget != null) {
             relativeTarget = Helpers.readUTF7String(relativeTarget);
         }
+        logRequest(OPERATION_PUT_RELATIVE_FILE, SUGGESTED_TARGET, suggestedTarget, RELATIVE_TARGET, relativeTarget);
 
         // exactly one should be empty
         if (StringUtils.isEmpty(suggestedTarget) == StringUtils.isEmpty(relativeTarget)) {
+            logCondition(() -> SUGGESTED_TARGET + " and " + RELATIVE_TARGET
+                    + " headers are both present or not present, yet they are mutually exclusive");
+            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
             throw new NotImplementedException();
         }
 
         DocumentRef parentRef = doc.getParentRef();
         if (!session.exists(parentRef) || !session.hasPermission(parentRef, SecurityConstants.ADD_CHILDREN)) {
+            logCondition(() -> "Either the parent document doesn't exist or the current user isn't granted "
+                    + SecurityConstants.ADD_CHILDREN + " access");
+            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
             throw new NotImplementedException();
         }
 
-        String newFileName = relativeTarget;
+        final String newFileName;
         if (StringUtils.isNotEmpty(suggestedTarget)) {
+            logCondition(() -> SUGGESTED_TARGET + " header is present");
             newFileName = suggestedTarget.startsWith(".")
                     ? FilenameUtils.getBaseName(blob.getFilename()) + suggestedTarget
                     : suggestedTarget;
+        } else {
+            newFileName = relativeTarget;
         }
 
         DocumentModel parent = session.getDocument(parentRef);
-
         DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), newFileName, doc.getType());
         newDoc.copyContent(doc);
         newDoc.setPropertyValue("dc:title", newFileName);
@@ -383,6 +460,9 @@ public class FilesEndpoint extends DefaultObject {
         Blob newBlob = createBlobFromRequestBody(newFileName, null);
         newDoc.setPropertyValue(xpath, (Serializable) newBlob);
         newDoc = session.createDocument(newDoc);
+        String newDocId = newDoc.getId();
+        logNuxeoAction(() -> "Created new document " + newDocId + " as a child of " + parent.getId() + " with filename "
+                + newFileName);
 
         String token = Helpers.createJWTToken();
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
@@ -395,6 +475,7 @@ public class FilesEndpoint extends DefaultObject {
         map.put(URL, wopiSrc);
         map.put(HOST_VIEW_URL, hostViewUrl);
         map.put(HOST_EDIT_URL, hostEditUrl);
+        logResponse(OPERATION_PUT_RELATIVE_FILE, OK.getStatusCode(), map);
         return Response.ok(map).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
@@ -405,20 +486,24 @@ public class FilesEndpoint extends DefaultObject {
      */
     @Produces(MediaType.APPLICATION_JSON)
     public Object renameFile() {
-        checkWritePropertiesPermission();
+        checkWritePropertiesPermission(OPERATION_RENAME_FILE);
 
-        String requestedName = Helpers.readUTF7String(getHeader(REQUESTED_NAME));
+        String requestedName = Helpers.readUTF7String(getHeader(OPERATION_RENAME_FILE, REQUESTED_NAME));
         if (!doc.isLocked()) {
+            logCondition("Document isn't locked");
+            logRequest(OPERATION_RENAME_FILE, REQUESTED_NAME, requestedName);
             return renameBlob(requestedName);
         }
 
-        String currentLock = getCurrentLock();
-        String lock = getHeader(LOCK);
+        String currentLock = getCurrentLock(OPERATION_RENAME_FILE);
+        String lock = getHeader(OPERATION_RENAME_FILE, LOCK);
+        logRequest(OPERATION_RENAME_FILE, REQUESTED_NAME, requestedName, LOCK, lock);
         if (lock.equals(currentLock)) {
+            logCondition(() -> LOCK + " header is equal to current WOPI lock");
             return renameBlob(requestedName);
         }
 
-        return buildConflictResponse(currentLock);
+        return buildConflictResponse(OPERATION_RENAME_FILE, currentLock);
     }
 
     /**
@@ -429,6 +514,7 @@ public class FilesEndpoint extends DefaultObject {
     protected Response renameBlob(String requestedName) {
         String extension = FilenameUtils.getExtension(blob.getFilename());
         String fullFilename = requestedName + (extension != null ? "." + extension : "");
+        logNuxeoAction(() -> "Renaming blob to " + fullFilename);
         blob.setFilename(fullFilename);
         doc.setPropertyValue(xpath, (Serializable) blob);
         doc.putContextData(SOURCE, WOPI_SOURCE);
@@ -436,6 +522,7 @@ public class FilesEndpoint extends DefaultObject {
 
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, requestedName);
+        logResponse(OPERATION_RENAME_FILE, OK.getStatusCode(), map);
         return Response.ok(map).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
@@ -445,17 +532,25 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/DeleteFile.html"></a>.
      */
     public Object deleteFile() {
+        logRequest(OPERATION_DELETE_FILE);
+
         if (doc.isLocked()) {
-            String currentLock = getCurrentLock();
-            return buildConflictResponse(currentLock);
+            logCondition("Document is locked");
+            String currentLock = getCurrentLock(OPERATION_DELETE_FILE);
+            return buildConflictResponse(OPERATION_DELETE_FILE, currentLock);
         }
 
         if (!session.hasPermission(doc.getRef(), SecurityConstants.REMOVE)) {
+            logCondition(() -> "Current user isn't granted " + SecurityConstants.REMOVE + " access");
             // cannot delete
+            logResponse(OPERATION_DELETE_FILE, CONFLICT.getStatusCode());
             throw new ConflictException();
         }
 
+        logNuxeoAction("Removing document");
         session.removeDocument(doc.getRef());
+
+        logResponse(OPERATION_DELETE_FILE, OK.getStatusCode());
         return Response.ok().build();
     }
 
@@ -466,24 +561,32 @@ public class FilesEndpoint extends DefaultObject {
      */
     @Produces(MediaType.APPLICATION_JSON)
     public Object getShareUrl() {
-        String urlType = getHeader(URL_TYPE, true);
+        String urlType = getHeader(OPERATION_GET_SHARE_URL, URL_TYPE, true);
+        logRequest(OPERATION_GET_SHARE_URL, URL_TYPE, urlType);
+
         if (!SHARE_URL_READ_ONLY.equals(urlType) && !SHARE_URL_READ_WRITE.equals(urlType)) {
+            logCondition(
+                    () -> URL_TYPE + " header should be either " + SHARE_URL_READ_ONLY + " or " + SHARE_URL_READ_WRITE);
+            logResponse(OPERATION_GET_SHARE_URL, SC_NOT_IMPLEMENTED);
             throw new NotImplementedException();
         }
 
         String shareURL = Helpers.getWOPIURL(baseURL, urlType.equals(SHARE_URL_READ_ONLY) ? ACTION_VIEW : ACTION_EDIT,
                 doc, xpath);
+
         Map<String, Serializable> map = new HashMap<>();
         map.put(SHARE_URL, shareURL);
+        logResponse(OPERATION_GET_SHARE_URL, OK.getStatusCode(), map);
         return Response.ok(map).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @POST
     @Path("contents")
     public Object doPostContents(@HeaderParam(OVERRIDE) Operation operation) {
-        if (Operation.PUT.equals(operation)) {
+        if (PUT.equals(operation)) {
             return putFile();
         }
+        logCondition(() -> "Invalid value " + operation + " for " + OVERRIDE + " header, should be " + PUT.name());
         throw new BadRequestException();
     }
 
@@ -493,23 +596,31 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutFile.html"></a>.
      */
     public Object putFile() {
-        checkWritePropertiesPermission();
+        checkWritePropertiesPermission(OPERATION_PUT_FILE);
 
         if (!doc.isLocked()) {
+            logRequest(OPERATION_PUT_FILE);
+            logCondition("Document isn't locked");
             if (blob.getLength() == 0) {
+                logCondition("Blob is empty");
                 return updateBlob();
             }
-            response.addHeader(LOCK, "");
+            logCondition("Blob is not empty");
+            String lockHeader = "";
+            response.addHeader(LOCK, lockHeader);
+            logResponse(OPERATION_PUT_FILE, CONFLICT.getStatusCode(), LOCK, lockHeader);
             throw new ConflictException();
         }
 
-        String currentLock = getCurrentLock();
-        String lock = getHeader(LOCK);
+        String currentLock = getCurrentLock(OPERATION_PUT_FILE);
+        String lock = getHeader(OPERATION_PUT_FILE, LOCK);
+        logRequest(OPERATION_PUT_FILE, LOCK, lock);
         if (lock.equals(currentLock)) {
+            logCondition(() -> LOCK + " header is equal to current WOPI lock");
             return updateBlob();
         }
 
-        return buildConflictResponse(currentLock);
+        return buildConflictResponse(OPERATION_PUT_FILE, currentLock);
     }
 
     /**
@@ -518,11 +629,15 @@ public class FilesEndpoint extends DefaultObject {
      * @return the expected response for the PutFile operation, with the 'X-WOPI-ItemVersion' header set.
      */
     protected Response updateBlob() {
+        logNuxeoAction("Updating blob");
         Blob newBlob = createBlobFromRequestBody(blob.getFilename(), blob.getMimeType());
         doc.setPropertyValue(xpath, (Serializable) newBlob);
         doc.putContextData(SOURCE, WOPI_SOURCE);
         doc = session.saveDocument(doc);
-        response.addHeader(ITEM_VERSION, doc.getVersionLabel());
+
+        String versionLabel = doc.getVersionLabel();
+        response.addHeader(ITEM_VERSION, versionLabel);
+        logResponse(OPERATION_PUT_FILE, OK.getStatusCode(), ITEM_VERSION, versionLabel);
         return Response.ok().build();
     }
 
@@ -548,8 +663,9 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopirest.readthedocs.io/en/latest/files/Unlock.html"></a>.
      */
     protected Object unlock() {
-        String lock = getHeader(LOCK);
-        return unlockOrRefresh(lock, true);
+        String lock = getHeader(OPERATION_UNLOCK, LOCK);
+        logRequest(OPERATION_UNLOCK, LOCK, lock);
+        return unlockOrRefresh(OPERATION_UNLOCK, lock, true);
     }
 
     /**
@@ -558,8 +674,9 @@ public class FilesEndpoint extends DefaultObject {
      * See <a href="https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html"></a>.
      */
     protected Object refreshLock() {
-        String lock = getHeader(LOCK);
-        return unlockOrRefresh(lock, false);
+        String lock = getHeader(OPERATION_REFRESH_LOCK, LOCK);
+        logRequest(OPERATION_REFRESH_LOCK, LOCK, lock);
+        return unlockOrRefresh(OPERATION_REFRESH_LOCK, lock, false);
     }
 
     protected int getMaxExpectedSize(String maxExpectedSizeHeader) {
@@ -573,22 +690,26 @@ public class FilesEndpoint extends DefaultObject {
         return Integer.MAX_VALUE;
     }
 
-    protected String getHeader(String headerName) {
-        return getHeader(headerName, false);
+    protected String getHeader(String operation, String headerName) {
+        return getHeader(operation, headerName, false);
     }
 
-    protected String getHeader(String headerName, boolean nullable) {
+    protected String getHeader(String operation, String headerName, boolean nullable) {
         List<String> headers = httpHeaders.getRequestHeader(headerName);
         String header = headers == null || headers.isEmpty() ? null : headers.get(0);
         if (StringUtils.isEmpty(header) && !nullable) {
+            logCondition(() -> "Header " + headerName + " is not present yet not nullable");
+            logResponse(operation, BAD_REQUEST.getStatusCode());
             throw new BadRequestException();
         }
         return header;
     }
 
-    protected void checkWritePropertiesPermission() {
+    protected void checkWritePropertiesPermission(String operation) {
         if (!session.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
+            logCondition("Write permission check failed");
             // cannot rename blob
+            logResponse(operation, CONFLICT.getStatusCode());
             throw new ConflictException();
         }
     }
@@ -620,7 +741,8 @@ public class FilesEndpoint extends DefaultObject {
         map.put(SUPPORTS_RENAME, true);
         map.put(SUPPORTS_UPDATE, true);
         map.put(SUPPORTS_DELETE_FILE, true);
-        map.put(SUPPORTED_SHARE_URL_TYPES, new String[] { SHARE_URL_READ_ONLY, SHARE_URL_READ_WRITE });
+        map.put(SUPPORTED_SHARE_URL_TYPES, (Serializable) Arrays.asList(SHARE_URL_READ_ONLY, SHARE_URL_READ_WRITE));
+
     }
 
     protected void addUserMetadataProperties(Map<String, Serializable> map) {
@@ -678,6 +800,55 @@ public class FilesEndpoint extends DefaultObject {
                             .getUrlFromDocumentView(NOTIFICATION_DOCUMENT_ID_CODEC_NAME, docView, true, baseURL);
         }
         return null;
+    }
+
+    protected void logRequest(String operation, String... headers) {
+        log.debug("Request: repository={} docId={} xpath={} user={} fileId={} operation={}{}", doc::getRepositoryName,
+                doc::getId, () -> xpath, session::getPrincipal, () -> fileId, () -> operation,
+                () -> getHeaderString(headers));
+    }
+
+    protected void logCondition(String condition) {
+        logCondition(() -> condition);
+    }
+
+    protected void logCondition(Supplier<String> condition) {
+        log.debug("Condition: repository={} docId={} xpath={} user={} fileId={} {}", doc::getRepositoryName, doc::getId,
+                () -> xpath, session::getPrincipal, () -> fileId, condition::get);
+    }
+
+    protected void logNuxeoAction(String action) {
+        logNuxeoAction(() -> action);
+    }
+
+    protected void logNuxeoAction(Supplier<String> action) {
+        log.debug("Nuxeo action: repository={} docId={} xpath={} user={} fileId={} {}", doc::getRepositoryName,
+                doc::getId, () -> xpath, session::getPrincipal, () -> fileId, action::get);
+    }
+
+    protected void logResponse(String operation, int status, String... headers) {
+        logResponse(operation, status, null, headers);
+    }
+
+    protected void logResponse(String operation, int status, Object entity, String... headers) {
+        log.debug("Response: repository={} docId={} xpath={} user={} fileId={} operation={} status={}{}{}",
+                doc::getRepositoryName, doc::getId, () -> xpath, session::getPrincipal, () -> fileId, () -> operation,
+                () -> status, () -> getEntityString(entity), () -> getHeaderString(headers));
+    }
+
+    protected String getHeaderString(String... headers) {
+        if (ArrayUtils.isEmpty(headers)) {
+            return "";
+        }
+        Map<String, String> headerMap = new HashMap<>();
+        for (int i = 0; i < headers.length; i += 2) {
+            headerMap.put(headers[i], headers[i + 1]);
+        }
+        return " headers=" + headerMap;
+    }
+
+    protected String getEntityString(Object entity) {
+        return entity == null ? "" : " body=" + entity.toString();
     }
 
 }

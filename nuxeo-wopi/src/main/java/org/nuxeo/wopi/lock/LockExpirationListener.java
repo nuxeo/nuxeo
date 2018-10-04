@@ -61,7 +61,8 @@ public class LockExpirationListener implements PostCommitEventListener {
 
     protected void handleExpiredLock(CoreSession session, Session directorySession, DocumentModel entry) {
         String docId = (String) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_DOC_ID);
-        log.debug("WOPI lock expired for document {}/{}, unlocking document and removing lock from directory.",
+        log.debug(
+                "Locking:  repository={} docId={} WOPI lock expired, unlocking document and removing lock from directory",
                 session::getRepositoryName, () -> docId);
         // unlock document
         session.removeLock(new IdRef(docId));

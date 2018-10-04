@@ -82,8 +82,8 @@ public class Helpers {
             // prevent server error
         }
         if (blob == null) {
-            log.debug("Cannot find blob with xpath={} for document {}/{}.", () -> xpath, doc::getRepositoryName,
-                    doc::getId);
+            log.debug("Blobs: repository={} docId={} xpath={} Cannot find blob", doc::getRepositoryName, doc::getId,
+                    () -> xpath);
             return null;
         }
         // ignore external blob providers
@@ -91,8 +91,8 @@ public class Helpers {
         BlobProvider blobProvider = blobManager.getBlobProvider(blob);
         if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
             log.debug(
-                    "Ignoring blob with xpath={} for document {}/{} as is is backed by a BlobProvider preventing updates.",
-                    () -> xpath, doc::getRepositoryName, doc::getId);
+                    "Blobs: repository={} docId={} xpath={} Ignoring blob as it is backed by a BlobProvider preventing updates",
+                    doc::getRepositoryName, doc::getId, () -> xpath);
             return null;
         }
         return blob;

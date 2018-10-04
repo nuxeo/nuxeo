@@ -38,6 +38,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -51,6 +53,8 @@ import org.nuxeo.wopi.FileInfo;
  * @since 10.3
  */
 public class LockHelper {
+
+    private static final Logger log = LogManager.getLogger(LockHelper.class);
 
     private LockHelper() {
         // helper class
@@ -68,6 +72,7 @@ public class LockHelper {
      * @see #addLock(String, String)
      */
     public static void addLock(String fileId, String repository, String docId, String lock) {
+        log.debug("Locking: fileId={} Adding lock {}", fileId, lock);
         doPriviledgedOnLockDirectory(session -> {
             Map<String, Object> entryMap = new HashMap<>();
             entryMap.put(LOCK_DIRECTORY_FILE_ID, fileId);
@@ -124,6 +129,7 @@ public class LockHelper {
      * Updates the WOPI lock stored for the given file id with the given lock and a fresh timestamp.
      */
     public static void updateLock(String fileId, String lock) {
+        log.debug("Locking: fileId={} Updating lock {}", fileId, lock);
         doPriviledgedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_LOCK, lock);
@@ -136,6 +142,7 @@ public class LockHelper {
      * Updates the WOPI lock stored for the given file id with a fresh timestamp.
      */
     public static void refreshLock(String fileId) {
+        log.debug("Locking: fileId={} Refreshing lock", fileId);
         doPriviledgedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP, System.currentTimeMillis());
@@ -147,6 +154,7 @@ public class LockHelper {
      * Removes the WOPI lock stored for the given file id.
      */
     public static void removeLock(String fileId) {
+        log.debug("Locking: fileId={} Removing lock", fileId);
         doPriviledgedOnLockDirectory(session -> session.deleteEntry(fileId));
     }
 
@@ -154,6 +162,8 @@ public class LockHelper {
      * Removes all the WOPI locks stored for the given repository and doc id.
      */
     public static void removeLocks(String repository, String docId) {
+        log.debug("Locking: repository={} docId={} Document was unlocked in Nuxeo, removing related WOPI locks",
+                repository, docId);
         doPriviledgedOnLockDirectory(session -> {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
