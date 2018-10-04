@@ -29,3 +29,8 @@ elasticsearch.reindex.bucketWriteSize=200
 #elasticsearch.indexing.clearCompletedAfterSeconds=30
 elasticsearch.adminCenter.displayClusterInfo=true
 elasticsearch.index.translog.durability=async
+
+# Scale on bulk scrolling
+nuxeo.core.bulk.scroller.concurrencyMax=6
+nuxeo.core.bulk.status.concurrencyMax=4
+nuxeo.core.bulk.done.concurrencyMax=2

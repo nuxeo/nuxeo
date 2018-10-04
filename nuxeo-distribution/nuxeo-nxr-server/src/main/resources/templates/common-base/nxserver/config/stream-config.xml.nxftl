@@ -10,6 +10,7 @@
   </extension>
   </#if>
   <require>org.nuxeo.runtime.stream.service</require>
+  <require>org.nuxeo.ecm.core.bulk.config</require>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
     <logConfig name="default" type="kafka">
@@ -17,6 +18,9 @@
     </logConfig>
     <logConfig name="bulk" type="kafka">
       <option name="kafkaConfig">bulk</option>
+      <log name="command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
+      <log name="status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
+      <log name="done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
     </logConfig>
   <#else>
     <logConfig name="default" type="chronicle">
@@ -24,6 +28,9 @@
     </logConfig>
     <logConfig name="bulk" type="chronicle">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+      <log name="command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
+      <log name="status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
+      <log name="done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
     </logConfig>
   </#if>
   </extension>

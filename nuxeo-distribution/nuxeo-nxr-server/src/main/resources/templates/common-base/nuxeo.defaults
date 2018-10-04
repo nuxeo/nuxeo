@@ -178,6 +178,11 @@ nuxeo.stream.pubsub.log.config=pubsub
 nuxeo.stream.pubsub.log.name=pubsub
 nuxeo.stream.pubsub.log.codec=avroBinary
 
+# Bulk
+nuxeo.core.bulk.scroller.concurrencyMax=2
+nuxeo.core.bulk.status.concurrencyMax=2
+nuxeo.core.bulk.done.concurrencyMax=1
+
 # JWT config, must be the same cluster-wide
 nuxeo.jwt.secret=
 nuxeo.jwt.defaultTTL=3600
