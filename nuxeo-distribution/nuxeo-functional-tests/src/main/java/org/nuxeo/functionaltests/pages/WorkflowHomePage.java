@@ -60,6 +60,12 @@ public class WorkflowHomePage extends AbstractPage {
         return taskName.equals(taskNameEl.getText());
     }
 
+    public boolean taskDisplaysDocumentOnTasksDashboard(String docTitle) {
+        WebElement targetDocumentTd = Locator.findElementWithTimeout(
+                By.xpath("//td[contains(text(), '" + docTitle + "')]"), userTasksPanel);
+        return targetDocumentTd != null;
+    }
+
     public void processFirstTask() {
         WebElement processButton = userTasksPanel.findElement(By.xpath("//input[@type='submit' and @value='Process']"));
         waitUntilEnabledAndClick(processButton);
