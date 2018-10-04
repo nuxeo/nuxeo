@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.RECORD_CODEC;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -111,7 +113,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, boolean scrollProduceImmediate) {
         List<String> actions = getActions();
         List<String> mapping = new ArrayList<>();
-        mapping.add("i1:" + COMMAND_STREAM);
+        mapping.add(INPUT_1 + ":" + COMMAND_STREAM);
         int i = 1;
         for (String action : actions) {
             mapping.add(String.format("o%s:%s", i, action));
@@ -124,7 +126,8 @@ public class BulkAdminServiceImpl implements BulkAdminService {
                                        scrollKeepAlive, scrollProduceImmediate), //
                                mapping)
                        .addComputation(() -> new BulkStatusComputation(STATUS_NAME),
-                               Arrays.asList("i1:" + STATUS_STREAM, "o1:" + DONE_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + STATUS_STREAM, //
+                                       OUTPUT_1 + ":" + DONE_STREAM))
                        .build();
     }
 

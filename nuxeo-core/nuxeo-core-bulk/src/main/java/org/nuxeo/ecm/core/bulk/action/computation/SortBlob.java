@@ -53,7 +53,7 @@ public class SortBlob extends AbstractTransientBlobComputation {
         storeBlob(blob, commandId);
 
         DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
-        context.produceRecord("o1", Record.of(commandId, codec.encode(out)));
+        context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
         context.askForCheckpoint();
     }
 

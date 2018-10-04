@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.core.bulk.action;
 
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -43,7 +45,8 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(SetSystemPropertyComputation::new,
-                               Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                                       OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 

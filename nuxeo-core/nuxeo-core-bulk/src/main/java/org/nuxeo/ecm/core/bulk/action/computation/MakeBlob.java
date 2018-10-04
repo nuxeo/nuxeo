@@ -78,9 +78,10 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         String value = saveInTransientStore(commandId);
         DataBucket out = new DataBucket(commandId, totals.get(commandId), value);
         if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate("o1", Record.of(commandId, codec.encode(out)));
+            ((ComputationContextImpl) context).produceRecordImmediate(OUTPUT_1,
+                    Record.of(commandId, codec.encode(out)));
         } else {
-            context.produceRecord("o1", Record.of(commandId, codec.encode(out)));
+            context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
         }
         totals.remove(commandId);
         counters.remove(commandId);
