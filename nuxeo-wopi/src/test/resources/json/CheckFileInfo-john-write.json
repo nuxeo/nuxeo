@@ -9,7 +9,6 @@
   "SupportsLocks": true,
   "SupportsRename": true,
   "SupportsUpdate": true,
-  "SupportsDeleteFile": true,
   "IsAnonymousUser": false,
   "UserFriendlyName": "John Doe",
   "ReadOnly": false,

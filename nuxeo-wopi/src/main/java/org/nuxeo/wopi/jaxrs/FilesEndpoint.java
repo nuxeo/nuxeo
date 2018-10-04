@@ -44,7 +44,6 @@ import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
 import static org.nuxeo.wopi.Constants.NAME;
 import static org.nuxeo.wopi.Constants.NOTIFICATION_DOCUMENT_ID_CODEC_NAME;
 import static org.nuxeo.wopi.Constants.OPERATION_CHECK_FILE_INFO;
-import static org.nuxeo.wopi.Constants.OPERATION_DELETE_FILE;
 import static org.nuxeo.wopi.Constants.OPERATION_GET_FILE;
 import static org.nuxeo.wopi.Constants.OPERATION_GET_LOCK;
 import static org.nuxeo.wopi.Constants.OPERATION_GET_SHARE_URL;
@@ -62,7 +61,6 @@ import static org.nuxeo.wopi.Constants.SHARE_URL_READ_WRITE;
 import static org.nuxeo.wopi.Constants.SIGNOUT_URL;
 import static org.nuxeo.wopi.Constants.SIZE;
 import static org.nuxeo.wopi.Constants.SUPPORTED_SHARE_URL_TYPES;
-import static org.nuxeo.wopi.Constants.SUPPORTS_DELETE_FILE;
 import static org.nuxeo.wopi.Constants.SUPPORTS_EXTENDED_LOCK_LENGTH;
 import static org.nuxeo.wopi.Constants.SUPPORTS_GET_LOCK;
 import static org.nuxeo.wopi.Constants.SUPPORTS_LOCKS;
@@ -231,8 +229,6 @@ public class FilesEndpoint extends DefaultObject {
     @POST
     public Object doPost(@HeaderParam(OVERRIDE) Operation operation) {
         switch (operation) {
-        case DELETE:
-            return deleteFile();
         case GET_LOCK:
             return getLock();
         case GET_SHARE_URL:
@@ -525,34 +521,6 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     /**
-     * Implements the DeleteFile operation.
-     * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/DeleteFile.html"></a>.
-     */
-    public Object deleteFile() {
-        logRequest(OPERATION_DELETE_FILE);
-
-        if (doc.isLocked()) {
-            logCondition("Document is locked");
-            String currentLock = getCurrentLock(OPERATION_DELETE_FILE);
-            return buildConflictResponse(OPERATION_DELETE_FILE, currentLock);
-        }
-
-        if (!session.hasPermission(doc.getRef(), SecurityConstants.REMOVE)) {
-            logCondition(() -> "Current user isn't granted " + SecurityConstants.REMOVE + " access");
-            // cannot delete
-            logResponse(OPERATION_DELETE_FILE, CONFLICT.getStatusCode());
-            throw new ConflictException();
-        }
-
-        logNuxeoAction("Removing document");
-        session.removeDocument(doc.getRef());
-
-        logResponse(OPERATION_DELETE_FILE, OK.getStatusCode());
-        return Response.ok().build();
-    }
-
-    /**
      * Implements the GetShareUrl operation.
      * <p>
      * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetShareUrl.html"></a>.
@@ -738,9 +706,7 @@ public class FilesEndpoint extends DefaultObject {
         map.put(SUPPORTS_LOCKS, true);
         map.put(SUPPORTS_RENAME, true);
         map.put(SUPPORTS_UPDATE, true);
-        map.put(SUPPORTS_DELETE_FILE, true);
         map.put(SUPPORTED_SHARE_URL_TYPES, (Serializable) Arrays.asList(SHARE_URL_READ_ONLY, SHARE_URL_READ_WRITE));
-
     }
 
     protected void addUserMetadataProperties(Map<String, Serializable> map) {

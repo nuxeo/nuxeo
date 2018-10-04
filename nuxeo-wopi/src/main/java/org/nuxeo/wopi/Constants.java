@@ -48,8 +48,6 @@ public class Constants {
 
     public static final String OPERATION_CHECK_FILE_INFO = "CheckFileInfo";
 
-    public static final String OPERATION_DELETE_FILE = "DeleteFile";
-
     public static final String OPERATION_GET_FILE = "GetFile";
 
     public static final String OPERATION_GET_LOCK = "GetLock";
@@ -123,8 +121,6 @@ public class Constants {
     public static final String SUPPORTS_RENAME = "SupportsRename";
 
     public static final String SUPPORTS_UPDATE = "SupportsUpdate";
-
-    public static final String SUPPORTS_DELETE_FILE = "SupportsDeleteFile";
 
     public static final String SUPPORTED_SHARE_URL_TYPES = "SupportedShareUrlTypes";
 

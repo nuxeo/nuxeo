@@ -707,51 +707,6 @@ public class TestFilesEndpoint {
     }
 
     @Test
-    public void testDeleteFile() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put(OVERRIDE, Operation.DELETE.name());
-
-        checkPostNotFound(headers);
-
-        // success - 200 - delete file
-        try (CloseableClientResponse response = post(johnToken, headers, zeroLengthBlobDocFileId)) {
-            assertEquals(200, response.getStatus());
-            transactionalFeature.nextTransaction();
-            assertFalse(session.exists(zeroLengthBlobDoc.getRef()));
-        }
-
-        // lock document from WOPI client
-        headers.put(OVERRIDE, Operation.LOCK.name());
-        headers.put(LOCK, "foo");
-        try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
-            assertEquals(200, response.getStatus());
-            transactionalFeature.nextTransaction();
-            assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
-        }
-
-        // fail - 409 - cannot delete, locked by another client
-        headers.put(OVERRIDE, Operation.DELETE.name());
-        headers.put(LOCK, "bar");
-        try (CloseableClientResponse response = post(johnToken, headers, blobDocFileId)) {
-            assertEquals(409, response.getStatus());
-            transactionalFeature.nextTransaction();
-            assertTrue(session.getDocument(blobDoc.getRef()).isLocked());
-            assertTrue(session.exists(blobDoc.getRef()));
-            String lock = response.getHeaders().getFirst(LOCK);
-            assertEquals("foo", lock);
-        }
-
-        // fail - 409 - cannot delete, locked by Nuxeo
-        session.getDocument(hugeBlobDoc.getRef()).setLock();
-        transactionalFeature.nextTransaction();
-        try (CloseableClientResponse response = post(johnToken, headers, hugeBlobDocFileId)) {
-            assertEquals(409, response.getStatus());
-            transactionalFeature.nextTransaction();
-            assertTrue(session.exists(hugeBlobDoc.getRef()));
-        }
-    }
-
-    @Test
     public void testPutFile() throws IOException {
         String data = "new content";
         Map<String, String> headers = new HashMap<>();
