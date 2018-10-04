@@ -106,7 +106,7 @@
       </properties>
     </widget>
 
-    <widget name="routing_task_target_document" type="singleDocumentSuggestion">
+    <widget name="routing_task_target_document" type="multipleDocumentsSuggestion">
       <labels>
         <label mode="any">label.document</label>
       </labels>
