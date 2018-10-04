@@ -14,32 +14,29 @@
  * limitations under the License.
  *
  * Contributors:
- *     Antoine Taillefer
  *     Thomas Roger
  */
 
 package org.nuxeo.wopi.jaxrs;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.nuxeo.ecm.webengine.app.WebEngineModule;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
-import org.nuxeo.ecm.webengine.model.io.BlobWriter;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
+ * Custom object returned by WOPI endpoints wrapping a Map object to make it writable.
+ *
  * @since 10.3
  */
-public class WOPIModule extends WebEngineModule {
+public class WOPIMap {
 
-    @Override
-    public Set<Object> getSingletons() {
-        Set<Object> singletons = new HashSet<>();
-        singletons.add(new JsonCoreIODelegate());
-        singletons.add(new BlobWriter());
-        singletons.add(new JacksonJsonProvider());
-        return singletons;
+    protected final Map<String, Serializable> map;
+
+    protected WOPIMap(Map<String, Serializable> map) {
+        this.map = map;
     }
+
+    public static WOPIMap of(Map<String, Serializable> map) {
+        return new WOPIMap(map);
+    }
+
 }

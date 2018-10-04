@@ -4,7 +4,7 @@ Bundle-Name: Nuxeo WOPI
 Bundle-SymbolicName: org.nuxeo.wopi;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
-Nuxeo-WebModule: org.nuxeo.wopi.jaxrs.WOPIModule;name=wopi
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=wopi
 Nuxeo-Component: OSGI-INF/auth-contrib.xml,
  OSGI-INF/directories-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
