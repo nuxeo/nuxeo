@@ -31,6 +31,20 @@ import java.util.stream.IntStream;
 public abstract class AbstractComputation implements Computation {
     protected final ComputationMetadata metadata;
 
+    public final static String INPUT_1 = "i1";
+
+    public final static String INPUT_2 = "i2";
+
+    public final static String INPUT_3 = "i3";
+
+    public final static String OUTPUT_1 = "o1";
+
+    public final static String OUTPUT_2 = "o2";
+
+    public final static String OUTPUT_3 = "o3";
+
+    public final static String OUTPUT_4 = "o4";
+
     public AbstractComputation(String name, int nbInputStreams, int nbOutputStreams) {
         this.metadata = new ComputationMetadata(name,
                 IntStream.range(1, nbInputStreams + 1).boxed().map(i -> "i" + i).collect(Collectors.toSet()),

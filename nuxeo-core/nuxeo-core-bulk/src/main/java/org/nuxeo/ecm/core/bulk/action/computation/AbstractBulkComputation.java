@@ -124,7 +124,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     public static void updateStatusProcessed(ComputationContext context, String commandId, long processed) {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
         delta.setProcessed(processed);
-        context.produceRecord("o1", commandId, BulkCodecs.getStatusCodec().encode(delta));
+        context.produceRecord(OUTPUT_1, commandId, BulkCodecs.getStatusCodec().encode(delta));
     }
 
     protected Log getLog() {

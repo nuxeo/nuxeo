@@ -53,7 +53,7 @@ public class ZipBlob extends AbstractTransientBlobComputation {
         storeBlob(blob, in.getCommandId());
 
         DataBucket out = new DataBucket(in.getCommandId(), in.getCount(), getTransientStoreKey(in.getCommandId()));
-        context.produceRecord("o1", Record.of(in.getCommandId(), codec.encode(out)));
+        context.produceRecord(OUTPUT_1, Record.of(in.getCommandId(), codec.encode(out)));
         context.askForCheckpoint();
     }
 

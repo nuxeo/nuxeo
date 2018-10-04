@@ -77,7 +77,7 @@ public class CSVProjection extends AbstractBulkComputation {
         String commandId = getCurrentCommand().getId();
         DataBucket dataBucket = new DataBucket(commandId, bucketSize, out.toByteArray());
         Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
-        context.produceRecord("o1", record);
+        context.produceRecord(OUTPUT_1, record);
         out = null;
     }
 

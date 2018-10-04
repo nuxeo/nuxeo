@@ -68,7 +68,7 @@ public class BulkStatusComputation extends AbstractComputation {
         byte[] statusAsByte = codec.encode(status);
         kvStore.put(key, statusAsByte);
         if (BulkStatus.State.COMPLETED.equals(status.getState())) {
-            context.produceRecord("o1", status.getCommandId(), statusAsByte);
+            context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsByte);
         }
         context.askForCheckpoint();
     }
