@@ -5,6 +5,7 @@
   "UserId": "john",
   "Version": "0.0",
   "SupportedShareUrlTypes": ["ReadOnly", "ReadWrite"],
+  "SupportsGetLock": true,
   "SupportsLocks": true,
   "SupportsRename": true,
   "SupportsUpdate": true,

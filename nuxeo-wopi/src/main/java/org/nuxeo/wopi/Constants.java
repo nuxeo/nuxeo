@@ -94,6 +94,8 @@ public class Constants {
 
     public static final String SUPPORTS_EXTENDED_LOCK_LENGTH = "SupportsExtendedLockLength";
 
+    public static final String SUPPORTS_GET_LOCK = "SupportsGetLock";
+
     public static final String SUPPORTS_LOCKS = "SupportsLocks";
 
     public static final String SUPPORTS_RENAME = "SupportsRename";

@@ -48,6 +48,7 @@ import static org.nuxeo.wopi.Constants.SIZE;
 import static org.nuxeo.wopi.Constants.SUPPORTED_SHARE_URL_TYPES;
 import static org.nuxeo.wopi.Constants.SUPPORTS_DELETE_FILE;
 import static org.nuxeo.wopi.Constants.SUPPORTS_EXTENDED_LOCK_LENGTH;
+import static org.nuxeo.wopi.Constants.SUPPORTS_GET_LOCK;
 import static org.nuxeo.wopi.Constants.SUPPORTS_LOCKS;
 import static org.nuxeo.wopi.Constants.SUPPORTS_RENAME;
 import static org.nuxeo.wopi.Constants.SUPPORTS_UPDATE;
@@ -614,6 +615,7 @@ public class FilesEndpoint extends DefaultObject {
 
     protected void addHostCapabilitiesProperties(Map<String, Serializable> map) {
         map.put(SUPPORTS_EXTENDED_LOCK_LENGTH, true);
+        map.put(SUPPORTS_GET_LOCK, true);
         map.put(SUPPORTS_LOCKS, true);
         map.put(SUPPORTS_RENAME, true);
         map.put(SUPPORTS_UPDATE, true);
