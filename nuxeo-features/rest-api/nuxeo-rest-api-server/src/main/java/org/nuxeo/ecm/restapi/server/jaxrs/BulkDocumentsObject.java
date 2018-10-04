@@ -36,8 +36,10 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * Web object that allows to deal with documents list.
  *
  * @since 5.7.3
+ * @deprecated since 10.3, use {@link BulkActionFrameworkObject BAF} instead
  */
 @WebObject(type = "bulk")
+@Deprecated
 public class BulkDocumentsObject extends DefaultObject {
 
     protected DocumentModelList docs;

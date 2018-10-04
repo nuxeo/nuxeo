@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import java.util.List;
+
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -91,6 +94,20 @@ public class APIRoot extends ModuleRoot {
     @Path("/conversion")
     public Object doGetConversion() {
         return newObject("conversions");
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Path("/bulk")
+    @SuppressWarnings("deprecation")
+    // we need to handle ids matrix because matrix aren't present in path used for dispatch
+    public Object bulk(@MatrixParam("id") List<String> ids) {
+        if (ids.isEmpty()) {
+            return newObject("bulkActionFramework");
+        } else {
+            return RepositoryObject.getBulkDocuments(this, ids);
+        }
     }
 
     /**
