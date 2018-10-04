@@ -70,15 +70,27 @@ public class RepositoryObject extends DefaultObject {
         return newObject("Document", doc);
     }
 
+    /**
+     * @deprecated since 10.3, use {@link BulkActionFrameworkObject BAF} instead
+     */
     @Path("bulk")
+    @Deprecated
     public Object getBulkDocuments(@MatrixParam("id") List<String> ids) {
-        CoreSession session = getContext().getCoreSession();
+        return getBulkDocuments(this, ids);
+    }
+
+    /**
+     * @deprecated since 10.3, use {@link BulkActionFrameworkObject BAF} instead
+     */
+    @Deprecated
+    protected static Object getBulkDocuments(DefaultObject obj, List<String> ids) {
+        CoreSession session = obj.getContext().getCoreSession();
         List<DocumentModel> docs = new ArrayList<>(ids.size());
         for (String loopid : ids) {
             docs.add(session.getDocument(new IdRef(loopid)));
         }
 
-        return newObject("bulk", new DocumentModelListImpl(docs));
+        return obj.newObject("bulk", new DocumentModelListImpl(docs));
     }
 
     @Path("@" + EmptyDocumentAdapter.NAME)
