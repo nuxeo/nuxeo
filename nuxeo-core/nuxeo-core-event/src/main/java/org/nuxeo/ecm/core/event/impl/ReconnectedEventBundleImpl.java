@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
 import java.rmi.dgc.VMID;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -83,7 +85,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         this.listenerName = listenerName;
     }
 
-    protected CoreSession getReconnectedCoreSession(String repoName) {
+    protected CoreSession getReconnectedCoreSession(String repoName, String originatingUsername) {
         if (reconnectedCoreSession == null) {
             try {
                 loginCtx = Framework.login();
@@ -91,7 +93,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 log.error("Cannot log in", e);
                 return null;
             }
-            reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
+            reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName, originatingUsername);
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
@@ -108,8 +110,17 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             reconnectedEvents = new ArrayList<Event>();
             for (Event event : sourceEventBundle) {
                 EventContext ctx = event.getContext();
-                CoreSession session = ctx.getRepositoryName() == null ? null
-                        : getReconnectedCoreSession(ctx.getRepositoryName());
+                String repositoryName = ctx.getRepositoryName();
+                CoreSession session;
+                if (repositoryName == null) {
+                    session = null;
+                } else {
+                    Principal principal = ctx.getPrincipal();
+                    String originatingUsername = principal instanceof NuxeoPrincipal
+                            ? ((NuxeoPrincipal) principal).getActingUser()
+                            : null;
+                    session = getReconnectedCoreSession(repositoryName, originatingUsername);
+                }
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
