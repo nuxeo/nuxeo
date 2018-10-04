@@ -148,7 +148,8 @@ public class TestLock {
         LockHelper.addLock(expiredLockFileId, "expiredWopiLock");
         assertEquals("expiredWopiLock", LockHelper.getLock(expiredLockFileId));
 
-        Map<String, List<DocumentModel>> expiredLocksByRepository = LockHelper.getExpiredLocksByRepository();
+        Map<String, List<DocumentModel>> expiredLocksByRepository = LockHelper.callPriviledgedOnLockDirectory(
+                LockHelper::getExpiredLocksByRepository);
         assertEquals(1, expiredLocksByRepository.size());
         String repositoryName = session.getRepositoryName();
         List<DocumentModel> expiredLocks = expiredLocksByRepository.get(repositoryName);
@@ -163,7 +164,7 @@ public class TestLock {
                     timestamp - (LOCK_TTL + TimeUnit.MINUTES.toMillis(10)));
             session.updateEntry(entry);
         });
-        expiredLocksByRepository = LockHelper.getExpiredLocksByRepository();
+        expiredLocksByRepository = LockHelper.callPriviledgedOnLockDirectory(LockHelper::getExpiredLocksByRepository);
         expiredLocks = expiredLocksByRepository.get(repositoryName);
         assertEquals(1, expiredLocks.size());
         assertEquals(expiredLockFileId,

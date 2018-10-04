@@ -20,7 +20,6 @@ package org.nuxeo.wopi.lock;
 
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_DOC_ID;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_FILE_ID;
-import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_NAME;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 
 import java.util.List;
@@ -35,8 +34,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles expired WOPI locks by unlocking the related document and removing the stored lock.
@@ -49,18 +46,17 @@ public class LockExpirationListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle eventBundle) {
-        Framework.doPrivileged(() -> {
-            try (Session directorySession = Framework.getService(DirectoryService.class).open(LOCK_DIRECTORY_NAME)) {
-                LockHelper.getExpiredLocksByRepository().entrySet().forEach(entry -> {
-                    String repository = entry.getKey();
-                    List<DocumentModel> lockEntries = entry.getValue();
-                    try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
-                        lockEntries.forEach(lockEntry -> handleExpiredLock(session, directorySession, lockEntry));
-                    }
-                });
+        LockHelper.doPriviledgedOnLockDirectory(this::handleExpiredLocks);
+    }
+
+    protected void handleExpiredLocks(Session directorySession) {
+        LockHelper.getExpiredLocksByRepository(directorySession).entrySet().forEach(entry -> {
+            String repository = entry.getKey();
+            List<DocumentModel> lockEntries = entry.getValue();
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
+                lockEntries.forEach(lockEntry -> handleExpiredLock(session, directorySession, lockEntry));
             }
         });
-
     }
 
     protected void handleExpiredLock(CoreSession session, Session directorySession, DocumentModel entry) {

@@ -163,10 +163,41 @@ public class LockHelper {
     }
 
     /**
-     * Returns the list of expired stored WOPI locks according to the {@link Constants#LOCK_TTL} for each repository.
+     * Performs the given consumer with a privileged session on the lock directory.
      */
-    public static Map<String, List<DocumentModel>> getExpiredLocksByRepository() {
-        return callPriviledgedOnLockDirectory(LockHelper::getExpiredLocksByRepository);
+    public static void doPriviledgedOnLockDirectory(Consumer<Session> consumer) {
+        Framework.doPrivileged(() -> {
+            try (Session session = openLockDirectorySession()) {
+                consumer.accept(session);
+            }
+        });
+    }
+
+    /**
+     * Applies the given function with a privileged session on the lock directory.
+     */
+    public static <R> R callPriviledgedOnLockDirectory(Function<Session, R> function) {
+        return Framework.doPrivileged(() -> {
+            try (Session session = openLockDirectorySession()) {
+                return function.apply(session);
+            }
+        });
+    }
+
+    /**
+     * Returns the list of expired stored WOPI locks according to the {@link Constants#LOCK_TTL} for each repository.
+     * <p>
+     * The given session must be privileged.
+     */
+    public static Map<String, List<DocumentModel>> getExpiredLocksByRepository(Session session) {
+        return Framework.getService(RepositoryManager.class)
+                        .getRepositoryNames()
+                        .stream()
+                        .map(repository -> getExpiredLocks(session, repository))
+                        .reduce(new HashMap<String, List<DocumentModel>>(), (a, b) -> {
+                            a.putAll(b);
+                            return a;
+                        });
     }
 
     /**
@@ -192,17 +223,6 @@ public class LockHelper {
         }
     }
 
-    protected static Map<String, List<DocumentModel>> getExpiredLocksByRepository(Session session) {
-        return Framework.getService(RepositoryManager.class)
-                        .getRepositoryNames()
-                        .stream()
-                        .map(repository -> getExpiredLocks(session, repository))
-                        .reduce(new HashMap<String, List<DocumentModel>>(), (a, b) -> {
-                            a.putAll(b);
-                            return a;
-                        });
-    }
-
     protected static Map<String, List<DocumentModel>> getExpiredLocks(Session session, String repository) {
         long expirationTime = System.currentTimeMillis() - LOCK_TTL;
         // TODO: inefficient if there are many locks.
@@ -217,22 +237,6 @@ public class LockHelper {
 
     protected static boolean filterExpiredLocks(DocumentModel entry, long expirationTime) {
         return expirationTime > (long) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP);
-    }
-
-    protected static void doPriviledgedOnLockDirectory(Consumer<Session> consumer) {
-        Framework.doPrivileged(() -> {
-            try (Session session = openLockDirectorySession()) {
-                consumer.accept(session);
-            }
-        });
-    }
-
-    protected static <R> R callPriviledgedOnLockDirectory(Function<Session, R> function) {
-        return Framework.doPrivileged(() -> {
-            try (Session session = openLockDirectorySession()) {
-                return function.apply(session);
-            }
-        });
     }
 
     protected static Session openLockDirectorySession() {
