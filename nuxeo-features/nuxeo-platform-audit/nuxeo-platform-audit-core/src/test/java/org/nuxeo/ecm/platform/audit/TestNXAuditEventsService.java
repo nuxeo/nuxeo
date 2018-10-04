@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -66,6 +67,7 @@ import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -246,20 +248,35 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void simplePincipalNameIsLoggedAsPrincipalName() throws Exception {
+    public void setSimplePincipalNameIsLoggedAsPrincipalName() throws Exception {
         // Given a simple principal
         Principal principal = new SimplePrincipal("testuser");
+        // I get it in the logs
+        doTestPrincipalName("testuser", principal);
+    }
 
+    @Test
+    public void testPrincipalNameIsActingUser() throws Exception {
+        // Given a Nuxeo principal with an acting user
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl("mysystem", false, true);
+        principal.setOriginatingUser("actualuser");
+        // I get it in the logs
+        doTestPrincipalName("actualuser", principal);
+    }
+
+    protected void doTestPrincipalName(String expected, Principal principal) throws InterruptedException {
+        // Given a principal
         // When i fire an event with it
+        int oldCount = serviceUnderTest.getEventsCount("loginSuccess").intValue();
         EventContext ctx = new UnboundEventContext(principal, new HashMap<String, Serializable>());
         eventService.fireEvent(ctx.newEvent("loginSuccess"));
         waitForAsyncCompletion();
 
-        // Then then event is logged with the principal's name
-        assertEquals(1, serviceUnderTest.getEventsCount("loginSuccess").intValue());
-        LogEntry logEntry = serviceUnderTest.nativeQueryLogs("log.eventId ='loginSuccess'", 1, 1).get(0);
-        assertEquals("testuser", logEntry.getPrincipalName());
-
+        // Then then event is logged with the originating principal's name
+        assertEquals(1, serviceUnderTest.getEventsCount("loginSuccess").intValue() - oldCount);
+        LogEntry logEntry = serviceUnderTest.nativeQueryLogs("log.eventId = 'loginSuccess' order by log.id desc", 1, 1)
+                                            .get(0);
+        assertEquals(expected, logEntry.getPrincipalName());
     }
 
     @Test
