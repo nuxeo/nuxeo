@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-video-parent</artifactId>
-    <version>9.10-HF19-SNAPSHOT</version>
+    <version>9.10-HF19</version>
   </parent>
   <artifactId>nuxeo-platform-video-jsf</artifactId>
   <name>Nuxeo Platform Video JSF</name>
