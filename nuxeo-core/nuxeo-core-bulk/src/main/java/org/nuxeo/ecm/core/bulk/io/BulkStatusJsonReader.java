@@ -20,13 +20,13 @@ package org.nuxeo.ecm.core.bulk.io;
 
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -45,43 +45,42 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 10.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class BulkJsonReader extends EntityJsonReader<BulkStatus> {
+public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
 
-    public BulkJsonReader() {
-        super(BULK_ENTITY_TYPE);
+    public BulkStatusJsonReader() {
+        super(STATUS_ENTITY_TYPE);
     }
 
     @Override
     public BulkStatus readEntity(JsonNode jn) {
-        BulkStatus status = new BulkStatus();
 
-        String id = jn.get(BULK_ID).asText();
-        status.setCommandId(id);
+        String id = jn.get(STATUS_COMMAND_ID).asText();
+        BulkStatus status = new BulkStatus(id);
 
-        String state = getStringField(jn, BULK_STATE);
+        String state = getStringField(jn, STATUS_STATE);
         if (isNotEmpty(state)) {
             status.setState(State.valueOf(state));
         }
 
-        String creation = getStringField(jn, BULK_SUBMIT);
+        String creation = getStringField(jn, STATUS_SUBMIT);
 
         if (isNotEmpty(creation)) {
             status.setSubmitTime(Instant.parse(creation));
         }
 
-        Long count = getLongField(jn, BULK_COUNT);
+        Long count = getLongField(jn, STATUS_TOTAL);
         if (count != null) {
-            status.setCount(count);
+            status.setTotal(count);
         }
 
-        Long processed = getLongField(jn, BULK_PROCESSED);
+        Long processed = getLongField(jn, STATUS_PROCESSED);
         if (processed != null) {
             status.setProcessed(processed);
         }
 
         Map<String, Serializable> result = emptyMap();
-        if (jn.has(BULK_RESULT)) {
-            result = BulkParameters.paramsToMap(jn.get(BULK_RESULT));
+        if (jn.has(STATUS_RESULT)) {
+            result = BulkParameters.paramsToMap(jn.get(STATUS_RESULT));
         }
         status.setResult(result);
 

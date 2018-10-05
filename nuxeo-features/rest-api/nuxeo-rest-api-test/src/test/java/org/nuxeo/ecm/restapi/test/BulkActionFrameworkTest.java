@@ -58,11 +58,11 @@ public class BulkActionFrameworkTest extends BaseTest {
     @Test
     public void testGetBulkStatus() throws Exception {
         // submit a bulk command to get its status
-        BulkCommand command = new BulkCommand().withUsername(session.getPrincipal().getName())
-                                               .withRepository(session.getRepositoryName())
-                                               .withQuery("SELECT * FROM Document WHERE ecm:isVersion = 0")
-                                               .withAction(SetPropertiesAction.ACTION_NAME)
-                                               .withParam("dc:description", "new description");
+        BulkCommand command = new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME,
+                "SELECT * FROM Document WHERE ecm:isVersion = 0").user(session.getPrincipal().getName())
+                                                                 .repository(session.getRepositoryName())
+                                                                 .param("dc:description", "new description")
+                                                                 .build();
         String commandId = bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(commandId, Duration.ofSeconds(10)));
 
@@ -73,7 +73,7 @@ public class BulkActionFrameworkTest extends BaseTest {
                 null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(count, node.get("count").asLong());
+            assertEquals(count, node.get("total").asLong());
             assertEquals(count, node.get("processed").asLong());
             assertEquals(COMPLETED.name(), node.get("state").asText());
         }

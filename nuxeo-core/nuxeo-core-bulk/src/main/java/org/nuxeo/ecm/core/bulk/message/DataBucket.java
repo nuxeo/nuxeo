@@ -41,7 +41,7 @@ public class DataBucket implements Serializable {
 
     protected byte[] data;
 
-    public DataBucket() {
+    protected DataBucket() {
         // Empty constructor for Avro decoder
     }
 

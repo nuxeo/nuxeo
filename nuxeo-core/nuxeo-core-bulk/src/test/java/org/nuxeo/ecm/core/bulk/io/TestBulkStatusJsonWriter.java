@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 
 import java.time.Instant;
@@ -42,10 +42,10 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 10.2
  */
 @Features(CoreBulkFeature.class)
-public class TestBulkJsonWriter extends AbstractJsonWriterTest.Local<BulkJsonWriter, BulkStatus> {
+public class TestBulkStatusJsonWriter extends AbstractJsonWriterTest.Local<BulkStatusJsonWriter, BulkStatus> {
 
-    public TestBulkJsonWriter() {
-        super(BulkJsonWriter.class, BulkStatus.class);
+    public TestBulkStatusJsonWriter() {
+        super(BulkStatusJsonWriter.class, BulkStatus.class);
     }
 
     @Test
@@ -53,20 +53,19 @@ public class TestBulkJsonWriter extends AbstractJsonWriterTest.Local<BulkJsonWri
         String zeroId = "00000000-0000-0000-0000-000000000000";
         String instant = "2018-06-21T12:37:08.172Z";
 
-        BulkStatus status = new BulkStatus();
-        status.setCommandId(zeroId);
+        BulkStatus status = new BulkStatus(zeroId);
         status.setState(State.SCHEDULED);
         status.setSubmitTime(Instant.parse(instant));
         status.setResult(Collections.singletonMap("result", "test"));
 
         JsonAssert json = jsonAssert(status);
         json.properties(7);
-        json.has(ENTITY_FIELD_NAME).isEquals(BULK_ENTITY_TYPE);
-        json.has(BULK_ID).isEquals(status.getCommandId());
-        json.has(BULK_STATE).isEquals(status.getState().toString());
-        json.has(BULK_SUBMIT).isEquals(instant);
-        json.has(BULK_COUNT).isEquals(0);
-        json.has(BULK_PROCESSED).isEquals(0);
-        json.has(BULK_RESULT).has("result").isEquals("test");
+        json.has(ENTITY_FIELD_NAME).isEquals(STATUS_ENTITY_TYPE);
+        json.has(STATUS_COMMAND_ID).isEquals(status.getCommandId());
+        json.has(STATUS_STATE).isEquals(status.getState().toString());
+        json.has(STATUS_SUBMIT).isEquals(instant);
+        json.has(STATUS_TOTAL).isEquals(0);
+        json.has(STATUS_PROCESSED).isEquals(0);
+        json.has(STATUS_RESULT).has("result").isEquals("test");
     }
 }

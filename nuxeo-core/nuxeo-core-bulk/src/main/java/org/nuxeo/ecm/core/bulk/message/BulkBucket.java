@@ -39,7 +39,7 @@ public class BulkBucket implements Serializable {
 
     protected List<String> ids = new ArrayList<>();
 
-    public BulkBucket() {
+    protected BulkBucket() {
         // Empty constructor for Avro decoder
     }
 

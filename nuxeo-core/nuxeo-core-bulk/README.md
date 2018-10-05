@@ -23,12 +23,11 @@ This module provides the ability to execute actions asynchronously on a -possibl
 The bulk command is the input of the framework. It is composed by the user submitting the command, the repository, the NXQL query that materializes the document set, the unique name of the action to execute and some optional parameters that could be needed by the action:
 
 ```java
-BulkCommand command = new BulkCommand().withRepository("myRepository")
-                                       .withUsername("myUser")
-                                       .withQuery("SELECT * from Document")
-                                       .withAction("myAction")
-                                       .withParam("param1", "myParam1")
-                                       .withParam("param2", "myParam2")
+        BulkCommand command = new BulkCommand.Builder("myAction", "SELECT * from Document").repository("myRepository")
+                                                                                           .user("myUser")
+                                                                                           .param("param1", "myParam1")
+                                                                                           .param("param2", "myParam2")
+                                                                                           .build();
 ```
 
 ## Execution flow

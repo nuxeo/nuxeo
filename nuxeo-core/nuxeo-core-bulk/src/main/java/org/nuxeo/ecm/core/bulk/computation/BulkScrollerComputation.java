@@ -169,7 +169,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             delta.setState(RUNNING);
         }
         delta.setScrollEndTime(Instant.now());
-        delta.setCount(documentCount);
+        delta.setTotal(documentCount);
         ((ComputationContextImpl) context).produceRecordImmediate(STATUS_STREAM, commandId,
                 BulkCodecs.getStatusCodec().encode(delta));
     }

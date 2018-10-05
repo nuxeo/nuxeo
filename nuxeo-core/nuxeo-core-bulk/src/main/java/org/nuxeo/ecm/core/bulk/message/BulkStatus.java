@@ -80,11 +80,22 @@ public class BulkStatus implements Serializable {
     protected Long processed;
 
     @Nullable
-    protected Long count;
+    protected Long total;
+
+    @Nullable
+    protected String action;
 
     @Nullable
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> result = new HashMap<>();
+
+    protected BulkStatus() {
+        // Empty constructor for Avro decoder
+    }
+
+    public BulkStatus(String commandId) {
+        this.commandId = commandId;
+    }
 
     /**
      * Creates a delta status for a command.
@@ -132,113 +143,61 @@ public class BulkStatus implements Serializable {
         if (update.getSubmitTime() != null) {
             setSubmitTime(update.getSubmitTime());
         }
-        if (update.count != null) {
-            setCount(update.getCount());
+        if (update.total != null) {
+            setTotal(update.getTotal());
+        }
+        if (update.action != null) {
+            setAction(update.action);
         }
         checkForCompletedState();
     }
 
     protected void checkForCompletedState() {
-        if (!isDelta() && getCount() > 0 && getProcessed() >= getCount()) {
+        if (!isDelta() && getTotal() > 0 && getProcessed() >= getTotal()) {
             setState(State.COMPLETED);
         }
     }
 
-    /**
-     * Gets command id.
-     *
-     * @return the id
-     */
     public String getCommandId() {
         return commandId;
     }
 
-    /**
-     * Sets bulk command id.
-     *
-     * @param id the id
-     */
     public void setCommandId(String id) {
         this.commandId = id;
     }
 
-    /**
-     * Returns the bulk action state.
-     *
-     * @return the bulk action state
-     */
     public State getState() {
         return state;
     }
 
-    /**
-     * Sets bulk action state.
-     *
-     * @param state the state
-     */
     public void setState(State state) {
         this.state = state;
     }
 
-    /**
-     * Gets bulk action submission time.
-     *
-     * @return the submit time
-     */
     public Instant getSubmitTime() {
         return submitTime;
     }
 
-    /**
-     * Sets bulk submission time.
-     *
-     * @param submitTime the submit time
-     */
     public void setSubmitTime(Instant submitTime) {
         this.submitTime = submitTime;
     }
 
-    /**
-     * Gets bulk action scroll start time.
-     *
-     * @return the scroll start time
-     */
     public Instant getScrollStartTime() {
         return scrollStartTime;
     }
 
-    /**
-     * Sets bulk scroll start time.
-     *
-     * @param scrollStartTime the scroll start time
-     */
     public void setScrollStartTime(Instant scrollStartTime) {
         this.scrollStartTime = scrollStartTime;
     }
 
-    /**
-     * Gets bulk action scroll end time.
-     *
-     * @return the scroll end time
-     */
     public Instant getScrollEndTime() {
         return scrollEndTime;
     }
 
-    /**
-     * Sets bulk scroll end time.
-     *
-     * @param scrollEndTime the scroll end time
-     */
     public void setScrollEndTime(Instant scrollEndTime) {
         this.scrollEndTime = scrollEndTime;
     }
 
-    /**
-     * Gets number of elements processed in this bulk.
-     *
-     * @return the number of processed elements
-     */
     public long getProcessed() {
         if (processed == null) {
             return 0;
@@ -247,33 +206,28 @@ public class BulkStatus implements Serializable {
     }
 
     /**
-     * Sets number of elements processed in this bulk.
-     *
-     * @param processed the number of elements
+     * Sets number of processed documents. For a delta this is a relative value that is aggregated during
+     * {@link #merge(BulkStatus)} operation.
      */
     public void setProcessed(long processed) {
         this.processed = processed;
     }
 
     /**
-     * Gets number of element touched in this bulk.
-     *
-     * @return the number of element
+     * Gets the total number of documents in the document set. Returns 0 when the scroll is not yet completed.
      */
-    public long getCount() {
-        if (count == null) {
+    public long getTotal() {
+        if (total == null) {
             return 0;
         }
-        return count;
+        return total;
     }
 
     /**
-     * Sets number of element touched in this bulk.
-     *
-     * @param count the number of element
+     * Sets the total number of documents in the document set
      */
-    public void setCount(long count) {
-        this.count = count;
+    public void setTotal(long count) {
+        this.total = count;
     }
 
     /**
@@ -303,6 +257,14 @@ public class BulkStatus implements Serializable {
      */
     public boolean isDelta() {
         return delta;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @Override

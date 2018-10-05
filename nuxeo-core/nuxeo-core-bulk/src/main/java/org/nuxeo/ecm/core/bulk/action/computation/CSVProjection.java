@@ -50,8 +50,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CSVProjection extends AbstractBulkComputation {
 
-    protected static final String KEY_SEP = ";";
-
     protected ByteArrayOutputStream out;
 
     public CSVProjection() {

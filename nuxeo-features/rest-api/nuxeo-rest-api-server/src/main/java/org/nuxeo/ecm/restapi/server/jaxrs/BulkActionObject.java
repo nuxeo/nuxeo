@@ -29,7 +29,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.BulkService;
@@ -68,18 +67,14 @@ public class BulkActionObject extends DefaultObject {
         String repository = getContext().getCoreSession().getRepositoryName();
         String username = getContext().getPrincipal().getName();
 
-        BulkCommand command = new BulkCommand().withAction(actionId)
-                                               .withRepository(repository)
-                                               .withUsername(username)
-                                               .withQuery(query);
+        BulkCommand command = new BulkCommand.Builder(actionId, query).repository(repository)
+                                                                      .user(username)
+                                                                      .params(BulkParameters.paramsToMap(actionParams))
+                                                                      .build();
 
-        if (StringUtils.isNotEmpty(actionParams)) {
-            command = command.withParams(BulkParameters.paramsToMap(actionParams));
-        }
-        String commandId = Framework.getService(BulkService.class).submit(command);
-
-        BulkStatus status = new BulkStatus();
-        status.setCommandId(commandId);
+        BulkService service = Framework.getService(BulkService.class);
+        String commandId = service.submit(command);
+        BulkStatus status = service.getStatus(commandId);
         return Response.status(Response.Status.ACCEPTED).entity(status).build();
     }
 

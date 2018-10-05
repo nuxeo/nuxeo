@@ -50,16 +50,16 @@ public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<Bulk
 
     @Test
     public void testDefault() throws Exception {
-        BulkCommand command = new BulkCommand().withUsername("myUser")
-                                               .withRepository("myRepository")
-                                               .withQuery("SELECT * FROM Document")
-                                               .withAction("myAction")
-                                               .withBucketSize(20)
-                                               .withBatchSize(10)
-                                               .withParam("actionParam", "mySpecificParameter")
-                                               .withParam("boolean", false)
-                                               .withParam("long", 1200)
-                                               .withParam("complex", new HashMap<>(singletonMap("key", "value")));
+        BulkCommand command = new BulkCommand.Builder("myAction",
+                "SELECT * FROM Document").user("myUser")
+                                         .repository("myRepository")
+                                         .bucket(20)
+                                         .batch(10)
+                                         .param("actionParam", "mySpecificParameter")
+                                         .param("boolean", false)
+                                         .param("long", 1200)
+                                         .param("complex", new HashMap<>(singletonMap("key", "value")))
+                                         .build();
         JsonAssert json = jsonAssert(command);
         json.properties(8);
         json.has(ENTITY_FIELD_NAME).isEquals(COMMAND_ENTITY_TYPE);

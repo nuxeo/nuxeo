@@ -50,6 +50,9 @@ public class BulkParameters {
     public static HashMap<String, Serializable> paramsToMap(JsonNode node) {
         // we declare variable and method return type as HashMap to be compliant with Serializable in params map
         HashMap<String, Serializable> params = new HashMap<>();
+        if (node == null) {
+            return params;
+        }
         Iterable<Map.Entry<String, JsonNode>> paramNodes = node::fields;
         for (Map.Entry<String, JsonNode> paramNode : paramNodes) {
             params.put(paramNode.getKey(), toSerializable(paramNode.getValue()));

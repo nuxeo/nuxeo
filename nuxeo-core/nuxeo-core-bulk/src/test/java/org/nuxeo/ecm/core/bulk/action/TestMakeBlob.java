@@ -184,10 +184,9 @@ public class TestMakeBlob {
         Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
         BulkServiceImpl service = (BulkServiceImpl) Framework.getService(BulkService.class);
         KeyValueStore kvStore = service.getKvStore();
-        BulkStatus cmdStatus = new BulkStatus();
-        cmdStatus.setCommandId(commandId);
+        BulkStatus cmdStatus = new BulkStatus(commandId);
         cmdStatus.setState(BulkStatus.State.RUNNING);
-        cmdStatus.setCount(count);
+        cmdStatus.setTotal(count);
         kvStore.put(commandId + STATUS_SUFFIX, codec.encode(cmdStatus));
     }
 }

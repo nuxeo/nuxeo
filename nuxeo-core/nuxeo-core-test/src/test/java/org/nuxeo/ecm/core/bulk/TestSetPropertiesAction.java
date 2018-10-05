@@ -74,13 +74,13 @@ public class TestSetPropertiesAction {
         complex.put("foo", foo);
         complex.put("bar", bar);
 
-        String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
-                                                           .withUsername(session.getPrincipal().getName())
-                                                           .withQuery(nxql)
-                                                           .withAction("setProperties")
-                                                           .withParam("dc:title", title)
-                                                           .withParam("dc:description", description)
-                                                           .withParam("cpx:complex", complex));
+        String commandId = service.submit(
+                new BulkCommand.Builder("setProperties", nxql).repository(session.getRepositoryName())
+                                                              .user(session.getPrincipal().getName())
+                                                              .param("dc:title", title)
+                                                              .param("dc:description", description)
+                                                              .param("cpx:complex", complex)
+                                                              .build());
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 

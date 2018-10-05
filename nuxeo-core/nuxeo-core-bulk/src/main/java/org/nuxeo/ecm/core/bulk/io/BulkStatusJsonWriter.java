@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_COUNT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ID;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_PROCESSED;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_RESULT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -42,22 +42,22 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 10.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class BulkJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
+public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
 
-    public BulkJsonWriter() {
-        super(BULK_ENTITY_TYPE, BulkStatus.class);
+    public BulkStatusJsonWriter() {
+        super(STATUS_ENTITY_TYPE, BulkStatus.class);
     }
 
     @Override
     public void writeEntityBody(BulkStatus entity, JsonGenerator jg) throws IOException {
-        jg.writeStringField(BULK_ID, entity.getCommandId());
-        jg.writeStringField(BULK_STATE, entity.getState() != null ? entity.getState().toString() : null);
-        jg.writeStringField(BULK_SUBMIT, entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
-        jg.writeNumberField(BULK_COUNT, entity.getCount());
-        jg.writeNumberField(BULK_PROCESSED, entity.getProcessed());
+        jg.writeStringField(STATUS_COMMAND_ID, entity.getCommandId());
+        jg.writeStringField(STATUS_STATE, entity.getState() != null ? entity.getState().toString() : null);
+        jg.writeStringField(STATUS_SUBMIT, entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
+        jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
+        jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
         Map<String, Serializable> result = entity.getResult();
         if (!result.isEmpty()) {
-            jg.writeObjectField(BULK_RESULT, result);
+            jg.writeObjectField(STATUS_RESULT, result);
         }
     }
 

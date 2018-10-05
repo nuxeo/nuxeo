@@ -112,7 +112,7 @@ public class BulkActionTest extends BaseTest {
 
             assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            String commandId = node.get("id").textValue();
+            String commandId = node.get("commandId").textValue();
 
             assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(10)));
 
@@ -176,7 +176,7 @@ public class BulkActionTest extends BaseTest {
 
             assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            String commandId = node.get("id").textValue();
+            String commandId = node.get("commandId").textValue();
 
             assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(10)));
 
