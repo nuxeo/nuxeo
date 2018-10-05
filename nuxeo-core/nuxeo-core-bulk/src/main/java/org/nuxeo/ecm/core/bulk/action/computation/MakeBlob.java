@@ -69,7 +69,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         if (counters.containsKey(commandId)) {
             counters.put(commandId, nbDocuments + counters.get(commandId));
         } else {
-            counters.put(commandId, Long.valueOf(nbDocuments));
+            counters.put(commandId, nbDocuments);
         }
         if (counters.get(commandId) < getTotal(commandId)) {
             return;
@@ -93,7 +93,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     protected Long getTotal(String commandId) {
         if (!totals.containsKey(commandId)) {
-            long total = Framework.getService(BulkService.class).getStatus(commandId).getCount();
+            long total = Framework.getService(BulkService.class).getStatus(commandId).getTotal();
             if (total == 0) {
                 return Long.MAX_VALUE;
             }

@@ -63,12 +63,11 @@ public class TestSetSystemPropertiesAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
 
-        String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
-                                                           .withUsername(session.getPrincipal().getName())
-                                                           .withQuery(nxql)
-                                                           .withAction("setSystemProperties")
-                                                           .withParam(SYSPROP_IS_TRASHED, Boolean.TRUE));
-
+        String commandId = service.submit(
+                new BulkCommand.Builder("setSystemProperties", nxql).repository(session.getRepositoryName())
+                                                                    .user(session.getPrincipal().getName())
+                                                                    .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
+                                                                    .build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
         BulkStatus status = service.getStatus(commandId);

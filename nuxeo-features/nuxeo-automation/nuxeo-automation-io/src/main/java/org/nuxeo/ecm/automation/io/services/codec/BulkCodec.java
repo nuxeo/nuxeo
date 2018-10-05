@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.automation.io.services.codec;
 
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.BULK_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
 
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.bulk.io.BulkJsonReader;
-import org.nuxeo.ecm.core.bulk.io.BulkJsonWriter;
+import org.nuxeo.ecm.core.bulk.io.BulkStatusJsonReader;
+import org.nuxeo.ecm.core.bulk.io.BulkStatusJsonWriter;
 
 /**
  * @since 10.2
@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.bulk.io.BulkJsonWriter;
 public class BulkCodec extends AbstractMarshallingRegistryCodec<BulkStatus> {
 
     public BulkCodec() {
-        super(BulkStatus.class, BULK_ENTITY_TYPE, BulkJsonReader.class, BulkJsonWriter.class);
+        super(BulkStatus.class, STATUS_ENTITY_TYPE, BulkStatusJsonReader.class, BulkStatusJsonWriter.class);
     }
 
 }

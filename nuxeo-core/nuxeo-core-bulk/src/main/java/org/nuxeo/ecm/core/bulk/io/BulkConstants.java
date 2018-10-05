@@ -27,23 +27,23 @@ public class BulkConstants {
 
     // BulkStatus part
 
-    public static final String BULK_ENTITY_TYPE = "bulk";
+    public static final String STATUS_ENTITY_TYPE = "bulkStatus";
 
-    public static final String BULK_ID = "id";
+    public static final String STATUS_COMMAND_ID = "commandId";
 
-    public static final String BULK_STATE = "state";
+    public static final String STATUS_STATE = "state";
 
-    public static final String BULK_SUBMIT = "submit";
+    public static final String STATUS_SUBMIT = "submit";
 
-    public static final String BULK_COUNT = "count";
+    public static final String STATUS_TOTAL = "total";
 
     /**
      * @since 10.3
      */
-    public static final String BULK_PROCESSED = "processed";
+    public static final String STATUS_PROCESSED = "processed";
 
     /** @since 10.3 */
-    public static final String BULK_RESULT = "result";
+    public static final String STATUS_RESULT = "result";
 
     // BulkCommand part
 

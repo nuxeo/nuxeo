@@ -32,8 +32,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 
 /**
  * @since 10.2
@@ -63,11 +63,10 @@ public class RunBulkAction {
         String repositoryName = session.getRepositoryName();
         String userName = session.getPrincipal().getName();
 
-        BulkCommand command = new BulkCommand().withRepository(repositoryName)
-                                               .withAction(action)
-                                               .withUsername(userName)
-                                               .withQuery(query)
-                                               .withParams(parameters);
+        BulkCommand command = new BulkCommand.Builder(action, query).repository(repositoryName)
+                                                                    .user(userName)
+                                                                    .params(parameters)
+                                                                    .build();
         String commandId = service.submit(command);
         return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
     }

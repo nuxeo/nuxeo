@@ -38,7 +38,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  * <ul>
  * <li>i1: Reads {@link BulkStatus} sharded by command id</li>
  * </ul>
- * Ouptuts:
+ * Outputs:
  * <ul>
  * <li>o1: Write {@link BulkStatus} full into the done stream.</li>
  * </ul>

@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -58,6 +56,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreBulkFeature.class, CoreFeature.class })
@@ -80,7 +81,7 @@ public class TestCSVExportAction {
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(10, status.getProcessed());
-        assertEquals(10, status.getCount());
+        assertEquals(10, status.getTotal());
 
         Blob blob = getBlob(command.getId());
         // file is ziped
@@ -141,10 +142,9 @@ public class TestCSVExportAction {
     protected BulkCommand createCommand() {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
-        return new BulkCommand().withRepository(session.getRepositoryName())
-                                .withUsername(session.getPrincipal().getName())
-                                .withQuery(nxql)
-                                .withAction(CSVExportAction.ACTION_NAME);
+        return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                                         .user(session.getPrincipal().getName())
+                                                                         .build();
     }
 
     protected Blob getBlob(String commandId) {

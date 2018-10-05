@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.computation.Record;
@@ -74,27 +75,26 @@ public class BulkServiceImpl implements BulkService {
             log.debug("Run action with command=" + command);
         }
         // check command
-        // TODO: check must be done on builder
-        if (isEmpty(command.getRepository()) || isEmpty(command.getQuery()) || isEmpty(command.getAction())) {
-            throw new IllegalArgumentException("Missing mandatory values");
+        if (isEmpty(command.getRepository())) {
+            RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
+            command.setRepository(repoManager.getDefaultRepositoryName());
         }
-        // TODO: set default on command builder ?
         if (command.getBucketSize() == 0 || command.getBatchSize() == 0) {
             BulkAdminService adminService = Framework.getService(BulkAdminService.class);
             if (command.getBucketSize() == 0) {
-                command.withBatchSize(adminService.getBatchSize(command.getAction()));
+                command.setBucketSize(adminService.getBucketSize(command.getAction()));
             }
-            if (command.getBucketSize() == 0) {
-                command.withBucketSize(adminService.getBucketSize(command.getAction()));
+            if (command.getBatchSize() == 0) {
+                command.setBatchSize(adminService.getBatchSize(command.getAction()));
             }
         }
 
         // store the bulk command and status in the key/value store
         KeyValueStore keyValueStore = getKvStore();
 
-        BulkStatus status = new BulkStatus();
-        status.setCommandId(command.getId());
+        BulkStatus status = new BulkStatus(command.getId());
         status.setState(SCHEDULED);
+        status.setAction(command.getAction());
         status.setSubmitTime(Instant.now());
 
         byte[] commandAsBytes = BulkCodecs.getCommandCodec().encode(command);

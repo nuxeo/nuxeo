@@ -40,10 +40,7 @@ public class TestBulkCommandAvro {
 
     @Test
     public void testCommandWithoutParameters() {
-        BulkCommand command = new BulkCommand().withUsername("username")
-                                               .withRepository("default")
-                                               .withQuery("SELECT * FROM Document")
-                                               .withAction("action");
+        BulkCommand command = new BulkCommand.Builder("action", "SELECT * FROM Document").build();
         BulkCommand actualCommand = codecRule.encodeDecode(command);
 
         assertEquals(command, actualCommand);
@@ -51,12 +48,13 @@ public class TestBulkCommandAvro {
 
     @Test
     public void testCommandWithSimpleParameters() {
-        BulkCommand command = new BulkCommand().withUsername("username")
-                                               .withRepository("default")
-                                               .withQuery("SELECT * FROM Document")
-                                               .withAction("action")
-                                               .withParam("key1", "value1")
-                                               .withParam("key2", "value2");
+        BulkCommand command = new BulkCommand.Builder("action", "SELECT * FROM Document").user("username")
+                                                                                         .repository("default")
+                                                                                         .param("key1", "value1")
+                                                                                         .param("key2", "value2")
+                                                                                         .bucket(150)
+                                                                                         .batch(15)
+                                                                                         .build();
         BulkCommand actualCommand = codecRule.encodeDecode(command);
 
         assertEquals(command, actualCommand);

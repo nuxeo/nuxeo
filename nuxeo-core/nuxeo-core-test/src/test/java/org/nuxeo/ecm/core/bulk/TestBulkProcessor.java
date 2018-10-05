@@ -67,16 +67,16 @@ public class TestBulkProcessor {
             String nxql = "SELECT * from Document where ecm:parentId='nonExistentId'";
             assertEquals(0, session.query(nxql).size());
 
-            String commandId = service.submit(new BulkCommand().withRepository(session.getRepositoryName())
-                                                               .withUsername(session.getPrincipal().getName())
-                                                               .withQuery(nxql)
-                                                               .withAction("setProperties"));
+            String commandId = service.submit(
+                    new BulkCommand.Builder("setProperties", nxql).repository(session.getRepositoryName())
+                                                                  .user(session.getPrincipal().getName())
+                                                                  .build());
             assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
             BulkStatus status = service.getStatus(commandId);
             assertEquals(commandId, status.getCommandId());
             assertEquals(BulkStatus.State.COMPLETED, status.getState());
-            assertEquals(0, status.getCount());
+            assertEquals(0, status.getTotal());
 
             LogRecord<Record> record = tailer.read(Duration.ofSeconds(10));
             assertNotNull("No done status found", record);

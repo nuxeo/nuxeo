@@ -38,10 +38,10 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 10.2
  */
 @Features(CoreBulkFeature.class)
-public class TestBulkJsonReader extends AbstractJsonReaderTest.Local<BulkJsonReader, BulkStatus> {
+public class TestBulkStatusJsonReader extends AbstractJsonReaderTest.Local<BulkStatusJsonReader, BulkStatus> {
 
-    public TestBulkJsonReader() {
-        super(BulkJsonReader.class, BulkStatus.class);
+    public TestBulkStatusJsonReader() {
+        super(BulkStatusJsonReader.class, BulkStatus.class);
     }
 
     @Test
