@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.signature.core.sign;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.nuxeo.runtime.api.login.LoginComponent.SYSTEM_USERNAME;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -78,25 +77,23 @@ public class TestDirectorySecurity {
     @Before
     public void setUp() throws Exception {
         // as system, create an dummy entry
-        login(SYSTEM_USERNAME);
-        try (Session session = directoryService.open(DIR_NAME)) {
-            DocumentModel entry = session.createEntry(Collections.singletonMap(ID_FIELD, "123"));
-            entryId = entry.getPropertyValue(SCHEMA_NAME + ":" + ID_FIELD);
-        } finally {
-            logout();
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(DIR_NAME)) {
+                DocumentModel entry = session.createEntry(Collections.singletonMap(ID_FIELD, "123"));
+                entryId = entry.getPropertyValue(SCHEMA_NAME + ":" + ID_FIELD);
+            }
+        });
     }
 
     @Test
     public void testDirectoryRead() throws Exception {
         // as system, we see the entry
-        login(SYSTEM_USERNAME);
-        try (Session session = directoryService.open(DIR_NAME)) {
-            DocumentModel entry = session.getEntry(entryId.toString());
-            assertNotNull(entry); // visible entry
-        } finally {
-            logout();
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(DIR_NAME)) {
+                DocumentModel entry = session.getEntry(entryId.toString());
+                assertNotNull(entry); // visible entry
+            }
+        });
 
         // as a random user, we don't see the entry
         login("aRandomUser");
@@ -111,13 +108,12 @@ public class TestDirectorySecurity {
     @Test
     public void testDirectoryQuery() throws Exception {
         // as system, we see the entry
-        login(SYSTEM_USERNAME);
-        try (Session session = directoryService.open(DIR_NAME)) {
-            DocumentModelList results = session.query(Collections.singletonMap(ID_FIELD, entryId));
-            assertEquals(1, results.size()); // visible entry
-        } finally {
-            logout();
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(DIR_NAME)) {
+                DocumentModelList results = session.query(Collections.singletonMap(ID_FIELD, entryId));
+                assertEquals(1, results.size()); // visible entry
+            }
+        });
 
         // as a random user, we don't see the entry
         login("aRandomUser");
