@@ -46,7 +46,7 @@ public class LockExpirationListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle eventBundle) {
-        LockHelper.doPriviledgedOnLockDirectory(this::handleExpiredLocks);
+        LockHelper.doPrivilegedOnLockDirectory(this::handleExpiredLocks);
     }
 
     protected void handleExpiredLocks(Session directorySession) {

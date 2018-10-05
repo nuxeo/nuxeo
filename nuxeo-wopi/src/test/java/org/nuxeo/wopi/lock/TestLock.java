@@ -123,7 +123,7 @@ public class TestLock {
         assertEquals("updatedWopiLock", LockHelper.getLock(fileId));
 
         // refresh lock
-        LockHelper.doPriviledgedOnLockDirectory(session -> {
+        LockHelper.doPrivilegedOnLockDirectory(session -> {
             try {
                 long timestamp = (long) session.getEntry(fileId).getProperty(LOCK_DIRECTORY_SCHEMA_NAME,
                         LOCK_DIRECTORY_TIMESTAMP);
@@ -148,7 +148,7 @@ public class TestLock {
         LockHelper.addLock(expiredLockFileId, "expiredWopiLock");
         assertEquals("expiredWopiLock", LockHelper.getLock(expiredLockFileId));
 
-        Map<String, List<DocumentModel>> expiredLocksByRepository = LockHelper.callPriviledgedOnLockDirectory(
+        Map<String, List<DocumentModel>> expiredLocksByRepository = LockHelper.doPrivilegedOnLockDirectory(
                 LockHelper::getExpiredLocksByRepository);
         assertEquals(1, expiredLocksByRepository.size());
         String repositoryName = session.getRepositoryName();
@@ -157,14 +157,14 @@ public class TestLock {
         assertTrue(expiredLocks.isEmpty());
 
         // force expiration for expiredLockFileId
-        LockHelper.doPriviledgedOnLockDirectory(session -> {
+        LockHelper.doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(expiredLockFileId);
             long timestamp = (long) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP,
                     timestamp - (LOCK_TTL + TimeUnit.MINUTES.toMillis(10)));
             session.updateEntry(entry);
         });
-        expiredLocksByRepository = LockHelper.callPriviledgedOnLockDirectory(LockHelper::getExpiredLocksByRepository);
+        expiredLocksByRepository = LockHelper.doPrivilegedOnLockDirectory(LockHelper::getExpiredLocksByRepository);
         expiredLocks = expiredLocksByRepository.get(repositoryName);
         assertEquals(1, expiredLocks.size());
         assertEquals(expiredLockFileId,
@@ -185,7 +185,7 @@ public class TestLock {
         assertEquals("bar", LockHelper.getLock(expiredLockFileId));
 
         // force expiration for expiredLockFileId
-        LockHelper.doPriviledgedOnLockDirectory(session -> {
+        LockHelper.doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(expiredLockFileId);
             long timestamp = (long) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP,

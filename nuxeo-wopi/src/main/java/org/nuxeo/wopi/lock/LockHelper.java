@@ -73,7 +73,7 @@ public class LockHelper {
      */
     public static void addLock(String fileId, String repository, String docId, String lock) {
         log.debug("Locking: fileId={} Adding lock {}", fileId, lock);
-        doPriviledgedOnLockDirectory(session -> {
+        doPrivilegedOnLockDirectory(session -> {
             Map<String, Object> entryMap = new HashMap<>();
             entryMap.put(LOCK_DIRECTORY_FILE_ID, fileId);
             entryMap.put(LOCK_DIRECTORY_REPOSITORY, repository);
@@ -88,7 +88,7 @@ public class LockHelper {
      * Gets the WOPI lock stored for the given file id if it exists, returns {@code null} otherwise.
      */
     public static String getLock(String fileId) {
-        return callPriviledgedOnLockDirectory(session -> {
+        return doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             return entry == null ? null : (String) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_LOCK);
         });
@@ -98,7 +98,7 @@ public class LockHelper {
      * Checks if a WOPI lock is stored for the given repository and doc id, no matter the xpath.
      */
     public static boolean isLocked(String repository, String docId) {
-        return callPriviledgedOnLockDirectory(session -> {
+        return doPrivilegedOnLockDirectory(session -> {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
             filter.put(LOCK_DIRECTORY_DOC_ID, docId);
@@ -113,7 +113,7 @@ public class LockHelper {
      */
     public static boolean hasOtherLock(String fileId) {
         FileInfo fileInfo = new FileInfo(fileId);
-        return callPriviledgedOnLockDirectory(session -> {
+        return doPrivilegedOnLockDirectory(session -> {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put(LOCK_DIRECTORY_REPOSITORY, fileInfo.repositoryName);
             filter.put(LOCK_DIRECTORY_DOC_ID, fileInfo.docId);
@@ -130,7 +130,7 @@ public class LockHelper {
      */
     public static void updateLock(String fileId, String lock) {
         log.debug("Locking: fileId={} Updating lock {}", fileId, lock);
-        doPriviledgedOnLockDirectory(session -> {
+        doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_LOCK, lock);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP, System.currentTimeMillis());
@@ -143,7 +143,7 @@ public class LockHelper {
      */
     public static void refreshLock(String fileId) {
         log.debug("Locking: fileId={} Refreshing lock", fileId);
-        doPriviledgedOnLockDirectory(session -> {
+        doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP, System.currentTimeMillis());
             session.updateEntry(entry);
@@ -155,7 +155,7 @@ public class LockHelper {
      */
     public static void removeLock(String fileId) {
         log.debug("Locking: fileId={} Removing lock", fileId);
-        doPriviledgedOnLockDirectory(session -> session.deleteEntry(fileId));
+        doPrivilegedOnLockDirectory((Session session) -> session.deleteEntry(fileId));
     }
 
     /**
@@ -164,7 +164,7 @@ public class LockHelper {
     public static void removeLocks(String repository, String docId) {
         log.debug("Locking: repository={} docId={} Document was unlocked in Nuxeo, removing related WOPI locks",
                 repository, docId);
-        doPriviledgedOnLockDirectory(session -> {
+        doPrivilegedOnLockDirectory(session -> {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
             filter.put(LOCK_DIRECTORY_DOC_ID, docId);
@@ -175,7 +175,7 @@ public class LockHelper {
     /**
      * Performs the given consumer with a privileged session on the lock directory.
      */
-    public static void doPriviledgedOnLockDirectory(Consumer<Session> consumer) {
+    public static void doPrivilegedOnLockDirectory(Consumer<Session> consumer) {
         Framework.doPrivileged(() -> {
             try (Session session = openLockDirectorySession()) {
                 consumer.accept(session);
@@ -186,7 +186,7 @@ public class LockHelper {
     /**
      * Applies the given function with a privileged session on the lock directory.
      */
-    public static <R> R callPriviledgedOnLockDirectory(Function<Session, R> function) {
+    public static <R> R doPrivilegedOnLockDirectory(Function<Session, R> function) {
         return Framework.doPrivileged(() -> {
             try (Session session = openLockDirectorySession()) {
                 return function.apply(session);
