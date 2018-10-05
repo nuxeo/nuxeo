@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>9.10-HF19-SNAPSHOT</version>
+    <version>9.10-HF19</version>
   </parent>
 
   <artifactId>nuxeo-platform-usermanager-core</artifactId>
