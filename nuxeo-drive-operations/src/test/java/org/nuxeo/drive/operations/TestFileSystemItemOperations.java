@@ -301,8 +301,8 @@ public class TestFileSystemItemOperations {
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
-        assertEquals("system", topLevelFolderItem.getCreator());
-        assertEquals("system", topLevelFolderItem.getLastContributor());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolderItem.getCreator());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolderItem.getLastContributor());
         assertFalse(topLevelFolderItem.getCanRename());
         assertFalse(topLevelFolderItem.getCanDelete());
         assertFalse(topLevelFolderItem.getCanCreateChild());

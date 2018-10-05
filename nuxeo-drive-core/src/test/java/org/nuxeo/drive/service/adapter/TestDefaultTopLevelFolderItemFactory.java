@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -119,8 +120,8 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
-        assertEquals("system", topLevelFolderItem.getCreator());
-        assertEquals("system", topLevelFolderItem.getLastContributor());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolderItem.getCreator());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolderItem.getLastContributor());
         assertFalse(topLevelFolderItem.getCanRename());
         try {
             topLevelFolderItem.rename("newName");

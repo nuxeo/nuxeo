@@ -329,8 +329,8 @@ public class TestUserWorkspaceHierarchy {
         assertEquals("/" + userWorkspace1ItemId + "/" + SYNC_ROOT_PARENT_ID, syncRootParent.getPath());
         assertEquals("My synchronized folders", syncRootParent.getName());
         assertTrue(syncRootParent.isFolder());
-        assertEquals("system", syncRootParent.getCreator());
-        assertEquals("system", syncRootParent.getLastContributor());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, syncRootParent.getCreator());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, syncRootParent.getLastContributor());
         assertFalse(syncRootParent.getCanRename());
         assertFalse(syncRootParent.getCanDelete());
         assertFalse(syncRootParent.getCanCreateChild());

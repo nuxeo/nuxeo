@@ -28,6 +28,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * Base implementation of a virtual {@link FolderItem}.
@@ -48,8 +49,8 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         this.parentId = parentId;
         name = folderName;
         folder = true;
-        creator = "system";
-        lastContributor = "system";
+        creator = SecurityConstants.SYSTEM_USERNAME;
+        lastContributor = SecurityConstants.SYSTEM_USERNAME;
         // The Fixed Origin of (Unix) Time
         creationDate = Calendar.getInstance(NuxeoDriveManagerImpl.UTC);
         creationDate.set(1970, 0, 1, 0, 0, 0);

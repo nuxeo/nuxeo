@@ -280,8 +280,8 @@ public class TestPermissionHierarchy {
         assertEquals("/" + TOP_LEVEL_ID, topLevelFolder.getPath());
         assertEquals("Nuxeo Drive", topLevelFolder.getName());
         assertTrue(topLevelFolder.isFolder());
-        assertEquals("system", topLevelFolder.getCreator());
-        assertEquals("system", topLevelFolder.getLastContributor());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolder.getCreator());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, topLevelFolder.getLastContributor());
         assertFalse(topLevelFolder.getCanRename());
         assertFalse(topLevelFolder.getCanDelete());
         assertFalse(topLevelFolder.getCanCreateChild());
@@ -365,8 +365,8 @@ public class TestPermissionHierarchy {
         assertEquals("/" + TOP_LEVEL_ID + "/" + SHARED_SYNC_ROOT_PARENT_ID, sharedSyncRootParent.getPath());
         assertEquals("Other Docs", sharedSyncRootParent.getName());
         assertTrue(sharedSyncRootParent.isFolder());
-        assertEquals("system", sharedSyncRootParent.getCreator());
-        assertEquals("system", sharedSyncRootParent.getLastContributor());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, sharedSyncRootParent.getCreator());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, sharedSyncRootParent.getLastContributor());
         assertFalse(sharedSyncRootParent.getCanRename());
         assertFalse(sharedSyncRootParent.getCanDelete());
         assertFalse(sharedSyncRootParent.getCanCreateChild());
