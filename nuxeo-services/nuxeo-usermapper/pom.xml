@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>9.10-HF19-SNAPSHOT</version>
+    <version>9.10-HF20-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-usermapper</artifactId>
   <name>nuxeo-usermapper</name>
-  <version>9.10-HF19-SNAPSHOT</version>
+  <version>9.10-HF20-SNAPSHOT</version>
   <description>
 
   </description>

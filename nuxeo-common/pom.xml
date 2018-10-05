@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>9.10-HF19-SNAPSHOT</version>
+    <version>9.10-HF20-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.common</groupId>
   <artifactId>nuxeo-common</artifactId>
-  <version>9.10-HF19-SNAPSHOT</version>
+  <version>9.10-HF20-SNAPSHOT</version>
   <name>Nuxeo Common</name>
   <description>Nuxeo Common: utilities.</description>
 
