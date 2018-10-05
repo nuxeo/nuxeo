@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>9.10-HF19-SNAPSHOT</version>
+    <version>9.10-HF20-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-webengine-ui</artifactId>

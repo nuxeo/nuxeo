@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.api.test.properties">
+
+  <require>org.nuxeo.ecm.core.automation.core.properties</require>
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="nuxeo.automation.object.blob.decoder.enabled">true</property>
+  </extension>
+
+</component>
