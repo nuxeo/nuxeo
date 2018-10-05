@@ -106,8 +106,8 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     protected boolean checkUnrestricted(CoreSession session) {
-        return SecurityConstants.SYSTEM_USERNAME.equals(session.getPrincipal().getName())
-                || (session.getPrincipal() instanceof NuxeoPrincipal && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+        return session.getPrincipal() instanceof NuxeoPrincipal
+                && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator();
     }
 
     /**

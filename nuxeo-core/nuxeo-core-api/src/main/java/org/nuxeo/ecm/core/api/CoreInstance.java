@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -35,7 +33,6 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
@@ -95,7 +92,7 @@ public class CoreInstance {
      * @since 5.9.3
      */
     public static CloseableCoreSession openCoreSessionSystem(String repositoryName) {
-        return openCoreSession(repositoryName, getPrincipal((SecurityConstants.SYSTEM_USERNAME)));
+        return openCoreSession(repositoryName, new SystemPrincipal(null));
     }
 
     /**
@@ -109,9 +106,7 @@ public class CoreInstance {
      * @since 8.1
      */
     public static CloseableCoreSession openCoreSessionSystem(String repositoryName, String originatingUsername) {
-        NuxeoPrincipal principal = getPrincipal((SecurityConstants.SYSTEM_USERNAME));
-        principal.setOriginatingUser(originatingUsername);
-        return openCoreSession(repositoryName, principal);
+        return openCoreSession(repositoryName, new SystemPrincipal(originatingUsername));
     }
 
     /**
@@ -197,11 +192,7 @@ public class CoreInstance {
 
     protected static NuxeoPrincipal getPrincipal(String username) {
         if (username != null) {
-            if (SYSTEM_USERNAME.equals(username)) {
-                return new SystemPrincipal(null);
-            } else {
-                return new UserPrincipal(username, new ArrayList<>(), false, false);
-            }
+            return new UserPrincipal(username, new ArrayList<>(), false, false);
         } else {
             LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
             if (entry != null) {

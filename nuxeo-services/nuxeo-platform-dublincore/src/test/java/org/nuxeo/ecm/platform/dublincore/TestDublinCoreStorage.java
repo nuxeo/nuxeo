@@ -234,7 +234,7 @@ public class TestDublinCoreStorage {
             DocumentModel file = session2.createDocumentModel("/", "file", "File");
             file = session2.createDocument(file);
             // check we haven't inserted a null in last contributors
-            assertEquals(Collections.singletonList("system"),
+            assertEquals(Collections.singletonList(SecurityConstants.SYSTEM_USERNAME),
                     Arrays.asList((String[]) file.getPropertyValue("dc:contributors")));
         }
     }

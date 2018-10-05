@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -62,7 +61,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
 
 public class NotificationEventListener implements PostCommitFilteringEventListener {
 
@@ -217,16 +215,15 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
     protected void sendNotificationSignalForUser(Notification notification, String subscriptor, Event event,
             DocumentEventContext ctx) {
 
-        Principal principal;
-        if (LoginComponent.SYSTEM_USERNAME.equals(subscriptor)) {
-            principal = new SystemPrincipal(null);
-        } else {
-            principal = getUserManager().getPrincipal(subscriptor);
-            if (principal == null) {
-                log.error("No Nuxeo principal found for '" + subscriptor
-                        + "'. No notification will be sent to this user");
-                return;
-            }
+        if (SecurityConstants.SYSTEM_USERNAME.equals(subscriptor)) {
+            // it doesn't make sense to notify the system user
+            return;
+        }
+        Principal principal = getUserManager().getPrincipal(subscriptor);
+        if (principal == null) {
+            log.error("No Nuxeo principal found for '" + subscriptor
+                    + "'. No notification will be sent to this user");
+            return;
         }
 
         if (Boolean.parseBoolean(Framework.getProperty(CHECK_READ_PERMISSION_PROPERTY))) {

@@ -168,7 +168,7 @@ public class DublinCoreStorageServiceImplTest {
 
         Map<String, Object> originalProperties = new HashMap<>(doc.getProperties("dublincore"));
 
-        Event event = getEventFromDocumentContext(BEFORE_DOC_UPDATE, session, new SystemPrincipal("system"));
+        Event event = getEventFromDocumentContext(BEFORE_DOC_UPDATE, session, new SystemPrincipal(null));
         storageService.addContributor(doc, event);
 
         assertDocumentPropertiesChanges(doc, originalProperties, new HashSet<>());

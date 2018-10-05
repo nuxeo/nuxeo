@@ -21,13 +21,13 @@ package org.nuxeo.ecm.user.center.profile.localeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Refresh Faces locale and timezone when the userProfileDocument is updated (and created).
@@ -48,7 +48,7 @@ public class UserLocaleSelectorListener implements EventListener {
             return;
         }
         // No need to sync Seam session for system user
-        if (LoginComponent.SYSTEM_USERNAME.equals(ctx.getPrincipal().getName())){
+        if (ctx.getPrincipal() instanceof SystemPrincipal) {
             log.debug("Skip locale update for system user");
             return;
         }

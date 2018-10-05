@@ -122,18 +122,9 @@ public class SecurityService extends DefaultComponent {
     }
 
     public boolean checkPermission(Document doc, Principal principal, String permission) {
-        String username = principal.getName();
-
-        // system bypass
-        // :FIXME: temporary workaround
-        if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
-            return true;
-        }
-
         if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
             return true;
         }
-
         // fully check each ACE in turn
         String[] resolvedPermissions = getPermissionsToCheck(permission);
         String[] additionalPrincipals = getPrincipalsToCheck(principal);
@@ -162,12 +153,6 @@ public class SecurityService extends DefaultComponent {
      * @since 9.1
      */
     public Collection<String> filterGrantedPermissions(Document doc, Principal principal, Collection<String> permissions) {
-        String username = principal.getName();
-
-        if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
-            return permissions;
-        }
-
         if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
             return permissions;
         }

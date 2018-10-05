@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -395,7 +394,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public boolean isAdministrator() {
-        return isAdministrator || SecurityConstants.SYSTEM_USERNAME.equals(getName());
+        return isAdministrator;
     }
 
     @Override

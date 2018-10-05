@@ -724,7 +724,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
 
         jsonDoc.setPropertyValue("dc:title", "New title");
-        jsonDoc.setPropertyArray("dc:contributors", "system");
+        jsonDoc.setPropertyArray("dc:contributors", "bob");
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
 
             // Then the document is updated
@@ -733,7 +733,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals("New title", note.getTitle());
 
             List<String> contributors = Arrays.asList((String[]) note.getPropertyValue("dc:contributors"));
-            assertTrue(contributors.contains("system"));
+            assertTrue(contributors.contains("bob"));
             assertTrue(contributors.contains("Administrator"));
             assertEquals(2, contributors.size());
         }

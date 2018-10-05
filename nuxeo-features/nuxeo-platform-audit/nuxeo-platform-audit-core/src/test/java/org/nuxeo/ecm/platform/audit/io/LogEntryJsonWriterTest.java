@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -64,7 +65,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         json.has("entity-type").isEquals("logEntry");
         json.has("id").isInt();
         json.has("category").isEquals("eventDocumentCategory");
-        json.has("principalName").isEquals("system");
+        json.has("principalName").isEquals(SecurityConstants.SYSTEM_USERNAME);
         json.has("docPath").isEquals("/");
         json.has("docType").isEquals("Root");
         json.has("docUUID").isEquals(root.getId());

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -71,13 +72,13 @@ public class NuxeoPrincipalJsonWriterTest extends
 
     @Test
     public void testSystemUser() throws Exception {
-        NuxeoPrincipal principal = new SystemPrincipal("system");
+        NuxeoPrincipal principal = new SystemPrincipal(null);
         JsonAssert json = jsonAssert(principal);
         json.isObject();
         // it has no properties
         json.properties(5);
         json.has("entity-type").isEquals("user");
-        json.has("id").isEquals("system");
+        json.has("id").isEquals(SecurityConstants.SYSTEM_USERNAME);
         json.has("isAdministrator").isTrue();
         json.has("isAnonymous").isFalse();
         JsonAssert exGroup = json.has("extendedGroups").length(1).has(0);

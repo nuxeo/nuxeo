@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -65,7 +64,7 @@ public abstract class AbstractUserProfileImporterTest {
         List<String> userIds = userManager.getUserIds();
         for (String userId : userIds) {
             NuxeoPrincipal principal = userManager.getPrincipal(userId);
-            if (principal != null && !(principal instanceof SystemPrincipal)) {
+            if (principal != null) {
                 userManager.deleteUser(userId);
             }
         }

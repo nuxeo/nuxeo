@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Anahide Tchertchian
  */
@@ -40,8 +40,8 @@ public class TestLoginComponentSystemID {
 
     @Test
     public void testSystemIDEquals() {
-        Principal user1 = new LoginComponent.SystemID(LoginComponent.SYSTEM_USERNAME);
-        Principal user2 = new LoginComponent.SystemID(LoginComponent.SYSTEM_USERNAME);
+        Principal user1 = new LoginComponent.SystemID(null);
+        Principal user2 = new LoginComponent.SystemID(null);
         assertNotNull(user1);
         assertEquals(user1, user2);
 

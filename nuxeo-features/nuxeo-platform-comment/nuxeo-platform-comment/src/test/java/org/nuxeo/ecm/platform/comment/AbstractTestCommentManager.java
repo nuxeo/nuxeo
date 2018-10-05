@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -202,7 +203,7 @@ public abstract class AbstractTestCommentManager {
         CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel(COMMENT_DOC_TYPE);
         comment.setPropertyValue(COMMENT_TEXT, "Test");
-        comment.setPropertyValue(COMMENT_AUTHOR, "system");
+        comment.setPropertyValue(COMMENT_AUTHOR, "bob");
         comment.setPropertyValue(COMMENT_CREATION_DATE, Calendar.getInstance());
 
         // Create a comment

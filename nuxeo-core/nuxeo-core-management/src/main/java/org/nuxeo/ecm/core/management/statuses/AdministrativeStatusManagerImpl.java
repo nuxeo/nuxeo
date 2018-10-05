@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.CoreManagementService;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
@@ -95,7 +96,7 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
             }
             if (!serviceExist) {
                 AdministrativeStatus newStatus = new AdministrativeStatus(desc.getInitialState(), "",
-                        Calendar.getInstance(), "system", serverInstanceName, desc.getId());
+                        Calendar.getInstance(), SecurityConstants.SYSTEM_USERNAME, serverInstanceName, desc.getId());
                 persister.saveStatus(newStatus);
             }
         }
