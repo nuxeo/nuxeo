@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
@@ -101,7 +102,8 @@ public class TestAdministrativeStatusService {
         assertTrue(RuntimeListener.isServerActivatedEventTriggered());
         assertFalse(RuntimeListener.isServerPassivatedEventTriggered());
 
-        status = localManager.deactivateNuxeoInstance("Nuxeo Server is down for maintenance", "system");
+        status = localManager.deactivateNuxeoInstance("Nuxeo Server is down for maintenance",
+                SecurityConstants.SYSTEM_USERNAME);
         assertTrue(status.isPassive());
         assertTrue(AdministrativeStatusChangeListener.isServerPassivatedEventTriggered());
         assertTrue(RuntimeListener.isServerPassivatedEventTriggered());
@@ -161,7 +163,8 @@ public class TestAdministrativeStatusService {
         AdministrativeStatusManager sm = globalManager.getStatusManager("MyClusterNode2");
         assertNotNull(sm);
 
-        AdministrativeStatus status = sm.deactivateNuxeoInstance("ClusterNode2 is deactivated for now", "system");
+        AdministrativeStatus status = sm.deactivateNuxeoInstance("ClusterNode2 is deactivated for now",
+                SecurityConstants.SYSTEM_USERNAME);
         assertNotNull(status);
 
         // check that we now have 2 instances
@@ -169,7 +172,7 @@ public class TestAdministrativeStatusService {
         assertEquals(2, instances.size());
 
         // update status on the same service on both nodes
-        globalManager.setStatus(serviceId, AdministrativeStatus.ACTIVE, "Yo Man", "system");
+        globalManager.setStatus(serviceId, AdministrativeStatus.ACTIVE, "Yo Man", SecurityConstants.SYSTEM_USERNAME);
 
         AdministrativeStatus statusNode1 = globalManager.getStatusManager(
                 globalManager.getLocalNuxeoInstanceIdentifier()).getStatus(serviceId);

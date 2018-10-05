@@ -237,7 +237,7 @@ public class CoreGraph implements Graph {
         protected Date now;
 
         protected StatementAdder(List<Statement> statements) {
-            super(getDefaultRepositoryName(), "system");
+            super(getDefaultRepositoryName());
             this.statements = statements;
         }
 

@@ -28,10 +28,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing group or user references.
@@ -141,8 +141,8 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                 if (userPrefix) {
                     name = name.substring(NuxeoPrincipal.PREFIX.length());
                 }
-                if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
-                    return new SystemPrincipal(name);
+                if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
+                    return new SystemPrincipal(null);
                 }
                 return getUserManager().getPrincipal(name);
             } else if (!includingUsers && includingGroups) {
@@ -153,16 +153,16 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
             } else {
                 if (userPrefix) {
                     name = name.substring(NuxeoPrincipal.PREFIX.length());
-                    if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
-                        return new SystemPrincipal(name);
+                    if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
+                        return new SystemPrincipal(null);
                     }
                     return getUserManager().getPrincipal(name);
                 } else if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
                     return getUserManager().getGroup(name);
                 } else {
-                    if (LoginComponent.SYSTEM_USERNAME.equals(name)) {
-                        return new SystemPrincipal(name);
+                    if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
+                        return new SystemPrincipal(null);
                     }
                     NuxeoPrincipal principal = getUserManager().getPrincipal(name);
                     if (principal != null) {

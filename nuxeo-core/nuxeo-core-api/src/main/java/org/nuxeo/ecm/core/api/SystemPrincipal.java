@@ -61,9 +61,6 @@ public class SystemPrincipal implements NuxeoPrincipal {
     @Override
     public boolean equals(Object other) {
         if (other instanceof SystemPrincipal) {
-            if (!LoginComponent.SYSTEM_USERNAME.equals(((Principal) other).getName())) {
-                return false;
-            }
             if (origUserName == null) {
                 return ((SystemPrincipal) other).origUserName == null;
             } else {

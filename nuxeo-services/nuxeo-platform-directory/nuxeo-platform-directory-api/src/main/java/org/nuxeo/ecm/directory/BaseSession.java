@@ -47,7 +47,6 @@ import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Base session class with helper methods common to all kinds of directory sessions.
@@ -186,8 +185,7 @@ public abstract class BaseSession implements Session, EntrySource {
         if (user == null) {
             return false;
         }
-        String username = user.getName();
-        if (username.equals(LoginComponent.SYSTEM_USERNAME) || user.isAdministrator()) {
+        if (user.isAdministrator()) {
             return true;
         }
 
@@ -211,6 +209,7 @@ public abstract class BaseSession implements Session, EntrySource {
 
         List<String> groups = new ArrayList<>(user.getAllGroups());
         groups.add(SecurityConstants.EVERYONE);
+        String username = user.getName();
         boolean allowed = hasPermission(permission, username, groups);
         if (!allowed) {
             // if the permission Read is not explicitly granted, check Write which includes it

@@ -33,7 +33,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
@@ -2278,9 +2277,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
                 return true;
             }
-        }
-        if (SYSTEM_USERNAME.equals(principal.getName())) {
-            return true;
         }
         if (principal instanceof NuxeoPrincipal) {
             return ((NuxeoPrincipal) principal).isAdministrator();

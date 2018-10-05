@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
@@ -63,7 +62,7 @@ public class TestSecurityPolicyService {
     protected CoreFeature coreFeature;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession()) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
             if (acp == null) {
