@@ -40,15 +40,7 @@ public class ThreadSafeRestletFilter extends Filter {
     private static final Log log = LogFactory.getLog(ThreadSafeRestletFilter.class);
 
     @Override
-    protected void beforeHandle(Request request, Response response) {
-    }
-
-    @Override
-    protected void afterHandle(Request request, Response response) {
-    }
-
-    @Override
-    protected void doHandle(Request request, Response response) {
+    protected int doHandle(Request request, Response response) {
         if (getNext() != null) {
             try {
                 // get a new instance of the restlet each time it is called.
@@ -62,6 +54,7 @@ public class ThreadSafeRestletFilter extends Filter {
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
+        return CONTINUE;
     }
 
 }
