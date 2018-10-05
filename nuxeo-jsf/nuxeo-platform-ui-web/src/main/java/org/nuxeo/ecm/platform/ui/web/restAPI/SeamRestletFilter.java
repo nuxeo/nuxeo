@@ -67,7 +67,7 @@ public class SeamRestletFilter extends Filter {
     }
 
     @Override
-    protected void beforeHandle(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
             // Complete HTTP call with conversation
@@ -82,11 +82,12 @@ public class SeamRestletFilter extends Filter {
                 Manager.instance().restoreConversation();
                 ServletLifecycle.resumeConversation(httpServletRequest);
                 Manager.instance().handleConversationPropagation(httpServletRequest.getParameterMap());
-                return;
+                return CONTINUE;
             }
         }
         // Standard call without conversation
         Lifecycle.beginCall();
+        return CONTINUE;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class SeamRestletFilter extends Filter {
     }
 
     @Override
-    protected void doHandle(Request request, Response response) {
+    protected int doHandle(Request request, Response response) {
         if (getNext() != null) {
             // get the Seam Wrapper from the instance
             Restlet next = getNext();
@@ -136,6 +137,7 @@ public class SeamRestletFilter extends Filter {
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
+        return CONTINUE;
     }
 
 }
