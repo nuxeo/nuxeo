@@ -58,8 +58,8 @@ public class TestSegmentIOListener {
     public void ensureToHandleEveryEventsInABundle() {
         EventBundle eventBundle = new EventBundleImpl();
         // Add event with ignored users
-        eventBundle.push(new EventImpl("dummyEvent", buildCtx("Administrator")));
-        eventBundle.push(new EventImpl("dummyEvent", buildCtx("system")));
+        eventBundle.push(new EventImpl("dummyEvent", buildCtx("MyAdministrator")));
+        eventBundle.push(new EventImpl("dummyEvent", buildCtx("mysystem")));
         // Add event with another user
         eventBundle.push(new EventImpl("dummyEvent", buildCtx("johndoe")));
 

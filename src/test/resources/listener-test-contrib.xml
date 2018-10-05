@@ -2,8 +2,8 @@
 <component name="org.nuxeo.segment.io.SegmentIOComponent.test.listener">
   <extension target="org.nuxeo.segment.io.SegmentIOComponent" point="filters">
     <userFilter>
-      <blackListedUser>Administrator</blackListedUser>
-      <blackListedUser>system</blackListedUser>
+      <blackListedUser>MyAdministrator</blackListedUser>
+      <blackListedUser>mysystem</blackListedUser>
     </userFilter>
   </extension>
 
