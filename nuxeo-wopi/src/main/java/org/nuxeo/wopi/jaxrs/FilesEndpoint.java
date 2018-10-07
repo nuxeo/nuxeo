@@ -692,7 +692,7 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void addRequiredProperties(Map<String, Serializable> map) {
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         map.put(BASE_FILE_NAME, blob.getFilename());
         map.put(OWNER_ID, doc.getPropertyValue("dc:creator"));
         map.put(SIZE, blob.getLength());
@@ -710,7 +710,7 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void addUserMetadataProperties(Map<String, Serializable> map) {
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         map.put(IS_ANONYMOUS_USER, principal.isAnonymous());
         map.put(USER_FRIENDLY_NAME, Helpers.principalFullName(principal));
     }

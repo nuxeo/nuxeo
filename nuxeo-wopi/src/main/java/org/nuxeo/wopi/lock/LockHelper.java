@@ -29,7 +29,6 @@ import static org.nuxeo.wopi.Constants.LOCK_TTL;
 import static org.nuxeo.wopi.Constants.WOPI_USER;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -213,23 +212,18 @@ public class LockHelper {
     /**
      * Marks the given principal as a WOPI user.
      */
-    public static void markAsWOPIUser(Principal principal) {
-        if (principal instanceof NuxeoPrincipal) {
-            synchronized (principal) { // NOSONAR
-                ((NuxeoPrincipal) principal).getModel().putContextData(WOPI_USER, true);
-            }
+    public static void markAsWOPIUser(NuxeoPrincipal principal) {
+        synchronized (principal) { // NOSONAR
+            principal.getModel().putContextData(WOPI_USER, true);
         }
     }
 
     /**
      * Checks if the given principal is marked as a WOPI user.
      */
-    public static boolean isWOPIUser(Principal principal) {
-        if (!(principal instanceof NuxeoPrincipal)) {
-            return false;
-        }
+    public static boolean isWOPIUser(NuxeoPrincipal principal) {
         synchronized (principal) { // NOSONAR
-            return ((NuxeoPrincipal) principal).getModel().getContextData(WOPI_USER) != null;
+            return principal.getModel().getContextData(WOPI_USER) != null;
         }
     }
 

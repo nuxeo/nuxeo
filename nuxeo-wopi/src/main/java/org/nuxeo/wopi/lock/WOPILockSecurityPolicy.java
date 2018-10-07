@@ -18,10 +18,10 @@
  */
 package org.nuxeo.wopi.lock;
 
-import java.security.Principal;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -46,7 +46,7 @@ public class WOPILockSecurityPolicy extends LockSecurityPolicy {
     private static final Logger log = LogManager.getLogger(WOPILockSecurityPolicy.class);
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = super.checkPermission(doc, mergedAcp, principal, permission, resolvedPermissions,
                 additionalPrincipals);
