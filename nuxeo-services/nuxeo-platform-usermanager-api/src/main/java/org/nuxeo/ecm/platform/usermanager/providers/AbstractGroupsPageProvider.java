@@ -92,7 +92,7 @@ public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider
                     // handle offset
                     long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
-                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount && i < offset + pageSize; i++) {
+                        for (int i = (int) offset; i < resultsCount && i < offset + pageSize; i++) {
                             pageGroups.add(groups.get(i));
                         }
                     }

@@ -179,7 +179,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                     // is unknown
                     if (currentPageDocuments != null && currentPageDocuments.size() > 0) {
                         int higherNonEmptyPage = getCurrentHigherNonEmptyPageIndex();
-                        int currentFilledPage = Long.valueOf(getCurrentPageIndex()).intValue();
+                        int currentFilledPage = (int) getCurrentPageIndex();
                         if ((docs.size() >= getPageSize()) && (currentFilledPage > higherNonEmptyPage)) {
                             setCurrentHigherNonEmptyPageIndex(currentFilledPage);
                         }

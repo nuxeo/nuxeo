@@ -85,7 +85,7 @@ public class TracerFactory implements TracerFactoryMBean {
         }
 
         protected String add(Trace trace) {
-            int index = Integer.valueOf(traces.size());
+            int index = traces.size();
             traces.put(Integer.valueOf(index), trace);
             return formatKey(trace.chain, index);
         }
@@ -172,7 +172,7 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     public void clearTrace(OperationChain chain, int index) {
-        tracesCache.getIfPresent(chain).removeTrace(Integer.valueOf(index));
+        tracesCache.getIfPresent(chain).removeTrace(index);
     }
 
     public void clearTrace(OperationChain chain) {
