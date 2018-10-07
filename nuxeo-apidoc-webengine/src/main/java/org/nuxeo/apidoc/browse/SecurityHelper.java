@@ -25,7 +25,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public class SecurityHelper {
 
     public static boolean canEditDocumentation(WebContext ctx) {
-        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         return canEditDocumentation(principal);
     }
 

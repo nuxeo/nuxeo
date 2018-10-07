@@ -81,7 +81,7 @@ public class TreeHelper {
         BaseNuxeoArtifactDocAdapter.setLocalCoreSession(ctx.getCoreSession());
 
         try {
-            boolean anonymous = ((NuxeoPrincipal) ctx.getPrincipal()).isAnonymous();
+            boolean anonymous = ctx.getPrincipal().isAnonymous();
 
             NuxeoArtifactTree tree = null;
             String lastPath = null;

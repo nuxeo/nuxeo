@@ -435,7 +435,7 @@ public class Distribution extends ModuleRoot {
     @GET
     @Path("_admin")
     public Object getForms() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        NuxeoPrincipal principal = getContext().getPrincipal();
         if (SecurityHelper.canEditDocumentation(principal)) {
             return getView("forms").arg("hideNav", Boolean.TRUE);
         } else {
@@ -522,7 +522,7 @@ public class Distribution extends ModuleRoot {
     @Path("_reindex")
     @Produces("text/plain")
     public Object reindex() {
-        NuxeoPrincipal nxPrincipal = (NuxeoPrincipal) getContext().getPrincipal();
+        NuxeoPrincipal nxPrincipal = getContext().getPrincipal();
         if (!nxPrincipal.isAdministrator()) {
             return Response.status(404).build();
         }
@@ -552,12 +552,12 @@ public class Distribution extends ModuleRoot {
         if (isEmbeddedMode() || isSiteMode()) {
             return false;
         }
-        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        NuxeoPrincipal principal = getContext().getPrincipal();
         return SecurityHelper.canEditDocumentation(principal);
     }
 
     public boolean canAddDocumentation() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        NuxeoPrincipal principal = getContext().getPrincipal();
         return !isEmbeddedMode() && SecurityHelper.canEditDocumentation(principal);
     }
 
