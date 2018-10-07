@@ -148,7 +148,7 @@ public class FileBlobProducers {
     }
 
     protected static void checkAccess(OperationContext context) {
-        NuxeoPrincipal principal = (NuxeoPrincipal) context.getPrincipal();
+        NuxeoPrincipal principal = context.getPrincipal();
         if (principal == null || !principal.isAdministrator()) {
             throw new RuntimeException("Unauthorized access: " + principal);
         }
