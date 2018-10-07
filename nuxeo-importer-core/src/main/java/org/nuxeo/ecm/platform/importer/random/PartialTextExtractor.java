@@ -40,7 +40,7 @@ public class PartialTextExtractor implements Converter {
             Blob blob = blobHolder.getBlob();
 
             String data = blob.getString();
-            int endIdx = new Double(data.length() * TEXT_RATIO).intValue();
+            int endIdx = (int) (data.length() * TEXT_RATIO);
             String txtData = data.substring(0, endIdx);
             return new SimpleBlobHolder(Blobs.createBlob(txtData));
 
