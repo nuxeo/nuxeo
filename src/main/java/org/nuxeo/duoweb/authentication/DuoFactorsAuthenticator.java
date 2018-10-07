@@ -211,7 +211,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         return null;
     }
 
-    public Principal createIdentity(String username) throws LoginException {
+    public NuxeoPrincipal createIdentity(String username) throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
         log.debug("createIdentity: " + username);
         try {
@@ -243,7 +243,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         if (loginPluginName == null) {
             // we don't use a specific plugin
             if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
-                return (NuxeoPrincipal) createIdentity(userIdent.getUserName());
+                return createIdentity(userIdent.getUserName());
             } else {
                 return null;
             }
@@ -277,7 +277,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             if (username == null) {
                 return null;
             } else {
-                return (NuxeoPrincipal) createIdentity(username);
+                return createIdentity(username);
             }
         }
     }
