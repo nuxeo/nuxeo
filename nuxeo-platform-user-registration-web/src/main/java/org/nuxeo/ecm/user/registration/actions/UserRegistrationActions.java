@@ -384,7 +384,7 @@ public class UserRegistrationActions implements Serializable {
             additionalsInfo.put(UserInvitationComponent.PARAM_ORIGINATING_USER , documentManager.getPrincipal().getName());
             additionalsInfo.put("docinfo:documentTitle", navigationContext.getCurrentDocument().getTitle());
             if (copyOwner) {
-                additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
+                additionalsInfo.put("registration:copyTo", documentManager.getPrincipal().getEmail());
             }
             additionalsInfo.put("registration:comment", comment);
         } catch (NuxeoException e) {
