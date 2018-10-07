@@ -49,7 +49,6 @@ import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -122,7 +121,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             Template tpl = getTemplateFor(browse);
             tpl.arg("operation", opDoc);
             CoreSession session = SessionFactory.getSession();
-            if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+            if (session.getPrincipal().isAdministrator()) {
                 // add yaml format - chains are exposing their operations
                 // so this information should be restricted to administrators.
                 try {
@@ -138,7 +137,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected boolean canManageTraces() {
-        return ((NuxeoPrincipal) WebEngine.getActiveContext().getPrincipal()).isAdministrator();
+        return WebEngine.getActiveContext().getPrincipal().isAdministrator();
     }
 
     @GET

@@ -108,7 +108,7 @@ public class DirectoryObject extends PaginableObject<DirectoryEntry> {
     }
 
     void checkEditGuards() {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        NuxeoPrincipal currentUser = getContext().getCoreSession().getPrincipal();
         if (!(currentUser.isAdministrator() || currentUser.isMemberOf("powerusers"))) {
             throw new WebSecurityException("Not allowed to edit directory");
         }

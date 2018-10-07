@@ -111,7 +111,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
 
     @POST
     public Response doPost(@FormParam("input") String input, @FormParam("chain") String chainXml) {
-        if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+        if (!session.getPrincipal().isAdministrator()) {
             return Response.status(403).build();
         }
         try {

@@ -20,10 +20,10 @@
 package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 
 /**
@@ -37,11 +37,11 @@ public class UnboundEventContext extends EventContextImpl {
 
     protected boolean boundToCoreSession = false;
 
-    public UnboundEventContext(Principal principal, Map<String, Serializable> properties) {
+    public UnboundEventContext(NuxeoPrincipal principal, Map<String, Serializable> properties) {
         this(null, principal, properties);
     }
 
-    public UnboundEventContext(CoreSession session, Principal principal, Map<String, Serializable> properties) {
+    public UnboundEventContext(CoreSession session, NuxeoPrincipal principal, Map<String, Serializable> properties) {
         super(session, principal);
         setProperties(properties);
         boundToCoreSession = session != null;

@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -219,7 +218,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             // it doesn't make sense to notify the system user
             return;
         }
-        Principal principal = getUserManager().getPrincipal(subscriptor);
+        NuxeoPrincipal principal = getUserManager().getPrincipal(subscriptor);
         if (principal == null) {
             log.error("No Nuxeo principal found for '" + subscriptor
                     + "'. No notification will be sent to this user");

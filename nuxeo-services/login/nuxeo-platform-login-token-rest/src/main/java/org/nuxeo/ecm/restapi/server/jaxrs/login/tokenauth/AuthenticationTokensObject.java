@@ -83,7 +83,7 @@ public class AuthenticationTokensObject extends AbstractResource<ResourceTypeImp
     }
 
     private NuxeoPrincipal getCurrentUser() {
-        return (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        return getContext().getCoreSession().getPrincipal();
     }
 
     private AuthenticationToken asAuthenticationToken(DocumentModel entry) {

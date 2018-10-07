@@ -21,10 +21,10 @@
 package org.nuxeo.ecm.core.security;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -53,7 +53,7 @@ public interface SecurityPolicyService extends Serializable {
      * @return access: true, false, or nothing. When nothing is returned, following policies or default core security
      *         are applied.
      */
-    Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] principalsToCheck);
 
     void registerDescriptor(SecurityPolicyDescriptor descriptor);

@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
 import java.rmi.dgc.VMID;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -115,10 +113,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 if (repositoryName == null) {
                     session = null;
                 } else {
-                    Principal principal = ctx.getPrincipal();
-                    String originatingUsername = principal instanceof NuxeoPrincipal
-                            ? ((NuxeoPrincipal) principal).getActingUser()
-                            : null;
+                    String originatingUsername = ctx.getPrincipal().getActingUser();
                     session = getReconnectedCoreSession(repositoryName, originatingUsername);
                 }
 

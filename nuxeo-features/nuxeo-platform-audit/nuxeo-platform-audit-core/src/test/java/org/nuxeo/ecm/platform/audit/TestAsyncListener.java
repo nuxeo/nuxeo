@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -99,7 +98,7 @@ public class TestAsyncListener {
                 return;
             }
             CoreSession session = ((DocumentEventContext) ctx).getSourceDocument().getCoreSession();
-            actingUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
+            actingUser = session.getPrincipal().getActingUser();
         }
 
     }

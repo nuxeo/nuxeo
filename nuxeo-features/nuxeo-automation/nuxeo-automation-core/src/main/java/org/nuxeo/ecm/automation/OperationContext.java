@@ -20,7 +20,6 @@
  */
 package org.nuxeo.ecm.automation;
 
-import java.security.Principal;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -138,7 +138,7 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
         return loginStack;
     }
 
-    public Principal getPrincipal() {
+    public NuxeoPrincipal getPrincipal() {
         CoreSession session = loginStack.getSession();
         return session != null ? session.getPrincipal() : null;
     }
@@ -184,7 +184,7 @@ public class OperationContext extends AbstractMap<String, Object> implements Aut
             return type.cast(this);
         } else if (type.isAssignableFrom(CoreSession.class)) {
             return type.cast(getCoreSession());
-        } else if (type.isAssignableFrom(Principal.class)) {
+        } else if (type.isAssignableFrom(NuxeoPrincipal.class)) {
             return type.cast(getPrincipal());
         } else { // try nuxeo services
             return Framework.getService(type);

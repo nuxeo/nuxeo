@@ -90,7 +90,7 @@ public abstract class BaseUMObject extends DefaultObject {
     }
 
     protected void checkUpdateGuardPreconditions() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact()) {
 

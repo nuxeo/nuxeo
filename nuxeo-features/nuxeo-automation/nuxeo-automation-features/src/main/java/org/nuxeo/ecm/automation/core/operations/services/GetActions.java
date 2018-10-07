@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -89,7 +88,7 @@ public class GetActions {
         }
         ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(session);
-        actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
+        actionContext.setCurrentPrincipal(session.getPrincipal());
         if (currentDocument != null) {
             actionContext.setCurrentDocument(currentDocument);
         } else {

@@ -146,7 +146,7 @@ public class TaskAutomationTest {
         assertEquals(SecurityConstants.ADMINISTRATOR, task.getInitiator());
 
         // accept task
-        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
+        taskService.acceptTask(coreSession, coreSession.getPrincipal(), task, "ok i'm in");
         coreSession.save();
         // test task again
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
@@ -234,7 +234,7 @@ public class TaskAutomationTest {
 
         assertEquals(SecurityConstants.ADMINISTRATOR, task1.getInitiator());
         // accept task
-        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task1, "ok i'm in");
+        taskService.acceptTask(coreSession, coreSession.getPrincipal(), task1, "ok i'm in");
         coreSession.save();
         // test task again
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
@@ -310,7 +310,7 @@ public class TaskAutomationTest {
         Task task = tasks.get(0);
 
         // accept task
-        taskService.acceptTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), task, "ok i'm in");
+        taskService.acceptTask(coreSession, coreSession.getPrincipal(), task, "ok i'm in");
         coreSession.save();
         // test task again
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
@@ -329,7 +329,7 @@ public class TaskAutomationTest {
 
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
-        taskService.rejectTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), tasks.get(0),
+        taskService.rejectTask(coreSession, coreSession.getPrincipal(), tasks.get(0),
                 "i don't agree with what you're saying");
         document = coreSession.getDocument(document.getRef());
         assertEquals("This document has been rejected !!!", document.getPropertyValue("dc:description"));

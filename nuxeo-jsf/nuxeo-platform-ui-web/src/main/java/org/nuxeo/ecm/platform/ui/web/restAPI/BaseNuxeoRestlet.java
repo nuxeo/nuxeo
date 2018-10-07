@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -119,14 +118,6 @@ public class BaseNuxeoRestlet extends Restlet {
             }
         }
         return null;
-    }
-
-    protected static Principal getUserPrincipal(Request req) {
-        HttpServletRequest httpServletRequest = getHttpRequest(req);
-        if (httpServletRequest == null) {
-            return null;
-        }
-        return httpServletRequest.getUserPrincipal();
     }
 
     protected static String getRestletFullUrl(Request request) {

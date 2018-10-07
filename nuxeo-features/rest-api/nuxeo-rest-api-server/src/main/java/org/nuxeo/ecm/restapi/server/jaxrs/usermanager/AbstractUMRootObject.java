@@ -101,7 +101,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     protected abstract T createArtifact(T artifact);
 
     protected void checkCurrentUserCanCreateArtifact(T artifact) {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        NuxeoPrincipal currentUser = getContext().getCoreSession().getPrincipal();
         if (!currentUser.isAdministrator()) {
             if (!currentUser.isMemberOf("powerusers") || !isAPowerUserEditableArtifact(artifact)) {
                 throw new WebSecurityException("Cannot create artifact");

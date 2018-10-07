@@ -23,8 +23,6 @@ package org.nuxeo.ecm.platform.userworkspace.web.ejb;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
-import java.security.Principal;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -38,6 +36,7 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -84,7 +83,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient Principal currentUser;
+    protected transient NuxeoPrincipal currentUser;
 
     @In(required = false, create = true)
     protected transient CoreSession documentManager;

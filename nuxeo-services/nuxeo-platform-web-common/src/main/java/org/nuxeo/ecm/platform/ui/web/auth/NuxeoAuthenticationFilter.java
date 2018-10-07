@@ -81,7 +81,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -207,7 +207,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
 
             EventProducer evtProducer = Framework.getService(EventProducer.class);
-            Principal principal = new SimplePrincipal(userInfo.getUserName());
+            NuxeoPrincipal principal = new UserPrincipal(userInfo.getUserName(), null, false, false);
 
             Map<String, Serializable> props = new HashMap<>();
             props.put("AuthenticationPlugin", userInfo.getAuthPluginName());

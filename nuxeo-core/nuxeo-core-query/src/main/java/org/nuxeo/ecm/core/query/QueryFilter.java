@@ -20,10 +20,10 @@
 package org.nuxeo.ecm.core.query;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
@@ -45,7 +45,7 @@ public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQL
             Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
 
     /** The principal. Note that this MUST be {@link Serializable}. */
-    protected final Principal principal;
+    protected final NuxeoPrincipal principal;
 
     protected final String[] principals;
 
@@ -64,7 +64,7 @@ public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQL
      * <p>
      * Note that the principal MUST be {@link Serializable}.
      */
-    public QueryFilter(Principal principal, String[] principals, String[] permissions, FacetFilter facetFilter,
+    public QueryFilter(NuxeoPrincipal principal, String[] principals, String[] permissions, FacetFilter facetFilter,
             Collection<SQLQuery.Transformer> queryTransformers, long limit, long offset) {
         this.principal = principal;
         this.principals = principals;
@@ -85,7 +85,7 @@ public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQL
                 0, 0);
     }
 
-    public Principal getPrincipal() {
+    public NuxeoPrincipal getPrincipal() {
         return principal;
     }
 

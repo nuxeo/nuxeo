@@ -178,22 +178,20 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
         if (selectedUser != null) {
             NuxeoPrincipal selectedPrincipal = userManager.getPrincipal(selectedUser.getId());
-            if (selectedPrincipal.isAdministrator() && !((NuxeoPrincipal) currentUser).isAdministrator()) {
+            if (selectedPrincipal.isAdministrator() && !currentUser.isAdministrator()) {
                 return false;
             }
         }
 
-        if (currentUser instanceof NuxeoPrincipal) {
-            NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            if (webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)) {
+        if (webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)) {
+            return true;
+        }
+        if (allowCurrentUser && selectedUser != null) {
+            if (currentUser.getName().equals(selectedUser.getId())) {
                 return true;
             }
-            if (allowCurrentUser && selectedUser != null) {
-                if (pal.getName().equals(selectedUser.getId())) {
-                    return true;
-                }
-            }
         }
+
         return false;
     }
 
@@ -477,7 +475,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
         String tenantId = newUserAdapter.getTenantId();
         if (StringUtils.isBlank(tenantId)) {
-            tenantId = ((NuxeoPrincipal) currentUser).getTenantId();
+            tenantId = currentUser.getTenantId();
         }
         newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoTenantIdField(),
                 tenantId);

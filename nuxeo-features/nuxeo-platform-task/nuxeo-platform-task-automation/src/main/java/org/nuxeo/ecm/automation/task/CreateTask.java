@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.automation.task;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,10 +109,7 @@ public class CreateTask {
     @OperationMethod(collector = DocumentModelCollector.class)
     @SuppressWarnings("unchecked")
     public DocumentModel run(DocumentModel document) throws OperationException {
-        Principal pal = coreSession.getPrincipal();
-        if (!(pal instanceof NuxeoPrincipal)) {
-            throw new OperationException("Principal is not an instance of NuxeoPrincipal");
-        }
+        NuxeoPrincipal pal = coreSession.getPrincipal();
 
         List<String> prefixedActorIds = new ArrayList<>();
         Object actors = ctx.get(keyForActors);
@@ -166,8 +162,8 @@ public class CreateTask {
         if (TaskService == null) {
             throw new OperationException("Service jbpmTaskService not found");
         }
-        TaskService.createTask(coreSession, (NuxeoPrincipal) pal, document, taskName, prefixedActorIds,
-                createOneTaskPerActor, directive, comment, dueDate, taskVariables, null);
+        TaskService.createTask(coreSession, pal, document, taskName, prefixedActorIds, createOneTaskPerActor, directive,
+                comment, dueDate, taskVariables, null);
 
         coreSession.save();
 

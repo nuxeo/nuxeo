@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.net.URI;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,15 +60,7 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
             translator = new URNDocumentViewTranslator();
         }
         EventContext context = event.getContext();
-        NuxeoPrincipal user = null;
-        Principal principal = context.getPrincipal();
-        if (principal instanceof NuxeoPrincipal) {
-            user = (NuxeoPrincipal) principal;
-        } else {
-            log.debug("Discading event on a non NuxeoPrincipal user");
-            return;
-        }
-
+        NuxeoPrincipal user = context.getPrincipal();
         DocumentModel docModel = (DocumentModel) context.getArguments()[0];
         String docId = docModel.getId();
         String repo = docModel.getRepositoryName();

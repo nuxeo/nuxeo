@@ -43,7 +43,8 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -241,7 +242,7 @@ public class OperationChainTest {
     public void testExpressionParams() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        SimplePrincipal principal = new SimplePrincipal("Hello from Context!");
+        NuxeoPrincipal principal = new UserPrincipal("Hello from Context!", null, false, false);
         ctx.put("messageHolder", principal);
         OperationChain chain = new OperationChain("testChain");
         chain.add("o1").set("message", new MvelExpression("Context[\"messageHolder\"].name"));
@@ -260,7 +261,7 @@ public class OperationChainTest {
     public void testTemplateParams() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        SimplePrincipal principal = new SimplePrincipal("Context");
+        NuxeoPrincipal principal = new UserPrincipal("Context", null, false, false);
         ctx.put("messageHolder", principal);
         OperationChain chain = new OperationChain("testChain");
         chain.add("o1").set("message", new MvelTemplate("Hello from @{Context[\"messageHolder\"].name}!"));

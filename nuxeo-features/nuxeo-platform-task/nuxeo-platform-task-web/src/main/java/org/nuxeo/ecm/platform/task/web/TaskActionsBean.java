@@ -98,7 +98,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             tasks = new ArrayList<Task>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
-                NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
+                NuxeoPrincipal principal = documentManager.getPrincipal();
                 List<String> actors = new ArrayList<String>();
                 actors.addAll(TaskActorsHelper.getTaskActors(principal));
                 tasks = taskService.getTaskInstances(currentDocument, actors, true, documentManager);
@@ -150,7 +150,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     public void acceptTask(Task task, String comment) {
-        String seamEventName = taskService.acceptTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
+        String seamEventName = taskService.acceptTask(documentManager, documentManager.getPrincipal(),
                 task, comment);
         if (seamEventName != null) {
             Events.instance().raiseEvent(seamEventName);
@@ -170,7 +170,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     public void rejectTask(Task task, String comment) {
-        String seamEventName = taskService.rejectTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
+        String seamEventName = taskService.rejectTask(documentManager, documentManager.getPrincipal(),
                 task, comment);
         if (seamEventName != null) {
             Events.instance().raiseEvent(seamEventName);

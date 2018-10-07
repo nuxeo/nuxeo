@@ -27,7 +27,6 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -324,12 +323,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
                     // Send a security exception to force authentication, if the current user is anonymous
-                    Principal principal = req.getUserPrincipal();
-                    if (principal instanceof NuxeoPrincipal) {
-                        NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
-                        if (nuxeoPrincipal.isAnonymous()) {
-                            throw new DocumentSecurityException("Authentication is needed for downloading the blob");
-                        }
+                    NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+                    if (principal != null && principal.isAnonymous()) {
+                        throw new DocumentSecurityException("Authentication is needed for downloading the blob");
                     }
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
                     return;
@@ -749,7 +745,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         EventContext ctx;
         if (doc != null) {
             CoreSession session = doc.getCoreSession();
-            Principal principal = session == null ? getPrincipal() : session.getPrincipal();
+            NuxeoPrincipal principal = session == null ? getPrincipal() : session.getPrincipal();
             ctx = new DocumentEventContext(session, principal, doc);
             ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
             ctx.setProperty(CoreEventConstants.SESSION_ID, doc.getSessionId());

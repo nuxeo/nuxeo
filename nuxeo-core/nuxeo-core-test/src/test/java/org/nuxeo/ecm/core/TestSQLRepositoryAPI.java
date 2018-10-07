@@ -4411,7 +4411,7 @@ public class TestSQLRepositoryAPI {
         assertTrue(session.isRetentionActive(docRef));
 
         // check that the document cannot be deleted now, even by system user
-        assertTrue(((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+        assertTrue(session.getPrincipal().isAdministrator());
         try {
             session.removeDocument(docRef);
             fail("remove should fail");
@@ -4420,7 +4420,7 @@ public class TestSQLRepositoryAPI {
         }
 
         // check that the document cannot be deleted through a parent
-        assertTrue(((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+        assertTrue(session.getPrincipal().isAdministrator());
         try {
             session.removeDocument(folder.getRef());
             fail("remove should fail");

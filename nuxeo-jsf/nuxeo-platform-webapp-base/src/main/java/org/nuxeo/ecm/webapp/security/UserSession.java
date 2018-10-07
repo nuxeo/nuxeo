@@ -21,13 +21,11 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import java.security.Principal;
-
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserSession {
 
-    Principal getCurrentUser();
+    NuxeoPrincipal getCurrentUser();
 
     NuxeoPrincipal getCurrentNuxeoPrincipal();
 

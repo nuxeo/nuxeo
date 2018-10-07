@@ -257,12 +257,12 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    public Principal getIdentity() {
+    public NuxeoPrincipal getIdentity() {
         return identity;
     }
 
     @Override
-    public Principal createIdentity(String username) throws LoginException {
+    public NuxeoPrincipal createIdentity(String username) throws LoginException {
         log.debug("createIdentity: " + username);
         try {
             NuxeoPrincipal principal;
@@ -296,7 +296,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 throw (LoginException) new LoginException("Unable to validate identity").initCause(e);
             }
             if (authenticated) {
-                return (NuxeoPrincipal) createIdentity(userIdent.getUserName());
+                return createIdentity(userIdent.getUserName());
             } else {
                 return null;
             }
@@ -330,7 +330,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (username == null) {
                 return null;
             } else {
-                return (NuxeoPrincipal) createIdentity(username);
+                return createIdentity(username);
             }
         }
     }
@@ -339,7 +339,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         if (!manager.checkUsernamePassword(username, password)) {
             return null;
         }
-        return (NuxeoPrincipal) createIdentity(username);
+        return createIdentity(username);
     }
 
 }

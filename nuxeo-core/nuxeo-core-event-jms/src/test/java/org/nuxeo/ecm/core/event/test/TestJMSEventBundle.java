@@ -42,8 +42,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -82,8 +82,8 @@ public class TestJMSEventBundle {
     protected EventBundle createTestEventBundle() {
         EventBundle bundle = new EventBundleImpl();
 
-        EventContext ctx1 = new EventContextImpl(fakeCoreSession, new SimplePrincipal("toto"));
-        EventContext ctx2 = new EventContextImpl(fakeCoreSession, new SimplePrincipal("titi"));
+        EventContext ctx1 = new EventContextImpl(fakeCoreSession, new UserPrincipal("toto", null, false, false));
+        EventContext ctx2 = new EventContextImpl(fakeCoreSession, new UserPrincipal("titi", null, false, false));
 
         DocumentRef parentRef = new IdRef("01");
         DocumentRef docRef = new IdRef("02");
@@ -92,7 +92,8 @@ public class TestJMSEventBundle {
                 schemas, null, null, null);
         DocumentRef destinationRef = new IdRef("03");
 
-        EventContext ctx3 = new DocumentEventContext(null, new SimplePrincipal("tata"), srcDoc, destinationRef);
+        EventContext ctx3 = new DocumentEventContext(null, new UserPrincipal("tata", null, false, false), srcDoc,
+                destinationRef);
 
         bundle.push(ctx1.newEvent("EVT1"));
         bundle.push(ctx2.newEvent("EVT2"));

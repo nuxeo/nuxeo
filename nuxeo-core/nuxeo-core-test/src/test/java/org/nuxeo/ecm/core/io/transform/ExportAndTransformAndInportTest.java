@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -17,6 +16,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -55,7 +55,7 @@ public class ExportAndTransformAndInportTest extends BaseExport {
     @Test
     public void testExportWithTransformThenImport() throws Exception {
 
-        Principal principal = session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         CloseableCoreSession importSession = null;
 
         DocumentModel root = createSomethingToExport(session);

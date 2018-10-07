@@ -266,12 +266,12 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    public Principal getIdentity() {
+    public NuxeoPrincipal getIdentity() {
         return identity;
     }
 
     @Override
-    public Principal createIdentity(String username) throws LoginException {
+    public NuxeoPrincipal createIdentity(String username) throws LoginException {
         log.debug("createIdentity: " + username);
         try {
             NuxeoPrincipal principal;
@@ -300,7 +300,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         if (loginPluginName == null) {
             // we don't use a specific plugin
             // For dummy test, Don't check against usermanager
-            return (NuxeoPrincipal) createIdentity(userIdent.getUserName());
+            return createIdentity(userIdent.getUserName());
         } else {
             LoginPlugin lp = loginPluginManager.getPlugin(loginPluginName);
             if (lp == null) {
@@ -331,14 +331,14 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (username == null) {
                 return null;
             } else {
-                return (NuxeoPrincipal) createIdentity(username);
+                return createIdentity(username);
             }
         }
     }
 
     protected NuxeoPrincipal validateUsernamePassword(String username, String password) throws Exception {
         // Dummy login module will not check against the user manager
-        return (NuxeoPrincipal) createIdentity(username);
+        return createIdentity(username);
     }
 
 }

@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_
 import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -96,7 +96,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     protected transient WebActions webActions;
 
     @In
-    protected transient Principal currentUser;
+    protected transient NuxeoPrincipal currentUser;
 
     protected transient TrashService trashService;
 

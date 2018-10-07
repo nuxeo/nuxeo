@@ -27,7 +27,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.admin.NuxeoCtlManager;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -71,7 +70,7 @@ public class ConnectClientRoot extends ModuleRoot {
     @Produces("text/html")
     @Path(value = "restartView")
     public Object restartServerView() {
-        if (((NuxeoPrincipal) getContext().getPrincipal()).isAdministrator()) {
+        if (getContext().getPrincipal().isAdministrator()) {
             return getView("serverRestart").arg("nuxeoctl", new NuxeoCtlManager());
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).build();

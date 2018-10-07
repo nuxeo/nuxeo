@@ -57,7 +57,7 @@ public class DocumentTaskProvider implements TaskProvider {
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
         // of the principal and all its groups
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         List<String> actors = TaskActorsHelper.getTaskActors(principal);
 
         return getCurrentTaskInstances(actors, coreSession);
@@ -74,7 +74,7 @@ public class DocumentTaskProvider implements TaskProvider {
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
         // of the principal and all its groups
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         List<String> actors = TaskActorsHelper.getTaskActors(principal);
 
         return getCurrentTaskInstances(actors, coreSession, sortInfos);
@@ -229,7 +229,7 @@ public class DocumentTaskProvider implements TaskProvider {
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
         // of the principal and all its groups
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         List<String> actors = TaskActorsHelper.getTaskActors(principal);
 
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_OR_DELEGATED_ACTORS_PP, session, true, sortInfos, actors,

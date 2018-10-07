@@ -91,7 +91,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
     @Override
     public String getVariant(DocumentModel doc, RenditionDefinition definition) {
         if (VARIANT_POLICY_USER.equals(definition.getVariantPolicy())) {
-            NuxeoPrincipal principal = (NuxeoPrincipal) doc.getCoreSession().getPrincipal();
+            NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
             if (principal.isAdministrator()) {
                 return org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY_ADMINISTRATOR_USER;
             } else {

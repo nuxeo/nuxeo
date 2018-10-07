@@ -33,7 +33,6 @@ import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DU
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_MODIFIED_DATE_PROPERTY;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -85,7 +84,7 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
 
     @Override
     public void addContributor(DocumentModel doc, Event event) {
-        Principal principal = Objects.requireNonNull(event.getContext().getPrincipal());
+        NuxeoPrincipal principal = Objects.requireNonNull(event.getContext().getPrincipal());
 
         String principalName = principal.getName();
         if (principal instanceof SystemPrincipal) {

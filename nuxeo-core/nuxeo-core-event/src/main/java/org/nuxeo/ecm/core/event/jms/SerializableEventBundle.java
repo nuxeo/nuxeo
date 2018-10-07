@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.event.jms;
 
 import java.io.Serializable;
 import java.rmi.dgc.VMID;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -181,7 +181,7 @@ public class SerializableEventBundle implements Serializable {
             Long time = Long.parseLong((String) evt.get("time"));
 
             Map<String, Serializable> ctxProperties = (Map<String, Serializable>) evt.get("contextProperties");
-            Principal principal = new SimplePrincipal((String) evt.get("principal"));
+            NuxeoPrincipal principal = new UserPrincipal((String) evt.get("principal"), null, false, false);
 
             List<Serializable> listArgs = (List<Serializable>) evt.get("args");
 

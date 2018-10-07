@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.trash;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Service containing the logic about deleting/purging/undeleting a document.
@@ -64,7 +64,7 @@ public interface TrashService extends org.nuxeo.ecm.core.api.trash.TrashService 
      * @deprecated since 10.1 only used in JSF part, no replacement
      */
     @Deprecated
-    boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies);
+    boolean canDelete(List<DocumentModel> docs, NuxeoPrincipal principal, boolean checkProxies);
 
     /**
      * Are all documents purgeable/undeletable?
@@ -74,10 +74,10 @@ public interface TrashService extends org.nuxeo.ecm.core.api.trash.TrashService 
      * @param docs the documents
      * @param principal the current user (to check locks)
      * @return {@code true} if the documents are purgeable/undeletable
-     * @deprecated since 10.1, use {@link #canPurgeOrUntrash(List, Principal)}
+     * @deprecated since 10.1, use {@link #canPurgeOrUntrash(List, NuxeoPrincipal)}
      */
     @Deprecated
-    default boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) {
+    default boolean canPurgeOrUndelete(List<DocumentModel> docs, NuxeoPrincipal principal) {
         return canPurgeOrUntrash(docs, principal);
     }
 
@@ -93,7 +93,7 @@ public interface TrashService extends org.nuxeo.ecm.core.api.trash.TrashService 
      * @deprecated since 10.1 only used in JSF part, no replacement
      */
     @Deprecated
-    TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies, boolean checkDeleted);
+    TrashInfo getTrashInfo(List<DocumentModel> docs, NuxeoPrincipal principal, boolean checkProxies, boolean checkDeleted);
 
     /**
      * Gets the closest document's ancestor above all the paths.
@@ -103,7 +103,8 @@ public interface TrashService extends org.nuxeo.ecm.core.api.trash.TrashService 
      * @param doc the document
      * @param paths the paths
      * @return the closer document above doc and above all the paths
-     * @deprecated since 10.1 only used in JSF part, use {@link #getAboveDocument(DocumentModel, Principal)} instead.
+     * @deprecated since 10.1 only used in JSF part, use {@link #getAboveDocument(DocumentModel, NuxeoPrincipal)}
+     *             instead.
      */
     @Deprecated
     DocumentModel getAboveDocument(DocumentModel doc, Set<Path> paths);

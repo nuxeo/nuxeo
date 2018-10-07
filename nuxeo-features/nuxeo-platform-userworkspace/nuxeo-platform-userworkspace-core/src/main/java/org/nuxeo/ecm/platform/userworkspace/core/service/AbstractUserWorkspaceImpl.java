@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.userworkspace.core.service;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,11 +118,9 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
      *
      * @since 9.2
      */
-    protected String getUserName(Principal principal, String username) {
-        if (principal instanceof NuxeoPrincipal) {
-            username = ((NuxeoPrincipal) principal).getActingUser();
-        } else if (username == null) {
-            username = principal.getName();
+    protected String getUserName(NuxeoPrincipal principal, String username) {
+        if (principal != null) {
+            username = principal.getActingUser();
         }
         if (NuxeoPrincipal.isTransientUsername(username)) {
             // no personal workspace for transient users
@@ -232,7 +229,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
      *
      * @since 5.7 "userWorkspaceCreated" is triggered
      */
-    protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String userName,
+    protected DocumentModel getCurrentUserPersonalWorkspace(NuxeoPrincipal principal, String userName,
             CoreSession userCoreSession) {
         String usedUsername = getUserName(principal, userName);
         if (usedUsername == null) {
@@ -267,7 +264,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
         return new PathRef(path);
     }
 
-    protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, Principal principal,
+    protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, NuxeoPrincipal principal,
             String username) {
         PathRef freeRef = null;
         for (String name : getCandidateUserWorkspaceNames(username)) {
@@ -311,7 +308,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
     }
 
     @Override
-    public boolean isUnderUserWorkspace(Principal principal, String username, DocumentModel doc) {
+    public boolean isUnderUserWorkspace(NuxeoPrincipal principal, String username, DocumentModel doc) {
         if (doc == null) {
             return false;
         }

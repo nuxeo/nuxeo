@@ -64,7 +64,7 @@ public class TestNotificationManager {
     @Test
     public void testSubscribedDocuments() {
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String prefixedPrincipalName = NuxeoPrincipal.PREFIX + principal.getName();
         String repositoryName = session.getRepositoryName();
 
@@ -116,7 +116,7 @@ public class TestNotificationManager {
     // NXP-24185: test I can subscribe to published document
     public void testSubscriptionOnPublishedDocument() {
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String prefixedPrincipalName = NuxeoPrincipal.PREFIX + principal.getName();
         String repositoryName = session.getRepositoryName();
 

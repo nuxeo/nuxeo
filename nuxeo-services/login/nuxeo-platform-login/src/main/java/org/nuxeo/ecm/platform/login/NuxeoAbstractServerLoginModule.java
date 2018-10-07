@@ -34,6 +34,7 @@ import javax.security.auth.spi.LoginModule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Abstract implementation of the {@link LoginModule} SPI from {@code javax.security.auth.spi}.
@@ -54,18 +55,18 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     protected String principalClassName;
 
     /** the principal to use when a null username and password are seen */
-    protected Principal unauthenticatedIdentity;
+    protected NuxeoPrincipal unauthenticatedIdentity;
 
     protected CallbackHandler callbackHandler;
 
     /** Flag indicating if the shared credential should be used */
     protected boolean useFirstPass;
 
-    protected abstract Principal getIdentity();
+    protected abstract NuxeoPrincipal getIdentity();
 
     protected abstract Group[] getRoleSets() throws LoginException;
 
-    protected abstract Principal createIdentity(String username) throws LoginException;
+    protected abstract NuxeoPrincipal createIdentity(String username) throws LoginException;
 
     public boolean abort() throws LoginException {
         log.trace("abort");

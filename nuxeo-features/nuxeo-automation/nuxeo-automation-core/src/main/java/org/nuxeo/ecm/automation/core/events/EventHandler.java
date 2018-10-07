@@ -259,7 +259,7 @@ public class EventHandler {
             }
         }
         if (memberOf != null && !memberOf.isEmpty()) {
-            NuxeoPrincipal p = (NuxeoPrincipal) eventCtx.getPrincipal();
+            NuxeoPrincipal p = eventCtx.getPrincipal();
             boolean granted = false;
             for (String group : memberOf) {
                 if (p.isMemberOf(group)) {
@@ -272,7 +272,7 @@ public class EventHandler {
             }
         }
         if (isAdministrator != null) {
-            if (!((NuxeoPrincipal) eventCtx.getPrincipal()).isAdministrator()) {
+            if (!eventCtx.getPrincipal().isAdministrator()) {
                 return false;
             }
         }

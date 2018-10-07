@@ -43,14 +43,11 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -113,13 +110,6 @@ public class TestElasticSearchQuery {
     @Before
     public void setupIndex() throws Exception {
         esa.initIndexes(true);
-    }
-
-    protected CloseableCoreSession getRestrictedSession(String userName) {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Map<String, Serializable> ctx = new HashMap<>();
-        ctx.put("principal", new UserPrincipal(userName, null, false, false));
-        return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);
     }
 
     @Test
@@ -232,7 +222,8 @@ public class TestElasticSearchQuery {
         Assert.assertEquals(1, ret.totalSize());
 
         // no match for unknown user
-        try (CloseableCoreSession restrictedSession = getRestrictedSession("bob")) {
+        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                "bob")) {
             ret = ess.query(new NxQueryBuilder(restrictedSession).nxql("SELECT * FROM Document"));
             Assert.assertEquals(0, ret.totalSize());
             ret = ess.query(new NxQueryBuilder(restrictedSession).esQuery(qb));

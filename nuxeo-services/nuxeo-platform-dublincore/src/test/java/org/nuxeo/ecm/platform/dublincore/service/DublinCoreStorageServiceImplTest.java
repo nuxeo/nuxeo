@@ -29,7 +29,6 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -45,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -321,7 +321,7 @@ public class DublinCoreStorageServiceImplTest {
         assertDocumentPropertiesChanges(doc, originalProperties, new HashSet<>());
     }
 
-    protected Event getEventFromDocumentContext(String eventName, CoreSession coreSession, Principal principal) {
+    protected Event getEventFromDocumentContext(String eventName, CoreSession coreSession, NuxeoPrincipal principal) {
         return new EventImpl(eventName,
                 new DocumentEventContext(coreSession, principal, coreSession.getRootDocument()));
     }

@@ -523,7 +523,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
                 taskDoc.setACP(acp, true);
                 task.setActors(actorIds);
-                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
+                String currentUser = session.getPrincipal().getActingUser();
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
 
@@ -533,7 +533,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
                 }
                 notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, new HashMap<>(), comment,
-                        (NuxeoPrincipal) session.getPrincipal(), actorIds);
+                        session.getPrincipal(), actorIds);
 
             }
         }.runUnrestricted();
@@ -583,7 +583,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 }
                 task.setDelegatedActors(allDelegatedActors);
 
-                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
+                String currentUser = session.getPrincipal().getActingUser();
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
                 List<DocumentModel> docs = new ArrayList<>();
@@ -594,7 +594,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED, new HashMap<>(),
                         String.format("Task delegated by '%s' to '%s'", currentUser, StringUtils.join(actorIds, ","))
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
-                        (NuxeoPrincipal) session.getPrincipal(), actorIds);
+                        session.getPrincipal(), actorIds);
             }
 
         }.runUnrestricted();

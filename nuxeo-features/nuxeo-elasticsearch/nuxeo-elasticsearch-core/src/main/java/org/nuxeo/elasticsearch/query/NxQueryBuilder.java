@@ -23,7 +23,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -180,7 +179,7 @@ public class NxQueryBuilder {
         hitDocConsumer = consumer;
         return this;
     }
-    
+
     /**
      * Fetch the documents using VCS (database) engine. This is done by default
      */
@@ -395,9 +394,8 @@ public class NxQueryBuilder {
     }
 
     protected QueryBuilder addSecurityFilter(QueryBuilder query) {
-        Principal principal = session.getPrincipal();
-        if (principal == null
-                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+        NuxeoPrincipal principal = session.getPrincipal();
+        if (principal == null || principal.isAdministrator()) {
             return query;
         }
         String[] principals = SecurityService.getPrincipalsToCheck(principal);

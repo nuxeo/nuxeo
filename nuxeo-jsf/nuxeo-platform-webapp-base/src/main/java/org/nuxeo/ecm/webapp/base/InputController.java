@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.webapp.base;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +79,7 @@ public abstract class InputController {
     protected TypesTool typesTool;
 
     @In(create = true, required = false)
-    protected Principal currentUser;
+    protected NuxeoPrincipal currentUser;
 
     /**
      * Utility method that helps remove a {@link DocumentModel} from a list. The document models are compared on
@@ -148,11 +147,7 @@ public abstract class InputController {
      * Is the current logged user an administrator?
      */
     public boolean getAdministrator() {
-        boolean administrator = false;
-        if (currentUser instanceof NuxeoPrincipal) {
-            administrator = ((NuxeoPrincipal) currentUser).isAdministrator();
-        }
-        return administrator;
+        return currentUser.isAdministrator();
     }
 
     /**

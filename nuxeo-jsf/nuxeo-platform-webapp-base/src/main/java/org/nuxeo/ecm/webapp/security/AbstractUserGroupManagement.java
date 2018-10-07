@@ -20,12 +20,12 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.SUBTAB_CATEGORY_SUFFIX;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.faces.FacesMessages;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -67,7 +67,7 @@ public abstract class AbstractUserGroupManagement {
     public static final String USERS_GROUPS_MANAGEMENT_ACCESS_FILTER = "usersGroupsManagementAccess";
 
     @In(create = true)
-    protected Principal currentUser;
+    protected NuxeoPrincipal currentUser;
 
     @In(create = true)
     protected transient UserManager userManager;

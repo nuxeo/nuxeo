@@ -27,8 +27,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * NuxeoPrincipal stub implementation.
- * <p>
- * TODO this should replace the DetachedNuxeoPrincipal from user manager to minimize principal implementations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

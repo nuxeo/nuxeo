@@ -25,7 +25,6 @@ import static org.jboss.seam.ScopeType.*;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ public class DeputyActionsBean implements Serializable {
     private transient UserManager userManager;
 
     @In
-    private transient Principal currentUser;
+    private transient NuxeoPrincipal currentUser;
 
     @In(create = true)
     private transient Map<String, String> messages;
@@ -150,12 +149,12 @@ public class DeputyActionsBean implements Serializable {
     }
 
     @Factory(value = "alternateLogins", scope = EVENT)
-    public List<Principal> getAlternatePrincipals() {
-        List<Principal> result = new ArrayList<Principal>();
+    public List<NuxeoPrincipal> getAlternatePrincipals() {
+        List<NuxeoPrincipal> result = new ArrayList<>();
         List<String> logins = deputyManager.getPossiblesAlternateLogins(currentUser.getName());
 
         for (String login : logins) {
-            Principal alternatePrincipal = userManager.getPrincipal(login);
+            NuxeoPrincipal alternatePrincipal = userManager.getPrincipal(login);
             if (alternatePrincipal != null) {
                 result.add(alternatePrincipal);
             }
@@ -165,9 +164,7 @@ public class DeputyActionsBean implements Serializable {
     }
 
     public String loginAsDeputy(String login) throws IOException, ServletException {
-        NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
-
-        if ((!nxUser.isAdministrator())
+        if ((!currentUser.isAdministrator())
                 && (!deputyManager.getPossiblesAlternateLogins(currentUser.getName()).contains(login))) {
             return null;
         }
@@ -217,11 +214,10 @@ public class DeputyActionsBean implements Serializable {
     }
 
     public boolean isMandated() {
-        NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
-        if (nxUser == null) {
+        if (currentUser == null) {
             return false;
         }
-        if (nxUser.getOriginatingUser() != null) {
+        if (currentUser.getOriginatingUser() != null) {
             return true;
         }
         return false;
@@ -233,17 +229,16 @@ public class DeputyActionsBean implements Serializable {
     }
 
     public String getLoginInformation() {
-        NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
-        if (nxUser == null) {
+        if (currentUser == null) {
             return "";
         }
 
-        String originalUser = nxUser.getOriginatingUser();
+        String originalUser = currentUser.getOriginatingUser();
 
         if (originalUser != null) {
-            return nxUser.getName() + " " + messages.get("label.deputed.by") + " " + originalUser;
+            return currentUser.getName() + " " + messages.get("label.deputed.by") + " " + originalUser;
         } else {
-            return nxUser.getName();
+            return currentUser.getName();
         }
     }
 
@@ -261,8 +256,7 @@ public class DeputyActionsBean implements Serializable {
             return null;
         }
 
-        NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
-        if (!nxUser.isAdministrator()) {
+        if (!currentUser.isAdministrator()) {
             return null;
         }
 

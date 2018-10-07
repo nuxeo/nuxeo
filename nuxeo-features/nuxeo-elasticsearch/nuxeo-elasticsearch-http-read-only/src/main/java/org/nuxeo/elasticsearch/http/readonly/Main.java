@@ -180,11 +180,11 @@ public class Main extends ModuleRoot {
     }
 
     public @NotNull NuxeoPrincipal getPrincipal() {
-        Principal principal = ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         if (principal == null) {
             throw new IllegalArgumentException("No principal found");
         }
-        return (NuxeoPrincipal) principal;
+        return principal;
     }
 
 }

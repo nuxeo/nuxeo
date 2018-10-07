@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +31,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
@@ -61,8 +59,7 @@ public class AuditLog {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        Principal principal = ctx.getPrincipal();
-        String uname = getPrincipalName(principal);
+        String uname = ctx.getPrincipal().getActingUser();
         LogEntry entry = newEntry(doc, uname, new Date());
         logger.addLogEntries(Collections.singletonList(entry));
         return doc;
@@ -72,8 +69,7 @@ public class AuditLog {
     public DocumentModelList run(DocumentModelList docs) {
         List<LogEntry> entries = new ArrayList<LogEntry>();
         Date date = new Date();
-        Principal principal = ctx.getPrincipal();
-        String uname = getPrincipalName(principal);
+        String uname = ctx.getPrincipal().getActingUser();
         for (DocumentModel doc : docs) {
             entries.add(newEntry(doc, uname, date));
         }
@@ -94,16 +90,6 @@ public class AuditLog {
         entry.setRepositoryId(doc.getRepositoryName());
         entry.setDocLifeCycle(doc.getCurrentLifeCycleState());
         return entry;
-    }
-
-    private String getPrincipalName(Principal principal) {
-        String uname;
-        if (principal instanceof NuxeoPrincipal) {
-            uname = ((NuxeoPrincipal) principal).getActingUser();
-        } else {
-            uname = principal.getName();
-        }
-        return uname;
     }
 
 }

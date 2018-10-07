@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -121,8 +120,8 @@ public class SecurityService extends DefaultComponent {
         return securityPolicyService.getPoliciesQueryTransformers(repositoryName);
     }
 
-    public boolean checkPermission(Document doc, Principal principal, String permission) {
-        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
+    public boolean checkPermission(Document doc, NuxeoPrincipal principal, String permission) {
+        if (principal.isAdministrator()) {
             return true;
         }
         // fully check each ACE in turn
@@ -152,8 +151,9 @@ public class SecurityService extends DefaultComponent {
      *
      * @since 9.1
      */
-    public Collection<String> filterGrantedPermissions(Document doc, Principal principal, Collection<String> permissions) {
-        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
+    public Collection<String> filterGrantedPermissions(Document doc, NuxeoPrincipal principal,
+            Collection<String> permissions) {
+        if (principal.isAdministrator()) {
             return permissions;
         }
 
@@ -196,11 +196,8 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    public static String[] getPrincipalsToCheck(Principal principal) {
-        List<String> userGroups = null;
-        if (principal instanceof NuxeoPrincipal) {
-            userGroups = ((NuxeoPrincipal) principal).getAllGroups();
-        }
+    public static String[] getPrincipalsToCheck(NuxeoPrincipal principal) {
+        List<String> userGroups = principal.getAllGroups();
         if (userGroups == null) {
             return new String[] { principal.getName(), SecurityConstants.EVERYONE };
         } else {

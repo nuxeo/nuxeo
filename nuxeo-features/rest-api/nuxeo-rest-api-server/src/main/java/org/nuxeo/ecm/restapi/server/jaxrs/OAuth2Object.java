@@ -527,12 +527,12 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected boolean hasPermission(String nxuser) {
-        NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
+        NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
         return principal.isAdministrator() || (nxuser == null ? false : nxuser.equals(principal.getName()));
     }
 
     protected void checkNotAnonymousUser() {
-        NuxeoPrincipal principal = ((NuxeoPrincipal) getContext().getCoreSession().getPrincipal());
+        NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
         if (principal.isAnonymous()) {
             throw new WebSecurityException("You do not have permissions to perform this operation.");
         }
