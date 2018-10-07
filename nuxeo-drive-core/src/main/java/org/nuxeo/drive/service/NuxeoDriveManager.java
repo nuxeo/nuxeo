@@ -19,13 +19,13 @@
  */
 package org.nuxeo.drive.service;
 
-import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo user.
@@ -40,13 +40,15 @@ public interface NuxeoDriveManager {
      *            session
      * @throws SecurityException if the user does not have write permissions to the container.
      */
-    public void registerSynchronizationRoot(Principal principal, DocumentModel newRootContainer, CoreSession session);
+    public void registerSynchronizationRoot(NuxeoPrincipal principal, DocumentModel newRootContainer,
+            CoreSession session);
 
     /**
      * @param principal the Nuxeo Drive user
      * @param rootContainer the folderish document that should no longer be used as a synchronization root
      */
-    public void unregisterSynchronizationRoot(Principal principal, DocumentModel rootContainer, CoreSession session);
+    public void unregisterSynchronizationRoot(NuxeoPrincipal principal, DocumentModel rootContainer,
+            CoreSession session);
 
     /**
      * Fetch the list of synchronization root refs for a given user and a given session repository. This list is assumed
@@ -66,7 +68,7 @@ public interface NuxeoDriveManager {
      * @param principal the user to fetch the roots for
      * @return the map keyed by repository names all active roots definitions for the current user.
      */
-    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal);
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(NuxeoPrincipal principal);
 
     /**
      * Fetch all the collection sync root member ids for a given user.
@@ -74,12 +76,12 @@ public interface NuxeoDriveManager {
      * @param principal the user to fetch the ids for
      * @return the map keyed by repository names all collection sync root member ids for the current user.
      */
-    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal);
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(NuxeoPrincipal principal);
 
     /**
      * Checks if the given {@link DocumentModel} is a synchronization root for the given user.
      */
-    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc);
+    public boolean isSynchronizationRoot(NuxeoPrincipal principal, DocumentModel doc);
 
     /**
      * Method to be called by a CoreEvent listener monitoring documents deletions to cleanup references to recently
@@ -104,11 +106,11 @@ public interface NuxeoDriveManager {
      *            were active during last synchronization
      * @param lowerBound the lower bound sent by the user's device. Typically set to the value returned by
      *            {@link FileSystemChangeSummary#getUpperBound()} of the previous call to
-     *            {@link NuxeoDriveManager#getChangeSummary(Principal, Map, long)} or 0 for catching every event since
-     *            the repository initialization.
+     *            {@link NuxeoDriveManager#getChangeSummary(NuxeoPrincipal, Map, long)} or 0 for catching every event
+     *            since the repository initialization.
      * @return the summary of document changes
      */
-    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+    public FileSystemChangeSummary getChangeSummary(NuxeoPrincipal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
             long lowerBound);
 
     /**
@@ -118,7 +120,7 @@ public interface NuxeoDriveManager {
 
     /**
      * Invalidate the synchronization roots cache for a given user so as to query the repository next time
-     * {@link #getSynchronizationRoots(Principal)} is called.
+     * {@link #getSynchronizationRoots(NuxeoPrincipal)} is called.
      *
      * @param userName the principal name of the user to invalidate the cache for.
      */
@@ -126,7 +128,7 @@ public interface NuxeoDriveManager {
 
     /**
      * Invalidate the collection sync root member cache for a given user so as to query the repository next time
-     * {@link #getCollectionSyncRootMemberIds(Principal)} is called.
+     * {@link #getCollectionSyncRootMemberIds(NuxeoPrincipal)} is called.
      *
      * @param userName the principal name of the user to invalidate the cache for.
      */
@@ -134,7 +136,7 @@ public interface NuxeoDriveManager {
 
     /**
      * Invalidate the collection sync root member cache for all users so as to query the repository next time
-     * {@link #getCollectionSyncRootMemberIds(Principal)} is called.
+     * {@link #getCollectionSyncRootMemberIds(NuxeoPrincipal)} is called.
      */
     void invalidateCollectionSyncRootMemberCache();
 

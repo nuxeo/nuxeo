@@ -18,11 +18,10 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Dummy implementation of a {@link VirtualFolderItemFactory} for test purpose.
@@ -32,7 +31,7 @@ import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
 public class DummyVirtualFolderItemFactory extends AbstractVirtualFolderItemFactory {
 
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         return null;
     }
 

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Base {@link FileSystemItemFactory} for a virtual {@link FolderItem}.
@@ -49,7 +49,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     protected String folderName = DEFAULT_FOLDER_NAME;
 
     @Override
-    public abstract FolderItem getVirtualFolderItem(Principal principal);
+    public abstract FolderItem getVirtualFolderItem(NuxeoPrincipal principal);
 
     @Override
     public String getName() {
@@ -139,7 +139,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public boolean exists(String id, Principal principal) {
+    public boolean exists(String id, NuxeoPrincipal principal) {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(String.format(
                     "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
@@ -149,7 +149,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal) {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(String.format(
                     "Cannot get the file system item for an id that cannot be handled from factory %s.", getName()));
@@ -158,7 +158,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, NuxeoPrincipal principal) {
         return getFileSystemItemById(id, principal);
     }
 

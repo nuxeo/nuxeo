@@ -30,7 +30,6 @@ import static org.junit.Assume.assumeFalse;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +65,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -123,7 +123,7 @@ public class DefaultFileSystemItemFactoryFixture {
     @Inject
     protected TrashService trashService;
 
-    protected Principal principal;
+    protected NuxeoPrincipal principal;
 
     protected String syncRootItemId;
 

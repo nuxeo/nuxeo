@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -148,7 +148,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
      * @see #isFileSystemItem(DocumentModel)
      */
     @Override
-    public boolean exists(String id, Principal principal) {
+    public boolean exists(String id, NuxeoPrincipal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
@@ -165,7 +165,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
@@ -183,7 +183,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, NuxeoPrincipal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];

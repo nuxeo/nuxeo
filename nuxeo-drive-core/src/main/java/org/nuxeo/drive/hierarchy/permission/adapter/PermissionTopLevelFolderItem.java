@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.permission.adapter;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * User workspace and permission based implementation of the top level {@link FolderItem}.
@@ -52,7 +52,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     protected List<String> childrenFactoryNames;
 
-    public PermissionTopLevelFolderItem(String factoryName, Principal principal, String folderName,
+    public PermissionTopLevelFolderItem(String factoryName, NuxeoPrincipal principal, String folderName,
             List<String> childrenFactoryNames) {
         super(factoryName, principal, null, null, folderName);
         this.childrenFactoryNames = childrenFactoryNames;

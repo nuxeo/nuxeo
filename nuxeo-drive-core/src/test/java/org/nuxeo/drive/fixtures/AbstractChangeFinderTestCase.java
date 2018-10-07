@@ -20,7 +20,6 @@ package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -148,7 +148,7 @@ public abstract class AbstractChangeFinderTestCase {
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
      */
-    protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
+    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) throws InterruptedException {
         return getChangeSummary(principal).getFileSystemChanges();
     }
 
@@ -163,7 +163,7 @@ public abstract class AbstractChangeFinderTestCase {
      * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
      * and updates {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary(Principal principal) throws InterruptedException {
+    protected FileSystemChangeSummary getChangeSummary(NuxeoPrincipal principal) throws InterruptedException {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
                 lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal, lastSyncActiveRootRefs,

@@ -18,14 +18,13 @@
  */
 package org.nuxeo.drive.hierarchy.permission.factory;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.SharedSyncRootParentFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 public class SharedSyncRootParentFactory extends AbstractVirtualFolderItemFactory {
 
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);
         if (topLevelFolder == null) {

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -148,7 +148,7 @@ public class TestDriveVersioning {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
-    protected Principal principal;
+    protected NuxeoPrincipal principal;
 
     protected DocumentModel syncRootFolder;
 

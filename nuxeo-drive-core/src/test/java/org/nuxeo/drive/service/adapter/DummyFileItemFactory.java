@@ -18,13 +18,12 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Dummy file implementation of a {@link FileSystemItemFactory} for test purpose.
@@ -83,7 +82,7 @@ public class DummyFileItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal) {
         return null;
     }
 

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
@@ -28,6 +26,7 @@ import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Dummy folder implementation of a {@link FileSystemItemFactory} for test purpose.
@@ -86,7 +85,7 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];

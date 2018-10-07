@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.userworkspace.factory;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.AbstractSyncRootFolderItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -64,7 +64,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName)
                                                          .getVirtualFolderItem(principal);
         if (parent == null) {

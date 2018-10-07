@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.H2OnlyFeature;
@@ -129,7 +129,7 @@ public class TestGetChangeSummaryMultiRepo {
         DocumentModel doc2;
         DocumentModel doc3;
 
-        Principal administrator = session.getPrincipal();
+        NuxeoPrincipal administrator = session.getPrincipal();
         nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1, session);
         nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2, session);
         nuxeoDriveManager.registerSynchronizationRoot(administrator, folder3, otherSession);

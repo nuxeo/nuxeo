@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.permission.factory;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +32,7 @@ import org.nuxeo.drive.service.impl.AbstractSyncRootFolderItemFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -120,7 +120,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {
             FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(userSyncRootParentFactoryName)

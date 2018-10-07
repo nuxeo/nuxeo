@@ -20,7 +20,6 @@ package org.nuxeo.drive.listener;
 
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,6 +39,7 @@ import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -164,7 +164,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         return !doc.isTrashed();
     }
 
-    protected void fireVirtualEventLogEntries(DocumentModel doc, String eventName, Principal principal,
+    protected void fireVirtualEventLogEntries(DocumentModel doc, String eventName, NuxeoPrincipal principal,
             String impactedUserName, CoreSession session) {
 
         if (Framework.getService(AuditLogger.class) == null) {

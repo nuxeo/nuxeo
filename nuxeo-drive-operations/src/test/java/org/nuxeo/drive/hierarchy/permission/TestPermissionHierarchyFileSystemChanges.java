@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -113,9 +113,9 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected CloseableCoreSession session2;
 
-    protected Principal principal1;
+    protected NuxeoPrincipal principal1;
 
-    protected Principal principal2;
+    protected NuxeoPrincipal principal2;
 
     protected DocumentModel userWorkspace1;
 
@@ -526,7 +526,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         txFeature.nextTransaction();
     }
 
-    protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
+    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) throws InterruptedException {
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal,
                 Collections.<String, Set<IdRef>> emptyMap(), lastEventLogId);
         assertNotNull(changeSummary);

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -161,7 +161,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         if (!relaxSyncRootConstraint && doc.isFolder()) {
             // Check not a synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
-            Principal principal = doc.getCoreSession().getPrincipal();
+            NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (isSyncRoot) {
                 log.debug(
@@ -207,7 +207,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     public boolean needsVersioning(DocumentModel doc) {
 
         String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         boolean contributorChanged = !principal.getName().equals(lastContributor);
         if (contributorChanged) {
             log.debug(

@@ -120,7 +120,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                         DocumentModel doc = session.getDocument(idRef);
                         // Filter by creator
                         // TODO: allow filtering by dc:creator in
-                        // NuxeoDriveManager#getSynchronizationRoots(Principal
+                        // NuxeoDriveManager#getSynchronizationRoots(NuxeoPrincipal
                         // principal)
                         if (session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
                             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo

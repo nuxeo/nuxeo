@@ -75,7 +75,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                     getDateClause(lowerBound, upperBound));
             log.debug("Querying repository for document changes: {}", query);
 
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            NuxeoPrincipal principal = session.getPrincipal();
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 try (CloseableCoreSession repoSession = CoreInstance.openCoreSession(repositoryName, principal)) {

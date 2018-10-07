@@ -24,7 +24,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +56,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -157,7 +157,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return getFileSystemItem(doc) != null;
     }
 
-    public boolean hasOneDriveToken(Principal user) throws UnsupportedEncodingException {
+    public boolean hasOneDriveToken(NuxeoPrincipal user) throws UnsupportedEncodingException {
         TokenAuthenticationService tokenService = Framework.getService(TokenAuthenticationService.class);
         for (DocumentModel token : tokenService.getTokenBindings(user.getName())) {
             String applicationName = (String) token.getPropertyValue("authtoken:applicationName");
@@ -293,7 +293,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public String synchronizeCurrentDocument() throws UnsupportedEncodingException {
         NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
-        Principal principal = documentManager.getPrincipal();
+        NuxeoPrincipal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
         driveManager.registerSynchronizationRoot(principal, newSyncRoot, documentManager);
         boolean hasOneNuxeoDriveToken = hasOneDriveToken(principal);
@@ -307,7 +307,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public void unsynchronizeCurrentDocument() {
         NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
-        Principal principal = documentManager.getPrincipal();
+        NuxeoPrincipal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
@@ -332,7 +332,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public void unsynchronizeRoot(DocumentModel syncRoot) {
         NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
-        Principal principal = documentManager.getPrincipal();
+        NuxeoPrincipal principal = documentManager.getPrincipal();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 

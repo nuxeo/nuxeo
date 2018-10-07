@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -27,6 +26,7 @@ import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Interface for the classes contributed to the {@code fileSystemItemFactory} extension point of the
@@ -203,14 +203,14 @@ public interface FileSystemItemFactory {
     /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the given principal.
      */
-    boolean exists(String id, Principal principal);
+    boolean exists(String id, NuxeoPrincipal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id using a core session fetched with the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
      */
-    FileSystemItem getFileSystemItemById(String id, Principal principal);
+    FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id and parent id using a core session fetched with the given
@@ -219,6 +219,6 @@ public interface FileSystemItemFactory {
      * @return the {@link FileSystemItem} or null if none matches the given id and parent id
      * @since 6.0
      */
-    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal);
+    FileSystemItem getFileSystemItemById(String id, String parentId, NuxeoPrincipal principal);
 
 }

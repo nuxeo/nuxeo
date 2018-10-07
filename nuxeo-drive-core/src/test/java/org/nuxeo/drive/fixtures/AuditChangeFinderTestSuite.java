@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -490,7 +490,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
     @Test
     public void testGetChangeSummary() throws Exception {
         FileSystemChangeSummary changeSummary;
-        Principal admin = new NuxeoPrincipalImpl("Administrator");
+        NuxeoPrincipal admin = new NuxeoPrincipalImpl("Administrator");
         DocumentModel doc1;
         DocumentModel doc2;
 
@@ -604,8 +604,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     @Test
     public void testGetChangeSummaryOnRootDocuments() throws Exception {
-        Principal admin = new NuxeoPrincipalImpl("Administrator");
-        Principal otherUser = new NuxeoPrincipalImpl("some-other-user");
+        NuxeoPrincipal admin = new NuxeoPrincipalImpl("Administrator");
+        NuxeoPrincipal otherUser = new NuxeoPrincipalImpl("some-other-user");
         Set<IdRef> activeRootRefs;
         FileSystemChangeSummary changeSummary;
         List<FileSystemItemChange> changes;
@@ -726,7 +726,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     @Test
     public void testSyncUnsyncRootsAsAnotherUser() throws Exception {
-        Principal user1Principal = user1Session.getPrincipal();
+        NuxeoPrincipal user1Principal = user1Session.getPrincipal();
         List<FileSystemItemChange> changes;
 
         try {

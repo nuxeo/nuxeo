@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +41,7 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -106,7 +106,7 @@ public class TestGetChangeSummary {
         DocumentModel doc2;
         DocumentModel folder3;
         try {
-            Principal administrator = session.getPrincipal();
+            NuxeoPrincipal administrator = session.getPrincipal();
             nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1, session);
             nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2, session);
 

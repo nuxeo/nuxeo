@@ -18,9 +18,8 @@
  */
 package org.nuxeo.drive.service;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Interface for the classes contributed to the {@code topLevelFolderItemFactory} extension point of the
@@ -36,7 +35,7 @@ public interface VirtualFolderItemFactory extends FileSystemItemFactory {
     /**
      * Returns the (unique) virtual {@link FolderItem}.
      */
-    FolderItem getVirtualFolderItem(Principal principal);
+    FolderItem getVirtualFolderItem(NuxeoPrincipal principal);
 
     String getFolderName();
 

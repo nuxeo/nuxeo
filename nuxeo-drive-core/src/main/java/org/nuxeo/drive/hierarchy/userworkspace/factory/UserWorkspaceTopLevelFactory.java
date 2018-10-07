@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.userworkspace.factory;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
@@ -100,7 +100,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         return getTopLevelFolderItem(principal);
     }
 
@@ -116,7 +116,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) {
+    public FolderItem getTopLevelFolderItem(NuxeoPrincipal principal) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(),

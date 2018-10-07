@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.security.Principal;
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
@@ -43,7 +43,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     protected boolean canScrollDescendants;
 
-    public AbstractVirtualFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
+    public AbstractVirtualFolderItem(String factoryName, NuxeoPrincipal principal, String parentId, String parentPath,
             String folderName) {
         super(factoryName, principal, false);
         this.parentId = parentId;

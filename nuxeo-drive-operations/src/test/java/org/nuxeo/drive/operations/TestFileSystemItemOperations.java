@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -148,7 +147,7 @@ public class TestFileSystemItemOperations {
     @Before
     public void init() throws Exception {
 
-        Principal administrator = session.getPrincipal();
+        NuxeoPrincipal administrator = session.getPrincipal();
         // Create 2 sync roots
         syncRoot1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
         syncRoot2 = session.createDocument(session.createDocumentModel("/", "folder2", "Folder"));
@@ -730,7 +729,7 @@ public class TestFileSystemItemOperations {
         // --------------------------------------------------------
         // No REMOVE permission on the source backing doc => false
         // --------------------------------------------------------
-        Principal joe = createUser("joe", "joe");
+        NuxeoPrincipal joe = createUser("joe", "joe");
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 

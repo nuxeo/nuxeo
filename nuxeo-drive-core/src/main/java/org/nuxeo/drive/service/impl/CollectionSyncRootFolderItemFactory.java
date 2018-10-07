@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -29,6 +27,7 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -74,7 +73,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
         if (!relaxSyncRootConstraint) {
             // Check synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
-            Principal principal = doc.getCoreSession().getPrincipal();
+            NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
                 log.debug(

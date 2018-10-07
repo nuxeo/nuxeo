@@ -22,7 +22,6 @@ package org.nuxeo.drive.service.impl;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -57,6 +56,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -149,7 +149,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void registerSynchronizationRoot(Principal principal, final DocumentModel newRootContainer,
+    public void registerSynchronizationRoot(NuxeoPrincipal principal, final DocumentModel newRootContainer,
             CoreSession session) {
         final String userName = principal.getName();
         log.debug("Registering synchronization root {} for {}", newRootContainer, userName);
@@ -255,7 +255,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void unregisterSynchronizationRoot(Principal principal, final DocumentModel rootContainer,
+    public void unregisterSynchronizationRoot(NuxeoPrincipal principal, final DocumentModel rootContainer,
             CoreSession session) {
         final String userName = principal.getName();
         log.debug("Unregistering synchronization root {} for {}", rootContainer, userName);
@@ -325,7 +325,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * client can reuse it as a starting id for a future incremental diff request.
      */
     @Override
-    public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+    public FileSystemChangeSummary getChangeSummary(NuxeoPrincipal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
             long lowerBound) {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         Map<String, Set<String>> collectionSyncRootMemberIds = getCollectionSyncRootMemberIds(principal);
@@ -392,7 +392,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) {
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(NuxeoPrincipal principal) {
         String userName = principal.getName();
         Map<String, SynchronizationRoots> syncRoots = (Map<String, SynchronizationRoots>) getSyncRootCache().get(
                 userName);
@@ -405,7 +405,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) {
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(NuxeoPrincipal principal) {
         String userName = principal.getName();
         Map<String, Set<String>> collSyncRootMemberIds = (Map<String, Set<String>>) getCollectionSyncRootMemberCache().get(
                 userName);
@@ -417,13 +417,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc) {
+    public boolean isSynchronizationRoot(NuxeoPrincipal principal, DocumentModel doc) {
         String repoName = doc.getRepositoryName();
         SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(repoName);
         return syncRoots.getRefs().contains(doc.getRef());
     }
 
-    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal) {
+    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, NuxeoPrincipal principal) {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
@@ -460,7 +460,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(Principal principal) {
+    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(NuxeoPrincipal principal) {
         Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<String, Set<String>>();
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);

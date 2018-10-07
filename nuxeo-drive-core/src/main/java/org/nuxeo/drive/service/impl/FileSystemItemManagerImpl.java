@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +31,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,22 +45,22 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     @Override
-    public List<FileSystemItem> getTopLevelChildren(Principal principal) {
+    public List<FileSystemItem> getTopLevelChildren(NuxeoPrincipal principal) {
         return getTopLevelFolder(principal).getChildren();
     }
 
     @Override
-    public FolderItem getTopLevelFolder(Principal principal) {
+    public FolderItem getTopLevelFolder(NuxeoPrincipal principal) {
         return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(principal);
     }
 
     @Override
-    public boolean exists(String id, Principal principal) {
+    public boolean exists(String id, NuxeoPrincipal principal) {
         return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).exists(id, principal);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal) {
         try {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     principal);
@@ -72,7 +72,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, NuxeoPrincipal principal) {
         try {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     parentId, principal);
@@ -85,7 +85,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public List<FileSystemItem> getChildren(String id, Principal principal) {
+    public List<FileSystemItem> getChildren(String id, NuxeoPrincipal principal) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
             throw new NuxeoException(String.format(
@@ -100,8 +100,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize,
-            long keepAlive) {
+    public ScrollFileSystemItemList scrollDescendants(String id, NuxeoPrincipal principal, String scrollId,
+            int batchSize, long keepAlive) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
             throw new NuxeoException(String.format(
@@ -116,7 +116,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public boolean canMove(String srcId, String destId, Principal principal) {
+    public boolean canMove(String srcId, String destId, NuxeoPrincipal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
             return false;
@@ -130,7 +130,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Write operations ---------------*/
     @Override
-    public FolderItem createFolder(String parentId, String name, Principal principal, boolean overwrite) {
+    public FolderItem createFolder(String parentId, String name, NuxeoPrincipal principal, boolean overwrite) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new NuxeoException(String.format(
@@ -146,7 +146,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileItem createFile(String parentId, Blob blob, Principal principal, boolean overwrite) {
+    public FileItem createFile(String parentId, Blob blob, NuxeoPrincipal principal, boolean overwrite) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new NuxeoException(String.format(
@@ -162,31 +162,31 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileItem updateFile(String id, Blob blob, Principal principal) {
+    public FileItem updateFile(String id, Blob blob, NuxeoPrincipal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         return updateFile(fsItem, blob);
     }
 
     @Override
-    public FileItem updateFile(String id, String parentId, Blob blob, Principal principal) {
+    public FileItem updateFile(String id, String parentId, Blob blob, NuxeoPrincipal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
         return updateFile(fsItem, blob);
     }
 
     @Override
-    public void delete(String id, Principal principal) {
+    public void delete(String id, NuxeoPrincipal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         delete(fsItem);
     }
 
     @Override
-    public void delete(String id, String parentId, Principal principal) {
+    public void delete(String id, String parentId, NuxeoPrincipal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
         delete(fsItem);
     }
 
     @Override
-    public FileSystemItem rename(String id, String name, Principal principal) {
+    public FileSystemItem rename(String id, String name, NuxeoPrincipal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
             throw new NuxeoException(
@@ -197,7 +197,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileSystemItem move(String srcId, String destId, Principal principal) {
+    public FileSystemItem move(String srcId, String destId, NuxeoPrincipal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
             throw new NuxeoException(

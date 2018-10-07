@@ -18,14 +18,13 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,7 +45,7 @@ public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItem
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         return fileSystemItemManager.getTopLevelFolder(principal);
     }
 

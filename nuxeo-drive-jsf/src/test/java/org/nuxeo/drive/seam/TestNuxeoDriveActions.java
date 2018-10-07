@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 
 import javax.inject.Inject;
 
@@ -30,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -56,7 +56,7 @@ public class TestNuxeoDriveActions {
 
     protected NuxeoDriveActions nuxeoDriveActions;
 
-    protected Principal principal;
+    protected NuxeoPrincipal principal;
 
     @Before
     public void setUp() {

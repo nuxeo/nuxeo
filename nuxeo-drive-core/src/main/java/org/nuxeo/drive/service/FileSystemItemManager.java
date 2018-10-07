@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileItem;
@@ -27,6 +26,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.impl.FileSystemItemManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Provides an API to manage usual file system operations on a {@link FileSystemItem} given its id. Allows the following
@@ -54,43 +54,43 @@ public interface FileSystemItemManager {
      * @deprecated use getTopLevelFolder#getChildren instead
      */
     @Deprecated
-    List<FileSystemItem> getTopLevelChildren(Principal principal);
+    List<FileSystemItem> getTopLevelChildren(NuxeoPrincipal principal);
 
     /**
      * Gets the top level {@link FolderItem} for the given principal.
      */
-    FolderItem getTopLevelFolder(Principal principal);
+    FolderItem getTopLevelFolder(NuxeoPrincipal principal);
 
     /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the given principal.
      *
-     * @see FileSystemItemFactory#exists(String, Principal)
+     * @see FileSystemItemFactory#exists(String, NuxeoPrincipal)
      */
-    boolean exists(String id, Principal principal);
+    boolean exists(String id, NuxeoPrincipal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id for the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
-     * @see FileSystemItemFactory#getFileSystemItemById(String, Principal)
+     * @see FileSystemItemFactory#getFileSystemItemById(String, NuxeoPrincipal)
      */
-    FileSystemItem getFileSystemItemById(String id, Principal principal);
+    FileSystemItem getFileSystemItemById(String id, NuxeoPrincipal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id and parent id for the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id and parent id
-     * @see #getFileSystemItemById(String, Principal)
+     * @see #getFileSystemItemById(String, NuxeoPrincipal)
      * @since 6.0
      */
-    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal);
+    FileSystemItem getFileSystemItemById(String id, String parentId, NuxeoPrincipal principal);
 
     /**
      * Gets the children of the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FolderItem#getChildren()
      */
-    List<FileSystemItem> getChildren(String id, Principal principal);
+    List<FileSystemItem> getChildren(String id, NuxeoPrincipal principal);
 
     /**
      * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the given
@@ -108,7 +108,7 @@ public interface FileSystemItemManager {
      * @see FolderItem#scrollDescendants(String, int, long)
      * @since 8.3
      */
-    ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize,
+    ScrollFileSystemItemList scrollDescendants(String id, NuxeoPrincipal principal, String scrollId, int batchSize,
             long keepAlive);
 
     /**
@@ -117,17 +117,17 @@ public interface FileSystemItemManager {
      *
      * @see FileSystemItem#getCanMove(String)
      */
-    boolean canMove(String srcId, String destId, Principal principal);
+    boolean canMove(String srcId, String destId, NuxeoPrincipal principal);
 
     /*------------- Write operations ----------------*/
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FolderItem#createFolder(String)
-     * @deprecated since 9.1, use {@link #createFolder(String, String, Principal, boolean)} instead
+     * @deprecated since 9.1, use {@link #createFolder(String, String, NuxeoPrincipal, boolean)} instead
      */
     @Deprecated
-    default FolderItem createFolder(String parentId, String name, Principal principal) {
+    default FolderItem createFolder(String parentId, String name, NuxeoPrincipal principal) {
         return createFolder(parentId, name, principal, false);
     }
 
@@ -138,16 +138,16 @@ public interface FileSystemItemManager {
      * @see FolderItem#createFolder(String, boolean)
      * @since 9.1
      */
-    FolderItem createFolder(String parentId, String name, Principal principal, boolean overwrite);
+    FolderItem createFolder(String parentId, String name, NuxeoPrincipal principal, boolean overwrite);
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FolderItem#createFile(Blob)
-     * @deprecated since 9.1, use {@link #createFile(String, Blob, Principal, boolean)} instead
+     * @deprecated since 9.1, use {@link #createFile(String, Blob, NuxeoPrincipal, boolean)} instead
      */
     @Deprecated
-    default FileItem createFile(String parentId, Blob blob, Principal principal) {
+    default FileItem createFile(String parentId, Blob blob, NuxeoPrincipal principal) {
         return createFile(parentId, blob, principal, false);
     }
 
@@ -158,44 +158,44 @@ public interface FileSystemItemManager {
      * @see FolderItem#createFile(Blob, boolean)
      * @since 9.1
      */
-    FileItem createFile(String parentId, Blob blob, Principal principal, boolean overwrite);
+    FileItem createFile(String parentId, Blob blob, NuxeoPrincipal principal, boolean overwrite);
 
     /**
      * Updates the {@link FileSystemItem} with the given id with the given blob for the given principal.
      *
      * @see FileItem#setBlob(Blob)
      */
-    FileItem updateFile(String id, Blob blob, Principal principal);
+    FileItem updateFile(String id, Blob blob, NuxeoPrincipal principal);
 
     /**
      * Updates the {@link FileSystemItem} with the given id and parent id with the given blob for the given principal.
      *
-     * @see #updateFile(String, Blob, Principal)
+     * @see #updateFile(String, Blob, NuxeoPrincipal)
      * @since 6.0
      */
-    FileItem updateFile(String id, String parentId, Blob blob, Principal principal);
+    FileItem updateFile(String id, String parentId, Blob blob, NuxeoPrincipal principal);
 
     /**
      * Deletes the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FileSystemItem#delete()
      */
-    void delete(String id, Principal principal);
+    void delete(String id, NuxeoPrincipal principal);
 
     /**
      * Deletes the {@link FileSystemItem} with the given id and parent id for the given principal.
      *
-     * @see #delete(String, Principal)
+     * @see #delete(String, NuxeoPrincipal)
      * @since 6.0
      */
-    void delete(String id, String parentId, Principal principal);
+    void delete(String id, String parentId, NuxeoPrincipal principal);
 
     /**
      * Renames the {@link FileSystemItem} with the given id with the given name for the given principal.
      *
      * @see FileSystemItem#rename(String)
      */
-    FileSystemItem rename(String id, String name, Principal principal);
+    FileSystemItem rename(String id, String name, NuxeoPrincipal principal);
 
     /**
      * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given
@@ -203,6 +203,6 @@ public interface FileSystemItemManager {
      *
      * @see FileSystemItem#move(String)
      */
-    FileSystemItem move(String srcId, String destId, Principal principal);
+    FileSystemItem move(String srcId, String destId, NuxeoPrincipal principal);
 
 }

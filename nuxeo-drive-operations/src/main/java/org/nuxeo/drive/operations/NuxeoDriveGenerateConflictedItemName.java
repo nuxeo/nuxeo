@@ -64,7 +64,7 @@ public class NuxeoDriveGenerateConflictedItemName {
             name = parts[0];
             extension = "." + parts[1];
         }
-        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         String userName = principal.getName(); // fallback
         if (!StringUtils.isBlank(principal.getLastName()) && !StringUtils.isBlank(principal.getFirstName())) {
             // build more user friendly name from user info

@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -90,7 +90,7 @@ public class TestFileSystemItemManagerService {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
-    protected Principal principal;
+    protected NuxeoPrincipal principal;
 
     protected DocumentModel syncRoot1;
 
@@ -118,7 +118,7 @@ public class TestFileSystemItemManagerService {
         // Create and register 2 synchronization roots for Administrator
         syncRoot1 = session.createDocument(session.createDocumentModel("/", "syncRoot1", "Folder"));
         syncRoot2 = session.createDocument(session.createDocumentModel("/", "syncRoot2", "Folder"));
-        Principal administrator = session.getPrincipal();
+        NuxeoPrincipal administrator = session.getPrincipal();
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1, session);
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2, session);
 
@@ -205,7 +205,7 @@ public class TestFileSystemItemManagerService {
                 fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 
         // ------------------------------------------------------------
-        // Check #getFileSystemItemById(String id, Principal principal)
+        // Check #getFileSystemItemById(String id, NuxeoPrincipal principal)
         // ------------------------------------------------------------
         // Folder
         FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(
@@ -282,7 +282,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // -------------------------------------------------------------------
-        // Check #getFileSystemItemById(String id, String parentId, Principal
+        // Check #getFileSystemItemById(String id, String parentId, NuxeoPrincipal
         // principal)
         // -------------------------------------------------------------------
         fsItem = fileSystemItemManagerService.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
@@ -359,7 +359,7 @@ public class TestFileSystemItemManagerService {
 
         // Not allowed to move a file system item if no REMOVE permission on the
         // source backing doc
-        Principal joePrincipal = new NuxeoPrincipalImpl("joe");
+        NuxeoPrincipal joePrincipal = new NuxeoPrincipalImpl("joe");
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
         nuxeoDriveManager.registerSynchronizationRoot(joePrincipal, syncRoot1, session);

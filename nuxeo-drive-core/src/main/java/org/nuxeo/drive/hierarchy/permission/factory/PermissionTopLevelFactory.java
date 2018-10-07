@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.permission.factory;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * User workspace and permission based implementation of the {@link TopLevelFolderItemFactory}.
@@ -62,13 +62,13 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory 
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         return getTopLevelFolderItem(principal);
     }
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) {
+    public FolderItem getTopLevelFolderItem(NuxeoPrincipal principal) {
         return new PermissionTopLevelFolderItem(getName(), principal, getFolderName(), childrenFactoryNames);
     }
 

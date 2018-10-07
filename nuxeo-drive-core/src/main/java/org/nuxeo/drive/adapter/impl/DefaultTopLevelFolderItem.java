@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,7 +50,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     private static final Logger log = LogManager.getLogger(DefaultTopLevelFolderItem.class);
 
-    public DefaultTopLevelFolderItem(String factoryName, Principal principal, String folderName) {
+    public DefaultTopLevelFolderItem(String factoryName, NuxeoPrincipal principal, String folderName) {
         super(factoryName, principal, null, null, folderName);
     }
 

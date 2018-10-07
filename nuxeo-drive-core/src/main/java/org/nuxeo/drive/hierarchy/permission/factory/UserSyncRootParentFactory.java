@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.permission.factory;
 
-import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
@@ -91,32 +91,32 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     /*------------------- FileSystemItemFactory ------------------- */
     /**
-     * Force parent item using {@link #getTopLevelFolderItem(Principal)}.
+     * Force parent item using {@link #getTopLevelFolderItem(NuxeoPrincipal)}.
      */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
             boolean relaxSyncRootConstraint) {
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
             boolean getLockInfo) {
-        Principal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint,
                 getLockInfo);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(),
@@ -142,7 +142,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     }
 
     /*------------------- Protected ------------------- */
-    protected FolderItem getTopLevelFolderItem(Principal principal) {
+    protected FolderItem getTopLevelFolderItem(NuxeoPrincipal principal) {
         FolderItem topLevelFolder = Framework.getService(FileSystemItemManager.class).getTopLevelFolder(principal);
         if (topLevelFolder == null) {
             throw new NuxeoException("Found no top level folder item. Please check your "

@@ -18,11 +18,10 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Default implementation of a {@link TopLevelFolderItemFactory}.
@@ -34,13 +33,13 @@ public class DefaultTopLevelFolderItemFactory extends AbstractVirtualFolderItemF
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) {
+    public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         return getTopLevelFolderItem(principal);
     }
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) {
+    public FolderItem getTopLevelFolderItem(NuxeoPrincipal principal) {
         return new DefaultTopLevelFolderItem(getName(), principal, getFolderName());
     }
 

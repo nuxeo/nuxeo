@@ -46,8 +46,8 @@ public interface FileSystemChangeSummary extends Serializable {
     /**
      * @return the upper bound of the range clause in the change query. Changes from the current summary instance all
      *         happen "strictly before" this bound. This value is expected to be passed to the next call to
-     *         {@link NuxeoDriveManager#getChangeSummary(java.security.Principal, java.util.Map, long)} to get strictly
-     *         monotonic change summaries (without overlap).
+     *         {@link NuxeoDriveManager#getChangeSummary(org.nuxeo.ecm.core.api.NuxeoPrincipal, java.util.Map, long)} to
+     *         get strictly monotonic change summaries (without overlap).
      */
     Long getUpperBound();
 

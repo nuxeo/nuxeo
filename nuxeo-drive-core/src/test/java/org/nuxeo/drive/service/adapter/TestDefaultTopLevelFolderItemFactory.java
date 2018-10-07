@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.test.runner.Features;
@@ -83,7 +83,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         // Create and register 2 synchronization roots for Administrator
         syncRoot1 = session.createDocument(session.createDocumentModel("/", "syncRoot1", "Folder"));
         syncRoot2 = session.createDocument(session.createDocumentModel("/", "syncRoot2", "Folder"));
-        Principal administrator = session.getPrincipal();
+        NuxeoPrincipal administrator = session.getPrincipal();
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1, session);
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2, session);
 
@@ -109,7 +109,7 @@ public class TestDefaultTopLevelFolderItemFactory {
 
         // -------------------------------------------------------------
         // Check TopLevelFolderItemFactory#getTopLevelFolderItem(String
-        // Principal)
+        // NuxeoPrincipal)
         // -------------------------------------------------------------
         FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         assertNotNull(topLevelFolderItem);
@@ -174,7 +174,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         }
 
         // -------------------------------------------------------------
-        // Check VirtualFolderItemFactory#getVirtualFolderItem(Principal
+        // Check VirtualFolderItemFactory#getVirtualFolderItem(NuxeoPrincipal
         // userName)
         // -------------------------------------------------------------
         assertEquals(topLevelFolderItem, defaultTopLevelFolderItemFactory.getVirtualFolderItem(session.getPrincipal()));
@@ -249,7 +249,7 @@ public class TestDefaultTopLevelFolderItemFactory {
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"));
         assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId(
                 "org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#"));
-        // #exists(String id, Principal principal)
+        // #exists(String id, NuxeoPrincipal principal)
         assertTrue(defaultTopLevelFolderItemFactory.exists(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", session.getPrincipal()));
         try {
@@ -260,7 +260,7 @@ public class TestDefaultTopLevelFolderItemFactory {
                     "Cannot check if a file system item exists for an id that cannot be handled from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
-        // #getFileSystemItemById(String id, Principal principal)
+        // #getFileSystemItemById(String id, NuxeoPrincipal principal)
         FileSystemItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", session.getPrincipal());
         assertNotNull(topLevelFolderItem);
@@ -275,7 +275,7 @@ public class TestDefaultTopLevelFolderItemFactory {
                     "Cannot get the file system item for an id that cannot be handled from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
-        // #getFileSystemItemById(String id, String parentId, Principal
+        // #getFileSystemItemById(String id, String parentId, NuxeoPrincipal
         // principal)
         topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", null, session.getPrincipal());

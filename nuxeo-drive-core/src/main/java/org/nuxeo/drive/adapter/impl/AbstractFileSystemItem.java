@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.security.Principal;
 import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +25,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -71,14 +71,14 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     protected String path;
 
     // Must not be serialized => transient
-    protected transient Principal principal;
+    protected transient NuxeoPrincipal principal;
 
     /**
      * Needed for JSON serialization/deserialization since we don't serialize the principal
      */
     protected String userName;
 
-    protected AbstractFileSystemItem(String factoryName, Principal principal, boolean relaxSyncRootConstraint) {
+    protected AbstractFileSystemItem(String factoryName, NuxeoPrincipal principal, boolean relaxSyncRootConstraint) {
         this.factoryName = factoryName;
         this.principal = principal;
         this.userName = principal.getName();

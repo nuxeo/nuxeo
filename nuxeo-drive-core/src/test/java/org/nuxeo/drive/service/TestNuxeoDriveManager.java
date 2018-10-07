@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -207,8 +207,8 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void testSynchronizeRootMultiUsers() throws Exception {
-        Principal user1 = user1Session.getPrincipal();
-        Principal user2 = user2Session.getPrincipal();
+        NuxeoPrincipal user1 = user1Session.getPrincipal();
+        NuxeoPrincipal user2 = user2Session.getPrincipal();
 
         // by default no user has any synchronization registered
         checkRootsCount(user1, 0);
@@ -280,8 +280,8 @@ public class TestNuxeoDriveManager {
         // trying to apply recursive changes on a removed document
         eventServiceAdmin.setListenerEnabledFlag("bulkLifeCycleChangeListener", false);
 
-        Principal user1 = user1Session.getPrincipal();
-        Principal user2 = user2Session.getPrincipal();
+        NuxeoPrincipal user1 = user1Session.getPrincipal();
+        NuxeoPrincipal user2 = user2Session.getPrincipal();
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 0);
 
@@ -370,13 +370,13 @@ public class TestNuxeoDriveManager {
         assertTrue(isUserSubscribed("user1", workspace_2));
         assertFalse(isUserSubscribed("user1", folder_2_1));
         assertTrue(isUserSubscribed("user1", folder_2_1_1));
-        Principal user1 = user1Session.getPrincipal();
+        NuxeoPrincipal user1 = user1Session.getPrincipal();
         checkRootsCount(user1, 2);
     }
 
     @Test
     public void testSyncRootCacheInvalidation() {
-        Principal user1Principal = user1Session.getPrincipal();
+        NuxeoPrincipal user1Principal = user1Session.getPrincipal();
         // No roots => no sync roots
         Set<String> expectedSyncRootPaths = new HashSet<>();
         checkRoots(user1Principal, 0, expectedSyncRootPaths);
@@ -427,7 +427,7 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void testSyncRootsWithPathInclusion() {
-        Principal user1Principal = user1Session.getPrincipal();
+        NuxeoPrincipal user1Principal = user1Session.getPrincipal();
 
         // Create 2 folders with path inclusion:
         // /default-domain/folder1 includes /default-domain/folder
@@ -630,12 +630,12 @@ public class TestNuxeoDriveManager {
         return session.getDocument(new PathRef(path));
     }
 
-    protected void checkRootsCount(Principal principal, int expectedCount) {
+    protected void checkRootsCount(NuxeoPrincipal principal, int expectedCount) {
         assertEquals(expectedCount,
                 nuxeoDriveManager.getSynchronizationRoots(principal).get(session.getRepositoryName()).refs.size());
     }
 
-    protected void checkRoots(Principal principal, int expectedCount, Set<String> expectedRootPaths) {
+    protected void checkRoots(NuxeoPrincipal principal, int expectedCount, Set<String> expectedRootPaths) {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
         Set<String> syncRootPaths = syncRoots.get(session.getRepositoryName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());

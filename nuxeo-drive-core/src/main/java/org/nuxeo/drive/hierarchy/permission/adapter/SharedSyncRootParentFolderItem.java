@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.permission.adapter;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,8 +51,8 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final Logger log = LogManager.getLogger(SharedSyncRootParentFolderItem.class);
 
-    public SharedSyncRootParentFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
-            String folderName) {
+    public SharedSyncRootParentFolderItem(String factoryName, NuxeoPrincipal principal, String parentId,
+            String parentPath, String folderName) {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
 
@@ -84,7 +84,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                     DocumentModel doc = session.getDocument(idRef);
                     // Filter by creator
                     // TODO: allow filtering by dc:creator in
-                    // NuxeoDriveManager#getSynchronizationRoots(Principal
+                    // NuxeoDriveManager#getSynchronizationRoots(NuxeoPrincipal
                     // principal)
                     if (!session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
                         // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo

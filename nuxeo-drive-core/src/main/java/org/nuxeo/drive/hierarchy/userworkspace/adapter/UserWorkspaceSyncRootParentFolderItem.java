@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.hierarchy.userworkspace.adapter;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,7 +51,7 @@ public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolder
 
     private static final Logger log = LogManager.getLogger(UserWorkspaceSyncRootParentFolderItem.class);
 
-    public UserWorkspaceSyncRootParentFolderItem(String factoryName, Principal principal, String parentId,
+    public UserWorkspaceSyncRootParentFolderItem(String factoryName, NuxeoPrincipal principal, String parentId,
             String parentPath, String folderName) {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
