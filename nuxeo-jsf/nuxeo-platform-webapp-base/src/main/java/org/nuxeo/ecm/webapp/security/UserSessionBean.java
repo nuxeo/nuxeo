@@ -24,7 +24,6 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
-import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 
@@ -44,12 +43,12 @@ public class UserSessionBean implements Serializable, UserSession {
 
     private static final long serialVersionUID = 7639281445209754L;
 
-    private Principal currentUser;
+    private NuxeoPrincipal currentUser;
 
     private static final Log log = LogFactory.getLog(UserSessionBean.class);
 
     @Factory(value = "currentUser", scope = SESSION)
-    public Principal getCurrentUser() {
+    public NuxeoPrincipal getCurrentUser() {
         if (currentUser == null) {
             FacesContext fContext = FacesContext.getCurrentInstance();
             if (fContext == null) {
@@ -60,7 +59,7 @@ public class UserSessionBean implements Serializable, UserSession {
                 // if seam identify filter is available, we can not get the UserPrincipal directly from the request
                 // currentUser =
                 // ((HttpServletRequest)((HttpServletRequestWrapper)(fContext.getExternalContext().getRequest())).getRequest()).getUserPrincipal();
-                currentUser = fContext.getExternalContext().getUserPrincipal();
+                currentUser = (NuxeoPrincipal) fContext.getExternalContext().getUserPrincipal();
             }
         }
         return currentUser;
@@ -68,7 +67,7 @@ public class UserSessionBean implements Serializable, UserSession {
 
     @Factory(value = "currentNuxeoPrincipal", scope = SESSION)
     public NuxeoPrincipal getCurrentNuxeoPrincipal() {
-        return (NuxeoPrincipal) getCurrentUser();
+        return getCurrentUser();
     }
 
     public boolean isAdministrator() {

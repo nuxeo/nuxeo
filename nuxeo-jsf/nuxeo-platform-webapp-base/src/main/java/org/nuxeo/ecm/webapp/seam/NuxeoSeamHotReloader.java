@@ -23,7 +23,6 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +63,7 @@ public class NuxeoSeamHotReloader implements Serializable {
     private static final Log log = LogFactory.getLog(NuxeoSeamHotReloader.class);
 
     @In(required = false, create = true)
-    private transient Principal currentUser;
+    private transient NuxeoPrincipal currentUser;
 
     /**
      * Returns true if dev mode is set
@@ -89,11 +88,7 @@ public class NuxeoSeamHotReloader implements Serializable {
      * @return
      */
     public boolean getCanTriggerFlush() {
-        NuxeoPrincipal pal = null;
-        if (currentUser instanceof NuxeoPrincipal) {
-            pal = (NuxeoPrincipal) currentUser;
-        }
-        return isDevModeSet() && pal != null && pal.isAdministrator();
+        return isDevModeSet() && currentUser != null && currentUser.isAdministrator();
     }
 
     /**

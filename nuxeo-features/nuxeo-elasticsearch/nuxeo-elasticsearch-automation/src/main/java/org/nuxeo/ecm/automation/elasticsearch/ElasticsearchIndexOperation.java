@@ -68,7 +68,7 @@ public class ElasticsearchIndexOperation {
     }
 
     private void checkAccess() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         if (principal == null || ! principal.isAdministrator()) {
             throw new NuxeoException("Unauthorized access: " + principal);
         }

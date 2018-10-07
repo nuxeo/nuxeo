@@ -36,13 +36,13 @@ public class InstanceRef implements DocumentRef {
 
     final String repositoryName;
 
-    final Principal principal;
+    final NuxeoPrincipal principal;
 
     final DocumentRef ref;
 
     transient DocumentModel referent;
 
-    public InstanceRef(DocumentModel doc, Principal principal) {
+    public InstanceRef(DocumentModel doc, NuxeoPrincipal principal) {
         if (doc.getRef() == null) {
             throw new NullPointerException("document as no reference yet");
         }

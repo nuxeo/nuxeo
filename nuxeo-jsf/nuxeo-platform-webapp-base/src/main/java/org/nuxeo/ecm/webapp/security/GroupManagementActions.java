@@ -175,7 +175,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
 
     public boolean getAllowDeleteGroup() {
         if (getAllAdminGroups().contains(selectedGroup.getId())) {
-            return ((NuxeoPrincipal) currentUser).isAdministrator();
+            return currentUser.isAdministrator();
         }
 
         return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
@@ -186,7 +186,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         // powerusers)
         // NXP-10584
         if (getAllAdminGroups().contains(selectedGroup.getId())) {
-            return ((NuxeoPrincipal) currentUser).isAdministrator();
+            return currentUser.isAdministrator();
         }
 
         return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);

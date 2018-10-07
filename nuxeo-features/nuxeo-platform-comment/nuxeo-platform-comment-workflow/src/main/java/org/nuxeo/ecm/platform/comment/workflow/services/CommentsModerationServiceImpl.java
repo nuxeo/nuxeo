@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
@@ -64,8 +63,8 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(), CommentsConstants.ACCEPT_CHAIN_NAME);
         vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(), CommentsConstants.REJECT_CHAIN_NAME);
 
-        taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), doc,
-                CommentsConstants.MODERATION_DIRECTIVE_NAME, moderators, false, null, null, null, vars, null);
+        taskService.createTask(session, session.getPrincipal(), doc, CommentsConstants.MODERATION_DIRECTIVE_NAME,
+                moderators, false, null, null, null, vars, null);
     }
 
     public Task getModerationTask(TaskService taskService, CoreSession session, DocumentModel doc, String commentId)
@@ -89,7 +88,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         if (moderationTask == null) {
             session.followTransition(new IdRef(commentId), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
         } else {
-            taskService.acceptTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
+            taskService.acceptTask(session, session.getPrincipal(), moderationTask, null);
         }
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -104,7 +103,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         if (moderationTask == null) {
             session.followTransition(new IdRef(commentId), CommentsConstants.REJECT_STATE);
         } else {
-            taskService.rejectTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
+            taskService.rejectTask(session, session.getPrincipal(), moderationTask, null);
         }
     }
 

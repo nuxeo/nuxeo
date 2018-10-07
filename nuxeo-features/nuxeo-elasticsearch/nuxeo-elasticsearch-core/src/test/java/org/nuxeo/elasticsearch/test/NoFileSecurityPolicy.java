@@ -18,8 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import java.security.Principal;
-
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -40,7 +38,7 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
     public static final SQLQuery.Transformer NO_FILE_TRANSFORMER = new NoFileTransformer();
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         if (doc.getType().getName().equals("File")) {
             return Access.DENY;
@@ -74,8 +72,8 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
         public NoFileTransformer() {
         }
 
-        public SQLQuery transform(Principal principal, SQLQuery query) {
-            if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
+        public SQLQuery transform(NuxeoPrincipal principal, SQLQuery query) {
+            if (principal.isAdministrator()) {
                 return query;
             }
             WhereClause where = query.where;

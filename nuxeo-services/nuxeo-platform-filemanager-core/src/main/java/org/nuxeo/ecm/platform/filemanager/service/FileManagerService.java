@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.filemanager.service;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -545,7 +545,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     @Override
     public List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
-            Principal principal) {
+            NuxeoPrincipal principal) {
         String nxql = String.format(QUERY, digest);
         DocumentModelList documentModelList = documentManager.query(nxql, MAX);
         List<DocumentLocation> docLocationList = new ArrayList<>(documentModelList.size());
@@ -571,7 +571,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     @Override
-    public DocumentModelList getCreationContainers(Principal principal, String docType) {
+    public DocumentModelList getCreationContainers(NuxeoPrincipal principal, String docType) {
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {

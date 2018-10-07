@@ -109,7 +109,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
         userTasks = new ArrayList<>();
         CoreSession coreSession = getCoreSession();
         boolean filterTrashDocs = getFilterDocumentsInTrash();
-        NuxeoPrincipal pal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal pal = coreSession.getPrincipal();
         TaskService taskService = Framework.getService(TaskService.class);
         List<Task> tasks = taskService.getAllCurrentTaskInstances(coreSession, getSortInfos());
         if (tasks != null) {

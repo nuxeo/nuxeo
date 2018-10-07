@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.security;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +43,10 @@ public class BaseUserGroupMock {
      * @param admin
      * @return
      */
-    protected Principal getMockedUser(String username, boolean admin) {
-        Principal user = mock(NuxeoPrincipalImpl.class);
-        when(((NuxeoPrincipal) user).isAdministrator()).thenReturn(admin);
-        when(((NuxeoPrincipal) user).getName()).thenReturn(username);
+    protected NuxeoPrincipal getMockedUser(String username, boolean admin) {
+        NuxeoPrincipal user = mock(NuxeoPrincipalImpl.class);
+        when(user.isAdministrator()).thenReturn(admin);
+        when(user.getName()).thenReturn(username);
 
         return user;
     }
@@ -58,9 +57,9 @@ public class BaseUserGroupMock {
      * @param userManager
      * @return
      */
-    protected Principal getMockedUser(String username, boolean isAdmin, UserManager userManager) {
-        Principal user = getMockedUser(username, isAdmin);
-        when(userManager.getPrincipal(username)).thenReturn((NuxeoPrincipal) user);
+    protected NuxeoPrincipal getMockedUser(String username, boolean isAdmin, UserManager userManager) {
+        NuxeoPrincipal user = getMockedUser(username, isAdmin);
+        when(userManager.getPrincipal(username)).thenReturn(user);
         return user;
     }
 

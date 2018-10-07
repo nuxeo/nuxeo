@@ -50,7 +50,6 @@ import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -83,8 +82,8 @@ public class AutomationMapper implements Bindings {
         automatic.put("Session", () -> ctx.getCoreSession());
         automatic.put(AutomationScriptingConstants.AUTOMATION_CTX_KEY, () -> ctx.getVars());
         automatic.put(AutomationScriptingConstants.AUTOMATION_MAPPER_KEY, () -> this);
-        automatic.put("CurrentUser", () -> new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
-        automatic.put("currentUser", () -> new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
+        automatic.put("CurrentUser", () -> new PrincipalWrapper(ctx.getPrincipal()));
+        automatic.put("currentUser", () -> new PrincipalWrapper(ctx.getPrincipal()));
         automatic.put("Env", () -> Framework.getProperties());
         automatic.put("CurrentDate", () -> new DateWrapper());
         // Helpers injection

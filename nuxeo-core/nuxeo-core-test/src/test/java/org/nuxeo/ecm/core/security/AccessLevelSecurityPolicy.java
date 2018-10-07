@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.security.Principal;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -38,12 +36,12 @@ import org.nuxeo.ecm.core.model.Document;
 public class AccessLevelSecurityPolicy extends AbstractSecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         try {
-            if ("Folder".equals(doc.getType().getName()) && principal instanceof NuxeoPrincipal) {
-                DocumentModel userModel = ((NuxeoPrincipal) principal).getModel();
+            if ("Folder".equals(doc.getType().getName())) {
+                DocumentModel userModel = principal.getModel();
                 if (userModel != null) {
                     Long accessLevel = (Long) userModel.getPropertyValue("user:accessLevel");
                     Long securityLevel = (Long) doc.getPropertyValue("sp:securityLevel");

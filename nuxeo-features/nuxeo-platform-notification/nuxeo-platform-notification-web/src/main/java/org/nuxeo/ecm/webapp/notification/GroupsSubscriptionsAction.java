@@ -104,21 +104,20 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
         List<String> newSubscriptions = getDisjunctElements(selectedNotifications, subscriptions);
         List<String> removedSubscriptions = getDisjunctElements(subscriptions, selectedNotifications);
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
             for (String subscription : removedSubscriptions) {
-                notificationManager.removeSubscription("user:" + principal.getName(), subscription, currentDoc);
+                notificationManager.removeSubscription("user:" + currentUser.getName(), subscription, currentDoc);
             }
         }
 
         // adding the newly selected subscriptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
-                notificationManager.addSubscription(NotificationConstants.USER_PREFIX + principal.getName(),
-                        subscription, currentDoc, false, principal, "");
+                notificationManager.addSubscription(NotificationConstants.USER_PREFIX + currentUser.getName(),
+                        subscription, currentDoc, false, currentUser, "");
             }
         }
 
@@ -152,9 +151,8 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
      */
     private List<String> getSubscriptionsForCurrentUser() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                "user:" + principal.getName(), currentDoc);
+                "user:" + currentUser.getName(), currentDoc);
         return subscriptions;
     }
 
@@ -237,7 +235,6 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
         boolean subscribe = selectedGrant.equals("Subscribe");
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
         List<String> registeredNotifications = null;
         if (subscribe) {
@@ -248,7 +245,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
             if (subscribe) {
                 if (registeredNotifications == null || !registeredNotifications.contains(selectedEntry)) {
                     notificationManager.addSubscription(selectedEntry, selectedNotification, currentDoc, true,
-                            currentPrincipal, notificationName);
+                            currentUser, notificationName);
                 } else {
                     facesMessages.add(StatusMessage.Severity.WARN,
                             resourcesAccessor.getMessages().get("label.notifications.alreadyRegistered"), selectedEntry);

@@ -340,8 +340,8 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             RestBinding binding = server.getOperationBinding(chainOrOperationId);
 
             if (binding != null && binding.isAdministrator) {
-                Principal principal = ctx.getPrincipal();
-                if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+                NuxeoPrincipal principal = ctx.getPrincipal();
+                if (!principal.isAdministrator()) {
                     String message = "Not allowed. You must be administrator to use this operation";
                     getLog().error(message);
                     throw new WebSecurityException(message);

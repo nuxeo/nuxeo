@@ -24,7 +24,6 @@ package org.nuxeo.ecm.webapp.context;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
-import java.security.Principal;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -54,7 +53,7 @@ public class UserServicesContext implements Serializable {
     private transient NavigationContext navigationContext;
 
     @In(required = false, create = true)
-    private transient Principal currentUser;
+    private transient NuxeoPrincipal currentUser;
 
     private transient RepositoryLocation repoLocation;
 
@@ -98,7 +97,7 @@ public class UserServicesContext implements Serializable {
         if (currentUser == null) {
             return false;
         } else {
-            return ((NuxeoPrincipal) currentUser).isAdministrator();
+            return currentUser.isAdministrator();
         }
     }
 

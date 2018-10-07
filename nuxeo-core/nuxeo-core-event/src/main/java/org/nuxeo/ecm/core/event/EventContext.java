@@ -19,10 +19,10 @@
 package org.nuxeo.ecm.core.event;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * An event context is describing the context in which a core event was raised.
@@ -110,7 +110,7 @@ public interface EventContext extends Serializable {
      *
      * @return the principal. Cannot be null.
      */
-    Principal getPrincipal();
+    NuxeoPrincipal getPrincipal();
 
     /**
      * Sets the core session.
@@ -120,7 +120,7 @@ public interface EventContext extends Serializable {
     /**
      * Sets the principal.
      */
-    void setPrincipal(Principal principal);
+    void setPrincipal(NuxeoPrincipal principal);
 
     /**
      * Creates a new event in that context given the event name. The default flags for the event will be used.

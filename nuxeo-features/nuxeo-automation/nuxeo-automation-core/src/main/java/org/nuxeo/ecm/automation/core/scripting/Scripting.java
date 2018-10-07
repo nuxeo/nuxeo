@@ -40,7 +40,6 @@ import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 import groovy.lang.Binding;
@@ -103,7 +102,7 @@ public class Scripting {
         }
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        PrincipalWrapper principalWrapper = new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal());
+        PrincipalWrapper principalWrapper = new PrincipalWrapper(ctx.getPrincipal());
         map.put("CurrentUser", principalWrapper);
         // Alias
         map.put("currentUser", principalWrapper);

@@ -49,7 +49,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,6 +68,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.BatchFinderWork;
 import org.nuxeo.ecm.core.BatchProcessorWork;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
@@ -473,7 +473,7 @@ public class DBSTransactionState {
 
             // update the direct children (with a limit in case it's too big)
             String nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s'", id);
-            Principal principal = new SystemPrincipal(null);
+            NuxeoPrincipal principal = new SystemPrincipal(null);
             QueryFilter queryFilter = new QueryFilter(principal, null, null, null, Collections.emptyList(), limit, 0);
             PartialList<Map<String, Serializable>> pl = session.queryProjection(nxql, NXQL.NXQL, queryFilter, false, 0,
                     new Object[0]);

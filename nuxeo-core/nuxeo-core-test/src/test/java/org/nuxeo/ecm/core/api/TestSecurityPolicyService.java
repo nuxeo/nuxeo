@@ -94,7 +94,7 @@ public class TestSecurityPolicyService {
             session.save();
 
             // test permission for 'foo' user using hasPermission
-            Principal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
+            NuxeoPrincipal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
             assertFalse(session.hasPermission(fooUser, folderRef, READ));
             assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
             setTestPermissions(fooUser.getName(), READ);
@@ -109,11 +109,11 @@ public class TestSecurityPolicyService {
             Map<String, Object> data = new HashMap<>();
             data.put("accessLevel", Long.valueOf(3));
             documentModelImpl.addDataModel(new DataModelImpl("user", data));
-            ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);
+            session.getPrincipal().setModel(documentModelImpl);
             // access level is too low for this doc
             assertFalse(session.hasPermission(folderRef, READ));
             // change user access level => can read
-            ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty("user", "accessLevel", Long.valueOf(5));
+            session.getPrincipal().getModel().setProperty("user", "accessLevel", Long.valueOf(5));
             assertTrue(session.hasPermission(folderRef, READ));
             session.save();
         }

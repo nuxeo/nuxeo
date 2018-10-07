@@ -106,7 +106,7 @@ public class HotReloadStudioSnapshot {
                 return jsonHelper(inProgress, "Update in progress.", null);
             }
 
-            if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+            if (!session.getPrincipal().isAdministrator()) {
                 return jsonHelper(error, "Must be Administrator to use this function.", null);
             }
 

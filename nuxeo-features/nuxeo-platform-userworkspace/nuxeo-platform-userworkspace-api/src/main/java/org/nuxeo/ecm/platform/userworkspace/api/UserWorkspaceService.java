@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.userworkspace.api;
 
 import java.io.Serializable;
-import java.security.Principal;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -94,7 +93,7 @@ public interface UserWorkspaceService extends Serializable {
      * @return {@code true} if the document is under the user's workspace
      * @since 9.2
      */
-    boolean isUnderUserWorkspace(Principal principal, String username, DocumentModel doc);
+    boolean isUnderUserWorkspace(NuxeoPrincipal principal, String username, DocumentModel doc);
 
     /**
      * Invalidates the user workspace service and force re-computation of user workspace root location.

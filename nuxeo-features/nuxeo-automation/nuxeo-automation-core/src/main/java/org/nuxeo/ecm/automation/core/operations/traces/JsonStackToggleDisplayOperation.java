@@ -45,7 +45,7 @@ public class JsonStackToggleDisplayOperation {
     protected OperationContext ctx;
 
     protected boolean canManageStackDisplay() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         return principal != null && (principal.isAdministrator());
     }
 

@@ -20,13 +20,10 @@ package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assume.assumeTrue;
 
-import java.io.Serializable;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -49,8 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -234,13 +229,6 @@ public class TestTreeIndexing {
 
     }
 
-    protected CloseableCoreSession getRestrictedSession(String userName) {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Map<String, Serializable> ctx = new HashMap<>();
-        ctx.put("principal", new UserPrincipal(userName, null, false, false));
-        return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);
-    }
-
     @Test
     public void shouldFilterTreeOnSecurity() throws Exception {
 
@@ -251,7 +239,7 @@ public class TestTreeIndexing {
 
         // check for user with no rights
         startTransaction();
-        try (CloseableCoreSession restrictedSession = getRestrictedSession("toto")) {
+        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(null, "toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
@@ -313,7 +301,7 @@ public class TestTreeIndexing {
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
-        try (CloseableCoreSession restrictedSession = getRestrictedSession("toto")) {
+        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(null, "toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
@@ -358,7 +346,7 @@ public class TestTreeIndexing {
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
-        try (CloseableCoreSession restrictedSession = getRestrictedSession("toto")) {
+        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(null, "toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 

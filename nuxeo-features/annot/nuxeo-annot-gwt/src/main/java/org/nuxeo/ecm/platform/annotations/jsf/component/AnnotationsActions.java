@@ -24,7 +24,6 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +66,7 @@ public class AnnotationsActions implements Serializable {
     public static final String TEXT_ANNOTATIONS_KEY = "nuxeo.text.annotations";
 
     @In(create = true)
-    protected transient Principal currentUser;
+    protected transient NuxeoPrincipal currentUser;
 
     public long getAnnotationsCount(DocumentModel doc) {
         DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
@@ -78,7 +77,7 @@ public class AnnotationsActions implements Serializable {
         String documentUrl = documentViewCodecManager.getUrlFromDocumentView("docpath", docView, true,
                 VirtualHostHelper.getBaseURL(request));
         try {
-            return annotationsService.getAnnotationsCount(new URI(documentUrl), (NuxeoPrincipal) currentUser);
+            return annotationsService.getAnnotationsCount(new URI(documentUrl), currentUser);
         } catch (URISyntaxException e) {
             throw new NuxeoException(e);
         }

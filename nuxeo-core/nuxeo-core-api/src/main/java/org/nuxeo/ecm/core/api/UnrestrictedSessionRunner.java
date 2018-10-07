@@ -19,14 +19,11 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.security.Principal;
-
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,7 +64,7 @@ public abstract class UnrestrictedSessionRunner {
         } else {
             repositoryName = session.getRepositoryName();
         }
-        Principal pal = session.getPrincipal();
+        NuxeoPrincipal pal = session.getPrincipal();
         if (pal != null) {
             originatingUsername = pal.getName();
         }
@@ -106,8 +103,7 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     protected boolean checkUnrestricted(CoreSession session) {
-        return session.getPrincipal() instanceof NuxeoPrincipal
-                && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator();
+        return session.getPrincipal().isAdministrator();
     }
 
     /**

@@ -19,12 +19,12 @@
 package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Specialized implementation to be used with an abstract session
@@ -40,11 +40,12 @@ public class DocumentEventContext extends EventContextImpl {
 
     public static final String COMMENT_PROPERTY_KEY = "comment";
 
-    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source) {
+    public DocumentEventContext(CoreSession session, NuxeoPrincipal principal, DocumentModel source) {
         super(session, principal, source, null);
     }
 
-    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source, DocumentRef destDoc) {
+    public DocumentEventContext(CoreSession session, NuxeoPrincipal principal, DocumentModel source,
+            DocumentRef destDoc) {
         super(session, principal, source, destDoc);
     }
 

@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -250,7 +249,7 @@ public class TestNXAuditEventsService {
     @Test
     public void setSimplePincipalNameIsLoggedAsPrincipalName() throws Exception {
         // Given a simple principal
-        Principal principal = new SimplePrincipal("testuser");
+        NuxeoPrincipal principal = new UserPrincipal("testuser", null, false, false);
         // I get it in the logs
         doTestPrincipalName("testuser", principal);
     }
@@ -264,7 +263,7 @@ public class TestNXAuditEventsService {
         doTestPrincipalName("actualuser", principal);
     }
 
-    protected void doTestPrincipalName(String expected, Principal principal) throws InterruptedException {
+    protected void doTestPrincipalName(String expected, NuxeoPrincipal principal) throws InterruptedException {
         // Given a principal
         // When i fire an event with it
         int oldCount = serviceUnderTest.getEventsCount("loginSuccess").intValue();

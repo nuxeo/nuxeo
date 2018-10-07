@@ -34,7 +34,6 @@ import org.nuxeo.ecm.automation.core.operations.services.GetActions;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -147,7 +146,7 @@ public class SeamOperationFilter {
         }
         seamActionContext.setDocumentManager(session);
         seamActionContext.putLocalVariable("SeamContext", new SeamContextHelper());
-        seamActionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
+        seamActionContext.setCurrentPrincipal(session.getPrincipal());
 
         context.put(GetActions.SEAM_ACTION_CONTEXT, seamActionContext);
     }

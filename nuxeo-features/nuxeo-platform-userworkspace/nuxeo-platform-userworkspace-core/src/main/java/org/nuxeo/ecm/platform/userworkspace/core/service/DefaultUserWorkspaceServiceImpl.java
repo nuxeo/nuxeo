@@ -28,7 +28,6 @@ import java.util.Map;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -104,7 +103,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("username", username);
-        notifyEvent(unrestrictedSession, doc, (NuxeoPrincipal) unrestrictedSession.getPrincipal(),
+        notifyEvent(unrestrictedSession, doc, unrestrictedSession.getPrincipal(),
                 DocumentEventTypes.USER_WORKSPACE_CREATED, properties);
 
         return doc;

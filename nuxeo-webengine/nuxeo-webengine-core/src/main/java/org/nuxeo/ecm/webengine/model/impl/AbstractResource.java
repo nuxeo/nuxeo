@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -243,6 +244,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         if (adapter == CoreSession.class) {
             return adapter.cast(ctx.getCoreSession());
         } else if (adapter == Principal.class) {
+            return adapter.cast(ctx.getPrincipal());
+        } else if (adapter == NuxeoPrincipal.class) {
             return adapter.cast(ctx.getPrincipal());
         }
         if (adapter == WebContext.class) {

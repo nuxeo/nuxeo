@@ -45,13 +45,13 @@ public class MeObject extends DefaultObject {
 
     @GET
     public NuxeoPrincipal doGet(@Context Request request) {
-        return (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        return getContext().getCoreSession().getPrincipal();
     }
 
     @PUT
     @Path("changepassword")
     public Object changePassword(String payload) throws JSONException {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        NuxeoPrincipal currentUser = getContext().getCoreSession().getPrincipal();
         JSONObject payloadJson = new JSONObject(payload);
         String oldPassword = payloadJson.getString("oldPassword");
         String newPassword = payloadJson.getString("newPassword");

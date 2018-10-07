@@ -30,13 +30,14 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.login.NuxeoAbstractServerLoginModule;
 
 public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
 
-    protected Principal identity;
+    protected NuxeoPrincipal identity;
 
     public boolean abort() throws LoginException {
         return true;
@@ -81,7 +82,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal getIdentity() {
+    protected NuxeoPrincipal getIdentity() {
         return identity;
     }
 
@@ -91,7 +92,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal createIdentity(String username) {
+    protected NuxeoPrincipal createIdentity(String username) {
         return new UserPrincipal(username, Collections.emptyList(), false, false);
     }
 

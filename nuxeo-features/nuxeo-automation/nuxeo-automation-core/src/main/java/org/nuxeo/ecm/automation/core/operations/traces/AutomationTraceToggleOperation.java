@@ -51,7 +51,7 @@ public class AutomationTraceToggleOperation {
     protected OperationContext ctx;
 
     protected boolean canManageTraces() {
-        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        NuxeoPrincipal principal = ctx.getPrincipal();
         return principal != null && (principal.isAdministrator());
     }
 

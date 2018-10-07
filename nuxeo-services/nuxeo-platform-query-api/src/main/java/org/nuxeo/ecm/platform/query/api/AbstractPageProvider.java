@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -994,7 +994,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      *
      * @since 7.4
      */
-    protected void fireSearchEvent(Principal principal, String query, List<T> entries, Long executionTimeMs) {
+    protected void fireSearchEvent(NuxeoPrincipal principal, String query, List<T> entries, Long executionTimeMs) {
 
         if (!isTrackingEnabled()) {
             return;

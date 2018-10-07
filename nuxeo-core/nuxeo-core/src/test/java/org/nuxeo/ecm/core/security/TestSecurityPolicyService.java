@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
@@ -38,6 +37,7 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -57,9 +57,9 @@ public class TestSecurityPolicyService {
 
     static final String user = "Bubbles";
 
-    static final Principal creatorPrincipal = new UserPrincipal("Bodie", new ArrayList<>(), false, false);
+    static final NuxeoPrincipal creatorPrincipal = new UserPrincipal("Bodie", new ArrayList<>(), false, false);
 
-    static final Principal userPrincipal = new UserPrincipal("Bubbles", new ArrayList<>(), false, false);
+    static final NuxeoPrincipal userPrincipal = new UserPrincipal("Bubbles", new ArrayList<>(), false, false);
 
     @Inject
     public SecurityPolicyService service;

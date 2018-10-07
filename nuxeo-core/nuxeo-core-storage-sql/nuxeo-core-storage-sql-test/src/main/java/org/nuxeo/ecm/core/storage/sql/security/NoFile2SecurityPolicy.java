@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql.security;
 
-import java.security.Principal;
-
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
@@ -50,7 +49,7 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
                 new StringLiteral("File"));
 
         @Override
-        public SQLQuery transform(Principal principal, SQLQuery query) {
+        public SQLQuery transform(NuxeoPrincipal principal, SQLQuery query) {
             WhereClause where = query.where;
             Predicate predicate;
             if (where == null || where.predicate == null) {

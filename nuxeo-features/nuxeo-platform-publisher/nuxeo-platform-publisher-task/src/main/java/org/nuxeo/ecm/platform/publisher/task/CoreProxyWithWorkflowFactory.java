@@ -111,7 +111,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         } else {
             targetDocModel = coreSession.getDocument(new PathRef(targetNode.getPath()));
         }
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         DocumentPublisherUnrestricted runner = new DocumentPublisherUnrestricted(coreSession, doc.getRef(),
                 targetDocModel.getRef(), principal, null);
         runner.runUnrestricted();
@@ -185,7 +185,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     @Override
     public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         removeExistingProxiesOnPreviousVersions(proxy);
         removeACL(proxy, coreSession);
         endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationApproved);
@@ -233,7 +233,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     @Override
     public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         notifyEvent(PublishingEvent.documentPublicationRejected, proxy, coreSession);
         endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationRejected);
         removeProxy(proxy, coreSession);
@@ -271,7 +271,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     @Override
     public boolean canManagePublishing(PublishedDocument publishedDocument) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal currentUser = coreSession.getPrincipal();
         return proxy.isProxy() && hasValidationTask(proxy, currentUser);
     }
 
@@ -289,7 +289,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     @Override
     public boolean hasValidationTask(PublishedDocument publishedDocument) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal currentUser = coreSession.getPrincipal();
         return hasValidationTask(proxy, currentUser);
     }
 

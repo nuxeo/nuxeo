@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.filemanager.api;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -30,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
@@ -124,7 +124,7 @@ public interface FileManager {
      *
      * @return the list of candidate containers
      */
-    DocumentModelList getCreationContainers(Principal principal, String docType);
+    DocumentModelList getCreationContainers(NuxeoPrincipal principal, String docType);
 
     /**
      * Returns the list of document that are to be suggested to the principal of documentManager as a candidate
@@ -135,7 +135,7 @@ public interface FileManager {
     DocumentModelList getCreationContainers(CoreSession documentManager, String docType);
 
     List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
-            Principal principal);
+            NuxeoPrincipal principal);
 
     boolean isUnicityEnabled();
 

@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
@@ -98,10 +98,10 @@ public abstract class AbstractUnicityChecker {
         }
     }
 
-    protected abstract void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc,
+    protected abstract void onDuplicatedDoc(CoreSession session, NuxeoPrincipal principal, DocumentModel newDoc,
             List<DocumentLocation> existingDocs, Event event);
 
-    protected void raiseDuplicatedFileEvent(CoreSession session, Principal principal, DocumentModel newDoc,
+    protected void raiseDuplicatedFileEvent(CoreSession session, NuxeoPrincipal principal, DocumentModel newDoc,
             List<DocumentLocation> existingDocs) {
 
         DocumentEventContext ctx = new DocumentEventContext(session, principal, newDoc);

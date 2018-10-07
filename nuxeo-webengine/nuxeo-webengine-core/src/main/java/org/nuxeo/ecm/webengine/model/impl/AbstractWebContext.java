@@ -51,6 +51,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
@@ -141,6 +142,8 @@ public abstract class AbstractWebContext implements WebContext {
             return adapter.cast(getCoreSession());
         } else if (Principal.class == adapter) {
             return adapter.cast(getPrincipal());
+        } else if (NuxeoPrincipal.class == adapter) {
+            return adapter.cast(getPrincipal());
         } else if (Resource.class == adapter) {
             return adapter.cast(tail());
         } else if (WebContext.class == adapter) {
@@ -181,8 +184,8 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     @Override
-    public Principal getPrincipal() {
-        return request.getUserPrincipal();
+    public NuxeoPrincipal getPrincipal() {
+        return (NuxeoPrincipal) request.getUserPrincipal();
     }
 
     @Override

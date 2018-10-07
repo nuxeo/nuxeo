@@ -33,7 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -89,8 +88,7 @@ public class BlobToFile {
 
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob blob) throws IOException, OperationException {
-        if (!(ctx.getPrincipal() instanceof NuxeoPrincipal)
-                || !((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+        if (!ctx.getPrincipal().isAdministrator()) {
             throw new OperationException("Not allowed. You must be administrator to use this operation");
         }
         if (isTargetDirectoryForbidden()) {

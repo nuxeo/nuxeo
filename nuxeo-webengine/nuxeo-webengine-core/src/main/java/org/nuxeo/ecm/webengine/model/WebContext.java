@@ -21,7 +21,6 @@
 package org.nuxeo.ecm.webengine.model;
 
 import java.io.Writer;
-import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -177,7 +177,7 @@ public interface WebContext extends Adaptable {
      *
      * @return the current principal. Can return null if the user has not been authenticated.
      */
-    Principal getPrincipal();
+    NuxeoPrincipal getPrincipal();
 
     /**
      * Gets the JAX-RS UriInfo.

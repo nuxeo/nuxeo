@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -314,7 +314,7 @@ public class TestUserWorkspace {
         session.save();
 
         try (CloseableCoreSession userSession = coreFeature.openCoreSession(username)) {
-            Principal principal = userSession.getPrincipal();
+            NuxeoPrincipal principal = userSession.getPrincipal();
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             DocumentModel bar = userSession.createDocumentModel(uw.getPathAsString(), "bar", "File");
             bar = userSession.createDocument(bar);

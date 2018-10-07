@@ -19,16 +19,12 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
@@ -41,18 +37,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  */
 public class CoreInstance {
 
-    private static final CoreInstance INSTANCE = new CoreInstance();
-
     private CoreInstance() {
-    }
-
-    /**
-     * Gets the CoreInstance singleton.
-     *
-     * @deprecated since 8.4, use {@link CoreSessionService} directly.
-     */
-    public static CoreInstance getInstance() {
-        return INSTANCE;
     }
 
     /**
@@ -65,7 +50,7 @@ public class CoreInstance {
      * @since 5.9.3
      */
     public static CloseableCoreSession openCoreSession(String repositoryName) {
-        return openCoreSession(repositoryName, getPrincipal((String) null));
+        return openCoreSession(repositoryName, getPrincipal(null));
     }
 
     /**
@@ -110,38 +95,7 @@ public class CoreInstance {
     }
 
     /**
-     * NOT PUBLIC, DO NOT CALL. Kept public for compatibility with old code.
-     * <p>
-     * Opens a {@link CoreSession} for the given context.
-     *
-     * @param repositoryName the repository name, or {@code null} for the default repository
-     * @param context the session open context
-     * @return the session
-     */
-    public static CloseableCoreSession openCoreSession(String repositoryName, Map<String, Serializable> context) {
-        return openCoreSession(repositoryName, getPrincipal(context));
-    }
-
-    /**
-     * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
-     * <p>
-     * The session must be closed using {@link CloseableCoreSession#close}.
-     *
-     * @param repositoryName the repository name, or {@code null} for the default repository
-     * @param principal the principal
-     * @return the session
-     * @since 5.9.3
-     */
-    public static CloseableCoreSession openCoreSession(String repositoryName, Principal principal) {
-        if (principal instanceof NuxeoPrincipal) {
-            return openCoreSession(repositoryName, (NuxeoPrincipal) principal);
-        } else {
-            return openCoreSession(repositoryName, getPrincipal(principal.getName()));
-        }
-    }
-
-    /**
-     * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
+     * Opens a {@link CoreSession} for the given principal.
      * <p>
      * The session must be closed using {@link CloseableCoreSession#close}.
      *
@@ -153,7 +107,7 @@ public class CoreInstance {
     public static CloseableCoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) {
         if (repositoryName == null) {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            repositoryName = repositoryManager.getDefaultRepository().getName();
+            repositoryName = repositoryManager.getDefaultRepositoryName();
         }
         return Framework.getService(CoreSessionService.class).createCoreSession(repositoryName, principal);
     }
@@ -177,17 +131,6 @@ public class CoreInstance {
      */
     public static void closeCoreSession(CloseableCoreSession session) {
         Framework.getService(CoreSessionService.class).releaseCoreSession(session);
-    }
-
-    protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map) {
-        if (map == null) {
-            return getPrincipal((String) null); // logged-in principal
-        }
-        NuxeoPrincipal principal = (NuxeoPrincipal) map.get("principal");
-        if (principal == null) {
-            principal = getPrincipal((String) map.get("username"));
-        }
-        return principal;
     }
 
     protected static NuxeoPrincipal getPrincipal(String username) {
@@ -216,35 +159,13 @@ public class CoreInstance {
     }
 
     /**
-     * Gets the number of open sessions.
-     *
-     * @since 5.4.2
-     * @deprecated since 8.4, use {@link CoreSessionService#getNumberOfOpenCoreSessions()} directly
-     */
-    @Deprecated
-    public int getNumberOfSessions() {
-        return Framework.getService(CoreSessionService.class).getNumberOfOpenCoreSessions();
-    }
-
-    /**
-     * Gets the number of open sessions.
-     *
-     * @since 5.4.2
-     * @deprecated since 8.4, use {@link CoreSessionService#getCoreSessionRegistrationInfos()} directly
-     */
-    @Deprecated
-    public Collection<CoreSessionRegistrationInfo> getRegistrationInfos() {
-        return Framework.getService(CoreSessionService.class).getCoreSessionRegistrationInfos();
-    }
-
-    /**
      * Gets the name of the currently logged-in principal.
      *
      * @return the principal name, or {@code null} if there was no login
      * @since 8.4
      */
     protected static String getCurrentPrincipalName() {
-        Principal p = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal p = ClientLoginModule.getCurrentPrincipal();
         return p == null ? null : p.getName();
     }
 

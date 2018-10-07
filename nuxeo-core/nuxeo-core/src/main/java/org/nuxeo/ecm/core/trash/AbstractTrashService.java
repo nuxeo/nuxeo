@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.trash;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,7 +80,7 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
-    public boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies) {
+    public boolean canDelete(List<DocumentModel> docs, NuxeoPrincipal principal, boolean checkProxies) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -91,7 +90,7 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
-    public boolean canPurgeOrUntrash(List<DocumentModel> docs, Principal principal) {
+    public boolean canPurgeOrUntrash(List<DocumentModel> docs, NuxeoPrincipal principal) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -100,7 +99,7 @@ public abstract class AbstractTrashService implements TrashService {
         return info.docs.size() == docs.size();
     }
 
-    protected TrashInfo getInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies,
+    protected TrashInfo getInfo(List<DocumentModel> docs, NuxeoPrincipal principal, boolean checkProxies,
             boolean checkDeleted) {
         TrashInfo info = new TrashInfo();
         info.docs = new ArrayList<>(docs.size());
@@ -136,9 +135,7 @@ public abstract class AbstractTrashService implements TrashService {
             }
             if (doc.isLocked()) {
                 String locker = getDocumentLocker(doc);
-                if (principal == null
-                        || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())
-                        || principal.getName().equals(locker)) {
+                if (principal == null || principal.isAdministrator() || principal.getName().equals(locker)) {
                     info.docs.add(doc);
                 } else {
                     info.locked++;
@@ -173,7 +170,7 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
-    public TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies,
+    public TrashInfo getTrashInfo(List<DocumentModel> docs, NuxeoPrincipal principal, boolean checkProxies,
             boolean checkDeleted) {
         TrashInfo info = getInfo(docs, principal, checkProxies, checkDeleted);
         // Keep only common tree roots (see NXP-1411)
@@ -211,7 +208,7 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
-    public DocumentModel getAboveDocument(DocumentModel doc, Principal principal) {
+    public DocumentModel getAboveDocument(DocumentModel doc, NuxeoPrincipal principal) {
         TrashInfo info = getTrashInfo(Collections.singletonList(doc), principal, false, false);
         return getAboveDocument(doc, info.rootPaths);
     }
@@ -245,7 +242,7 @@ public abstract class AbstractTrashService implements TrashService {
         }
         try (IterableQueryResult result = session.queryAndFetch(String.format(TRASHED_QUERY, parent.getId()),
                 NXQL.NXQL)) {
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            NuxeoPrincipal principal = session.getPrincipal();
             StreamSupport.stream(result.spliterator(), false)
                          .map(map -> map.get(NXQL.ECM_UUID).toString())
                          .map(IdRef::new)

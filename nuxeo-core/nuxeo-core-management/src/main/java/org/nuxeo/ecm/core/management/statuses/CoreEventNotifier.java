@@ -23,8 +23,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.SimplePrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -43,8 +42,7 @@ public class CoreEventNotifier implements Notifier {
         eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE, instanceIdentifier);
         eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE, serviceIdentifier);
 
-        EventContext ctx = new InlineEventContext(new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME),
-                eventProperties);
+        EventContext ctx = new InlineEventContext(new SystemPrincipal(null), eventProperties);
 
         Event event = ctx.newEvent(eventName);
         Framework.getService(EventProducer.class).fireEvent(event);

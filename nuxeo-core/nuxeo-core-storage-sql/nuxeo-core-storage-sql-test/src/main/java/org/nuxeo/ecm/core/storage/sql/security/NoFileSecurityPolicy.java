@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql.security;
 
-import java.security.Principal;
-
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.core.security.SecurityPolicy;
 public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements SecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         if (doc.getType().getName().equals("File")) {
             return Access.DENY;

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -190,7 +189,7 @@ public interface CoreSession {
      *
      * @return the principal
      */
-    Principal getPrincipal();
+    NuxeoPrincipal getPrincipal();
 
     /**
      * Checks if the principal that created the client session has the given privilege on the referred document.
@@ -200,14 +199,14 @@ public interface CoreSession {
     /**
      * Checks if a given principal has the given privilege on the referred document.
      */
-    boolean hasPermission(Principal principal, DocumentRef docRef, String permission);
+    boolean hasPermission(NuxeoPrincipal principal, DocumentRef docRef, String permission);
 
     /**
      * Filters the supplied permissions based on whether they are granted to a given principal for a given document.
      *
      * @since 9.1
      */
-    Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef,
+    Collection<String> filterGrantedPermissions(NuxeoPrincipal principal, DocumentRef docRef,
             Collection<String> permissions);
 
     /**

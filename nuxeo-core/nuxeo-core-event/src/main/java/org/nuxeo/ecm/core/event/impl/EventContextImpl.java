@@ -18,9 +18,8 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.security.Principal;
-
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Default implementation
@@ -33,7 +32,7 @@ public class EventContextImpl extends AbstractEventContext {
 
     protected transient CoreSession session;
 
-    protected Principal principal;
+    protected NuxeoPrincipal principal;
 
     /**
      * Constructor to be used by derived classes
@@ -45,14 +44,14 @@ public class EventContextImpl extends AbstractEventContext {
         this(null, null, args);
     }
 
-    public EventContextImpl(CoreSession session, Principal principal, Object... args) {
+    public EventContextImpl(CoreSession session, NuxeoPrincipal principal, Object... args) {
         super(args);
         this.session = session;
         this.principal = principal;
         updateRepositoryName();
     }
 
-    public EventContextImpl(CoreSession session, Principal principal) {
+    public EventContextImpl(CoreSession session, NuxeoPrincipal principal) {
         this.session = session;
         this.principal = principal;
         args = EMPTY;
@@ -69,7 +68,7 @@ public class EventContextImpl extends AbstractEventContext {
     }
 
     @Override
-    public Principal getPrincipal() {
+    public NuxeoPrincipal getPrincipal() {
         return principal;
     }
 
@@ -86,7 +85,7 @@ public class EventContextImpl extends AbstractEventContext {
     }
 
     @Override
-    public void setPrincipal(Principal principal) {
+    public void setPrincipal(NuxeoPrincipal principal) {
         this.principal = principal;
     }
 

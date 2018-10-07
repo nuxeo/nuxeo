@@ -18,9 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -36,8 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -48,7 +43,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -132,13 +126,6 @@ public class TestSecurityPolicy {
         startTransaction();
     }
 
-    protected CloseableCoreSession getRestrictedSession(String userName) {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Map<String, Serializable> ctx = new HashMap<>();
-        ctx.put("principal", new UserPrincipal(userName, null, false, false));
-        return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);
-    }
-
     @Test
     public void shouldWorkWithSecurityPolicy() throws Exception {
         buildAndIndexDocs();
@@ -149,7 +136,7 @@ public class TestSecurityPolicy {
         Assert.assertEquals(6, docs.totalSize());
 
         // As user File document are not denied
-        try (CloseableCoreSession restrictedSession = getRestrictedSession("toto")) {
+        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(null, "toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(1, docs.size());
             Assert.assertEquals(1, docs.totalSize());

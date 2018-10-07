@@ -66,64 +66,61 @@ public class GetCounters {
 
         Map<String, Object> collection = new LinkedHashMap<>();
 
-        Principal principal = ctx.getPrincipal();
-        if (principal instanceof NuxeoPrincipal) {
-            NuxeoPrincipal nuxeoUser = (NuxeoPrincipal) principal;
-            // Only Administrators can access the counters
-            if (nuxeoUser.isAdministrator()) {
-                for (String counterName : counterNames) {
-                    CounterHistoryStack stack = cm.getCounterHistory(counterName);
+        NuxeoPrincipal nuxeoUser = ctx.getPrincipal();
+        // Only Administrators can access the counters
+        if (nuxeoUser.isAdministrator()) {
+            for (String counterName : counterNames) {
+                CounterHistoryStack stack = cm.getCounterHistory(counterName);
 
-                    // copy and reverse the list
-                    List<long[]> valueList = new ArrayList<>(stack.getAsList());
-                    Collections.reverse(valueList);
+                // copy and reverse the list
+                List<long[]> valueList = new ArrayList<>(stack.getAsList());
+                Collections.reverse(valueList);
 
-                    // bare values [ [t0,v0], [t1,v1] ...]
-                    List<List<Number>> valueSerie = new ArrayList<>();
-                    // delta values [ [t1,v1-v0], [t2,v2-v3] ...]
-                    List<List<Number>> deltaSerie = new ArrayList<>();
-                    // speed values [ [t1,v1-v0/t1-t0], ...]
-                    List<List<Number>> speedSerie = new ArrayList<>();
+                // bare values [ [t0,v0], [t1,v1] ...]
+                List<List<Number>> valueSerie = new ArrayList<>();
+                // delta values [ [t1,v1-v0], [t2,v2-v3] ...]
+                List<List<Number>> deltaSerie = new ArrayList<>();
+                // speed values [ [t1,v1-v0/t1-t0], ...]
+                List<List<Number>> speedSerie = new ArrayList<>();
 
-                    float lastTS = 0;
-                    float lastValue = 0;
-                    long now = System.currentTimeMillis();
-                    for (long[] values : valueList) {
+                float lastTS = 0;
+                float lastValue = 0;
+                long now = System.currentTimeMillis();
+                for (long[] values : valueList) {
 
-                        // use seconds
-                        long ts = values[0];
-                        float t = (now - ts) / 1000;
-                        float value = values[1];
-                        Float tFloat = Float.valueOf(ts);
+                    // use seconds
+                    long ts = values[0];
+                    float t = (now - ts) / 1000;
+                    float value = values[1];
+                    Float tFloat = Float.valueOf(ts);
 
-                        // bare values
-                        Float bareValue = Float.valueOf(value);
-                        valueSerie.add(Arrays.asList(tFloat, bareValue));
+                    // bare values
+                    Float bareValue = Float.valueOf(value);
+                    valueSerie.add(Arrays.asList(tFloat, bareValue));
 
-                        // delta values
-                        Float deltaValue = Float.valueOf(value - lastValue);
-                        deltaSerie.add(Arrays.asList(tFloat, deltaValue));
+                    // delta values
+                    Float deltaValue = Float.valueOf(value - lastValue);
+                    deltaSerie.add(Arrays.asList(tFloat, deltaValue));
 
-                        if (lastTS > 0) {
-                            // speed values
-                            float tdelta = lastTS - t;
-                            if (tdelta == 0) {
-                                tdelta = 1;
-                            }
-                            Float speedValue = Float.valueOf(60 * (value - lastValue) / (tdelta));
-                            speedSerie.add(Arrays.asList(tFloat, speedValue));
+                    if (lastTS > 0) {
+                        // speed values
+                        float tdelta = lastTS - t;
+                        if (tdelta == 0) {
+                            tdelta = 1;
                         }
-                        lastTS = t;
-                        lastValue = value;
+                        Float speedValue = Float.valueOf(60 * (value - lastValue) / (tdelta));
+                        speedSerie.add(Arrays.asList(tFloat, speedValue));
                     }
-
-                    Map<String, Object> counter = new LinkedHashMap<>();
-                    counter.put("values", valueSerie);
-                    counter.put("deltas", deltaSerie);
-                    counter.put("speed", speedSerie);
-
-                    collection.put(counterName, counter);
+                    lastTS = t;
+                    lastValue = value;
                 }
+
+                Map<String, Object> counter = new LinkedHashMap<>();
+                counter.put("values", valueSerie);
+                counter.put("deltas", deltaSerie);
+                counter.put("speed", speedSerie);
+
+                collection.put(counterName, counter);
             }
         }
 

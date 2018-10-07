@@ -57,7 +57,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
         final DocumentModel doc = (DocumentModel) context.getArguments()[0];
         final String repo = doc.getRepositoryName();
 
-        removeGraphFor(session, repo, doc, (NuxeoPrincipal) context.getPrincipal());
+        removeGraphFor(session, repo, doc, context.getPrincipal());
     }
 
     protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc, NuxeoPrincipal user)

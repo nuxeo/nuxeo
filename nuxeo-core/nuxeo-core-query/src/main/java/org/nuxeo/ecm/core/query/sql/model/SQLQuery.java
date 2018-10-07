@@ -21,7 +21,8 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 import java.io.Serializable;
-import java.security.Principal;
+
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Bogdan Stefanescu
@@ -252,14 +253,14 @@ public class SQLQuery implements ASTNode {
 
         Transformer IDENTITY = new IdentityTransformer();
 
-        SQLQuery transform(Principal principal, SQLQuery query);
+        SQLQuery transform(NuxeoPrincipal principal, SQLQuery query);
     }
 
     public static class IdentityTransformer implements Transformer {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public SQLQuery transform(Principal principal, SQLQuery query) {
+        public SQLQuery transform(NuxeoPrincipal principal, SQLQuery query) {
             return query;
         }
     }

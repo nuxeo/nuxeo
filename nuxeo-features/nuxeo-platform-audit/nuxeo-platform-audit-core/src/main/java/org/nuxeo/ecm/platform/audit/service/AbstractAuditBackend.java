@@ -261,7 +261,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                 // don't log events with this flag
                 return null;
             }
-            Principal principal = docCtx.getPrincipal();
+            NuxeoPrincipal principal = docCtx.getPrincipal();
             Map<String, Serializable> properties = docCtx.getProperties();
 
             entry.setDocUUID(document.getId());
@@ -269,13 +269,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             entry.setDocType(document.getType());
             entry.setRepositoryId(document.getRepositoryName());
             if (principal != null) {
-                String principalName;
-                if (principal instanceof NuxeoPrincipal) {
-                    principalName = ((NuxeoPrincipal) principal).getActingUser();
-                } else {
-                    principalName = principal.getName();
-                }
-                entry.setPrincipalName(principalName);
+                entry.setPrincipalName(principal.getActingUser());
             } else {
                 log.warn("received event " + eventName + " with null principal");
             }
@@ -300,17 +294,11 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             doPutExtendedInfos(entry, docCtx, document, principal);
 
         } else {
-            Principal principal = ctx.getPrincipal();
+            NuxeoPrincipal principal = ctx.getPrincipal();
             Map<String, Serializable> properties = ctx.getProperties();
 
             if (principal != null) {
-                String principalName;
-                if (principal instanceof NuxeoPrincipal) {
-                    principalName = ((NuxeoPrincipal) principal).getActingUser();
-                } else {
-                    principalName = principal.getName();
-                }
-                entry.setPrincipalName(principalName);
+                entry.setPrincipalName(principal.getActingUser());
             }
             entry.setComment((String) properties.get("comment"));
 
@@ -352,7 +340,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
         long nbSyncedEntries = 1;
 
-        Principal principal = session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         List<DocumentModel> folderishChildren = new ArrayList<>();
 
         provider.addLogEntry(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));

@@ -170,9 +170,8 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
     protected boolean getCanEditGroups() {
         if (canEditGroups == null) {
             canEditGroups = false;
-            if (!userManager.areGroupsReadOnly() && currentUser instanceof NuxeoPrincipal) {
-                NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-                if (pal.isAdministrator()) {
+            if (!userManager.areGroupsReadOnly() && currentUser != null) {
+                if (currentUser.isAdministrator()) {
                     canEditGroups = true;
                 }
             }

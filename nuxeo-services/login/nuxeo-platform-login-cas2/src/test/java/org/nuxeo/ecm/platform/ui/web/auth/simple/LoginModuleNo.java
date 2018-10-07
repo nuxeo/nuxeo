@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
-import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Map;
 
@@ -27,11 +26,12 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.login.NuxeoAbstractServerLoginModule;
 
 public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
 
-    protected Principal identity;
+    protected NuxeoPrincipal identity;
 
     public boolean abort() throws LoginException {
         return true;
@@ -55,7 +55,7 @@ public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal getIdentity() {
+    protected NuxeoPrincipal getIdentity() {
         return null;
     }
 
@@ -65,7 +65,7 @@ public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal createIdentity(String username) {
+    protected NuxeoPrincipal createIdentity(String username) {
         return null;
     }
 

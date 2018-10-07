@@ -59,7 +59,7 @@ public class SubscribeOperation {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        NuxeoPrincipal principal = coreSession.getPrincipal();
         String username = NotificationConstants.USER_PREFIX + principal.getName();
         if (notifications == null || notifications.isEmpty()) {
             // subscribe all available notifications

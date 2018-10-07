@@ -104,7 +104,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
     @Test
     public void testPrincipal() throws IOException {
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
-        JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);
+        JsonAssert jsonAssert = jsonAssert(session.getPrincipal(), ctx);
         jsonAssert = jsonAssert.get(String.format("contextParameters.%s", NAME));
         jsonAssert.properties(5);
         JsonAssert avatar = jsonAssert.has("avatar").isObject();
@@ -128,7 +128,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         session.removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
         session.save();
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
-        JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);
+        JsonAssert jsonAssert = jsonAssert(session.getPrincipal(), ctx);
         jsonAssert = jsonAssert.get(String.format("contextParameters.%s", NAME)).isNull();
     }
 
@@ -136,7 +136,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
     @Deploy("org.nuxeo.ecm.user.center.profile:OSGI-INF/test-profile-enricher-compat-contrib.xml")
     public void testCompatibility() throws IOException {
         RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
-        JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);
+        JsonAssert jsonAssert = jsonAssert(session.getPrincipal(), ctx);
         jsonAssert = jsonAssert.get(String.format("contextParameters.%s", NAME));
         jsonAssert.properties(3);
         jsonAssert.has("avatar").isEquals(avatarURL);

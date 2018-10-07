@@ -21,8 +21,7 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
-import java.security.Principal;
-
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 
 /**
@@ -30,19 +29,19 @@ import org.nuxeo.ecm.platform.annotations.api.Annotation;
  */
 public interface EventListener {
 
-    void beforeAnnotationCreated(Principal principal, Annotation annotation);
+    void beforeAnnotationCreated(NuxeoPrincipal principal, Annotation annotation);
 
-    void afterAnnotationCreated(Principal principal, Annotation annotation);
+    void afterAnnotationCreated(NuxeoPrincipal principal, Annotation annotation);
 
-    void beforeAnnotationRead(Principal principal, String annotationId);
+    void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId);
 
-    void afterAnnotationRead(Principal principal, Annotation annotation);
+    void afterAnnotationRead(NuxeoPrincipal principal, Annotation annotation);
 
-    void beforeAnnotationUpdated(Principal principal, Annotation annotation);
+    void beforeAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation);
 
-    void afterAnnotationUpdated(Principal principal, Annotation annotation);
+    void afterAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation);
 
-    void beforeAnnotationDeleted(Principal principal, Annotation annotation);
+    void beforeAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation);
 
-    void afterAnnotationDeleted(Principal principal, Annotation annotation);
+    void afterAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation);
 }

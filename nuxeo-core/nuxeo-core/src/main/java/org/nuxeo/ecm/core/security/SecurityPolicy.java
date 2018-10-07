@@ -20,8 +20,7 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.security.Principal;
-
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -51,7 +50,7 @@ public interface SecurityPolicy {
      * @return access: GRANT, DENY, or UNKNOWN. When UNKNOWN is returned, following policies or default core security
      *         are applied.
      */
-    Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals);
 
     /**
@@ -126,7 +125,7 @@ public interface SecurityPolicy {
          * @return the query with security policy applied
          * @since 5.7.2
          */
-        String transform(Principal principal, String query);
+        String transform(NuxeoPrincipal principal, String query);
     }
 
     /**
@@ -136,7 +135,7 @@ public interface SecurityPolicy {
      */
     class IdentityQueryTransformer implements QueryTransformer {
         @Override
-        public String transform(Principal principal, String query) {
+        public String transform(NuxeoPrincipal principal, String query) {
             return query;
         }
     }

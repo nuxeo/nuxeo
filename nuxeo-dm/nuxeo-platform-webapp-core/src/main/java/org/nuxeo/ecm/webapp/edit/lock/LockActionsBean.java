@@ -109,7 +109,7 @@ public class LockActionsBean implements LockActions {
         } else if (document.isProxy()) {
             canLock = false;
         } else {
-            NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+            NuxeoPrincipal userName = documentManager.getPrincipal();
             Lock lock = documentManager.getLockInfo(document.getRef());
             canLock = lock == null
                     && (userName.isAdministrator() || isManagerOnDocument(document.getRef())
@@ -147,7 +147,7 @@ public class LockActionsBean implements LockActions {
         if (document == null) {
             canUnlock = false;
         } else {
-            NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+            NuxeoPrincipal userName = documentManager.getPrincipal();
             Map<String, Serializable> lockDetails = getLockDetails(document);
             if (lockDetails.isEmpty() || document.isProxy()) {
                 canUnlock = false;
@@ -232,7 +232,7 @@ public class LockActionsBean implements LockActions {
         if (lockDetails == null) {
             message = "document.unlock.done";
         } else {
-            NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+            NuxeoPrincipal userName = documentManager.getPrincipal();
             if (userName.isAdministrator() || documentManager.hasPermission(document.getRef(), EVERYTHING)
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 

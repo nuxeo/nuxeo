@@ -43,7 +43,6 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,7 +68,6 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelChildrenIterator;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -121,8 +119,6 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @author Florent Guillaume
  */
 public abstract class AbstractSession implements CoreSession, Serializable {
-
-    public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal("anonymous", new ArrayList<>(), true, false);
 
     private static final Log log = LogFactory.getLog(CoreSession.class);
 
@@ -299,12 +295,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean hasPermission(Principal principal, DocumentRef docRef, String permission) {
+    public boolean hasPermission(NuxeoPrincipal principal, DocumentRef docRef, String permission) {
         Document doc = resolveReference(docRef);
         return hasPermission(principal, doc, permission);
     }
 
-    protected final boolean hasPermission(Principal principal, Document doc, String permission) {
+    protected final boolean hasPermission(NuxeoPrincipal principal, Document doc, String permission) {
         return getSecurityService().checkPermission(doc, principal, permission);
     }
 
@@ -315,7 +311,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef,
+    public Collection<String> filterGrantedPermissions(NuxeoPrincipal principal, DocumentRef docRef,
             Collection<String> permissions) {
         Document doc = resolveReference(docRef);
         return getSecurityService().filterGrantedPermissions(doc, principal, permissions);
@@ -1170,7 +1166,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
             long countUpTo) {
         SecurityService securityService = getSecurityService();
-        Principal principal = getPrincipal();
+        NuxeoPrincipal principal = getPrincipal();
         try {
             String permission = BROWSE;
             String repoName = getRepositoryName();
@@ -1250,7 +1246,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             Object... params) {
         try {
             SecurityService securityService = getSecurityService();
-            Principal principal = getPrincipal();
+            NuxeoPrincipal principal = getPrincipal();
             String[] principals = getPrincipalsToCheck();
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
@@ -1281,7 +1277,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
             boolean distinctDocuments, long limit, long offset, long countUpTo, Object... params) {
-        Principal principal = getPrincipal();
+        NuxeoPrincipal principal = getPrincipal();
         String[] principals = getPrincipalsToCheck();
         String[] permissions = getPermissionsToCheck(BROWSE);
         Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
@@ -1292,7 +1288,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected String[] getPrincipalsToCheck() {
-        Principal principal = getPrincipal();
+        NuxeoPrincipal principal = getPrincipal();
         String[] principals;
         if (isAdministrator()) {
             principals = null; // means: no security check needed
@@ -2270,7 +2266,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected boolean isAdministrator() {
-        Principal principal = getPrincipal();
+        NuxeoPrincipal principal = getPrincipal();
         // FIXME: this is inconsistent with NuxeoPrincipal#isAdministrator
         // method because it allows hardcoded Administrator user
         if (Framework.isTestModeSet()) {
@@ -2278,10 +2274,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 return true;
             }
         }
-        if (principal instanceof NuxeoPrincipal) {
-            return ((NuxeoPrincipal) principal).isAdministrator();
-        }
-        return false;
+        return principal.isAdministrator();
     }
 
     @Override

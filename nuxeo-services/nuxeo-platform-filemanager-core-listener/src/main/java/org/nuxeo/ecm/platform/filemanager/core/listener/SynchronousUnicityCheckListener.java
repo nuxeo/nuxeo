@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -65,7 +65,7 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
     }
 
     @Override
-    protected void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc,
+    protected void onDuplicatedDoc(CoreSession session, NuxeoPrincipal principal, DocumentModel newDoc,
             List<DocumentLocation> existingDocs, Event event) {
         // simply send a message
         log.info("Duplicated file detected");

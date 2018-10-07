@@ -77,7 +77,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
             return;
         }
 
-        String cUserName = getUserPrincipal(req).getName();
+        String cUserName = session.getPrincipal().getName();
 
         // get Action
         String action = STATUS;

@@ -18,16 +18,14 @@
  */
 package org.nuxeo.ecm.core.api.trash;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Service containing the logic about deleting/purging/undeleting a document.
@@ -79,7 +77,7 @@ public interface TrashService {
      * @param principal the current user (to check locks)
      * @return {@code true} if the documents are purgeable/undeletable
      */
-    boolean canPurgeOrUntrash(List<DocumentModel> docs, Principal principal);
+    boolean canPurgeOrUntrash(List<DocumentModel> docs, NuxeoPrincipal principal);
 
     /**
      * Is document purgeable/untrashable?
@@ -90,7 +88,7 @@ public interface TrashService {
      * @param principal the current user (to check locks)
      * @return {@code true} if the documents are purgeable/untrashable
      */
-    default boolean canPurgeOrUntrash(DocumentModel doc, Principal principal) {
+    default boolean canPurgeOrUntrash(DocumentModel doc, NuxeoPrincipal principal) {
         return canPurgeOrUntrash(Collections.singletonList(doc), principal);
     }
 
@@ -103,7 +101,7 @@ public interface TrashService {
      * @param principal the current user
      * @return the first non trashed ancestor
      */
-    DocumentModel getAboveDocument(DocumentModel doc, Principal principal);
+    DocumentModel getAboveDocument(DocumentModel doc, NuxeoPrincipal principal);
 
     /**
      * Moves documents to the trash.

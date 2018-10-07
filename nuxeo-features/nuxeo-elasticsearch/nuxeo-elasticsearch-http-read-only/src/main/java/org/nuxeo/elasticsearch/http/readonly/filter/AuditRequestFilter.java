@@ -37,7 +37,7 @@ public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
 
     @Override
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
-        principal = (NuxeoPrincipal) session.getPrincipal();
+        principal = session.getPrincipal();
         if (!principal.isAdministrator()) {
             throw new IllegalArgumentException("Invalid index submitted: " + indices);
         }

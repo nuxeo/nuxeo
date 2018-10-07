@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -73,7 +72,7 @@ public class GetUserTasks {
             DocumentModel doc = taskService.getTargetDocumentModel(task, repo);
             if (doc == null) {
                 log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document",
-                        principal().getName(), task.getName()));
+                        ctx.getPrincipal().getName(), task.getName()));
                 continue;
             }
 
@@ -82,10 +81,6 @@ public class GetUserTasks {
             rows.add(obj);
         }
         return Blobs.createJSONBlobFromValue(rows);
-    }
-
-    protected NuxeoPrincipal principal() {
-        return (NuxeoPrincipal) ctx.getPrincipal();
     }
 
 }

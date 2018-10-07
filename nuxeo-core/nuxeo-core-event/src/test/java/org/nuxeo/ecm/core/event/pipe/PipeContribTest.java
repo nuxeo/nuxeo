@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.event.pipe;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -63,7 +63,7 @@ public class PipeContribTest {
         Assert.assertEquals(new Integer(10), desc2.getPriority());
 
 
-        UnboundEventContext ctx = new UnboundEventContext(new SimplePrincipal("titi"), null);
+        UnboundEventContext ctx = new UnboundEventContext(new UserPrincipal("titi", null, false, false), null);
 
         eventService.fireEvent(ctx.newEvent("Test1"));
         eventService.fireEvent(ctx.newEvent("Test2"));

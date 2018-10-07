@@ -142,7 +142,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
         Session userdir = directoryService.open("userDirectory");
         DocumentModel userModel = userdir.getEntry(userName);
         // set it on session
-        NuxeoPrincipal originalUser = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal originalUser = session.getPrincipal();
         originalUser.setModel(userModel);
         originalUser.setName(userName);
     }
