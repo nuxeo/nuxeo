@@ -59,7 +59,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -461,7 +460,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
                         String mode = widgetDefinition.getMode(BuiltinModes.EDIT);
                         ActionContext el = new ELActionContext();
-                        el.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
+                        el.setCurrentPrincipal(documentManager.getPrincipal());
                         el.setCurrentDocument(navigationContext.getCurrentDocument());
                         mode = el.evalExpression(mode, String.class);
                         if (mode == null || mode.equals(BuiltinModes.EDIT)) {

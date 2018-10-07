@@ -1173,7 +1173,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         session.save();
         instantiateAndRun(session);
         session.save();
-        List<Task> tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) session.getPrincipal(), session);
+        List<Task> tasks = taskService.getTaskInstances(doc, session.getPrincipal(), session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         Task ts = tasks.get(0);

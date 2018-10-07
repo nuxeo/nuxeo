@@ -49,7 +49,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -1060,7 +1059,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Create a task not related to a workflow instance
         List<Task> tasks = Framework.getService(TaskService.class).createTask(session,
-                (NuxeoPrincipal) session.getPrincipal(), note, "testNoWorkflowTask",
+                session.getPrincipal(), note, "testNoWorkflowTask",
                 singletonList("user:Administrator"), false, null, null, null, Collections.emptyMap(), null);
         assertEquals(1, tasks.size());
         Task task = tasks.get(0);

@@ -372,8 +372,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 String comment = data != null ? (String) data.get(GraphNode.NODE_VARIABLE_COMMENT) : null;
                 final Map<String, Serializable> extraEventProperties = new HashMap<>();
                 extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
-                TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task,
-                        comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
+                TaskEventNotificationHelper.notifyTaskEnded(session, session.getPrincipal(), task, comment,
+                        TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
             }
         }
 
@@ -857,7 +857,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     public void endTask(CoreSession session, Task task, Map<String, Object> data, String status) {
         String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
         TaskService taskService = Framework.getService(TaskService.class);
-        taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(), task, comment, null, false);
+        taskService.endTask(session, session.getPrincipal(), task, comment, null, false);
 
         Map<String, String> taskVariables = task.getVariables();
         String routeInstanceId = taskVariables.get(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
@@ -1129,7 +1129,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
         GraphNode node = graph.getNode(nodeId);
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String actor = principal.getActingUser();
         node.updateTaskInfo(task.getId(), true, status, actor, null);
     }
@@ -1185,8 +1185,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR,
-                            ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
                     eventProperties.put("comment", comment);
                     // compute duration since workflow started
                     long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
@@ -1250,8 +1249,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR,
-                            ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
                     eventProperties.put("comment", comment);
 
                     // compute duration since workflow started

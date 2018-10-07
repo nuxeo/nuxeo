@@ -70,7 +70,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         // on the instance, too => removing acls
         result = undoReadOnlySecurityPolicy(result, session);
         // set initiator
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String initiator = principal.getActingUser();
         result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
         // using the ref, the value of the attached document might not been

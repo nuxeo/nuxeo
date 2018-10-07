@@ -171,7 +171,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         // task properties
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
-        String[] users = { ((NuxeoPrincipal) session.getPrincipal()).getName() };
+        String[] users = { session.getPrincipal().getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         node1 = session.saveDocument(node1);
         DocumentModel node2 = createNode(routeDoc, "node2", session);

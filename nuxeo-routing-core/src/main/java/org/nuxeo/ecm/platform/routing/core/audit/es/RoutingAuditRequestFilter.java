@@ -51,7 +51,7 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
     @Override
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
         this.session = session;
-        principal = (NuxeoPrincipal) session.getPrincipal();
+        principal = session.getPrincipal();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         this.indices = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
         this.types = ElasticSearchConstants.ENTRY_TYPE;

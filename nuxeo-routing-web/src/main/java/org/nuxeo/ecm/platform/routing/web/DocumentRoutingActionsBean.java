@@ -888,8 +888,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         TaskService taskService = Framework.getService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
-            return taskService.getAllTaskInstances(currentRoute.getDocument().getId(),
-                    (NuxeoPrincipal) documentManager.getPrincipal(), documentManager);
+            return taskService.getAllTaskInstances(currentRoute.getDocument().getId(), documentManager.getPrincipal(),
+                    documentManager);
         }
         return null;
     }

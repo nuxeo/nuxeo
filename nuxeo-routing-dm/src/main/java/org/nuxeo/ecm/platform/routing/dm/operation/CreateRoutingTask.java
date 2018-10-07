@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.routing.dm.operation;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,10 +111,7 @@ public class CreateRoutingTask {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel createTask(DocumentModel document) throws OperationException {
-        Principal pal = coreSession.getPrincipal();
-        if (!(pal instanceof NuxeoPrincipal)) {
-            throw new OperationException("Principal is not an instance of NuxeoPrincipal");
-        }
+        NuxeoPrincipal pal = coreSession.getPrincipal();
 
         DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         DocumentModel stepDocument = step.getDocument();
@@ -149,7 +145,7 @@ public class CreateRoutingTask {
             mapPropertiesToTaskVariables(taskVariables, stepDocument, document, mappingTaskVariables);
         }
         // TODO: call method with number of comments after NXP-8068 is merged
-        List<Task> tasks = taskService.createTask(coreSession, (NuxeoPrincipal) pal, document, taskStep.getName(),
+        List<Task> tasks = taskService.createTask(coreSession, pal, document, taskStep.getName(),
                 actors, false, taskStep.getDirective(), null, taskStep.getDueDate(), taskVariables, null);
         routing.makeRoutingTasks(coreSession, tasks);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());

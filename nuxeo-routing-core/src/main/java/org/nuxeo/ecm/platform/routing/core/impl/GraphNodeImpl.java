@@ -997,7 +997,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             log.info(String.format("Task with id %s does not exist anymore", taskId));
             DocumentModelList docs = graph.getAttachedDocumentModels();
             Framework.getService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, taskId);
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            NuxeoPrincipal principal = session.getPrincipal();
             String actor = principal.getActingUser();
             updateTaskInfo(taskId, true, null, actor, null);
             return;
@@ -1016,7 +1016,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         // task is considered processed with the status "null" when is
         // canceled
         // actor
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String actor = principal.getActingUser();
         updateTaskInfo(taskId, true, null, actor, null);
     }

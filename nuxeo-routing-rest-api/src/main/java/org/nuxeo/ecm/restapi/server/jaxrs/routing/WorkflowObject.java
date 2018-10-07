@@ -117,7 +117,7 @@ public class WorkflowObject extends DefaultObject {
     }
 
     protected void checkCancelGuards(DocumentRoute route) {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        NuxeoPrincipal currentUser = getContext().getCoreSession().getPrincipal();
         if (currentUser.isAdministrator() || currentUser.isMemberOf("powerusers")) {
             return;
         }

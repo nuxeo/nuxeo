@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
@@ -267,7 +266,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     protected static ActionContext createActionContext(CoreSession session) {
         ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(session);
-        actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
+        actionContext.setCurrentPrincipal(session.getPrincipal());
         return actionContext;
     }
 

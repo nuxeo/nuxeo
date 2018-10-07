@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -72,7 +71,7 @@ public class RunnableWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentM
             ActionContext actionContext = new ELActionContext();
             actionContext.setCurrentDocument(document);
             actionContext.setDocumentManager(wrapper.getSession());
-            actionContext.setCurrentPrincipal((NuxeoPrincipal) wrapper.getSession().getPrincipal());
+            actionContext.setCurrentPrincipal(wrapper.getSession().getPrincipal());
 
             for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
                 DocumentModel route = it.next();

@@ -49,7 +49,7 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
             return false;
         }
         String lockOwner = lockInfo.getOwner();
-        NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal userName = session.getPrincipal();
         return userName.getName().equals(lockOwner);
     }
 

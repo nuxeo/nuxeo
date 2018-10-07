@@ -134,7 +134,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 eventProperties.put("action", status);
                 eventProperties.put("data", (Serializable) varData);
                 eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
-                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
                 eventProperties.put("nodeVariables", (Serializable) node.getVariables());
                 eventProperties.put("workflowVariables", (Serializable) graph.getVariables());
 
@@ -267,7 +267,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                     throw new DocumentRouteException("Executing unexpected SUSPENDED state");
                 }
                 // actor
-                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                NuxeoPrincipal principal = session.getPrincipal();
                 String actor = principal.getActingUser();
                 node.setLastActor(actor);
                 // resuming, variables have been set by resumeGraph
@@ -384,7 +384,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // we may get several tasks if there's one per actor when the node
         // has the property
         // hasMultipleTasks set to true
-        List<Task> tasks = taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), docs,
+        List<Task> tasks = taskService.createTask(session, session.getPrincipal(), docs,
                                                   node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
                                                   new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
                                                   taskVariables, null, node.getWorkflowContextualInfo(session, true));
@@ -398,7 +398,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
             eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
-            eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser());
+            eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getOriginatingUser());
             eventProperties.put("nodeVariables", (Serializable) node.getVariables());
             if (routeInstance instanceof GraphRoute) {
                 eventProperties.put("workflowVariables", (Serializable) ((GraphRoute) routeInstance).getVariables());
@@ -448,7 +448,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         List<TaskComment> comments = task.getComments();
         String comment = comments.size() > 0 ? comments.get(comments.size() - 1).getText() : "";
         // actor
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
         String actor = principal.getActingUser();
         node.updateTaskInfo(task.getId(), true, status, actor, comment);
     }
