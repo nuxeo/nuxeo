@@ -200,7 +200,7 @@ public class SuggestionServiceTest {
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
-        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
                 messages);
@@ -228,7 +228,7 @@ public class SuggestionServiceTest {
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
-        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
                 messages);
@@ -277,7 +277,7 @@ public class SuggestionServiceTest {
         });
 
         // build a suggestion context
-        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
                 messages);
@@ -300,7 +300,7 @@ public class SuggestionServiceTest {
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         // build a suggestion context
-        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
                 messages);
@@ -377,7 +377,7 @@ public class SuggestionServiceTest {
         // backend
 
         // build a suggestion context
-        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
                 messages);
