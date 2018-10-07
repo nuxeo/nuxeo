@@ -29,7 +29,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
@@ -64,8 +63,7 @@ public class SignPDFDocument {
 
     @OperationMethod
     public Blob run(DocumentModel doc) throws OperationException {
-        if (!(ctx.getPrincipal() instanceof NuxeoPrincipal)
-                || !((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+        if (!ctx.getPrincipal().isAdministrator()) {
             throw new OperationException("Not allowed. You must be administrator to use this operation");
         }
         DocumentModel user = userManager.getUserModel(username);
