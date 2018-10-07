@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.Principal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -637,7 +637,7 @@ public class CMISQLQueryMaker implements QueryMaker {
      * @since 5.7.2
      * @throws CmisRuntimeException If a security policy prevents doing CMIS queries.
      */
-    protected String applySecurityPolicyQueryTransformers(NuxeoCmisService service, Principal principal,
+    protected String applySecurityPolicyQueryTransformers(NuxeoCmisService service, NuxeoPrincipal principal,
             String statement) {
         SecurityPolicyService securityPolicyService = Framework.getService(SecurityPolicyService.class);
         if (securityPolicyService == null) {

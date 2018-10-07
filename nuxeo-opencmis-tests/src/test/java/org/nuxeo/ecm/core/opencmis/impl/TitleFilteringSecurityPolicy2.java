@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import java.security.Principal;
-
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
@@ -52,7 +51,7 @@ public class TitleFilteringSecurityPolicy2 extends TitleFilteringSecurityPolicy 
         public static final QueryTransformer INSTANCE = new TitleFilteringTransformer();
 
         @Override
-        public String transform(Principal principal, String statement) {
+        public String transform(NuxeoPrincipal principal, String statement) {
             /*
              * If you use this method as an example for a real QueryTransform implementation, note that you should
              * likely implement a more complex logic to add things to the query. In particular, if the query uses column
