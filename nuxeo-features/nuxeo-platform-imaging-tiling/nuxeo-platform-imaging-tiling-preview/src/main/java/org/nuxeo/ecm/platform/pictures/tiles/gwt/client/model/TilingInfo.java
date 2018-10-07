@@ -231,13 +231,13 @@ public class TilingInfo {
         JSONNumber tileHeightJS = (JSONNumber) tileInfo.get("tileHeight");
 
         zoom = zoomFactor.doubleValue();
-        originalImageWidth = new Double(widthJS.doubleValue()).intValue();
-        originalImageHeight = new Double(heightJS.doubleValue()).intValue();
-        nbXTiles = new Double(xTilesJS.doubleValue()).intValue();
-        nbYTiles = new Double(yTilesJS.doubleValue()).intValue();
-        maxTiles = new Double(maxTilesJS.doubleValue()).intValue();
-        tileWidth = new Double(tileWidthJS.doubleValue()).intValue();
-        tileHeight = new Double(tileHeightJS.doubleValue()).intValue();
+        originalImageWidth = (int) widthJS.doubleValue();
+        originalImageHeight = (int) heightJS.doubleValue();
+        nbXTiles = (int) xTilesJS.doubleValue();
+        nbYTiles = (int) yTilesJS.doubleValue();
+        maxTiles = (int) maxTilesJS.doubleValue();
+        tileWidth = (int) tileWidthJS.doubleValue();
+        tileHeight = (int) tileHeightJS.doubleValue();
 
         JSONObject additionalInfo = (JSONObject) jsonValue.get("additionalInfo");
         JSONString lastModificationDateJS = (JSONString) additionalInfo.get("lastModificationDate");

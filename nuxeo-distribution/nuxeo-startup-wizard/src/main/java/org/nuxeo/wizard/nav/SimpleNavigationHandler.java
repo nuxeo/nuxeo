@@ -79,7 +79,7 @@ public class SimpleNavigationHandler {
             }
 
             // XXX false !
-            page.progress = new Double((idx + 1) * (100.0 / nav.length)).intValue();
+            page.progress = (int) ((idx + 1) * (100.0 / nav.length));
             previousPage = page;
 
         }
@@ -116,7 +116,7 @@ public class SimpleNavigationHandler {
         if (totalActivePages == 0) {
             return 0;
         }
-        return new Double((activePageIdx) * (100.0 / totalActivePages)).intValue();
+        return (int) ((activePageIdx) * (100.0 / totalActivePages));
     }
 
     public Page getCurrentPage(String action) {

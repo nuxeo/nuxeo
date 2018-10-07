@@ -85,7 +85,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
                     // handle offset
                     long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
-                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount && i < offset + pageSize; i++) {
+                        for (int i = (int) offset; i < resultsCount && i < offset + pageSize; i++) {
                             pageTasks.add(userTasks.get(i));
                         }
                     }

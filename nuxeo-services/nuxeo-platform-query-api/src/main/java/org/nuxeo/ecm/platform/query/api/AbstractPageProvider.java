@@ -649,13 +649,13 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public void setCurrentEntryIndex(long index) {
-        int intIndex = new Long(index).intValue();
+        int intIndex = (int) index;
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            throw new NuxeoException(String.format("Index %s not found in current page", new Integer(intIndex)));
+            throw new NuxeoException(String.format("Index %s not found in current page", intIndex));
         }
         if (index >= currentPage.size()) {
-            throw new NuxeoException(String.format("Index %s not found in current page", new Integer(intIndex)));
+            throw new NuxeoException(String.format("Index %s not found in current page", intIndex));
         }
         currentEntryIndex = intIndex;
     }

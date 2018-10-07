@@ -51,7 +51,7 @@ public class PendingDownload {
         if (expectedLength == 0 || dowloadingFile == null || dowloadingFile.length() == 0) {
             return 0;
         } else {
-            return new Float((dowloadingFile.length() / expectedLength) * 100).intValue();
+            return (int) ((dowloadingFile.length() / expectedLength) * 100);
         }
     }
 

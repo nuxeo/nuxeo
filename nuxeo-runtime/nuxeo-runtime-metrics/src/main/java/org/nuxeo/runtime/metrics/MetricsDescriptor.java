@@ -253,7 +253,7 @@ public class MetricsDescriptor implements Serializable {
             if (parentDir.exists() && parentDir.isDirectory()) {
                 outputDir.mkdir();
                 reporter = CsvReporter.forRegistry(registry).build(outputDir);
-                reporter.start(Long.valueOf(period), TimeUnit.SECONDS);
+                reporter.start(period, TimeUnit.SECONDS);
             } else {
                 enabled = false;
                 LogFactory.getLog(MetricsServiceImpl.class).error("Invalid output directory, disabling: " + this);

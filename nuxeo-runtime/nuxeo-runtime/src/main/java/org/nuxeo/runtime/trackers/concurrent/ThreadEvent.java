@@ -43,12 +43,12 @@ public abstract class ThreadEvent extends Event {
         }
 
         public boolean isLongRunning() {
-            return Boolean.valueOf((Boolean) getData());
+            return (Boolean) getData();
         }
 
         @Override
         public void handle(ThreadEventHandler handler) {
-            handler.onEnter(Boolean.valueOf((Boolean) getData()));
+            handler.onEnter((Boolean) getData());
         }
     }
 
