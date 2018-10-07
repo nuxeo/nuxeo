@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.security.Principal;
-
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -73,7 +71,7 @@ public class TestSegmentIOListener {
         return new EventContextImpl(session, mockPrincipal(principalName));
     }
 
-    protected Principal mockPrincipal(String name) {
+    protected NuxeoPrincipal mockPrincipal(String name) {
         NuxeoPrincipal mockedUser = mock(NuxeoPrincipal.class);
         when(mockedUser.getName()).thenReturn(name);
         return mockedUser;

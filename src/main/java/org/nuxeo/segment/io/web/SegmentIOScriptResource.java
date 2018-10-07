@@ -95,7 +95,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
         }
         ctx.put("optedOutCondition", optedOutCondition);
 
-        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        NuxeoPrincipal principal = getContext().getPrincipal();
 
         if (principal != null) {
             if (login == null || principal.getName().equals(login)) {

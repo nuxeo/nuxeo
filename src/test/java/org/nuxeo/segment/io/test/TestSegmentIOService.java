@@ -19,7 +19,6 @@
 package org.nuxeo.segment.io.test;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class TestSegmentIOService {
         TransactionHelper.startTransaction();
     }
 
-    protected void sendAuthenticationEvent(Principal principal) {
+    protected void sendAuthenticationEvent(NuxeoPrincipal principal) {
         Map<String, Serializable> props = new HashMap<>();
         props.put("AuthenticationPlugin", "FakeAuth");
         props.put("LoginPlugin", "FakeLogin");
@@ -170,7 +169,7 @@ public class TestSegmentIOService {
     @Test
     public void shouldBeAbleToTrackScreenAndPage() {
         SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
-        component.screen((NuxeoPrincipal) session.getPrincipal(), "Login", new HashMap<>());
+        component.screen(session.getPrincipal(), "Login", new HashMap<>());
 
         List<Map<String, Object>> testData = component.getTestData();
         Assert.assertEquals(1, testData.size());
@@ -178,7 +177,7 @@ public class TestSegmentIOService {
         Assert.assertEquals("screen", data.get("action"));
         Assert.assertEquals("Login", data.get("eventName"));
 
-        component.page((NuxeoPrincipal) session.getPrincipal(), "login.jsp", new HashMap<>());
+        component.page(session.getPrincipal(), "login.jsp", new HashMap<>());
         testData = component.getTestData();
         Assert.assertEquals(1, testData.size());
         data = testData.remove(0);

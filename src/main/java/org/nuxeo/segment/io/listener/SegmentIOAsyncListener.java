@@ -19,7 +19,6 @@
 package org.nuxeo.segment.io.listener;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOMapper;
@@ -84,17 +82,10 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
             for (SegmentIOMapper mapper : mappers) {
                 Map<String, Object> ctx = new HashMap<>();
 
-                Principal princ = event.getContext().getPrincipal();
+                NuxeoPrincipal principal = event.getContext().getPrincipal();
                 SegmentIO service = Framework.getService(SegmentIO.class);
-                if (!service.mustTrackprincipal(princ.getName())) {
+                if (!service.mustTrackprincipal(principal.getName())) {
                     break;
-                }
-
-                NuxeoPrincipal principal;
-                if (princ instanceof NuxeoPrincipal) {
-                    principal = (NuxeoPrincipal) princ;
-                } else {
-                    principal = Framework.getService(UserManager.class).getPrincipal(princ.getName());
                 }
 
                 ctx.put("event", event);
