@@ -102,7 +102,7 @@ public class MultiTenantActions implements Serializable {
     public void validateTenantAdministrators(FacesContext context, UIComponent component, Object value) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String currentDocumentTenantId = (String) currentDocument.getPropertyValue(TENANT_ID_PROPERTY);
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) documentManager.getPrincipal();
+        NuxeoPrincipal currentUser = documentManager.getPrincipal();
         String currentUserTenantId = currentUser.getTenantId();
         if (!StringUtils.isBlank(currentDocumentTenantId) && !StringUtils.isBlank(currentUserTenantId)
                 && currentUserTenantId.equals(currentDocumentTenantId)) {
