@@ -22,8 +22,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletException;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -102,18 +100,14 @@ public class TomcatServerConfigurator implements ServerConfigurator {
         File home = Environment.getDefault().getHome();
         File docBase = new File(home, descriptor.getWebRoot());
         docBase.mkdirs(); // make sure the WAR root exists
-        try {
-            Context context = tomcat.addWebapp(contextPath, docBase.getAbsolutePath());
-            StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-            // avoid costly scanning, we register everything explicitly
-            jarScanner.setScanManifest(false); // many MANIFEST.MF files have incorrect Class-Path
-            jarScanner.setScanAllDirectories(false);
-            jarScanner.setScanAllFiles(false);
-            jarScanner.setScanBootstrapClassPath(false);
-            jarScanner.setScanClassPath(false);
-        } catch (ServletException e) {
-            throw new RuntimeServiceException(e);
-        }
+        Context context = tomcat.addWebapp(contextPath, docBase.getAbsolutePath());
+        StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
+        // avoid costly scanning, we register everything explicitly
+        jarScanner.setScanManifest(false); // many MANIFEST.MF files have incorrect Class-Path
+        jarScanner.setScanAllDirectories(false);
+        jarScanner.setScanAllFiles(false);
+        jarScanner.setScanBootstrapClassPath(false);
+        jarScanner.setScanClassPath(false);
     }
 
     @Override

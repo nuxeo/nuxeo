@@ -136,7 +136,7 @@
     <servlet-api.version>4.0.1</servlet-api.version>
     <jaxb-api.version>2.2.11</jaxb-api.version>
     <jaxb.version>2.3.0.1</jaxb.version>
-    <tomcat.version>9.0.10</tomcat.version>
+    <tomcat.version>9.0.12</tomcat.version>
     <lucene.version>7.3.1</lucene.version>
     <elasticsearch.version>6.3.0</elasticsearch.version> <!-- when changing this make sure JNA version is in sync -->
     <jna.version>4.5.2</jna.version>
