@@ -20,6 +20,9 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.converter;
 
+import static org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants.THUMBNAIL_DEFAULT_SIZE;
+import static org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants.THUMBNAIL_SIZE_PARAMETER_NAME;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -48,16 +51,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ThumbnailDocumentConverter implements Converter {
 
-    public static final String THUMBNAIL_CONVERTER_NAME = "toThumbnail";
-
-    public static final String THUMBNAIL_SIZE_PARAMETER_NAME = "size";
-
-    public static final String THUMBNAIL_DEFAULT_SIZE = "100x100";
-
     public static final String THUMBNAIL_COMMAND = "toThumbnail";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         try {
             // Make sure the toThumbnail command is available
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
@@ -95,5 +92,6 @@ public class ThumbnailDocumentConverter implements Converter {
 
     @Override
     public void init(ConverterDescriptor descriptor) {
+        // Nothing to do here
     }
 }

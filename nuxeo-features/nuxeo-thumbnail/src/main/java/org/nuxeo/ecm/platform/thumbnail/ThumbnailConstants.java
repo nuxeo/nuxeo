@@ -45,7 +45,7 @@ public class ThumbnailConstants {
         /**
          * Event sent after checking before updating document if the main blob has been updated
          */
-        scheduleThumbnailUpdate
+        scheduleThumbnailUpdate // NOSONAR (matches the event name)
     }
 
 }
