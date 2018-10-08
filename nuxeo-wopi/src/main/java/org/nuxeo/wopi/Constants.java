@@ -28,9 +28,11 @@ public class Constants {
         // constants class
     }
 
-    public static final String ACCESS_TOKEN = "accessToken";
+    public static final String ACCESS_TOKEN_ATTRIBUTE = "accessToken";
 
-    public static final String ACCESS_TOKEN_TTL = "accessTokenTTL";
+    public static final String ACCESS_TOKEN_PARAMETER = "access_token";
+
+    public static final String ACCESS_TOKEN_TTL_ATTRIBUTE = "accessTokenTTL";
 
     public static final String ACTION_EDIT = "edit";
 
@@ -65,6 +67,8 @@ public class Constants {
     public static final String OPERATION_RENAME_FILE = "RenameFile";
 
     public static final String OPERATION_UNLOCK = "Unlock";
+
+    public static final String WOPI_JSP = "/wopi.jsp";
 
     public static final String WOPI_SERVLET_PATH = "wopi";
 

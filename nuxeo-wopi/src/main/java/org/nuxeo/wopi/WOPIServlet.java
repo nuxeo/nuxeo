@@ -21,10 +21,11 @@
 package org.nuxeo.wopi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
-import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_ATTRIBUTE;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL_ATTRIBUTE;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
 import static org.nuxeo.wopi.Constants.FORM_URL;
+import static org.nuxeo.wopi.Constants.WOPI_JSP;
 import static org.nuxeo.wopi.Constants.WOPI_SRC;
 
 import java.io.IOException;
@@ -52,8 +53,6 @@ import org.nuxeo.runtime.api.Framework;
 public class WOPIServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
-    public static final String WOPI_JSP = "/wopi.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -104,8 +103,8 @@ public class WOPIServlet extends HttpServlet {
             }
 
             String token = Helpers.createJWTToken();
-            request.setAttribute(ACCESS_TOKEN, token);
-            request.setAttribute(ACCESS_TOKEN_TTL, Helpers.getJWTTokenExp(token));
+            request.setAttribute(ACCESS_TOKEN_ATTRIBUTE, token);
+            request.setAttribute(ACCESS_TOKEN_TTL_ATTRIBUTE, Helpers.getJWTTokenExp(token));
             String baseURL = VirtualHostHelper.getBaseURL(request);
             String fileId = FileInfo.computeFileId(doc, xpath);
             String wopiSrc = URLEncoder.encode(String.format("%s%s%s", baseURL, FILES_ENDPOINT_PATH, fileId),

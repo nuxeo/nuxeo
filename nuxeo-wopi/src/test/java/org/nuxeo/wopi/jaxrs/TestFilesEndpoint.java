@@ -28,6 +28,7 @@ import static org.mockito.Mockito.withSettings;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.jwt.JWTClaims.CLAIM_SUBJECT;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_PARAMETER;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.NAME;
@@ -1093,7 +1094,8 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse get(String token, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(BASE_URL).path(String.join("/", path)).queryParam("access_token", token);
+        WebResource wr = client.resource(BASE_URL).path(String.join("/", path)).queryParam(ACCESS_TOKEN_PARAMETER,
+                token);
         WebResource.Builder builder = wr.getRequestBuilder();
         if (headers != null) {
             headers.forEach(builder::header);
@@ -1106,7 +1108,8 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse post(String token, String data, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(BASE_URL).path(String.join("/", path)).queryParam("access_token", token);
+        WebResource wr = client.resource(BASE_URL).path(String.join("/", path)).queryParam(ACCESS_TOKEN_PARAMETER,
+                token);
         WebResource.Builder builder = wr.getRequestBuilder();
         if (headers != null) {
             headers.forEach(builder::header);

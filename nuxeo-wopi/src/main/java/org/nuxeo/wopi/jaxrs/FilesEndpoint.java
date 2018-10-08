@@ -26,7 +26,7 @@ import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
-import static org.nuxeo.wopi.Constants.ACCESS_TOKEN;
+import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_PARAMETER;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 import static org.nuxeo.wopi.Constants.BASE_FILE_NAME;
@@ -460,7 +460,8 @@ public class FilesEndpoint extends DefaultObject {
 
         String token = Helpers.createJWTToken();
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
-        String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN, token);
+        String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN_PARAMETER,
+                token);
         String hostViewUrl = Helpers.getWOPIURL(baseURL, ACTION_VIEW, newDoc, xpath);
         String hostEditUrl = Helpers.getWOPIURL(baseURL, ACTION_EDIT, newDoc, xpath);
 
