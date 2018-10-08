@@ -5810,6 +5810,18 @@
           <version>0.1</version>
         </plugin>
         <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>3.3.2</version>
+          <!-- run manually with mvn -nsu -Paddons,distrib org.owasp:dependency-check-maven:aggregate -->
+          <!-- report file is in target/dependency-check-report.html -->
+          <configuration>
+            <suppressionFiles>
+              <suppressionFile>owasp-dependency-suppression.xml</suppressionFile>
+            </suppressionFiles>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>1.8</version>
