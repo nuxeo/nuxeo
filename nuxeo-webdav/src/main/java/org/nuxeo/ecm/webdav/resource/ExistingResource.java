@@ -79,6 +79,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
@@ -354,11 +355,10 @@ public class ExistingResource extends AbstractResource {
         return lockDiscovery;
     }
 
-    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) throws
-            URISyntaxException {
+    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
         Date creationDate = getTimePropertyWrapper(doc, "dc:created");
-        String displayName = new URI(null, backend.getDisplayName(doc), null).toASCIIString();
+        String displayName = EscapeUtils.encodePath(backend.getDisplayName(doc));
         PropStatBuilderExt props = new PropStatBuilderExt();
         props.lastModified(lastModified).creationDate(creationDate).displayName(displayName).status(OK);
         if (doc.isFolder()) {

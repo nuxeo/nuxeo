@@ -117,7 +117,7 @@ public class FileResource extends ExistingResource {
 
     @PROPFIND
     @Produces({ "application/xml", "text/xml" })
-    public Response propfind(@Context UriInfo uriInfo) throws IOException, JAXBException, URISyntaxException {
+    public Response propfind(@Context UriInfo uriInfo) throws IOException, JAXBException {
 
         Unmarshaller u = Util.getUnmarshaller();
 
