@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Florent Munch
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -33,12 +34,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static final String SECRET_KEY_NAME = "secret";
 
     public static final String MAX_AGE_KEY_NAME = "maxAge";
+
+    private static final String DIGEST_ALGORITHM_PROPERTY = "nuxeo.auth.portal.digest.algorithm";
 
     private static final String TS_HEADER = "NX_TS";
 
@@ -100,12 +105,16 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     protected Boolean validateToken(String ts, String random, String token, String userName) {
+        // determine the digest
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        String digest = configurationService.getProperty(DIGEST_ALGORITHM_PROPERTY);
+
         // reconstruct the token
         String clearToken = ts + TOKEN_SEP + random + TOKEN_SEP + secret + TOKEN_SEP + userName;
 
         byte[] hashedToken;
         try {
-            hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
+            hashedToken = MessageDigest.getInstance(digest).digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
             return false;
         }

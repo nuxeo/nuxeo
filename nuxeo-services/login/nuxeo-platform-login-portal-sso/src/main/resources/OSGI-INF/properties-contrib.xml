@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.portal.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      Digest algorithm used to generate the token during a portal authentication.
+
+      @since 10.3
+    </documentation>
+
+    <property name="nuxeo.auth.portal.digest.algorithm">MD5</property>
+
+  </extension>
+
+</component>

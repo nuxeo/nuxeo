@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+
+  <extension-point name="authenticators" />
+
+</component>
