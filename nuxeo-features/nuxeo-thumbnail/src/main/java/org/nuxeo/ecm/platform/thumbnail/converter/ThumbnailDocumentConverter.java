@@ -69,12 +69,8 @@ public class ThumbnailDocumentConverter implements Converter {
             targetBlob.setMimeType("image/png");
             try (CloseableFile source = blob.getCloseableFile()) {
                 CmdParameters params = cles.getDefaultCmdParameters();
-                String size;
-                if (parameters != null && parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
-                    size = (String) parameters.get(THUMBNAIL_SIZE_PARAMETER_NAME);
-                } else {
-                    size = THUMBNAIL_DEFAULT_SIZE;
-                }
+                String size = parameters == null ? THUMBNAIL_DEFAULT_SIZE
+                        : (String) parameters.getOrDefault(THUMBNAIL_SIZE_PARAMETER_NAME, THUMBNAIL_DEFAULT_SIZE);
                 params.addNamedParameter(THUMBNAIL_SIZE_PARAMETER_NAME, size);
                 params.addNamedParameter("inputFilePath", source.getFile());
                 params.addNamedParameter("outputFilePath", targetBlob.getFile());
