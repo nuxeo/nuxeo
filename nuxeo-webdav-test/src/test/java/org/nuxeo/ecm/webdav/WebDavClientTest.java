@@ -203,6 +203,33 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testListFolderContentsSpecialName() throws Exception {
+        String folderName = "foo bar[1] caf\u00e9";
+        DocumentModel folder = session.createDocumentModel("/workspaces/workspace", folderName, "Folder");
+        session.createDocument(folder);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        try (CloseableHttpResponse response = client.execute(request, context)) {
+            MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
+            MultiStatusResponse[] responses = multiStatus.getResponses();
+            StringBuilder failmsg = new StringBuilder("Got: ");
+            boolean gotit = false;
+            for (MultiStatusResponse resp : responses) {
+                String href = resp.getHref();
+                failmsg.append(href);
+                failmsg.append("\n");
+                if (href.endsWith("/workspace/foo%20bar%5B1%5D%20caf%C3%A9")) {
+                    gotit = true;
+                }
+            }
+            assertTrue(failmsg.toString(), gotit);
+        }
+    }
+
+    @Test
     public void testGetDocProperties() throws Exception {
         HttpPropfind request = new HttpPropfind(ROOT_URI + "quality.jpg", DavConstants.PROPFIND_ALL_PROP,
                 DavConstants.DEPTH_1);

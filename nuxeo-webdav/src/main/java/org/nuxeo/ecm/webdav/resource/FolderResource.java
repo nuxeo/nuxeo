@@ -25,7 +25,6 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +53,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
@@ -98,7 +98,7 @@ public class FolderResource extends ExistingResource {
     @PROPFIND
     @Produces({ "application/xml", "text/xml" })
     public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth)
-            throws IOException, JAXBException, URISyntaxException {
+            throws IOException, JAXBException {
 
         if (depth == null) {
             depth = "1";
@@ -145,12 +145,12 @@ public class FolderResource extends ExistingResource {
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop) throws URISyntaxException {
+            Prop prop) {
         return createResponse(doc, uriInfo, prop, true);
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop, boolean append) throws URISyntaxException {
+            Prop prop, boolean append) {
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
         PropStat propStatNotFound = null;
@@ -161,7 +161,7 @@ public class FolderResource extends ExistingResource {
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
         if (append) {
-            String path = new URI(null, backend.getDisplayName(doc), null).toASCIIString();
+            String path = EscapeUtils.encodePath(backend.getDisplayName(doc));
             uriBuilder.path(path);
         }
         URI uri = uriBuilder.build();

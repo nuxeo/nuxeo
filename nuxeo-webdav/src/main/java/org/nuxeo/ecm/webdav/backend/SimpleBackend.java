@@ -24,8 +24,6 @@ package org.nuxeo.ecm.webdav.backend;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -52,6 +50,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.resource.ExistingResource;
 import org.nuxeo.runtime.api.Framework;
 
@@ -178,7 +177,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         if (exists(docRef)) {
             doc = getSession().getDocument(docRef);
         } else {
-            String encodedPath = urlEncode(resolvedLocation.toString());
+            String encodedPath = EscapeUtils.encodePath(resolvedLocation.toString());
             if (!resolvedLocation.toString().equals(encodedPath)) {
                 DocumentRef encodedPathRef = new PathRef(encodedPath);
                 if (exists(encodedPathRef)) {
@@ -213,7 +212,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                                 if (filename.equals(blobFilename)) {
                                     doc = child;
                                     break;
-                                } else if (urlEncode(filename).equals(blobFilename)) {
+                                } else if (EscapeUtils.encodePath(filename).equals(blobFilename)) {
                                     doc = child;
                                     break;
                                 } else if (URLEncoder.encode(filename, "UTF-8").equals(blobFilename)) {
@@ -233,15 +232,6 @@ public class SimpleBackend extends AbstractCoreBackend {
             }
         }
         return doc;
-    }
-
-    private String urlEncode(String value) {
-        try {
-            return new URI(null, value, null).toASCIIString();
-        } catch (URISyntaxException e) {
-            log.warn("Can't encode path " + value);
-            return value;
-        }
     }
 
     protected DocumentModel resolveParent(String location) {
