@@ -127,7 +127,7 @@ public class TestLock {
             try {
                 long timestamp = (long) session.getEntry(fileId).getProperty(LOCK_DIRECTORY_SCHEMA_NAME,
                         LOCK_DIRECTORY_TIMESTAMP);
-                Thread.sleep(10);
+                Thread.sleep(10); // NOSONAR
                 LockHelper.refreshLock(fileId);
                 long refreshedTimestamp = (long) session.getEntry(fileId).getProperty(LOCK_DIRECTORY_SCHEMA_NAME,
                         LOCK_DIRECTORY_TIMESTAMP);

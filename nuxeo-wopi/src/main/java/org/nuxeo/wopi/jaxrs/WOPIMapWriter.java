@@ -25,7 +25,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -61,9 +60,9 @@ public class WOPIMapWriter implements MessageBodyWriter<WOPIMap> {
 
     @Override
     public void writeTo(WOPIMap wopiMap, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException {
-        JsonGenerator jg = factory.createGenerator(entityStream, JsonEncoding.UTF8);
-        jg.writeObject(wopiMap.map);
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+        try (JsonGenerator jg = factory.createGenerator(entityStream, JsonEncoding.UTF8)) {
+            jg.writeObject(wopiMap.map);
+        }
     }
 }
