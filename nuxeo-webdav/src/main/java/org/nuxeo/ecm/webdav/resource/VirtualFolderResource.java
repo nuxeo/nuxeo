@@ -66,6 +66,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.jaxrs.IsCollection;
 import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
 import org.nuxeo.ecm.webdav.jaxrs.IsHidden;
@@ -85,16 +86,15 @@ public class VirtualFolderResource extends AbstractResource {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><p>");
         sb.append("Folder listing for ");
-        sb.append(path);
+        sb.append(StringEscapeUtils.escapeHtml4(path));
         sb.append("/");
         sb.append("</p>\n<ul>\n");
         for (String name : rootFolderNames) {
-            String qname = StringEscapeUtils.escapeHtml4(name);
             sb.append("<li><a href=\"");
-            sb.append(qname);
+            sb.append(StringEscapeUtils.escapeHtml4(EscapeUtils.encodePath(name)));
             sb.append("/"); // terminating slash
             sb.append("\">");
-            sb.append(qname);
+            sb.append(StringEscapeUtils.escapeHtml4(name));
             sb.append("</a></li>\n");
         }
         sb.append("</ul></body>\n");

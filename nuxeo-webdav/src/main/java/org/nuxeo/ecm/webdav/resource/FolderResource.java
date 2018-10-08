@@ -75,20 +75,19 @@ public class FolderResource extends ExistingResource {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><p>");
         sb.append("Folder listing for ");
-        sb.append(path);
+        sb.append(StringEscapeUtils.escapeHtml4(path));
         sb.append("/");
         sb.append("</p>\n<ul>\n");
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
             String name = backend.getDisplayName(child);
-            String qname = StringEscapeUtils.escapeHtml4(name);
             sb.append("<li><a href=\"");
-            sb.append(qname);
+            sb.append(StringEscapeUtils.escapeHtml4(EscapeUtils.encodePath(name)));
             if (child.isFolder()) {
                 sb.append("/");
             }
             sb.append("\">");
-            sb.append(qname);
+            sb.append(StringEscapeUtils.escapeHtml4(name));
             sb.append("</a></li>\n");
         }
         sb.append("</ul></body>\n");

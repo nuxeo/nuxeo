@@ -31,6 +31,7 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
@@ -39,6 +40,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
@@ -174,6 +176,42 @@ public class WebDavClientTest extends AbstractServerTest {
             for (DavPropertyName propName : props.getPropertyNames()) {
                 // System.out.println(propName + " " + props.get(propName).getValue());
             }
+        }
+    }
+
+    @Test
+    public void testListVirtualFolderContentsHTML() throws Exception {
+        HttpGet request = new HttpGet(TEST_URI + "/");
+        try (CloseableHttpResponse response = client.execute(request, context)) {
+            String body;
+            try (InputStream in = response.getEntity().getContent()) {
+                body = IOUtils.toString(in, "UTF-8");
+            }
+            assertTrue(body, body.contains("Folder listing for /</p>"));
+            assertTrue(body, body.contains("<a href=\"workspace/\">workspace</a>"));
+        }
+    }
+
+    @Test
+    public void testListFolderContentsHTML() throws Exception {
+        String folderName = "foo bar[1] caf\u00e9";
+        DocumentModel folder = session.createDocumentModel("/workspaces/workspace", folderName, "Folder");
+        session.createDocument(folder);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        HttpGet request = new HttpGet(ROOT_URI);
+        try (CloseableHttpResponse response = client.execute(request, context)) {
+            String body;
+            try (InputStream in = response.getEntity().getContent()) {
+                body = IOUtils.toString(in, "UTF-8");
+            }
+            assertTrue(body, body.contains("Folder listing for /workspaces/workspace/</p>"));
+            assertTrue(body, body.contains("<a href=\"quality.jpg\">quality.jpg</a>"));
+            assertTrue(body, body.contains("<a href=\"test.html\">test.html</a>"));
+            assertTrue(body, body.contains("<a href=\"test.txt\">test.txt</a>"));
+            assertTrue(body, body.contains("<a href=\"foo%20bar%5B1%5D%20caf%C3%A9/\">foo bar[1] caf&eacute;</a>"));
         }
     }
 
