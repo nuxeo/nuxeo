@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+<suppress>
+   <notes><![CDATA[
+   file name: xz-1.8.jar (vulnerable script xzgrep is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.tukaani:xz:.*$</gav>
+   <cve>CVE-2015-4035</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: geronimo-connector-2.2.1-NX1.jar (vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.apache\.geronimo\.components:geronimo-connector:.*$</gav>
+   <cve>CVE-2008-0732</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: geronimo-transaction-2.2.1.jar (vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.apache\.geronimo\.components:geronimo-transaction:.*$</gav>
+   <cve>CVE-2008-0732</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: xbean-naming-3.18.jar (vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.apache\.xbean:xbean-naming:.*$</gav>
+   <cve>CVE-2008-0732</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   Spurious match of old Tomcat CVEs.
+   ]]></notes>
+   <cve>CVE-2000-0672</cve>
+   <cve>CVE-2000-0760</cve>
+   <cve>CVE-2000-1210</cve>
+   <cve>CVE-2001-0590</cve>
+   <cve>CVE-2002-0493</cve>
+   <cve>CVE-2002-1148</cve>
+   <cve>CVE-2002-1394</cve>
+   <cve>CVE-2002-2006</cve>
+   <cve>CVE-2002-2272</cve>
+   <cve>CVE-2003-0042</cve>
+   <cve>CVE-2003-0043</cve>
+   <cve>CVE-2003-0044</cve>
+   <cve>CVE-2003-0045</cve>
+   <cve>CVE-2003-0866</cve>
+   <cve>CVE-2005-0808</cve>
+   <cve>CVE-2005-4838</cve>
+   <cve>CVE-2006-7196</cve>
+   <cve>CVE-2007-0450</cve>
+   <cve>CVE-2007-1355</cve>
+   <cve>CVE-2007-1358</cve>
+   <cve>CVE-2007-2449</cve>
+   <cve>CVE-2007-2450</cve>
+   <cve>CVE-2007-3383</cve>
+   <cve>CVE-2007-5461</cve>
+   <cve>CVE-2008-0128</cve>
+   <cve>CVE-2008-5519</cve>
+   <cve>CVE-2009-2696</cve>
+   <cve>CVE-2009-3548</cve>
+   <cve>CVE-2012-5568</cve>
+   <cve>CVE-2013-2185</cve>
+   <cve>CVE-2013-4286</cve>
+   <cve>CVE-2013-4322</cve>
+   <cve>CVE-2013-4444</cve>
+   <cve>CVE-2013-4590</cve>
+   <cve>CVE-2013-6357</cve>
+   <cve>CVE-2014-0075</cve>
+   <cve>CVE-2014-0096</cve>
+   <cve>CVE-2014-0099</cve>
+   <cve>CVE-2014-0119</cve>
+   <cve>CVE-2016-5425</cve>
+   <cve>CVE-2016-6325</cve>
+   <cve>CVE-2017-6056</cve>
+</suppress>
+
+<suppress>
+   <notes><![CDATA[
+   file name: affinity-3.1.9.jar (wrong identification, net.openhft:affinity != thread_project:thread)
+   ]]></notes>
+   <gav regex="true">^net\.openhft:affinity:.*$</gav>
+   <cpe>cpe:/a:thread_project:thread</cpe>
+</suppress>
+
+<suppress>
+   <notes><![CDATA[
+   file name: ognl-2.7.2.jar (only used in tests; OGNL not used)
+   ]]></notes>
+   <gav regex="true">^ognl:ognl:.*$</gav>
+   <cpe>cpe:/a:ognl_project:ognl</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: jsoup-1.4.1.jar (only used in tests)
+   ]]></notes>
+   <gav regex="true">^org\.jsoup:jsoup:.*$</gav>
+   <cpe>cpe:/a:jsoup:jsoup</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: jgiven-html-app-0.16.0.jar (only used in tests)
+   ]]></notes>
+   <gav regex="true">^com\.tngtech\.jgiven:jgiven-html-app:.*$</gav>
+   <cpe>cpe:/a:app_project:app</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: gatling-app-2.3.1.jar (only used in tests)
+   ]]></notes>
+   <gav regex="true">^io\.gatling:gatling-app:.*$</gav>
+   <cpe>cpe:/a:app_project:app</cpe>
+</suppress>
+</suppressions>
