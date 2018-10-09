@@ -135,7 +135,7 @@ limitations under the License.
 
       _search: function() {
         if (this.searchTerm) {
-          this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm) + '*');
+          this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm));
         } else {
           if (this.params.ecm_fulltext) {
             this.set('params.ecm_fulltext', '');
