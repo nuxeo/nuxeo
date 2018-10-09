@@ -217,7 +217,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         CoreSession session = sourceDocument.getCoreSession();
         DocumentModel version = null;
         boolean isVersionable = sourceDocument.isVersionable();
-        if (isVersionable) {
+        if (sourceDocument.isVersion()) {
+            version = sourceDocument;
+            sourceDocument = session.getDocument(new IdRef(version.getSourceId()));
+        } else if (isVersionable) {
             DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
             version = session.getDocument(versionRef);
         }

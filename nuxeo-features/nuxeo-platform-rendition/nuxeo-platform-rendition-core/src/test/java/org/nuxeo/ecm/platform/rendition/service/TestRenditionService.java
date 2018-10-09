@@ -63,8 +63,10 @@ import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -72,7 +74,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -311,6 +312,31 @@ public class TestRenditionService {
         assertTrue(rendition.isStored());
 
         assertTrue(rendition.getHostDocument().isVersion());
+
+        // update the source Document
+        file.setPropertyValue("dc:description", "I have been updated yet again");
+        file = session.saveDocument(file);
+        assertEquals("0.3+", file.getVersionLabel());
+
+        // create a version of the document
+        file.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        file = session.saveDocument(file);
+        session.save();
+        eventService.waitForAsyncCompletion();
+        assertEquals("0.4", file.getVersionLabel());
+
+        // update the source Document
+        file.setPropertyValue("dc:description", "I have been updated a very last time");
+        file = session.saveDocument(file);
+        assertEquals("0.4+", file.getVersionLabel());
+
+        // check that source doc is referenced in rendered version.
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("0.4");
+        rendition = renditionService.getRendition(session.getVersion(file.getId(), versionModel),
+                PDF_RENDITION_DEFINITION, true);
+        assertEquals(file.getId(),
+                rendition.getHostDocument().getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
 
     }
 
