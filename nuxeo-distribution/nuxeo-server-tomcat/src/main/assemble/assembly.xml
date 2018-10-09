@@ -41,11 +41,42 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip:${tomcat.classifier}" />
+      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip" />
     </unzip>
     <move todir="${tomcat}">
       <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
     </move>
+    <!-- clean up Tomcat and remove unused or heavy files -->
+    <mkdir dir="${tomcat}/doc-tomcat" />
+    <move todir="${tomcat}/doc-tomcat">
+      <fileset dir="${tomcat}">
+        <include name="LICENSE" />
+        <include name="NOTICE" />
+        <include name="RELEASE-NOTES" />
+        <include name="RUNNING.txt" />
+      </fileset>
+    </move>
+    <delete>
+      <fileset dir="${tomcat}/bin">
+        <include name="catalina.bat" />
+        <include name="catalina.sh" />
+        <include name="configtest.bat" />
+        <include name="configtest.sh" />
+        <include name="shutdown.bat" />
+        <include name="shutdown.sh" />
+        <include name="startup.bat" />
+        <include name="startup.sh" />
+        <include name="version.bat" />
+        <include name="version.sh" />
+        <include name="commons-daemon-native.tar.gz" />
+        <include name="tomcat-native.tar.gz" />
+      </fileset>
+    </delete>
+    <delete dir="${tomcat}/logs" />
+    <delete dir="${tomcat}/temp" />
+    <delete dir="${tomcat}/webapps/docs" />
+    <delete dir="${tomcat}/webapps/examples" />
+    <!-- install Nuxeo-specific files -->
     <copy tofile="${tomcat}/bin/nuxeo-launcher.jar">
     	<artifact:file key="org.nuxeo:nuxeo-launcher:::jar-with-dependencies" />
     </copy>

@@ -13,11 +13,6 @@
   <name>Nuxeo Server Tomcat Build</name>
   <description>Package Nuxeo Server with Tomcat</description>
 
-  <properties>
-    <!-- Use a Nuxeo lightened Tomcat -->
-    <tomcat.classifier>light</tomcat.classifier>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
