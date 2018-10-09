@@ -12,6 +12,16 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="publish_space_suggestion">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE dc:title ILIKE '?%'
+          AND ecm:mixinType = 'PublishSpace' AND ecm:isVersion = 0 AND
+          ecm:isTrashed = 0
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
   </extension>
 
 </component>
