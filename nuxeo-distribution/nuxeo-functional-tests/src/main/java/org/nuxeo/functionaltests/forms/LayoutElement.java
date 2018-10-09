@@ -26,6 +26,7 @@ import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -157,7 +158,12 @@ public class LayoutElement implements LayoutFragment {
     public void setInput(WebElement elt, String value) {
         elt.click();
         if (value != null) {
-            elt.sendKeys(Keys.chord(Keys.CONTROL, "a"), value);
+            elt.sendKeys(
+                    // replace existing input content when typing, as the clear() method crashes on boolean elements for
+                    // instance
+                    Keys.chord(Keys.CONTROL, "a"), // select input content for linux
+                    Keys.chord(Keys.COMMAND, "a"), // select input content for macos
+                    value); // add new value
         }
     }
 
