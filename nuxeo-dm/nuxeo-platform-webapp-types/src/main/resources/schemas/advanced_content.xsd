@@ -8,6 +8,7 @@
 
   <xs:element name="title" type="xs:string" />
   <xs:element name="ecm_parentId" type="xs:string" />
+  <xs:element name="ecm_trashed" type="xs:boolean" default="false" />
 
   <!-- aggregates field-->
   <xs:element name="dc_last_contributor_agg" type="nxs:stringList" />
