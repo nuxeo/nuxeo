@@ -32,13 +32,16 @@
         <fixedPart>
           ecm:isVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isTrashed = 0
+          'HiddenInNavigation'
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="advanced_content" name="title" />
         </predicate>
         <predicate parameter="ecm:parentId" operator="=">
           <field schema="advanced_content" name="ecm_parentId" />
+        </predicate>
+        <predicate parameter="ecm:isTrashed" operator="=">
+          <field schema="advanced_content" name="ecm_trashed" />
         </predicate>
       </whereClause>
       <aggregates>
