@@ -144,8 +144,16 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeStringField("state", doc.getRef() != null ? doc.getCurrentLifeCycleState() : null);
         jg.writeStringField("parentRef", doc.getParentRef() != null ? doc.getParentRef().toString() : null);
         jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
-        jg.writeBooleanField("isVersion", doc.isVersion());
-        jg.writeBooleanField("isProxy", doc.isProxy());
+        boolean isVersion = doc.isVersion();
+        jg.writeBooleanField("isVersion", isVersion);
+        boolean isProxy = doc.isProxy();
+        jg.writeBooleanField("isProxy", isProxy);
+        if (isProxy) {
+            jg.writeStringField("proxyTargetId", doc.getSourceId());
+        }
+        if (isVersion || isProxy) {
+            jg.writeStringField("versionableId", doc.getVersionSeriesId());
+        }
         jg.writeStringField("changeToken", doc.getChangeToken());
         jg.writeBooleanField("isTrashed", doc.getRef() != null && doc.isTrashed());
         jg.writeStringField("title", doc.getTitle());
