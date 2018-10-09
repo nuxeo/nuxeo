@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.platform.rendition.Constants;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -532,77 +533,67 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     @Override
-    public Rendition getDefaultRendition(DocumentModel doc, String reason, boolean store, Map<String, Serializable> extendedInfos) {
-        DefaultRenditionDescriptor resolvedDesc = null;
-        for (int i = defaultRenditionDescriptors.size() - 1; i >= 0; i--) {
-            DefaultRenditionDescriptor d = defaultRenditionDescriptors.get(i);
-            if ((StringUtils.isEmpty(reason) && StringUtils.isEmpty(d.reason))
-                    || (reason != null && reason.equals(d.reason))) {
-                resolvedDesc = d;
-                break;
-            }
-        }
-        if (resolvedDesc == null) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cannot find default rendition script for reason %s", reason));
-            }
-            return null;
-        }
+    public Rendition getDefaultRendition(DocumentModel doc, String reason, boolean store,
+            Map<String, Serializable> extendedInfos) {
         Map<String, Object> context = new HashMap<>();
         Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
         NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
         context.put("Document", doc);
         context.put("Infos", ei);
         context.put("CurrentUser", currentUser);
-        ScriptEngine engine = scriptEngineManager.getEngineByName(resolvedDesc.getScriptLanguage());
-        if (engine == null) {
-            throw new NuxeoException(
-                    "Engine not found for language: " + resolvedDesc.getScriptLanguage());
-        }
-        if (!(engine instanceof Invocable)) {
-            throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
-                    + resolvedDesc.getScriptLanguage());
-        }
-        Rendition rendition = null;
-        try {
-            engine.eval(resolvedDesc.getScript());
-            engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
-            Object result = ((Invocable) engine).invokeFunction("run");
-            if (!(result instanceof String)) {
-                log.error("Failed to get rendition name (" + result + ")");
-            } else {
-                String defaultRenditionName = (String) result;
-                if (StringUtils.isBlank(defaultRenditionName)) {
-                    log.info("Default rendition name cannot be evaluated, returning null");
-                } else {
-                    try {
-                        rendition = getRendition(doc, defaultRenditionName);
-                    } catch (NuxeoException e) {
-                        log.error("Unable to use default rendition " + defaultRenditionName, e);
+        ScriptEngine engine = null;
+        for (int i = defaultRenditionDescriptors.size() - 1; i >= 0; i--) {
+            DefaultRenditionDescriptor desc = defaultRenditionDescriptors.get(i);
+            if ((StringUtils.isEmpty(reason) && StringUtils.isEmpty(desc.reason))
+                    || (reason != null && reason.equals(desc.reason))) {
+                String scriptLanguage = desc.getScriptLanguage();
+                if (engine == null || !engine.getFactory().getNames().contains(scriptLanguage)) {
+                    // Instantiating an engine may be costly, let's keep previous one if same language
+                    engine = scriptEngineManager.getEngineByName(scriptLanguage);
+                    if (engine == null) {
+                        throw new NuxeoException("Engine not found for language: " + scriptLanguage);
                     }
                 }
-            }
+                if (!(engine instanceof Invocable)) {
+                    throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
+                            + scriptLanguage);
+                }
+                try {
+                    engine.eval(desc.getScript());
+                    engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
+                    Object result = ((Invocable) engine).invokeFunction("run");
+                    if (result == null && desc.override) {
+                        break;
+                    } else {
+                        String defaultRenditionName = (String) result;
+                        if (!StringUtils.isBlank(defaultRenditionName)) {
+                            try {
+                                return getRendition(doc, defaultRenditionName, store);
+                            } catch (NuxeoException e) {
+                                log.error("Unable to use default rendition " + defaultRenditionName, e);
+                            }
+                        }
+                    }
 
-        } catch (NoSuchMethodException e) {
-            throw new NuxeoException("Script does not contain function: run() in defaultRendition: ", e);
-        } catch (ScriptException e) {
-            log.error("Failed to evaluate script: ", e);
-        }
-        if (store) {
-            StoredRendition storedRendition = storeRendition(doc, rendition);
-            if (storedRendition != null) {
-                return storedRendition;
+                } catch (NoSuchMethodException e) {
+                    throw new NuxeoException("Script does not contain function: run() in defaultRendition: ", e);
+                } catch (ScriptException e) {
+                    log.error("Failed to evaluate script: ", e);
+                }
             }
         }
-        return rendition;
+        if (log.isWarnEnabled()) {
+            log.warn(String.format("Failed to get rendition name for reason %s", reason));
+        }
+        return null;
     }
 
     @Override
     public DocumentModel publishRendition(DocumentModel doc, DocumentModel target, String renditionName,
             boolean override) {
-        RenditionService rs = Framework.getService(RenditionService.class);
-        Rendition rendition = StringUtils.isEmpty(renditionName) ? rs.getDefaultRendition(doc, "publish", true, null)
-                : rs.getRendition(doc, renditionName, true);
+        Rendition rendition = StringUtils.isEmpty(renditionName)
+                ? getDefaultRendition(doc, Constants.DEFAULT_RENDTION_PUBLISH_REASON, true, null)
+                : getRendition(doc, renditionName, true);
         if (rendition == null) {
             throw new NuxeoException("Unable to render the document");
         }

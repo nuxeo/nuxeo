@@ -73,4 +73,9 @@ public class Constants {
      */
     public static final String RENDITION_VARIANT_PROPERTY_ADMINISTRATOR_USER = "administratoruser:";
 
+    /**
+     * @since 10.3
+     */
+    public static final String DEFAULT_RENDTION_PUBLISH_REASON = "publish";
+
 }

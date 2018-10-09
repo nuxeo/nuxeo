@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.test.defaultOverride">
+
+  <require>org.nuxeo.ecm.platform.rendition.download.contrib</require>
+  <require>org.nuxeo.ecm.platform.rendition.publish.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="defaultRendition">
+    <defaultRendition reason="publish">
+      <script language="JavaScript">
+        function run() {
+          if (Document.getType() == "Folder") {
+            return 'zipTreeExport';
+          }
+        }
+      </script>
+    </defaultRendition>
+    <defaultRendition reason="download" override="true">
+      <script language="JavaScript">
+        function run() {
+          if (Document.getType() == "Folder") {
+            return null;
+          }
+          return 'xmlExport';
+        }
+      </script>
+    </defaultRendition>
+  </extension>
+
+</component>

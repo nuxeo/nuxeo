@@ -41,6 +41,12 @@ public class DefaultRenditionDescriptor {
     @XNode("@reason")
     protected String reason;
 
+    /**
+     * @since 10.3
+     */
+    @XNode("@override")
+    protected boolean override;
+
     @XNode("script@language")
     protected String scriptLanguage;
 
@@ -61,6 +67,7 @@ public class DefaultRenditionDescriptor {
         script = other.script;
         scriptLanguage = other.scriptLanguage;
         reason = other.reason;
+        override = other.override;
     }
 
     public void merge(DefaultRenditionDescriptor other) {
@@ -73,6 +80,7 @@ public class DefaultRenditionDescriptor {
         if (other.reason != null) {
             reason = other.reason;
         }
+        override = other.override;
     }
 
 }
