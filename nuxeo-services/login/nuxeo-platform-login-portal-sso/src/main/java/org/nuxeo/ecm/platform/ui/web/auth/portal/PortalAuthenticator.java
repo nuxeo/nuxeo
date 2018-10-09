@@ -15,11 +15,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Florent Guillaume
  *     Florent Munch
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth.portal;
 
 import java.security.MessageDigest;
@@ -69,14 +67,17 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected String digestAlgorithm = DIGEST_ALGORITHM_DEFAULT;
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
-        return null;
+        return null; // NOSONAR
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
-        return false;
+        return Boolean.FALSE;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
 
@@ -96,6 +97,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.containsKey(SECRET_KEY_NAME)) {
             secret = parameters.get(SECRET_KEY_NAME);
@@ -114,11 +116,12 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return false;
+        return Boolean.FALSE;
     }
 
-    protected Boolean validateToken(String ts, String random, String token, String userName) {
+    protected boolean validateToken(String ts, String random, String token, String userName) {
         // reconstruct the token
         String clearToken = ts + TOKEN_SEP + random + TOKEN_SEP + secret + TOKEN_SEP + userName;
 
