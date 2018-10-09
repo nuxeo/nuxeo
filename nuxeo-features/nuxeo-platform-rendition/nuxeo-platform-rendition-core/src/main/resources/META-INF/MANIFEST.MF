@@ -10,6 +10,7 @@ Nuxeo-Component: OSGI-INF/rendition-schemas-contrib.xml,
  OSGI-INF/rendition-download-contrib.xml,
  OSGI-INF/rendition-adapter-contrib.xml,
  OSGI-INF/rendition-operations-contrib.xml,
+ OSGI-INF/rendition-publish-contrib.xml,
  OSGI-INF/marshallers-contrib.xml,
  OSGI-INF/rendition-scheduler-contrib.xml,
  OSGI-INF/rendition-workmanager-contrib.xml

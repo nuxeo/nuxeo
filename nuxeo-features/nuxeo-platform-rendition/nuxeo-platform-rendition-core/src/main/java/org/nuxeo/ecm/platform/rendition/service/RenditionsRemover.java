@@ -15,7 +15,7 @@
  * Contributors:
  * Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.platform.rendition.publisher;
+package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
@@ -47,7 +47,7 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
 
     protected final DocumentModel proxy;
 
-    protected RenditionsRemover(DocumentModel source) {
+    public RenditionsRemover(DocumentModel source) {
         super(source.getCoreSession());
         this.proxy = source;
     }
