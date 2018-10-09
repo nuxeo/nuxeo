@@ -69,47 +69,6 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="advanced_document_trash_content">
-      <trackUsage>true</trackUsage>
-      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-      <whereClause docType="AdvancedContent">
-        <fixedPart>
-          ecm:isCheckedInVersion = 0 AND
-          ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isTrashed = 1
-        </fixedPart>
-        <predicate parameter="dc:title" operator="FULLTEXT">
-          <field schema="advanced_content" name="title" />
-        </predicate>
-        <predicate parameter="ecm:parentId" operator="=">
-          <field schema="advanced_content" name="ecm_parentId" />
-        </predicate>
-      </whereClause>
-      <aggregates>
-        <aggregate id="dc_last_contributor_agg" type="terms" parameter="dc:lastContributor">
-          <field schema="advanced_content" name="dc_last_contributor_agg" />
-          <properties>
-            <property name="size">10</property>
-          </properties>
-        </aggregate>
-        <aggregate id="dc_modified_agg" type="date_range" parameter="dc:modified">
-          <field schema="advanced_content" name="dc_modified_agg" />
-          <properties>
-            <property name="format">"dd-MM-yyyy"</property>
-          </properties>
-          <dateRanges>
-            <dateRange key="last24h" fromDate="now-24H" toDate="now"/>
-            <dateRange key="lastWeek" fromDate="now-7d" toDate="now-24H"/>
-            <dateRange key="lastMonth" fromDate="now-1M" toDate="now-7d"/>
-            <dateRange key="lastYear" fromDate="now-1y" toDate="now-1M"/>
-            <dateRange key="priorToLastYear" toDate="now-1y"/>
-          </dateRanges>
-        </aggregate>
-      </aggregates>
-      <sort column="dc:modified" ascending="false" />
-      <pageSize>20</pageSize>
-    </coreQueryPageProvider>
-
     <coreQueryPageProvider name="document_trash_content">
       <whereClause docType="AdvancedSearch">
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
