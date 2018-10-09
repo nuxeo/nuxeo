@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -40,6 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * @since 9.3
@@ -55,6 +57,9 @@ public class TestDefaultRendition {
 
     @Inject
     protected RenditionService renditionService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testDefaultRenditionOnContainer() throws Exception {
@@ -111,6 +116,35 @@ public class TestDefaultRendition {
         assertNotNull(ren);
         Blob blob = ren.getBlob();
         assertEquals("text/plain", blob.getMimeType());
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testDefaultRenditionOverride() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel file = TestRenditionProvider.createBlobDoc("File", session);
+
+        Rendition folderPublishRen = renditionService.getDefaultRendition(folder, "publish", null);
+        Rendition folderDownloadRen = renditionService.getDefaultRendition(folder, "download", null);
+        Rendition fileRen = renditionService.getDefaultRendition(file, "publish", null);
+        assertNull(folderPublishRen);
+        assertNotNull(folderDownloadRen);
+        assertEquals("application/pdf", fileRen.getBlob().getMimeType());
+        assertEquals("application/zip", folderDownloadRen.getBlob().getMimeType());
+        // Deploy another contrib with an additional publish reason and an override existing download reason
+        hotDeployer.deploy("org.nuxeo.ecm.platform.rendition.core:test-default-rendition-override-contrib.xml");
+        folder = session.createDocumentModel("/", "dummy-folder", "Folder");
+        folder = session.createDocument(folder);
+        folderPublishRen = renditionService.getDefaultRendition(folder, "publish", null);
+        folderDownloadRen = renditionService.getDefaultRendition(folder, "download", null);
+        fileRen = renditionService.getDefaultRendition(file, "publish", null);
+        assertNotNull(folderPublishRen);
+        assertNull(folderDownloadRen);
+        assertEquals("application/zip", folderPublishRen.getBlob().getMimeType());
+        assertEquals("application/pdf", fileRen.getBlob().getMimeType());
     }
 
 }
