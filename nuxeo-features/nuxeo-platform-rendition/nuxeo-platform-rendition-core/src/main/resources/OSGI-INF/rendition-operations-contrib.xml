@@ -6,6 +6,8 @@
 
     <operation class="org.nuxeo.ecm.platform.rendition.operation.GetRendition" />
     <operation class="org.nuxeo.ecm.platform.rendition.operation.GetContainerRendition" />
+    <operation class="org.nuxeo.ecm.platform.rendition.operation.PublishRendition"  replace="true"/>
+    <operation class="org.nuxeo.ecm.platform.rendition.operation.UnpublishAll"/>
 
   </extension>
 
