@@ -26,6 +26,8 @@ package org.nuxeo.ecm.platform.rendition;
  */
 public class Constants {
 
+    public static final String ALL_PUBLICATION_QUERY = "SELECT * FROM Document WHERE ecm:isProxy = 1 AND (rend:sourceVersionableId = %s OR ecm:proxyVersionableId = %s)";
+
     private Constants() {
         // Constants class
     }
