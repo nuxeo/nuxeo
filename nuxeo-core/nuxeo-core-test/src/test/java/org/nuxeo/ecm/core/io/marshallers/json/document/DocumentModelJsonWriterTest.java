@@ -114,6 +114,24 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         JsonAssert json = jsonAssert(versionDoc);
         json.isObject();
         json.has("isVersion").isTrue();
+        json.has("versionableId").isEquals(document.getId());
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testIsProxy() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "DummyDoc");
+        folder = session.createDocument(folder);
+        DocumentRef versionDocRef = document.checkIn(VersioningOption.MAJOR, "CheckIn comment");
+        DocumentModel versionDoc = session.getDocument(versionDocRef);
+        DocumentModel proxyDoc = session.publishDocument(versionDoc, folder);
+        JsonAssert json = jsonAssert(proxyDoc);
+        json.isObject();
+        json.has("isProxy").isTrue();
+        json.has("versionableId").isEquals(document.getId());
+        json.has("proxyTargetId").isEquals(versionDoc.getId());
     }
 
     @Test
