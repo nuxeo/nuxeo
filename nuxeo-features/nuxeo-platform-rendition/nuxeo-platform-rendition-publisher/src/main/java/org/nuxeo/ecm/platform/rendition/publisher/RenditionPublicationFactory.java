@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.ecm.platform.rendition.service.RenditionsRemover;
 import org.nuxeo.runtime.api.Framework;
 
 /**

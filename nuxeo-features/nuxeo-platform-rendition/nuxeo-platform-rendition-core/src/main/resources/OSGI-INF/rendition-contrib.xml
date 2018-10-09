@@ -44,6 +44,21 @@
       </filters>
     </renditionDefinition>
 
+    <renditionDefinition name="mainBlob" visible="false">
+      <operationChain>mainBlob</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <contentType></contentType>
+    </renditionDefinition>
+
+    <renditionDefinition name="containerDefaultRendition" visible="false">
+      <contentType>application/zip</contentType>
+      <operationChain>containerContentBlob</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <filters>
+        <filter-id>container</filter-id>
+      </filters>
+    </renditionDefinition>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -64,6 +79,21 @@
         <param name="exportAsTree" type="boolean">true</param>
       </operation>
     </chain>
+
+    <chain id="mainBlob">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.GetBlob" />
+    </chain>
+
+    <chain id="containerContentBlob">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.GetContainerRendition">
+        <param type="string" name="reason">download</param>
+        <param type="int" name="limit">200</param>
+        <param type="int" name="maxDepth">2</param>
+      </operation>
+    </chain>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -71,6 +101,17 @@
 
     <filter id="allowPDFRendition" />
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="defaultRendition">
+    <defaultRendition>
+      <script language="JavaScript">
+        function run() {
+          return 'xmlExport';
+        }
+      </script>
+    </defaultRendition>
   </extension>
 
 </component>

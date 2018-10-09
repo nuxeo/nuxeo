@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.publish.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="defaultRendition">
+    <defaultRendition reason="publish">
+      <script language="JavaScript">
+        function run() {
+          if (Document.getType() == "File" || Document.getType() == "Note") {
+            return 'pdf';
+          } else if (Document.hasSchema("file")) {
+            return 'mainBlob';
+          }
+          return null;
+        }
+      </script>
+    </defaultRendition>
+  </extension>
+
+</component>

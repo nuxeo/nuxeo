@@ -35,6 +35,12 @@ public class DefaultRenditionDescriptor {
     @XNode("script")
     protected String script;
 
+    /**
+     * @since 10.3
+     */
+    @XNode("@reason")
+    protected String reason;
+
     @XNode("script@language")
     protected String scriptLanguage;
 
@@ -54,6 +60,7 @@ public class DefaultRenditionDescriptor {
     public DefaultRenditionDescriptor(DefaultRenditionDescriptor other) {
         script = other.script;
         scriptLanguage = other.scriptLanguage;
+        reason = other.reason;
     }
 
     public void merge(DefaultRenditionDescriptor other) {
@@ -62,6 +69,9 @@ public class DefaultRenditionDescriptor {
         }
         if (other.scriptLanguage != null) {
             scriptLanguage = other.scriptLanguage;
+        }
+        if (other.reason != null) {
+            reason = other.reason;
         }
     }
 
