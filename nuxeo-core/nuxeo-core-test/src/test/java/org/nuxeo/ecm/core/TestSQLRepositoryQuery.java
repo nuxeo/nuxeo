@@ -3307,6 +3307,59 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-mongodb-like-anchored-enabled.xml")
+    public void testQueryLikeAnchoredEnabled() {
+        dotTestQueryLikeAnchored(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-mongodb-like-anchored-disabled.xml")
+    public void testQueryLikeAnchoredDisabled() {
+        dotTestQueryLikeAnchored(false);
+    }
+
+    @Test
+    public void testQueryLikeAnchoredDefault() {
+        dotTestQueryLikeAnchored(true);
+    }
+
+    protected void dotTestQueryLikeAnchored(boolean anchored) {
+        assumeTrue("LIKE anchoring can only be disabled on MongoDB", anchored || isDBSMongoDB());
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "foobarbaz");
+        session.createDocument(doc);
+        session.save();
+
+        // should not match
+        checkLikeMatch(false, "gee");
+        checkLikeMatch(false, "foogee");
+        checkLikeMatch(false, "geebar");
+        // should match if not anchored
+        checkLikeMatch(!anchored, "");
+        checkLikeMatch(!anchored, "bar");
+        checkLikeMatch(!anchored, "foobar");
+        checkLikeMatch(!anchored, "barbaz");
+        // should match
+        checkLikeMatch(true, "foobarbaz");
+        checkLikeMatch(true, "%foobarbaz");
+        checkLikeMatch(true, "foobarbaz%");
+        checkLikeMatch(true, "%foobarbaz%");
+        checkLikeMatch(true, "%barbaz");
+        checkLikeMatch(true, "foobar%");
+        checkLikeMatch(true, "foo%baz");
+        checkLikeMatch(true, "%");
+        checkLikeMatch(true, "%bar%");
+        checkLikeMatch(true, "%foo%baz%");
+    }
+
+    protected void checkLikeMatch(boolean shouldMatch, String string) {
+        DocumentModelList dml = session.query("SELECT * FROM File WHERE dc:title LIKE '" + string + "'");
+        assertEquals("Should " + (shouldMatch ? "match" : "not match") + ": '" + string + "'", shouldMatch ? 1 : 0,
+                dml.size());
+    }
+
+    @Test
     public void testQueryIdNotFromUuid() throws Exception {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
