@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>7.10-HF46-SNAPSHOT</version>
+    <version>7.10-HF47-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-query-api</artifactId>
