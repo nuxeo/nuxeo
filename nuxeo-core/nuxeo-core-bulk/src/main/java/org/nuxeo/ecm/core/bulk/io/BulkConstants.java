@@ -21,11 +21,11 @@ package org.nuxeo.ecm.core.bulk.io;
 /**
  * Bulk constants for serialization.
  *
- * @since 10.2
+ * @since 10.3
  */
 public class BulkConstants {
 
-    // BulkStatus part
+    // BulkStatus
 
     public static final String STATUS_ENTITY_TYPE = "bulkStatus";
 
@@ -33,19 +33,21 @@ public class BulkConstants {
 
     public static final String STATUS_STATE = "state";
 
-    public static final String STATUS_SUBMIT = "submit";
+    public static final String STATUS_SUBMIT_TIME = "submitted";
+
+    public static final String STATUS_SCROLL_START = "scrollStart";
+
+    public static final String STATUS_SCROLL_END = "scrollEnd";
+
+    public static final String STATUS_COMPLETED_TIME = "completed";
 
     public static final String STATUS_TOTAL = "total";
 
-    /**
-     * @since 10.3
-     */
     public static final String STATUS_PROCESSED = "processed";
 
-    /** @since 10.3 */
     public static final String STATUS_RESULT = "result";
 
-    // BulkCommand part
+    // BulkCommand
 
     public static final String COMMAND_ENTITY_TYPE = "bulkCommand";
 
@@ -66,4 +68,5 @@ public class BulkConstants {
     private BulkConstants() {
         // constants class
     }
+
 }

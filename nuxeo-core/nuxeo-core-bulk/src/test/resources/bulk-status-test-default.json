@@ -1,10 +1,13 @@
 {
   "entity-type": "bulkStatus",
   "commandId": "00000000-0000-0000-0000-000000000000",
-  "state": "SCHEDULED",
-  "submit": "2018-06-21T12:37:08.172Z",
-  "total": 0,
-  "processed": 0,
+  "state": "COMPLETED",
+  "submitted": "2018-06-21T12:37:08.172Z",
+  "scrollStart": "2018-06-21T12:38:08.172Z",
+  "scrollEnd": "2018-06-21T12:39:08.172Z",
+  "completed": "2018-06-21T12:40:08.172Z",
+  "total": 125,
+  "processed": 126,
   "result": {
     "result1": "o1",
     "result2": [

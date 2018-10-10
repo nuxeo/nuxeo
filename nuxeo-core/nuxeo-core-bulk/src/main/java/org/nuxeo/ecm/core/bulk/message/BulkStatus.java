@@ -42,27 +42,34 @@ public class BulkStatus implements Serializable {
     private static final long serialVersionUID = 20181021L;
 
     /**
-     * Possible states of bulk execution.
+     * Possible states of a bulk command:
      */
     public enum State {
+        /** The command or the status is unknown. */
         UNKNOWN,
 
-        /** The {@link BulkCommand} has been submitted to the system. */
+        /** The command has been submitted to the service. */
         SCHEDULED,
 
-        /** System is currently scrolling the database and computing the action. */
+        /** The scroller is running and materialize the document set. */
         SCROLLING_RUNNING,
 
-        /** System is currently computing the action (scrolling is finished). */
+        /** The scroller has terminated, the size of the document set is known and action is applied. */
         RUNNING,
 
-        /** System has finished to scroll. */
+        /** The action has been applied to the document set, the command is completed. */
         COMPLETED
     }
 
     protected String commandId;
 
+    @Nullable
+    protected String action;
+
     protected boolean delta;
+
+    @Nullable
+    protected Long processed;
 
     @Nullable
     protected State state;
@@ -76,14 +83,11 @@ public class BulkStatus implements Serializable {
     @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant scrollEndTime;
 
-    @Nullable
-    protected Long processed;
+    @AvroEncode(using = InstantAsLongEncoding.class)
+    protected Instant completedTime;
 
     @Nullable
     protected Long total;
-
-    @Nullable
-    protected String action;
 
     @Nullable
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
@@ -128,6 +132,10 @@ public class BulkStatus implements Serializable {
             throw new IllegalArgumentException(
                     String.format("Cannot merge an a full status: %s with %s", this, update));
         }
+        if (!getCommandId().equals(update.getCommandId())) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot merge different command: %s with %s", this, update));
+        }
         if (update.getState() != null) {
             setState(update.getState());
         }
@@ -143,6 +151,9 @@ public class BulkStatus implements Serializable {
         if (update.getSubmitTime() != null) {
             setSubmitTime(update.getSubmitTime());
         }
+        if (update.getCompletedTime() != null) {
+            setCompletedTime(update.getCompletedTime());
+        }
         if (update.total != null) {
             setTotal(update.getTotal());
         }
@@ -154,7 +165,10 @@ public class BulkStatus implements Serializable {
 
     protected void checkForCompletedState() {
         if (!isDelta() && getTotal() > 0 && getProcessed() >= getTotal()) {
-            setState(State.COMPLETED);
+            if (!State.COMPLETED.equals(getState())) {
+                setState(State.COMPLETED);
+                setCompletedTime(Instant.now());
+            }
         }
     }
 
@@ -198,6 +212,17 @@ public class BulkStatus implements Serializable {
         this.scrollEndTime = scrollEndTime;
     }
 
+    public Instant getCompletedTime() {
+        return completedTime;
+    }
+
+    public void setCompletedTime(Instant completedTime) {
+        this.completedTime = completedTime;
+    }
+
+    /**
+     * For a full status returns the number of documents where the action has been applied so far.
+     */
     public long getProcessed() {
         if (processed == null) {
             return 0;
