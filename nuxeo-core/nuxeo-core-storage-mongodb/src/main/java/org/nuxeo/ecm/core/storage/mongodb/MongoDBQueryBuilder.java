@@ -87,6 +87,7 @@ import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.mongodb.QueryOperators;
 
@@ -106,6 +107,8 @@ public class MongoDBQueryBuilder {
     public static final Double MINUS_ONE = Double.valueOf(-1);
 
     protected static final String DATE_CAST = "DATE";
+
+    protected static final String LIKE_ANCHORED_PROP = "nuxeo.mongodb.like.anchored";
 
     protected final AtomicInteger counter = new AtomicInteger();
 
@@ -146,6 +149,8 @@ public class MongoDBQueryBuilder {
      */
     protected String elemMatchPrefix;
 
+    protected boolean likeAnchored;
+
     public MongoDBQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
         schemaManager = Framework.getService(SchemaManager.class);
@@ -157,6 +162,7 @@ public class MongoDBQueryBuilder {
         this.pathResolver = pathResolver;
         this.fulltextSearchDisabled = fulltextSearchDisabled;
         this.propertyKeys = new HashMap<>();
+        likeAnchored = !Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(LIKE_ANCHORED_PROP);
     }
 
     public void walk() {
@@ -700,6 +706,17 @@ public class MongoDBQueryBuilder {
         // TODO check list fields
         String like = walkStringLiteral((StringLiteral) rvalue);
         String regex = ExpressionEvaluator.likeToRegex(like);
+        // MongoDB native matches are unanchored: optimize the regex for faster matches
+        if (regex.startsWith(".*")) {
+            regex = regex.substring(2);
+        } else if (likeAnchored) {
+            regex = "^" + regex;
+        }
+        if (regex.endsWith(".*")) {
+            regex = regex.substring(0, regex.length() - 2); // better range index use
+        } else if (likeAnchored) {
+            regex = regex + "$";
+        }
 
         int flags = caseInsensitive ? Pattern.CASE_INSENSITIVE : 0;
         Pattern pattern = Pattern.compile(regex, flags);
