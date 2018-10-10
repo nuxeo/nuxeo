@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
-    <version>7.10-HF46-SNAPSHOT</version>
+    <version>7.10-HF46</version>
   </parent>
   <artifactId>nuxeo-opencmis-tests</artifactId>
   <name>Nuxeo Chemistry OpenCMIS Tests</name>
