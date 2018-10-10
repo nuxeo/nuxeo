@@ -50,7 +50,7 @@ public class TestBulkStatusJsonReader extends AbstractJsonReaderTest.Local<BulkS
         File file = FileUtils.getResourceFileFromContext("bulk-status-test-default.json");
         BulkStatus status = asObject(file);
         assertEquals("00000000-0000-0000-0000-000000000000", status.getCommandId());
-        assertEquals(State.SCHEDULED, status.getState());
+        assertEquals(State.COMPLETED, status.getState());
         assertEquals(Instant.parse("2018-06-21T12:37:08.172Z"), status.getSubmitTime());
         Map<String, Serializable> result = status.getResult();
         assertEquals("o1", result.get("result1"));

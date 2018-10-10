@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -52,9 +55,16 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
     public void writeEntityBody(BulkStatus entity, JsonGenerator jg) throws IOException {
         jg.writeStringField(STATUS_COMMAND_ID, entity.getCommandId());
         jg.writeStringField(STATUS_STATE, entity.getState() != null ? entity.getState().toString() : null);
-        jg.writeStringField(STATUS_SUBMIT, entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
-        jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
         jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
+        jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
+        jg.writeStringField(STATUS_SUBMIT_TIME,
+                entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
+        jg.writeStringField(STATUS_SCROLL_START,
+                entity.getScrollStartTime() != null ? entity.getScrollStartTime().toString() : null);
+        jg.writeStringField(STATUS_SCROLL_END,
+                entity.getScrollEndTime() != null ? entity.getScrollEndTime().toString() : null);
+        jg.writeStringField(STATUS_COMPLETED_TIME,
+                entity.getCompletedTime() != null ? entity.getCompletedTime().toString() : null);
         Map<String, Serializable> result = entity.getResult();
         if (!result.isEmpty()) {
             jg.writeObjectField(STATUS_RESULT, result);

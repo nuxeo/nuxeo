@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.core.bulk.io;
 
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 
@@ -51,19 +54,24 @@ public class TestBulkStatusJsonWriter extends AbstractJsonWriterTest.Local<BulkS
     @Test
     public void testDefault() throws Exception {
         String zeroId = "00000000-0000-0000-0000-000000000000";
-        String instant = "2018-06-21T12:37:08.172Z";
+        Instant instant = Instant.now();
 
         BulkStatus status = new BulkStatus(zeroId);
-        status.setState(State.SCHEDULED);
-        status.setSubmitTime(Instant.parse(instant));
+        status.setState(State.COMPLETED);
+        status.setSubmitTime(instant);
+        status.setScrollStartTime(instant.plusSeconds(1));
+        status.setScrollEndTime(instant.plusSeconds(2));
+        status.setCompletedTime(instant.plusSeconds(3));
         status.setResult(Collections.singletonMap("result", "test"));
 
         JsonAssert json = jsonAssert(status);
-        json.properties(7);
         json.has(ENTITY_FIELD_NAME).isEquals(STATUS_ENTITY_TYPE);
         json.has(STATUS_COMMAND_ID).isEquals(status.getCommandId());
         json.has(STATUS_STATE).isEquals(status.getState().toString());
-        json.has(STATUS_SUBMIT).isEquals(instant);
+        json.has(STATUS_SUBMIT_TIME).isEquals(status.getSubmitTime().toString());
+        json.has(STATUS_SCROLL_START).isEquals(status.getScrollStartTime().toString());
+        json.has(STATUS_SCROLL_END).isEquals(status.getScrollEndTime().toString());
+        json.has(STATUS_COMPLETED_TIME).isEquals(status.getCompletedTime().toString());
         json.has(STATUS_TOTAL).isEquals(0);
         json.has(STATUS_PROCESSED).isEquals(0);
         json.has(STATUS_RESULT).has("result").isEquals("test");

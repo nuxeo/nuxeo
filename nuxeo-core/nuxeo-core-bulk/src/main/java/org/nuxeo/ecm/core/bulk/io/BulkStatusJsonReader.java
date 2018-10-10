@@ -21,11 +21,14 @@ package org.nuxeo.ecm.core.bulk.io;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -53,7 +56,6 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
 
     @Override
     public BulkStatus readEntity(JsonNode jn) {
-
         String id = jn.get(STATUS_COMMAND_ID).asText();
         BulkStatus status = new BulkStatus(id);
 
@@ -62,20 +64,30 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
             status.setState(State.valueOf(state));
         }
 
-        String creation = getStringField(jn, STATUS_SUBMIT);
-
-        if (isNotEmpty(creation)) {
-            status.setSubmitTime(Instant.parse(creation));
+        Long processed = getLongField(jn, STATUS_PROCESSED);
+        if (processed != null) {
+            status.setProcessed(processed);
         }
-
         Long count = getLongField(jn, STATUS_TOTAL);
         if (count != null) {
             status.setTotal(count);
         }
 
-        Long processed = getLongField(jn, STATUS_PROCESSED);
-        if (processed != null) {
-            status.setProcessed(processed);
+        String instantString = getStringField(jn, STATUS_SUBMIT_TIME);
+        if (isNotEmpty(instantString)) {
+            status.setSubmitTime(Instant.parse(instantString));
+        }
+        instantString = getStringField(jn, STATUS_SCROLL_START);
+        if (isNotEmpty(instantString)) {
+            status.setScrollStartTime(Instant.parse(instantString));
+        }
+        instantString = getStringField(jn, STATUS_SCROLL_END);
+        if (isNotEmpty(instantString)) {
+            status.setScrollEndTime(Instant.parse(instantString));
+        }
+        instantString = getStringField(jn, STATUS_COMPLETED_TIME);
+        if (isNotEmpty(instantString)) {
+            status.setCompletedTime(Instant.parse(instantString));
         }
 
         Map<String, Serializable> result = emptyMap();
