@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.mongodb
-Nuxeo-Component: OSGI-INF/mongodb-repository-service.xml
+Nuxeo-Component: OSGI-INF/mongodb-repository-service.xml,
+ OSGI-INF/mongodb-configuration-properties.xml
