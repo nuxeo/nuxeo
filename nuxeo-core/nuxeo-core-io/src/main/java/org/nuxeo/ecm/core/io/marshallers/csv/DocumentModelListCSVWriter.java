@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -57,7 +58,7 @@ public class DocumentModelListCSVWriter extends AbstractCSVWriter<DocumentModelL
         Writer<DocumentModel> writer = registry.getWriter(null, DocumentModel.class, TEXT_CSV_TYPE);
         for (DocumentModel doc : entity) {
             writer.write(doc, DocumentModel.class, null, TEXT_CSV_TYPE, out);
-            out.write("\n".getBytes(UTF8));
+            out.write("\n".getBytes(StandardCharsets.UTF_8));
         }
     }
 

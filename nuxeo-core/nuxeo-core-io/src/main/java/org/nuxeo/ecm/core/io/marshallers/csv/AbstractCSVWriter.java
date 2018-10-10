@@ -18,10 +18,14 @@
  */
 package org.nuxeo.ecm.core.io.marshallers.csv;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +44,7 @@ public abstract class AbstractCSVWriter<T> implements Writer<T> {
 
     public static final MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
 
-    public static final Charset UTF8 = Charset.forName("utf-8");
+    private static final DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
 
     private final Class<T> klass;
 
@@ -53,13 +57,18 @@ public abstract class AbstractCSVWriter<T> implements Writer<T> {
         return TEXT_CSV_TYPE.equals(mediatype) && klass.isAssignableFrom(clazz);
     }
 
+    protected void writeCalendarWithSeparator(OutputStream out, Calendar value) throws IOException {
+        write(out, format.format(ZonedDateTime.ofInstant(value.toInstant(), value.getTimeZone().toZoneId())));
+        writeSeparator(out);
+    }
+
     protected void writeWithSeparator(OutputStream out, String value) throws IOException {
         write(out, value);
         writeSeparator(out);
     }
 
     protected void write(OutputStream out, String value) throws IOException {
-        out.write((value == null ? "null" : value).getBytes(UTF8));
+        out.write((value == null ? "null" : value).getBytes(UTF_8));
     }
 
     protected void writeSeparator(OutputStream out) throws IOException {
