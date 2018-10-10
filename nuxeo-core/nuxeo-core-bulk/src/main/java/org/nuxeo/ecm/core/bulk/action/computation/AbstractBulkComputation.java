@@ -73,7 +73,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
-        fetchCommand(bucket.getCommandId());
+        command = getCommand(bucket.getCommandId());
+        if (command == null) {
+            // this requires a manual intervention, the kv store might have been lost
+            getLog().error(String.format("Stopping processing, unknown command: %s, offset: %s, record: %s.",
+                    bucket.getCommandId(), context.getLastOffset(), record));
+            context.askForTermination();
+            return;
+        }
         for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
             processBatchOfDocuments(batch);
         }
@@ -81,11 +88,11 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         context.askForCheckpoint();
     }
 
-    protected void fetchCommand(String commandId) {
-        if (command != null && command.getId().equals(commandId)) {
-            return;
+    protected BulkCommand getCommand(String commandId) {
+        if (command == null || !command.getId().equals(commandId)) {
+            return Framework.getService(BulkService.class).getCommand(commandId);
         }
-        command = Framework.getService(BulkService.class).getCommand(commandId);
+        return command;
     }
 
     public BulkCommand getCurrentCommand() {
