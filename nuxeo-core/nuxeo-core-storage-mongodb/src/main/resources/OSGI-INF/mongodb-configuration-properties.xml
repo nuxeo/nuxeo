@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.mongodb.configuration">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property to disable the fact that on MongoDB a LIKE match anchors its search
+      (like in SQL databases), i.e., absent wildcards, it does not match in the middle of a string.
+
+      When true, does not match in the middle of a string.
+      When false, works as if there was a % on each side of the LIKE expression.
+
+      @since 10.3
+    </documentation>
+    <!-- default is true for 10.3 and later -->
+    <property name="nuxeo.mongodb.like.anchored">true</property>
+  </extension>
+
+</component>
