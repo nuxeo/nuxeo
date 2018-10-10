@@ -11,8 +11,8 @@
 
       @since 10.3
     </documentation>
-    <!-- default is true for 10.3 and later -->
-    <property name="nuxeo.mongodb.like.anchored">true</property>
+    <!-- default is false for 9.10 and earlier -->
+    <property name="nuxeo.mongodb.like.anchored">false</property>
   </extension>
 
 </component>

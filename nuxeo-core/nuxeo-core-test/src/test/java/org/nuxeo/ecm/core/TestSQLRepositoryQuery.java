@@ -3275,7 +3275,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryLikeAnchoredDefault() {
-        dotTestQueryLikeAnchored(true);
+        dotTestQueryLikeAnchored(false);
     }
 
     protected void dotTestQueryLikeAnchored(boolean anchored) {
