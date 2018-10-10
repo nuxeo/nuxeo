@@ -28,13 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
  * @since 10.3
@@ -97,7 +96,7 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         Lock lock = doc.getLockInfo();
         if (lock != null) {
             writeWithSeparator(out, lock.getOwner());
-            writeWithSeparator(out, ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated())));
+            writeCalendarWithSeparator(out, lock.getCreated());
         } else {
             writeWithSeparator(out, null);
             writeWithSeparator(out, null);
@@ -105,7 +104,7 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         if (doc.hasSchema("dublincore")) {
             Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
             if (cal != null) {
-                writeWithSeparator(out, DateParser.formatW3CDateTime(cal.getTime()));
+                writeCalendarWithSeparator(out, cal);
             }
         } else {
             writeWithSeparator(out, null);
@@ -117,9 +116,9 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         // provides the current document to the property writer
         Schema schema = schemaManager.getSchema(schemaName);
         List<Field> fields = new ArrayList<>(schema.getFields());
-        Collections.sort(fields, (o1, o2) -> o1.getName().getLocalName().compareTo(o2.getName().getLocalName()));
+        fields.sort(Comparator.comparing(o -> o.getName().getLocalName()));
         String prefix = schema.getNamespace().prefix;
-        if (prefix == null || prefix.length() == 0) {
+        if (StringUtils.isBlank(prefix)) {
             prefix = schema.getName();
         }
         prefix += ":";
