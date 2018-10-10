@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
-    <version>7.10-HF46-SNAPSHOT</version>
+    <version>7.10-HF46</version>
   </parent>
   <artifactId>nuxeo-elasticsearch-web</artifactId>
   <name>Elasticsearch WebApp integration</name>
