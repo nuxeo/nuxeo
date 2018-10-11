@@ -20,15 +20,19 @@ This module provides the ability to execute actions asynchronously on a -possibl
 
 ## Bulk Command
 
-The bulk command is the input of the framework. It is composed by the user submitting the command, the repository, the NXQL query that materializes the document set, the unique name of the action to execute and some optional parameters that could be needed by the action:
+The bulk command is the input of the framework.
+It is composed by the unique name of the action to execute, the NXQL query that materializes the document set, the user submitting the command, the repository and some optional parameters that could be needed by the action:
 
 ```java
-        BulkCommand command = new BulkCommand.Builder("myAction", "SELECT * from Document").repository("myRepository")
-                                                                                           .user("myUser")
-                                                                                           .param("param1", "myParam1")
-                                                                                           .param("param2", "myParam2")
-                                                                                           .build();
+BulkCommand command = new BulkCommand.Builder("myAction", "SELECT * from Document")
+                                        .repository("myRepository")
+                                        .user("myUser")
+                                        .param("param1", "myParam1")
+                                        .param("param2", "myParam2")
+                                        .build();
+String commandId = Framework.getService(BulkService.class).submit(command);
 ```
+
 
 ## Execution flow
 
@@ -100,9 +104,112 @@ You need to register a couple action / stream processor :
 </extension>
 ```
 
+See [`SetPropertiesAction`](./src/main/java/org/nuxeo/ecm/core/bulk/action/SetPropertiesAction.java) for a very basic action implementation.
+
 You can find more info on how to configure a stream processor in the following link:
 https://github.com/nuxeo/nuxeo/tree/master/nuxeo-runtime/nuxeo-runtime-stream#stream-processing
 
+
+## Testing a bulk action with REST API
+
+Here is an example on how to launch a bulk command and get status:
+
+```bash
+## Run a bulk action
+curl -s -X POST 'http://localhost:8080/nuxeo/site/automation/Bulk.RunAction' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' -d '{
+  "context": {},
+  "params": {
+    "action": "csvExport",
+    "query": "SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0",
+    "parameters": {}
+  }
+}' | tee /tmp/bulk-command.txt
+# {"commandId":"e8cc059d-6b9d-480b-a6e1-b0edace6d982"}
+
+## Extract the command id from the output
+commandId=$(cat /tmp/bulk-command.txt | jq .[] | tr -d '"')
+
+## Ask for the command status
+curl -s -X GET "http://localhost:8080/nuxeo/api/v1/bulk/$commandId"  -u Administrator:Administrator  -H 'content-type: application/json' | jq .
+# {
+#  "entity-type": "bulkStatus",
+#  "commandId": "e8cc059d-6b9d-480b-a6e1-b0edace6d982",
+#  "state": "RUNNING",
+#  "processed": 0,
+#  "total": 1844,
+#  "submitted": "2018-10-11T13:10:26.825Z",
+#  "scrollStart": "2018-10-11T13:10:26.827Z",
+#  "scrollEnd": "2018-10-11T13:10:26.846Z",
+#  "completed": null
+#}
+
+## Wait for the completion of the command, this is only for testing purpose
+## a normal client should poll the status regularly instead of using this call:
+curl -X POST 'http://localhost:8080/nuxeo/site/automation/Bulk.WaitForAction' -u Administrator:Administrator -H 'content-type: application/json+nxrequest' -d $'{
+  "context": {},
+  "params": {
+    "commandId": "'"$commandId"'",
+    "timeoutSecond": "3600"
+  }
+}'
+# {"entity-type":"boolean","value":true}
+
+## Get the status again:
+curl -s -X GET "http://localhost:8080/nuxeo/api/v1/bulk/$commandId"  -u Administrator:Administrator  -H 'content-type: application/json' | jq .
+#{
+#  "entity-type": "bulkStatus",
+#  "commandId": "e8cc059d-6b9d-480b-a6e1-b0edace6d982",
+#  "state": "COMPLETED",
+#  "processed": 1844,
+#  "total": 1844,
+#  "submitted": "2018-10-11T13:10:26.825Z",
+#  "scrollStart": "2018-10-11T13:10:26.827Z",
+#  "scrollEnd": "2018-10-11T13:10:26.846Z",
+#  "completed": "2018-10-11T13:10:28.243Z"
+#}
+
+```
+
+## Debugging
+
+All streams used by the bulk service and action can be introspected using
+the Nuxeo `bin/stream.sh` script.
+
+For instance to see the latest commands submitted:
+```bash
+## When using Kafka
+./bin/stream.sh tail -k -l bulk-command --codec avro
+## When using Chronicle Queue
+# ./bin/stream.sh tail --chronicle ./nxserver/data/stream/bulk -l command --codec avro
+```
+| offset | watermark | flag | key | length | data |
+| --- | --- | --- | --- | ---: | --- |
+|bulk-command-01:+2|2018-10-11 11:18:34.955:0|[DEFAULT]|setProperties|164|{"id": "b667b677-d40e-471a-8377-eb16dd301b42", "action": "setProperties", "query": "Select * from Document", "username": "Administrator", "repository": "default", "bucketSize": 100, "batchSize": 25, "params": "{\"dc:description\":\"a new new testbulk description\"}"}|
+|bulk-command-00:+2|2018-10-11 15:10:26.826:0|[DEFAULT]|csvExport|151|{"id": "e8cc059d-6b9d-480b-a6e1-b0edace6d982", "action": "csvExport", "query": "SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0", "username": "Administrator", "repository": "default", "bucketSize": 100, "batchSize": 50, "params": null}|
+
+
+To get the latest commands completed:
+```bash
+./bin/stream.sh tail -k -l bulk-done --codec avro
+```
+| offset | watermark | flag | key | length | data |
+| --- | --- | --- | --- | ---: | --- |
+|bulk-done-00:+4|2018-10-11 14:23:29.219:0|[DEFAULT]|580df47d-dd90-4d16-b23c-0e39ae363e06|96|{"commandId": "580df47d-dd90-4d16-b23c-0e39ae363e06", "action": "csvExport", "delta": false, "processed": 3873, "state": "COMPLETED", "submitTime": 1539260607207, "scrollStartTime": 1539260607275, "scrollEndTime": 1539260607326, "completedTime": 1539260609218, "total": 3873, "result": null}|
+|bulk-done-00:+5|2018-10-11 15:10:28.244:0|[DEFAULT]|e8cc059d-6b9d-480b-a6e1-b0edace6d982|96|{"commandId": "e8cc059d-6b9d-480b-a6e1-b0edace6d982", "action": "csvExport", "delta": false, "processed": 1844, "state": "COMPLETED", "submitTime": 1539263426825, "scrollStartTime": 1539263426827, "scrollEndTime": 1539263426846, "completedTime": 1539263428243, "total": 1844, "result": null}|
+
+
+Of course you can view the BulkBucket message
+```bash
+./bin/stream.sh tail -k -l bulk-csvExport --codec avro
+```
+| offset | watermark | flag | key | length | data |
+| --- | --- | --- | --- | ---: | --- |
+|bulk-csvExport-01:+48|2018-10-11 15:10:26.842:0|[DEFAULT]|e8cc059d-6b9d-480b-a6e1-b0edace6d982:18|3750|{"commandId": "e8cc059d-6b9d-480b-a6e1-b0edace6d982", "ids": ["763135b8-ca49-4eea-9a52-1ceaa227e60a", ...]}|
+
+And check for any lag on any computation, for more information on `stream.sh`:
+```bash
+./bin/stream.sh help
+```
 
 ### Following Project QA Status
 
