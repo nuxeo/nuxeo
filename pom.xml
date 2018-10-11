@@ -6173,7 +6173,7 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                      <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
+                      <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
                   </requireReleaseDeps>
