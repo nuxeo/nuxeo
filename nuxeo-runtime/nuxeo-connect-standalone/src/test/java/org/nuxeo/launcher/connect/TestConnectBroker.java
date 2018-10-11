@@ -1358,6 +1358,82 @@ public class TestConnectBroker {
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testInstallPackageRequestWithCustomTargetPlatforms() throws Exception {
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "10.3-I20181011_1121");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(false);
+
+        // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // M-1.0.0-I20181011_1121 should be installed correctly
+        assertThat(connectBroker.pkgRequest(null, Arrays.asList("M"), null, null, true, false)).isTrue();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
+        // M-1.0.0-I20181011_1121]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        String expectedLogs = "\n" //
+                + "Dependency resolution:\n" + "  Installation order (1):        M-1.0.0-I20181011_1121\n"
+                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n"
+                + "  Packages to download (1):      M:1.0.0-I20181011_1121\n" //
+                + "\n" + "Package 'M-1.0.0-I20181011_1121' is already in local cache.\n" //
+                + "Installing M-1.0.0-I20181011_1121";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "9.10-HF08-SNAPSHOT");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(true);
+
+        // N-1.0.1-HF08 should be installed correctly
+        assertThat(connectBroker.pkgRequest(null, Arrays.asList("N"), null, null, true, false)).isTrue();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
+        // M-1.0.0-I20181011_1121, N-1.0.1-HF08-SNAPSHOT]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121", "N-1.0.1-HF08-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        expectedLogs = "\n" //
+                + "Dependency resolution:\n" //
+                + "  Installation order (1):        N-1.0.1-HF08-SNAPSHOT\n"
+                + "  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT, M:1.0.0-I20181011_1121\n"
+                + "  Local packages to install (1): N:1.0.1-HF08-SNAPSHOT\n" + "\n"
+                + "Download of 'N-1.0.1-HF08-SNAPSHOT' will replace the one already in local cache.\n"
+                + "Downloading [N-1.0.1-HF08-SNAPSHOT]...\n"
+                + "Replacement of N-1.0.1-HF08-SNAPSHOT in local cache...\n" //
+                + "Added N-1.0.1-HF08-SNAPSHOT\n" //
+                + "Installing N-1.0.1-HF08-SNAPSHOT";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
     protected void checkPackagesState(PackageState expectedState, String... packageIds) {
         checkPackagesState(connectBroker, Arrays.asList(packageIds), expectedState);
     }
