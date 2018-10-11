@@ -79,7 +79,7 @@ def parse_licenses(filename):
             # (AL 1.1) (BSD 4) (Public Domain) MXP1: Xml Pull Parser 3rd Edition (XPP3) (xpp3:xpp3:1.1.4c - http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1/)
             m = re.match('((\([^)]+\) )+)(.+) \(([^ :]+):([^ :]+):([^ :]+) - .+\)', line)
             if m is None:
-                # print('XXX ' + line)
+                print('NXP-25776 cannot parse: ', line)
                 continue
             license_list = [l.strip('() ') for l in m.group(1).split(') (')]
             name = m.group(3)
@@ -203,8 +203,8 @@ def dump(licenses, versions, descriptions, gas, whitelist):
 
 def format_line(ga, licences, versions, descriptions):
     group, artifact = ga.split(':')
-    galist = licences[ga]
-    version = versions[ga]
+    galist = licences.get(ga, 'unknown')
+    version = versions.get(ga, 'unknown')
     info = descriptions.get(ga, ' ')
     return '| ' + group + ':' + artifact + ':' + version + ' | ' + artifact + '-' + version + '.jar' + ' | ' + info + ' | ' + version + ' | ' + ', '.join(galist) + ' |'
 
