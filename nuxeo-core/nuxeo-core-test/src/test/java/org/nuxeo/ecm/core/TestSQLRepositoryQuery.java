@@ -3600,39 +3600,14 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollApiRequiresAdminRights() throws Exception {
-        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, 1);
-        assertFalse(ret.hasResults());
-
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            exception.expect(NuxeoException.class);
-            exception.expectMessage("Only Administrators can scroll");
-            // raise an illegal access
-            ret = bobSession.scroll("SELECT * FROM Document", 3, 1);
-            assertFalse(ret.hasResults());
-        }
-    }
-
-    @Test
-    public void testScrollApiRequiresAdminRightsBis() throws Exception {
-        assumeTrue("Backend must support true scrolling", supportsScroll());
-
+    public void testScrollApiDoesNotRequiresAdminRights() throws Exception {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         session.createDocument(doc1);
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
-        session.createDocument(doc2);
         session.save();
-
-        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 10);
-        assertTrue(ret.hasResults());
-        assertEquals(1, ret.getResults().size());
-
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            exception.expect(NuxeoException.class);
-            exception.expectMessage("Only Administrators can scroll");
-            // raise an illegal access
-            ret = bobSession.scroll(ret.getScrollId());
-            assertFalse(ret.hasResults());
+            ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 10);
+            assertTrue(ret.hasResults());
+            assertEquals(1, ret.getResults().size());
         }
     }
 
