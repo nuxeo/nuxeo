@@ -44,6 +44,10 @@
       <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.code.externalsortinginjava</groupId>
       <artifactId>externalsortinginjava</artifactId>
     </dependency>

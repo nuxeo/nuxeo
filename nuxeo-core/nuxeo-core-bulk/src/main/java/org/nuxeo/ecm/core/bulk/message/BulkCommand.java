@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.message;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -159,7 +161,13 @@ public class BulkCommand implements Serializable {
          * @param nxqlQuery the query that represent the document set to apply the action
          */
         public Builder(String action, String nxqlQuery) {
+            if (isEmpty(action)) {
+                throw new IllegalArgumentException("Action cannot be empty");
+            }
             this.action = action;
+            if (isEmpty(nxqlQuery)) {
+                throw new IllegalArgumentException("Query cannot be empty");
+            }
             this.query = nxqlQuery;
         }
 
@@ -183,6 +191,9 @@ public class BulkCommand implements Serializable {
          * The size of a bucket of documents id that fits into a record
          */
         public Builder bucket(int size) {
+            if (size <= 0) {
+                throw new IllegalArgumentException("Invalid bucket size must > 0");
+            }
             if (batchSize > size) {
                 throw new IllegalArgumentException(
                         String.format("Bucket size: %d must be greater or equals to batch size: %d", size, batchSize));
@@ -195,6 +206,9 @@ public class BulkCommand implements Serializable {
          * The number of documents processed by action within a transaction
          */
         public Builder batch(int size) {
+            if (size <= 0) {
+                throw new IllegalArgumentException("Invalid batch size must > 0");
+            }
             if (bucketSize > 0 && size > bucketSize) {
                 throw new IllegalArgumentException(
                         String.format("Bucket size: %d must be greater or equals to batch size: %d", size, batchSize));
@@ -207,6 +221,9 @@ public class BulkCommand implements Serializable {
          * Add an action parameter
          */
         public Builder param(String key, Serializable value) {
+            if (isEmpty(key)) {
+                throw new IllegalArgumentException("Param key cannot be null");
+            }
             params.put(key, value);
             return this;
         }
@@ -216,6 +233,9 @@ public class BulkCommand implements Serializable {
          */
         public Builder params(Map<String, Serializable> params) {
             if (params != null && !params.isEmpty()) {
+                if (params.containsKey(null)) {
+                    throw new IllegalArgumentException("Param key cannot be null");
+                }
                 this.params = params;
             }
             return this;

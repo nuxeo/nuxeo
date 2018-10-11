@@ -75,12 +75,20 @@ public class BulkServiceImpl implements BulkService {
             log.debug("Run action with command=" + command);
         }
         // check command
+        BulkAdminService adminService = Framework.getService(BulkAdminService.class);
+        if (!adminService.getActions().contains(command.getAction())) {
+            throw new IllegalArgumentException("Unknown action for command: " + command);
+        }
+        RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
         if (isEmpty(command.getRepository())) {
-            RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
             command.setRepository(repoManager.getDefaultRepositoryName());
+        } else {
+            if (repoManager.getRepository(command.getRepository()) == null) {
+                throw new IllegalArgumentException("Unknown repository: " + command);
+            }
         }
         if (command.getBucketSize() == 0 || command.getBatchSize() == 0) {
-            BulkAdminService adminService = Framework.getService(BulkAdminService.class);
+
             if (command.getBucketSize() == 0) {
                 command.setBucketSize(adminService.getBucketSize(command.getAction()));
             }

@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -141,6 +142,9 @@ public class BulkScrollerComputation extends AbstractComputation {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                     }
                     updateStatusAfterScroll(context, commandId, documentCount);
+                } catch (IllegalArgumentException | QueryParseException e) {
+                    log.error("Invalid query results in an empty document set: " + command.toString(), e);
+                    updateStatusAfterScroll(context, commandId, 0);
                 } finally {
                     loginContext.logout();
                 }
