@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_KV_STORE_NAME;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_SUFFIX;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
 
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
@@ -48,6 +49,9 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  */
 public class BulkStatusComputation extends AbstractComputation {
 
+    // How long we keep the command and its status in the kv store once completed
+    public static final long COMPLETED_TTL_SECONDS = 3_600;
+
     public BulkStatusComputation(String name) {
         super(name, 1, 1);
     }
@@ -66,9 +70,12 @@ public class BulkStatusComputation extends AbstractComputation {
             status = recordStatus;
         }
         byte[] statusAsByte = codec.encode(status);
-        kvStore.put(key, statusAsByte);
         if (BulkStatus.State.COMPLETED.equals(status.getState())) {
+            kvStore.put(key, statusAsByte, COMPLETED_TTL_SECONDS);
+            kvStore.setTTL(recordStatus.getCommandId() + COMMAND_SUFFIX, COMPLETED_TTL_SECONDS);
             context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsByte);
+        } else {
+            kvStore.put(key, statusAsByte);
         }
         context.askForCheckpoint();
     }
