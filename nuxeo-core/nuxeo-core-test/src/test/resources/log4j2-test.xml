@@ -14,7 +14,6 @@
     <Logger name="org.nuxeo" level="info" />
     <!-- Needed by TestTrashBackwardMechanism -->
     <logger name="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener" level="debug" />
-    <logger name="org.nuxeo.ecm.core.trash.BulkTrashedStateChangeListener" level="debug" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

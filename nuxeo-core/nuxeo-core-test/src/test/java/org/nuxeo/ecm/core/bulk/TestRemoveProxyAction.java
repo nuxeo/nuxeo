@@ -18,19 +18,15 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_non_proxy;
+import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_proxy;
 import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_total;
-import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.SetSystemPropertyComputation.NOTIFY;
-import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
+import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -41,20 +37,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
-public class TestSetSystemPropertiesAction {
+public class TestRemoveProxyAction {
 
     @Inject
     public BulkService service;
@@ -62,57 +55,29 @@ public class TestSetSystemPropertiesAction {
     @Inject
     public CoreSession session;
 
-    @Inject
-    public EventService eventService;
-
-    @Inject
-    public TransactionalFeature txFeature;
-
-    private static class TestListener extends EventListenerDescriptor {
-
-        private int count;
-
-        private TestListener() {
-            events = new HashSet<>(Collections.singleton(DOCUMENT_TRASHED));
-        }
-
-        @Override
-        public void initListener() {
-            inLineListener = event -> count++;
-        }
-    }
-
     @Test
-    public void testSetSystemProperties() throws Exception {
+    public void testRemoveProxy() throws Exception {
 
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
-        TestListener listener = new TestListener();
-        
-        eventService.addEventListener(listener);
-        
+        assertEquals(created_proxy, session.query(nxql + " and ecm:isProxy=1").size());
+        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
+
         String commandId = service.submit(
-                new BulkCommand.Builder("setSystemProperties", nxql).repository(session.getRepositoryName())
-                                                                    .user(session.getPrincipal().getName())
-                                                                    .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
-                                                                    .param(NOTIFY, DOCUMENT_TRASHED)
-                                                                    .build());
+                new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                          .user(session.getPrincipal().getName())
+                                                          .build());
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
-        assertEquals(COMPLETED, status.getState());
+        assertEquals(BulkStatus.State.COMPLETED, status.getState());
         assertEquals(created_total, status.getProcessed());
 
-        txFeature.nextTransaction();
-
-        for (DocumentModel child : session.getChildren(model.getRef())) {
-            assertEquals(TRUE, session.getDocumentSystemProp(child.getRef(), SYSPROP_IS_TRASHED, Boolean.class));
-        }
-
-        assertEquals(created_total, listener.count);
+        assertEquals(0, session.query(nxql + " and ecm:isProxy=1").size());
+        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
 
     }
 }

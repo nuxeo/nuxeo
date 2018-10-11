@@ -359,12 +359,14 @@ public class TestUserWorkspace {
                                         .collect(Collectors.toList());
         TrashService trashService = Framework.getService(TrashService.class);
         trashService.trashDocuments(docs);
+        coreFeature.waitForAsyncCompletion();
         session.save();
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNull(uw);
         }
         trashService.untrashDocuments(docs);
+        coreFeature.waitForAsyncCompletion();
         session.save();
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
