@@ -27,14 +27,15 @@ import io.gatling.http.Predef._
   */
 object NuxeoBulk {
 
-  def bulkUpdateDocument = () => {
-    http("Run a bulk operation")
-      .post(Constants.AUTOMATION_PATH + "/Bulk.RunAction")
+  def bulkUpdateDocument(query: String, property: String, value: String) = {
+    http("Update documents")
+      .post(Constants.API_SEARCH + "/bulk/setProperties")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
-      .header("content-type", "application/json+nxrequest")
-      .body(StringBody( """{"params":{"query":"Select * from Document", "action":"setProperties", "parameters":{"dc:description":"testbulk"}},"context":{}}""")
-    )
+      .header("content-type", "application/json")
+      .queryParam("query", query)
+      .body(StringBody( """{"""" + property + """":"""" + value + """"}""")
+      )
   }
 
   def bulkCsvExport(query: String) = {
