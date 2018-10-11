@@ -6275,6 +6275,7 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <exclude>org.nuxeo:nuxeo-ftest:1.8.6-SNAPSHOT:zip</exclude>
+                      <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
                   </requireReleaseDeps>
