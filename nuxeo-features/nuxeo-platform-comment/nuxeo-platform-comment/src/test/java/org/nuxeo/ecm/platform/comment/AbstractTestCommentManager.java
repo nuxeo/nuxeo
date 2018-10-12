@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Funsho David
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment;
@@ -22,10 +23,9 @@ package org.nuxeo.ecm.platform.comment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
-import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -51,6 +50,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.Comments;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -104,8 +104,10 @@ public abstract class AbstractTestCommentManager {
         try {
             commentManager.createComment(session, comment);
             fail("Creating a comment should have failed !");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
 
         comment.setParentId(doc.getId());
@@ -156,8 +158,10 @@ public abstract class AbstractTestCommentManager {
         try {
             commentManager.getComment(session, "fakeId");
             fail("Getting a comment should have failed !");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
 
         comment = commentManager.getComment(session, comment.getId());
@@ -188,8 +192,10 @@ public abstract class AbstractTestCommentManager {
         try {
             commentManager.deleteComment(session, "fakeId");
             fail("Deleting a comment should have failed !");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
 
         commentManager.deleteComment(session, comment.getId());
