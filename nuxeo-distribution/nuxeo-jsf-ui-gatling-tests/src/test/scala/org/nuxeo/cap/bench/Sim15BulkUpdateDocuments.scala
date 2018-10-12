@@ -27,7 +27,8 @@ object ScnBulkUpdateDocuments {
   def get = () => {
     scenario("BulkUpdateDocuments")
       .feed(Feeders.admins)
-      .exec(NuxeoBulk.bulkUpdateDocument("Select * from Document", "dc:description", "bulk")
+      .exec(NuxeoBulk.bulkUpdateDocument("SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0",
+        "dc:description", "bulk")
         .asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
       .exec(NuxeoBulk.waitForAction("${commandId}"))
   }
