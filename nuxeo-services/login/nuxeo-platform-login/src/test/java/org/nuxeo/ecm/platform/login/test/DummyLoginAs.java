@@ -21,28 +21,14 @@ import javax.security.auth.login.LoginException;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * 
- *
- * @since 8.3
+ * @since 10.3
  */
-public class DummyLoginComponent extends DefaultComponent {
-
-    final LoginAs loginAs = new LoginAs() {
-
-        @Override
-        public LoginContext loginAs(String username) throws LoginException {
-            return Framework.login(username, username);
-        }
-    };
+public class DummyLoginAs implements LoginAs {
 
     @Override
-    public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(LoginAs.class)) {
-            return adapter.cast(loginAs);
-        }
-        return super.getAdapter(adapter);
+    public LoginContext loginAs(String username) throws LoginException {
+        return Framework.login(username, username);
     }
-}
+};

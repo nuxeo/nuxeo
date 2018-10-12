@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -486,15 +485,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
             return null;
         }
         return preFilters;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getAdapter(Class<T> adapter) {
-        if (LoginAs.class == adapter) {
-            return (T) new LoginAsImpl();
-        }
-        return super.getAdapter(adapter);
     }
 
     public LoginScreenConfig getLoginScreenConfig() {

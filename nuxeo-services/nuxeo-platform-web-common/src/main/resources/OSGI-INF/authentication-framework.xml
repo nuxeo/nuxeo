@@ -10,9 +10,9 @@
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
 
-  <service>
-      <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
-  </service>
+  <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
+    <implementation class="org.nuxeo.ecm.platform.ui.web.auth.service.LoginAsImpl" />
+  </extension>
 
   <extension-point name="authenticators">
   <documentation>

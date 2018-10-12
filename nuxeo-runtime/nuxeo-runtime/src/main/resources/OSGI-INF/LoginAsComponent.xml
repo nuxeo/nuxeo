@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.runtime.LoginAsComponent" version="1.0">
+
+  <documentation>
+    The LoginAs component provides the service that allows to login
+    in the system as the given user without
+    checking the password
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.api.login.LoginAsComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
+  </service>
+
+  <extension-point name="implementation">
+    <documentation>
+      The extension point to define the implementation of the service provided by the component
+    </documentation>
+    <object class="org.nuxeo.runtime.api.login.LoginAsDescriptor" />
+  </extension-point>
+
+</component>
+
