@@ -83,6 +83,13 @@ public class GetLastDocumentVersionTest {
 
     protected DocumentModel createDocumentVersions(DocumentModel doc, VersioningOption vo, int nrVersions) {
         for (int i = 1; i <= nrVersions; i++) {
+            // make sure the version doesn't have the same "created" as the previous one
+            try {
+                Thread.sleep(2); // NOSONAR
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
             doc.setPropertyValue("dc:description", String.valueOf(i));
             doc.putContextData(VersioningService.VERSIONING_OPTION, vo);
             doc = session.saveDocument(doc);
