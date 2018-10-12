@@ -24,28 +24,30 @@ import io.gatling.http.Predef._
 
 object ScnBulkUpdateFolders {
 
-  def get = (docs: Iterator[Map[String, String]]) => {
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
     scenario("BulkUpdateFolders").exec(
-      asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
-        feed(Feeders.admins)
-          .feed(docs)
+      during(duration, "counterName") {
+        feed(documents)
+          // TODO: when NXP-25940 is done use random user
+          .feed(Feeders.admins)
           .exec(NuxeoBulk.bulkUpdateDocument("SELECT * FROM Document WHERE ecm:path = '" + Constants.GAT_WS_PATH + "/${parentPath}'", "dc:description", "bulk folder")
             .asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
           .exec(NuxeoBulk.waitForAction("${commandId}"))
+          .pause(pause)
       }
     )
   }
-
 }
-// Run a bulk command for each document matching the parent folder
+
+// Run a bulk update command on a parent folder of a document
 class Sim25BulkUpdateFolders extends Simulation {
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connectionHeader("keep-alive")
-  val docs = Feeders.createDocFeeder()
-  val scn = ScnBulkUpdateFolders.get(docs)
+  val scn = ScnBulkUpdateFolders.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
-    .protocols(httpProtocol)
+    .protocols(httpProtocol).exponentialPauses
+    .assertions(global.successfulRequests.percent.gte(90))
 }
