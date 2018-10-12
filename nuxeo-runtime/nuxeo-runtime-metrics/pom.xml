@@ -40,6 +40,10 @@
       <artifactId>metrics-jvm</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.readytalk</groupId>
       <artifactId>metrics3-statsd</artifactId>
     </dependency>

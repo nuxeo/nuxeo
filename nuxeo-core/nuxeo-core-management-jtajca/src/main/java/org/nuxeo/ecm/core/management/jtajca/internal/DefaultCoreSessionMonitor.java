@@ -30,9 +30,9 @@ import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.Ser
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.jvm.JmxAttributeGauge;
 
 public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 

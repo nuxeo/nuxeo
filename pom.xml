@@ -231,7 +231,7 @@
     <kafka.version>2.0.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
     <chronicle.bom.version>1.16.158</chronicle.bom.version>
-    <metrics.version>3.2.6</metrics.version>
+    <metrics.version>4.0.3</metrics.version>
     <maven.surefire.version>2.22.0</maven.surefire.version>
   </properties>
 
@@ -4345,23 +4345,10 @@
 
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-core</artifactId>
+        <artifactId>metrics-bom</artifactId>
         <version>${metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-graphite</artifactId>
-        <version>${metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-log4j2</artifactId>
-        <version>${metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-jvm</artifactId>
-        <version>${metrics.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
