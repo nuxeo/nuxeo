@@ -23,6 +23,11 @@ import java.util.Date;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
@@ -36,6 +41,16 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
     public void populate(CoreSession session) {
         super.populate(session);
         DocumentModel test = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("Tutu", "WriteProperties", true));
+        acl.add(new ACE("Tutu", "Read", true));
+        acp.addACL(acl);
+        test.setACP(acp, false);
+
+        test.setACP(acp, false);
         for (int i = 0; i < SIZE; i++) {
             DocumentModel doc = session.createDocumentModel(test.getPathAsString(), "doc" + i, "ComplexDoc");
             doc.setProperty("dublincore", "modified", new Date());

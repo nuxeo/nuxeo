@@ -2,11 +2,11 @@
 <component name="org.nuxeo.dummy.bulk.login">
 
   <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
-    <implementation class="org.nuxeo.ecm.core.bulk.CoreBulkFeature$DummyLogin" />
+    <implementation class="org.nuxeo.ecm.core.bulk.DummyLoginAs" />
   </extension>
 
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
-    <domain name="nuxeo-system-login">
+    <domain name="nuxeo-client-login">
       <login-module code="org.nuxeo.runtime.api.login.SystemLoginModule" flag="required" />
       <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
         <option name="password-stacking">true</option>

@@ -951,6 +951,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         unAuthenticatedURLPrefix = new ArrayList<>();
         for (String pluginName : service.getAuthChain()) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
+            if (plugin == null) {
+                log.error("Could not find plugin for name '" + pluginName + "'");
+            }
             List<String> prefix = plugin.getUnAuthenticatedURLPrefix();
             if (prefix != null && !prefix.isEmpty()) {
                 unAuthenticatedURLPrefix.addAll(prefix);
@@ -1038,7 +1041,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         for (String pluginName : service.getAuthChain(httpRequest)) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             AuthenticationPluginDescriptor descriptor = service.getDescriptor(pluginName);
-
+            if (plugin == null) {
+                log.error("No auth plugin can be foundfor name '" + pluginName + "'");
+            }
             if (Boolean.TRUE.equals(plugin.needLoginPrompt(httpRequest))) {
                 if (descriptor.getNeedStartingURLSaving()) {
                     saveRequestedURLBeforeRedirect(httpRequest, httpResponse);
