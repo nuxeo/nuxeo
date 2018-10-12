@@ -33,6 +33,8 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
 
@@ -41,6 +43,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -54,6 +57,7 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.comment.impl.CommentJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -206,6 +210,61 @@ public class CommentAdapterTest extends BaseTest {
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
         assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
+    }
+
+    @Test
+    public void testGetCommentWithoutRepliesUsingRepliesFetcher() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        Comment comment = createComment(file.getId());
+        String commentId = comment.getId();
+        fetchInvalidations();
+
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + COMMENT_ENTITY_TYPE, CommentJsonWriter.FETCH_REPLIES_SUMMARY);
+        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId, queryParams);
+
+        assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
+        assertEquals(0, node.get(COMMENT_NUMBER_OF_REPLIES).intValue());
+        assertFalse(node.has(COMMENT_LAST_REPLY_DATE));
+    }
+
+    @Test
+    public void testGetCommentWithRepliesUsingRepliesFetcher() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        Comment comment = createComment(file.getId());
+        String commentId = comment.getId();
+        fetchInvalidations();
+
+        createComment(commentId);
+        createComment(commentId);
+        Comment reply3 = createComment(commentId);
+        fetchInvalidations();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + COMMENT_ENTITY_TYPE, CommentJsonWriter.FETCH_REPLIES_SUMMARY);
+        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId, queryParams);
+
+        assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
+        assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+        assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
+        assertEquals(3, node.get(COMMENT_NUMBER_OF_REPLIES).intValue());
+        assertTrue(node.has(COMMENT_LAST_REPLY_DATE));
+        assertEquals(reply3.getCreationDate().toString(), node.get(COMMENT_LAST_REPLY_DATE).textValue());
     }
 
     @Test
