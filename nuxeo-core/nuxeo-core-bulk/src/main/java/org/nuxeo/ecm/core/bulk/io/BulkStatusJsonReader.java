@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.bulk.io;
 
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
@@ -62,6 +63,10 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
         String state = getStringField(jn, STATUS_STATE);
         if (isNotEmpty(state)) {
             status.setState(State.valueOf(state));
+        }
+        String action = getStringField(jn, STATUS_ACTION);
+        if (isNotEmpty(action)) {
+            status.setAction(action);
         }
 
         Long processed = getLongField(jn, STATUS_PROCESSED);
