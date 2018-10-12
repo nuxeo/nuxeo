@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.api.Comments.commentToDocumentModel;
 import static org.nuxeo.ecm.platform.comment.api.Comments.newComment;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -49,40 +51,84 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.platform.query.api")
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenGettingNonExistingComment() {
-        commentManager.getComment(session, "nonExistingCommentId");
+        try {
+            commentManager.getComment(session, "nonExistingCommentId");
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
+        }
+
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenGettingNonExistingExternalComment() {
-        commentManager.getExternalComment(session, "nonExistingExternalCommentId");
+        try {
+            commentManager.getExternalComment(session, "nonExistingExternalCommentId");
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenCreatingCommentForNonExistingParent() {
-        commentManager.createComment(session,
-                getSampleComment("nonExistingId", session.getPrincipal().getName(), "some text"));
+        try {
+            commentManager.createComment(session,
+                    getSampleComment("nonExistingId", session.getPrincipal().getName(), "some text"));
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The document or comment nonExistingId does not exist.", e.getMessage());
+        }
+
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenUpdatingNonExistingComment() {
-        commentManager.updateComment(session, "nonExistingCommentId", new CommentImpl());
+        try {
+            commentManager.updateComment(session, "nonExistingCommentId", new CommentImpl());
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenUpdatingNonExistingExternalComment() {
-        commentManager.updateExternalComment(session, "nonExistingExternalCommentId", new CommentImpl());
+        try {
+            commentManager.updateExternalComment(session, "nonExistingExternalCommentId", new CommentImpl());
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenDeletingNonExistingComment() {
-        commentManager.deleteComment(session, "nonExistingCommentId");
+        try {
+            commentManager.deleteComment(session, "nonExistingCommentId");
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenDeletingNonExistingExternalComment() {
-        commentManager.deleteExternalComment(session, "nonExistingExternalCommentId");
+        try {
+            commentManager.deleteExternalComment(session, "nonExistingExternalCommentId");
+            fail("This test is expected to fail!");
+        } catch (CommentNotFoundException e) {
+            assertEquals(404, e.getStatusCode());
+            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
+        }
     }
 
     @Test

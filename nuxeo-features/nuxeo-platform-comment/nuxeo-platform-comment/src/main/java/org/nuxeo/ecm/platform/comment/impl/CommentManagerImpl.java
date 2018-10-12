@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -395,10 +396,10 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
+    public Comment createComment(CoreSession session, Comment comment) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(comment.getParentId());
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The document " + comment.getParentId() + " does not exist.");
+            throw new CommentNotFoundException("The document " + comment.getParentId() + " does not exist.");
         }
         DocumentModel docToComment = session.getDocument(commentRef);
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
@@ -415,12 +416,12 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
+    public Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The document " + commentId + " does not exist.");
+            throw new CommentNotFoundException("The document " + commentId + " does not exist.");
         }
-        DocumentModel commentModel =  session.getDocument(commentRef);
+        DocumentModel commentModel = session.getDocument(commentRef);
         return Comments.newComment(commentModel);
     }
 
@@ -446,15 +447,15 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public void updateComment(CoreSession session, String commentId, Comment comment) throws IllegalArgumentException {
+    public void updateComment(CoreSession session, String commentId, Comment comment) throws NuxeoException {
         throw new UnsupportedOperationException("Update a comment is not possible through this implementation");
     }
 
     @Override
-    public void deleteComment(CoreSession session, String commentId) throws IllegalArgumentException {
+    public void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+            throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         DocumentModel comment = session.getDocument(commentRef);
         DocumentModel commentedDoc = session.getDocument(
@@ -463,20 +464,19 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+    public Comment getExternalComment(CoreSession session, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Get a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public void updateExternalComment(CoreSession session, String entityId, Comment comment)
-            throws IllegalArgumentException {
+    public void updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Update a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+    public void deleteExternalComment(CoreSession session, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Delete a comment from its external entity id is not possible through this implementation");
     }

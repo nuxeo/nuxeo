@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
@@ -155,11 +156,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment createComment(CoreSession session, Comment comment) throws IllegalArgumentException {
+    public Comment createComment(CoreSession session, Comment comment) throws CommentNotFoundException {
         String parentId = comment.getParentId();
         DocumentRef docRef = new IdRef(parentId);
         if (!session.exists(docRef)) {
-            throw new IllegalArgumentException("The document " + comment.getParentId() + " does not exist.");
+            throw new CommentNotFoundException("The document or comment " + comment.getParentId() + " does not exist.");
         }
         String path = getCommentContainerPath(session, parentId);
         DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
@@ -182,10 +183,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getComment(CoreSession session, String commentId) throws IllegalArgumentException {
+    public Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+            throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         DocumentModel commentModel = session.getDocument(commentRef);
         return Comments.newComment(commentModel);
@@ -209,10 +210,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void updateComment(CoreSession session, String commentId, Comment comment) throws IllegalArgumentException {
+    public void updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException {
         IdRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+            throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         DocumentModel commentModel = session.getDocument(commentRef);
         Comments.commentToDocumentModel(comment, commentModel);
@@ -223,10 +224,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteComment(CoreSession session, String commentId) throws IllegalArgumentException {
+    public void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException {
         IdRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
-            throw new IllegalArgumentException("The comment " + commentId + " does not exist.");
+            throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         DocumentModel comment = session.getDocument(commentRef);
         DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
@@ -235,20 +236,20 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+    public Comment getExternalComment(CoreSession session, String entityId) throws CommentNotFoundException {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         if (commentModel == null) {
-            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         return Comments.newComment(commentModel);
     }
 
     @Override
     public void updateExternalComment(CoreSession session, String entityId, Comment comment)
-            throws IllegalArgumentException {
+            throws CommentNotFoundException {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         if (commentModel == null) {
-            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         Comments.commentToDocumentModel(comment, commentModel);
         if (comment instanceof ExternalEntity) {
@@ -258,10 +259,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws IllegalArgumentException {
+    public void deleteExternalComment(CoreSession session, String entityId) throws CommentNotFoundException {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         if (commentModel == null) {
-            throw new IllegalArgumentException("The external comment " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         DocumentModel comment = session.getDocument(commentModel.getRef());
         DocumentModel parent = session.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));

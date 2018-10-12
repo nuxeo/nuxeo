@@ -15,7 +15,7 @@
  *
  * Contributors:
  *     Funsho David
- *
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment;
@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -199,8 +200,10 @@ public class TestAnnotationService {
         try {
             annotationService.deleteAnnotation(session, "toto");
             fail("Deleting an unknown annotation should have failed");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
         annotationService.deleteAnnotation(session, annotation.getId());
         assertFalse(session.exists(new IdRef(annotation.getId())));
@@ -291,8 +294,10 @@ public class TestAnnotationService {
         try {
             annotationService.updateExternalAnnotation(session, "fakeId", annotation);
             fail("The external annotation should not exist");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
 
         annotationService.updateExternalAnnotation(session, entityId, annotation);
@@ -322,8 +327,10 @@ public class TestAnnotationService {
         try {
             annotationService.deleteExternalAnnotation(session, "toto");
             fail("Deleting an unknown annotation should have failed");
-        } catch (IllegalArgumentException e) {
+        } catch (CommentNotFoundException e) {
             // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
         }
         annotationService.deleteExternalAnnotation(session, entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));

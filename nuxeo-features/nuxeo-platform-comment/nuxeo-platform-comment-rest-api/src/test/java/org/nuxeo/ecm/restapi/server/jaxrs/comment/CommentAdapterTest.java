@@ -15,6 +15,7 @@
  *
  * Contributors:
  *       Kevin Leturc <kleturc@nuxeo.com>
+ *       Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.restapi.server.jaxrs.comment;
@@ -43,7 +44,6 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -111,6 +111,14 @@ public class CommentAdapterTest extends BaseTest {
     }
 
     @Test
+    public void testGetCommentsForNonExistingDocument() {
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/nonExistingDocId/@comment",
+                new MultivaluedMapImpl())) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
     public void testGetComments() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -169,6 +177,18 @@ public class CommentAdapterTest extends BaseTest {
     }
 
     @Test
+    public void testGetCommentWithNonExistingId() {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + file.getId() + "/@comment/" + "nonExistingId")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
     public void testGetComment() throws IOException {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
         file = session.createDocument(file);
@@ -209,6 +229,18 @@ public class CommentAdapterTest extends BaseTest {
 
             Comment updatedComment = commentManager.getComment(session, commentId);
             assertEquals("And now I update it", updatedComment.getText());
+        }
+    }
+
+    @Test
+    public void testDeleteCommentWithNonExistingId() {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + file.getId() + "/@comment/" + "nonExistingId")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         }
     }
 

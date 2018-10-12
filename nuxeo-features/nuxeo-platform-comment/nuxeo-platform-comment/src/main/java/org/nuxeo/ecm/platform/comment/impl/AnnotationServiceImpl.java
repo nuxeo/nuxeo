@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Funsho David
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment.impl;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
@@ -74,10 +76,10 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public Annotation getAnnotation(CoreSession session, String annotationId) {
+    public Annotation getAnnotation(CoreSession session, String annotationId) throws CommentNotFoundException {
         DocumentRef annotationRef = new IdRef(annotationId);
         if (!session.exists(annotationRef)) {
-            throw new IllegalArgumentException("The document " + annotationId + " does not exist.");
+            throw new CommentNotFoundException("The document " + annotationId + " does not exist.");
         }
         DocumentModel annotationModel = session.getDocument(annotationRef);
         return Comments.newAnnotation(annotationModel);
@@ -85,10 +87,11 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath) {
+    public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath)
+            throws CommentNotFoundException {
         DocumentRef docRef = new IdRef(documentId);
         if (!session.exists(docRef)) {
-            throw new IllegalArgumentException("The document " + documentId + " does not exist.");
+            throw new CommentNotFoundException("The document " + documentId + " does not exist.");
         }
         DocumentModel annotatedDoc = session.getDocument(docRef);
         CommentManager commentManager = Framework.getService(CommentManager.class);
@@ -109,10 +112,11 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public void updateAnnotation(CoreSession session, String annotationId, Annotation annotation) {
+    public void updateAnnotation(CoreSession session, String annotationId, Annotation annotation)
+            throws CommentNotFoundException {
         IdRef annotationRef = new IdRef(annotationId);
         if (!session.exists(annotationRef)) {
-            throw new IllegalArgumentException("The annotation " + annotationId + " does not exist.");
+            throw new CommentNotFoundException("The annotation " + annotationId + " does not exist.");
         }
         DocumentModel annotationModel = session.getDocument(annotationRef);
         Comments.annotationToDocumentModel(annotation, annotationModel);
@@ -123,24 +127,25 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public void deleteAnnotation(CoreSession session, String annotationId) throws IllegalArgumentException {
+    public void deleteAnnotation(CoreSession session, String annotationId) throws CommentNotFoundException {
         Framework.getService(CommentManager.class).deleteComment(session, annotationId);
     }
 
     @Override
-    public Annotation getExternalAnnotation(CoreSession session, String entityId) throws IllegalArgumentException {
+    public Annotation getExternalAnnotation(CoreSession session, String entityId) throws CommentNotFoundException {
         DocumentModel annotationModel = getAnnotationModel(session, entityId);
         if (annotationModel == null) {
-            throw new IllegalArgumentException("The external annotation " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external annotation " + entityId + " does not exist.");
         }
         return Comments.newAnnotation(annotationModel);
     }
 
     @Override
-    public void updateExternalAnnotation(CoreSession session, String entityId, Annotation annotation) {
+    public void updateExternalAnnotation(CoreSession session, String entityId, Annotation annotation)
+            throws CommentNotFoundException {
         DocumentModel annotationModel = getAnnotationModel(session, entityId);
         if (annotationModel == null) {
-            throw new IllegalArgumentException("The external annotation " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external annotation " + entityId + " does not exist.");
         }
         Comments.annotationToDocumentModel(annotation, annotationModel);
         if (annotation instanceof ExternalEntity) {
@@ -150,10 +155,10 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public void deleteExternalAnnotation(CoreSession session, String entityId) throws IllegalArgumentException {
+    public void deleteExternalAnnotation(CoreSession session, String entityId) throws CommentNotFoundException {
         DocumentModel annotationModel = getAnnotationModel(session, entityId);
         if (annotationModel == null) {
-            throw new IllegalArgumentException("The external annotation " + entityId + " does not exist.");
+            throw new CommentNotFoundException("The external annotation " + entityId + " does not exist.");
         }
         Framework.getService(CommentManager.class).deleteComment(session, annotationModel.getId());
     }
