@@ -113,7 +113,7 @@ public class BulkServiceImpl implements BulkService {
         // send command to bulk processor
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM);
-        logAppender.append(command.getAction(), Record.of(command.getAction(), commandAsBytes));
+        logAppender.append(command.getId(), Record.of(command.getId(), commandAsBytes));
         return command.getId();
     }
 

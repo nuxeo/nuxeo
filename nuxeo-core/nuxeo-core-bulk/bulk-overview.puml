@@ -42,7 +42,7 @@ frame core-bulk {
     queue command [stream: command
     ----
     msg: BulkCommand
-    key: actionName
+    key: commandId
     partitions: 1, n]
 
     queue status [stream: status
