@@ -27,9 +27,11 @@
         <configuration>
           <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
           <clearComplexPropertyBeforeSet>true</clearComplexPropertyBeforeSet>
+          <allowVersionWriteForDublinCore>false</allowVersionWriteForDublinCore>
         </configuration>
       </code>
       Note that setting clearComplexPropertyBeforeSet to false is DEPRECATED since 9.3.
+      Note that setting allowVersionWriteForDublinCore to true is DEPRECATED since 10.3.
     </documentation>
 
     <object
