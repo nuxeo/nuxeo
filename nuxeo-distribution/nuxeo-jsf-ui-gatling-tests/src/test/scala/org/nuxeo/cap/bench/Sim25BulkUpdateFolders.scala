@@ -22,6 +22,8 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
+import scala.concurrent.duration.Duration
+
 object ScnBulkUpdateFolders {
 
   def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
@@ -46,6 +48,7 @@ class Sim25BulkUpdateFolders extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connectionHeader("keep-alive")
+  val documents = Feeders.createRandomDocFeeder()
   val scn = ScnBulkUpdateFolders.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
