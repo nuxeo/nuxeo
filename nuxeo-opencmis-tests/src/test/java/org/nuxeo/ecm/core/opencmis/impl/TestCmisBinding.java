@@ -2811,6 +2811,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
         verService.checkOut(repositoryId, idHolder, null, null);
+        sleepBetweenTwoVersions();
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         waitForIndexing();
@@ -2835,6 +2836,18 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("2.0", getValue(singleResult, PropertyIds.VERSION_LABEL));
         assertEquals(BigInteger.valueOf(2), getValue(singleResult, "major_version"));
         assertEquals(BigInteger.valueOf(0), getValue(singleResult, "minor_version"));
+    }
+
+    /**
+     * Make sure the version doesn't have the same "created" as the previous one.
+     */
+    protected static void sleepBetweenTwoVersions() {
+        try {
+            Thread.sleep(2); // NOSONAR
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
