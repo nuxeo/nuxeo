@@ -22,11 +22,8 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
 
-import javax.ws.rs.core.MediaType;
-
+import org.apache.commons.csv.CSVPrinter;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -38,33 +35,31 @@ import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
     public DocumentPropertyCSVWriter() {
-        super(Property.class);
+        super();
     }
 
     @Override
-    public void write(Property entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out)
-            throws IOException {
+    protected void write(Property entity, CSVPrinter csvPrinter) throws IOException {
         if (entity.isScalar()) {
-            writeScalarProperty(out, entity);
+            writeScalarProperty(entity, csvPrinter);
         } else {
-            writeUnsupported(out, entity);
+            writeUnsupported(entity, csvPrinter);
         }
-
     }
 
-    protected void writeScalarProperty(OutputStream out, Property entity) throws IOException {
+    protected void writeScalarProperty(Property entity, CSVPrinter csvPrinter) throws IOException {
         Object value = entity.getValue();
         if (value == null) {
-            write(out, null);
+            csvPrinter.print(null);
         } else if (entity.getType() instanceof BinaryType) {
-            writeUnsupported(out, entity);
+            writeUnsupported(entity, csvPrinter);
         } else {
-            write(out, entity.getType().encode(value));
+            csvPrinter.print(entity.getType().encode(value));
         }
     }
 
-    protected void writeUnsupported(OutputStream out, Property entity) throws IOException {
-        write(out, String.format("type %s is not supported", entity.getType().getName()));
+    protected void writeUnsupported(Property entity, CSVPrinter csvPrinter) throws IOException {
+        csvPrinter.print(String.format("type %s is not supported", entity.getType().getName()));
     }
 
 }

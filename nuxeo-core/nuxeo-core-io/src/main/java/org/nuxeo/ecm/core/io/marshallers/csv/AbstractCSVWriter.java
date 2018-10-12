@@ -22,17 +22,28 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
+ * Base class for CSV {@link Writer}.
+ * </p>
+ * It provides you a {@link CSVPrinter} to manage the marshalling.
+ *
+ * @param <T> The Java type to marshall as CSV.
  * @since 10.3
  */
 @Supports(AbstractCSVWriter.TEXT_CSV)
@@ -44,22 +55,46 @@ public abstract class AbstractCSVWriter<T> implements Writer<T> {
 
     public static final MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
 
-    private static final DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
+    /**
+     * The current {@link RenderingContext}.
+     */
+    @Inject
+    protected RenderingContext ctx;
 
-    private final Class<T> klass;
+    @Inject
+    protected SchemaManager schemaManager;
 
-    protected AbstractCSVWriter(Class<T> klass) {
-        this.klass = klass;
-    }
+    @Inject
+    protected MarshallerRegistry registry;
 
     @Override
     public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-        return TEXT_CSV_TYPE.equals(mediatype) && klass.isAssignableFrom(clazz);
+        return TEXT_CSV_TYPE.equals(mediatype);
     }
 
-    protected void writeCalendarWithSeparator(OutputStream out, Calendar value) throws IOException {
-        write(out, format.format(ZonedDateTime.ofInstant(value.toInstant(), value.getTimeZone().toZoneId())));
-        writeSeparator(out);
+    @Override
+    public void write(T entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out)
+            throws IOException {
+        CSVPrinter printer = getCSVPrinter(out);
+        write(entity, printer);
+        printer.flush();
+    }
+
+    protected abstract void write(T entity, CSVPrinter printer) throws IOException;
+
+    protected CSVPrinter getCSVPrinter(OutputStream out) throws IOException {
+        if (out instanceof OutputStreamWithCSVWriter) {
+            return ((OutputStreamWithCSVWriter) out).getCsvPrinter();
+        }
+        return new CSVPrinter(new OutputStreamWriter(out), CSVFormat.DEFAULT);
+    }
+
+    protected void printCalendar(Calendar value, CSVPrinter csvPrinter) throws IOException {
+        if (value != null) {
+            csvPrinter.print(((GregorianCalendar) value).toZonedDateTime());
+        } else {
+            csvPrinter.print(null);
+        }
     }
 
     protected void writeWithSeparator(OutputStream out, String value) throws IOException {
