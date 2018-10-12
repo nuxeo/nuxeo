@@ -36,6 +36,12 @@ public class TypeConfiguration {
     @XNode("clearComplexPropertyBeforeSet")
     Boolean clearComplexPropertyBeforeSet;
 
+    /**
+     * @since 10.3
+     */
+    @XNode("allowVersionWriteForDublinCore")
+    protected Boolean allowVersionWriteForDublinCore;
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(prefetchInfo=" + prefetchInfo + ", clearComplexPropertyBeforeSet="

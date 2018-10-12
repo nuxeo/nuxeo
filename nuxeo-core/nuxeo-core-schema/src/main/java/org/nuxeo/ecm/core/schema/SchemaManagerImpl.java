@@ -93,6 +93,10 @@ public class SchemaManagerImpl implements SchemaManager {
     /** Effective clearComplexPropertyBeforeSet flag. */
     protected boolean clearComplexPropertyBeforeSet;
 
+    /**
+     * Effective allowVersionWriteForDublinCore flag. */
+    protected boolean allowVersionWriteForDublinCore;
+
     /** Effective schemas. */
     protected Map<String, Schema> schemas = new HashMap<>();
 
@@ -190,6 +194,9 @@ public class SchemaManagerImpl implements SchemaManager {
         if (config.clearComplexPropertyBeforeSet != null) {
             log.info("Registered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
         }
+        if (config.allowVersionWriteForDublinCore != null) {
+            log.info("Registered allowVersionWriteForDublinCore: " + config.allowVersionWriteForDublinCore);
+        }
     }
 
     public synchronized void unregisterConfiguration(TypeConfiguration config) {
@@ -200,6 +207,9 @@ public class SchemaManagerImpl implements SchemaManager {
             }
             if (config.clearComplexPropertyBeforeSet != null) {
                 log.info("Unregistered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
+            }
+            if (config.allowVersionWriteForDublinCore != null) {
+                log.info("Unregistered allowVersionWriteForDublinCore: " + config.allowVersionWriteForDublinCore);
             }
         } else {
             log.error("Unregistering unknown configuration: " + config);
@@ -328,12 +338,16 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void recomputeConfiguration() {
         prefetchInfo = null;
         clearComplexPropertyBeforeSet = CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT;
+        allowVersionWriteForDublinCore = false; // default in the absence of any XML config
         for (TypeConfiguration tc : allConfigurations) {
             if (StringUtils.isNotBlank(tc.prefetchInfo)) {
                 prefetchInfo = new PrefetchInfo(tc.prefetchInfo);
             }
             if (tc.clearComplexPropertyBeforeSet != null) {
                 clearComplexPropertyBeforeSet = tc.clearComplexPropertyBeforeSet.booleanValue();
+            }
+            if (tc.allowVersionWriteForDublinCore != null) {
+                allowVersionWriteForDublinCore = tc.allowVersionWriteForDublinCore.booleanValue();
             }
         }
     }
@@ -897,6 +911,11 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public boolean getClearComplexPropertyBeforeSet() {
         return clearComplexPropertyBeforeSet;
+    }
+
+    @Override
+    public boolean getAllowVersionWriteForDublinCore() {
+        return allowVersionWriteForDublinCore;
     }
 
 }
