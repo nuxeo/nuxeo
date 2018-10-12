@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.sql.config.login.test">
 
-  <implementation
-    class="org.nuxeo.ecm.platform.login.test.DummyLoginComponent" />
-
-  <service>
-    <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
-  </service>
+  <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
+    <implementation class="org.nuxeo.ecm.platform.login.test.DummyLoginAs" />
+  </extension>
 
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
-
-
     <domain name="nuxeo-system-login">
       <login-module code="org.nuxeo.runtime.api.login.SystemLoginModule"
         flag="required" />
