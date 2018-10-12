@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     mcedica
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.comment.workflow.utils;
 
@@ -102,11 +103,29 @@ public final class CommentsConstants {
     /** @since 10.3 */
     public static final String COMMENT_TEXT_FIELD = "text";
 
-    /** @since 10.3 */
+    /**
+     * Creation Date in ISO-8601 representation.
+     * @since 10.3
+     */
     public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
 
-    /** @since 10.3 */
+    /**
+     * Modification Date in ISO-8601 representation.
+     * @since 10.3
+     */
     public static final String COMMENT_MODIFICATION_DATE_FIELD = "modificationDate";
+
+    /**
+     * Number of direct replies.
+     * @since 10.3
+     */
+    public static final String COMMENT_NUMBER_OF_REPLIES = "numberOfReplies";
+
+    /**
+     * Last Reply Date in ISO-8601 representation.
+     * @since 10.3
+     */
+    public static final String COMMENT_LAST_REPLY_DATE = "lastReplyDate";
 
     private CommentsConstants() {
     }
