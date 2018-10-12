@@ -10,4 +10,14 @@
     <property name="nuxeo.core.bulk.status.concurrency">1</property>
     <property name="nuxeo.core.bulk.done.concurrency">1</property>
   </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="6" />
+    <streamProcessor name="csvExport" class="org.nuxeo.ecm.core.bulk.action.CSVExportAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="6">
+      <option name="produceImmediate">true</option>
+    </streamProcessor>
+  </extension>
+
 </component>
