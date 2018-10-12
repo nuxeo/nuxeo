@@ -43,6 +43,8 @@ public class BulkConstants {
 
     public static final String STATUS_TOTAL = "total";
 
+    public static final String STATUS_ACTION = "action";
+
     public static final String STATUS_PROCESSED = "processed";
 
     public static final String STATUS_RESULT = "result";

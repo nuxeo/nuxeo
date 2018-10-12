@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.io;
 
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
@@ -57,6 +58,7 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
         jg.writeStringField(STATUS_STATE, entity.getState() != null ? entity.getState().toString() : null);
         jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
         jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
+        jg.writeStringField(STATUS_ACTION, entity.getAction());
         jg.writeStringField(STATUS_SUBMIT_TIME,
                 entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
         jg.writeStringField(STATUS_SCROLL_START,
