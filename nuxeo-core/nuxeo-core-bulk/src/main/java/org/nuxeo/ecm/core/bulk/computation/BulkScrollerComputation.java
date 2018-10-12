@@ -169,6 +169,7 @@ public class BulkScrollerComputation extends AbstractComputation {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
         if (documentCount == 0) {
             delta.setState(COMPLETED);
+            delta.setCompletedTime(Instant.now());
         } else {
             delta.setState(RUNNING);
         }
