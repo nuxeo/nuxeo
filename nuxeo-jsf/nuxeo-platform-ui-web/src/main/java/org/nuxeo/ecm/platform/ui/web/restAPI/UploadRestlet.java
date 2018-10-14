@@ -21,10 +21,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,19 +31,15 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -60,21 +53,11 @@ import org.restlet.resource.StringRepresentation;
  *
  * @author tdelprat
  */
-@Name("uploadRestlet")
-@Scope(EVENT)
 public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
     private static final Log log = LogFactory.getLog(UploadRestlet.class);
 
     private static final long serialVersionUID = -7858792615823015193L;
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
-
-    @In(create = true)
-    protected transient SimpleFileManager FileManageActions;
 
     @Override
     public void handle(Request req, Response res) {
@@ -86,16 +69,14 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
         DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         DocumentModel targetContainer;
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
-            targetContainer = documentManager.getDocument(new IdRef(docid));
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repo)) {
+            try {
+                targetContainer = session.getDocument(new IdRef(docid));
+            } catch (NuxeoException e) {
+                handleError(res, e);
+                return;
+            }
 
-        if (targetContainer != null) {
             List<Blob> blobs = null;
             try {
                 blobs = FileUploadHelper.parseRequest(req);
@@ -104,16 +85,13 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 return;
             }
 
-            if (blobs == null) {
+            if (!FileUploadHelper.isMultipartRequest(req)) {
                 // mono import
                 String outcome;
                 try {
-                    Blob inputBlob;
-                    try (InputStream in = req.getEntity().getStream()) {
-                        inputBlob = Blobs.createBlob(in);
-                    }
+                    Blob inputBlob = blobs.get(0);
                     inputBlob.setFilename(fileName);
-                    outcome = FileManageActions.addBinaryFileFromPlugin(inputBlob, fileName, targetContainer);
+                    outcome = addBinaryFileFromPlugin(inputBlob, targetContainer);
                 } catch (NuxeoException | IOException e) {
                     outcome = "ERROR : " + e.getMessage();
                 }
@@ -124,8 +102,8 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 for (Blob blob : blobs) {
                     String outcome;
                     try {
-                        outcome = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), targetContainer);
-                    } catch (NuxeoException e) {
+                        outcome = addBinaryFileFromPlugin(blob, targetContainer);
+                    } catch (NuxeoException | IOException e) {
                         log.error("error importing " + blob.getFilename() + ": " + e.getMessage(), e);
                         outcome = "ERROR : " + e.getMessage();
                     }
@@ -136,6 +114,13 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
         Representation rep = new StringRepresentation(result.asXML(), MediaType.APPLICATION_XML);
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
+    }
+
+    protected String addBinaryFileFromPlugin(Blob blob, DocumentModel folder) throws IOException {
+        FileManager fileManager = Framework.getService(FileManager.class);
+        DocumentModel doc = fileManager.createDocumentFromBlob(folder.getCoreSession(), blob, folder.getPathAsString(),
+                true, blob.getFilename());
+        return doc.getName();
     }
 
 }

@@ -12,7 +12,7 @@
         name="upload"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.UploadRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/{filename}/upload</urlPattern>
       </urlPatterns>
@@ -28,8 +28,8 @@
         name="pluginUpload"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.PluginUploadRestlet"
         enabled="true"
-        useSeam="true"
-        useConversation="true">
+        useSeam="false"
+        useConversation="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/pluginUpload</urlPattern>
         <urlPattern>/{repo}/{docid}/createFromFile</urlPattern>
@@ -108,7 +108,7 @@
         name="downloadFileRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.DownloadFileRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/downloadFile</urlPattern>
       </urlPatterns>
@@ -122,7 +122,7 @@
         name="uploadFileRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.UploadFileRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/{filename}/uploadFile</urlPattern>
       </urlPatterns>
@@ -140,7 +140,7 @@
         name="createDocumentRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.CreateDocumentRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{parentdocid}/createDocument</urlPattern>
       </urlPatterns>
@@ -191,7 +191,7 @@
         name="creationFolderListRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.CreationContainerListRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/creationContainerList</urlPattern>
       </urlPatterns>

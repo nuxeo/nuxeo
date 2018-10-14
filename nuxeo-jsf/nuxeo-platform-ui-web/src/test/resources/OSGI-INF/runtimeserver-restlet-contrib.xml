@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.restlet.test.servletcontainer">
+
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo Restlet Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.platform.ui.web.restAPI.RestletServlet</servlet-class>
+      <url-pattern>/restAPI/*</url-pattern>
+    </servlet>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="filter">
+    <filter context="/">
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.ui.web.auth.TrustingNuxeoAuthenticationFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+    <filter context="/">
+      <filter-name>NuxeoRequestController</filter-name>
+      <filter-class>org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter</filter-class>
+      <filter-mapping>
+        <url-pattern>/*</url-pattern>
+      </filter-mapping>
+    </filter>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="test" transactional="true">
+      <pattern>.*</pattern>
+    </filterConfig>
+  </extension>
+
+</component>

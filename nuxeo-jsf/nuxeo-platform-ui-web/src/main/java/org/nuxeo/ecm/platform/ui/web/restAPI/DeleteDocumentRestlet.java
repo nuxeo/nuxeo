@@ -92,7 +92,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements 
             // build the XML response document holding the ref
             Element docElement = result.addElement(documentTag);
             docElement.addElement(docRefTag).setText("Document " + docId + " deleted");
-            res.setEntity(result.asXML(), MediaType.TEXT_XML);
+            res.setEntity(result.asXML(), MediaType.APPLICATION_XML);
             res.getEntity().setCharacterSet(CharacterSet.UTF_8);
         } catch (NuxeoException e) {
             log.error(e.getMessage(), e);

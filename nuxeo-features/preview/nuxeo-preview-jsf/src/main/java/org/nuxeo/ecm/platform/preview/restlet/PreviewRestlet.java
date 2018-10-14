@@ -28,7 +28,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,16 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -56,11 +46,7 @@ import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdap
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -74,26 +60,11 @@ import org.restlet.data.Status;
  * @since 10.3
  * @deprecated since 10.3
  */
-@Name("previewRestlet")
-@Scope(ScopeType.EVENT)
-public class PreviewRestlet extends BaseNuxeoRestlet {
+public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
 
     private static final Log log = LogFactory.getLog(PreviewRestlet.class);
 
     public static final String PREVIEWURL_DEFAULTXPATH = "default";
-
-    @In(create = true)
-    protected NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
-
-    protected DocumentModel targetDocument;
-
-    @In(create = true)
-    protected transient LocaleSelector localeSelector;
-
-    @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
 
     // cache duration in seconds
     // protected static int MAX_CACHE_LIFE = 60 * 10;
@@ -104,7 +75,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     protected static final List<String> previewInProcessing = Collections.synchronizedList(new ArrayList<String>());
 
     @Override
-    public void handle(Request req, Response res) {
+    public void doHandleStatelessRequest(Request req, Response res) {
         HttpServletRequest request = getHttpRequest(req);
         HttpServletResponse response = getHttpResponse(res);
 
@@ -114,7 +85,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         xpath = xpath.replace("-", "/");
         List<String> segments = req.getResourceRef().getSegments();
         StringBuilder sb = new StringBuilder();
-        for (int i = 6; i < segments.size(); i++) {
+        int pos = segments.indexOf("restAPI") + 5;
+        for (int i = pos; i < segments.size(); i++) {
             sb.append(segments.get(i));
             sb.append("/");
         }
@@ -138,12 +110,9 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             handleError(res, "you must specify a documentId");
             return;
         }
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
-            targetDocument = documentManager.getDocument(new IdRef(docid));
-        } catch (DocumentNotFoundException e) {
-            handleError(res, e);
+
+        boolean initOk = initRepositoryAndTargetDocument(res, repo, docid);
+        if (!initOk) {
             return;
         }
 
@@ -160,8 +129,6 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             handleError(res, e);
             return;
         }
-
-        localeSetup(req);
 
         List<Blob> previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
         if (previewBlobs == null || previewBlobs.isEmpty()) {
@@ -219,18 +186,6 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         return bh.getBlob();
     }
 
-    /**
-     * @since 5.7
-     */
-    private void localeSetup(Request req) {
-        // Forward locale from HttpRequest to Seam context if not set into DM
-        Locale locale = Framework.getService(LocaleProvider.class).getLocale(documentManager);
-        if (locale == null) {
-            locale = getHttpRequest(req).getLocale();
-        }
-        localeSelector.setLocale(locale);
-    }
-
     private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing) {
 
         HtmlPreviewAdapter preview = null; // getFromCache(targetDocument,
@@ -274,9 +229,9 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
         sb.append("<html><body><center><h1>");
         if (e == null) {
-            sb.append(resourcesAccessor.getMessages().get("label.not.available.preview") + "</h1>");
+            sb.append("No preview is available for this document." + "</h1>");
         } else {
-            sb.append(resourcesAccessor.getMessages().get("label.cannot.generated.preview") + "</h1>");
+            sb.append("Preview cannot be generated for this document." + "</h1>");
             sb.append("<pre>Technical issue:</pre>");
             sb.append("<pre>Blob path: ");
             sb.append(xpath);

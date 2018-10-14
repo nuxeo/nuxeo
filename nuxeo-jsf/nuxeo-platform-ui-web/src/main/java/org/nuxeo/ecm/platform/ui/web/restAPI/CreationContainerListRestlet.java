@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
@@ -30,8 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -50,8 +46,6 @@ import org.restlet.data.Response;
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-@Name("creationContainerListRestlet")
-@Scope(EVENT)
 public class CreationContainerListRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final Log log = LogFactory.getLog(CreationContainerListRestlet.class);
@@ -77,7 +71,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements Li
             docElement.addElement(docTitleTag).setText(parent.getTitle());
             docElement.addElement(docPathTag).setText(parent.getPathAsString());
         }
-        res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);
+        res.setEntity(resultDocument.asXML(), MediaType.APPLICATION_XML);
         res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 

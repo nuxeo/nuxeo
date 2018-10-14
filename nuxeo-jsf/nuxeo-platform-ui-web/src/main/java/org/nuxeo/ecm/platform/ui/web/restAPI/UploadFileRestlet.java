@@ -21,26 +21,22 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
@@ -53,8 +49,6 @@ import org.restlet.data.Response;
  * @author Sun Tan <stan@nuxeo.com>
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-@Name("uploadFileRestlet")
-@Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     public static final String LIVED_AUTOVERSIONING_PROP = "org.nuxeo.ecm.platform.liveedit.autoversioning";
@@ -62,11 +56,6 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
     public static final String POLICY_MINOR_INCR = "minor";
 
     private static final long serialVersionUID = -6167207806181917456L;
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -87,18 +76,10 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
         }
 
         DocumentModel dm = null;
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
+        try (CloseableCoreSession documentManager = CoreInstance.openCoreSession(repo)) {
             if (docid != null) {
                 dm = documentManager.getDocument(new IdRef(docid));
             }
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
-
-        try {
 
             String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
 
@@ -110,16 +91,12 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
                 blobPropertyName = schemaName + ":" + blobFieldName;
             }
 
-            InputStream is = req.getEntity().getStream();
-
-            saveFileToDocument(filename, dm, blobPropertyName, is);
+            try (InputStream is = req.getEntity().getStream()) {
+                saveFileToDocument(filename, dm, blobPropertyName, is);
+            }
         } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
-    }
-
-    protected CoreSession getDocumentManager() {
-        return documentManager;
     }
 
     /**
@@ -146,7 +123,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
 
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);
 
-        getDocumentManager().saveDocument(dm);
+        dm.getCoreSession().saveDocument(dm);
         // autoversioning see https://jira.nuxeo.org/browse/NXP-5849 for more
         // details
         String versioningPolicy = Framework.getProperty(LIVED_AUTOVERSIONING_PROP);
@@ -156,7 +133,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
             }
         }
 
-        getDocumentManager().save();
+        dm.getCoreSession().save();
     }
 
     /**

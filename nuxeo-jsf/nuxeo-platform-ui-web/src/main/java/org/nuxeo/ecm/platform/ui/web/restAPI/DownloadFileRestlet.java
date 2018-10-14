@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -28,18 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -50,16 +44,9 @@ import org.restlet.data.Response;
  * @author Sun Tan <stan@nuxeo.com>
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-@Name("downloadFileRestlet")
-@Scope(EVENT)
 public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final long serialVersionUID = -2163290273836947871L;
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
 
     @Override
     public void handle(Request req, Response res) {
@@ -73,9 +60,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
         }
 
         DocumentModel dm;
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
+        try (CloseableCoreSession documentManager = CoreInstance.openCoreSession(repo)) {
             String docid = (String) req.getAttributes().get("docid");
             if (docid != null) {
                 dm = documentManager.getDocument(new IdRef(docid));
@@ -83,12 +68,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
                 handleError(res, "you must specify a valid document IdRef");
                 return;
             }
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
 
-        try {
             String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
             String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
             Blob blob;

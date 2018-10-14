@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.jsf.restlet.test.converter">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+    <converter name="dummyWord" class="org.nuxeo.ecm.platform.preview.restlet.TestPreviewRestlet$DummyWordConverter">
+      <sourceMimeType>application/x-dummy-word</sourceMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
+    </converter>
+  </extension>
+
+</component>

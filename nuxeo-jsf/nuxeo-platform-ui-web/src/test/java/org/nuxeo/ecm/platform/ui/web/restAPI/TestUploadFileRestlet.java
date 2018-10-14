@@ -73,12 +73,7 @@ public class TestUploadFileRestlet implements LiveEditConstants {
         Long minor = (Long) doc.getPropertyValue("uid:minor_version");
 
         // call the save of uploadfile restlet
-        UploadFileRestlet restlet = new UploadFileRestlet() {
-            @Override
-            protected CoreSession getDocumentManager() {
-                return session;
-            }
-        };
+        UploadFileRestlet restlet = new UploadFileRestlet();
         String expectedFileName = "myfile.txt";
         String blobPropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_BLOB_FIELD;
         restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
@@ -122,12 +117,7 @@ public class TestUploadFileRestlet implements LiveEditConstants {
         Long minor = (Long) doc.getPropertyValue("uid:minor_version");
 
         // call the save of uploadfile restlet
-        UploadFileRestlet restlet = new UploadFileRestlet() {
-            @Override
-            protected CoreSession getDocumentManager() {
-                return session;
-            }
-        };
+        UploadFileRestlet restlet = new UploadFileRestlet();
         String expectedFileName = "myfile.txt";
         String blobPropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_BLOB_FIELD;
         restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,

@@ -23,22 +23,16 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import java.io.Serializable;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
@@ -53,16 +47,9 @@ import org.restlet.resource.StringRepresentation;
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-@Name("createDocumentRestlet")
-@Scope(EVENT)
 public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditConstants, Serializable {
 
     private static final long serialVersionUID = -7223939557577366747L;
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
 
     @Override
     public void handle(Request req, Response res) {
@@ -73,9 +60,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditC
         }
 
         DocumentModel parentDm;
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
+        try (CloseableCoreSession documentManager = CoreInstance.openCoreSession(repo)) {
             String parentDocRef = (String) req.getAttributes().get("parentdocid");
             if (parentDocRef != null) {
                 parentDm = documentManager.getDocument(new IdRef(parentDocRef));
@@ -83,17 +68,12 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditC
                 handleError(res, "you must specify a valid document IdRef for the parent document");
                 return;
             }
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
 
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         String docTypeName = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         String titleField = "dublincore:title";
         String title = getQueryParamValue(req, titleField, "New " + docTypeName);
 
-        try {
             DocumentModel newDm = documentManager.createDocumentModel(docTypeName);
             Form queryParameters = req.getResourceRef().getQueryAsForm();
             for (String paramName : queryParameters.getNames()) {
