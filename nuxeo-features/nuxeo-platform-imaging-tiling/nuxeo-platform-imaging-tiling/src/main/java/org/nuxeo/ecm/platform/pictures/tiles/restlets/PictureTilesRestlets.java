@@ -65,7 +65,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
     protected static Map<String, PictureTilesCachedEntry> cachedAdapters = new ConcurrentHashMap<String, PictureTilesCachedEntry>();
 
     @Override
-    public void handle(Request req, Response res) {
+    public void doHandleStatelessRequest(Request req, Response res) {
         HttpServletRequest request = getHttpRequest(req);
         HttpServletResponse response = getHttpResponse(res);
 
@@ -132,6 +132,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
             tiles = adapter.getTiles(tileWidth, tileHeight, maxTiles);
         } catch (NuxeoException e) {
             handleError(res, e);
+            return;
         }
 
         if ((x == null) || (y == null)) {
@@ -190,7 +191,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
             mt = MediaType.APPLICATION_JSON;
         } else {
             serializer = new XMLPictureTilesSerializer();
-            mt = MediaType.TEXT_XML;
+            mt = MediaType.APPLICATION_XML;
         }
 
         res.setEntity(serializer.serialize(tiles), mt);

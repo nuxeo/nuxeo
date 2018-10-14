@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Version: 1.0.0
+Bundle-SymbolicName: org.nuxeo.ecm.platform.preview.jsf.tests;singleton:=true

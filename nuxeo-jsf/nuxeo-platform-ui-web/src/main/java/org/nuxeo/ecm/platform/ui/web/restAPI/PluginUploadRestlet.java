@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -30,35 +28,26 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileUploadException;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
-@Name("pluginUploadRestlet")
-@Scope(EVENT)
 public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    protected CoreSession documentManager;
-
-    @In(create = true)
-    protected transient SimpleFileManager FileManageActions;
 
     @Override
     public void handle(Request req, Response res) {
@@ -67,7 +56,9 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
         String returnCode = "TRANSF_ERROR";
         String relativePath = "";
         List<String> segments = req.getResourceRef().getSegments();
-        List<String> pathElements = segments.subList(5, segments.size());
+        int pos = segments.indexOf("restAPI") + 4;
+        List<String> pathElements = segments.subList(pos, segments.size() - 1);
+        String fileName = segments.get(segments.size() - 1);
 
         for (String pathElement : pathElements) {
             if (pathElement != null && !pathElement.trim().equals("")) {
@@ -79,28 +70,9 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
             }
         }
 
-        DocumentModel currentDocument;
-
-        try {
-            if (navigationContext.getCurrentServerLocation() == null) {
-                // init context if needed
-                navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            }
-
-            documentManager = navigationContext.getOrCreateDocumentManager();
-            currentDocument = navigationContext.getCurrentDocument();
-
-            if (currentDocument == null || !currentDocument.getRef().toString().equals(docid)) {
-                // init context if needed
-                currentDocument = documentManager.getDocument(new IdRef(docid));
-                navigationContext.setCurrentDocument(currentDocument);
-            }
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
-
-        if (currentDocument != null) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repo)) {
+            DocumentModel doc = session.getDocument(new IdRef(docid));
+            DocumentModel folder = session.getDocument(new PathRef(doc.getPathAsString() + relativePath));
             List<Blob> blobs;
             try {
                 blobs = FileUploadHelper.parseRequest(req);
@@ -111,13 +83,27 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
 
             Blob blob = blobs.get(0);
             try {
-                returnCode = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), relativePath);
+                blob.setFilename(fileName);
+                returnCode = addBinaryFileFromPlugin(blob, folder);
             } catch (NuxeoException e) {
                 handleError(res, e);
                 return;
             }
+        } catch (NuxeoException | IOException e) {
+            handleError(res, e);
+            return;
         }
-        res.setEntity(returnCode, MediaType.TEXT_PLAIN);
+
+        Representation rep = new StringRepresentation(returnCode, MediaType.TEXT_PLAIN);
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        res.setEntity(rep);
+    }
+
+    protected String addBinaryFileFromPlugin(Blob blob, DocumentModel folder) throws IOException {
+        FileManager fileManager = Framework.getService(FileManager.class);
+        DocumentModel doc = fileManager.createDocumentFromBlob(folder.getCoreSession(), blob, folder.getPathAsString(),
+                true, blob.getFilename());
+        return doc.getName();
     }
 
 }

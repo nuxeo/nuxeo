@@ -63,7 +63,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                     server.setAttribute("url", getRelURL(repositoryName, "*"));
                     serversNode.appendChild(server);
                 }
-                res.setEntity(result.asXML(), MediaType.TEXT_XML);
+                res.setEntity(result.asXML(), MediaType.APPLICATION_XML);
                 res.getEntity().setCharacterSet(CharacterSet.UTF_8);
                 return;
             } catch (DOMException e) {
@@ -137,7 +137,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                 }
             }
 
-            res.setEntity(result.asXML(), MediaType.TEXT_XML);
+            res.setEntity(result.asXML(), MediaType.APPLICATION_XML);
             res.getEntity().setCharacterSet(CharacterSet.UTF_8);
         }
     }

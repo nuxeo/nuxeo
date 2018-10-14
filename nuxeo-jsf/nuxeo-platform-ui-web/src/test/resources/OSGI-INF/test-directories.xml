@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.restAPI.test.dircache">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="foo" extends="template-directory">
+      <schema>user</schema>
+      <idField>username</idField>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId" target="groupId" />
+      </references>
+    </directory>
+    <directory name="bar" extends="template-directory">
+      <schema>user</schema>
+      <idField>username</idField>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId" target="groupId" />
+      </references>
+    </directory>
+  </extension>
+</component>

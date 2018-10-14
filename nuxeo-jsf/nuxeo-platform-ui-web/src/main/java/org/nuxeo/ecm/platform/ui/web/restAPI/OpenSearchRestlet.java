@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.restlet.data.CharacterSet;
@@ -85,7 +86,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             // perform the search on the fulltext index and wrap the results as
             // a DocumentModelList with the 10 first matching results ordered by
             // modification time
-            String query = String.format(QUERY, keywords);
+            String query = String.format(QUERY, NXQL.escapeStringInner(keywords));
             DocumentModelList documents = session.query(query, null, MAX, 0, true);
 
             // build the RSS 2.0 response document holding the results

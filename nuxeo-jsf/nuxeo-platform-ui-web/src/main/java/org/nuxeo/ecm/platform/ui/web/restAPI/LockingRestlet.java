@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
@@ -81,8 +82,10 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
 
         // get Action
         String action = STATUS;
-        if (req.getResourceRef().getSegments().size() > 5) {
-            action = req.getResourceRef().getSegments().get(5).toLowerCase();
+        List<String> segments = req.getResourceRef().getSegments();
+        int pos = segments.indexOf("restAPI") + 4;
+        if (segments.size() > pos) {
+            action = segments.get(pos).toLowerCase();
         }
         if (req.getMethod().equals(Method.LOCK)) {
             action = LOCK;
@@ -172,7 +175,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         current.setAttribute("code", code);
         current.setAttribute("message", response);
         result.setRootElement((org.dom4j.Element) current);
-        res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        res.setEntity(result.asXML(), MediaType.APPLICATION_XML);
         res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 

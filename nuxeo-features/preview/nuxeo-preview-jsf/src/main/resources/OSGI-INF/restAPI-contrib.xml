@@ -12,7 +12,7 @@
       name="preview"
       class="org.nuxeo.ecm.platform.preview.restlet.PreviewRestlet"
       enabled="true"
-      useSeam="true">
+      useSeam="false">
       <urlPatterns>
         <urlPattern>/preview/{repo}/{docid}/{fieldPath}/{subPath}</urlPattern>
         <urlPattern>/preview/{repo}/{docid}/{fieldPath}/</urlPattern>

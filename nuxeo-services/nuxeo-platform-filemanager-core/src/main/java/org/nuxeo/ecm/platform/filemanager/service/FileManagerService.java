@@ -576,7 +576,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                containers.addAll(getCreationContainers(session, docType));
+                DocumentModelList docs = getCreationContainers(session, docType);
+                docs.forEach(doc -> doc.detach(true));
+                containers.addAll(docs);
             }
         }
         return containers;

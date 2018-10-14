@@ -23,8 +23,9 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
-import org.jboss.seam.web.MultipartRequest;
+import org.apache.http.entity.ContentType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.restlet.data.Request;
@@ -71,44 +72,49 @@ public class FileUploadHelper {
         return null;
     }
 
-    /**
-     * Parses a Multipart Servlet Request to extract blobs
-     */
     public static List<Blob> parseRequest(HttpServletRequest request) throws FileUploadException, IOException {
-        List<Blob> blobs = new ArrayList<Blob>();
-
-        if (request instanceof MultipartRequest) {
-            MultipartRequest seamMPRequest = (MultipartRequest) request;
-
-            Enumeration<String> names = seamMPRequest.getParameterNames();
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                try (InputStream in = seamMPRequest.getFileInputStream(name)) {
-                    if (in != null) {
-                        Blob blob = Blobs.createBlob(in);
-                        blob.setFilename(seamMPRequest.getFileName(name));
-                        blobs.add(blob);
-                    }
-                }
+        if (!isMultipartRequest(request)) {
+            try (InputStream in = request.getInputStream()) {
+                Blob blob = createBlob(in, request.getContentType());
+                return Collections.singletonList(blob);
             }
         } else {
-            // fallback method for non-seam servlet request
-            FileUpload fu = new FileUpload(new DiskFileItemFactory());
-            String fileNameCharset = request.getHeader("FileNameCharset");
+            FileUpload fileUpload = new FileUpload(new DiskFileItemFactory());
+            String fileNameCharset = request.getHeader("FileNameCharset"); // compat with old code
             if (fileNameCharset != null) {
-                fu.setHeaderEncoding(fileNameCharset);
+                fileUpload.setHeaderEncoding(fileNameCharset);
             }
-            ServletRequestContext requestContext = new ServletRequestContext(request);
-            List<FileItem> fileItems = fu.parseRequest(requestContext);
-            for (FileItem item : fileItems) {
+            List<Blob> blobs = new ArrayList<>();
+            for (FileItem item : fileUpload.parseRequest(new ServletRequestContext(request))) {
                 try (InputStream is = item.getInputStream()) {
-                    Blob blob = Blobs.createBlob(is);
+                    Blob blob = createBlob(is, item.getContentType());
                     blob.setFilename(item.getName());
                     blobs.add(blob);
                 }
             }
+            return blobs;
         }
-        return blobs;
+    }
+
+    public static boolean isMultipartRequest(Request request) {
+        HttpServletRequest httpServletRequest = ((ServletCall) ((HttpRequest) request).getHttpCall()).getRequest();
+        return isMultipartRequest(httpServletRequest);
+    }
+
+    public static boolean isMultipartRequest(HttpServletRequest request) {
+        if (!"POST".equalsIgnoreCase(request.getMethod())) {
+            return false;
+        }
+        String contentType = request.getContentType();
+        return contentType == null ? false : contentType.toLowerCase().startsWith("multipart/");
+    }
+
+    public static Blob createBlob(InputStream in, String contentType) throws IOException {
+        ContentType ct = ContentType.parse(contentType);
+        String mimeType = ct.getMimeType();
+        Charset charset = ct.getCharset();
+        String encoding = charset == null ? null : charset.name();
+        return Blobs.createBlob(in, mimeType, encoding);
     }
 
 }
