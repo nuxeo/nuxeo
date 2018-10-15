@@ -34,7 +34,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -74,8 +76,10 @@ public class TestSetPropertiesAction {
         complex.put("foo", foo);
         complex.put("bar", bar);
 
+        int oldSize = service.getStatuses(session.getPrincipal().getName()).size();
+
         String commandId = service.submit(
-                new BulkCommand.Builder("setProperties", nxql).repository(session.getRepositoryName())
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                               .user(session.getPrincipal().getName())
                                                               .param("dc:title", title)
                                                               .param("dc:description", description)
@@ -90,8 +94,8 @@ public class TestSetPropertiesAction {
         assertEquals(10, status.getProcessed());
 
         List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
-        assertEquals(1, statuses.size());
-        assertEquals(status.getCommandId(), statuses.get(0).getCommandId());
+        assertEquals(1, statuses.size() - oldSize);
+        assertEquals(status.getCommandId(), statuses.get(statuses.size() - 1).getCommandId());
 
         List<BulkStatus> emptyStatuses = service.getStatuses("toto");
         assertEquals(0, emptyStatuses.size());
@@ -104,5 +108,49 @@ public class TestSetPropertiesAction {
             assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));
             assertEquals(bar, child.getPropertyValue("cpx:complex/bar"));
         }
+    }
+
+    /**
+     * The action must not completely fail even when setting a property fails (property not found or version not
+     * writable).
+     */
+    @Test
+    public void testSetPropertiesFailures() throws Exception {
+        DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        DocumentModel doc = session.getDocument(new PathRef("/default-domain/workspaces/test/doc0"));
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+        DocumentModel ver = session.getDocument(verRef);
+        session.save();
+        txFeature.nextTransaction();
+
+        String nxql = String.format("SELECT * FROM Document WHERE ecm:uuid in ('%s', '%s', '%s')",
+                workspace.getId(), // no such property
+                ver.getId(), // not writable
+                doc.getId() // ok
+                );
+
+        int oldSize = service.getStatuses(session.getPrincipal().getName()).size();
+
+        String commandId = service.submit(
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                                              .user(session.getPrincipal().getName())
+                                                                              .param("cpx:complex/foo", "test foo")
+                                                                              .build());
+
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+
+        BulkStatus status = service.getStatus(commandId);
+        assertNotNull(status);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(3, status.getProcessed());
+
+        List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
+        assertEquals(1, statuses.size() - oldSize);
+        assertEquals(status.getCommandId(), statuses.get(statuses.size() - 1).getCommandId());
+
+        // docs not in error are still written though
+        txFeature.nextTransaction();
+        doc.refresh();
+        assertEquals("test foo", doc.getPropertyValue("cpx:complex/foo"));
     }
 }
