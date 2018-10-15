@@ -94,7 +94,7 @@ public class TestCSVExportAction {
         File file = getUnzipFile(command, blob);
 
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
-        assertEquals(10, lines.size());
+        assertEquals(11, lines.size());
 
         // file is sorted
         List<String> sortedLines = new ArrayList<>(lines);

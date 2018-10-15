@@ -30,6 +30,9 @@ import org.apache.avro.io.Encoder;
 import org.apache.avro.reflect.CustomEncoding;
 
 /**
+ * This {@link CustomEncoding} encodes/decodes {@link Instant} to a long (time in milliseconds) before encoding it in
+ * Avro format.
+ *
  * @since 10.3
  */
 public class InstantAsLongEncoding extends CustomEncoding<Instant> {
