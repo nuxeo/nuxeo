@@ -92,6 +92,11 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
             folder.mkdir();
         }
 
+        if ("/".equals(docfrom.getPathAsString())) {
+            // we do not serialize the root document
+            return folder;
+        }
+
         if (docfrom.hasFacet("Folderish")) {
             newFolder = new File(fsPath + "/" + docfrom.getName());
             newFolder.mkdir();
