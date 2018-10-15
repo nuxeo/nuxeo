@@ -39,27 +39,32 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
     }
 
     @Override
-    protected void write(Property entity, CSVPrinter csvPrinter) throws IOException {
+    protected void write(Property entity, CSVPrinter printer) throws IOException {
         if (entity.isScalar()) {
-            writeScalarProperty(entity, csvPrinter);
+            writeScalarProperty(entity, printer);
         } else {
-            writeUnsupported(entity, csvPrinter);
+            writeUnsupported(entity, printer);
         }
     }
 
-    protected void writeScalarProperty(Property entity, CSVPrinter csvPrinter) throws IOException {
+    @Override
+    protected void writeHeader(Property entity, CSVPrinter printer) throws IOException {
+        printer.printRecord(entity.getXPath());
+    }
+
+    protected void writeScalarProperty(Property entity, CSVPrinter printer) throws IOException {
         Object value = entity.getValue();
         if (value == null) {
-            csvPrinter.print(null);
+            printer.print(null);
         } else if (entity.getType() instanceof BinaryType) {
-            writeUnsupported(entity, csvPrinter);
+            writeUnsupported(entity, printer);
         } else {
-            csvPrinter.print(entity.getType().encode(value));
+            printer.print(entity.getType().encode(value));
         }
     }
 
-    protected void writeUnsupported(Property entity, CSVPrinter csvPrinter) throws IOException {
-        csvPrinter.print(String.format("type %s is not supported", entity.getType().getName()));
+    protected void writeUnsupported(Property entity, CSVPrinter printer) throws IOException {
+        printer.print(String.format("type %s is not supported", entity.getType().getName()));
     }
 
 }

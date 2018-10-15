@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.io.marshallers.csv;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -49,8 +47,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 @Supports(AbstractCSVWriter.TEXT_CSV)
 public abstract class AbstractCSVWriter<T> implements Writer<T> {
 
-    public static final String SEPARATOR = ",";
-
     public static final String TEXT_CSV = "text/csv";
 
     public static final MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
@@ -75,39 +71,30 @@ public abstract class AbstractCSVWriter<T> implements Writer<T> {
     @Override
     public void write(T entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out)
             throws IOException {
-        CSVPrinter printer = getCSVPrinter(out);
+        CSVPrinter printer = getCSVPrinter(entity, out);
         write(entity, printer);
         printer.flush();
     }
 
     protected abstract void write(T entity, CSVPrinter printer) throws IOException;
 
-    protected CSVPrinter getCSVPrinter(OutputStream out) throws IOException {
+    protected abstract void writeHeader(T entity, CSVPrinter printer) throws  IOException;
+
+    protected CSVPrinter getCSVPrinter(T entity, OutputStream out) throws IOException {
         if (out instanceof OutputStreamWithCSVWriter) {
             return ((OutputStreamWithCSVWriter) out).getCsvPrinter();
         }
-        return new CSVPrinter(new OutputStreamWriter(out), CSVFormat.DEFAULT);
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(out), CSVFormat.DEFAULT);
+        writeHeader(entity, printer);
+        return printer;
     }
 
-    protected void printCalendar(Calendar value, CSVPrinter csvPrinter) throws IOException {
+    protected void printCalendar(Calendar value, CSVPrinter printer) throws IOException {
         if (value != null) {
-            csvPrinter.print(((GregorianCalendar) value).toZonedDateTime());
+            printer.print(((GregorianCalendar) value).toZonedDateTime());
         } else {
-            csvPrinter.print(null);
+            printer.print(null);
         }
-    }
-
-    protected void writeWithSeparator(OutputStream out, String value) throws IOException {
-        write(out, value);
-        writeSeparator(out);
-    }
-
-    protected void write(OutputStream out, String value) throws IOException {
-        out.write((value == null ? "null" : value).getBytes(UTF_8));
-    }
-
-    protected void writeSeparator(OutputStream out) throws IOException {
-        write(out, SEPARATOR);
     }
 
 }
