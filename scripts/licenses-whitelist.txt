@@ -9,7 +9,6 @@ CC BY 2.5
 CC BY-SA 3.0
 CDDL 1.0
 CDDL 1.1
-Eclipse Public License
 EPL 1.0
 GPL 2
 GPL 2 CPE

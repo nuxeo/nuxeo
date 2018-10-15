@@ -5898,6 +5898,7 @@
               <licenseMerge>CDDL 1.0
                 |CDDL
                 |CDDL license
+                |CDDL License
                 |Common Development and Distribution License (CDDL) v1.0
                 |COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</licenseMerge>
               <licenseMerge>CDDL 1.0 + GPL 2
@@ -5905,6 +5906,7 @@
                 |CDDL+GPL License
                 |COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) plus GPL</licenseMerge>
               <licenseMerge>CDDL 1.0 + GPL 2 CPE
+                |CDDL/GPLv2+CE
                 |Dual License: CDDL 1.0 and GPL V2 with Classpath Exception
                 |CDDL + GPLv2 with classpath exception</licenseMerge>
               <licenseMerge>CDDL 1.1 + GPL 2
@@ -5921,6 +5923,7 @@
                 |CC0 1.0 Universal
                 |Public Domain, per Creative Commons CC0</licenseMerge>
               <licenseMerge>EPL 1.0
+                |Eclipse Public License
                 |Eclipse Public License 1.0
                 |Eclipse Public License (EPL)
                 |Eclipse Public License (EPL) 1.0
@@ -5946,6 +5949,7 @@
                 |GNU Lesser General Public License (LGPL)
                 |lgpl
                 |LGPL
+                |LGPL license
                 |GNU LESSER GENERAL PUBLIC LICENSE
                 |GNU Lesser General Public License
                 |Gnu Lesser Public License</licenseMerge>
@@ -5974,6 +5978,7 @@
                 |Bouncy Castle Licence
                 |JSON License</licenseMerge>
               <licenseMerge>MPL 1.1
+                |Mozilla Public License 1.1 (MPL 1.1)
                 |Mozilla Public License version 1.1</licenseMerge>
               <licenseMerge>MPL 2.0
                 |Mozilla Public License
@@ -5988,6 +5993,7 @@
               <licenseMerge>UnboundID
                 |UnboundID SCIM SDK Free Use License</licenseMerge>
               <licenseMerge>Unicode
+                |Unicode/ICU License
                 |ICU License</licenseMerge>
               <licenseMerge>W3C
                 |The W3C Software License
