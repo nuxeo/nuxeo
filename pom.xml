@@ -5818,12 +5818,13 @@
           <configuration>
             <suppressionFiles>
               <suppressionFile>owasp-dependency-suppression.xml</suppressionFile>
-              <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled> <!-- .NET Assembly analyzer needs mono-->
-              <nspAnalyzerEnabled>false</nspAnalyzerEnabled> <!-- Node Security Project not accessible -->
-              <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled> <!-- Node -->
-              <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled> <!-- Ruby -->
-              <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled> <!-- Ruby -->
             </suppressionFiles>
+            <skipTestScope>true</skipTestScope>
+            <skipSystemScope>true</skipSystemScope>
+            <skipArtifactType>pom</skipArtifactType>
+            <skipArtifactType>xpi</skipArtifactType>
+            <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled> <!-- .NET Assembly analyzer needs mono-->
+            <nspAnalyzerEnabled>false</nspAnalyzerEnabled> <!-- Node Security Project not accessible -->
           </configuration>
         </plugin>
         <plugin>
