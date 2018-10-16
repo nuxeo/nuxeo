@@ -183,7 +183,16 @@ public class WorkManagerTest {
         assertEquals("SleepWork", qd.id);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.getMaxThreads());
-        assertEquals(Collections.singleton("SleepWork"), qd.categories);
+
+        assertEquals(2, qd.categories.size());
+        assertTrue(qd.categories.contains("SleepWork"));
+        assertTrue(qd.categories.contains("TestCategory"));
+
+        SleepWork testCategory = new SleepWork(1, "TestCategory", false, "id");
+        assertEquals(QUEUE, service.getCategoryQueueId(testCategory.getCategory()));
+
+        SleepWork unknowCategory = new SleepWork(1, "UnknowCategory", false, "id");
+        assertEquals(WorkManagerImpl.DEFAULT_CATEGORY, service.getCategoryQueueId(unknowCategory.getCategory()));
     }
 
     @Test
