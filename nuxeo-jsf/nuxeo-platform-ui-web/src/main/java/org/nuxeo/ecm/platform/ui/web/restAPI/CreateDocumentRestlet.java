@@ -53,6 +53,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditC
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
         String repo = (String) req.getAttributes().get("repo");
         if (repo == null || repo.equals("*")) {
             handleError(res, "you must specify a repository");

@@ -63,6 +63,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
         boolean exportAsTree;
         boolean exportAsZip;
         String action = req.getResourceRef().getSegments().get(4);

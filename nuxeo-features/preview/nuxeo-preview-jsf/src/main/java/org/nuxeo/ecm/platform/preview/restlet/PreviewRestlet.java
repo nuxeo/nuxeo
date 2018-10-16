@@ -76,6 +76,7 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
 
     @Override
     public void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
         HttpServletRequest request = getHttpRequest(req);
         HttpServletResponse response = getHttpResponse(res);
 

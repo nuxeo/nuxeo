@@ -34,6 +34,7 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
 
         StringBuffer sb = new StringBuffer();
 

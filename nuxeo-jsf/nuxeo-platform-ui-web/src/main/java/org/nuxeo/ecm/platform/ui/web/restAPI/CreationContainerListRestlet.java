@@ -54,6 +54,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements Li
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
 
         DocumentModelList containers = null;
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);

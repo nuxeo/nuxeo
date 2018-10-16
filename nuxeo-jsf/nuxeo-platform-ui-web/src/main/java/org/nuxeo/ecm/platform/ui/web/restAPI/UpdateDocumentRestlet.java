@@ -44,6 +44,7 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements 
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
         String repoId = (String) req.getAttributes().get("repo");
         String docId = (String) req.getAttributes().get("docid");
 

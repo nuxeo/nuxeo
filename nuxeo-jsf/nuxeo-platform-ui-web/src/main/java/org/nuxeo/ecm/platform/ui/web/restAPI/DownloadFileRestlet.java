@@ -50,6 +50,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
         HttpServletRequest request = getHttpRequest(req);
         HttpServletResponse response = getHttpResponse(res);
 

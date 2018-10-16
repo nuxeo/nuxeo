@@ -44,6 +44,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
 
