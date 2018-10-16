@@ -74,6 +74,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
         HttpServletResponse response = getHttpResponse(res);
         HttpServletRequest request = getHttpRequest(req);
 
