@@ -44,14 +44,13 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentTreeWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-
-import com.noelios.restlet.http.HttpConstants;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.representation.Representation;
 
 /**
  * @deprecated since 7.2. Exports are now exposed directly as renditions on the document. Exports can be generated
@@ -138,12 +137,12 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
             // use the Facelets APIs to set a new header
             Map<String, Object> attributes = res.getAttributes();
-            Form headers = (Form) attributes.get(HttpConstants.ATTRIBUTE_HEADERS);
+            Form headers = (Form) attributes.get(HeaderConstants.ATTRIBUTE_HEADERS);
             if (headers == null) {
                 headers = new Form();
             }
             headers.add("Content-Disposition", String.format("attachment; filename=\"%s\";", FILENAME));
-            attributes.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
+            attributes.put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         }
 
         MediaType mediaType = exportAsZip ? MediaType.APPLICATION_ZIP : MediaType.TEXT_XML;

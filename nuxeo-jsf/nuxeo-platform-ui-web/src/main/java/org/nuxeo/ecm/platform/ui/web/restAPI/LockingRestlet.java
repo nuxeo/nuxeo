@@ -29,11 +29,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.w3c.dom.Element;
 
 /**

@@ -38,11 +38,10 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.http.entity.ContentType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.restlet.data.Request;
-
-import com.noelios.restlet.ext.servlet.ServletCall;
-import com.noelios.restlet.http.HttpCall;
-import com.noelios.restlet.http.HttpRequest;
+import org.restlet.Request;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.engine.adapter.ServerCall;
+import org.restlet.ext.servlet.internal.ServletCall;
 
 /**
  * Helper to encapsulate Multipart requests parsing to extract blobs.
@@ -63,7 +62,7 @@ public class FileUploadHelper {
     public static List<Blob> parseRequest(Request request) throws FileUploadException, IOException {
         if (request instanceof HttpRequest) {
             HttpRequest httpRequest = (HttpRequest) request;
-            HttpCall httpCall = httpRequest.getHttpCall();
+            ServerCall httpCall = httpRequest.getHttpCall();
             if (httpCall instanceof ServletCall) {
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
                 return parseRequest(httpServletRequest);

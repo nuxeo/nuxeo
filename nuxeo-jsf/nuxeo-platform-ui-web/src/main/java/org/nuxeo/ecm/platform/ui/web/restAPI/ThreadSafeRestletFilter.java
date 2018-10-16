@@ -23,12 +23,12 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.routing.Filter;
 
 /**
  * Restlet Filter that ensure thread safety for seam unaware restlet.

@@ -31,10 +31,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 

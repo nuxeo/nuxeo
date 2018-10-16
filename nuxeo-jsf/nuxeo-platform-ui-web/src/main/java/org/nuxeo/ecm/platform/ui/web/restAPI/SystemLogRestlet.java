@@ -22,10 +22,10 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Small restlet logging in the commons logging log.

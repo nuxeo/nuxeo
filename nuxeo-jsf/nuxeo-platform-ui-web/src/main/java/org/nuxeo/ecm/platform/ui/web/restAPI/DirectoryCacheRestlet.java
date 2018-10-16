@@ -33,13 +33,13 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Restlet to invalidate the cache of directories from an external application.

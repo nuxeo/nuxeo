@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Sample code for a Seam-aware restlet.

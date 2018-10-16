@@ -48,9 +48,9 @@ import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**

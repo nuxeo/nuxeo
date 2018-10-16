@@ -32,11 +32,11 @@ import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements LiveEditConstants {
 
