@@ -77,7 +77,7 @@ public class WorkStateHelper {
     }
 
     protected static void setLastOffset(String workId, Long offset, long ttl) {
-        getKeyValueStore().put(getOffsetKey(workId), offset == null ? null : offset, ttl);
+        getKeyValueStore().put(getOffsetKey(workId), offset == null ? null : offset.toString(), ttl);
     }
 
     protected static void setState(String workId, Work.State state, long ttl) {

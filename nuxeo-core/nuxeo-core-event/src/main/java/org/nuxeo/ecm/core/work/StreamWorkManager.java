@@ -24,9 +24,8 @@ import static org.nuxeo.ecm.core.work.api.WorkManager.Scheduling.CANCEL_SCHEDULE
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.NamingException;
@@ -107,8 +106,6 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected LogManager logManager;
 
-    protected final Set<String> streamIds = new HashSet<>();
-
     protected boolean storeState;
 
     protected long stateTTL;
@@ -123,7 +120,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public void schedule(Work work, Scheduling scheduling, boolean afterCommit) {
-        String queueId = getStreamForCategory(work.getCategory());
+        String queueId = getCategoryQueueId(work.getCategory());
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Scheduling: workId: %s, category: %s, queue: %s, scheduling: %s, afterCommit: %s, work: %s",
@@ -148,10 +145,10 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         WorkSchedulePath.newInstance(work);
-        LogAppender<Record> appender = logManager.getAppender(getStreamForCategory(work.getCategory()));
+        LogAppender<Record> appender = logManager.getAppender(queueId);
         if (appender == null) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
-                    getStreamForCategory(work.getCategory())));
+                    queueId));
             return;
         }
         String key = work.getPartitionKey();
@@ -162,13 +159,6 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (storeState) {
             WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }
-    }
-
-    protected String getStreamForCategory(String category) {
-        if (category != null && streamIds.contains(category)) {
-            return category;
-        }
-        return DEFAULT_CATEGORY;
     }
 
     @Override
@@ -196,6 +186,9 @@ public class StreamWorkManager extends WorkManagerImpl {
                 return;
             }
             supplantWorkManagerImpl();
+            for (Entry<String, WorkQueueDescriptor> entry : workQueueConfig.registry.entrySet()) {
+                workQueueConfig.categoryToQueueId.put(entry.getKey(), entry.getKey());
+            }
             workQueueConfig.index();
             initTopology();
             logManager = getLogManager();
@@ -278,7 +271,6 @@ public class StreamWorkManager extends WorkManagerImpl {
             throw new RuntimeException(e);
         }
         wqr.getQueueIds().forEach(id -> workQueueConfig.addContribution(wqr.get(id)));
-        streamIds.addAll(workQueueConfig.getQueueIds());
         workQueueConfig.getQueueIds().forEach(id -> log.info("Registering : " + id));
     }
 
