@@ -129,8 +129,19 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
      * This should be called by the last computation of the action's topology to inform on the progress of the command.
      */
     public static void updateStatusProcessed(ComputationContext context, String commandId, long processed) {
+        updateStatusProcessed(context, commandId, processed, null);
+    }
+
+    /**
+     * This should be called by the last computation of the action's topology to inform on the progress of the command.
+     */
+    public static void updateStatusProcessed(ComputationContext context, String commandId, long processed,
+            Map<String, Serializable> result) {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
         delta.setProcessed(processed);
+        if (result != null) {
+            delta.setResult(result);
+        }
         context.produceRecord(OUTPUT_1, commandId, BulkCodecs.getStatusCodec().encode(delta));
     }
 

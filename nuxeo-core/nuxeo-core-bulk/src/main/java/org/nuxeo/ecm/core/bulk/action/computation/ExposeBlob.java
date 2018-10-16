@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
@@ -57,7 +59,9 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
         store.setCompleted(commandId, true);
 
         // update the command status
-        AbstractBulkComputation.updateStatusProcessed(context, commandId, documents);
+        String url = Framework.getService(DownloadService.class).getDownloadUrl(commandId);
+        Map<String, Serializable> result = Collections.singletonMap("url", url);
+        AbstractBulkComputation.updateStatusProcessed(context, commandId, documents, result);
         context.askForCheckpoint();
     }
 

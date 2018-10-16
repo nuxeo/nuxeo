@@ -22,6 +22,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
@@ -44,8 +46,10 @@ import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.VERSI
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -56,6 +60,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,6 +101,20 @@ public class TestCSVExportAction {
     @Inject
     public BulkService bulkService;
 
+    @Inject
+    public DownloadService downloadService;
+
+    protected static abstract class DummyServletOutputStream extends ServletOutputStream {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
+
     @Test
     public void testSimple() throws Exception {
         BulkCommand command = createCommand();
@@ -103,6 +125,9 @@ public class TestCSVExportAction {
         assertEquals(COMPLETED, status.getState());
         assertEquals(10, status.getProcessed());
         assertEquals(10, status.getTotal());
+
+        String url = Framework.getService(DownloadService.class).getDownloadUrl(command.getId());
+        assertEquals(url, status.getResult().get("url"));
 
         Blob blob = getBlob(command.getId());
         // file is ziped
@@ -192,6 +217,45 @@ public class TestCSVExportAction {
         HashCode hash1 = hash(getUnzipFile(command1, blob1));
         HashCode hash2 = hash(getUnzipFile(command2, blob2));
         assertEquals(hash1,  hash2);
+    }
+
+    @Test
+    public void testDownloadCSV() throws Exception {
+
+        BulkCommand command = createCommand();
+        bulkService.submit(command);
+        assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
+
+        BulkStatus status = bulkService.getStatus(command.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(10, status.getProcessed());
+        assertEquals(10, status.getTotal());
+
+        Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
+        File testZip = new File(dir.toFile(), "test.zip");
+        FileOutputStream out = new FileOutputStream(testZip);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        String url = (String) status.getResult().get("url");
+        downloadService.handleDownload(request, response, null, url);
+
+        ZipUtils.unzip(testZip, dir.toFile());
+        File csv = new File(dir.toFile(), command.getId() + ".csv");
+        List<String> lines = Files.lines(csv.toPath()).collect(Collectors.toList());
+        assertEquals(11, lines.size());
+
     }
 
     private HashCode hash(File file) throws IOException {
