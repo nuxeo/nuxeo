@@ -33,20 +33,19 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.download.DownloadService.ByteRange;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.engine.adapter.HttpResponse;
+import org.restlet.engine.adapter.ServerCall;
+import org.restlet.ext.servlet.internal.ServletCall;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.w3c.dom.Element;
-
-import com.noelios.restlet.ext.servlet.ServletCall;
-import com.noelios.restlet.http.HttpCall;
-import com.noelios.restlet.http.HttpRequest;
-import com.noelios.restlet.http.HttpResponse;
 
 /**
  * Base class for Nuxeo Restlet.
@@ -101,7 +100,7 @@ public class BaseNuxeoRestlet extends Restlet {
     protected static HttpServletRequest getHttpRequest(Request req) {
         if (req instanceof HttpRequest) {
             HttpRequest httpRequest = (HttpRequest) req;
-            HttpCall httpCall = httpRequest.getHttpCall();
+            ServerCall httpCall = httpRequest.getHttpCall();
             if (httpCall instanceof ServletCall) {
                 return ((ServletCall) httpCall).getRequest();
             }
@@ -112,7 +111,7 @@ public class BaseNuxeoRestlet extends Restlet {
     protected static HttpServletResponse getHttpResponse(Response res) {
         if (res instanceof HttpResponse) {
             HttpResponse httpResponse = (HttpResponse) res;
-            HttpCall httpCall = httpResponse.getHttpCall();
+            ServerCall httpCall = httpResponse.getHttpCall();
             if (httpCall instanceof ServletCall) {
                 return ((ServletCall) httpCall).getResponse();
             }

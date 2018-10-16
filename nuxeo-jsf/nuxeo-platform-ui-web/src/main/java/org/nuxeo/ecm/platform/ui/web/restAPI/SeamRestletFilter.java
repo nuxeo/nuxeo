@@ -35,16 +35,15 @@ import org.jboss.seam.servlet.ServletRequestSessionMap;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
-
-import com.noelios.restlet.ext.servlet.ServletCall;
-import com.noelios.restlet.http.HttpCall;
-import com.noelios.restlet.http.HttpRequest;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.engine.adapter.ServerCall;
+import org.restlet.ext.servlet.internal.ServletCall;
+import org.restlet.routing.Filter;
 
 /**
  * Restlet Filter to initialized Seam context
@@ -71,7 +70,7 @@ public class SeamRestletFilter extends Filter {
         FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
             // Complete HTTP call with conversation
-            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+            ServerCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
 
@@ -94,7 +93,7 @@ public class SeamRestletFilter extends Filter {
     protected void afterHandle(Request request, Response response) {
         FacesLifecycle.setPhaseId(null);
         if (useConversation && request instanceof HttpRequest) {
-            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+            ServerCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
                 if (TransactionHelper.isTransactionActive()) {
                     // early commit of the transaction before releasing the

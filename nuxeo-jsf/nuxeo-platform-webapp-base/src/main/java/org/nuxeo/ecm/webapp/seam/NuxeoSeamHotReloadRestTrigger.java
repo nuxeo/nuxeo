@@ -21,9 +21,9 @@ package org.nuxeo.ecm.webapp.seam;
 import java.util.Set;
 
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Restlet to trigger the reloading. (can not be done directly from a Seam bean without messing up JSF scopes).

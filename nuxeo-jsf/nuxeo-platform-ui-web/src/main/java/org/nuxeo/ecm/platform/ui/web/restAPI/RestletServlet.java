@@ -33,12 +33,11 @@ import org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.restlet.Filter;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
-
-import com.noelios.restlet.ext.servlet.ServletConverter;
+import org.restlet.ext.servlet.ServletAdapter;
+import org.restlet.routing.Filter;
+import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 
 /**
  * Servlet used to run a Restlet inside Nuxeo.
@@ -53,13 +52,13 @@ public class RestletServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1764653653643L;
 
-    protected ServletConverter converter;
+    protected ServletAdapter adapter;
 
     @Override
     public synchronized void init() throws ServletException {
         super.init();
 
-        converter = new ServletConverter(getServletContext());
+        adapter = new ServletAdapter(getServletContext());
 
         // init the router
         Router restletRouter = new Router();
@@ -98,15 +97,12 @@ public class RestletServlet extends HttpServlet {
                 }
             }
 
-            // force regexp init
             for (String urlPattern : plugin.getUrlPatterns()) {
-                log.debug("Pre-compiling restlet pattern " + urlPattern);
-                Route route = restletRouter.attach(urlPattern, restletToAdd);
-                route.getTemplate().match("");
+                restletRouter.attach(urlPattern, restletToAdd, Template.MODE_STARTS_WITH);
             }
         }
 
-        converter.setTarget(restletRouter);
+        adapter.setNext(restletRouter);
     }
 
     @Override
@@ -115,19 +111,14 @@ public class RestletServlet extends HttpServlet {
         if (!TransactionHelper.isTransactionActive()) {
             tx = TransactionHelper.startTransaction();
         }
+        boolean ok = false;
         try {
-            converter.service(req, res);
-        } catch (ServletException e) {
-            if (tx) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-            throw e;
-        } catch (IOException e) {
-            if (tx) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-            throw e;
+            adapter.service(req, res);
+            ok = true;
         } finally {
+            if (!ok) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
             if (tx) {
                 if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                     // SeamRestletFilter might have done an early commit to

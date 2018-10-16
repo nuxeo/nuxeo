@@ -176,7 +176,7 @@
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
     <xz.version>1.8</xz.version>
-    <restlet.version>1.1.10</restlet.version>
+    <restlet.version>2.4.1</restlet.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -3632,35 +3632,23 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>org.restlet</groupId>
+        <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet</artifactId>
         <version>${restlet.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.restlet</groupId>
+        <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet.ext.fileupload</artifactId>
         <version>${restlet.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.noelios.restlet</groupId>
-        <artifactId>com.noelios.restlet</artifactId>
+        <groupId>org.restlet.jse</groupId>
+        <artifactId>org.restlet.ext.httpclient</artifactId>
         <version>${restlet.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.noelios.restlet</groupId>
-        <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-        <version>${restlet.version}</version>
-        <exclusions>
-          <!-- we use official javax.servlet:javax.servlet-api instead -->
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId> <!-- without javax. -->
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.noelios.restlet</groupId>
-        <artifactId>com.noelios.restlet.ext.httpclient</artifactId>
+        <groupId>org.restlet.jee</groupId>
+        <artifactId>org.restlet.ext.servlet</artifactId>
         <version>${restlet.version}</version>
       </dependency>
       <dependency>
