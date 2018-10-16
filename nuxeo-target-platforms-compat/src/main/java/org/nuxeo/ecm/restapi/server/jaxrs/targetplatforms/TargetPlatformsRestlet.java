@@ -31,6 +31,7 @@ import java.io.IOException;
 public class TargetPlatformsRestlet extends BaseNuxeoRestlet {
     @Override
     public void handle(Request request, Response response) {
+        logDeprecation();
         HttpServletResponse res = BaseNuxeoRestlet.getHttpResponse(response);
         HttpServletRequest req = BaseNuxeoRestlet.getHttpRequest(request);
         if (req == null || res == null || res.isCommitted()) {
