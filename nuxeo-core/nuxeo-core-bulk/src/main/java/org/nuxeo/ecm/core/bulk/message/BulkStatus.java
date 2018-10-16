@@ -160,6 +160,9 @@ public class BulkStatus implements Serializable {
         if (update.action != null) {
             setAction(update.action);
         }
+        if (update.getResult() != null) {
+            setResult(update.getResult());
+        }
         checkForCompletedState();
     }
 
