@@ -6,6 +6,7 @@
       <name>Sleep Work Queue</name>
       <maxThreads>2</maxThreads>
       <category>SleepWork</category>
+      <category>TestCategory</category>
       <clearCompletedAfterSeconds>1234</clearCompletedAfterSeconds>
     </queue>
     <queue id="PrioritizedSleepWork">
