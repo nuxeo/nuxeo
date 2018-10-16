@@ -19,10 +19,13 @@
 package org.nuxeo.ecm.core.bulk.action.computation;
 
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
+import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
+import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +38,7 @@ import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
@@ -50,6 +54,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CSVProjection extends AbstractBulkComputation {
 
+    public static final String SCHEMAS_PARAM = "schemas";
+
+    public static final String XPATHS_PARAM = "xpaths";
+
     protected ByteArrayOutputStream out;
 
     public CSVProjection() {
@@ -57,14 +65,25 @@ public class CSVProjection extends AbstractBulkComputation {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
         out = new ByteArrayOutputStream();
         DocumentRef[] refs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
-        DocumentModelList list = session.getDocuments(refs);
+
+        List<String> schemas = properties.get(SCHEMAS_PARAM) != null ? (List<String>) properties.get(SCHEMAS_PARAM)
+                : new ArrayList<>();
+        List<String> xpaths = properties.get(XPATHS_PARAM) != null ? (List<String>) properties.get(XPATHS_PARAM)
+                : new ArrayList<>();
+
+        DocumentModelList docs = session.getDocuments(refs);
+
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
-        Writer<DocumentModelList> writer = registry.getWriter(null, DocumentModelList.class, TEXT_CSV_TYPE);
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, schemas);
+        renderingCtx.setParameterValues(XPATHS_CTX_DATA, xpaths);
+        Writer<DocumentModelList> writer = registry.getWriter(renderingCtx, DocumentModelList.class, TEXT_CSV_TYPE);
         try {
-            writer.write(list, DocumentModelList.class, null, TEXT_CSV_TYPE, out);
+            writer.write(docs, DocumentModelList.class, null, TEXT_CSV_TYPE, out);
         } catch (IOException e) {
             getLog().error(e, e);
         }

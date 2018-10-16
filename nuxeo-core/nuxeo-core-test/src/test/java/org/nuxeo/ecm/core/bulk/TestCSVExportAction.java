@@ -18,10 +18,29 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_PROXY_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_TRASHED_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_VERSION_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LAST_MODIFIED_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LOCK_CREATED_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LOCK_OWNER_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PARENT_REF_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PATH_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PROXY_TARGET_ID_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.REPOSITORY_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.STATE_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TITLE_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TYPE_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.UID_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.VERSIONABLE_ID_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.VERSION_LABEL_FIELD;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +77,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
@@ -96,10 +117,49 @@ public class TestCSVExportAction {
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         assertEquals(11, lines.size());
 
+        // Check header
+        assertArrayEquals(new String[] { REPOSITORY_FIELD, UID_FIELD, PATH_FIELD, TYPE_FIELD, STATE_FIELD,
+                PARENT_REF_FIELD, IS_CHECKED_OUT_FIELD, IS_VERSION_FIELD, IS_PROXY_FIELD, PROXY_TARGET_ID_FIELD,
+                VERSIONABLE_ID_FIELD, CHANGE_TOKEN_FIELD, IS_TRASHED_FIELD, TITLE_FIELD, VERSION_LABEL_FIELD,
+                LOCK_OWNER_FIELD, LOCK_CREATED_FIELD, LAST_MODIFIED_FIELD }, lines.get(0).split(","));
+
         // file is sorted
         List<String> sortedLines = new ArrayList<>(lines);
         Collections.sort(sortedLines);
         assertEquals(lines, sortedLines);
+    }
+
+    @Test
+    public void testExportWithParams() throws Exception {
+        BulkCommand command = createCommandWithParams();
+        bulkService.submit(command);
+        assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
+
+        BulkStatus status = bulkService.getStatus(command.getId());
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(10, status.getProcessed());
+        assertEquals(10, status.getTotal());
+
+        Blob blob = getBlob(command.getId());
+        // file is ziped
+        assertNotNull(blob);
+        try (InputStream is = new FileInputStream(blob.getFile())) {
+            assertTrue(ZipUtils.isValid(is));
+        }
+
+        // file has the correct number of lines
+        File file = getUnzipFile(command, blob);
+
+        List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
+        // Check header
+        List<String> header = Arrays.asList(lines.get(0).split(","));
+        assertArrayEquals(
+                new String[] { "dc:contributors", "dc:coverage", "dc:created", "dc:creator", "dc:description",
+                        "dc:expired", "dc:format", "dc:issued", "dc:language", "dc:lastContributor", "dc:modified",
+                        "dc:nature", "dc:publisher", "dc:rights", "dc:source", "dc:subjects", "dc:title", "dc:valid",
+                        "cpx:complex/foo" },
+                header.subList(18, 37).toArray());
+
     }
 
     protected File getUnzipFile(BulkCommand command, Blob blob) throws IOException {
@@ -144,6 +204,18 @@ public class TestCSVExportAction {
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
+                                                                         .build();
+    }
+
+    protected BulkCommand createCommandWithParams() {
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                                         .user(session.getPrincipal().getName())
+                                                                         .param("schemas",
+                                                                                 ImmutableList.of("dublincore"))
+                                                                         .param("xpaths",
+                                                                                 ImmutableList.of("cpx:complex/foo"))
                                                                          .build();
     }
 

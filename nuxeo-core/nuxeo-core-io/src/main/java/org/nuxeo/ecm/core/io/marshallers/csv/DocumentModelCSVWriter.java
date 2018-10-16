@@ -45,6 +45,10 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 
+    public static final String SCHEMAS_CTX_DATA = "schemas";
+
+    public static final String XPATHS_CTX_DATA = "xpaths";
+
     public DocumentModelCSVWriter() {
         super();
     }
@@ -52,54 +56,30 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
     @Override
     protected void write(DocumentModel entity, CSVPrinter printer) throws IOException {
         writeSystem(entity, printer);
-        List<String> schemas = new ArrayList<>(Arrays.asList(entity.getSchemas()));
+        // If no specific schema is defined, all schemas are written
+        List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
+                : Arrays.asList(entity.getSchemas());
+        List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
         Collections.sort(schemas);
         for (String schema : schemas) {
             writeSchema(entity, schema, printer);
+        }
+        if (xpaths != null) {
+            Collections.sort(xpaths);
+            for (String xpath : xpaths) {
+                writeProperty(entity, xpath, printer);
+            }
         }
     }
 
     @Override
     protected void writeHeader(DocumentModel entity, CSVPrinter printer) throws IOException {
-        writeDocumentModelHeader(entity, printer);
+        DocumentModelCSVHeader.printSystemPropertiesHeader(printer);
+        List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
+                : Arrays.asList(entity.getSchemas());
+        List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
+        DocumentModelCSVHeader.printPropertiesHeader(schemas, xpaths, printer);
         printer.println();
-    }
-
-    public void writeDocumentModelHeader(DocumentModel docModel, CSVPrinter printer) throws IOException {
-        printer.print("repository");
-        printer.print("uid");
-        printer.print("path");
-        printer.print("type");
-        printer.print("state");
-        printer.print("parentRef");
-        printer.print("isCheckedOut");
-        printer.print("isVersion");
-        printer.print("isProxy");
-        printer.print("proxyTargetId");
-        printer.print("versionableId");
-        printer.print("changeToken");
-        printer.print("isTrashed");
-        printer.print("title");
-        printer.print("versionLabel");
-        printer.print("lockOwner");
-        printer.print("lockCreated");
-        printer.print("lastModified");
-        List<String> schemas = new ArrayList<>(Arrays.asList(docModel.getSchemas()));
-        Collections.sort(schemas);
-        for (String schemaName : schemas) {
-            Schema schema = schemaManager.getSchema(schemaName);
-            List<Field> fields = new ArrayList<>(schema.getFields());
-            fields.sort(Comparator.comparing(o -> o.getName().getLocalName()));
-            String prefix = schema.getNamespace().prefix;
-            if (StringUtils.isBlank(prefix)) {
-                prefix = schema.getName();
-            }
-            prefix += ":";
-            for (Field f : fields) {
-                String prefixedName = prefix + f.getName().getLocalName();
-                printer.print(prefixedName);
-            }
-        }
     }
 
     protected void writeSystem(DocumentModel doc, CSVPrinter printer) throws IOException {
@@ -139,22 +119,25 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
     }
 
     protected void writeSchema(DocumentModel entity, String schemaName, CSVPrinter printer) throws IOException {
-        Writer<Property> propertyWriter = registry.getWriter(null, Property.class, TEXT_CSV_TYPE);
         // provides the current document to the property writer
         Schema schema = schemaManager.getSchema(schemaName);
         List<Field> fields = new ArrayList<>(schema.getFields());
+        // fields are sorted for reproducibility
         fields.sort(Comparator.comparing(o -> o.getName().getLocalName()));
         String prefix = schema.getNamespace().prefix;
         if (StringUtils.isBlank(prefix)) {
             prefix = schema.getName();
         }
         prefix += ":";
-        // fields are sorted for reproducibility
         for (Field field : fields) {
-            String prefixedName = prefix + field.getName().getLocalName();
-            Property property = entity.getProperty(prefixedName);
-            propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE,
-                    new OutputStreamWithCSVWriter(printer));
+            writeProperty(entity, prefix + field.getName().getLocalName(), printer);
         }
+    }
+
+    protected void writeProperty(DocumentModel entity, String xpath, CSVPrinter printer) throws IOException {
+        Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, TEXT_CSV_TYPE);
+        Property property = entity.getProperty(xpath);
+        propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE,
+                new OutputStreamWithCSVWriter(printer));
     }
 }
