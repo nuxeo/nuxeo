@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 
 import java.io.IOException;
 
