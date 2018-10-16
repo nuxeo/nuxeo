@@ -19,28 +19,28 @@
 
 package org.nuxeo.ecm.diff.content.restlet;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -49,9 +49,7 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -64,19 +62,11 @@ import org.restlet.data.Status;
  * @author Antoine Taillefer
  * @since 5.6
  */
-@Name("contentDiffRestlet")
-@Scope(ScopeType.EVENT)
 public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
     private static final Log log = LogFactory.getLog(ContentDiffRestlet.class);
 
-    @In(create = true)
-    protected NavigationContext navigationContext;
-
-    @In(create = true)
-    protected transient LocaleSelector localeSelector;
-
-    protected CoreSession documentManager;
+    protected Locale locale;
 
     protected DocumentModel leftDoc;
 
@@ -96,7 +86,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         // Get subPath for other content diff blobs, such as images
         List<String> segments = req.getResourceRef().getSegments();
         StringBuilder sb = new StringBuilder();
-        for (int i = 7; i < segments.size(); i++) {
+        int pos = segments.indexOf("restAPI") + 6;
+        for (int i = pos; i < segments.size(); i++) {
             sb.append(segments.get(i));
             sb.append("/");
         }
@@ -108,9 +99,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         ContentDiffConversionType conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
 
         // Check locale
-        String localeParam = getQueryParamValue(req, ContentDiffHelper.LOCALE_URL_PARAM_NAME,
-                localeSelector.getLocaleString());
-        localeSelector.setLocaleString(localeParam);
+        String localeParam = getQueryParamValue(req, ContentDiffHelper.LOCALE_URL_PARAM_NAME, null);
+        locale = isBlank(localeParam) ? Locale.getDefault() : LocaleUtils.toLocale(localeParam);
 
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
@@ -131,15 +121,9 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             handleError(res, "You must specify a right document id.");
             return;
         }
-        try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
+        try (CloseableCoreSession documentManager = CoreInstance.openCoreSession(repo)) {
             leftDoc = documentManager.getDocument(new IdRef(leftDocId));
             rightDoc = documentManager.getDocument(new IdRef(rightDocId));
-        } catch (NuxeoException e) {
-            handleError(res, e);
-            return;
-        }
 
         List<Blob> contentDiffBlobs = initCachedContentDiffBlobs(res, xpath, conversionType);
         if (CollectionUtils.isEmpty(contentDiffBlobs)) {
@@ -181,10 +165,10 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             res.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
         }
-        try {
+
             downloadService.downloadBlob(request, response, leftDoc, xpath, blob, blob.getFilename(), reason,
                     extendedInfos, inline, byteRange -> setEntityToBlobOutput(fblob, byteRange, res));
-        } catch (IOException e) {
+        } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
     }
@@ -202,11 +186,9 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         List<Blob> contentDiffBlobs;
         try {
             if (xpath.equals(ContentDiffHelper.DEFAULT_XPATH)) {
-                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, conversionType,
-                        localeSelector.getLocale());
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, conversionType, locale);
             } else {
-                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, xpath, conversionType,
-                        localeSelector.getLocale());
+                contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, xpath, conversionType, locale);
             }
         } catch (NuxeoException ce) {
             handleNoContentDiff(res, xpath, ce);

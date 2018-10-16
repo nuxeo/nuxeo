@@ -12,7 +12,7 @@
 
     <restletPlugin name="contentDiff"
       class="org.nuxeo.ecm.diff.content.restlet.ContentDiffRestlet"
-      enabled="true" useSeam="true">
+      enabled="true" useSeam="false">
       <urlPatterns>
         <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/
         </urlPattern>
