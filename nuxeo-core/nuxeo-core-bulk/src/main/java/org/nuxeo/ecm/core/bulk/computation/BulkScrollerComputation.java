@@ -105,8 +105,9 @@ public class BulkScrollerComputation extends AbstractComputation {
     }
 
     protected void processRecord(ComputationContext context, Record record) {
+        BulkCommand command = null;
         try {
-            BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
+            command = BulkCodecs.getCommandCodec().decode(record.getData());
             String commandId = command.getId();
             int bucketSize = Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
             if (bucketSize > scrollBatchSize) {
@@ -153,7 +154,13 @@ public class BulkScrollerComputation extends AbstractComputation {
                 throw new NuxeoException(e);
             }
         } catch (NuxeoException e) {
-            log.error("Discard invalid record: " + record, e);
+            if (command != null) {
+                log.error("Invalid command produces an empty document set: " + command, e);
+                updateStatusAfterScroll(context, command.getId(), 0);
+            } else {
+                log.error("Discard invalid record: " + record, e);
+            }
+
         }
         context.askForCheckpoint();
     }
