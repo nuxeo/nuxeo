@@ -34,3 +34,7 @@ elasticsearch.index.translog.durability=async
 nuxeo.core.bulk.scroller.concurrencyMax=6
 nuxeo.core.bulk.status.concurrencyMax=4
 nuxeo.core.bulk.done.concurrencyMax=2
+
+# Scale audit writing
+nuxeo.stream.audit.batch.size=1000
+nuxeo.stream.audit.batch.threshold.ms=1000
