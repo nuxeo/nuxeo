@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -58,8 +60,22 @@ import org.w3c.dom.Element;
  * </ul>
  *
  * @author tiry
+ * @deprecated since 10.3, will be removed
  */
+@Deprecated
 public class BaseNuxeoRestlet extends Restlet {
+
+    private static final Log log = LogFactory.getLog(BaseNuxeoRestlet.class);
+
+    protected static boolean DEPRECATION_DONE;
+
+    protected void logDeprecation() {
+        if (!DEPRECATION_DONE) {
+            DEPRECATION_DONE = true;
+            log.warn("Restlet endpoints (" + getClass().getSimpleName()
+                    + ") are DEPRECATED since Nuxeo 10.3 and will be removed in a future version");
+        }
+    }
 
     // error handling
 

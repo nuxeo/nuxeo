@@ -57,6 +57,7 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
 
         DOMDocumentFactory domFactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domFactory.createDocument();

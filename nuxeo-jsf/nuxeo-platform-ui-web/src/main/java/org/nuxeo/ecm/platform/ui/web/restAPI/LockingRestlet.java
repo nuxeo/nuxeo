@@ -65,6 +65,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
+        logDeprecation();
 
         String repoId = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");

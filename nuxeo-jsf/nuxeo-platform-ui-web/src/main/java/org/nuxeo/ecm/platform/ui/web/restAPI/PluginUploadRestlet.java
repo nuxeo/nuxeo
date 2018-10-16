@@ -51,6 +51,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String returnCode = "TRANSF_ERROR";

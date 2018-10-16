@@ -37,7 +37,9 @@ import org.restlet.Response;
  * Base class for stateless restlet, i.e. Restlets that don't use Seam.
  *
  * @author tiry
+ * @deprecated since 10.3, will be removed
  */
+@Deprecated
 public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
     protected CoreSession session;

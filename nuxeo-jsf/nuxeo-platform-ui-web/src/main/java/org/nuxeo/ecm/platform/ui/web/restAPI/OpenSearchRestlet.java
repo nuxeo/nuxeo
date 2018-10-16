@@ -79,6 +79,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        logDeprecation();
         try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
             // read the search term passed as the 'q' request parameter
             String keywords = getQueryParamValue(req, "q", " ");
