@@ -65,6 +65,12 @@ public class CatCommand extends Command {
                                 .hasArg()
                                 .argName("CODEC")
                                 .build());
+        options.addOption(Option.builder()
+                                .longOpt("data-size")
+                                .desc("Maximum size of message data to render")
+                                .hasArg()
+                                .argName("L")
+                                .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder()
@@ -78,6 +84,7 @@ public class CatCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int limit = Integer.parseInt(cmd.getOptionValue("lines", "-1"));
+        int dataSize = Integer.parseInt(cmd.getOptionValue("data-size", "256"));
         String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
@@ -86,7 +93,7 @@ public class CatCommand extends Command {
         if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
             avroSchemaStorePath = NUXEO_SCHEMA_STORE;
         }
-        cat(manager, name, group, limit, getRecordRenderer(render, avroSchemaStorePath), codec);
+        cat(manager, name, group, limit, getRecordRenderer(render, avroSchemaStorePath, dataSize), codec);
         return true;
     }
 

@@ -40,6 +40,8 @@ import org.nuxeo.lib.stream.log.LogRecord;
  */
 public abstract class Renderer implements Consumer<LogRecord<Record>> {
 
+    protected int dataSize = 256;
+
     public abstract void header();
 
     public abstract void footer();
@@ -65,7 +67,7 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
         } catch (IllegalStateException e) {
             errorMessage = e.getMessage() + " data: ";
         }
-        return errorMessage + record.dataOverview(256);
+        return errorMessage + record.dataOverview(dataSize);
 
     }
     protected String renderAvroMessage(AvroSchemaStore store, Record record) {
