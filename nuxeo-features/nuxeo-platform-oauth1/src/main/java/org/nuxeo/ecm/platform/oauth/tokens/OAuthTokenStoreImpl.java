@@ -142,13 +142,15 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     protected NuxeoOAuthToken getTokenFromDirectory(String token) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = session.getEntry(token);
-            if (entry == null) {
-                return null;
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.getEntry(token);
+                if (entry == null) {
+                    return null;
+                }
+                return getTokenFromDirectoryEntry(entry);
             }
-            return getTokenFromDirectoryEntry(entry);
-        }
+        });
     }
 
     protected NuxeoOAuthToken getTokenFromDirectoryEntry(DocumentModel entry) {
@@ -157,17 +159,19 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(NuxeoOAuthToken aToken) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = session.getEntry(aToken.getToken());
-            if (entry == null) {
-                entry = session.createEntry(Collections.singletonMap("token", aToken.getToken()));
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.getEntry(aToken.getToken());
+                if (entry == null) {
+                    entry = session.createEntry(Collections.singletonMap("token", aToken.getToken()));
+                }
+
+                aToken.updateEntry(entry);
+                session.updateEntry(entry);
+
+                return getTokenFromDirectoryEntry(session.getEntry(aToken.getToken()));
             }
-
-            aToken.updateEntry(entry);
-            session.updateEntry(entry);
-
-            return getTokenFromDirectoryEntry(session.getEntry(aToken.getToken()));
-        }
+        });
     }
 
     @Override
