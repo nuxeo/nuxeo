@@ -33,6 +33,7 @@
     <module>nuxeo-runtime-kv</module>
     <module>nuxeo-runtime-pubsub</module>
     <module>nuxeo-runtime-migration</module>
+    <module>nuxeo-runtime-aws</module>
     <module>nuxeo-runtime-test</module>
     <module>nuxeo-launcher-commons</module>
     <module>nuxeo-connect-standalone</module>
