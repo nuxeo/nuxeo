@@ -23,6 +23,7 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -44,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.MutableStartupConfiguration;
+import org.apache.directory.server.core.configuration.PartitionConfiguration;
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.jndi.CoreContextFactory;
 import org.apache.directory.server.core.partition.PartitionNexus;
@@ -184,6 +186,12 @@ public class MockLdapServer implements ContextProvider {
     }
 
     private void initConfiguration() throws NamingException {
+        MutablePartitionConfiguration systemPartition = new MutablePartitionConfiguration();
+        systemPartition.setId(PartitionConfiguration.SYSTEM_PARTITION_NAME);
+        systemPartition.setSuffix("ou=system");
+        systemPartition.setIndexedAttributes(Collections.singleton("objectClass"));
+        cfg.setSystemPartitionConfiguration(systemPartition);
+
         // Create the partition for the tests
         MutablePartitionConfiguration testPartition = new MutablePartitionConfiguration();
         testPartition.setId("NuxeoTestLdapServer");

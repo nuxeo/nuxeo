@@ -12,6 +12,9 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <!-- Set level to ERROR to ignore warning explaining that admin password needs to be changed,
+         as it cannot be changed before startup. -->
+    <Logger name="org.apache.directory.server.core.DefaultDirectoryService" level="error"/>
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
