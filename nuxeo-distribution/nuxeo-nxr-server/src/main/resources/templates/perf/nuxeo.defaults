@@ -26,7 +26,6 @@ nuxeo.cache.type=memory
 elasticsearch.indexing.maxThreads=6
 elasticsearch.reindex.bucketReadSize=1000
 elasticsearch.reindex.bucketWriteSize=200
-#elasticsearch.indexing.clearCompletedAfterSeconds=30
 elasticsearch.adminCenter.displayClusterInfo=true
 elasticsearch.index.translog.durability=async
 
@@ -38,3 +37,7 @@ nuxeo.core.bulk.done.concurrencyMax=2
 # Scale audit writing
 nuxeo.stream.audit.batch.size=1000
 nuxeo.stream.audit.batch.threshold.ms=1000
+
+# Enable longer work duration
+kafka.max.poll.interval.ms=600000
+kafka.max.poll.records=2
