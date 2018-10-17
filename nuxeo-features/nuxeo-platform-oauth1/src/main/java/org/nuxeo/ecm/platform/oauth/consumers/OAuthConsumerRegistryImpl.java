@@ -67,55 +67,63 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
 
     protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = session.getEntry(consumerKey);
-            if (entry == null) {
-                return null;
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.getEntry(consumerKey);
+                if (entry == null) {
+                    return null;
+                }
+                return NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
             }
-            return NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
-        }
+        });
     }
 
     @Override
     public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = session.createEntry(Collections.singletonMap("consumerKey", consumer.consumerKey));
-            consumer.asDocumentModel(entry);
-            session.updateEntry(entry);
-            consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null);
-            return consumer;
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.createEntry(
+                        Collections.singletonMap("consumerKey", consumer.consumerKey));
+                consumer.asDocumentModel(entry);
+                session.updateEntry(entry);
+                return NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null);
+            }
+        });
     }
 
     @Override
     public void deleteConsumer(String consumerKey) {
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(DIRECTORY_NAME)) {
-                session.deleteEntry(consumerKey);
+        Framework.doPrivileged(() -> {
+            try {
+                DirectoryService ds = Framework.getService(DirectoryService.class);
+                try (Session session = ds.open(DIRECTORY_NAME)) {
+                    session.deleteEntry(consumerKey);
+                }
+            } catch (DirectoryException e) {
+                log.error("Unable to delete consumer " + consumerKey, e);
             }
-        } catch (DirectoryException e) {
-            log.error("Unable to delete consumer " + consumerKey, e);
-        }
+        });
     }
 
     @Override
     public List<NuxeoOAuthConsumer> listConsumers() {
-
-        List<NuxeoOAuthConsumer> result = new ArrayList<NuxeoOAuthConsumer>();
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(DIRECTORY_NAME)) {
-                DocumentModelList entries = session.query(Collections.emptyMap());
-                for (DocumentModel entry : entries) {
-                    result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
+        return Framework.doPrivileged(() -> {
+            try {
+                DirectoryService ds = Framework.getService(DirectoryService.class);
+                try (Session session = ds.open(DIRECTORY_NAME)) {
+                    DocumentModelList entries = session.query(Collections.emptyMap());
+                    List<NuxeoOAuthConsumer> result = new ArrayList<NuxeoOAuthConsumer>();
+                    for (DocumentModel entry : entries) {
+                        result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
+                    }
+                    return result;
                 }
+            } catch (DirectoryException e) {
+                log.error("Error while fetching consumer directory", e);
+                return Collections.emptyList();
             }
-        } catch (DirectoryException e) {
-            log.error("Error while fetching consumer directory", e);
-        }
-        return result;
+        });
     }
 
 }
