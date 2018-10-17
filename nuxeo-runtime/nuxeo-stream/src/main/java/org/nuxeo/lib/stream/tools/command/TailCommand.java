@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.tools.command;
 
+import static org.nuxeo.lib.stream.tools.command.CatCommand.NUXEO_SCHEMA_STORE;
+
 import java.nio.file.Paths;
 import java.time.Duration;
 
@@ -31,8 +33,6 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
-
-import static org.nuxeo.lib.stream.tools.command.CatCommand.NUXEO_SCHEMA_STORE;
 
 /**
  * Output the last records on a Log.
@@ -74,6 +74,13 @@ public class TailCommand extends Command {
                                 .argName("CODEC")
                                 .build());
         options.addOption(
+                Option.builder()
+                      .longOpt("data-size")
+                      .desc("Maximum size of message data to render")
+                      .hasArg()
+                      .argName("L")
+                      .build());
+        options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder("t")
                                 .longOpt("timeout")
@@ -92,6 +99,7 @@ public class TailCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int lines = Integer.parseInt(cmd.getOptionValue("lines", "10"));
+        int dataSize = Integer.parseInt(cmd.getOptionValue("data-size", "256"));
         String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
@@ -101,9 +109,9 @@ public class TailCommand extends Command {
             avroSchemaStorePath = NUXEO_SCHEMA_STORE;
         }
         int timeout = Integer.parseInt(cmd.getOptionValue("timeout", "120"));
-        tail(manager, name, group, lines, getRecordRenderer(render, avroSchemaStorePath), codec);
+        tail(manager, name, group, lines, getRecordRenderer(render, avroSchemaStorePath, dataSize), codec);
         if (cmd.hasOption("follow")) {
-            follow(manager, name, group, getRecordRenderer(render, avroSchemaStorePath), timeout, codec);
+            follow(manager, name, group, getRecordRenderer(render, avroSchemaStorePath, dataSize), timeout, codec);
         }
         return true;
     }

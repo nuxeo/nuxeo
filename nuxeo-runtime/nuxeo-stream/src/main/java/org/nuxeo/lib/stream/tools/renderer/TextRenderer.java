@@ -34,12 +34,13 @@ public class TextRenderer extends Renderer {
 
     protected final FileAvroSchemaStore schemaStore;
 
-    public TextRenderer(String avroSchemaStorePath) {
+    public TextRenderer(String avroSchemaStorePath, int dataSize) {
         if (avroSchemaStorePath != null) {
             schemaStore = new FileAvroSchemaStore(Paths.get(avroSchemaStorePath));
         } else {
             schemaStore = null;
         }
+        this.dataSize = dataSize;
     }
 
     @Override
