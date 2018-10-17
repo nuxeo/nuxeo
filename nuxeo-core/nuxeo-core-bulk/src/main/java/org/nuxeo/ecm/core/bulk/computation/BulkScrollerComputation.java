@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
@@ -142,7 +143,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                     }
                     updateStatusAfterScroll(context, commandId, documentCount);
-                } catch (IllegalArgumentException | QueryParseException e) {
+                } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
                     log.error("Invalid query results in an empty document set: " + command.toString(), e);
                     updateStatusAfterScroll(context, commandId, 0);
                 } finally {

@@ -41,6 +41,7 @@
       <prefetch>common.icon, dc:title, dc:description, dc:created, dc:modified,
         dc:lastContributor, dc:creator</prefetch>
       <clearComplexPropertyBeforeSet>true</clearComplexPropertyBeforeSet> <!-- false is DEPRECATED since 9.3 -->
+      <allowVersionWriteForDublinCore>false</allowVersionWriteForDublinCore> <!-- true is DEPRECATED since 10.3 -->
     </configuration>
   </extension>
 

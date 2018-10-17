@@ -278,28 +278,42 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (!isVersion()) {
             throw new PropertyException("Cannot write readonly property: " + name);
         }
-        if (!name.startsWith(DC_PREFIX) && !getTopLevelSchema(property).isVersionWritabe()) {
+        if (getTopLevelSchema(property).isVersionWritabe()) {
+            // do write
+            return false;
+        }
+        if (!name.startsWith(DC_PREFIX)) {
             throw new PropertyException("Cannot set property on a version: " + name);
         }
         // ignore write if value can quickly be detected as unchanged
         Object value = property.getValueForWrite();
-        Object oldValue;
         Type type = property.getType();
+        boolean equals;
         if (type.isSimpleType()) {
-            oldValue = state.getSingle(name);
+            Object oldValue = state.getSingle(name);
+            equals = Objects.deepEquals(value, oldValue);
         } else if (type.isListType() && ((ListType) type).getFieldType().isSimpleType()) {
-            oldValue = state.getArray(name);
+            Object[] oldValue = state.getArray(name);
+            if (value == null && oldValue != null && oldValue.length == 0) {
+                // empty array and null are the same
+                equals = true;
+            } else {
+                equals = Objects.deepEquals(value, oldValue);
+            }
         } else {
             // complex property or complex list, no quick way to detect changes
-            // do write
-            return false;
+            equals = false;
         }
-        if (!Objects.deepEquals(value, oldValue)) {
-            // do write
-            return false;
+        if (equals) {
+            // unchanged, ignore write even though strictly speaking writing the version is not allowed
+            return true;
+        } else {
+            if (Framework.getService(SchemaManager.class).getAllowVersionWriteForDublinCore()) {
+                // do write (compatibility with old Nuxeo versions that had this bug)
+                return false;
+            }
+            throw new PropertyException("Cannot set property on a version: " + name);
         }
-        // ignore attempt to write identical value
-        return true;
     }
 
     /**

@@ -32,7 +32,7 @@ from release import Release, ReleaseInfo
 from terminalsize import get_terminal_size
 
 
-CONNECT_TEST_URL = "https://nos-test-connect.nos.nuxeo.com/nuxeo"
+CONNECT_TEST_URL = "https://nos-preprod-connect.nuxeocloud.com/nuxeo"
 CONNECT_PROD_URL = "https://connect.nuxeo.com/nuxeo"
 
 

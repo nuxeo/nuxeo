@@ -27,12 +27,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
@@ -63,8 +65,22 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             DocumentRef[] docRefs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
             DocumentModelList docs = session.getDocuments(docRefs);
-            docs.forEach(doc -> properties.forEach(doc::setPropertyValue));
-            session.saveDocuments(docs.toArray(new DocumentModel[0]));
+            for (DocumentModel doc : docs) {
+                for (Entry<String, Serializable> es : properties.entrySet()) {
+                    try {
+                        doc.setPropertyValue(es.getKey(), es.getValue());
+                    } catch (PropertyException e) {
+                        // TODO send to error stream
+                        getLog().warn("Cannot write property: " + es.getKey() + " of document: " + doc.getId(), e);
+                    }
+                }
+                try {
+                    session.saveDocument(doc);
+                } catch (PropertyException e) {
+                    // TODO send to error stream
+                    getLog().warn("Cannot save document: " + doc.getId(), e);
+                }
+            }
         }
     }
 

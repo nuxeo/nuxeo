@@ -97,4 +97,12 @@ public interface SchemaManager extends TypeProvider {
      */
     boolean getClearComplexPropertyBeforeSet();
 
+    /**
+     * Whether we allow to write the dublincore schema on a version.
+     *
+     * @return {@code true} if write to the dublincore schema of a version is allowed
+     * @since 10.3
+     */
+    boolean getAllowVersionWriteForDublinCore();
+
 }

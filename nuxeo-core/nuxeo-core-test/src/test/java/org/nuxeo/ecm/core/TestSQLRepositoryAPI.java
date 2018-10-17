@@ -79,6 +79,7 @@ import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -3746,6 +3747,43 @@ public class TestSQLRepositoryAPI {
         assertEquals("t1", ver.getProperty("dublincore", "title"));
         assertEquals("approved", ver.getCurrentLifeCycleState());
         assertEquals(cal3, ver.getProperty("dublincore", "issued"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-version-write-dublincore-allowed.xml")
+    public void testVersionWriteDublinCoreAllowed() {
+        doTestVersionWriteDublinCore(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-version-write-dublincore-forbidden.xml")
+    public void testVersionWriteDublinCoreForbidden() {
+        doTestVersionWriteDublinCore(false);
+    }
+
+    @Test
+    public void testVersionWriteDublinCoreDefault() {
+        doTestVersionWriteDublinCore(false);
+    }
+
+    protected void doTestVersionWriteDublinCore(boolean expectWritable) {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+        DocumentModel ver = session.getDocument(verRef);
+        ver.setPropertyValue("dc:title", "ver title");
+        try {
+            ver = session.saveDocument(ver);
+            if (!expectWritable) {
+                fail("should fail to save");
+            }
+        } catch (PropertyException e) {
+            if (expectWritable) {
+                throw e;
+            } else {
+                assertTrue(e.getMessage(), e.getMessage().equals("Cannot set property on a version: dc:title"));
+            }
+        }
     }
 
     /**
