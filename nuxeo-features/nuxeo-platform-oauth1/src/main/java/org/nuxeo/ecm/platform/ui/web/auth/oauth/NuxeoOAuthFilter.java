@@ -275,7 +275,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registered");
+            log.debug("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -286,7 +286,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         try {
             validator.validateMessage(message, accessor);
         } catch (OAuthException | URISyntaxException | IOException e) {
-            log.error("Error while validating OAuth signature", e);
+            log.debug("Error while validating OAuth signature", e);
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
             httpResponse.sendError(errCode, "Can not validate signature");
             return;
@@ -326,7 +326,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
 
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registered");
+            log.debug("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -344,7 +344,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         try {
             validator.validateMessage(message, accessor);
         } catch (OAuthException | URISyntaxException | IOException e) {
-            log.error("Error while validating OAuth signature", e);
+            log.debug("Error while validating OAuth signature", e);
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
             httpResponse.sendError(errCode, "Can not validate signature");
             return;
@@ -391,7 +391,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
             httpResponse.getWriter().write(sb.toString());
         } else {
-            log.error("Verifier does not match : can not continue");
+            log.debug("Verifier does not match : can not continue");
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Verifier is not correct");
         }
     }
@@ -420,7 +420,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
-            log.error("Consumer " + consumerKey + " is unknown, can not authenticated");
+            log.debug("Consumer " + consumerKey + " is unknown, can not authenticated");
             httpResponse.sendError(errCode, "Consumer " + consumerKey + " is not registered");
             return null;
         } else {
@@ -458,7 +458,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             try {
                 validator.validateMessage(message, accessor);
                 if (targetLogin != null) {
-                    LoginContext loginContext = NuxeoAuthenticationFilter.loginAs(targetLogin);
+                    LoginContext loginContext = Framework.loginAsUser(targetLogin);
                     return loginContext;
                 } else {
                     int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.USER_REFUSED);
@@ -466,7 +466,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     return null;
                 }
             } catch (OAuthException | URISyntaxException | IOException | LoginException e) {
-                log.error("Error while validating OAuth signature", e);
+                log.debug("Error while validating OAuth signature", e);
                 int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
                 httpResponse.sendError(errCode, "Can not validate signature");
             }
