@@ -31,6 +31,7 @@ object ScnBulkUpdateDocuments {
         "dc:description", "bulk")
         .asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
       .exec(NuxeoBulk.waitForAction("${commandId}"))
+      .exec(NuxeoRest.waitForAsyncJobs())
   }
 
 }
