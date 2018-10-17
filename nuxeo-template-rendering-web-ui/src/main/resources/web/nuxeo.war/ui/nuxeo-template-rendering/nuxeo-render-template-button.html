@@ -23,11 +23,7 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-render-template-button">
   <template>
-    <style include="iron-flex iron-flex-alignment">
-      :host {
-        display: inline-block;
-      }
-
+    <style include="iron-flex iron-flex-alignment nuxeo-action-button-styles">
       .container {
         padding: 1em 0 2em;
       }
@@ -43,9 +39,11 @@ limitations under the License.
 
     <nuxeo-operation id="getTemplatesOp" op="[[filterOp]]"></nuxeo-operation>
     <nuxeo-operation id="renderTemplateOp" op="[[renderOp]]"></nuxeo-operation>
-    <paper-icon-button noink icon="[[icon]]" src="[[iconSrc]]" id="render" on-tap="_toggleDialog"></paper-icon-button>
+    <div id="render" class="action" on-tap="_toggleDialog">
+      <paper-icon-button noink icon="[[icon]]" src="[[iconSrc]]"></paper-icon-button>
+      <span class="label" hidden$="[[!showLabel]]">[[i18n(label)]]</span>
+    </div>
     <paper-tooltip for="render">[[i18n(tooltip)]]</paper-tooltip>
-    <paper-toast id="toast"></paper-toast>
 
     <nuxeo-dialog id="dialog" modal no-auto-focus>
       <h2>[[i18n('renderTemplateButton.dialog.heading')]]</h2>
@@ -120,6 +118,20 @@ limitations under the License.
          *    templateData: the templateData containing the parameters to be run
          **/
         renderOp: String,
+        /**
+         * `true` if the action should display the label, `false` otherwise.
+         **/
+         showLabel: {
+          type: Boolean,
+          value: false,
+        },
+        /**
+         * The label to be displayed on menus.
+         **/
+         label: {
+          type: String,
+          value: 'renderTemplateButton.tooltip'
+        },
         /**
          * The label for the tooltip.
          **/
@@ -233,12 +245,11 @@ limitations under the License.
       },
 
       _toast: function(msg, duration) {
-        if (this.$.toast.opened) {
-          this.$.toast.close();
-        }
-        this.$.toast.duration = typeof duration === 'undefined' ? 3000 : duration;
-        this.$.toast.text = msg;
-        this.$.toast.open();
+        this.fire('notify', {
+          message: msg,
+          close: true,
+          duration: duration
+        });
       },
 
       _download: function(response) {

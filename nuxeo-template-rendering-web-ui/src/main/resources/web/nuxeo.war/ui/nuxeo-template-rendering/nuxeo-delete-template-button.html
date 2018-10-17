@@ -23,11 +23,7 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-delete-template-button">
   <template>
-    <style include="nuxeo-styles">
-      :host {
-        display: inline-block;
-      }
-
+    <style include="nuxeo-styles nuxeo-action-button-styles">
       .container {
         padding: 1em 0 2em;
       }
@@ -39,7 +35,10 @@ limitations under the License.
 
     <nuxeo-operation id="deleteTemplatesOp" op="TemplateProcessor.Detach"></nuxeo-operation>
     <nuxeo-document id="template" doc-path="[[document.path]]"></nuxeo-document>
-    <paper-icon-button id="delete" icon="icons:delete-sweep" on-tap="_toggleDialog" noink ></paper-icon-button>
+    <div id="delete" class="action" on-tap="_toggleDialog">
+      <paper-icon-button icon="icons:delete-sweep" noink ></paper-icon-button>
+      <span class="label" hidden$="[[!showLabel]]">[[i18n('deleteTemplateButton.tooltip')]]</span>
+    </div>
     <paper-tooltip for="delete">[[i18n('deleteTemplateButton.tooltip')]]</paper-tooltip>
 
     <nuxeo-dialog id="dialog" modal no-auto-focus>
@@ -69,7 +68,14 @@ limitations under the License.
         /**
          * The template to be deleted
          **/
-        document: Object
+        document: Object,
+        /**
+         * `true` if the action should display the label, `false` otherwise.
+         **/
+        showLabel: {
+          type: Boolean,
+          value: false,
+        }
       },
 
       _toggleDialog: function() {
