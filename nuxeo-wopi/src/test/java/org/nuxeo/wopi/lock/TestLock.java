@@ -224,15 +224,19 @@ public class TestLock {
             LockHelper.addLock(fileId, "foo");
             assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
 
-            // WOPI lock but not a WOPI user -> Write permission denied to john
+            // WOPI lock but not a WOPI request -> Write permission denied to john
             assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // WOPI lock and a WOPI user -> Write permission granted to john
+            // WOPI lock and a WOPI request -> Write permission granted to john
             // This is possible thanks to the WOPI lock security policy that grants access if the doc is locked by a
-            // WOPI client (existing WOPI lock) and the current principal is a WOPI user.
-            LockHelper.markAsWOPIUser(johnPrincipal);
-            assertTrue(LockHelper.isWOPIUser(johnPrincipal));
+            // WOPI client (existing WOPI lock) and the request originates from a WOPI client.
+            LockHelper.flagWOPIRequest();
+            assertTrue(LockHelper.isWOPIRequest());
             assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+
+            // Unflag request
+            LockHelper.unflagWOPIRequest();
+            assertFalse(LockHelper.isWOPIRequest());
         }
     }
 

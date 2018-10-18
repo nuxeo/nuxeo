@@ -26,7 +26,6 @@ import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_REPOSITORY;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_TIMESTAMP;
 import static org.nuxeo.wopi.Constants.LOCK_TTL;
-import static org.nuxeo.wopi.Constants.WOPI_USER;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -54,6 +52,11 @@ import org.nuxeo.wopi.FileInfo;
 public class LockHelper {
 
     private static final Logger log = LogManager.getLogger(LockHelper.class);
+
+    /**
+     * Flag to know if the request originated from a WOPI client.
+     */
+    protected static ThreadLocal<Boolean> isWOPIRequest = new ThreadLocal<>();
 
     private LockHelper() {
         // helper class
@@ -210,21 +213,24 @@ public class LockHelper {
     }
 
     /**
-     * Marks the given principal as a WOPI user.
+     * Returns {@code true} if the request originated from a WOPI client.
      */
-    public static void markAsWOPIUser(NuxeoPrincipal principal) {
-        synchronized (principal) { // NOSONAR
-            principal.getModel().putContextData(WOPI_USER, true);
-        }
+    public static boolean isWOPIRequest() {
+        return Boolean.TRUE.equals(isWOPIRequest.get());
     }
 
     /**
-     * Checks if the given principal is marked as a WOPI user.
+     * Flags the request as originating from a WOPI client.
      */
-    public static boolean isWOPIUser(NuxeoPrincipal principal) {
-        synchronized (principal) { // NOSONAR
-            return principal.getModel().getContextData(WOPI_USER) != null;
-        }
+    public static void flagWOPIRequest() {
+        isWOPIRequest.set(true);
+    }
+
+    /**
+     * Unflags the request as originating from a WOPI client.
+     */
+    public static void unflagWOPIRequest() {
+        isWOPIRequest.remove();
     }
 
     protected static Map<String, List<DocumentModel>> getExpiredLocks(Session session, String repository) {
