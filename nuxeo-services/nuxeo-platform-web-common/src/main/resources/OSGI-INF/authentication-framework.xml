@@ -115,19 +115,6 @@
   </extension-point>
 
 
-  <extension-point name="preFilter">
-  <documentation>
-    Contribute a filter class that will be executer just before the default Authentification Filter
-    This is pretty much the same as a standard filter, but you don't have to configure
-    all it's mapping since it will always be executed just before the default auth filter.
-
-    @author Thierry Delprat (td@nuxeo.com)
-  </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthPreFilterDescriptor" />
-  </extension-point>
-
-
   <extension-point name="loginScreen">
 
     <documentation>
