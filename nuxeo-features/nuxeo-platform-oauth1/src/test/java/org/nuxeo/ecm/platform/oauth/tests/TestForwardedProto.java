@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
-import org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuth1Authenticator;
 
 /**
  * @since 5.9.5
@@ -49,16 +49,16 @@ public class TestForwardedProto {
     @Test
     public void itCanReplaceRequestSchemeByTheOneInXFPHeader() throws Exception {
         HttpServletRequest req = mockRequestWithForwardedHeader(TEST_SITE_URL, HTTPS);
-        assertEquals("https://mysite.org/bla", NuxeoOAuthFilter.getRequestURL(req));
+        assertEquals("https://mysite.org/bla", NuxeoOAuth1Authenticator.getRequestURL(req));
 
         req = mockRequestWithForwardedHeader("https://mysite.org/bla", HTTPS);
-        assertEquals("https://mysite.org/bla", NuxeoOAuthFilter.getRequestURL(req));
+        assertEquals("https://mysite.org/bla", NuxeoOAuth1Authenticator.getRequestURL(req));
 
         req = mockRequestWithForwardedHeader(TEST_SITE_URL, null);
-        assertEquals(TEST_SITE_URL, NuxeoOAuthFilter.getRequestURL(req));
+        assertEquals(TEST_SITE_URL, NuxeoOAuth1Authenticator.getRequestURL(req));
 
         req = mockRequestWithForwardedHeader(TEST_SITE_URL, HTTP);
-        assertEquals(TEST_SITE_URL, NuxeoOAuthFilter.getRequestURL(req));
+        assertEquals(TEST_SITE_URL, NuxeoOAuth1Authenticator.getRequestURL(req));
 
     }
 
