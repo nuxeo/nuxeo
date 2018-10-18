@@ -170,7 +170,7 @@
     <selenium.version>2.45.0</selenium.version>
     <cxf.version>3.1.3</cxf.version>
     <cxf.nx.version>3.1.3-NX2</cxf.nx.version>
-    <pdfbox.version>1.8.15</pdfbox.version>
+    <pdfbox.version>1.8.16</pdfbox.version>
     <aws.version>1.10.22</aws.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
