@@ -53,6 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.filemanager.core")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")

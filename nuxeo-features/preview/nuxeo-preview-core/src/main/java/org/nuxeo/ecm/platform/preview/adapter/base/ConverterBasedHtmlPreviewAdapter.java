@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
-    private static final Log log = LogFactory.getLog(ConverterBasedHtmlPreviewAdapter.class);
+    private static final Logger log = LogManager.getLogger(ConverterBasedHtmlPreviewAdapter.class);
 
     /**
      * @since 10.3
@@ -268,9 +268,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
             return getMimeTypeService().getMimetypeFromFile(file);
         } catch (ConversionException e) {
             throw new ConversionException("Could not get MimeTypeRegistry");
-        } catch (MimetypeNotFoundException e) {
-            return "application/octet-stream";
-        } catch (MimetypeDetectionException e) {
+        } catch (MimetypeNotFoundException | MimetypeDetectionException e) {
             return "application/octet-stream";
         }
     }

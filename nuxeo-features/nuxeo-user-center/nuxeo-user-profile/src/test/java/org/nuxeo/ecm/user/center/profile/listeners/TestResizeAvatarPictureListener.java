@@ -18,7 +18,8 @@
  */
 package org.nuxeo.ecm.user.center.profile.listeners;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
@@ -72,8 +73,8 @@ public class TestResizeAvatarPictureListener {
     ResizeAvatarPictureListener underTest;
 
     @Test
-    public void testResizeAvatar() throws Exception {
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+    public void testResizeAvatar() {
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
         userWorkspace.addFacet(UserProfileConstants.USER_PROFILE_FACET);
 
         ImagingService imagingService = Framework.getService(ImagingService.class);
@@ -88,11 +89,11 @@ public class TestResizeAvatarPictureListener {
         Blob resizedImage = (Blob) userWorkspace.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
 
         assertNotNull(resizedImage);
-        assertFalse(tooBigAvatar.equals(resizedImage));
+        assertNotEquals(tooBigAvatar, resizedImage);
 
         ImageInfo imageInfo = imagingService.getImageInfo(resizedImage);
         assertTrue(imageInfo.getWidth() < RESIZED_IMAGE_WIDTH);
-        assertTrue(imageInfo.getHeight() == RESIZED_IMAGE_HEIGHT);
+        assertEquals(imageInfo.getHeight(), RESIZED_IMAGE_HEIGHT);
 
         Blob limitSizeAvatar = lookForAvatarBlob("data/MediumAvatar.jpg");
         assertNotNull(tooBigAvatar);
@@ -106,8 +107,8 @@ public class TestResizeAvatarPictureListener {
 
         imageInfo = imagingService.getImageInfo(resizedImage);
 
-        assertTrue(imageInfo.getWidth() == RESIZED_IMAGE_WIDTH);
-        assertTrue(imageInfo.getHeight() == RESIZED_IMAGE_HEIGHT);
+        assertEquals(imageInfo.getWidth(), RESIZED_IMAGE_WIDTH);
+        assertEquals(imageInfo.getHeight(), RESIZED_IMAGE_HEIGHT);
 
         Blob underLimitSizeAvatar = lookForAvatarBlob("data/SmallAvatar.jpg");
         assertNotNull(tooBigAvatar);
@@ -126,8 +127,7 @@ public class TestResizeAvatarPictureListener {
 
     protected Blob lookForAvatarBlob(String avatarImagePath) {
         URL avatarURL = this.getClass().getClassLoader().getResource(avatarImagePath);
-        Blob originalImage = new URLBlob(avatarURL);
-        return originalImage;
+        return new URLBlob(avatarURL);
     }
 
 }

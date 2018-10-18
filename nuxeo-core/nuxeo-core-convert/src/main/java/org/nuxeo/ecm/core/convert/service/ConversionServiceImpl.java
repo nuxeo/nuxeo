@@ -37,8 +37,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -74,7 +74,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ConversionServiceImpl extends DefaultComponent implements ConversionService {
 
-    protected static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(ConversionServiceImpl.class);
 
     public static final String CONVERTER_EP = "converter";
 
@@ -124,7 +124,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             config.update(desc);
             config.clearCachingDirectory();
         } else {
-            log.error("Unable to handle unknown extensionPoint " + extensionPoint);
+            log.error("Unable to handle unknown extensionPoint {}", extensionPoint);
         }
     }
 
@@ -298,10 +298,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             parameters = new HashMap<>();
         }
 
-        // exist if not registered
+        // exit if not registered
         ConverterCheckResult check = isConverterAvailable(converterName);
         if (!check.isAvailable()) {
-            // exist is not installed / configured
+            // exit is not installed / configured
             throw new ConverterNotAvailable(converterName);
         }
 

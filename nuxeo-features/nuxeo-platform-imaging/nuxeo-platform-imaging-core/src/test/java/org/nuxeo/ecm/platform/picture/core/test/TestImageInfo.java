@@ -51,6 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.picture.api")
+@Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestImageInfo {
