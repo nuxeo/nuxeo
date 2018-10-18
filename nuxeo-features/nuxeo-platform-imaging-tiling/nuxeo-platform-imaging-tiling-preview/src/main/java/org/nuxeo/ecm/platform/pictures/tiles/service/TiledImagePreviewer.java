@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant;
 import org.nuxeo.ecm.platform.preview.adapter.AbstractPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
@@ -88,8 +89,9 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
             if (info != null) {
                 int width = info.getWidth();
                 int height = info.getHeight();
-                Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("WidthThreshold", "1200"));
-                Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("HeightThreshold", "1200"));
+                PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+                Integer widthThreshold = Integer.valueOf(ptc.getEnvValue("WidthThreshold", "1200"));
+                Integer heightThreshold = Integer.valueOf(ptc.getEnvValue("HeightThreshold", "1200"));
                 return width > widthThreshold || height > heightThreshold;
             }
         }

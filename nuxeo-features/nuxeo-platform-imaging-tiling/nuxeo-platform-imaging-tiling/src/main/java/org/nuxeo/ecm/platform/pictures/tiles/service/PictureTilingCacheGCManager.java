@@ -30,6 +30,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manage GC processing to clean up disk cache
@@ -49,8 +51,8 @@ public class PictureTilingCacheGCManager {
     private static int gcCalls = 0;
 
     protected static long getMaxDiskSpaceUsageKB() {
-        String maxStr = PictureTilingComponent.getEnvValue(MAX_DISK_SPACE_USAGE_KEY,
-                Long.toString(MAX_DISK_SPACE_USAGE_KB));
+        PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+        String maxStr = ptc.getEnvValue(MAX_DISK_SPACE_USAGE_KEY, Long.toString(MAX_DISK_SPACE_USAGE_KB));
         return Long.parseLong(maxStr);
     }
 
@@ -68,7 +70,8 @@ public class PictureTilingCacheGCManager {
 
     public static long getCacheSizeInBytes() {
         long totalSize = 0;
-        Map<String, PictureTilingCacheInfo> cache = PictureTilingComponent.getCache();
+        PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+        Map<String, PictureTilingCacheInfo> cache = ptc.getCache();
 
         for (String key : cache.keySet()) {
             PictureTilingCacheInfo cacheEntry = cache.get(key);
@@ -101,7 +104,8 @@ public class PictureTilingCacheGCManager {
 
     public static void doGC(long deltaInKB) {
         gcRuns += 1;
-        Map<String, PictureTilingCacheInfo> cache = PictureTilingComponent.getCache();
+        PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+        Map<String, PictureTilingCacheInfo> cache = ptc.getCache();
 
         Map<Date, String> sortingMap = new HashMap<Date, String>();
 

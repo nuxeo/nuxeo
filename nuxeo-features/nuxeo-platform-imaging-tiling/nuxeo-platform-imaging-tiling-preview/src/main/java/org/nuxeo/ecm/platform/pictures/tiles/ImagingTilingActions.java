@@ -24,7 +24,9 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam bean for
@@ -48,11 +50,13 @@ public class ImagingTilingActions implements Serializable {
     public static final String DEFAULT_HEIGHT_THRESHOLD = "1200";
 
     public int getTilingWidthThreshold() {
-        return Integer.valueOf(PictureTilingComponent.getEnvValue(WIDTH_THRESHOLD_PARAM, DEFAULT_WIDTH_THRESHOLD));
+        PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+        return Integer.valueOf(ptc.getEnvValue(WIDTH_THRESHOLD_PARAM, DEFAULT_WIDTH_THRESHOLD));
     }
 
     public int getTilingHeightThreshold() {
-        return Integer.valueOf(PictureTilingComponent.getEnvValue(HEIGHT_THRESHOLD_PARAM, DEFAULT_HEIGHT_THRESHOLD));
+        PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+        return Integer.valueOf(ptc.getEnvValue(HEIGHT_THRESHOLD_PARAM, DEFAULT_HEIGHT_THRESHOLD));
     }
 
 }

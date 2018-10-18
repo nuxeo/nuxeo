@@ -60,19 +60,19 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     public static final String IMAGES_TO_CONVERT_EP = "imagesToConvert";
 
-    protected static Map<String, PictureTilingCacheInfo> cache = new HashMap<>();
+    protected Map<String, PictureTilingCacheInfo> cache = new HashMap<>();
 
-    protected static List<String> inprocessTiles = Collections.synchronizedList(new ArrayList<>());
+    protected List<String> inprocessTiles = Collections.synchronizedList(new ArrayList<>());
 
-    protected static PictureTiler defaultTiler = new MagickTiler();
+    protected PictureTiler defaultTiler = new MagickTiler();
 
-    protected static Map<String, String> envParameters = new HashMap<>();
+    protected Map<String, String> envParameters = new HashMap<>();
 
     protected Map<String, String> blobProperties = new HashMap<>();
 
     protected List<ImageToConvertDescriptor> imagesToConvert = new ArrayList<>();
 
-    protected static Thread gcThread;
+    protected Thread gcThread;
 
     private String workingDirPath = defaultWorkingDirPath();
 
@@ -84,7 +84,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         startGC();
     }
 
-    public static void startGC() {
+    public void startGC() {
         if (!GCTask.GCEnabled) {
             GCTask.GCEnabled = true;
             log.debug("PictureTilingComponent activated starting GC thread");
@@ -97,7 +97,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         }
     }
 
-    public static void endGC() {
+    public void endGC() {
         if (GCTask.GCEnabled) {
             GCTask.GCEnabled = false;
             log.debug("Stopping GC Thread");
@@ -112,7 +112,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         endGC();
     }
 
-    public static Map<String, PictureTilingCacheInfo> getCache() {
+    public Map<String, PictureTilingCacheInfo> getCache() {
         return cache;
     }
 
@@ -353,25 +353,25 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     // tests
-    public static void setDefaultTiler(PictureTiler tiler) {
+    public void setDefaultTiler(PictureTiler tiler) {
         defaultTiler = tiler;
     }
 
     // ****************************************
     // Env setting management
 
-    public static Map<String, String> getEnv() {
+    public Map<String, String> getEnv() {
         return envParameters;
     }
 
-    public static String getEnvValue(String paramName) {
+    public String getEnvValue(String paramName) {
         if (envParameters == null) {
             return null;
         }
         return envParameters.get(paramName);
     }
 
-    public static String getEnvValue(String paramName, String defaultValue) {
+    public String getEnvValue(String paramName, String defaultValue) {
         String value = getEnvValue(paramName);
         if (value == null) {
             return defaultValue;
@@ -380,7 +380,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         }
     }
 
-    public static void setEnvValue(String paramName, String paramValue) {
+    public void setEnvValue(String paramName, String paramValue) {
         envParameters.put(paramName, paramValue);
     }
 
