@@ -38,6 +38,17 @@
 
   </extension>
 
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/drive_browser_login.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>view_drive_metadata</from-outcome>
