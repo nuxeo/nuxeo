@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 /**
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class MimeTypeTranslationHelper {
 
-    protected final Log log = LogFactory.getLog(MimeTypeTranslationHelper.class);
+    private static final Logger log = LogManager.getLogger(MimeTypeTranslationHelper.class);
 
     protected final Map<String, List<ConvertOption>> srcMappings = new HashMap<>();
 
@@ -46,30 +45,16 @@ public class MimeTypeTranslationHelper {
         List<String> sMts = desc.getSourceMimeTypes();
         String dMt = desc.getDestinationMimeType();
 
-        List<ConvertOption> dco = dstMappings.get(dMt);
-        if (dco == null) {
-            dco = new ArrayList<>();
-        }
-
+        List<ConvertOption> dco = dstMappings.computeIfAbsent(dMt, (key) -> new ArrayList<>());
         for (String sMT : sMts) {
-            List<ConvertOption> sco = srcMappings.get(sMT);
-
-            if (sco == null) {
-                sco = new ArrayList<>();
-            }
-
+            List<ConvertOption> sco = srcMappings.computeIfAbsent(sMT, (key) -> new ArrayList<>());
             sco.add(new ConvertOption(desc.getConverterName(), dMt));
-            srcMappings.put(sMT, sco);
-
             dco.add(new ConvertOption(desc.getConverterName(), sMT));
         }
-
-        dstMappings.put(dMt, dco);
-        log.debug("Added converter " + desc.getSourceMimeTypes() + " to " + desc.getDestinationMimeType());
+        log.debug("Added converter {} to {}", desc::getSourceMimeTypes, desc::getDestinationMimeType);
     }
 
     public String getConverterName(String sourceMimeType, String destMimeType) {
-
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
         if (sco == null) {
             // use wildcard
@@ -104,6 +89,10 @@ public class MimeTypeTranslationHelper {
         return converterNames;
     }
 
+    /**
+     * @deprecated since 10.3. Not used.
+     */
+    @Deprecated
     public List<String> getDestinationMimeTypes(String sourceMimeType) {
         List<String> dst = new ArrayList<>();
 
@@ -117,6 +106,10 @@ public class MimeTypeTranslationHelper {
         return dst;
     }
 
+    /**
+     * @deprecated since 10.3. Not used.
+     */
+    @Deprecated
     public List<String> getSourceMimeTypes(String destinationMimeType) {
         List<String> src = new ArrayList<>();
 

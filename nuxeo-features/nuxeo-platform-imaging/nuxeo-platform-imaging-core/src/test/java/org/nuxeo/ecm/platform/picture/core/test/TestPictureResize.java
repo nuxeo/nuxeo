@@ -56,14 +56,14 @@ public class TestPictureResize {
     CoreSession session;
 
     @Test
-    public void testResizer1() throws Exception {
         Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+    public void testResizer() throws Exception {
 
         OperationContext ctx = new OperationContext(session);
 
         ctx.setInput(source);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("maxWidth", 150);
         params.put("maxHeight", 300);
         OperationChain chain = new OperationChain("fakeChain");
@@ -73,7 +73,5 @@ public class TestPictureResize {
         Blob result = (Blob) service.run(ctx, chain);
 
         assertNotNull(result);
-        // FileUtils.copyToFile(result.getStream(), new
-        // File("/tmp/convert.test"));
     }
 }

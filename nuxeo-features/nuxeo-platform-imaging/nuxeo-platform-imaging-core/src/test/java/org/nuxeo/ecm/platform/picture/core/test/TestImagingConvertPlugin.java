@@ -31,9 +31,14 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -59,11 +64,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author Laurent Doguin
  */
 @RunWith(FeaturesRunner.class)
-@Features({ AutomationFeature.class })
+@Features(AutomationFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
-@Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.picture.convert")
+@Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestImagingConvertPlugin {
 
@@ -88,20 +93,15 @@ public class TestImagingConvertPlugin {
         options.put(OPTION_RESIZE_HEIGHT, resizeHeight);
         options.put(OPTION_RESIZE_DEPTH, resizeDepth);
 
-        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
-            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
-            blob.setFilename(filename);
-            BlobHolder bh = new SimpleBlobHolder(blob);
-
+        doOnTestImages((bh, path) -> {
             BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
-            BufferedImage image = ImageIO.read(result.getBlob().getStream());
+            BufferedImage image = readImage(result.getBlob());
 
             assertNotNull("Resized image is null", image);
             assertEquals("Resized image height", resizeHeight, image.getHeight());
-        }
+        });
     }
 
     @Test
@@ -111,26 +111,21 @@ public class TestImagingConvertPlugin {
         Map<String, Serializable> options = new HashMap<>();
         options.put(OPTION_ROTATE_ANGLE, 90);
 
-        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
-            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
-            blob.setFilename(filename);
-            BlobHolder bh = new SimpleBlobHolder(blob);
-
+        doOnTestImages((bh, path) -> {
             BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
-            BufferedImage image = ImageIO.read(new FileInputStream(FileUtils.getResourceFileFromContext(path)));
+            BufferedImage image = readImage(path);
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();
             assertTrue("Original image size != (0,0)", width > 0 && height > 0);
 
-            image = ImageIO.read(result.getBlob().getStream());
+            image = readImage(result.getBlob());
             assertNotNull("Rotated image is null", image);
             assertEquals("Ratated image width", height, image.getWidth());
             assertEquals("Rotated image height", width, image.getHeight());
-        }
+        });
     }
 
     @Test
@@ -146,40 +141,66 @@ public class TestImagingConvertPlugin {
         options.put(OPTION_RESIZE_WIDTH, cropWidth);
         options.put(OPTION_RESIZE_HEIGHT, cropHeight);
 
-        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
-            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
-            blob.setFilename(filename);
-            BlobHolder bh = new SimpleBlobHolder(blob);
-
+        doOnTestImages((bh, path) -> {
             BlobHolder result = conversionService.convert(converter, bh, options);
             assertNotNull(result);
 
-            BufferedImage image = ImageIO.read(new FileInputStream(FileUtils.getResourceFileFromContext(path)));
+            BufferedImage image = readImage(path);
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();
             assertTrue("Original image size != (0,0)", width > 0 && height > 0);
 
-            image = ImageIO.read(result.getBlob().getStream());
+            image = readImage(result.getBlob());
             assertNotNull("Croped image is null", image);
             assertEquals("Croped image width", cropWidth, image.getWidth());
             assertEquals("Croped image height", cropHeight, image.getHeight());
-        }
+        });
     }
 
     @Test
     public void testConvertToPDF() throws Exception {
         String converter = "pictureConvertToPDF";
-
-        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
-            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
-            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
-            blob.setFilename(filename);
-            BlobHolder bh = new SimpleBlobHolder(blob);
-
+        doOnTestImages((bh, path) -> {
             BlobHolder result = conversionService.convert(converter, bh, null);
             assertNotNull(result);
+        });
+    }
+
+    protected void doOnTestImages(BiConsumer<BlobHolder, String> consumer) throws IOException {
+        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
+            BlobHolder bh = getBlobHolder(path);
+            consumer.accept(bh, path);
+        }
+    }
+
+    protected BlobHolder getBlobHolder(String path) throws IOException {
+        Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
+        return new SimpleBlobHolder(blob);
+    }
+
+    protected BufferedImage readImage(String path) {
+        try {
+            return readImage(new FileInputStream(FileUtils.getResourceFileFromContext(path)));
+        } catch (FileNotFoundException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    protected BufferedImage readImage(Blob blob) {
+        try {
+            return readImage(blob.getStream());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    protected BufferedImage readImage(InputStream inputStream) {
+        try {
+            return ImageIO.read(inputStream);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
