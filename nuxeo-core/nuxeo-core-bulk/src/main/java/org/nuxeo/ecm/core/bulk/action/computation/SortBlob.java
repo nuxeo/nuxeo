@@ -18,9 +18,19 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
@@ -48,9 +58,22 @@ public class SortBlob extends AbstractTransientBlobComputation {
         DataBucket in = codec.decode(record.getData());
 
         String commandId = in.getCommandId();
-        Blob blob = getBlob(in.getDataAsString());
-        blob = sort(blob, commandId);
-        storeBlob(blob, commandId);
+        Blob tmpBlob = getBlob(in.getDataAsString());
+        tmpBlob = sort(tmpBlob, commandId);
+
+        // Create a new file to add header and footer
+        Path path = createTemp(commandId);
+        try (InputStream is = tmpBlob.getStream(); FileOutputStream os = new FileOutputStream(path.toFile(), true)) {
+            os.write(in.getHeader());
+            IOUtils.copy(is, os);
+            os.write(in.getFooter());
+            os.flush();
+            tmpBlob.getFile().delete();
+        } catch (IOException e) {
+            getLog().error(e, e);
+        }
+
+        storeBlob(new FileBlob(path.toFile()), commandId);
 
         DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
         context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
@@ -59,7 +82,7 @@ public class SortBlob extends AbstractTransientBlobComputation {
 
     protected Blob sort(Blob blob, String commandId) {
         try {
-            Path temp = createTemp(commandId);
+            Path temp = createTemp("tmp" + commandId);
             ExternalSort.sort(blob.getFile(), temp.toFile());
             return new FileBlob(temp.toFile());
         } catch (IOException e) {

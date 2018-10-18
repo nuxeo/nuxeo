@@ -41,18 +41,32 @@ public class DataBucket implements Serializable {
 
     protected byte[] data;
 
+    protected byte[] header;
+
+    protected byte[] footer;
+
     protected DataBucket() {
         // Empty constructor for Avro decoder
     }
 
     public DataBucket(String commandId, long count, String data) {
-        this(commandId, count, data.getBytes(UTF_8));
+        this(commandId, count, data, "", "");
     }
 
     public DataBucket(String commandId, long count, byte[] data) {
+        this(commandId, count, data, new byte[0], new byte[0]);
+    }
+
+    public DataBucket(String commandId, long count, String data, String header, String footer) {
+        this(commandId, count, data.getBytes(UTF_8), header.getBytes(UTF_8), footer.getBytes(UTF_8));
+    }
+
+    public DataBucket(String commandId, long count, byte[] data, byte[] header, byte[] footer) {
         this.commandId = commandId;
         this.count = count;
         this.data = data;
+        this.header = header;
+        this.footer = footer;
     }
 
     public String getCommandId() {
@@ -67,8 +81,24 @@ public class DataBucket implements Serializable {
         return data;
     }
 
+    public byte[] getHeader() {
+        return header;
+    }
+
+    public byte[] getFooter() {
+        return footer;
+    }
+
     public String getDataAsString() {
         return new String(data, UTF_8);
+    }
+
+    public String getHeaderAsString() {
+        return new String(header, UTF_8);
+    }
+
+    public String getFooterAsString() {
+        return new String(footer, UTF_8);
     }
 
     @Override

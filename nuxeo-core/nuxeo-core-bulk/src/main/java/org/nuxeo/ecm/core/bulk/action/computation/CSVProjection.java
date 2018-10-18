@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
 import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
 import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.XPATHS_CTX_DATA;
@@ -25,10 +26,12 @@ import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.XPATH
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -92,10 +95,28 @@ public class CSVProjection extends AbstractBulkComputation {
     @Override
     public void endBucket(ComputationContext context, int bucketSize) {
         String commandId = getCurrentCommand().getId();
-        DataBucket dataBucket = new DataBucket(commandId, bucketSize, out.toByteArray());
-        Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
-        context.produceRecord(OUTPUT_1, record);
-        out = null;
+        try {
+            // Extract header from data
+            String csv = out.toString(UTF_8.name());
+            String recordSeparator = CSVFormat.DEFAULT.getRecordSeparator();
+            String header = getHeader(csv, recordSeparator);
+            String data = getData(csv, recordSeparator);
+            DataBucket dataBucket = new DataBucket(commandId, bucketSize, data.getBytes(UTF_8), header.getBytes(UTF_8),
+                    new byte[0]);
+            Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
+            context.produceRecord(OUTPUT_1, record);
+            out = null;
+        } catch (UnsupportedEncodingException e) {
+            getLog().error(e, e);
+        }
+    }
+
+    protected String getHeader(String csv, String recordSeparator) {
+        return csv.substring(0, csv.indexOf(recordSeparator) + recordSeparator.length());
+    }
+
+    protected String getData(String csv, String recordSeparator) {
+        return csv.substring(csv.indexOf(recordSeparator) + recordSeparator.length());
     }
 
 }
