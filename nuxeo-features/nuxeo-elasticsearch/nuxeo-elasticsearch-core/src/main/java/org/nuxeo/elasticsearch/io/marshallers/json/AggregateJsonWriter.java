@@ -87,6 +87,18 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         SYSTEM_SCHEMA.addField("ecm:isTrashed", BooleanType.INSTANCE, null, 0, null);
     }
 
+    /**
+     * @since 10.3
+     */
+    protected Field getSystemField(String name) {
+        Field result = SYSTEM_SCHEMA.getField(name);
+        if (result == null && name.startsWith("ecm:path@level")) {
+            SYSTEM_SCHEMA.addField(name, StringType.INSTANCE, null, 0, null);
+            return SYSTEM_SCHEMA.getField(name);
+        }
+        return result;
+    }
+
     @Inject
     private SchemaManager schemaManager;
 
@@ -110,7 +122,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         String fieldName = agg.getField();
         Field field;
         if (fieldName.startsWith("ecm:")) {
-            field = SYSTEM_SCHEMA.getField(fieldName);
+            field = getSystemField(fieldName);
             if (field == null) {
                 log.warn(String.format("%s is not a valid field for aggregates", fieldName));
                 return;
