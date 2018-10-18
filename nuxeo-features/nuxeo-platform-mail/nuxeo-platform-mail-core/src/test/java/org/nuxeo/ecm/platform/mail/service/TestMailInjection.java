@@ -32,7 +32,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.mail.Message;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
@@ -67,7 +66,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.core.convert")
 @Deploy("org.nuxeo.ecm.core.convert.api")
 @Deploy("org.nuxeo.ecm.core.convert.plugins")
-public class TesteMailInjection {
+public class TestMailInjection {
 
     @Inject
     protected MailService mailService;
@@ -75,14 +74,12 @@ public class TesteMailInjection {
     @Inject
     protected CoreSession session;
 
-    protected String incomingDocumentType;
-
     protected DocumentModel mailFolder1;
 
     protected DocumentModel mailFolder2;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         createMailFolders();
     }
 
@@ -127,6 +124,7 @@ public class TesteMailInjection {
         visitor.visit(messages, initialExecutionContext);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testBadMailAddress() throws Exception {
         injectEmail("data/test_bad_mail_address.eml", mailFolder1.getPathAsString());
@@ -148,8 +146,7 @@ public class TesteMailInjection {
 
     private Message getSampleMessage(String filePath) throws Exception {
         InputStream stream = new FileInputStream(getTestMailSource(filePath));
-        MimeMessage msg = new MimeMessage((Session) null, stream);
-        return msg;
+        return new MimeMessage(null, stream);
     }
 
     private String getTestMailSource(String filePath) {
