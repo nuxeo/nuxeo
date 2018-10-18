@@ -23,6 +23,8 @@ package org.nuxeo.ecm.platform.pictures.tiles.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Task for GC dedicated Thread
@@ -41,7 +43,8 @@ public class GCTask implements Runnable {
 
     public static long getGCIntervalInMinutes() {
         if (GC_INTERVAL == 0) {
-            GC_INTERVAL = Long.parseLong(PictureTilingComponent.getEnvValue(GCINTERVAL_KEY, Long.toString(10)));
+            PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
+            GC_INTERVAL = Long.parseLong(ptc.getEnvValue(GCINTERVAL_KEY, Long.toString(10)));
             log.debug("GC interval set to " + GC_INTERVAL);
         }
         return GC_INTERVAL;

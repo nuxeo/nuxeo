@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -68,11 +70,17 @@ public class TestService {
     @Rule
     public final TestName testName = new TestName();
 
+    @Inject
+    protected PictureTilingService pts;
+
+    protected PictureTilingComponent ptc;
+
     @Before
     public void postSetUp() {
-        PictureTilingComponent.getCache().clear();
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
-        PictureTilingComponent.endGC();
+        ptc = (PictureTilingComponent) pts;
+        ptc.getCache().clear();
+        ptc.setDefaultTiler(new MagickTiler());
+        ptc.endGC();
         // set a dedicated tiling cache working dir by tests
         String workingDir = Environment.getDefault()
                                        .getData()
@@ -86,7 +94,7 @@ public class TestService {
 
     @After
     public void tearDown() {
-        PictureTilingComponent.endGC();
+        ptc.endGC();
     }
 
     @Test
@@ -184,7 +192,7 @@ public class TestService {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        ptc.setDefaultTiler(new MagickTiler());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
@@ -205,7 +213,7 @@ public class TestService {
     public void testMagick() throws Exception {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        ptc.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 200, 200, 2);
@@ -218,7 +226,7 @@ public class TestService {
     public void testMagick2() throws Exception {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        ptc.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 200, 160, 2);
@@ -229,7 +237,7 @@ public class TestService {
 
     protected void benchTiler(PictureTilingService pts, PictureTiler tiler) throws Exception {
 
-        PictureTilingComponent.setDefaultTiler(tiler);
+        ptc.setDefaultTiler(tiler);
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
         long t0 = System.currentTimeMillis();
@@ -301,11 +309,11 @@ public class TestService {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
         int gcCalls = PictureTilingCacheGCManager.getGCCalls();
-        PictureTilingComponent.endGC();
+        ptc.endGC();
 
-        String maxStr = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+        String maxStr = ptc.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 Long.toString(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KB));
-        PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+        ptc.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 Integer.toString(reduceSize));
 
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
@@ -324,7 +332,7 @@ public class TestService {
         assertTrue(cacheSize > 0);
 
         GCTask.setGCIntervalInMinutes(-100);
-        PictureTilingComponent.startGC();
+        ptc.startGC();
 
         log.debug("waiting for GC to run");
         Thread.sleep(600);
@@ -340,20 +348,20 @@ public class TestService {
         assertTrue(runs > 0);
         assertTrue(calls > 2);
 
-        PictureTilingComponent.endGC();
+        ptc.endGC();
 
         long newCacheSize = PictureTilingCacheGCManager.getCacheSizeInKBs();
         log.debug("new cacheSize = {}KB", newCacheSize);
         log.debug("effective delta = {}KB", cacheSize - newCacheSize);
         assertTrue(cacheSize - newCacheSize > reduceSize);
 
-        PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
+        ptc.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.pictures.tiles:OSGI-INF/pictures-tiles-contrib.xml")
     public void testParametersContrib() {
-        String cacheSize = PictureTilingComponent.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
+        String cacheSize = ptc.getEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 "ERROR");
         assertEquals("50000", cacheSize);
     }
@@ -362,7 +370,7 @@ public class TestService {
     public void testBorderTiles() throws Exception {
         PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        ptc.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("chutes.jpg");
         Blob image = Blobs.createBlob(file);
         PictureTiles tiles = pts.getTiles(new BlobResource(image), 64, 64, 3);
