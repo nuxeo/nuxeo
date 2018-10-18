@@ -8,13 +8,9 @@
     <authenticationChain>
       <plugins>
         <plugin>BASIC_AUTH</plugin>
+        <plugin>OAUTH_AUTH</plugin>
       </plugins>
     </authenticationChain>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="preFilter">
-    <preFilter name="OAuth" class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter" />
   </extension>
 
 </component>

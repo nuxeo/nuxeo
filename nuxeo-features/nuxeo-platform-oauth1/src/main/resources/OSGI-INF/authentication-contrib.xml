@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.oauth1.defaultConfig">
 
-  <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="preFilter">
-
-      <preFilter name="OAuth" class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter"/>
-
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="OAUTH_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuth1Authenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
   </extension>
 
 </component>
