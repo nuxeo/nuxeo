@@ -65,6 +65,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         long nbDocuments = in.getCount();
 
         appendToFile(commandId, in.getData());
+        // TODO append header and footer when the sort parameter is available and equals false
 
         if (counters.containsKey(commandId)) {
             counters.put(commandId, nbDocuments + counters.get(commandId));
@@ -76,7 +77,8 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         }
         // all docs for the command are processed
         String value = saveInTransientStore(commandId);
-        DataBucket out = new DataBucket(commandId, totals.get(commandId), value);
+        DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
+                in.getFooterAsString());
         if (produceImmediate) {
             ((ComputationContextImpl) context).produceRecordImmediate(OUTPUT_1,
                     Record.of(commandId, codec.encode(out)));

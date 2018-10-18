@@ -108,7 +108,8 @@ public class BulkScrollerComputation extends AbstractComputation {
         try {
             BulkCommand command = BulkCodecs.getCommandCodec().decode(record.getData());
             String commandId = command.getId();
-            int bucketSize = Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
+            int bucketSize = command.getBucketSize() > 0 ? command.getBucketSize()
+                    : Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
             if (bucketSize > scrollBatchSize) {
                 log.warn(String.format("Bucket size: %d too big for action: %s, reduce to scroll size: %d", bucketSize,
                         command.getAction(), scrollBatchSize));

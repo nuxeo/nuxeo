@@ -25,24 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_PROXY_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_TRASHED_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_VERSION_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LAST_MODIFIED_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LOCK_CREATED_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LOCK_OWNER_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PARENT_REF_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PATH_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PROXY_TARGET_ID_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.REPOSITORY_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.STATE_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TITLE_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TYPE_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.UID_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.VERSIONABLE_ID_FIELD;
-import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.VERSION_LABEL_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVHeader.SYSTEM_PROPERTIES_HEADER_FIELDS;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -118,6 +102,18 @@ public class TestCSVExportAction {
     @Test
     public void testSimple() throws Exception {
         BulkCommand command = createCommand();
+        testCsvExport(command);
+    }
+
+    @Test
+    public void testSimpleWithMultipleBuckets() throws Exception {
+        BulkCommand command = createCommand();
+        command.setBucketSize(1);
+        command.setBatchSize(1);
+        testCsvExport(command);
+    }
+
+    public void testCsvExport(BulkCommand command) throws Exception {
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
@@ -143,15 +139,15 @@ public class TestCSVExportAction {
         assertEquals(11, lines.size());
 
         // Check header
-        assertArrayEquals(new String[] { REPOSITORY_FIELD, UID_FIELD, PATH_FIELD, TYPE_FIELD, STATE_FIELD,
-                PARENT_REF_FIELD, IS_CHECKED_OUT_FIELD, IS_VERSION_FIELD, IS_PROXY_FIELD, PROXY_TARGET_ID_FIELD,
-                VERSIONABLE_ID_FIELD, CHANGE_TOKEN_FIELD, IS_TRASHED_FIELD, TITLE_FIELD, VERSION_LABEL_FIELD,
-                LOCK_OWNER_FIELD, LOCK_CREATED_FIELD, LAST_MODIFIED_FIELD }, lines.get(0).split(","));
+        assertArrayEquals(SYSTEM_PROPERTIES_HEADER_FIELDS, lines.get(0).split(","));
+        long count = lines.stream().filter(Predicate.isEqual(lines.get(0))).count();
+        assertEquals(1, count);
 
         // file is sorted
-        List<String> sortedLines = new ArrayList<>(lines);
-        Collections.sort(sortedLines);
-        assertEquals(lines, sortedLines);
+        List<String> content = lines.subList(1, lines.size());
+        List<String> sortedContent = new ArrayList<>(content);
+        Collections.sort(sortedContent);
+        assertEquals(content, sortedContent);
     }
 
     @Test
