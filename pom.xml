@@ -167,7 +167,7 @@
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>1.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <pdfbox.version>1.8.15</pdfbox.version>
+    <pdfbox.version>1.8.16</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.11.427</aws.version>
     <azure.version>3.1.0</azure.version>
