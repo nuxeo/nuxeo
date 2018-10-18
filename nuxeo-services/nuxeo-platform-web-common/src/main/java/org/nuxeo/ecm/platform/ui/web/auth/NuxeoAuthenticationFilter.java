@@ -92,12 +92,10 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.login.PrincipalImpl;
 import org.nuxeo.ecm.platform.login.TrustingLoginPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
-import org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain;
 import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -421,15 +419,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         try {
             doInitIfNeeded();
-
-            List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
-
-            if (preFilters == null) {
-                doFilterInternal(request, response, chain);
-            } else {
-                NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(preFilters, chain, this);
-                chainWithPreFilters.doFilter(request, response);
-            }
+            doFilterInternal(request, response, chain);
         } finally {
             ClientLoginModule.clearThreadLocalLogin();
             contextTimer.stop();
@@ -697,7 +687,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                 PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime()
                                                                                                .getComponent(
                                                                                                        PluggableAuthenticationService.NAME);
-                svc.initPreFilters();
                 new ComponentManager.Listener() {
                     // nullify service field if components are restarting
                     @Override

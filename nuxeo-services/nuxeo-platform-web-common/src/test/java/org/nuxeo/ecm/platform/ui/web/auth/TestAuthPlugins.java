@@ -24,13 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -83,16 +80,6 @@ public class TestAuthPlugins {
         assertTrue(plugin.getNeedStartingURLSaving());
         assertEquals("Dummy_LM", plugin.getLoginModulePlugin());
         assertSame(Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"), plugin.getClassName());
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-prefilter.xml")
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-prefilter-disable.xml")
-    public void preFilterCanBeDisabled() throws Exception {
-        PluggableAuthenticationService authService = getAuthService();
-        authService.initPreFilters();
-        List<NuxeoAuthPreFilter> filters = authService.getPreFilters();
-        assertEquals(2, filters.size());
     }
 
 }
