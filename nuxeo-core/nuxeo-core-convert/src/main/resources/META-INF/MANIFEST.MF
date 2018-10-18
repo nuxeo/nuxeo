@@ -10,7 +10,8 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Eclipse-BuddyPolicy: dependent
-Nuxeo-Component: OSGI-INF/convert-service-framework.xml
+Nuxeo-Component: OSGI-INF/convert-service-framework.xml,
+ OSGI-INF/properties-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: org.apache.commons.logging,
  org.nuxeo.common.utils,

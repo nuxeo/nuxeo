@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.test.configuration">
+
+  <require>org.nuxeo.ecm.core.convert.configuration</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.convert.enforceSourceMimeTypeCheck">false</property>
+  </extension>
+
+</component>

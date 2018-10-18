@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
-import org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -98,7 +98,7 @@ public class ChainedConverter implements Converter {
         String srcMT = blobHolder.getBlob().getMimeType();
         BlobHolder result = blobHolder;
         for (String dstMT : steps) {
-            String converterName = Framework.getService(MimeTypeTranslationHelper.class).getConverterName(srcMT, dstMT);
+            String converterName = Framework.getService(ConversionService.class).getConverterName(srcMT, dstMT);
             if (converterName == null) {
                 throw new ConversionException(
                         "Chained conversion error : unable to find converter between " + srcMT + " and " + dstMT);
@@ -117,7 +117,8 @@ public class ChainedConverter implements Converter {
             steps.add(descriptor.getDestinationMimeType());
         } else {
             ConverterDescriptor fconv = ConversionServiceImpl.getConverterDescriptor(subConverters.get(0));
-            ConverterDescriptor lconv = ConversionServiceImpl.getConverterDescriptor(subConverters.get(subConverters.size() - 1));
+            ConverterDescriptor lconv = ConversionServiceImpl.getConverterDescriptor(
+                    subConverters.get(subConverters.size() - 1));
 
             descriptor.sourceMimeTypes = fconv.sourceMimeTypes;
             descriptor.destinationMimeType = lconv.destinationMimeType;

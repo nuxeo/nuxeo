@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.3">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+      point="converter">
+
+    <converter name="toText1" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="toText2" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="toJpg1" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>image/png</sourceMimeType>
+      <destinationMimeType>image/jpg</destinationMimeType>
+    </converter>
+
+    <converter name="wildcard" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="wildcard-subtype" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>image/*</sourceMimeType>
+      <destinationMimeType>image/jpg</destinationMimeType>
+    </converter>
+
+    <converter name="html2text" class="org.nuxeo.ecm.core.convert.tests.IdentityConverter">
+      <sourceMimeType>text/html</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+  </extension>
+
+</component>

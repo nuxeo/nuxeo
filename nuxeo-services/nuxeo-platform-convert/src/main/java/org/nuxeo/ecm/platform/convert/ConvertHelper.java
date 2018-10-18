@@ -55,6 +55,9 @@ public class ConvertHelper {
             String filename = FileUtils.getFileNameNoExt(blob.getFilename());
             filename = filename + "." + mtr.getExtensionsFromMimetypeName(destMimeType).get(0);
             result.setFilename(filename);
+            if (result.getMimeType() == null) {
+                result.setMimeType(destMimeType);
+            }
             return result;
         }
     }

@@ -45,7 +45,7 @@ public class TestImageToPDF extends BaseConverterTest {
         checkConverterAvailability(converterName);
         checkCommandAvailability("converter");
 
-        BlobHolder pdfBH = getBlobFromPath("test-docs/hello.pdf");
+        BlobHolder pdfBH = getBlobFromPath("test-docs/hello.jpg");
         Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("targetFilePath", "hello.pdf");
 

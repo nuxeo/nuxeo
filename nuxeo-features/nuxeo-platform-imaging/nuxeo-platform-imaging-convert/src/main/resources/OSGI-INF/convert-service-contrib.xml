@@ -5,36 +5,40 @@
     point="converter">
 
     <converter name="pictureRotation" class="org.nuxeo.ecm.platform.picture.convert.RotationPictureConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
+      <sourceMimeType>application/photoshop</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <sourceMimeType>application/postscript</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
       <destinationMimeType>image/png</destinationMimeType>
       <destinationMimeType>image/gif</destinationMimeType>
     </converter>
-    
+
     <converter name="pictureResize" class="org.nuxeo.ecm.platform.picture.convert.ResizePictureConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
+      <sourceMimeType>application/photoshop</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <sourceMimeType>application/postscript</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
       <destinationMimeType>image/png</destinationMimeType>
       <destinationMimeType>image/gif</destinationMimeType>
     </converter>
-    
+
     <converter name="pictureCrop" class="org.nuxeo.ecm.platform.picture.convert.CropPictureConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
+      <sourceMimeType>application/photoshop</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <sourceMimeType>application/postscript</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
       <destinationMimeType>image/png</destinationMimeType>
       <destinationMimeType>image/gif</destinationMimeType>
     </converter>
 
     <converter name="pictureConvertToPDF" class="org.nuxeo.ecm.platform.picture.convert.ConvertToPDFPictureConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
+      <sourceMimeType>application/photoshop</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <sourceMimeType>application/postscript</sourceMimeType>
       <destinationMimeType>application/pdf</destinationMimeType>
     </converter>
 
