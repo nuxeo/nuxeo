@@ -19,13 +19,17 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter
-      </filter-name>
+  </extension>
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>OAuth 1 Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuth1Servlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>OAuth 1 Servlet</servlet-name>
       <url-pattern>/oauth/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
+    </servlet-mapping>
   </extension>
 
 </fragment>

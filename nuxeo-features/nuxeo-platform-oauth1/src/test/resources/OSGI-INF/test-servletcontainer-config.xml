@@ -25,4 +25,12 @@
     </filter>
   </extension>
 
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>OAuth 1 Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuth1Servlet</servlet-class>
+      <url-pattern>/oauth/*</url-pattern>
+    </servlet>
+  </extension>
+
 </component>
