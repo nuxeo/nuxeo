@@ -145,10 +145,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             return false;
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String uri = httpRequest.getRequestURI();
-        if (uri.contains("/oauth/")) {
-            return true;
-        }
         if (isOAuthSignedRequest(httpRequest)) {
             return true;
         }
@@ -161,27 +157,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        String uri = httpRequest.getRequestURI();
-
-        // process OAuth 3 legged calls
-        if (uri.contains("/oauth/")) {
-            String call = uri.split("/oauth/")[1];
-
-            if (call.equals("authorize")) {
-                processAuthorize(httpRequest, httpResponse);
-            } else if (call.equals("request-token")) {
-                processRequestToken(httpRequest, httpResponse);
-            } else if (call.equals("access-token")) {
-                processAccessToken(httpRequest, httpResponse);
-
-            } else {
-                httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "OAuth call not supported");
-            }
-            return;
-        }
         // Signed request (simple 2 legged OAuth call or signed request
         // after a 3 legged nego)
-        else if (isOAuthSignedRequest(httpRequest)) {
+        if (isOAuthSignedRequest(httpRequest)) {
 
             LoginContext loginContext = processSignedRequest(httpRequest, httpResponse);
             // forward the call if authenticated
@@ -196,204 +174,11 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                         log.warn("Error when loging out", e);
                     }
                 }
-            } else {
-                if (!httpResponse.isCommitted()) {
-                    httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                }
                 return;
             }
         }
-        // Non OAuth calls can pass through
-        else {
-            throw new RuntimeException("request is not a outh request");
-        }
-    }
-
-    protected void processAuthorize(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-            throws IOException, ServletException {
-
-        String token = httpRequest.getParameter(OAuth.OAUTH_TOKEN);
-
-        if (httpRequest.getMethod().equals("GET")) {
-
-            log.debug("OAuth authorize : from end user ");
-
-            // initial access => send to real login page
-            String loginUrl = VirtualHostHelper.getBaseURL(httpRequest);
-
-            httpRequest.getSession(true).setAttribute("OAUTH-INFO", getOAuthTokenStore().getRequestToken(token));
-
-            String redirectUrl = "oauthGrant.jsp" + "?" + OAuth.OAUTH_TOKEN + "=" + token;
-            redirectUrl = URLEncoder.encode(redirectUrl, "UTF-8");
-            loginUrl = loginUrl + "login.jsp?requestedUrl=" + redirectUrl;
-
-            httpResponse.sendRedirect(loginUrl);
-
-        } else {
-            // post after permission validation
-            log.debug("OAuth authorize validate ");
-
-            String nuxeo_login = httpRequest.getParameter("nuxeo_login");
-            String duration = httpRequest.getParameter("duration");
-
-            // XXX get what user has granted !!!
-
-            OAuthToken rToken = getOAuthTokenStore().addVerifierToRequestToken(token, Long.parseLong(duration));
-            rToken.setNuxeoLogin(nuxeo_login);
-
-            String cbUrl = rToken.getCallbackUrl();
-            if (cbUrl == null) {
-                // get the callback url from the consumer ...
-                String consumerKey = rToken.getConsumerKey();
-                NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
-                if (consumer != null) {
-                    cbUrl = consumer.getCallbackURL();
-                }
-
-                if (cbUrl == null) {
-                    // fall back to default Google oauth callback ...
-                    cbUrl = "http://oauth.gmodules.com/gadgets/oauthcallback";
-                }
-            }
-            Map<String, String> parameters = new LinkedHashMap<String, String>();
-            parameters.put(OAuth.OAUTH_TOKEN, rToken.getToken());
-            parameters.put("oauth_verifier", rToken.getVerifier());
-            String targetUrl = URIUtils.addParametersToURIQuery(cbUrl, parameters);
-
-            log.debug("redirecting user after successful grant " + targetUrl);
-
-            httpResponse.sendRedirect(targetUrl);
-        }
-
-    }
-
-    protected void processRequestToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-            throws IOException, ServletException {
-
-        OAuthMessage message = OAuthServlet.getMessage(httpRequest, null);
-        String consumerKey = message.getConsumerKey();
-
-        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
-        if (consumer == null) {
-            log.debug("Consumer " + consumerKey + " is not registered");
-            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
-            httpResponse.sendError(errCode, "Unknown consumer key");
-            return;
-        }
-        OAuthAccessor accessor = new OAuthAccessor(consumer);
-
-        OAuthValidator validator = getValidator();
-        try {
-            validator.validateMessage(message, accessor);
-        } catch (OAuthException | URISyntaxException | IOException e) {
-            log.debug("Error while validating OAuth signature", e);
-            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
-            httpResponse.sendError(errCode, "Can not validate signature");
-            return;
-        }
-
-        log.debug("OAuth request-token : generate a tmp token");
-        String callBack = message.getParameter(OAuth.OAUTH_CALLBACK);
-
-        // XXX should not only use consumerKey !!!
-        OAuthToken rToken = getOAuthTokenStore().createRequestToken(consumerKey, callBack);
-
-        httpResponse.setContentType("application/x-www-form-urlencoded");
-        httpResponse.setStatus(HttpServletResponse.SC_OK);
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(OAuth.OAUTH_TOKEN);
-        sb.append("=");
-        sb.append(rToken.getToken());
-        sb.append("&");
-        sb.append(OAuth.OAUTH_TOKEN_SECRET);
-        sb.append("=");
-        sb.append(rToken.getTokenSecret());
-        sb.append("&oauth_callback_confirmed=true");
-
-        log.debug("returning : " + sb.toString());
-
-        httpResponse.getWriter().write(sb.toString());
-    }
-
-    protected void processAccessToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-            throws IOException, ServletException {
-
-        OAuthMessage message = OAuthServlet.getMessage(httpRequest, null);
-        String consumerKey = message.getConsumerKey();
-        String token = message.getToken();
-
-        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, message.getSignatureMethod());
-
-        if (consumer == null) {
-            log.debug("Consumer " + consumerKey + " is not registered");
-            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
-            httpResponse.sendError(errCode, "Unknown consumer key");
-            return;
-        }
-
-        OAuthAccessor accessor = new OAuthAccessor(consumer);
-
-        OAuthToken rToken = getOAuthTokenStore().getRequestToken(token);
-
-        accessor.requestToken = rToken.getToken();
-        accessor.tokenSecret = rToken.getTokenSecret();
-
-        OAuthValidator validator = getValidator();
-
-        try {
-            validator.validateMessage(message, accessor);
-        } catch (OAuthException | URISyntaxException | IOException e) {
-            log.debug("Error while validating OAuth signature", e);
-            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
-            httpResponse.sendError(errCode, "Can not validate signature");
-            return;
-        }
-
-        log.debug("OAuth access-token : generate a real token");
-
-        String verif = message.getParameter("oauth_verifier");
-        token = message.getParameter(OAuth.OAUTH_TOKEN);
-
-        log.debug("OAuth verifier = " + verif);
-
-        boolean allowByPassVerifier = false;
-
-        if (verif == null) {
-            // here we don't have the verifier in the request
-            // this is strictly prohibited in the spec
-            // => see http://tools.ietf.org/html/rfc5849 page 11
-            //
-            // Anyway since iGoogle does not seem to forward the verifier
-            // we allow it for designated consumers
-
-            allowByPassVerifier = consumer.allowBypassVerifier();
-        }
-
-        if (rToken.getVerifier().equals(verif) || allowByPassVerifier) {
-
-            // Ok we can authenticate
-            OAuthToken aToken = getOAuthTokenStore().createAccessTokenFromRequestToken(rToken);
-
-            httpResponse.setContentType("application/x-www-form-urlencoded");
-            httpResponse.setStatus(HttpServletResponse.SC_OK);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(OAuth.OAUTH_TOKEN);
-            sb.append("=");
-            sb.append(aToken.getToken());
-            sb.append("&");
-            sb.append(OAuth.OAUTH_TOKEN_SECRET);
-            sb.append("=");
-            sb.append(aToken.getTokenSecret());
-
-            log.debug("returning : " + sb.toString());
-
-            httpResponse.getWriter().write(sb.toString());
-        } else {
-            log.debug("Verifier does not match : can not continue");
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Verifier is not correct");
-        }
+        // else normal chaining
+        chain.doFilter(request, response);
     }
 
     protected LoginContext processSignedRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
@@ -421,7 +206,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             log.debug("Consumer " + consumerKey + " is unknown, can not authenticated");
-            httpResponse.sendError(errCode, "Consumer " + consumerKey + " is not registered");
             return null;
         } else {
 
@@ -443,8 +227,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     // OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
                     // We need to send a 403 to force client to ask for a new
                     // token in case the Access Token was deleted !!!
-                    int errCode = HttpServletResponse.SC_UNAUTHORIZED;
-                    httpResponse.sendError(errCode, "Signed fetch is not allowed");
                     return null;
                 }
                 targetLogin = consumer.getSignedFetchUser();
@@ -460,15 +242,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 if (targetLogin != null) {
                     LoginContext loginContext = Framework.loginAsUser(targetLogin);
                     return loginContext;
-                } else {
-                    int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.USER_REFUSED);
-                    httpResponse.sendError(errCode, "No configured login information");
-                    return null;
                 }
             } catch (OAuthException | URISyntaxException | IOException | LoginException e) {
                 log.debug("Error while validating OAuth signature", e);
-                int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
-                httpResponse.sendError(errCode, "Can not validate signature");
             }
         }
         return null;
