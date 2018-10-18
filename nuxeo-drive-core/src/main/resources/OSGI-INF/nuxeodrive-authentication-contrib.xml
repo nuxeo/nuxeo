@@ -9,6 +9,7 @@
     <startURLPattern>
       <patterns>
         <pattern>drive_login.jsp</pattern>
+        <pattern>drive_browser_login.jsp</pattern>
       </patterns>
     </startURLPattern>
 
