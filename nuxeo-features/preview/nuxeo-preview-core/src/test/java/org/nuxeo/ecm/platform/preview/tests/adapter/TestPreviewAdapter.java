@@ -33,6 +33,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -63,6 +65,9 @@ public class TestPreviewAdapter {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    protected MimetypeRegistry mimetypeRegistry;
 
     @Test
     public void testFileDocument() throws Exception {
@@ -114,6 +119,8 @@ public class TestPreviewAdapter {
     public void testFilesOfficePreviewer() throws IOException {
         DocumentModel document = session.createDocumentModel("CustomDoc");
         Blob officeBlob = new FileBlob(FileUtils.getResourceFileFromContext("hello.docx"));
+        String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.docx", officeBlob, null);
+        officeBlob.setMimeType(mimeType);
         document.setPropertyValue("files:files",
                 (Serializable) Collections.singletonList(Collections.singletonMap("file", officeBlob)));
 

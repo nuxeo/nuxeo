@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.configuration">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enforces the source mime type check when calling a converter. Defaults to true.
+
+      @since 10.3
+    </documentation>
+    <property name="nuxeo.convert.enforceSourceMimeTypeCheck">true</property>
+  </extension>
+
+</component>

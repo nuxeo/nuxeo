@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.convert.plugins.tests;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -88,7 +87,8 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testAnyToTextDocxConverter() throws Exception {
-        doTestAny2TextConverter("application/msword", "docx2text", "hello.docx");
+        doTestAny2TextConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx2text",
+                "hello.docx");
     }
 
     @Test

@@ -7,6 +7,7 @@
     <converter name="dummy2" class="org.nuxeo.ecm.core.convert.tests.DummyConverter">
       <sourceMimeType>test/me</sourceMimeType>
       <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
       <destinationMimeType>foo/bar</destinationMimeType>
     </converter>
 

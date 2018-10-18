@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -53,8 +56,6 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
-
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 /**
  * @since 8.2
@@ -143,17 +144,21 @@ public class PreviewAdapter extends DefaultAdapter {
         String xpath = bh.getXpath();
         HtmlPreviewAdapter preview;
 
-        if (isBlobTarget() && !isBlobHolder(doc, xpath)) {
-            preview = PreviewHelper.getBlobPreviewAdapter(doc);
-            return preview.getFilePreviewBlobs(xpath, blobPostProcessing);
-        }
+        try {
+            if (isBlobTarget() && !isBlobHolder(doc, xpath)) {
+                preview = PreviewHelper.getBlobPreviewAdapter(doc);
+                return preview.getFilePreviewBlobs(xpath, blobPostProcessing);
+            }
 
-        preview = doc.getAdapter(HtmlPreviewAdapter.class);
-        if (preview == null) {
-            return null;
-        }
+            preview = doc.getAdapter(HtmlPreviewAdapter.class);
+            if (preview == null) {
+                return null;
+            }
 
-        return preview.getFilePreviewBlobs(blobPostProcessing);
+            return preview.getFilePreviewBlobs(blobPostProcessing);
+        } catch (PreviewException e) {
+            throw new WebResourceNotFoundException("Preview not available", e);
+        }
     }
 
     private DocumentBlobHolder getBlobHolderToPreview() {

@@ -136,6 +136,23 @@ public class PreviewAdapterTest extends BaseTest {
         }
     }
 
+    @Test
+    public void testUnknownMimeTypePreview() {
+        DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
+        Blob blob = Blobs.createBlob("Dummy", "application/octet-stream", null, "dummy");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try (CloseableClientResponse response = getPreview(doc)) {
+            assertEquals(404, response.getStatus());
+        }
+        try (CloseableClientResponse response = getPreview(doc, "file:content")) {
+            assertEquals(404, response.getStatus());
+        }
+    }
+
     protected CloseableClientResponse getPreview(DocumentModel doc) {
         return getPreview(doc, null);
     }
