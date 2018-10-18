@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
@@ -205,7 +207,7 @@ public class TestService {
         assertTrue(result.isAvailable());
         assertNull(result.getErrorMessage());
         assertNull(result.getInstallationMessage());
-        assertEquals(2, result.getSupportedInputMimeTypes().size());
+        assertEquals(3, result.getSupportedInputMimeTypes().size());
 
         notRegistred = false;
         try {
@@ -316,6 +318,32 @@ public class TestService {
         assertTrue("file1 was not found in result", resultFilenames.remove("file1"));
         assertTrue("file2 was not found in result", resultFilenames.remove("file2"));
         assertTrue("There's unexpected blobs in result", resultFilenames.isEmpty());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-pdf-contrib.xml")
+    public void testEnforceSourceMimeTypeCheck() {
+        Map<String, Serializable> parameters = new HashMap<>();
+        Blob blob = Blobs.createBlob("dummy", "application/octet-stream");
+        try {
+            cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+            fail();
+        } catch (ConversionException e) {
+            assertEquals("application/octet-stream mime type not supported by dummyPdf converter", e.getMessage());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-pdf-contrib.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/test-properties-contrib.xml")
+    public void testNoEnforceSourceMimeTypeCheck() {
+        Map<String, Serializable> parameters = new HashMap<>();
+        Blob blob = Blobs.createBlob("dummy", "application/octet-stream", null, "dummy");
+        BlobHolder result = cs.convert("dummyPdf", new SimpleBlobHolder(blob), parameters);
+        Blob resultBlob = result.getBlob();
+        assertNotNull(resultBlob);
+        assertEquals("application/pdf", resultBlob.getMimeType());
+        assertEquals("dummy.pdf", resultBlob.getFilename());
     }
 
 }

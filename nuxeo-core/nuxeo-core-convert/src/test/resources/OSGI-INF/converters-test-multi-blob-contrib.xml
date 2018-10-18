@@ -2,7 +2,9 @@
 <component name="org.nuxeo.ecm.core.convert.tests.multi">
 
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
-    <converter name="dummyMulti" class="org.nuxeo.ecm.core.convert.tests.DummyMultiOutputConverter" />
+    <converter name="dummyMulti" class="org.nuxeo.ecm.core.convert.tests.DummyMultiOutputConverter">
+      <sourceMimeType>text/plain</sourceMimeType>
+    </converter>
   </extension>
 
 </component>

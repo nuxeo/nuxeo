@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -90,6 +91,9 @@ public abstract class BaseConverterTest {
         Blob blob = Blobs.createBlob(file);
         if (srcMT != null) {
             blob.setMimeType(srcMT);
+        } else {
+            MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+            blob.setMimeType(mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), blob, null));
         }
         blob.setFilename(file.getName());
         return new SimpleBlobHolder(blob);

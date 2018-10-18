@@ -20,9 +20,14 @@
 package org.nuxeo.ecm.core.convert.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +42,16 @@ public class MimeTypeTranslationHelper {
 
     private static final Logger log = LogManager.getLogger(MimeTypeTranslationHelper.class);
 
+    /**
+     * @since 10.3
+     */
+    public static final String ANY_MIME_TYPE = "*";
+
+    /**
+     * @since 10.3
+     */
+    public static final Pattern MIME_TYPE_PATTERN = Pattern.compile("(.*?);(.*)", Pattern.DOTALL);
+
     protected final Map<String, List<ConvertOption>> srcMappings = new HashMap<>();
 
     protected final Map<String, List<ConvertOption>> dstMappings = new HashMap<>();
@@ -45,48 +60,118 @@ public class MimeTypeTranslationHelper {
         List<String> sMts = desc.getSourceMimeTypes();
         String dMt = desc.getDestinationMimeType();
 
-        List<ConvertOption> dco = dstMappings.computeIfAbsent(dMt, (key) -> new ArrayList<>());
+        List<ConvertOption> dco = dstMappings.computeIfAbsent(dMt, key -> new ArrayList<>());
         for (String sMT : sMts) {
-            List<ConvertOption> sco = srcMappings.computeIfAbsent(sMT, (key) -> new ArrayList<>());
+            List<ConvertOption> sco = srcMappings.computeIfAbsent(sMT, key -> new ArrayList<>());
             sco.add(new ConvertOption(desc.getConverterName(), dMt));
             dco.add(new ConvertOption(desc.getConverterName(), sMT));
         }
         log.debug("Added converter {} to {}", desc::getSourceMimeTypes, desc::getDestinationMimeType);
     }
 
-    public String getConverterName(String sourceMimeType, String destMimeType) {
-        List<ConvertOption> sco = srcMappings.get(sourceMimeType);
-        if (sco == null) {
-            // use wildcard
-            sco = srcMappings.get("*");
-            if (sco == null) {
-                return null;
-            }
-        }
-        for (ConvertOption co : sco) {
-            if (co.mimeType.equals(destMimeType)) {
-                return co.getConverterName();
-            }
-        }
-        return null;
+    /**
+     * Returns the last registered converter name for the given {@code sourceMimeType} and {@code destinationMimeType}.
+     * <p>
+     * Follow the algorithm of {@link #getConverterNames(String, String)}.
+     *
+     * @see #getConverterNames(String, String)
+     */
+    public String getConverterName(String sourceMimeType, String destinationMimeType) {
+        List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType);
+        return converterNames.isEmpty() ? null : converterNames.get(converterNames.size() - 1);
     }
 
-    public List<String> getConverterNames(String sourceMimeType, String destMimeType) {
-        List<ConvertOption> sco = srcMappings.get(sourceMimeType);
-        List<String> converterNames = new ArrayList<>();
-        if (sco == null) {
-            // use wildcard
-            sco = srcMappings.get("*");
-            if (sco == null) {
-                return converterNames;
-            }
+    /**
+     * Returns {@code true} if the given {@code mimeTypes} has a compatible mime type with {@code mimeType},
+     * {@code false} otherwise.
+     * <p>
+     * The {@code mimeTypes} list has a compatible mime type if:
+     * <ul>
+     * <li>it contains "*"</li>
+     * <li>it contains exactly {@code mimeType}</li>
+     * <li>it contains a mime type with the same primary type as {@code mimeType} and a wildcard sub type</li>
+     * </ul>
+     *
+     * @since 10.3
+     */
+    public boolean hasCompatibleMimeType(List<String> mimeTypes, String mimeType) {
+        String mt = parseMimeType(mimeType);
+        Set<String> expectedMimeTypes = new HashSet<>();
+        expectedMimeTypes.add(ANY_MIME_TYPE);
+        if (mt != null) {
+            expectedMimeTypes.add(mt);
+            expectedMimeTypes.add(computeMimeTypeWithWildcardSubType(mt));
         }
-        for (ConvertOption co : sco) {
-            if (co.mimeType.equals(destMimeType)) {
-                converterNames.add(co.getConverterName());
-            }
+        return mimeTypes.stream().anyMatch(expectedMimeTypes::contains);
+    }
+
+    /**
+     * Returns the list of converter names handling the given {@code sourceMimeType} and {@code destinationMimeType}.
+     * <p>
+     * Find the converter names based on the following algorithm:
+     * <ul>
+     * <li>Find the converters exactly matching the given {@code sourceMimeType}</li>
+     * <li>If no converter found, find the converters matching a wildcard subtype based on the {@code sourceMimeType},
+     * such has "image/*"</li>
+     * <li>If no converter found, find the converters matching a wildcard source mime type "*"</li>
+     * <li>Then, filter only the converting matching the given {@code destinationMimeType}</li>
+     * </ul>
+     */
+    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
+        // remove content type parameters if any
+        String srcMimeType = parseMimeType(sourceMimeType);
+
+        List<ConvertOption> cos = srcMappings.getOrDefault(srcMimeType, Collections.emptyList());
+        if (cos.isEmpty()) {
+            // use a mime type with a wildcard sub type
+            cos = srcMappings.getOrDefault(computeMimeTypeWithWildcardSubType(srcMimeType), Collections.emptyList());
         }
-        return converterNames;
+
+        if (cos.isEmpty()) {
+            // use a wildcard mime type
+            cos = srcMappings.getOrDefault(ANY_MIME_TYPE, Collections.emptyList());
+        }
+
+        return cos.stream()
+                  .filter(co -> destinationMimeType == null || co.mimeType.equals(destinationMimeType))
+                  .map(co -> co.converter)
+                  .collect(Collectors.toList());
+    }
+
+    /**
+     * Parses the given {@code mimeType} and returns only the primary type and optionally the sub type if any.
+     * <p>
+     * Some input/output samples:
+     * <ul>
+     * <li>"image/jpeg" => "image/jpeg"</li>
+     * <li>"image/*" => "image/*"</li>
+     * <li>"image/png; param1=foo; param2=bar" => "image/png"</li>
+     * </ul>
+     *
+     * @since 10.3
+     */
+    protected String parseMimeType(String mimeType) {
+        if (mimeType == null) {
+            return null;
+        }
+
+        return MIME_TYPE_PATTERN.matcher(mimeType).replaceAll("$1").trim();
+    }
+
+    /**
+     * Returns a new mime type with the primary type of the given {@code mimeType} and a wildcard sub type.
+     * <p>
+     * Some input/output samples:
+     * <ul>
+     * <li>"image/jpeg" => "image/*"</li>
+     * <li>"video/*" => "video/*"</li>
+     * <li>"application/pdf" => "application/*"</li>
+     * </ul>
+     *
+     * @since 10.3
+     */
+    protected String computeMimeTypeWithWildcardSubType(String mimeType) {
+        return mimeType != null ? mimeType.replaceAll("(.*)/(.*)", "$1/" + ANY_MIME_TYPE) : null;
     }
 
     /**

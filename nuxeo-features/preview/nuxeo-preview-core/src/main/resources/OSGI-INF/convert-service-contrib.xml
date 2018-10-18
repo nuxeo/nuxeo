@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
-   <converter name="any2html" class="org.nuxeo.ecm.platform.preview.converters.HtmlPreviewConverter">
+    <converter name="any2html" class="org.nuxeo.ecm.platform.preview.converters.HtmlPreviewConverter">
       <destinationMimeType>text/html</destinationMimeType>
 
       <sourceMimeType>application/pdf</sourceMimeType>
@@ -14,11 +14,25 @@
       <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>application/rtf</sourceMimeType>
+      <sourceMimeType>text/csv</sourceMimeType>
+      <sourceMimeType>text/tsv</sourceMimeType>
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+       application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+       application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+       application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
 
       <!-- OpenOffice.org 1.x documents -->
       <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
@@ -54,7 +68,10 @@
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
 
-   </converter>
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+
+    </converter>
 
   </extension>
 

@@ -146,7 +146,7 @@ public class TestPictureRenditions {
 
     @Test
     public void shouldMakeRenditionAvailableImageToPDF() throws Exception {
-        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
         DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
         doc.setProperty("file", "content", source);
 

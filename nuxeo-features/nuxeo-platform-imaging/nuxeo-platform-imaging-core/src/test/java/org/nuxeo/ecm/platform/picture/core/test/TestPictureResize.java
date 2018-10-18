@@ -56,8 +56,8 @@ public class TestPictureResize {
     CoreSession session;
 
     @Test
-        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
     public void testResizer() throws Exception {
+        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
 
         OperationContext ctx = new OperationContext(session);
 

@@ -5,9 +5,7 @@
     point="converter">
 
     <converter name="resizeAvatar" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
-      <sourceMimeType>image/jpeg</sourceMimeType>
-      <sourceMimeType>image/png</sourceMimeType>
-      <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/*</sourceMimeType>
       <destinationMimeType>image/jpg</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">resizeAvatar</parameter>

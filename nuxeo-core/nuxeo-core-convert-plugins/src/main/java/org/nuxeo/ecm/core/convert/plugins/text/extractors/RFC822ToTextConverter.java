@@ -170,7 +170,7 @@ public class RFC822ToTextConverter implements Converter {
         } else {
             Blob blob;
             try (InputStream in = p.getInputStream()) {
-                blob = Blobs.createBlob(in);
+                blob = Blobs.createBlob(in, p.getContentType());
             }
             BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(blob), null);
             return result.getBlob().getByteArray();

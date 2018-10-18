@@ -257,6 +257,9 @@
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
 
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+
       <parameters>
         <parameter name="CommandLineName">soffice</parameter>
         <parameter name="format">html</parameter>

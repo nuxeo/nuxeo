@@ -31,6 +31,7 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -69,6 +71,9 @@ public class TestResizeAvatarPictureListener {
 
     @Inject
     UserWorkspaceService userWorkspaceService;
+
+    @Inject
+    MimetypeRegistry mimeypeRegistry;
 
     ResizeAvatarPictureListener underTest;
 
@@ -127,7 +132,8 @@ public class TestResizeAvatarPictureListener {
 
     protected Blob lookForAvatarBlob(String avatarImagePath) {
         URL avatarURL = this.getClass().getClassLoader().getResource(avatarImagePath);
-        return new URLBlob(avatarURL);
+        String mimeType = mimeypeRegistry.getMimetypeFromExtension(FilenameUtils.getExtension(avatarImagePath));
+        return new URLBlob(avatarURL, mimeType);
     }
 
 }

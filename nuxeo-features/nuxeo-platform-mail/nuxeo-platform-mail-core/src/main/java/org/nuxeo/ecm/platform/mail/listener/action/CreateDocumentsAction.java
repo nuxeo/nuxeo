@@ -117,7 +117,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         if (text != null && !text.isEmpty()) {
-            Blob sb = Blobs.createBlob(text);
+            Blob sb = Blobs.createBlob(text, "text/html");
             BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
             ConversionService conversionService = Framework.getService(ConversionService.class);
             Map<String, Serializable> parameters = new HashMap<>();
