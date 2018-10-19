@@ -39,7 +39,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.core.Manager;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -154,7 +153,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static LifeCycleService geLifeCycleService() {
         if (lifeCycleService == null) {
-            lifeCycleService = NXCore.getLifeCycleService();
+            lifeCycleService = Framework.getService(LifeCycleService.class);
             if (lifeCycleService == null) {
                 log.error("No Life Cycle service registered");
             }

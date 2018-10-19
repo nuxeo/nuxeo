@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -751,7 +750,7 @@ public class DBSDocument extends BaseDocument<State> {
     // TODO generic
     @Override
     public void followTransition(String transition) throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
+        LifeCycleService service = Framework.getService(LifeCycleService.class);
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
         }
@@ -761,7 +760,7 @@ public class DBSDocument extends BaseDocument<State> {
     // TODO generic
     @Override
     public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
+        LifeCycleService service = Framework.getService(LifeCycleService.class);
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
         }
