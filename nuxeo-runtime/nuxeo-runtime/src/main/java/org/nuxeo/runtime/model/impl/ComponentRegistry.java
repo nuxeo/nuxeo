@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public class ComponentRegistry {
 
-    private final Logger log = LogManager.getLogger();
+    private final Logger log = LogManager.getLogger(ComponentRegistry.class);
 
     /**
      * All registered components including unresolved ones. You can check the state of a component for getting the

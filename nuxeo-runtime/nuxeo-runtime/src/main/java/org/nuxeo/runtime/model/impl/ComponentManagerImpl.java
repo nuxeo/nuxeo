@@ -65,7 +65,7 @@ import org.nuxeo.runtime.util.Watch;
  */
 public class ComponentManagerImpl implements ComponentManager {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(ComponentManagerImpl.class);
 
     // must use an ordered Set to avoid loosing the order of the pending
     // extensions

@@ -70,7 +70,7 @@ import org.osgi.framework.Bundle;
  */
 public class DefaultRuntimeContext implements RuntimeContext {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(DefaultRuntimeContext.class);
 
     protected RuntimeService runtime;
 

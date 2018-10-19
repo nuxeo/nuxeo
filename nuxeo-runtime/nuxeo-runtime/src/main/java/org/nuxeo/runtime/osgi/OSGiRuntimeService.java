@@ -90,7 +90,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     public static final Version VERSION = Version.parseString("1.4.0");
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(OSGiRuntimeService.class);
 
     private final BundleContext bundleContext;
 
