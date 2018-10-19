@@ -74,12 +74,12 @@ public class TestDocumentWrapperGetRef {
         // session.save();
         //
         // Run the script operation:
-        runChain(doc, "followtransitiondelete");
+        runChain(doc, "followTransitionApprove");
 
         // the script operation should run a Session.followTransition using
         // getRef of document wrapper
         lifecycleState = session.getCurrentLifeCycleState(doc.getRef());
-        assertEquals("After the test, the document currentlifecycle state is", "deleted", lifecycleState);
+        assertEquals("After the test, the document currentlifecycle state is", "approved", lifecycleState);
     }
 
     private void runChain(DocumentModel inputDoc, String chainId) throws Exception {

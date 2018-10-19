@@ -21,6 +21,8 @@ package org.nuxeo.ecm.lifeCycle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 
 import java.util.Collection;
 
@@ -194,6 +196,8 @@ public class BulkLifeCycleChangeListenerTest {
     }
 
     @Test
+    @Deprecated
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
     public void testLifeCycleAPIDelete() {
         testBulkLifeCycleChangeDelete();
     }
@@ -202,11 +206,14 @@ public class BulkLifeCycleChangeListenerTest {
      * NXP-22197
      */
     @Test
+    @Deprecated
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
     @Deploy("org.nuxeo.ecm.webapp.core.tests:OSGI-INF/test-bulk-life-cycle-change-paginate-contrib.xml")
     public void testLifeCycleAPIDeletePaginate() {
         testBulkLifeCycleChangeDelete();
     }
 
+    @Deprecated
     protected void testBulkLifeCycleChangeDelete() {
 
         DocumentModel folderDoc = session.createDocumentModel("/", "testFolder", "Folder");
@@ -224,17 +231,17 @@ public class BulkLifeCycleChangeListenerTest {
         session.saveDocument(testFile3);
 
         Collection<String> allowedStateTransitions = session.getAllowedStateTransitions(folderDoc.getRef());
-        assertTrue(allowedStateTransitions.contains("delete"));
+        assertTrue(allowedStateTransitions.contains(DELETE_TRANSITION));
 
-        assertTrue(session.followTransition(folderDoc.getRef(), "delete"));
+        assertTrue(session.followTransition(folderDoc.getRef(), DELETE_TRANSITION));
         session.save();
 
         nextTransaction();
 
         // Check that the BulkLifeCycleChangeListener has changed child folders and files to approved
-        assertEquals("deleted", session.getCurrentLifeCycleState(testFile1.getRef()));
-        assertEquals("deleted", session.getCurrentLifeCycleState(testFile2.getRef()));
-        assertEquals("deleted", session.getCurrentLifeCycleState(testFile3.getRef()));
+        assertEquals(DELETED_STATE, session.getCurrentLifeCycleState(testFile1.getRef()));
+        assertEquals(DELETED_STATE, session.getCurrentLifeCycleState(testFile2.getRef()));
+        assertEquals(DELETED_STATE, session.getCurrentLifeCycleState(testFile3.getRef()));
     }
 
 }
