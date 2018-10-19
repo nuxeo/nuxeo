@@ -21,7 +21,7 @@
 
 package org.nuxeo.common.utils;
 
-import static org.nuxeo.common.utils.UserAgentMatcher.isSafari5;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
 
 import java.io.UnsupportedEncodingException;
@@ -49,6 +49,9 @@ public class RFC2231 {
      * @param value the value to escape
      */
     public static void percentEscape(StringBuilder buf, String value) {
+        if (isEmpty(value)) {
+            return;
+        }
         byte[] bytes;
         try {
             bytes = value.getBytes(UTF8);
