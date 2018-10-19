@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,16 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import static com.tngtech.jgiven.impl.util.AssertionUtil.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -34,8 +36,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -50,12 +50,12 @@ public class TestDocumentWrapperGetRef {
     @Inject
     AutomationService automationService;
 
-    @Test
     /**
-     * Test the documentWrapper getRef method to be used in script.
-     * This test use the operation chain defined in the test extension src/test/resources/test-doc-wrapper.xml
+     * Test the documentWrapper getRef method to be used in script. This test use the operation chain defined in the
+     * test extension src/test/resources/test-doc-wrapper.xml
      */
-    public void testDocumentWrapperGetRef() throws InvalidChainException, OperationException, Exception {
+    @Test
+    public void testDocumentWrapperGetRef() throws Exception {
 
         // testing scripts using document wrapper get ref method: follow
         // transition
@@ -66,7 +66,7 @@ public class TestDocumentWrapperGetRef {
 
         // before starting, check it's in project
         String lifecycleState = session.getCurrentLifeCycleState(doc.getRef());
-        Assert.assertEquals("At first, the document currentlifecycle state is", "project", lifecycleState);
+        assertEquals("At first, the document currentlifecycle state is", "project", lifecycleState);
 
         // The automation chain should be similar to the following:
         //
@@ -79,11 +79,10 @@ public class TestDocumentWrapperGetRef {
         // the script operation should run a Session.followTransition using
         // getRef of document wrapper
         lifecycleState = session.getCurrentLifeCycleState(doc.getRef());
-        Assert.assertEquals("After the test, the document currentlifecycle state is", "deleted", lifecycleState);
+        assertEquals("After the test, the document currentlifecycle state is", "deleted", lifecycleState);
     }
 
-    private void runChain(DocumentModel inputDoc, String chainId) throws OperationException, InvalidChainException,
-            Exception {
+    private void runChain(DocumentModel inputDoc, String chainId) throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(inputDoc);
             automationService.run(ctx, chainId);
@@ -91,12 +90,12 @@ public class TestDocumentWrapperGetRef {
     }
 
     @Test
-    public void testGetParentRef() throws Exception {
+    public void testGetParentRef() {
         DocumentModel doc = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         DocumentWrapper workspaces = new DocumentWrapper(session, doc);
         DocumentWrapper domain = workspaces.getParent("Domain");
-        Assert.assertNotNull(domain);
+        assertNotNull(domain);
         DocumentWrapper unknown = workspaces.getParent("pfff");
-        Assert.assertNull(unknown);
+        assertNull(unknown);
     }
 }

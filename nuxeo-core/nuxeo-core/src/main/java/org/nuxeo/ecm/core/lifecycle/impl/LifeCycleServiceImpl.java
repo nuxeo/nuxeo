@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,8 +128,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
             String destinationStateName = lifeCycle.getTransitionByName(transitionName).getDestinationStateName();
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
-            throw new LifeCycleException("Not allowed to follow transition <" + transitionName + "> from state <"
-                    + lifeCycleState + '>');
+            throw new LifeCycleException(
+                    "Not allowed to follow transition <" + transitionName + "> from state <" + lifeCycleState + '>');
         }
     }
 
