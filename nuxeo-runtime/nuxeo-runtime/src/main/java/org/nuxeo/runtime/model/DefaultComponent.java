@@ -23,8 +23,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 
 /**
@@ -135,13 +133,6 @@ public class DefaultComponent implements Component, Adaptable {
     @Override
     public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
-    }
-
-    /**
-     * @since 10.3
-     */
-    protected Log getLog() {
-        return LogFactory.getLog(getClass());
     }
 
     /**

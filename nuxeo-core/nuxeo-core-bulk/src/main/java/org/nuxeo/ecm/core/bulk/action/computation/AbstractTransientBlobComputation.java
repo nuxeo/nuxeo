@@ -24,8 +24,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -38,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public abstract class AbstractTransientBlobComputation extends AbstractComputation {
+
+    private static final Logger log = LogManager.getLogger(AbstractTransientBlobComputation.class);
 
     private Path temp;
 
@@ -64,7 +66,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         List<Blob> blobs = store.getBlobs(key);
         Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
         if (blob == null) {
-            getLog().error("Could not retrieve blob for key " + key);
+            log.error("[{}] Could not retrieve blob for key {}", metadata.name(), key);
         }
         return blob;
     }
@@ -77,9 +79,5 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
 
     protected Path createTemp(String commandId) {
         return temp.resolve(commandId + ".csv");
-    }
-
-    protected Log getLog() {
-        return LogFactory.getLog(getClass());
     }
 }

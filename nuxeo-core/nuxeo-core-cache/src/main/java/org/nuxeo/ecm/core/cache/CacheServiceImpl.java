@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  * @since 6.0
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
+
+    private static final Logger log = LogManager.getLogger(CacheServiceImpl.class);
 
     /**
      * @since 10.3
@@ -203,17 +207,17 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             String nodeId = Framework.getProperty(NODE_ID_PROP);
             if (StringUtils.isBlank(nodeId)) {
                 nodeId = String.valueOf(RANDOM.nextLong());
-                getLog().warn("Missing cluster node id configuration, please define it explicitly "
-                        + "(usually through repository.clustering.id). Using random cluster node id instead: "
-                        + nodeId);
+                log.warn("Missing cluster node id configuration, please define it explicitly "
+                        + "(usually through repository.clustering.id). Using random cluster node id instead: {}",
+                        nodeId);
             } else {
                 nodeId = nodeId.trim();
             }
             invalidator = new CachePubSubInvalidator();
             invalidator.initialize(CACHE_INVAL_PUBSUB_TOPIC, nodeId);
-            getLog().info("Registered cache invalidator for node: " + nodeId);
+            log.info("Registered cache invalidator for node: {}", nodeId);
         } else {
-            getLog().info("Not registering a cache invalidator because clustering is not enabled");
+            log.info("Not registering a cache invalidator because clustering is not enabled");
         }
         // create and starts caches
         Collection<CacheDescriptor> descriptors = getDescriptors(XP_CACHES);

@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -57,6 +59,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static class SetPropertyComputation extends AbstractBulkComputation {
 
+        private static final Logger log = LogManager.getLogger(SetPropertyComputation.class);
+
         public SetPropertyComputation() {
             super(ACTION_NAME);
         }
@@ -71,14 +75,14 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                         doc.setPropertyValue(es.getKey(), es.getValue());
                     } catch (PropertyException e) {
                         // TODO send to error stream
-                        getLog().warn("Cannot write property: " + es.getKey() + " of document: " + doc.getId(), e);
+                        log.warn("Cannot write property: {} of document: {}", es.getKey(), doc.getId(), e);
                     }
                 }
                 try {
                     session.saveDocument(doc);
                 } catch (PropertyException e) {
                     // TODO send to error stream
-                    getLog().warn("Cannot save document: " + doc.getId(), e);
+                    log.warn("Cannot save document: {}", doc.getId(), e);
                 }
             }
         }
