@@ -39,13 +39,6 @@
         class="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
-
-    <authenticationPlugin name="WEBSERVICES_AUTH" enabled="true"
-        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.WebServicesAuthenticator">
-      <parameters>
-        <parameter name="URLSkip">webservices/</parameter>
-      </parameters>
-    </authenticationPlugin>
   </extension>
 
   <extension
@@ -60,7 +53,6 @@
         <plugin>JWT_AUTH</plugin>
         <plugin>FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
     </authenticationChain>
 

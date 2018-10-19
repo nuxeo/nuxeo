@@ -61,14 +61,12 @@ public class TestSpecificChainSetting {
         assertTrue(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertTrue(chain.contains("ANONYMOUS_AUTH"));
-        assertTrue(chain.contains("WEBSERVICES_AUTH"));
 
         HttpServletRequest request = new DummyHttpServletRequest("/toto", null);
         chain = authService.getAuthChain(request);
         assertTrue(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertTrue(chain.contains("ANONYMOUS_AUTH"));
-        assertTrue(chain.contains("WEBSERVICES_AUTH"));
     }
 
     @Test
@@ -92,7 +90,6 @@ public class TestSpecificChainSetting {
         assertTrue(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
         assertTrue(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // test-allow
         request = new DummyHttpServletRequest("/testallow/toto", null);
@@ -104,7 +101,6 @@ public class TestSpecificChainSetting {
         assertTrue(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
         assertFalse(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // test-headers
         Map<String, String> headers = new HashMap<>();
@@ -118,7 +114,6 @@ public class TestSpecificChainSetting {
         assertFalse(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
         assertTrue(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // test-headers2
         headers = new HashMap<>();
@@ -132,7 +127,6 @@ public class TestSpecificChainSetting {
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertFalse(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // WSS url
         headers = new HashMap<>();
@@ -145,7 +139,6 @@ public class TestSpecificChainSetting {
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertFalse(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
 
         // WSS header
         headers = new HashMap<>();
@@ -159,7 +152,6 @@ public class TestSpecificChainSetting {
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertFalse(chain.contains("ANONYMOUS_AUTH"));
-        assertFalse(chain.contains("WEBSERVICES_AUTH"));
     }
 
     @Test
