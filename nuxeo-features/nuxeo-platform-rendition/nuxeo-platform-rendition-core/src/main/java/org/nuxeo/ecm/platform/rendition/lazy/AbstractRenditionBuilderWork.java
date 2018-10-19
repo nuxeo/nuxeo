@@ -103,6 +103,13 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     }
 
     @Override
+    public boolean isCoalescing() {
+        // The same rendering has no reason to be executed more than once if schedulled multiple times
+        // The last schedulled work will build the wanted rendition
+        return true;
+    }
+
+    @Override
     public void work() {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Starting %s work with id %s for transient store key %s and document %s.",
