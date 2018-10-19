@@ -20,6 +20,8 @@ package org.nuxeo.ecm.automation.io.services;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
@@ -31,6 +33,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.7.3
  */
 public class IOComponent extends DefaultComponent {
+
+    private static final Logger log = LogManager.getLogger(IOComponent.class);
 
     /**
      * @since 10.3
@@ -61,7 +65,7 @@ public class IOComponent extends DefaultComponent {
             try {
                 codecs.addCodec(d.klass.getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
-                getLog().error(e,e);
+                log.error("Unable to instantiate codec", e);
             }
         });
         codecs.postInit();

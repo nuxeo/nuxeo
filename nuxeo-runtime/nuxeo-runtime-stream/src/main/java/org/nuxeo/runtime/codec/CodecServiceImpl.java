@@ -23,12 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class CodecServiceImpl extends DefaultComponent implements CodecService {
+
+    private static final Logger log = LogManager.getLogger(CodecServiceImpl.class);
 
     public static final String XP_CODEC = "codec";
 
@@ -39,7 +43,7 @@ public class CodecServiceImpl extends DefaultComponent implements CodecService {
         super.start(context);
         List<CodecDescriptor> descriptors = getDescriptors(XP_CODEC);
         for (CodecDescriptor descriptor : descriptors) {
-            getLog().debug(String.format("Creating CodecFactory : %s", descriptor.klass.getSimpleName()));
+            log.debug("Creating CodecFactory : {}", descriptor.klass::getSimpleName);
             try {
                 CodecFactory factory = descriptor.klass.getDeclaredConstructor().newInstance();
                 factory.init(descriptor.options);

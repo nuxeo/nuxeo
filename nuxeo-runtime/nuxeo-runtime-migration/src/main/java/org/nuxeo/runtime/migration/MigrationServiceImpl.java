@@ -37,6 +37,8 @@ import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueServiceImpl;
@@ -67,6 +69,8 @@ import org.nuxeo.runtime.pubsub.SerializableMessage;
  * @since 9.3
  */
 public class MigrationServiceImpl extends DefaultComponent implements MigrationService {
+
+    private static final Logger log = LogManager.getLogger(MigrationServiceImpl.class);
 
     public static final String KEYVALUE_STORE_NAME = "migration";
 
@@ -138,7 +142,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             String id = message.id;
             Migrator migrator = getMigrator(id);
             if (migrator == null) {
-                getLog().error("Unknown migration id received in invalidation: " + id);
+                log.error("Unknown migration id received in invalidation: {}", id);
                 return;
             }
             migrator.notifyStatusChange();
@@ -288,7 +292,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             String nodeId = Framework.getProperty(NODE_ID_PROP);
             if (StringUtils.isBlank(nodeId)) {
                 nodeId = String.valueOf(RANDOM.nextLong());
-                getLog().warn("Missing cluster node id configuration, please define it explicitly "
+                log.warn("Missing cluster node id configuration, please define it explicitly "
                         + "(usually through repository.clustering.id). Using random cluster node id instead: "
                         + nodeId);
             } else {
@@ -296,9 +300,9 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             }
             invalidator = new MigrationInvalidator();
             invalidator.initialize(MIGRATION_INVAL_PUBSUB_TOPIC, nodeId);
-            getLog().info("Registered migration invalidator for node: " + nodeId);
+            log.info("Registered migration invalidator for node: {}", nodeId);
         } else {
-            getLog().info("Not registering a migration invalidator because clustering is not enabled");
+            log.info("Not registering a migration invalidator because clustering is not enabled");
         }
 
         executor = new MigrationThreadPoolExecutor();
@@ -430,7 +434,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
         BiConsumer<MigrationContext, Throwable> afterMigration = (migrationContext, t) -> {
             if (t != null) {
-                getLog().error("Exception during execution of step: " + step + " for migration: " + id, t);
+                log.error("Exception during execution of step: {} for migration: {}", step, id, t);
             }
             // after the migrator is finished, change state, except if shutdown is requested or exception
             String state = t != null || migrationContext.isShutdownRequested()

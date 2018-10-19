@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -49,6 +50,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 9.3
  */
 public class StreamServiceImpl extends DefaultComponent implements StreamService {
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(StreamServiceImpl.class);
 
     public static final String NUXEO_STREAM_DIR_PROP = "nuxeo.stream.chronicle.dir";
 
@@ -127,7 +130,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         LogManager manager = getLogManager(config.getId());
         config.logs.forEach(l -> {
-            getLog().info("Create if not exists stream: " + l.getId() + " with manager: " + config.getId());
+            log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());
             manager.createIfNotExists(l.getId(), l.size);
         });
     }
@@ -144,10 +147,10 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {
         if (processors.containsKey(descriptor.getId())) {
-            getLog().error("Processor already initialized: " + descriptor.getId());
+            log.error("Processor already initialized: {}", descriptor.getId());
             return;
         }
-        getLog().info("Init Stream processor: " + descriptor.getId() + " with manager: " + descriptor.config);
+        log.info("Init Stream processor: {} with manager: {}", descriptor.getId(), descriptor.config);
         LogManager manager = getLogManager(descriptor.config);
         Topology topology;
         try {
@@ -157,10 +160,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         StreamProcessor streamProcessor = new LogStreamProcessor(manager);
         Settings settings = getSettings(descriptor);
-        if (getLog().isDebugEnabled()) {
-            getLog().debug(
-                    "Starting computation topology: " + descriptor.getId() + "\n" + topology.toPlantuml(settings));
-        }
+        log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
         streamProcessor.init(topology, settings);
         processors.put(descriptor.getId(), streamProcessor);
     }

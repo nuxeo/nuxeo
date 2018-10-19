@@ -49,8 +49,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -88,7 +88,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DownloadServiceImpl extends DefaultComponent implements DownloadService {
 
-    private static final Log log = LogFactory.getLog(DownloadServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DownloadServiceImpl.class);
 
     public static final String XP_PERMISSIONS = "permissions";
 
@@ -123,7 +123,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             try {
                 redirectResolver = descriptor.klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                getLog().error(e,e);
+                log.error("Unable to instantiate redirectResolver", e);
             }
         }
         if (redirectResolver == null) {
@@ -530,7 +530,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             } else {
                 byteRange = DownloadHelper.parseRange(range, length);
                 if (byteRange == null) {
-                    getLog().error("Invalid byte range received: " + range);
+                    log.error("Invalid byte range received: {}", range);
                 } else {
                     response.setHeader("Content-Range",
                             "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
@@ -607,7 +607,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (xpath.startsWith(BLOBHOLDER_PREFIX)) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh == null) {
-                getLog().debug("Not a BlobHolder");
+                log.debug("{} is not a BlobHolder", doc);
                 return null;
             }
             String suffix = xpath.substring(BLOBHOLDER_PREFIX.length());
@@ -615,13 +615,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             try {
                 index = Integer.parseInt(suffix);
             } catch (NumberFormatException e) {
-                getLog().debug(e.getMessage());
+                log.debug(e.getMessage());
                 return null;
             }
             if (!suffix.equals(Integer.toString(index))) {
                 // attempt to use a non-canonical integer, could be used to bypass
                 // a permission function checking just "blobholder:1" and receiving "blobholder:01"
-                getLog().debug("Non-canonical index: " + suffix);
+                log.debug("Non-canonical index: {}", suffix);
                 return null;
             }
             if (index == 0) {
@@ -633,13 +633,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             if (!xpath.contains(":")) {
                 // attempt to use a xpath not prefix-qualified, could be used to bypass
                 // a permission function checking just "file:content" and receiving "content"
-                getLog().debug("Non-canonical xpath: " + xpath);
+                log.debug("Non-canonical xpath: {}", xpath);
                 return null;
             }
             try {
                 blob = (Blob) doc.getPropertyValue(xpath);
             } catch (PropertyNotFoundException e) {
-                getLog().debug(e.getMessage());
+                log.debug("Property '{}' not found", xpath, e);
                 return null;
             }
         }
@@ -683,12 +683,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 throw new NuxeoException("Script does not contain function: " + RUN_FUNCTION + "() in permission: "
                         + descriptor.name, e);
             } catch (ScriptException e) {
-                getLog().error("Failed to evaluate script: " + descriptor.name, e);
+                log.error("Failed to evaluate script: {}", descriptor.name, e);
                 continue;
             }
             if (!(result instanceof Boolean)) {
-                getLog().error(
-                        "Failed to get boolean result from permission: " + descriptor.name + " (" + result + ")");
+                log.error("Failed to get boolean result from permission: {} ({})", descriptor.name, result);
                 continue;
             }
             boolean allow = ((Boolean) result).booleanValue();
@@ -721,7 +720,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
             String cacheControl = "max-age=15, must-revalidate";
-            getLog().debug("Setting Cache-Control: " + cacheControl);
+            log.debug("Setting Cache-Control: {}",  cacheControl);
             response.setHeader("Cache-Control", cacheControl);
         }
     }

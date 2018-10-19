@@ -25,6 +25,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
@@ -39,6 +41,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public class MakeBlob extends AbstractTransientBlobComputation {
+
+    private static final Logger log = LogManager.getLogger(MakeBlob.class);
 
     public static final String NAME = "makeBlob";
 
@@ -110,7 +114,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
             stream.write(content);
             stream.flush();
         } catch (IOException e) {
-            getLog().error(e, e);
+            log.error("Unable to write content", e);
         }
     }
 
@@ -120,7 +124,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         try {
             Files.delete(path);
         } catch (IOException e) {
-            getLog().error(e, e);
+            log.error("Unable to delete file", e);
         }
         return getTransientStoreKey(commandId);
     }

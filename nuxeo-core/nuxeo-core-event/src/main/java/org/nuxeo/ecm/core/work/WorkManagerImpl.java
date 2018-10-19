@@ -47,6 +47,8 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -82,6 +84,8 @@ import com.codahale.metrics.Timer;
  * @since 5.6
  */
 public class WorkManagerImpl extends DefaultComponent implements WorkManager {
+
+    private static final Logger log = LogManager.getLogger(WorkManagerImpl.class);
 
     public static final String NAME = "org.nuxeo.ecm.core.work.service";
 
@@ -159,11 +163,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (ALL_QUEUES.equals(descriptor.getId())) {
                 Boolean processing = descriptor.processing;
                 if (processing == null) {
-                    getLog().error("Ignoring work queue descriptor " + ALL_QUEUES + " with no processing/queuing");
+                    log.error("Ignoring work queue descriptor {} with no processing/queuing", ALL_QUEUES);
                     return;
                 }
-                String what = " processing=" + processing + (queuing == null ? "" : " queuing=" + queuing);
-                getLog().info("Setting on all work queues:" + what);
+                log.info("Setting on all work queues:{}",
+                        () -> " processing=" + processing + (queuing == null ? "" : " queuing=" + queuing));
                 // activate/deactivate processing on all queues
                 getDescriptors(QUEUES_EP).forEach(d -> {
                     WorkQueueDescriptor wqd = new WorkQueueDescriptor();
@@ -198,7 +202,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         // (from another Nuxeo instance) can be seen
         executor.prestartAllCoreThreads();
         executors.put(config.id, executor);
-        getLog().info("Initialized work queue " + config.id + " " + config.toString());
+        log.info("Initialized work queue {}, {}", config.id, config);
     }
 
     void activateQueue(WorkQueueDescriptor config) {
@@ -206,7 +210,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalArgumentException("cannot activate all queues");
         }
         queuing.setActive(config.id, config.isProcessingEnabled());
-        getLog().info("Activated work queue " + config.id + " " + config.toString());
+        log.info("Activated work queue {}, {}",  config.id, config);
         // Enable metrics
         if (config.isProcessingEnabled()) {
             activateQueueMetrics(config.id);
@@ -222,7 +226,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             deactivateQueueMetrics(config.id);
         }
         queuing.setActive(config.id, false);
-        getLog().info("Deactivated work queue " + config.id);
+        log.info("Deactivated work queue {}", config.id);
     }
 
     void activateQueueMetrics(String queueId) {
@@ -258,10 +262,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         if (!value) {
             if (!queuing.supportsProcessingDisabling()) {
-                getLog().error(
-                        "Attempting to disable works processing on a WorkQueuing instance that does not support it. "
-                                + "Works will still be processed. "
-                                + "Disabling works processing to manage distribution finely can be done using Redis or Stream implementations.");
+                log.error("Attempting to disable works processing on a WorkQueuing instance that does not support it. "
+                        + "Works will still be processed. "
+                        + "Disabling works processing to manage distribution finely can be done using Redis or Stream implementations.");
             }
             deactivateQueue(config);
         } else {
@@ -362,7 +365,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                     }
                     try {
                         if (!shutdown(10, TimeUnit.SECONDS)) {
-                            getLog().error("Some processors are still active");
+                            log.error("Some processors are still active");
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
@@ -391,8 +394,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         descriptors.forEach(d -> d.categories.forEach(c -> {
             categoryToQueueId.computeIfPresent(c, (k, v) -> {
                 if (!v.equals(d.getId())) {
-                    getLog().error("Work category '" + c + "' cannot be assigned to work queue '" + d.getId()
-                            + "' because it is already assigned to work queue '" + v + "'");
+                    log.error("Work category '{}' cannot be assigned to work queue '{}'"
+                            + " because it is already assigned to work queue '{}'", c, d.getId(), v);
                 }
                 return v;
             });
@@ -646,11 +649,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             try {
                 if (work.isSuspending()) {
-                    getLog().trace(work + " is suspending, giving up");
+                    log.trace("{} is suspending, giving up", work);
                     return;
                 }
                 if (isShutdown()) {
-                    getLog().trace("rescheduling " + work.getId(), t);
+                    log.trace("rescheduling {}", work.getId(), t);
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
                     return;
@@ -680,7 +683,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 boolean hasRunningWork = false;
                 for (Work work : running) {
                     work.setWorkInstanceSuspending();
-                    getLog().trace("suspending and rescheduling " + work.getId());
+                    log.trace("suspending and rescheduling {}", work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
                     hasRunningWork = true;
@@ -743,9 +746,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             // which is buggy
             boolean disabled = Boolean.TRUE.booleanValue();
             if (!disabled && hasWorkInState(workId, scheduling.state)) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Canceling schedule because found: " + scheduling);
-                }
+                log.debug("Canceling schedule because found: {}", scheduling);
                 return;
 
             }
@@ -768,46 +769,33 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             transactionManager = null;
         }
         if (transactionManager == null) {
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Not scheduling work after commit because of missing transaction manager: " + work);
-            }
+            log.debug("Not scheduling work after commit because of missing transaction manager: {}", work);
             return false;
         }
         try {
             Transaction transaction = transactionManager.getTransaction();
             if (transaction == null) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Not scheduling work after commit because of missing transaction: " + work);
-                }
+                log.debug("Not scheduling work after commit because of missing transaction: {}", work);
                 return false;
             }
             int status = transaction.getStatus();
             if (status == Status.STATUS_ACTIVE) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Scheduling work after commit: " + work);
-                }
+                log.debug("Scheduling work after commit: {}", work);
                 transaction.registerSynchronization(new WorkScheduling(work, scheduling));
                 return true;
             } else if (status == Status.STATUS_COMMITTED) {
                 // called in afterCompletion, we can schedule immediately
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Scheduling work immediately: " + work);
-                }
+                log.debug("Scheduling work immediately: {}", work);
                 return false;
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Cancelling schedule because transaction marked rollback-only: " + work);
-                }
+                log.debug("Cancelling schedule because transaction marked rollback-only: {}", work);
                 return true;
             } else {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Not scheduling work after commit because transaction is in status " + status + ": "
-                            + work);
-                }
+                log.debug("Not scheduling work after commit because transaction is in status {}: {}", status, work);
                 return false;
             }
         } catch (SystemException | RollbackException e) {
-            getLog().error("Cannot schedule after commit", e);
+            log.error("Cannot schedule after commit", e);
             return false;
         }
     }
@@ -874,7 +862,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
         long deadline = getTimestampAfter(durationInMs);
         int pause = (int) Math.min(durationInMs, 500L);
-        getLog().debug("awaitForCompletion " + durationInMs + " ms");
+        log.debug("awaitForCompletion {} ms", durationInMs);
         do {
             if (noScheduledOrRunningWork(queueId)) {
                 completionSynchronizer.signalCompletedWork();
@@ -883,7 +871,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             }
             completionSynchronizer.waitForCompletedWork(pause);
         } while (System.currentTimeMillis() < deadline);
-        getLog().info("awaitCompletion timeout after " + durationInMs + " ms");
+        log.info("awaitCompletion timeout after {} ms", durationInMs);
         SequenceTracer.destroy("timeout after " + durationInMs + " ms");
         return false;
     }
@@ -909,15 +897,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             return getExecutor(queueId).runningCount.getCount() == 0L;
         }
         if (getQueueSize(queueId, null) > 0) {
-            if (getLog().isTraceEnabled()) {
-                getLog().trace(queueId + " not empty, sched: " + getQueueSize(queueId, State.SCHEDULED) + ", running: "
-                        + getQueueSize(queueId, State.RUNNING));
-            }
+            log.trace("{} not empty, sched: {}, running: {}", () -> queueId,
+                    () -> getQueueSize(queueId, State.SCHEDULED), () -> getQueueSize(queueId, State.RUNNING));
             return false;
         }
-        if (getLog().isTraceEnabled()) {
-            getLog().trace(queueId + " is completed");
-        }
+        log.trace("{} is completed", queueId);
         return true;
     }
 

@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.MarshallerInspector;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -46,6 +48,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 7.2
  */
 public class MarshallerRegistryImpl extends DefaultComponent implements MarshallerRegistry {
+
+    private static final Logger log = LogManager.getLogger(MarshallerRegistryImpl.class);
 
     /**
      * @since 10.3
@@ -108,7 +112,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
                             + Writer.class.getName() + " or " + Reader.class.getName());
         }
         if (marshallersByType.get(marshaller) != null) {
-            getLog().warn("The marshaller " + marshaller.getName() + " is already registered.");
+            log.warn("The marshaller {} is already registered.", marshaller.getName());
             return;
         } else {
             marshallersByType.put(marshaller, inspector);
@@ -140,7 +144,7 @@ public class MarshallerRegistryImpl extends DefaultComponent implements Marshall
     @Override
     public void deregister(Class<?> marshaller) {
         if (marshaller == null) {
-            getLog().warn("Cannot deregister null marshaller");
+            log.warn("Cannot deregister null marshaller");
             return;
         }
         MarshallerInspector inspector = new MarshallerInspector(marshaller);

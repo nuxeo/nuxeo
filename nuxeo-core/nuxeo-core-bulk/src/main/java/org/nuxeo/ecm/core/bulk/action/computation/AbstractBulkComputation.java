@@ -29,8 +29,8 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,6 +64,8 @@ import com.google.common.collect.Lists;
  */
 public abstract class AbstractBulkComputation extends AbstractComputation {
 
+    private static final Logger log = LogManager.getLogger(AbstractBulkComputation.class);
+
     protected Map<String, BulkCommand> commands = new PassiveExpiringMap(60, TimeUnit.SECONDS);
 
     protected BulkCommand command;
@@ -88,12 +90,12 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             context.askForCheckpoint();
         } else {
             if (isAbortedCommand(bucket.getCommandId())) {
-                getLog().debug("Skipping aborted command: " + bucket.getCommandId());
+                log.debug("Skipping aborted command: {}", bucket.getCommandId());
                 context.askForCheckpoint();
             } else {
                 // this requires a manual intervention, the kv store might have been lost
-                getLog().error(String.format("Stopping processing, unknown command: %s, offset: %s, record: %s.",
-                        bucket.getCommandId(), context.getLastOffset(), record));
+                log.error("Stopping processing, unknown command: {}, offset: {}, record: {}.",
+                        bucket.getCommandId(), context.getLastOffset(), record);
                 context.askForTermination();
             }
         }
@@ -164,10 +166,6 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             delta.setResult(result);
         }
         context.produceRecord(OUTPUT_1, commandId, BulkCodecs.getStatusCodec().encode(delta));
-    }
-
-    protected Log getLog() {
-        return LogFactory.getLog(getClass());
     }
 
     protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -36,6 +38,8 @@ import com.mongodb.client.MongoDatabase;
  * @since 9.1
  */
 public class MongoDBComponent extends DefaultComponent implements MongoDBConnectionService {
+
+    private static final Logger log = LogManager.getLogger(MongoDBComponent.class);
 
     /**
      * @since 10.3
@@ -53,7 +57,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         super.start(context);
         Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);
         confs.forEach(c -> {
-            getLog().debug("Initializing MongoClient with id=" + c.getId());
+            log.debug("Initializing MongoClient with id={}", c::getId);
             clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c.server));
         });
     }
@@ -64,7 +68,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         super.stop(context);
         // don't remove entrySet otherwise java will try to load mongo client classes even in a non mongo setup
         clients.entrySet().forEach(e -> {
-            getLog().debug("Closing MongoClient with id=" + e.getKey());
+            log.debug("Closing MongoClient with id={}", e::getKey);
             e.getValue().close();
         });
         clients.clear();

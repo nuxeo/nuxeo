@@ -88,7 +88,7 @@ public class CSVProjection extends AbstractBulkComputation {
         try {
             writer.write(docs, DocumentModelList.class, null, TEXT_CSV_TYPE, out);
         } catch (IOException e) {
-            getLog().error(e, e);
+            log.error("Unable to write documents", e);
         }
     }
 
