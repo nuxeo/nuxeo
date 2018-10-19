@@ -24,7 +24,6 @@
         <plugin>WEBENGINE_FORM_AUTH</plugin>  
         <plugin>OPENID_CONNECT_AUTH</plugin>      
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
