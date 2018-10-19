@@ -38,7 +38,7 @@ import org.osgi.framework.SynchronousBundleListener;
  */
 public class OSGiComponentLoader implements SynchronousBundleListener {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(OSGiComponentLoader.class);
 
     private final OSGiRuntimeService runtime;
 

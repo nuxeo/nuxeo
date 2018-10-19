@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 @SuppressWarnings("unchecked")
 public class DescriptorRegistry {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(DescriptorRegistry.class);
 
     // target -> xp -> id -> list of descriptors
     protected Map<String, Map<String, Map<String, List<Descriptor>>>> descriptors = new HashMap<>();

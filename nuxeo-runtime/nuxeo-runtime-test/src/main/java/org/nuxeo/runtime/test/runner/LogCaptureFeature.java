@@ -56,7 +56,7 @@ import org.junit.runners.model.FrameworkMethod;
  */
 public class LogCaptureFeature implements RunnerFeature {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(LogCaptureFeature.class);
 
     /**
      * @since 5.7

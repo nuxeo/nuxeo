@@ -65,7 +65,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml")
 public class TestService {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger(TestService.class);
 
     @Rule
     public final TestName testName = new TestName();

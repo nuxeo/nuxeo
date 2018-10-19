@@ -78,7 +78,7 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
  */
 public class RuntimeHarnessImpl implements RuntimeHarness {
 
-    protected static final Logger log = LogManager.getLogger();
+    protected static final Logger log = LogManager.getLogger(RuntimeHarnessImpl.class);
 
     protected static URL[] introspectClasspath() {
         return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
