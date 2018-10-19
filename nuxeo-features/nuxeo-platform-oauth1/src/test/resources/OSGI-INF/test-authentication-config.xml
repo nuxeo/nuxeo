@@ -8,7 +8,7 @@
     <authenticationChain>
       <plugins>
         <plugin>BASIC_AUTH</plugin>
-        <plugin>OAUTH_AUTH</plugin>
+        <plugin>OAUTH1_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>

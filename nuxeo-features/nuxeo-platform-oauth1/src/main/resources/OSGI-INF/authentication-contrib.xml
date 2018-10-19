@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="authenticators">
-    <authenticationPlugin name="OAUTH_AUTH" enabled="true"
+    <authenticationPlugin name="OAUTH1_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuth1Authenticator">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
