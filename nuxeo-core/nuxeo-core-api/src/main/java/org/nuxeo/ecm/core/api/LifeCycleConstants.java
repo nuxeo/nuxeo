@@ -25,10 +25,22 @@ package org.nuxeo.ecm.core.api;
  */
 public interface LifeCycleConstants {
 
+    /**
+     * @since 10.3, use trash service instead
+     */
+    @Deprecated
     String DELETED_STATE = "deleted";
 
+    /**
+     * @since 10.3, use trash service instead
+     */
+    @Deprecated
     String DELETE_TRANSITION = "delete";
 
+    /**
+     * @since 10.3, use trash service instead
+     */
+    @Deprecated
     String UNDELETE_TRANSITION = "undelete";
 
     /**

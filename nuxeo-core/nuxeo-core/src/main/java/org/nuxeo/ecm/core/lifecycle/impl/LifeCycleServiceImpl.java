@@ -20,6 +20,9 @@
 
 package org.nuxeo.ecm.core.lifecycle.impl;
 
+import static java.util.function.Predicate.isEqual;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -155,6 +158,13 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
                 for (Object contribution : contributions) {
                     LifeCycleDescriptor desc = (LifeCycleDescriptor) contribution;
                     lifeCycles.addContribution(desc);
+                    // look for delete state to warn about usage
+                    if (!"default".equals(desc.getName())
+                            && desc.getStates().stream().map(LifeCycleState::getName).anyMatch(
+                                    isEqual(DELETED_STATE))) {
+                        log.warn("The 'deleted' state is deprecated and shouldn't be use anymore."
+                                + " Please consider removing it from you life cycle policy and use trash service instead.");
+                    }
                 }
             } else if (point.equals("lifecyclemanager")) {
                 log.warn("Ignoring deprecated lifecyclemanager extension point");
