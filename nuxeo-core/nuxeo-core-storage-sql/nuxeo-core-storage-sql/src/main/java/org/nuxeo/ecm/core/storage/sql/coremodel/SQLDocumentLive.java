@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -404,7 +403,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public void followTransition(String transition) throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
+        LifeCycleService service = Framework.getService(LifeCycleService.class);
         if (service == null) {
             throw new NuxeoException("LifeCycleService not available");
         }
@@ -413,7 +412,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public Collection<String> getAllowedStateTransitions() {
-        LifeCycleService service = NXCore.getLifeCycleService();
+        LifeCycleService service = Framework.getService(LifeCycleService.class);
         if (service == null) {
             throw new NuxeoException("LifeCycleService not available");
         }

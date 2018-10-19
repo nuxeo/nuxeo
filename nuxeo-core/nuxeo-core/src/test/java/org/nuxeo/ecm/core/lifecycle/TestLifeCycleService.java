@@ -32,7 +32,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,7 +53,7 @@ public class TestLifeCycleService {
 
     @Before
     public void setUp() throws Exception {
-        lifeCycleService = NXCore.getLifeCycleService();
+        lifeCycleService = Framework.getService(LifeCycleService.class);
         assertNotNull(lifeCycleService);
     }
 

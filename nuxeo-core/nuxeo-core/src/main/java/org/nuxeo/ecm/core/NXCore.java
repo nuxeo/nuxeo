@@ -42,7 +42,9 @@ public final class NXCore {
      *
      * @see LifeCycleServiceImpl
      * @return the life cycle service
+     * @deprecated since 10.3, use directly {@link Framework#getService(Class)} with {@link LifeCycleService}
      */
+    @Deprecated
     public static LifeCycleService getLifeCycleService() {
         return (LifeCycleService) Framework.getRuntime().getComponent(LifeCycleServiceImpl.NAME);
     }

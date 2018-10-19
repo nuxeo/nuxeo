@@ -8,8 +8,11 @@
     @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
   </documentation>
 
-  <implementation
-      class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl"/>
+  <implementation class="org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.lifecycle.LifeCycleService" />
+  </service>
 
   <extension-point name="lifecycle">
 
@@ -37,8 +40,7 @@
       life cycle where <i>default</i> is the name of a registered life cycle.
     </documentation>
 
-    <object
-        class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
+    <object class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor"/>
 
   </extension-point>
 
