@@ -16,9 +16,9 @@
             return 'mainBlob';
           } else if (Document.getType() == 'Note') {
             return 'pdf';
-          } else if (Document.getType() == 'Collection') {
+          } else if (Document.getFacets().contains("Collection")) {
             return 'containerDefaultRendition';
-          } else if (Document.getType() == 'Folder') {
+          } else if (Document.getFacets().contains("Folderish")) {
             return 'containerDefaultRendition';
           } else {
             return 'xmlExport';
