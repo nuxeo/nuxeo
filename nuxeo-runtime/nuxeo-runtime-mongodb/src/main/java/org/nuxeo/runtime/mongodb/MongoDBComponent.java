@@ -59,8 +59,10 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     }
 
     @Override
+    @SuppressWarnings("Java8MapForEach")
     public void stop(ComponentContext context) throws InterruptedException {
         super.stop(context);
+        // don't remove entrySet otherwise java will try to load mongo client classes even in a non mongo setup
         clients.entrySet().forEach(e -> {
             getLog().debug("Closing MongoClient with id=" + e.getKey());
             e.getValue().close();
@@ -95,13 +97,10 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
      */
     @Override
     public Iterable<MongoDatabase> getDatabases() {
-        return () -> clients.entrySet()
-                            .stream()
-                            .map(e -> {
-                                MongoDBConnectionConfig c = getDescriptor(XP_CONNECTION, e.getKey());
-                                return MongoDBConnectionHelper.getDatabase(e.getValue(), c.dbname);
-                            })
-                            .iterator();
+        return () -> clients.entrySet().stream().map(e -> {
+            MongoDBConnectionConfig c = getDescriptor(XP_CONNECTION, e.getKey());
+            return MongoDBConnectionHelper.getDatabase(e.getValue(), c.dbname);
+        }).iterator();
     }
 
 }

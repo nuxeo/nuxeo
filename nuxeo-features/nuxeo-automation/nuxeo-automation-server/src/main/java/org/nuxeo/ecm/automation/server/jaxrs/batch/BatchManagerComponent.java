@@ -24,7 +24,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +87,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         List<BatchHandlerDescriptor> descriptors = getDescriptors(XP_BATCH_HANDLER);
         descriptors.forEach(d -> {
             try {
-                BatchHandler handler = d.klass.newInstance();
+                BatchHandler handler = d.klass.getDeclaredConstructor().newInstance();
                 handler.initialize(d.name, d.properties);
                 handlers.put(d.name, handler);
             } catch (ReflectiveOperationException e) {
