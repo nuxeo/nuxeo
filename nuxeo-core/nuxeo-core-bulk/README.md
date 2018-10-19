@@ -18,6 +18,17 @@ This module provides the ability to execute actions asynchronously on a -possibl
 
 - __batch__: a smaller (or equals) portion of a bucket where the action is applied within a transaction.
 
+## Requirements
+
+To work properly the Bulk Service need a true KeyValue storage to store the command its status,
+there are 2 possibles choices:
+
+- Use `RedisKeyValueStore` this is the case if you have `nuxeo.redis.enabled=true` in your nuxeo.conf.
+- Use `MongoDBKeyValueStore` this is the case if you are using the `mongodb` template.
+
+You should not rely on the default `MemKeyValueStore` implementation that flushes the data on restart.
+
+
 ## Bulk Command
 
 The bulk command is the input of the framework.
@@ -62,6 +73,8 @@ Each action runs its own stream processor (a topology of computations).
 The action processor must respect the following rules:
 
 - action must send a status update containing the number of processed documents since the last update.
+
+- action must handle possible error, for instance the user that send the command might not have write permission on all documents
 
 - the total number of processed documents reported must match at some point the number of documents in the document set.
 
