@@ -18,7 +18,10 @@
  */
 package org.nuxeo.ecm.core.trash;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.function.Predicate.isEqual;
+import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STATE_LIFECYCLE;
@@ -28,14 +31,14 @@ import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.migrator.AbstractRepositoryMigrator;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -47,8 +50,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 10.2
  */
 public class TrashedStateMigrator extends AbstractRepositoryMigrator {
-
-    private static final Log log = LogFactory.getLog(TrashedStateMigrator.class);
 
     protected static final String QUERY_DELETED = "SELECT ecm:uuid FROM Document WHERE ecm:currentLifeCycleState = 'deleted' AND ecm:isVersion = 0";
 
@@ -110,19 +111,29 @@ public class TrashedStateMigrator extends AbstractRepositoryMigrator {
         checkShutdownRequested();
 
         // compute all deleted doc id refs
-        List<IdRef> deletedRefs = deletedMaps.stream() //
-                                             .map(map -> (String) map.get(ECM_UUID))
-                                             .map(IdRef::new)
-                                             .collect(Collectors.toList());
+        List<String> ids = deletedMaps.stream().map(map -> (String) map.get(ECM_UUID)).collect(toList());
 
         checkShutdownRequested();
 
         // set ecm:isTrashed property by batch
-        int size = deletedRefs.size();
+        int size = ids.size();
         int i = 0;
         reportProgress(session.getRepositoryName(), "Setting isTrashed property", i, size);
-        for (IdRef deletedRef : deletedRefs) {
-            session.setDocumentSystemProp(deletedRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
+        LifeCycleService lifeCycleService = Framework.getService(LifeCycleService.class);
+        for (String id : ids) {
+            // here we need the low level Document in order to workaround the backward mechanism of followTransition
+            // present in the CoreSession
+            Document doc = ((AbstractSession) session).getSession().getDocumentByUUID(id);
+            // set trash property to true
+            doc.setSystemProp(SYSPROP_IS_TRASHED, TRUE);
+            // try to follow undelete transition
+            try {
+                lifeCycleService.followTransition(doc, UNDELETE_TRANSITION);
+            } catch (LifeCycleException e) {
+                // this is possible if the lifecycle policy doesn't exist anymore
+                // force 'project' state
+                doc.setCurrentLifeCycleState("project");
+            }
             checkShutdownRequested();
             i++;
             if (i % BATCH_SIZE == 0 || i == size) {

@@ -124,7 +124,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
     public void followTransition(Document doc, String transitionName) throws LifeCycleException {
         String lifeCycleState = doc.getLifeCycleState();
         LifeCycle lifeCycle = getLifeCycleFor(doc);
-        if (lifeCycle.getAllowedStateTransitionsFrom(lifeCycleState).contains(transitionName)) {
+        if (lifeCycle != null && lifeCycle.getAllowedStateTransitionsFrom(lifeCycleState).contains(transitionName)) {
             String destinationStateName = lifeCycle.getTransitionByName(transitionName).getDestinationStateName();
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
