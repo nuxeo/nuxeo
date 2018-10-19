@@ -40,7 +40,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
-import static org.nuxeo.ecm.core.trash.TrashService.IS_TRASHED_FROM_DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.trash.LifeCycleTrashService.FROM_LIFE_CYCLE_TRASH_SERVICE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,6 +75,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
@@ -96,7 +97,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -2078,8 +2078,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
+        // backward compat - used to forward deprecated call followTransition("deleted") to trash service
+        TrashService trashService = Framework.getService(TrashService.class);
         boolean deleteTransitions = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
                 || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
+        if (deleteTransitions && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)
+                && !Boolean.TRUE.equals(options.get(FROM_LIFE_CYCLE_TRASH_SERVICE))) {
+            String message = "Following the transition '" + transition + "' is deprecated. Please use TrashService.";
+            if (log.isTraceEnabled()) {
+                log.warn(message, new Throwable("stack trace"));
+            } else {
+                log.warn(message);
+            }
+            DocumentModel docModel = readModel(doc);
+            if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                trashService.trashDocument(docModel);
+            } else {
+                trashService.untrashDocument(docModel);
+            }
+            return true;
+        }
 
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
             if (!deleteTransitions || Framework.getService(ConfigurationService.class)
@@ -2102,28 +2120,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
         if (!docModel.isImmutable()) {
             writeModel(doc, docModel);
-        }
-        // backward compat - used to forward deprecated call followTransition("deleted") to trash service
-        // we need to exclude proxy because trash service will remove them.
-        // This is triggered if the configuration property is set to true
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue(IS_TRASHED_FROM_DELETE_TRANSITION)) {
-            TrashService trashService = Framework.getService(TrashService.class);
-            if (deleteTransitions && !doc.isProxy() && !trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
-                String message = "Following the transition " + transition + " is deprecated.";
-                if (log.isTraceEnabled()) {
-                    log.warn(message, new Throwable("stack trace"));
-                } else {
-                    log.warn(message);
-                }
-                docModel = readModel(doc);
-                docModel.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);
-                if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
-                    trashService.trashDocument(docModel);
-                } else {
-                    trashService.untrashDocument(docModel);
-                }
-            }
         }
         return true; // throws if error
     }

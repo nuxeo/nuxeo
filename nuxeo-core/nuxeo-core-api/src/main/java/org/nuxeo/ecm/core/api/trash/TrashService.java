@@ -55,14 +55,6 @@ public interface TrashService {
     String DISABLE_TRASH_RENAMING = "skipTrashRenaming";
 
     /**
-     * Configuration property to enable backward compatibility to forward the call to the service on
-     * followTransition("deleted").
-     *
-     * @since 10.2
-     */
-    String IS_TRASHED_FROM_DELETE_TRANSITION = "org.nuxeo.isTrashed.from.deleteTransition";
-
-    /**
      * @return whether or not the input {@link DocumentRef} is trashed.
      * @since 10.1
      */

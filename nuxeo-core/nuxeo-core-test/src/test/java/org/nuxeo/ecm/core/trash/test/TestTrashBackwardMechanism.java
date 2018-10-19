@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * Class to test the backward mechanism when following a delete/undelete transition.
@@ -45,9 +44,8 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, LogCaptureFeature.class })
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-backward-mechanism-follow-transition.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestTrashBackwardMechanism {
 
@@ -56,9 +54,6 @@ public class TestTrashBackwardMechanism {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testPropertyTrashService() {

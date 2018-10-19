@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.trash;
 
+import static java.lang.Boolean.TRUE;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +40,13 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 public class LifeCycleTrashService extends AbstractTrashService {
 
     private static final Log log = LogFactory.getLog(LifeCycleTrashService.class);
+
+    /**
+     * Context data property for backward mechanism in {@link CoreSession#followTransition(DocumentModel, String)}.
+     *
+     * @since 10.3
+     */
+    public static final String FROM_LIFE_CYCLE_TRASH_SERVICE = "fromLifeCycleTrashService";
 
     @Override
     public boolean isTrashed(CoreSession session, DocumentRef docRef) {
@@ -79,10 +88,11 @@ public class LifeCycleTrashService extends AbstractTrashService {
             // handle placeless document
             session.removeDocument(doc.getRef());
         } else {
-            if (!Boolean.TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
+            if (!TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
                 String name = mangleName(doc);
                 session.move(doc.getRef(), doc.getParentRef(), name);
             }
+            doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
             session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
         }
     }
@@ -159,12 +169,13 @@ public class LifeCycleTrashService extends AbstractTrashService {
 
     protected void undeleteDocument(CoreSession session, DocumentModel doc) {
         String name = doc.getName();
-        if (!Boolean.TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
+        if (!TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
             String newName = unmangleName(doc);
             if (!newName.equals(name)) {
                 session.move(doc.getRef(), doc.getParentRef(), newName);
             }
         }
+        doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
         session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
 

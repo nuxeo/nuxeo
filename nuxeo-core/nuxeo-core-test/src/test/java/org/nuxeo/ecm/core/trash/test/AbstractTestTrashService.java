@@ -21,9 +21,12 @@ package org.nuxeo.ecm.core.trash.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +44,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -382,14 +384,19 @@ public abstract class AbstractTestTrashService {
         DocumentRef fileRef = file.getRef();
 
         // following detete/undelete will trigger the trash service
-        file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        // in all cases document follow the transition + document will be trashed
-        assertEquals(LifeCycleConstants.DELETED_STATE, session.getCurrentLifeCycleState(fileRef));
+        file.followTransition(DELETE_TRANSITION);
+        // we don't follow transition anymore in new system
+        if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
+            assertEquals(DELETED_STATE, session.getCurrentLifeCycleState(fileRef));
+        } else {
+            assertEquals("project", session.getCurrentLifeCycleState(fileRef));
+        }
         assertTrue(session.isTrashed(fileRef));
 
-        file.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
-        // in all cases document follow the transition + document will be trashed
-        assertNotEquals(LifeCycleConstants.DELETED_STATE, session.getCurrentLifeCycleState(fileRef));
+        file.followTransition(UNDELETE_TRANSITION);
+        // we don't follow transition anymore in new system
+        // in all cases we're expecting project state
+        assertEquals("project", session.getCurrentLifeCycleState(fileRef));
         assertFalse(session.isTrashed(fileRef));
 
     }

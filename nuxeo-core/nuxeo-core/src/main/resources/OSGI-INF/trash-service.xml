@@ -24,13 +24,6 @@
       configuration is still available for former trash service based on document life cycle state.
     </documentation>
     <property name="org.nuxeo.trash.keepCheckedIn">true</property>
-
-    <documentation>
-      If true, the trash service is called to set the ecm:isTrashed property when the 'delete' transition is followed.
-
-      @since 10.2
-    </documentation>
-    <property name="org.nuxeo.isTrashed.from.deleteTransition">true</property>
   </extension>
 
 </component>

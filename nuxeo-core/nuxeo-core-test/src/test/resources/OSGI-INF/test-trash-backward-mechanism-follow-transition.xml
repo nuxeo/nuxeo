@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.tests.trash.backward.mechanism.follow.transition">
-
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="org.nuxeo.isTrashed.from.deleteTransition">true</property>
-  </extension>
-
-</component>
