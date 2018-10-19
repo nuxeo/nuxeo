@@ -18,19 +18,17 @@
  */
 package org.nuxeo.ecm.core.bulk.computation;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_KV_STORE_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.COMMAND_SUFFIX;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.BulkServiceImpl;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
  * Saves the status into a key value store.
@@ -48,9 +46,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  * @since 10.2
  */
 public class BulkStatusComputation extends AbstractComputation {
-
-    // How long we keep the command and its status in the kv store once completed
-    public static final long COMPLETED_TTL_SECONDS = 3_600;
+    private static final Log log = LogFactory.getLog(BulkStatusComputation.class);
 
     public BulkStatusComputation(String name) {
         super(name, 1, 1);
@@ -58,24 +54,26 @@ public class BulkStatusComputation extends AbstractComputation {
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        KeyValueStore kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(BULK_KV_STORE_NAME);
         Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
         BulkStatus recordStatus = codec.decode(record.getData());
-        String key = recordStatus.getCommandId() + STATUS_SUFFIX;
+        BulkServiceImpl bulkService = (BulkServiceImpl) Framework.getService(BulkService.class);
         BulkStatus status;
-        if (recordStatus.isDelta()) {
-            status = codec.decode(kvStore.get(key));
-            status.merge(recordStatus);
-        } else {
+        if (!recordStatus.isDelta()) {
             status = recordStatus;
-        }
-        byte[] statusAsByte = codec.encode(status);
-        if (BulkStatus.State.COMPLETED.equals(status.getState())) {
-            kvStore.put(key, statusAsByte, COMPLETED_TTL_SECONDS);
-            kvStore.setTTL(recordStatus.getCommandId() + COMMAND_SUFFIX, COMPLETED_TTL_SECONDS);
-            context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsByte);
         } else {
-            kvStore.put(key, statusAsByte);
+            status = bulkService.getStatus(recordStatus.getCommandId());
+            if (BulkStatus.State.UNKNOWN.equals(status.getState())) {
+                // this requires a manual intervention, the kv store might have been lost
+                log.error(String.format("Stopping processing, unknown status for command: %s, offset: %s, record: %s.",
+                        recordStatus.getCommandId(), context.getLastOffset(), record));
+                context.askForTermination();
+                return;
+            }
+            status.merge(recordStatus);
+        }
+        byte[] statusAsBytes = bulkService.setStatus(status);
+        if (BulkStatus.State.COMPLETED.equals(status.getState())) {
+            context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsBytes);
         }
         context.askForCheckpoint();
     }

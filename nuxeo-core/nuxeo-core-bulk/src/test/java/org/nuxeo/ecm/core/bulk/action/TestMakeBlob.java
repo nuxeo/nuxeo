@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_SUFFIX;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -181,12 +179,10 @@ public class TestMakeBlob {
     }
 
     protected void createStatus(String commandId, int count) {
-        Codec<BulkStatus> codec = BulkCodecs.getStatusCodec();
+        BulkStatus status = new BulkStatus(commandId);
+        status.setState(BulkStatus.State.RUNNING);
+        status.setTotal(count);
         BulkServiceImpl service = (BulkServiceImpl) Framework.getService(BulkService.class);
-        KeyValueStore kvStore = service.getKvStore();
-        BulkStatus cmdStatus = new BulkStatus(commandId);
-        cmdStatus.setState(BulkStatus.State.RUNNING);
-        cmdStatus.setTotal(count);
-        kvStore.put(commandId + STATUS_SUFFIX, codec.encode(cmdStatus));
+        service.setStatus(status);
     }
 }
