@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -154,6 +155,28 @@ public class TestRenditionOperation {
                 "SELECT * FROM Document WHERE ecm:isProxy = 1 AND rend:sourceVersionableId = '%s'", file.getId()));
         assertEquals(1, retrievedPublished.size());
         assertEquals(publishedRendition.getId(), retrievedPublished.get(0).getId());
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void shouldPublishMutlipleDocument() throws OperationException {
+        DocumentModel file1 = createDummyFile();
+        DocumentModel file2 = createDummyFile();
+        DocumentModel section = session.createDocumentModel("/", "section", "Section");
+        section = session.createDocument(section);
+
+        DocumentModelList publishedRenditions;
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(new String[] { file1.getId(), file2.getId() });
+            Map<String, Object> params = new HashMap<>();
+            params.put("target", section);
+            params.put("defaultRendition", true);
+            publishedRenditions = (DocumentModelList) automationService.run(ctx, PublishRendition.ID, params);
+        }
+        assertNotNull(publishedRenditions);
+        assertEquals(2, publishedRenditions.size());
     }
 
     /**
