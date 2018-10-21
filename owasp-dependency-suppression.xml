@@ -16,10 +16,13 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: geronimo-transaction-2.2.1.jar (vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
+   file name: geronimo-transaction-2.2.1.jar
+   (CVE-2008-0732: vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
+   (CVE-2011-5034: vulnerable code not in geronimo-transaction)
    ]]></notes>
    <gav regex="true">^org\.apache\.geronimo\.components:geronimo-transaction:.*$</gav>
    <cve>CVE-2008-0732</cve>
+   <cve>CVE-2011-5034</cve>
 </suppress>
 <suppress>
    <notes><![CDATA[
@@ -27,6 +30,43 @@
    ]]></notes>
    <gav regex="true">^org\.apache\.xbean:xbean-naming:.*$</gav>
    <cve>CVE-2008-0732</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: vaadin-sass-compiler-0.9.12-NX01.jar (vulnerability is in vaadin itself, not sass-compiler)
+   ]]></notes>
+   <gav regex="true">^com\.vaadin:vaadin-sass-compiler:.*$</gav>
+   <cve>CVE-2011-0509</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: annotations-12.0.jar (vulnerability is not in annotations)
+   ]]></notes>
+   <gav regex="true">^com\.intellij:annotations:.*$</gav>
+   <cve>CVE-2017-8316</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: scala-library-2.12.3.jar (vulnerable compilation daemon is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.scala-lang:scala-library:.*$</gav>
+   <cve>CVE-2017-15288</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: scala-reflect-2.12.3.jar (vulnerable compilation daemon is not used nor included by Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.scala-lang:scala-reflect:.*$</gav>
+   <cve>CVE-2017-15288</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   Jetty is only used in tests
+   ]]></notes>
+   <cve>CVE-2017-7656</cve>
+   <cve>CVE-2017-7657</cve>
+   <cve>CVE-2017-7658</cve>
+   <cve>CVE-2017-9735</cve>
 </suppress>
 <suppress>
    <notes><![CDATA[
@@ -78,6 +118,59 @@
 
 <suppress>
    <notes><![CDATA[
+   file name: openstack-keystone-2.1.1.jar (OpenStack Keystone not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.apache\.jclouds\.api:openstack-keystone:.*$</gav>
+   <cpe>cpe:/a:openstack:openstack</cpe>
+   <cpe>cpe:/a:openstack:keystone</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: openstack-swift-2.1.1.jar (OpenStack Swift not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.apache\.jclouds\.api:openstack-swift:.*$</gav>
+   <cpe>cpe:/a:openstack:openstack</cpe>
+   <cpe>cpe:/a:openstack:swift</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: postgresql-42.2.5.jar (PostgreSQL not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
+   <cpe>cpe:/a:postgresql:postgresql</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: mysql-connector-java-5.1.47.jar (MySQL not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^mysql:mysql-connector-java:.*$</gav>
+   <cpe>cpe:/a:mysql:mysql</cpe>
+   <cpe>cpe:/a:oracle:mysql</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: sqljdbc-4.2.6420.jar (SQL Server not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^com\.microsoft\.sqlserver:sqljdbc:.*$</gav>
+   <cpe>cpe:/a:microsoft:sql_server</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: marklogic-xcc-8.0.5.jar (MarkLogic not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^com\.marklogic:marklogic-xcc:.*$</gav>
+   <cpe>cpe:/a:marklogic:marklogic</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: quartz-mongodb-2.0.0-NX2.jar (MongoDB not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^com\.novemberain:quartz-mongodb:.*$</gav>
+   <cpe>cpe:/a:mongodb:mongodb</cpe>
+</suppress>
+
+<suppress>
+   <notes><![CDATA[
    file name: affinity-3.1.9.jar (wrong identification, net.openhft:affinity != thread_project:thread)
    ]]></notes>
    <gav regex="true">^net\.openhft:affinity:.*$</gav>
@@ -111,5 +204,19 @@
    ]]></notes>
    <gav regex="true">^io\.gatling:gatling-app:.*$</gav>
    <cpe>cpe:/a:app_project:app</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: okhttp-3.1.1.jar (only used in tests)
+   ]]></notes>
+   <gav regex="true">^com\.squareup\.okhttp3:okhttp:.*$</gav>
+   <cpe>cpe:/a:squareup:okhttp3</cpe>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: gwt-servlet-2.7.0-NX1.jar (protobuf not directly accessible)
+   ]]></notes>
+   <gav regex="true">^com\.google\.gwt:gwt-servlet:.*$</gav>
+   <cpe>cpe:/a:google:protobuf</cpe>
 </suppress>
 </suppressions>
