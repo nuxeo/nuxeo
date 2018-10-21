@@ -5848,6 +5848,7 @@
                 |ASL, version 2
                 |Apache 2
                 |Apache 2.0
+                |Apache 2.0 license
                 |Apache 2.0 License
                 |Apache License
                 |Apache License 2
@@ -5888,6 +5889,7 @@
               <licenseMerge>CDDL 1.0
                 |CDDL
                 |CDDL license
+                |CDDL 1.0 license
                 |CDDL License
                 |Common Development and Distribution License (CDDL) v1.0
                 |COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</licenseMerge>
@@ -5913,6 +5915,7 @@
                 |CC0 1.0 Universal
                 |Public Domain, per Creative Commons CC0</licenseMerge>
               <licenseMerge>EPL 1.0
+                |EPL 1.0 license
                 |Eclipse Public License
                 |Eclipse Public License 1.0
                 |Eclipse Public License (EPL)
@@ -5935,6 +5938,7 @@
                 |GNU Lesser GPL 2.1
                 |The GNU Lesser General Public License, Version 2.1
                 |LGPL, version 2.1
+                |LGPL 2.1 license
                 |LGPL-2.1
                 |GNU Lesser General Public License (LGPL)
                 |lgpl
@@ -5944,6 +5948,7 @@
                 |GNU Lesser General Public License
                 |Gnu Lesser Public License</licenseMerge>
               <licenseMerge>LGPL 3
+                |LGPL 3.0 license
                 |Lesser General Public License, version 3 or greater
                 |GNU General Lesser Public License (LGPL) version 3.0
                 |GNU Lesser General Public License, Version 3
