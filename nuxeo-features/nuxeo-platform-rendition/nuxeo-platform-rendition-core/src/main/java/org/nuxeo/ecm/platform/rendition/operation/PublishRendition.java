@@ -28,6 +28,8 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.operations.document.PublishDocument;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -66,6 +68,15 @@ public class PublishRendition {
             RenditionService rs = Framework.getService(RenditionService.class);
             return rs.publishRendition(doc, target, renditionName, override);
         }
+    }
+
+    @OperationMethod
+    public DocumentModelList run(DocumentModelList docs) {
+        DocumentModelList result = new DocumentModelListImpl();
+        for (DocumentModel doc : docs) {
+            result.add(run(doc));
+        }
+        return result;
     }
 
 }
