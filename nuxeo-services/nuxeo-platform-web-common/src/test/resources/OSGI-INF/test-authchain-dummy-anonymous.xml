@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="test-authchain-dummy-anonymous">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>DUMMY_AUTH_ANONYMOUS</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
+    <authenticationPlugin name="DUMMY_AUTH_ANONYMOUS"
+      class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginAnonymous">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+</component>
