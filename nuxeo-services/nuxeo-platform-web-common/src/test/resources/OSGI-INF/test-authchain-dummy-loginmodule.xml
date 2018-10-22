@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="test-authchain-dummy-loginmodule">
+
+  <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry" point="plugin">
+    <LoginPlugin name="Trusting_LM" class="org.nuxeo.ecm.platform.login.TrustingLoginPlugin">
+      <enabled>true</enabled>
+    </LoginPlugin>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
+    <domain name="nuxeo-ecm-web">
+      <login-module code="org.nuxeo.ecm.platform.ui.web.auth.DummyLoginModule" flag="required">
+      </login-module>
+    </domain>
+  </extension>
+
+</component>

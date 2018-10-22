@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="test-authchain-dummy-token">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>DUMMY_AUTH_TOKEN</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
+    <specificAuthenticationChain name="dummy_token" handlePrompt="false">
+      <urlPatterns>
+        <url>.*/no/prompt.*</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>DUMMY_AUTH_TOKEN</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
+    <authenticationPlugin name="DUMMY_AUTH_TOKEN"
+      class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginToken">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+</component>
