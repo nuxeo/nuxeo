@@ -2,7 +2,7 @@
   <parent>
     <artifactId>nuxeo-automation-parent</artifactId>
     <groupId>org.nuxeo.ecm.automation</groupId>
-    <version>9.10-HF20-SNAPSHOT</version>
+    <version>9.10-HF20</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.automation</groupId>

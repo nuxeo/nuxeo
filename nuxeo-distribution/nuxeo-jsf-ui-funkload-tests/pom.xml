@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>9.10-HF20-SNAPSHOT</version>
+    <version>9.10-HF20</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
