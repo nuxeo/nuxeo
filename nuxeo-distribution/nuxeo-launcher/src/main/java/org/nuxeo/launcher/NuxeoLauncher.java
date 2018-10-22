@@ -87,7 +87,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.ConnectProject;
+import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.tools.report.client.ReportConnector;
@@ -256,6 +258,13 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_CLID = "clid";
 
     private static final String OPTION_CLID_DESC = "Use the provided instance CLID file";
+
+    /**
+     * @since 10.3
+     */
+    protected static final String OPTION_OFFLINE = "offline";
+
+    private static final String OPTION_OFFLINE_DESC = "Allow offline registration";
 
     /**
      * @since 8.10-HF15
@@ -969,6 +978,8 @@ public abstract class NuxeoLauncher {
                                 .build());
         // Instance CLID option
         options.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
+        // Register offline option
+        options.addOption(Option.builder().longOpt(OPTION_OFFLINE).desc(OPTION_OFFLINE_DESC).build());
         // Register renew option
         options.addOption(Option.builder().longOpt(OPTION_RENEW).desc(OPTION_RENEW_DESC).build());
         { // Output options (mutually exclusive)
@@ -1500,6 +1511,11 @@ public abstract class NuxeoLauncher {
             return registerSaveCLID();
         }
 
+        // register --offline
+        if (cmdLine.hasOption(OPTION_OFFLINE) && params.length == 0) {
+            return registerOffline();
+        }
+
         return registerRemoteInstance();
     }
 
@@ -1523,6 +1539,29 @@ public abstract class NuxeoLauncher {
             throw new ConfigurationException(e);
         }
         log.info("Server registration saved");
+        return true;
+    }
+
+    protected boolean registerOffline() throws IOException, ConfigurationException {
+        log.info("\nTo register your instance:");
+        log.info(String.format("1. Visit %s/connect/registerInstance", ConnectUrlConfig.getBaseUrl()));
+        log.info(String.format(
+                "2. Select the project on which you want the instance to be registered and copy the technical identifier found below (CTID):\n\n%s\n",
+                TechnicalInstanceIdentifier.instance().getCTID()));
+        Date expirationDate = new Date();
+        prompt("3. Enter the given identifier to register your instance (CLID): ", strCLID -> {
+            try {
+                getConnectRegistrationBroker().registerLocal(strCLID, "");
+                long timestamp = Long.parseLong(StringUtils.substringBetween(strCLID, ".", "."));
+                expirationDate.setTime(timestamp * 1000);
+            } catch (IOException | ConfigurationException | NumberFormatException e) {
+                return false;
+            }
+            return true;
+        }, "This identifier is invalid or cannot be read properly.");
+
+        log.info("Server registration saved");
+        log.info("Your Nuxeo Online Services is valid until " + expirationDate);
         return true;
     }
 
