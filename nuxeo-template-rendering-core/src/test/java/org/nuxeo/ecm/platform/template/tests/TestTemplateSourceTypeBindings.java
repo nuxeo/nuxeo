@@ -18,7 +18,10 @@
  */
 package org.nuxeo.ecm.platform.template.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -34,7 +37,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -60,6 +63,9 @@ public class TestTemplateSourceTypeBindings {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected TrashService trashService;
 
     @Inject
     protected TemplateProcessorService tps;
@@ -197,9 +203,9 @@ public class TestTemplateSourceTypeBindings {
         assertTrue(t1.getForcedTypes().contains("File"));
         session.save();
         waitForAsyncCompletion();
-        // change template's state to 'deleted'
-        session.followTransition(t1.getAdaptedDoc(), LifeCycleConstants.DELETE_TRANSITION);
-        assertEquals(LifeCycleConstants.DELETED_STATE, session.getDocument(t1.getAdaptedDoc().getRef()).getCurrentLifeCycleState());
+        // trash template
+        trashService.trashDocument(t1.getAdaptedDoc());
+        assertTrue(t1.getAdaptedDoc().isTrashed());
         // now create a simple file
         DocumentModel simpleFile3 = session.createDocumentModel(root.getPathAsString(), "myTestFile3", "File");
         simpleFile3 = session.createDocument(simpleFile3);
