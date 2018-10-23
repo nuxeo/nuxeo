@@ -22,6 +22,7 @@ package org.nuxeo.wopi;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,10 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     // extension => wopi action => wopi action url
     protected Map<String, Map<String, String>> extensionActionURLs = new HashMap<>();
 
+    protected PublicKey proofKey;
+
+    protected PublicKey oldProofKey;
+
     @Override
     public void start(ComponentContext context) {
         Path discoveryPath = Paths.get(Environment.getDefault().getData().getAbsolutePath(), WOPI_DIR, DISCOVERY_XML);
@@ -71,6 +76,12 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
         WOPIDiscovery discovery = WOPIDiscovery.read(discoveryPath.toFile());
         discovery.getNetZone().getApps().forEach(this::registerApp);
+
+        WOPIDiscovery.ProofKey pk = discovery.getProofKey();
+        proofKey = ProofKeyHelper.getPublicKey(pk.getModulus(), pk.getExponent());
+        oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
+        log.debug("Registered proof key: {}", proofKey);
+        log.debug("Registered old proof key: {}", oldProofKey);
     }
 
     protected void registerApp(WOPIDiscovery.App app) {
@@ -133,4 +144,27 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         return appName == null || actionURLs.isEmpty() ? null : new WOPIBlobInfo(xpath, appName, actionURLs.keySet());
     }
 
+    @Override
+    public boolean verifyProofKey(String proofKeyHeader, String oldProofKeyHeader, String url, String accessToken,
+            String timestampHeader) {
+        if (StringUtils.isBlank(proofKeyHeader)) {
+            return true; // assume valid
+        }
+
+        long timestamp = Long.valueOf(timestampHeader);
+        if (!ProofKeyHelper.verifyTimestamp(timestamp)) {
+            return false;
+        }
+
+        byte[] expectedProofBytes = ProofKeyHelper.getExpectedProofBytes(url, accessToken, timestamp);
+        // follow flow from https://wopi.readthedocs.io/en/latest/scenarios/proofkeys.html#verifying-the-proof-keys
+        boolean res = ProofKeyHelper.verifyProofKey(proofKey, proofKeyHeader, expectedProofBytes);
+        if (!res && StringUtils.isNotBlank(oldProofKeyHeader)) {
+            res = ProofKeyHelper.verifyProofKey(proofKey, oldProofKeyHeader, expectedProofBytes);
+            if (!res) {
+                res = ProofKeyHelper.verifyProofKey(oldProofKey, proofKeyHeader, expectedProofBytes);
+            }
+        }
+        return res;
+    }
 }

@@ -19,20 +19,34 @@
 
 package org.nuxeo.wopi.jaxrs;
 
+import static org.nuxeo.wopi.Headers.PROOF;
+import static org.nuxeo.wopi.Headers.PROOF_OLD;
+import static org.nuxeo.wopi.Headers.TIMESTAMP;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.wopi.Constants;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Helpers;
+import org.nuxeo.wopi.WOPIService;
+import org.nuxeo.wopi.exception.InternalServerErrorException;
 import org.nuxeo.wopi.exception.NotFoundException;
 import org.nuxeo.wopi.lock.LockHelper;
 
@@ -45,10 +59,19 @@ public class WOPIRoot extends ModuleRoot {
 
     protected static final String THREAD_NAME_PREFIX = "WOPI_";
 
+    @Context
+    protected HttpServletRequest request;
+
+    @Context
+    protected HttpHeaders httpHeaders;
+
     @Path("/files/{fileId}")
     public Object filesResource(@PathParam("fileId") FileInfo fileInfo) {
         // prefix thread name for logging purpose
         prefixThreadName();
+
+        // verify proof key
+        verifyProofKey();
 
         // flag the request as originating from a WOPI client for locking policy purpose
         LockHelper.flagWOPIRequest();
@@ -67,6 +90,19 @@ public class WOPIRoot extends ModuleRoot {
         String threadName = currentThread.getName();
         if (!threadName.startsWith(THREAD_NAME_PREFIX)) {
             currentThread.setName(THREAD_NAME_PREFIX + threadName);
+        }
+    }
+
+    protected void verifyProofKey() {
+        String proofKeyHeader = Helpers.getHeader(httpHeaders, PROOF);
+        String oldProofKeyHeader = Helpers.getHeader(httpHeaders, PROOF_OLD);
+        String timestampHeader = Helpers.getHeader(httpHeaders, TIMESTAMP);
+        String accessToken = request.getParameter(Constants.ACCESS_TOKEN_PARAMETER);
+        String url = String.format("%s%s?%s", VirtualHostHelper.getServerURL(request),
+                request.getRequestURI().substring(1), request.getQueryString());
+        if (!Framework.getService(WOPIService.class)
+                      .verifyProofKey(proofKeyHeader, oldProofKeyHeader, url, accessToken, timestampHeader)) {
+            throw new InternalServerErrorException();
         }
     }
 

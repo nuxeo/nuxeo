@@ -90,7 +90,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -662,8 +661,7 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected String getHeader(String operation, String headerName, boolean nullable) {
-        List<String> headers = httpHeaders.getRequestHeader(headerName);
-        String header = headers == null || headers.isEmpty() ? null : headers.get(0);
+        String header = Helpers.getHeader(httpHeaders, headerName);
         if (StringUtils.isEmpty(header) && !nullable) {
             logCondition(() -> "Header " + headerName + " is not present yet not nullable");
             logResponse(operation, BAD_REQUEST.getStatusCode());

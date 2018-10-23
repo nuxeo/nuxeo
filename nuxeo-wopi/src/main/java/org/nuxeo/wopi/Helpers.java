@@ -20,10 +20,12 @@
 package org.nuxeo.wopi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.nuxeo.wopi.Constants.JWT_TOKEN_TTL;
 import static org.nuxeo.wopi.Constants.WOPI_SERVLET_PATH;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,9 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.jwt.JWTClaims;
 import org.nuxeo.ecm.jwt.JWTService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.wopi.exception.BadRequestException;
+
+import javax.ws.rs.core.HttpHeaders;
 
 /**
  * @since 10.3
@@ -117,6 +122,11 @@ public class Helpers {
                 return first + ' ' + last;
             }
         }
+    }
+
+    public static String getHeader(HttpHeaders httpHeaders, String headerName) {
+        List<String> headers = httpHeaders.getRequestHeader(headerName);
+        return headers == null || headers.isEmpty() ? null : headers.get(0);
     }
 
 }

@@ -48,4 +48,10 @@ public interface WOPIService {
      */
     String getActionURL(Blob blob, String action);
 
+    /**
+     * Verifies that the request originate from Office Online.
+     */
+    boolean verifyProofKey(String proofKeyHeader, String oldProofKeyHeader, String url, String accessToken,
+            String timestampHeader);
+
 }

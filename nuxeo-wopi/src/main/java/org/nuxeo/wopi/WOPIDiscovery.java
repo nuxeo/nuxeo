@@ -41,12 +41,23 @@ public class WOPIDiscovery {
     @JacksonXmlProperty(localName = "net-zone")
     private NetZone netZone;
 
+    @JacksonXmlProperty(localName = "proof-key")
+    private ProofKey proofKey;
+
     public NetZone getNetZone() {
         return netZone;
     }
 
     public void setNetZone(NetZone netZone) {
         this.netZone = netZone;
+    }
+
+    public ProofKey getProofKey() {
+        return proofKey;
+    }
+
+    public void setProofKey(ProofKey proofKey) {
+        this.proofKey = proofKey;
     }
 
     protected static final XmlMapper XML_MAPPER = new XmlMapper();
@@ -72,6 +83,52 @@ public class WOPIDiscovery {
 
         public void setApps(List<App> apps) {
             this.apps = apps;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ProofKey {
+
+        private String exponent;
+
+        private String modulus;
+
+        @JacksonXmlProperty(localName = "oldexponent")
+        private String oldExponent;
+
+        @JacksonXmlProperty(localName = "oldmodulus")
+        private String oldModulus;
+
+        public String getExponent() {
+            return exponent;
+        }
+
+        public void setExponent(String exponent) {
+            this.exponent = exponent;
+        }
+
+        public String getModulus() {
+            return modulus;
+        }
+
+        public void setModulus(String modulus) {
+            this.modulus = modulus;
+        }
+
+        public String getOldExponent() {
+            return oldExponent;
+        }
+
+        public void setOldExponent(String oldExponent) {
+            this.oldExponent = oldExponent;
+        }
+
+        public String getOldModulus() {
+            return oldModulus;
+        }
+
+        public void setOldModulus(String oldModulus) {
+            this.oldModulus = oldModulus;
         }
     }
 

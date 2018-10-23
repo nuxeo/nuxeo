@@ -38,6 +38,10 @@ public class Headers {
 
     public static final String OVERRIDE = "X-WOPI-Override";
 
+    public static final String PROOF = "X-WOPI-Proof";
+
+    public static final String PROOF_OLD = "X-WOPI-ProofOld";
+
     public static final String RELATIVE_TARGET = "X-WOPI-RelativeTarget";
 
     public static final String REQUESTED_NAME = "X-WOPI-RequestedName";
@@ -45,5 +49,7 @@ public class Headers {
     public static final String SUGGESTED_TARGET = "X-WOPI-SuggestedTarget";
 
     public static final String URL_TYPE = "X-WOPI-UrlType";
+
+    public static final String TIMESTAMP = "X-WOPI-TimeStamp";
 
 }

@@ -20,6 +20,7 @@
 package org.nuxeo.wopi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.Blobs.createBlob;
@@ -66,6 +67,9 @@ public class TestWOPIService {
         assertEquals("Word", wopiServiceImpl.extensionAppNames.get("rtf"));
         assertNull(wopiServiceImpl.extensionAppNames.get("png"));
         assertNull(wopiServiceImpl.extensionAppNames.get("bin"));
+        // proof keys
+        assertNotNull(wopiServiceImpl.proofKey);
+        assertNotNull(wopiServiceImpl.oldProofKey);
     }
 
     @Test
