@@ -18,13 +18,17 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -60,6 +64,8 @@ import com.google.common.collect.Lists;
  */
 public abstract class AbstractBulkComputation extends AbstractComputation {
 
+    protected Map<String, BulkCommand> commands = new PassiveExpiringMap(60, TimeUnit.SECONDS);
+
     protected BulkCommand command;
 
     public AbstractBulkComputation(String name) {
@@ -74,25 +80,40 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
         command = getCommand(bucket.getCommandId());
-        if (command == null) {
-            // this requires a manual intervention, the kv store might have been lost
-            getLog().error(String.format("Stopping processing, unknown command: %s, offset: %s, record: %s.",
-                    bucket.getCommandId(), context.getLastOffset(), record));
-            context.askForTermination();
-            return;
+        if (command != null) {
+            for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
+                processBatchOfDocuments(batch);
+            }
+            endBucket(context, bucket.getIds().size());
+            context.askForCheckpoint();
+        } else {
+            if (isAbortedCommand(bucket.getCommandId())) {
+                getLog().debug("Skipping aborted command: " + bucket.getCommandId());
+                context.askForCheckpoint();
+            } else {
+                // this requires a manual intervention, the kv store might have been lost
+                getLog().error(String.format("Stopping processing, unknown command: %s, offset: %s, record: %s.",
+                        bucket.getCommandId(), context.getLastOffset(), record));
+                context.askForTermination();
+            }
         }
-        for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
-            processBatchOfDocuments(batch);
-        }
-        endBucket(context, bucket.getIds().size());
-        context.askForCheckpoint();
+    }
+
+    protected boolean isAbortedCommand(String commandId) {
+        BulkService bulkService = Framework.getService(BulkService.class);
+        BulkStatus status = bulkService.getStatus(commandId);
+        return ABORTED.equals(status.getState());
     }
 
     protected BulkCommand getCommand(String commandId) {
-        if (command == null || !command.getId().equals(commandId)) {
-            return Framework.getService(BulkService.class).getCommand(commandId);
+        BulkCommand ret = commands.get(commandId);
+        if (ret == null) {
+            ret = Framework.getService(BulkService.class).getCommand(commandId);
+            commands.put(commandId, ret);
+            // This is to remove expired/completed commands from the cache map
+            commands.size();
         }
-        return command;
+        return ret;
     }
 
     public BulkCommand getCurrentCommand() {
