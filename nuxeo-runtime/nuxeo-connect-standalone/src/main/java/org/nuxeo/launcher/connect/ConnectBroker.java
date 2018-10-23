@@ -482,8 +482,13 @@ public class ConnectBroker {
     }
 
     public void pkgListAll() {
-        log.info("All packages:");
-        pkgList(getPackageManager().listAllPackages());
+        if (Boolean.parseBoolean(relax)) {
+            log.info("All packages (all platforms):");
+            pkgList(getPackageManager().getAllPackages(getPackageManager().getAllSources(), null, null));
+        } else {
+            log.info("All packages:");
+            pkgList(getPackageManager().listAllPackages());
+        }
     }
 
     public void pkgList(List<? extends Package> packagesList) {
