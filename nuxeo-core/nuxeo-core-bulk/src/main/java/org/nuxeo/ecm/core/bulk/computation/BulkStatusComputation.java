@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.bulk.computation;
 
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
@@ -62,7 +66,7 @@ public class BulkStatusComputation extends AbstractComputation {
             status = recordStatus;
         } else {
             status = bulkService.getStatus(recordStatus.getCommandId());
-            if (BulkStatus.State.UNKNOWN.equals(status.getState())) {
+            if (UNKNOWN.equals(status.getState())) {
                 // this requires a manual intervention, the kv store might have been lost
                 log.error(String.format("Stopping processing, unknown status for command: %s, offset: %s, record: %s.",
                         recordStatus.getCommandId(), context.getLastOffset(), record));
@@ -72,7 +76,7 @@ public class BulkStatusComputation extends AbstractComputation {
             status.merge(recordStatus);
         }
         byte[] statusAsBytes = bulkService.setStatus(status);
-        if (BulkStatus.State.COMPLETED.equals(status.getState())) {
+        if (status.getState() == COMPLETED || recordStatus.getState() == ABORTED) {
             context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsBytes);
         }
         context.askForCheckpoint();

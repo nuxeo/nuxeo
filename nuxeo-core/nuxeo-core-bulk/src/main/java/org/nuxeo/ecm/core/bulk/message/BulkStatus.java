@@ -58,7 +58,10 @@ public class BulkStatus implements Serializable {
         RUNNING,
 
         /** The action has been applied to the document set, the command is completed. */
-        COMPLETED
+        COMPLETED,
+
+        /** The command has been aborted, the action might have been partially applied on the document set. */
+        ABORTED
     }
 
     protected String commandId;
@@ -136,7 +139,7 @@ public class BulkStatus implements Serializable {
             throw new IllegalArgumentException(
                     String.format("Cannot merge different command: %s with %s", this, update));
         }
-        if (update.getState() != null) {
+        if (update.getState() != null && getState() != State.ABORTED) {
             setState(update.getState());
         }
         if (update.processed != null) {
@@ -168,7 +171,7 @@ public class BulkStatus implements Serializable {
 
     protected void checkForCompletedState() {
         if (!isDelta() && getTotal() > 0 && getProcessed() >= getTotal()) {
-            if (!State.COMPLETED.equals(getState())) {
+            if (getState() != State.COMPLETED && getState() != State.ABORTED) {
                 setState(State.COMPLETED);
                 setCompletedTime(Instant.now());
             }
