@@ -159,7 +159,7 @@ public class BulkActionTest extends BaseTest {
 
     @Test
     public void testExecuteBulkActionWithSavedSearch() throws Exception {
-        String savedSearchId = RestServerInit.getSavedSearchId(1, session);
+        String savedSearchId = RestServerInit.getSavedSearchId(3, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         testExecuteBulkAction("search/saved/" + savedSearchId, queryParams);
     }
