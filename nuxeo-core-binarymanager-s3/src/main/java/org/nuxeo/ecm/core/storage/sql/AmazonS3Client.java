@@ -49,7 +49,8 @@ import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
-import com.google.common.base.MoreObjects;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 
 /**
  * @since 10.2
@@ -97,6 +98,8 @@ public class AmazonS3Client {
      */
     public static final String PATHSTYLEACCESS_PROPERTY = "pathstyleaccess";
 
+    public static final String ACCELERATE_MODE_ENABLED_PROPERTY = "accelerateMode";
+
     private final AmazonS3 amazonS3;
 
     private final String bucketName;
@@ -109,6 +112,8 @@ public class AmazonS3Client {
 
     private final AWSCredentialsProvider awsCredentialsProvider;
 
+    private boolean accelerateModeEnabled = false;
+
     /**
      * @param build
      * @param endpoint
@@ -116,9 +121,10 @@ public class AmazonS3Client {
      * @param bucketNamePrefix
      * @param bucketName
      * @param awsCredentialsProvider
+     * @param accelerateModeEnabled
      */
     private AmazonS3Client(AmazonS3 amazonS3, String bucketName, String bucketNamePrefix,
-            AWSCredentialsProvider awsCredentialsProvider, boolean useServerSideEncryption, String serverSideKMSKeyID) {
+            AWSCredentialsProvider awsCredentialsProvider, boolean useServerSideEncryption, String serverSideKMSKeyID, boolean accelerateModeEnabled) {
         this.amazonS3 = amazonS3;
 
         this.bucketName = bucketName;
@@ -126,6 +132,7 @@ public class AmazonS3Client {
         this.awsCredentialsProvider = awsCredentialsProvider;
         this.useServerSideEncryption = useServerSideEncryption;
         this.serverSideKMSKeyID = serverSideKMSKeyID;
+        this.accelerateModeEnabled = accelerateModeEnabled;
 
     }
 
@@ -153,7 +160,7 @@ public class AmazonS3Client {
 
         private final String systemPropertyPrefix;
 
-        protected boolean useServerSideEncryption;
+        protected boolean useServerSideEncryption = false;
 
         protected String serverSideKMSKeyID;
 
@@ -195,6 +202,8 @@ public class AmazonS3Client {
 
             boolean pathStyleAccessEnabled = getBooleanProperty(PATHSTYLEACCESS_PROPERTY);
 
+            boolean accelerateModeEnabled = getBooleanProperty(ACCELERATE_MODE_ENABLED_PROPERTY);
+
             AmazonS3Builder<?,?> s3Builder = getAWSClientBuilder();
 
             AWSCredentialsProvider awsCredentialsProvider = buildAWSCredentials();
@@ -205,6 +214,10 @@ public class AmazonS3Client {
                 s3Builder.enablePathStyleAccess();
             }
 
+            if (accelerateModeEnabled) {
+                s3Builder.withAccelerateModeEnabled(accelerateModeEnabled);
+            }
+
             if (isNotBlank(endpoint)) {
                 s3Builder = s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
             } else {
@@ -212,7 +225,7 @@ public class AmazonS3Client {
             }
 
             return new AmazonS3Client(s3Builder.build(), bucketName, bucketNamePrefix, awsCredentialsProvider,
-                    useServerSideEncryption, serverSideKMSKeyID);
+                    useServerSideEncryption, serverSideKMSKeyID, accelerateModeEnabled);
 
         }
 
@@ -413,5 +426,17 @@ public class AmazonS3Client {
     public AWSCredentialsProvider getAwsCredentialsProvider() {
         return awsCredentialsProvider;
     }
+
+    public AWSSecurityTokenService getSTSClient() {
+        return AWSSecurityTokenServiceClientBuilder.standard()
+                .withRegion(amazonS3.getRegionName())
+                .withCredentials(awsCredentialsProvider)
+                .build();
+    }
+
+    public boolean isAccelerateModeEnabled() {
+        return accelerateModeEnabled;
+    }
+
 
 }
