@@ -50,6 +50,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @Features(RenditionFeature.class)
 @Deploy("org.nuxeo.ecm.platform.collections.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.rendition.core:test-default-rendition-schemas.xml")
 public class TestDefaultRendition {
 
     @Inject
@@ -73,7 +74,7 @@ public class TestDefaultRendition {
                 "Collection");
         collection = session.createDocument(collection);
         DocumentModel folder11 = session.createDocumentModel("/", "dummy-folder", "Folder");
-        folder11 = session.createDocument(folder01);
+        folder11 = session.createDocument(folder11);
         DocumentModel file11 = TestRenditionProvider.createBlobDoc("/", "dummy-file11", "dummy-file11.txt", "File",
                 session);
         DocumentModel file12 = TestRenditionProvider.createBlobDoc("/", "dummy-file12", "dummy-file12.txt", "File",
@@ -91,6 +92,53 @@ public class TestDefaultRendition {
             try (ZipFile zip = new ZipFile(source.getFile())) {
                 assertEquals(3, zip.size());
                 ZipEntry z1 = zip.getEntry("dummy-collection.zip");
+                assertNotNull(z1);
+                try (ZipInputStream zis = new ZipInputStream(zip.getInputStream(z1))) {
+                    ZipEntry entry;
+                    int i = 0;
+                    while ((entry = zis.getNextEntry()) != null) {
+                        i++;
+                        assertEquals("dummy-file1" + i + ".txt", entry.getName());
+                    }
+                    assertEquals(2, i);
+                }
+
+            }
+        }
+    }
+
+    @Test
+    public void testDefaultRenditionOnFolderishAndCollectionContainers() throws Exception {
+        DocumentModel customFolderish01 = session.createDocumentModel("/", "dummy-custom-folderish", "CustomFolderish");
+        customFolderish01 = session.createDocument(customFolderish01);
+        TestRenditionProvider.createBlobDoc(customFolderish01.getPathAsString(), "dummy-file01", "dummy-file01.txt", "File",
+                session);
+        TestRenditionProvider.createBlobDoc(customFolderish01.getPathAsString(), "dummy-file01", "dummy-file01.txt", "File",
+                session);
+
+        DocumentModel customCollection = session.createDocumentModel(customFolderish01.getPathAsString(), "dummy-custom-collection",
+                "CustomCollection");
+        customCollection = session.createDocument(customCollection);
+        DocumentModel folder11 = session.createDocumentModel("/", "dummy-folder", "Folder");
+        folder11 = session.createDocument(folder11);
+        DocumentModel file11 = TestRenditionProvider.createBlobDoc("/", "dummy-file11", "dummy-file11.txt", "File",
+                session);
+        DocumentModel file12 = TestRenditionProvider.createBlobDoc("/", "dummy-file12", "dummy-file12.txt", "File",
+                session);
+        CollectionManager collectionManager = Framework.getService(CollectionManager.class);
+        collectionManager.addToCollection(customCollection, folder11, session);
+        collectionManager.addToCollection(customCollection, file11, session);
+        collectionManager.addToCollection(customCollection, file12, session);
+
+        Rendition ren = renditionService.getDefaultRendition(customFolderish01, "download", null);
+        assertNotNull(ren);
+
+        Blob resultBlob = ren.getBlob();
+        assertEquals("application/zip", resultBlob.getMimeType());
+        try (CloseableFile source = resultBlob.getCloseableFile()) {
+            try (ZipFile zip = new ZipFile(source.getFile())) {
+                assertEquals(3, zip.size());
+                ZipEntry z1 = zip.getEntry("dummy-custom-collection.zip");
                 assertNotNull(z1);
                 try (ZipInputStream zis = new ZipInputStream(zip.getInputStream(z1))) {
                     ZipEntry entry;
