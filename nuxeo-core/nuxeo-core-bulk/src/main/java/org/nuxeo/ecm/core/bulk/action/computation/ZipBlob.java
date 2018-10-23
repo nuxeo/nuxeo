@@ -46,7 +46,7 @@ public class ZipBlob extends AbstractTransientBlobComputation {
 
         Blob blob = getBlob(in.getDataAsString());
         try {
-            blob = BlobUtils.zip(blob, null);
+            blob = BlobUtils.zip(blob, blob.getFilename() + ".zip");
         } catch (IOException e) {
             getLog().error(e, e);
         }
