@@ -94,6 +94,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the Document"));
+        assertTrue(workflowHomePage.taskDisplaysDocumentOnTasksDashboard(TEST_FILE_TITLE));
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
@@ -133,6 +134,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
+        assertTrue(workflowHomePage.taskDisplaysDocumentOnTasksDashboard(TEST_FILE_TITLE));
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
@@ -151,6 +153,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
+        assertTrue(workflowHomePage.taskDisplaysDocumentOnTasksDashboard(TEST_FILE_TITLE));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
@@ -171,6 +174,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the Review"));
+        assertTrue(workflowHomePage.taskDisplaysDocumentOnTasksDashboard(TEST_FILE_TITLE));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
 
