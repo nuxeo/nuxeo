@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.core.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="custom-folderish" src="schemas/custom-folderish.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="CustomFolderish" extends="Document">
+      <facet name="Folderish"/>
+      <schema name="common" />
+      <schema name="dublincore" />
+    </doctype>
+
+    <doctype name="CustomCollection" extends="Document">
+      <facet name="Collection"/>
+      <schema name="common" />
+      <schema name="dublincore" />
+    </doctype>
+
+  </extension>
+
+</component>
