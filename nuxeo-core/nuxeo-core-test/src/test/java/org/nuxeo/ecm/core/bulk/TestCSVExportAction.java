@@ -65,6 +65,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -132,6 +133,7 @@ public class TestCSVExportAction {
         Blob blob = getBlob(command.getId());
         // file is ziped
         assertNotNull(blob);
+        assertEquals("zip", FilenameUtils.getExtension(blob.getFilename()));
         try (InputStream is = new FileInputStream(blob.getFile())) {
             assertTrue(ZipUtils.isValid(is));
         }
