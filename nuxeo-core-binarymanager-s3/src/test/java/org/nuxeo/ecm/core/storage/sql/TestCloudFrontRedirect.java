@@ -20,10 +20,10 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
-import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.AWS_ID_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.AWS_SECRET_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.BUCKET_NAME_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.AmazonS3Client.BUCKET_PREFIX_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.NuxeoS3Client.AWS_ID_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.NuxeoS3Client.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.NuxeoS3Client.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.NuxeoS3Client.BUCKET_PREFIX_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.DISTRIB_DOMAIN_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.PRIVATE_KEY_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager.PRIVATE_KEY_PROPERTY;

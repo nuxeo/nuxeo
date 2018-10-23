@@ -53,9 +53,9 @@ import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 
 /**
- * @since 10.2
+ * @since 10.3
  */
-public class AmazonS3Client {
+public class NuxeoS3Client {
 
     public static final String BUCKET_NAME_PROPERTY = "bucket";
 
@@ -93,37 +93,25 @@ public class AmazonS3Client {
 
     public static final String ENDPOINT_PROPERTY = "endpoint";
 
-    /**
-     * @since 10.3
-     */
     public static final String PATHSTYLEACCESS_PROPERTY = "pathstyleaccess";
 
     public static final String ACCELERATE_MODE_ENABLED_PROPERTY = "accelerateMode";
 
-    private final AmazonS3 amazonS3;
+    protected final AmazonS3 amazonS3;
 
-    private final String bucketName;
+    protected final String bucketName;
 
-    private final String bucketNamePrefix;
+    protected final String bucketNamePrefix;
 
-    private final boolean useServerSideEncryption;
+    protected final boolean useServerSideEncryption;
 
-    private final String serverSideKMSKeyID;
+    protected final String serverSideKMSKeyID;
 
-    private final AWSCredentialsProvider awsCredentialsProvider;
+    protected final AWSCredentialsProvider awsCredentialsProvider;
 
-    private boolean accelerateModeEnabled = false;
+    protected final boolean accelerateModeEnabled;
 
-    /**
-     * @param build
-     * @param endpoint
-     * @param bucketRegion
-     * @param bucketNamePrefix
-     * @param bucketName
-     * @param awsCredentialsProvider
-     * @param accelerateModeEnabled
-     */
-    private AmazonS3Client(AmazonS3 amazonS3, String bucketName, String bucketNamePrefix,
+    private NuxeoS3Client(AmazonS3 amazonS3, String bucketName, String bucketNamePrefix,
             AWSCredentialsProvider awsCredentialsProvider, boolean useServerSideEncryption, String serverSideKMSKeyID, boolean accelerateModeEnabled) {
         this.amazonS3 = amazonS3;
 
@@ -154,26 +142,27 @@ public class AmazonS3Client {
 
     public static class Builder {
 
-        private static final Log log = LogFactory.getLog(AmazonS3Client.Builder.class);
+        private static final Log log = LogFactory.getLog(NuxeoS3Client.Builder.class);
 
         private final Map<String, String> properties;
 
         private final String systemPropertyPrefix;
 
-        protected boolean useServerSideEncryption = false;
+        protected boolean useServerSideEncryption;
 
         protected String serverSideKMSKeyID;
 
         /**
-         * @param systemPropertyPrefix
-         * @param properties2
+         * Creates a NuxeoS3Client Builder for given properties map.
+         * @param systemPropertyPrefix the prefix used for all properties
+         * @param properties the property map
          */
         public Builder(String systemPropertyPrefix, Map<String, String> properties) {
             this.systemPropertyPrefix = systemPropertyPrefix;
             this.properties = properties;
         }
 
-        public AmazonS3Client build() {
+        public NuxeoS3Client build() {
             String bucketName = getProperty(BUCKET_NAME_PROPERTY);
             // as bucket prefix is optional we don't want to use the fallback mechanism
             String bucketNamePrefix = StringUtils.defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
@@ -224,7 +213,7 @@ public class AmazonS3Client {
                 s3Builder = s3Builder.withRegion(bucketRegion);
             }
 
-            return new AmazonS3Client(s3Builder.build(), bucketName, bucketNamePrefix, awsCredentialsProvider,
+            return new NuxeoS3Client(s3Builder.build(), bucketName, bucketNamePrefix, awsCredentialsProvider,
                     useServerSideEncryption, serverSideKMSKeyID, accelerateModeEnabled);
 
         }
@@ -234,7 +223,6 @@ public class AmazonS3Client {
             ClientConfiguration clientConfiguration = new ClientConfiguration();
             setupProxy(clientConfiguration);
             configureConnection(clientConfiguration);
-            customConfiguration(clientConfiguration);
             return clientConfiguration;
         }
 
@@ -247,32 +235,15 @@ public class AmazonS3Client {
             return awsCredentialsProvider;
         }
 
-        /**
-         * @param clientConfiguration
-         * @since 10.2
-         */
-        protected void customConfiguration(ClientConfiguration clientConfiguration) {
-
-        }
-
-        /**
-         * @return
-         * @since 10.2
-         */
         protected AmazonS3Builder<?,?> getAWSClientBuilder() {
-
             String keystoreFile = getProperty(KEYSTORE_FILE_PROPERTY);
-
             if (isNotBlank(keystoreFile)) {
-
                 KeyPair keypair = getKeyPair(keystoreFile);
                 EncryptionMaterials encryptionMaterials = new EncryptionMaterials(keypair);
-
                 return AmazonS3EncryptionClientBuilder.standard()
                                                       .withCryptoConfiguration(new CryptoConfiguration())
                                                       .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(
                                                               encryptionMaterials));
-
             } else {
                 return AmazonS3ClientBuilder.standard();
             }
@@ -316,7 +287,6 @@ public class AmazonS3Client {
                 Certificate cert = keystore.getCertificate(privkeyAlias);
                 PublicKey pubKey = cert.getPublicKey();
                 KeyPair keypair = new KeyPair(pubKey, privKey);
-                // Get encryptionMaterials from keypair
                 return keypair;
             } catch (IOException | GeneralSecurityException e) {
                 throw new RuntimeException("Could not read keystore: " + keystoreFile + ", alias: " + privkeyAlias, e);
@@ -419,11 +389,11 @@ public class AmazonS3Client {
         return amazonS3;
     }
 
-    public static AmazonS3Client.Builder builder(String systemPropertyPrefix, Map<String, String> properties) {
+    public static NuxeoS3Client.Builder builder(String systemPropertyPrefix, Map<String, String> properties) {
         return new Builder(systemPropertyPrefix, properties);
     }
 
-    public AWSCredentialsProvider getAwsCredentialsProvider() {
+    public AWSCredentialsProvider getAWSCredentialsProvider() {
         return awsCredentialsProvider;
     }
 

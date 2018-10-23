@@ -82,13 +82,13 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected String policy;
 
-    private AmazonS3Client s3Client;
+    private NuxeoS3Client s3Client;
 
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
 
-        s3Client = AmazonS3Client.builder(S3BinaryManager.SYSTEM_PROPERTY_PREFIX, properties).build();
+        s3Client = NuxeoS3Client.builder(S3BinaryManager.SYSTEM_PROPERTY_PREFIX, properties).build();
         expiration = Integer.parseInt(defaultIfEmpty(properties.get(INFO_EXPIRATION), "0"));
         policy = properties.get(POLICY_TEMPLATE_PROPERTY);
         stsClient = s3Client.getSTSClient();

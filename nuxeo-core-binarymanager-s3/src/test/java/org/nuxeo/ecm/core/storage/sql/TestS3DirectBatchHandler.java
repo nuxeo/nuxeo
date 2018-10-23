@@ -80,8 +80,8 @@ public class TestS3DirectBatchHandler {
         envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
-        System.setProperty(S3DIRECT_PREIX + AmazonS3Client.AWS_ID_PROPERTY, envId);
-        System.setProperty(S3DIRECT_PREIX + AmazonS3Client.AWS_SECRET_PROPERTY, envSecret);
+        System.setProperty(S3DIRECT_PREIX + NuxeoS3Client.AWS_ID_PROPERTY, envId);
+        System.setProperty(S3DIRECT_PREIX + NuxeoS3Client.AWS_SECRET_PROPERTY, envSecret);
     }
 
     @Test

@@ -108,7 +108,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     protected TransferManager transferManager;
 
-    private AmazonS3Client client;
+    protected NuxeoS3Client client;
 
     @Override
     public void close() {
@@ -123,7 +123,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
      * @since 7.2
      */
     protected void abortOldUploads() throws IOException {
-        int oneDay = (int) TimeUnit.DAYS.toMillis(1);
+        long oneDay = TimeUnit.DAYS.toMillis(1);
         try {
             transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
         } catch (AmazonS3Exception e) {
@@ -135,17 +135,16 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
     }
 
-
     @Override
     protected void setupCloudClient() throws IOException {
 
-        client = AmazonS3Client.builder(SYSTEM_PROPERTY_PREFIX, properties).build();
+        client = NuxeoS3Client.builder(SYSTEM_PROPERTY_PREFIX, properties).build();
 
         amazonS3 = client.getAmazonS3();
         bucketName = client.getBucketName();
         bucketNamePrefix = client.getBucketNamePrefix();
 
-        createBucketIfDoesNotExists();
+        createBucketIfDoesNotExist();
 
         // compat for NXP-17895, using "downloadfroms3", to be removed
         // these two fields have already been initialized by the base class initialize()
@@ -163,9 +162,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         abortOldUploads();
     }
 
-    protected void createBucketIfDoesNotExists() throws IOException {
+    protected void createBucketIfDoesNotExist() throws IOException {
         try {
-            // Try to create bucket if it doesn't exist
             if (!amazonS3.doesBucketExist(bucketName)) {
                 amazonS3.createBucket(bucketName);
                 amazonS3.setBucketAcl(bucketName, CannedAccessControlList.Private);
@@ -227,7 +225,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
      * @since 10.2
      */
     public AWSCredentialsProvider getAwsCredentialsProvider() {
-        return client.getAwsCredentialsProvider();
+        return client.getAWSCredentialsProvider();
     }
 
     /**
@@ -326,7 +324,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         return (amazonS3 instanceof AmazonS3Encryption);
     }
 
-
     public class S3FileStorage implements FileStorage {
 
         @Override
@@ -381,7 +378,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 }
             }
         }
-
 
         @Override
         public boolean fetchFile(String digest, File file) throws IOException {

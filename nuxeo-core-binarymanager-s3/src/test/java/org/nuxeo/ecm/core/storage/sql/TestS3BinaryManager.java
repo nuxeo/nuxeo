@@ -76,10 +76,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
             String idKey = "CHANGETHIS";
             String secretKey = "CHANGETHIS";
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            PROPERTIES.put(AmazonS3Client.BUCKET_NAME_PROPERTY, bucketName);
-            PROPERTIES.put(AmazonS3Client.BUCKET_PREFIX_PROPERTY, "testfolder/");
-            PROPERTIES.put(AmazonS3Client.AWS_ID_PROPERTY, idKey);
-            PROPERTIES.put(AmazonS3Client.AWS_SECRET_PROPERTY , secretKey);
+            PROPERTIES.put(NuxeoS3Client.BUCKET_NAME_PROPERTY, bucketName);
+            PROPERTIES.put(NuxeoS3Client.BUCKET_PREFIX_PROPERTY, "testfolder/");
+            PROPERTIES.put(NuxeoS3Client.AWS_ID_PROPERTY, idKey);
+            PROPERTIES.put(NuxeoS3Client.AWS_SECRET_PROPERTY , secretKey);
             boolean useKeyStore = false;
             if (useKeyStore) {
                 // keytool -genkeypair -keystore /tmp/keystore.ks -alias unittest -storepass unittest -keypass unittest
@@ -88,10 +88,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
                 String keyStorePassword = "unittest";
                 String privKeyAlias = "unittest";
                 String privKeyPassword = "unittest";
-                PROPERTIES.put(AmazonS3Client.KEYSTORE_FILE_PROPERTY , keyStoreFile);
-                PROPERTIES.put(AmazonS3Client.KEYSTORE_PASS_PROPERTY , keyStorePassword);
-                PROPERTIES.put(AmazonS3Client.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
-                PROPERTIES.put(AmazonS3Client.PRIVKEY_PASS_PROPERTY , privKeyPassword);
+                PROPERTIES.put(NuxeoS3Client.KEYSTORE_FILE_PROPERTY , keyStoreFile);
+                PROPERTIES.put(NuxeoS3Client.KEYSTORE_PASS_PROPERTY , keyStorePassword);
+                PROPERTIES.put(NuxeoS3Client.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
+                PROPERTIES.put(NuxeoS3Client.PRIVKEY_PASS_PROPERTY , privKeyPassword);
             }
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
@@ -126,17 +126,17 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Test
     public void testS3MaxConnections() throws Exception {
-        PROPERTIES.put(AmazonS3Client.CONNECTION_MAX_PROPERTY, "1");
-        PROPERTIES.put(AmazonS3Client.CONNECTION_RETRY_PROPERTY, "0");
-        PROPERTIES.put(AmazonS3Client.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
+        PROPERTIES.put(NuxeoS3Client.CONNECTION_MAX_PROPERTY, "1");
+        PROPERTIES.put(NuxeoS3Client.CONNECTION_RETRY_PROPERTY, "0");
+        PROPERTIES.put(NuxeoS3Client.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
         try {
             binaryManager = new S3BinaryManager();
             binaryManager.initialize("repo", PROPERTIES);
             doTestS3MaxConnections();
         } finally {
-            PROPERTIES.remove(AmazonS3Client.CONNECTION_MAX_PROPERTY);
-            PROPERTIES.remove(AmazonS3Client.CONNECTION_RETRY_PROPERTY);
-            PROPERTIES.remove(AmazonS3Client.CONNECTION_TIMEOUT_PROPERTY);
+            PROPERTIES.remove(NuxeoS3Client.CONNECTION_MAX_PROPERTY);
+            PROPERTIES.remove(NuxeoS3Client.CONNECTION_RETRY_PROPERTY);
+            PROPERTIES.remove(NuxeoS3Client.CONNECTION_TIMEOUT_PROPERTY);
         }
     }
 
