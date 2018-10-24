@@ -5962,6 +5962,8 @@
               <licenseMerge>GPL 2 CPE
                 |GPLv2+CE
                 |GPL2 w/ CPE</licenseMerge>
+              <licenseMerge>GPL 2 UFOSS
+                |The GNU General Public License, v2 with FOSS exception</licenseMerge>
               <licenseMerge>GPL 3
                 |GPL v3</licenseMerge>
               <licenseMerge>MIT
