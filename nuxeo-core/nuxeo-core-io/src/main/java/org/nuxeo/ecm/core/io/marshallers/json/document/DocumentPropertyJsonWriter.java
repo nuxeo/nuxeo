@@ -20,14 +20,20 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher.ENTITY_ENRICHER_NAME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,7 +45,11 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.Enriched;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
+import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
@@ -243,7 +253,32 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             blobUrl = "";
         }
         jg.writeStringField("data", blobUrl);
+
+        enrichBlob(jg, blob);
+
         jg.writeEndObject();
+    }
+
+    /**
+     * @since 10.3
+     */
+    private void enrichBlob(JsonGenerator jg, Blob blob) throws IOException {
+        Set<String> enrichers = ctx.getEnrichers("blob");
+        if (enrichers.size() > 0) {
+            WrappedContext wrappedCtx = ctx.wrap();
+            OutputStreamWithJsonWriter out = new OutputStreamWithJsonWriter(jg);
+            Enriched<Blob> enriched = new Enriched<>(blob);
+            ParameterizedType genericType = TypeUtils.parameterize(Enriched.class, Blob.class);
+            for (String enricherName : enrichers) {
+                try (Closeable ignored = wrappedCtx.with(ENTITY_ENRICHER_NAME, enricherName).open()) {
+                    Collection<Writer<Enriched>> writers = registry.getAllWriters(ctx, Enriched.class,
+                            genericType, APPLICATION_JSON_TYPE);
+                    for (Writer<Enriched> writer : writers) {
+                        writer.write(enriched, Enriched.class, genericType, APPLICATION_JSON_TYPE, out);
+                    }
+                }
+            }
+        }
     }
 
     /**
