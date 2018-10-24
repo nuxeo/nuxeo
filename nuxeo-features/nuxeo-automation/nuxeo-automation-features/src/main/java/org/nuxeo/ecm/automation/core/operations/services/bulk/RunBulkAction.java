@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 /**
  * @since 10.2
  */
-@Operation(id = RunBulkAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk", addToStudio = true, description = "Run a bulk on a set of documents expressed by a NXQL.")
+@Operation(id = RunBulkAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
 public class RunBulkAction {
 
     public static final String ID = "Bulk.RunAction";
@@ -55,19 +55,34 @@ public class RunBulkAction {
     @Param(name = "action", required = true)
     protected String action;
 
+    @Param(name = "repositoryName", required = false)
+    protected String repositoryName;
+
+    @Param(name = "bucketSize", required = false)
+    protected int bucketSize;
+
+    @Param(name = "batchSize", required = false)
+    protected int batchSize;
+
     @Param(name = "parameters", required = false)
     protected Map<String, Serializable> parameters = new HashMap<>();
 
     @OperationMethod
     public Blob run() throws IOException {
-        String repositoryName = session.getRepositoryName();
         String userName = session.getPrincipal().getName();
-
-        BulkCommand command = new BulkCommand.Builder(action, query).repository(repositoryName)
-                                                                    .user(userName)
-                                                                    .params(parameters)
-                                                                    .build();
-        String commandId = service.submit(command);
+        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(parameters);
+        if (repositoryName != null) {
+            builder.repository(repositoryName);
+        } else {
+            builder.repository(session.getRepositoryName());
+        }
+        if (bucketSize > 0) {
+            builder.bucket(bucketSize);
+        }
+        if (batchSize > 0) {
+            builder.batch(batchSize);
+        }
+        String commandId = service.submit(builder.build());
         return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
     }
 
