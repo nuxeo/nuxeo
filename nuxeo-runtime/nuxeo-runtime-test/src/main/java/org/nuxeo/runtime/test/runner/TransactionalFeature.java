@@ -18,8 +18,6 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -76,7 +74,7 @@ public class TransactionalFeature implements RunnerFeature {
     }
 
     public void nextTransaction() {
-        nextTransaction(Duration.ofMinutes(10));
+        nextTransaction(Duration.ofMinutes(3));
     }
 
     /**
@@ -100,7 +98,7 @@ public class TransactionalFeature implements RunnerFeature {
             for (Waiter provider : waiters) {
                 long start = System.currentTimeMillis();
                 try {
-                    assertTrue(await(provider, remainingDuration));
+                    await(provider, remainingDuration);
                 } catch (InterruptedException cause) {
                     Thread.currentThread().interrupt();
                     throw new AssertionError("interrupted while awaiting for asynch completion", cause);
@@ -119,17 +117,15 @@ public class TransactionalFeature implements RunnerFeature {
         }
     }
 
-    protected boolean await(Waiter waiter, Duration duration) throws InterruptedException {
-        if (waiter.await(duration)) {
-            return true;
+    protected void await(Waiter waiter, Duration duration) throws InterruptedException {
+        if (!waiter.await(duration)) {
+            try {
+                File file = new ThreadDeadlocksDetector().dump(new long[0]);
+                log.warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
+            } catch (IOException cause) {
+                log.warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
+            }
         }
-        try {
-            File file = new ThreadDeadlocksDetector().dump(new long[0]);
-            log.warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
-        } catch (IOException cause) {
-            log.warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
-        }
-        return false;
     }
 
     @Override
