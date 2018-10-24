@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.trash;
 
 import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.ACTION_NAME;
-import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.SetSystemPropertyComputation.NOTIFY;
 
 import java.util.HashSet;
 import java.util.List;
@@ -150,7 +149,6 @@ public class PropertyTrashService extends AbstractTrashService {
         service.submit(new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                  .user(session.getPrincipal().getName())
                                                                  .param(SYSPROP_IS_TRASHED, value)
-                                                                 .param(NOTIFY, eventId)
                                                                  .build());
     }
 
