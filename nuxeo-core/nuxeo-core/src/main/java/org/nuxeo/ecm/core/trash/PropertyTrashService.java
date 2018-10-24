@@ -18,7 +18,8 @@
  */
 package org.nuxeo.ecm.core.trash;
 
-import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.action.TrashAction.ACTION_NAME;
+import static org.nuxeo.ecm.core.bulk.action.TrashAction.PARAM_NAME;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.bulk.BulkService;
-import org.nuxeo.ecm.core.bulk.action.RemoveProxyAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.runtime.api.Framework;
 
@@ -87,8 +87,7 @@ public class PropertyTrashService extends AbstractTrashService {
                 session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.TRUE);
                 notifyEvent(session, DOCUMENT_TRASHED, docForEvent);
                 if (session.hasChildren(doc.getRef())) {
-                    removeProxies(doc);
-                    setTrashPropertyToChildren(doc, Boolean.TRUE);
+                    trashDescendants(doc, Boolean.TRUE);
                 }
             }
         }
@@ -123,7 +122,7 @@ public class PropertyTrashService extends AbstractTrashService {
         session.setDocumentSystemProp(docRef, SYSPROP_IS_TRASHED, Boolean.FALSE);
         notifyEvent(session, DOCUMENT_UNTRASHED, docForEvent);
         if (processChildren && session.hasChildren(doc.getRef())) {
-            setTrashPropertyToChildren(doc, Boolean.FALSE);
+            trashDescendants(doc, Boolean.FALSE);
         }
 
         Set<DocumentRef> docRefs = new HashSet<>();
@@ -138,29 +137,14 @@ public class PropertyTrashService extends AbstractTrashService {
         return docRefs;
     }
 
-    protected void setTrashPropertyToChildren(DocumentModel model, Boolean value) {
-        String eventId = value ? DOCUMENT_TRASHED : DOCUMENT_UNTRASHED;
-        String currentTrashValue = value ? "0" : "1";
+    protected void trashDescendants(DocumentModel model, Boolean value) {
         CoreSession session = model.getCoreSession();
         BulkService service = Framework.getService(BulkService.class);
-        String nxql = String.format(
-                "SELECT * from Document where ecm:isProxy = 0 AND ecm:isTrashed = %s AND ecm:ancestorId='%s'",
-                currentTrashValue, model.getId());
+        String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
         service.submit(new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                  .user(session.getPrincipal().getName())
-                                                                 .param(SYSPROP_IS_TRASHED, value)
+                                                                 .param(PARAM_NAME, value)
                                                                  .build());
-    }
-
-    protected void removeProxies(DocumentModel model) {
-        CoreSession session = model.getCoreSession();
-        BulkService service = Framework.getService(BulkService.class);
-        String nxql = String.format("SELECT * from Document where ecm:isProxy=1 AND ecm:ancestorId='%s'",
-                model.getId());
-        service.submit(
-                new BulkCommand.Builder(RemoveProxyAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                                            .user(session.getPrincipal().getName())
-                                                                            .build());
     }
 
     @Override
@@ -171,8 +155,8 @@ public class PropertyTrashService extends AbstractTrashService {
                 return false;
             case TRASHED_STATE_IS_DEDICATED_PROPERTY:
                 return true;
-        default:
-            throw new UnsupportedOperationException(feature.name());
+            default:
+                throw new UnsupportedOperationException(feature.name());
         }
     }
 
