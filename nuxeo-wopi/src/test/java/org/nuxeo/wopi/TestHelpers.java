@@ -18,14 +18,19 @@
  */
 package org.nuxeo.wopi;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +45,7 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.wopi.exception.UnauthorizedException;
 
 /**
  * Tests the {@link Helpers} class.
@@ -48,6 +54,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(WOPIFeature.class)
+@Deploy("org.nuxeo.ecm.jwt")
+@Deploy("org.nuxeo.wopi:test-jwt-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/dummy-blob-provider.xml")
 public class TestHelpers {
 
@@ -80,4 +88,30 @@ public class TestHelpers {
         assertNull(Helpers.getEditableBlob(doc, FILE_CONTENT_PROPERTY));
     }
 
+    @Test
+    public void testGetJWToken() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        // null token
+        try {
+            Helpers.getJWTToken(request);
+            fail("UnauthorizedException should be thrown.");
+        } catch (UnauthorizedException e) {
+            assertEquals(401, e.getStatusCode());
+        }
+
+        // invalid token
+        try {
+            when(request.getParameter("access_token")).thenReturn("invalidToken");
+            Helpers.getJWTToken(request);
+            fail("UnauthorizedException should be thrown.");
+        } catch (UnauthorizedException e) {
+            assertEquals(401, e.getStatusCode());
+        }
+
+        // valid token
+        String token = Helpers.createJWTToken();
+        when(request.getParameter("access_token")).thenReturn(token);
+        assertEquals(token, Helpers.getJWTToken(request));
+    }
 }

@@ -457,7 +457,7 @@ public class FilesEndpoint extends DefaultObject {
         logNuxeoAction(() -> "Created new document " + newDocId + " as a child of " + parent.getId() + " with filename "
                 + newFileName);
 
-        String token = Helpers.createJWTToken();
+        String token = Helpers.getJWTToken(request);
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
         String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN_PARAMETER,
                 token);
