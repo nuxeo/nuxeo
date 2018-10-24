@@ -23,16 +23,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.created_total;
 import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.ACTION_NAME;
-import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.SetSystemPropertyComputation.NOTIFY;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -44,8 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -66,24 +60,7 @@ public class TestSetSystemPropertiesAction {
     public CoreSession session;
 
     @Inject
-    public EventService eventService;
-
-    @Inject
     public TransactionalFeature txFeature;
-
-    private static class TestListener extends EventListenerDescriptor {
-
-        private int count;
-
-        private TestListener() {
-            events = new HashSet<>(Collections.singleton(DOCUMENT_TRASHED));
-        }
-
-        @Override
-        public void initListener() {
-            inLineListener = event -> count++;
-        }
-    }
 
     @Test
     public void testSetSystemProperties() throws Exception {
@@ -91,15 +68,10 @@ public class TestSetSystemPropertiesAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
-        TestListener listener = new TestListener();
-
-        eventService.addEventListener(listener);
-
         String commandId = service.submit(
                 new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                           .user(session.getPrincipal().getName())
                                                           .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
-                                                          .param(NOTIFY, DOCUMENT_TRASHED)
                                                           .build());
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
@@ -114,9 +86,6 @@ public class TestSetSystemPropertiesAction {
         for (DocumentModel child : session.getChildren(model.getRef())) {
             assertEquals(TRUE, session.getDocumentSystemProp(child.getRef(), SYSPROP_IS_TRASHED, Boolean.class));
         }
-        assertEquals(created_total, listener.count);
-
-        eventService.removeEventListener(listener);
     }
 
     /**
@@ -141,15 +110,10 @@ public class TestSetSystemPropertiesAction {
                 doc.getId() // ok
         );
 
-        TestListener listener = new TestListener();
-
-        eventService.addEventListener(listener);
-
         String commandId = service.submit(
                 new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                           .user(session.getPrincipal().getName())
                                                           .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
-                                                          .param(NOTIFY, DOCUMENT_TRASHED)
                                                           .build());
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
@@ -158,12 +122,6 @@ public class TestSetSystemPropertiesAction {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(2, status.getProcessed());
-
-        txFeature.nextTransaction();
-
-        assertEquals(2, listener.count);
-
-        eventService.removeEventListener(listener);
     }
 
 }
