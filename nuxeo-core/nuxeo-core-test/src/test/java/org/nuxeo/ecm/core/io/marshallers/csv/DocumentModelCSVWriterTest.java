@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.io.marshallers.csv;
 
+import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentPropertyCSVWriter.LIST_DELIMITER;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -47,6 +49,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     public void setup() {
         document = session.createDocumentModel("/", "myDoc", "File");
         document.setPropertyValue("dc:description", "There is a , in the description");
+        document.setPropertyValue("dc:contributors", new String[] { "John", "Jane" });
         document = session.createDocument(document);
     }
 
@@ -66,5 +69,6 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("changeToken").isNull();
         csv.has("title").isEquals("myDoc");
         csv.has("dc:description").isEquals("There is a , in the description");
+        csv.has("dc:contributors").isEquals("John" + LIST_DELIMITER + "Jane");
     }
 }

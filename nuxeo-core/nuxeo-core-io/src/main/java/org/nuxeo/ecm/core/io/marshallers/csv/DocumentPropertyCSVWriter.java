@@ -22,10 +22,15 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 
 /**
@@ -33,6 +38,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
+
+    protected static final String LIST_DELIMITER = "\n";
 
     public DocumentPropertyCSVWriter() {
         super();
@@ -42,8 +49,10 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
     protected void write(Property entity, CSVPrinter printer) throws IOException {
         if (entity.isScalar()) {
             writeScalarProperty(entity, printer);
+        } else if (entity.isList()) {
+            writeListProperty(entity, printer);
         } else {
-            writeUnsupported(entity, printer);
+            writeUnsupported(entity.getType(), printer);
         }
     }
 
@@ -54,17 +63,38 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
     protected void writeScalarProperty(Property entity, CSVPrinter printer) throws IOException {
         Object value = entity.getValue();
+        Type type = entity.getType();
         if (value == null) {
             printer.print(null);
-        } else if (entity.getType() instanceof BinaryType) {
-            writeUnsupported(entity, printer);
+        } else if (type instanceof BinaryType) {
+            writeUnsupported(type, printer);
         } else {
-            printer.print(entity.getType().encode(value));
+            printer.print(type.encode(value));
         }
     }
 
-    protected void writeUnsupported(Property entity, CSVPrinter printer) throws IOException {
-        printer.print(String.format("type %s is not supported", entity.getType().getName()));
+    protected void writeListProperty(Property entity, CSVPrinter printer) throws IOException {
+        ListType type = (ListType) entity.getType();
+        if (entity instanceof ArrayProperty) {
+            Object[] array = (Object[]) entity.getValue();
+            if (array == null) {
+                printer.print(null);
+                return;
+            }
+            Type itemType = type.getFieldType();
+            if (itemType instanceof BinaryType) {
+                writeUnsupported(type, printer);
+            } else {
+                String value = Arrays.stream(array).map(itemType::encode).collect(Collectors.joining(LIST_DELIMITER));
+                printer.print(value);
+            }
+        } else {
+            writeUnsupported(type, printer);
+        }
+    }
+
+    protected void writeUnsupported(Type type, CSVPrinter printer) throws IOException {
+        printer.print(String.format("type %s is not supported", type.getName()));
     }
 
 }
