@@ -109,6 +109,7 @@ public class BulkServiceImpl implements BulkService {
         BulkStatus status = new BulkStatus(command.getId());
         status.setState(SCHEDULED);
         status.setAction(command.getAction());
+        status.setUsername(command.getUsername());
         status.setSubmitTime(Instant.now());
         setStatus(status);
         byte[] commandAsBytes = setCommand(command);
@@ -169,7 +170,7 @@ public class BulkServiceImpl implements BulkService {
     public BulkStatus abort(String commandId) {
         BulkStatus status = getStatus(commandId);
         if (COMPLETED.equals(status.getState())) {
-            // too late
+            log.debug("Cannot abort a completed command: " + commandId);
             return status;
         }
         // TODO: Check that the current user is either admin either the command username
@@ -210,6 +211,8 @@ public class BulkServiceImpl implements BulkService {
             case UNKNOWN:
                 log.error("Unknown status for command: " + commandId);
                 return false;
+            default:
+                // continue
             }
             Thread.sleep(100);
         } while (deadline > System.currentTimeMillis());

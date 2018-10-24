@@ -49,17 +49,19 @@ public class BulkConstants {
 
     public static final String STATUS_RESULT = "result";
 
+    public static final String STATUS_USERNAME = "username";
+
     // BulkCommand
 
     public static final String COMMAND_ENTITY_TYPE = "bulkCommand";
 
-    public static final String COMMAND_USERNAME = "username";
+    public static final String COMMAND_USERNAME = STATUS_USERNAME;
 
     public static final String COMMAND_REPOSITORY = "repository";
 
     public static final String COMMAND_QUERY = "query";
 
-    public static final String COMMAND_ACTION = "action";
+    public static final String COMMAND_ACTION = STATUS_ACTION;
 
     public static final String COMMAND_PARAMS = "params";
 

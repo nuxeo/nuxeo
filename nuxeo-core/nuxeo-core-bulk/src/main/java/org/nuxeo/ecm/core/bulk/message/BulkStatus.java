@@ -69,6 +69,9 @@ public class BulkStatus implements Serializable {
     @Nullable
     protected String action;
 
+    @Nullable
+    protected String username;
+
     protected boolean delta;
 
     @Nullable
@@ -160,11 +163,14 @@ public class BulkStatus implements Serializable {
         if (update.total != null) {
             setTotal(update.getTotal());
         }
-        if (update.action != null) {
+        if (update.getAction() != null && getAction() == null) {
             setAction(update.action);
         }
         if (update.getResult() != null) {
             setResult(update.getResult());
+        }
+        if (update.getUsername() != null && getUsername() == null) {
+            setUsername(getUsername());
         }
         checkForCompletedState();
     }
@@ -296,6 +302,14 @@ public class BulkStatus implements Serializable {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

@@ -3,6 +3,7 @@
   "commandId": "00000000-0000-0000-0000-000000000000",
   "state": "COMPLETED",
   "action": "myAction",
+  "username": "myUser",
   "total": 127,
   "processed": 127,
   "submitted": "2018-06-21T12:37:08.172Z",

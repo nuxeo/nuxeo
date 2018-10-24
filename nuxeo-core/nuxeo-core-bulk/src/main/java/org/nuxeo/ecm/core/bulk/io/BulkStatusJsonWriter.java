@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_USERNAME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -59,6 +60,7 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
         jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
         jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
         jg.writeStringField(STATUS_ACTION, entity.getAction());
+        jg.writeStringField(STATUS_USERNAME, entity.getUsername());
         jg.writeStringField(STATUS_SUBMIT_TIME,
                 entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
         jg.writeStringField(STATUS_SCROLL_START,
