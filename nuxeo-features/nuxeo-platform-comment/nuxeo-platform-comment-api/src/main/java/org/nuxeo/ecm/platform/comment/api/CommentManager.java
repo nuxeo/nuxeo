@@ -235,10 +235,11 @@ public interface CommentManager {
      * @param session the core session
      * @param commentId the comment id
      * @param comment the updated comment
+     * @return the updated comment
      * @throws CommentNotFoundException if no comment was found with the given id.
      * @since 10.3
      */
-    void updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException;
+    Comment updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException;
 
     /**
      * Deletes a comment.
@@ -267,10 +268,11 @@ public interface CommentManager {
      * @param session the core session
      * @param entityId the external entity id
      * @param comment the comment containing the modifications
+     * @return the updated comment
      * @throws CommentNotFoundException if no comment was found with the given external entity id.
      * @since 10.3
      */
-    void updateExternalComment(CoreSession session, String entityId, Comment comment) throws CommentNotFoundException;
+    Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws CommentNotFoundException;
 
     /**
      * Deletes an external comment.

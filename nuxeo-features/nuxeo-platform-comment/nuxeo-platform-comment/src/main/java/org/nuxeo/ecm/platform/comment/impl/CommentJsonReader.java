@@ -15,6 +15,7 @@
  *
  * Contributors:
  *       Kevin Leturc <kleturc@nuxeo.com>
+ *       Nuno Cunha <ncunha@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.comment.impl;
 
@@ -63,12 +64,15 @@ public class CommentJsonReader extends EntityJsonReader<Comment> {
         comment.setAuthor(jn.get(COMMENT_AUTHOR_FIELD).textValue());
         comment.setText(jn.get(COMMENT_TEXT_FIELD).textValue());
 
-        Instant creationDate = jn.get(COMMENT_CREATION_DATE_FIELD).textValue() != null
-                ? Instant.parse(jn.get(COMMENT_CREATION_DATE_FIELD).textValue())
+        JsonNode creationDateNode = jn.get(COMMENT_CREATION_DATE_FIELD);
+        Instant creationDate = creationDateNode != null && !creationDateNode.isNull()
+                ? Instant.parse(creationDateNode.textValue())
                 : null;
         comment.setCreationDate(creationDate);
-        Instant modificationDate = jn.get(COMMENT_MODIFICATION_DATE_FIELD).textValue() != null
-                ? Instant.parse(jn.get(COMMENT_MODIFICATION_DATE_FIELD).textValue())
+
+        JsonNode modificationDateNode = jn.get(COMMENT_MODIFICATION_DATE_FIELD);
+        Instant modificationDate = modificationDateNode != null && !modificationDateNode.isNull()
+                ? Instant.parse(modificationDateNode.textValue())
                 : null;
         comment.setModificationDate(modificationDate);
 

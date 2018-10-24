@@ -137,19 +137,41 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        Comment comment = commentManager.createComment(session,
-                getSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
+        Comment commentToCreate = getSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
 
-        assertNotNull(comment);
-        assertNotNull(comment.getId());
-        assertNotNull(comment.getCreationDate());
-        assertNotNull(comment.getAncestorIds());
-        assertEquals(1, comment.getAncestorIds().size());
-        assertTrue(comment.getAncestorIds().contains(doc.getId()));
-        assertEquals("Administrator", comment.getAuthor());
-        assertEquals(doc.getId(), comment.getParentId());
-        assertEquals("some text", comment.getText());
-        assertNull(comment.getModificationDate());
+        Comment createdComment = commentManager.createComment(session, commentToCreate);
+        assertNotNull(createdComment);
+        assertNotNull(createdComment.getId());
+        assertEquals(commentToCreate.getCreationDate(), createdComment.getCreationDate());
+        assertNotNull(createdComment.getAncestorIds());
+        assertEquals(1, createdComment.getAncestorIds().size());
+        assertTrue(createdComment.getAncestorIds().contains(doc.getId()));
+        assertEquals(commentToCreate.getAuthor(), createdComment.getAuthor());
+        assertEquals(doc.getId(), createdComment.getParentId());
+        assertEquals(commentToCreate.getText(), createdComment.getText());
+        assertNull(createdComment.getModificationDate());
+    }
+
+    @Test
+    public void shouldReturnCreatedObjectWithCreationDateWhenCreatingCommentWithoutCreationDate() {
+        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        Comment commentToCreate = getSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
+        commentToCreate.setCreationDate(null);
+
+        Comment createdComment = commentManager.createComment(session, commentToCreate);
+        assertNotNull(createdComment);
+        assertNotNull(createdComment.getId());
+        assertNotNull(createdComment.getCreationDate());
+        assertNotNull(createdComment.getAncestorIds());
+        assertEquals(1, createdComment.getAncestorIds().size());
+        assertTrue(createdComment.getAncestorIds().contains(doc.getId()));
+        assertEquals(commentToCreate.getAuthor(), createdComment.getAuthor());
+        assertEquals(doc.getId(), createdComment.getParentId());
+        assertEquals(commentToCreate.getText(), createdComment.getText());
+        assertNull(createdComment.getModificationDate());
     }
 
     @Test
@@ -204,6 +226,29 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     }
 
     @Test
+    public void shouldReflectUpdatedFieldsWhenUpdatingExistingCommentWithoutProvidingModificationDate() {
+        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
+        doc = session.createDocument(doc);
+
+        Comment comment = commentManager.createComment(session,
+                getSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
+
+        session.save();
+
+        comment.setText("my updated text!");
+        commentManager.updateComment(session, comment.getId(), comment);
+
+        Comment storedComment = newComment(session.getDocument(new IdRef(comment.getId())));
+        assertEquals(comment.getId(), storedComment.getId());
+        assertEquals(comment.getAuthor(), storedComment.getAuthor());
+        assertEquals(comment.getCreationDate(), storedComment.getCreationDate());
+        assertEquals(comment.getText(), storedComment.getText());
+        assertEquals(comment.getParentId(), storedComment.getParentId());
+        assertEquals(comment.getAncestorIds(), storedComment.getAncestorIds());
+        assertNotNull(storedComment.getModificationDate());
+    }
+
+    @Test
     public void shouldReflectUpdatedFieldsWhenUpdatingExistingExternalComment() {
         DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
         doc = session.createDocument(doc);
@@ -219,10 +264,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         comment.setText("my updated text!");
         comment.setModificationDate(Instant.now());
-        commentManager.updateExternalComment(session, "anEntityId", comment);
-
-        Comment storedComment = newComment(session.getDocument(new IdRef(comment.getId())));
-        assertNotNull(storedComment);
+        Comment storedComment = commentManager.updateExternalComment(session, "anEntityId", comment);
         assertEquals(comment, storedComment);
     }
 

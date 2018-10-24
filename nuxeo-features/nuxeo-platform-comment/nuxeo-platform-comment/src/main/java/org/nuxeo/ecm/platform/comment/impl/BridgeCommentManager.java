@@ -140,15 +140,15 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException {
+    public Comment updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist");
         }
         if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
-            second.updateComment(session, commentId, comment);
+            return second.updateComment(session, commentId, comment);
         } else {
-            first.updateComment(session, commentId, comment);
+            return first.updateComment(session, commentId, comment);
         }
     }
 
@@ -171,8 +171,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
-        second.updateExternalComment(session, entityId, comment);
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
+        return second.updateExternalComment(session, entityId, comment);
     }
 
     @Override

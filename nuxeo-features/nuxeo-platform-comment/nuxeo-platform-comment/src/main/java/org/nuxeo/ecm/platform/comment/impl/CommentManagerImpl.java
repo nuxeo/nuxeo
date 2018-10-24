@@ -447,7 +447,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public void updateComment(CoreSession session, String commentId, Comment comment) throws NuxeoException {
+    public Comment updateComment(CoreSession session, String commentId, Comment comment) throws NuxeoException {
         throw new UnsupportedOperationException("Update a comment is not possible through this implementation");
     }
 
@@ -470,7 +470,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public void updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Update a comment from its external entity id is not possible through this implementation");
     }

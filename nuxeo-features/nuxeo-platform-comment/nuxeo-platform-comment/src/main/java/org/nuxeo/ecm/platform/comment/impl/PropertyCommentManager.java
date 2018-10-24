@@ -32,6 +32,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -162,6 +163,12 @@ public class PropertyCommentManager extends AbstractCommentManager {
         if (!session.exists(docRef)) {
             throw new CommentNotFoundException("The document or comment " + comment.getParentId() + " does not exist.");
         }
+
+        // Initiate Creation Date if it is not done yet
+        if (comment.getCreationDate() == null) {
+            comment.setCreationDate(Instant.now());
+        }
+
         String path = getCommentContainerPath(session, parentId);
         DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
         Comments.commentToDocumentModel(comment, commentModel);
@@ -210,17 +217,25 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException {
+    public Comment updateComment(CoreSession session, String commentId, Comment comment)
+            throws CommentNotFoundException {
         IdRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
+
+        // Initiate Modification Date if it is not done yet
+        if (comment.getModificationDate() == null) {
+            comment.setModificationDate(Instant.now());
+        }
+
         DocumentModel commentModel = session.getDocument(commentRef);
         Comments.commentToDocumentModel(comment, commentModel);
         if (comment instanceof ExternalEntity) {
             Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
         }
         session.saveDocument(commentModel);
+        return Comments.newComment(commentModel);
     }
 
     @Override
@@ -245,7 +260,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void updateExternalComment(CoreSession session, String entityId, Comment comment)
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
             throws CommentNotFoundException {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         if (commentModel == null) {
@@ -256,6 +271,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
         }
         session.saveDocument(commentModel);
+        return Comments.newComment(commentModel);
     }
 
     @Override

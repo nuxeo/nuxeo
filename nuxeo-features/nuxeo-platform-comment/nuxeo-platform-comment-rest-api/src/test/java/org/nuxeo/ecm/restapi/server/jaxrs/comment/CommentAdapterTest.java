@@ -34,6 +34,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
@@ -111,6 +112,28 @@ public class CommentAdapterTest extends BaseTest {
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
             assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
             assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        }
+    }
+
+    @Test
+    public void testCreateCommentWithoutCreationDate() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        Comment comment = instantiateComment(file.getId());
+        comment.setCreationDate(null);
+
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+            assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+            assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+            assertNotNull(node.get(COMMENT_CREATION_DATE_FIELD).textValue());
         }
     }
 
@@ -222,10 +245,10 @@ public class CommentAdapterTest extends BaseTest {
         String commentId = comment.getId();
         fetchInvalidations();
 
-
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fetch." + COMMENT_ENTITY_TYPE, CommentJsonWriter.FETCH_REPLIES_SUMMARY);
-        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId, queryParams);
+        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId,
+                queryParams);
 
         assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
@@ -254,7 +277,8 @@ public class CommentAdapterTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fetch." + COMMENT_ENTITY_TYPE, CommentJsonWriter.FETCH_REPLIES_SUMMARY);
-        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId, queryParams);
+        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@comment/" + commentId,
+                queryParams);
 
         assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
@@ -288,6 +312,30 @@ public class CommentAdapterTest extends BaseTest {
 
             Comment updatedComment = commentManager.getComment(session, commentId);
             assertEquals("And now I update it", updatedComment.getText());
+        }
+    }
+
+    @Test
+    public void testUpdateCommentWithoutModificationDate() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        Comment comment = createComment(file.getId());
+        String commentId = comment.getId();
+        fetchInvalidations();
+
+        comment.setText("And now I update it");
+        comment.setModificationDate(null);
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            assertNotNull(node.get(COMMENT_MODIFICATION_DATE_FIELD).textValue());
         }
     }
 
