@@ -33,5 +33,6 @@
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ContextualParametersJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.SubtypesJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.UserVisiblePermissionsJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BlobAppLinksJsonEnricher" enable="true" />
   </extension>
 </component>

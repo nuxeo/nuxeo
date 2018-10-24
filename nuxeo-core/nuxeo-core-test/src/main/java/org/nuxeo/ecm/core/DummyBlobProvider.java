@@ -21,7 +21,9 @@ package org.nuxeo.ecm.core;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,7 +31,9 @@ import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.blob.apps.AppLink;
 
 /**
  * Dummy storage in memory.
@@ -76,6 +80,14 @@ public class DummyBlobProvider extends AbstractBlobProvider {
         String k = String.valueOf(counter.incrementAndGet());
         blobs.put(k, bytes);
         return k;
+    }
+
+    public List<AppLink> getAppLinks(String user, ManagedBlob blob) {
+        AppLink link = new AppLink();
+        link.setAppName("dummyApp");
+        link.setIcon("dummyIcon");
+        link.setLink("dummyLink");
+        return Arrays.asList(link);
     }
 
 }

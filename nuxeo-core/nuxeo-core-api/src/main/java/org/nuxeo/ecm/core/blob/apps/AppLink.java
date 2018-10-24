@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.blob.apps;
 
-import java.net.URI;
-
 /**
  * @since 7.3
  */
