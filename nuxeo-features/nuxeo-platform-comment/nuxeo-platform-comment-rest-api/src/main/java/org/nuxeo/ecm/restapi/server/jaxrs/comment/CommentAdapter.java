@@ -80,10 +80,10 @@ public class CommentAdapter extends DefaultAdapter {
 
     @PUT
     @Path("{commentId}")
-    public Comment updateComment(@PathParam("commentId") String commentId, Comment comment) {
+    public Response updateComment(@PathParam("commentId") String commentId, Comment comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        commentManager.updateComment(getContext().getCoreSession(), commentId, comment);
-        return comment;
+        Comment updatedComment = commentManager.updateComment(getContext().getCoreSession(), commentId, comment);
+        return Response.ok(updatedComment).build();
     }
 
     @PUT
