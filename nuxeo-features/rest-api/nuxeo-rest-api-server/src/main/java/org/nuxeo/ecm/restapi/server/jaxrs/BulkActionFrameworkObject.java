@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -45,6 +46,17 @@ public class BulkActionFrameworkObject extends DefaultObject {
     @Produces(MediaType.APPLICATION_JSON)
     public BulkStatus executeBulkAction(@PathParam("commandId") String commandId) {
         BulkStatus status = Framework.getService(BulkService.class).getStatus(commandId);
+        if (status.getState() == State.UNKNOWN) {
+            throw new WebResourceNotFoundException("Bulk command with id=" + commandId + " doesn't exist");
+        }
+        return status;
+    }
+
+    @PUT
+    @Path("{commandId}/abortion")
+    @Produces(MediaType.APPLICATION_JSON)
+    public BulkStatus abortBulkAction(@PathParam("commandId") String commandId) {
+        BulkStatus status = Framework.getService(BulkService.class).abort(commandId);
         if (status.getState() == State.UNKNOWN) {
             throw new WebResourceNotFoundException("Bulk command with id=" + commandId + " doesn't exist");
         }
