@@ -63,6 +63,10 @@
   // This attribute allows true fullscreen mode in slideshow view
   // when using PowerPoint Online's 'view' action.
   office_frame.setAttribute('allowfullscreen', 'true');
+
+  // The sandbox attribute is needed to allow automatic redirection to the O365 sign-in page in the business user flow
+  office_frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox');
+
   frameholder.appendChild(office_frame);
   document.getElementById('office_form').submit();
   </script>
