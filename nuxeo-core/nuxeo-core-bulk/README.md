@@ -180,8 +180,18 @@ curl -s -X GET "http://localhost:8080/nuxeo/api/v1/bulk/$commandId"  -u Administ
 #  "scrollEnd": "2018-10-11T13:10:26.846Z",
 #  "completed": "2018-10-11T13:10:28.243Z"
 #}
+```
+
+Also a command can be aborted, this is useful for long running command launched by error, 
+or to by pass a command that fails systematically which blocks the entire action processor:
 
 ```
+## Abort a command
+curl -s -X PUT "http://localhost:8080/nuxeo/api/v1/bulk/$commandId/abortion"  -u Administrator:Administrator  -H 'content-type: application/json' | jq .
+
+```
+
+
 
 ## Debugging
 
