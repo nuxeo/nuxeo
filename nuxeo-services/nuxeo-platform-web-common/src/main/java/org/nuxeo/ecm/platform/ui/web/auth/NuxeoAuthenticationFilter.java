@@ -22,7 +22,9 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DRIVE_PROTOCOL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_AUTHENTICATION_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_CONNECTION_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
@@ -32,6 +34,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.MOBILE_PROTOCOL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
@@ -911,10 +914,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (!redirected && !XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
+            String callbackURL = request.getParameter(CALLBACK_URL_PARAMETER);
             try {
-                String url = baseURL + LoginScreenHelper.getStartupPagePath();
-                url = URIUtils.addParametersToURIQuery(url, parameters);
-                ((HttpServletResponse) response).sendRedirect(url);
+                httpResponse.sendRedirect(getLogoutRedirectURL(callbackURL, baseURL, parameters));
                 redirected = true;
             } catch (IOException e) {
                 log.error("Unable to redirect to default start page after logout : " + e.getMessage());
@@ -927,6 +929,26 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Unable to logout " + e.getMessage());
         }
         return redirected;
+    }
+
+    /**
+     * @since 10.3
+     */
+    protected String getLogoutRedirectURL(String callbackURL, String baseURL, Map<String, String> parameters) {
+        if (isCallbackURLValid(callbackURL, baseURL)) {
+            return callbackURL;
+        }
+
+        String url = baseURL + LoginScreenHelper.getStartupPagePath();
+        return URIUtils.addParametersToURIQuery(url, parameters);
+    }
+
+    /**
+     * @since 10.3
+     */
+    protected boolean isCallbackURLValid(String callbackURL, String baseURL) {
+        return StringUtils.isNotBlank(callbackURL) && ((baseURL != null && callbackURL.startsWith(baseURL))
+                || callbackURL.startsWith(MOBILE_PROTOCOL) || callbackURL.startsWith(DRIVE_PROTOCOL));
     }
 
     // App Server JAAS SPI

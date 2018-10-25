@@ -42,6 +42,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_FORM_USERNAME_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginSSO.DUMMY_SSO_TICKET;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginToken.DUMMY_AUTH_TOKEN_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -632,6 +634,25 @@ public class TestNuxeoAuthenticationFilter {
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
         Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        initAuthPluginFormLogoutRequest(request, session, sessionAttributes);
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called, as we redirect instead
+        assertFalse(chain.called);
+
+        // logout event
+        checkEvents(EVENT_LOGOUT);
+
+        // cached auth has been removed
+        checkNoCachedUser(sessionAttributes);
+
+        // redirect was called. home.html is the default LoginScreenHelper startup page
+        verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/home.html"));
+    }
+
+    protected void initAuthPluginFormLogoutRequest(HttpServletRequest request, HttpSession session,
+            Map<String, Object> sessionAttributes) throws LoginException {
         when(request.getSession(anyBoolean())).thenReturn(session);
         mockRequestURI(request, "/" + LOGOUT_PAGE, "", "");
         // cached identity
@@ -643,6 +664,54 @@ public class TestNuxeoAuthenticationFilter {
         doNothing().when(loginContext).logout();
         cuii.setLoginContext(loginContext);
         sessionAttributes.put(NXAuthConstants.USERIDENT_KEY, cuii);
+    }
+
+    /**
+     * Auth in session and /logout request. Removes session auth. Redirects to callback URL.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-form.xml")
+    public void testAuthPluginFormLogoutCallbackURL() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        initAuthPluginFormLogoutRequest(request, session, sessionAttributes);
+
+        // set the callbackURL parameter to a valid URL
+        when(request.getParameter(eq(CALLBACK_URL_PARAMETER))).thenReturn("http://localhost:8080/nuxeo/redirect");
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called, as we redirect instead
+        assertFalse(chain.called);
+
+        // logout event
+        checkEvents(EVENT_LOGOUT);
+
+        // cached auth has been removed
+        checkNoCachedUser(sessionAttributes);
+
+        // redirect was called and callback URL was valid
+        verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/redirect"));
+    }
+
+    /**
+     * Auth in session and /logout request. Removes session auth. Invalid callback URL. Redirects to startup page.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-form.xml")
+    public void testAuthPluginFormLogoutInvalidCallbackURL() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        initAuthPluginFormLogoutRequest(request, session, sessionAttributes);
+
+        // set the callbackURL parameter to an invalid URL
+        when(request.getParameter(eq(CALLBACK_URL_PARAMETER))).thenReturn("http://example.com/redirect");
 
         filter.doFilter(request, response, chain);
 
@@ -757,6 +826,8 @@ public class TestNuxeoAuthenticationFilter {
         doNothing().when(loginContext).logout();
         cuii.setLoginContext(loginContext);
         sessionAttributes.put(NXAuthConstants.USERIDENT_KEY, cuii);
+        // the callbackURL parameter should be ignored as the SSO do a redirect
+        when(request.getParameter(eq(CALLBACK_URL_PARAMETER))).thenReturn("http://example.com/redirected");
 
         filter.doFilter(request, response, chain);
 
@@ -771,6 +842,32 @@ public class TestNuxeoAuthenticationFilter {
 
         // redirect to the SSO logout page
         verify(response).sendRedirect(eq("http://sso.example.com/logout"));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-form.xml")
+    public void testCallbackURL() {
+        String baseURL = "http://localhost:8080/nuxeo/";
+        assertFalse(filter.isCallbackURLValid(null, baseURL));
+        assertFalse(filter.isCallbackURLValid("http://foo.bar/nuxeo/redirect", null));
+        assertTrue(filter.isCallbackURLValid("http://localhost:8080/nuxeo/redirect", baseURL));
+        assertFalse(filter.isCallbackURLValid("https://example.com/redirect", baseURL));
+        assertTrue(filter.isCallbackURLValid("nuxeo://redirect", baseURL));
+        assertTrue(filter.isCallbackURLValid("nxdrive://redirect", baseURL));
+        assertFalse(filter.isCallbackURLValid("foo://", baseURL));
+
+        // wrong callback URL => redirects to startup page
+        assertEquals("http://localhost:8080/nuxeo/home.html",
+                filter.getLogoutRedirectURL("https://example.com/redirect", baseURL, null));
+        assertEquals("http://localhost:8080/nuxeo/home.html", filter.getLogoutRedirectURL(null, baseURL, null));
+        assertEquals("http://localhost:8080/nuxeo/home.html",
+                filter.getLogoutRedirectURL("foo://redirect", baseURL, null));
+        // OK
+        assertEquals("http://localhost:8080/nuxeo/redirect",
+                filter.getLogoutRedirectURL("http://localhost:8080/nuxeo/redirect", baseURL, null));
+        assertEquals("nuxeo://redirect", filter.getLogoutRedirectURL("nuxeo://redirect", baseURL, null));
+        assertEquals("nxdrive://redirect", filter.getLogoutRedirectURL("nxdrive://redirect", baseURL, null));
     }
 
 }

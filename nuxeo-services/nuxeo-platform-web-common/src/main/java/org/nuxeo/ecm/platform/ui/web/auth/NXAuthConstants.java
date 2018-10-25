@@ -86,7 +86,7 @@ public final class NXAuthConstants {
 
     /**
      * Name of the session parameter which stores the url to be redirected when logging out
-     * 
+     *
      * @since 9.1
      */
     public static final String REDIRECT_URL = "redirect_url";
@@ -94,6 +94,21 @@ public final class NXAuthConstants {
     @Deprecated
     // because of typo.
     public static final String PASSORD_KEY = "user_password";
+
+    /**
+     * @since 10.3
+     */
+    protected static final String CALLBACK_URL_PARAMETER = "callbackURL";
+
+    /**
+     * @since 10.3
+     */
+    protected static final String MOBILE_PROTOCOL = "nuxeo://";
+
+    /**
+     * @since 10.3
+     */
+    protected static final String DRIVE_PROTOCOL = "nxdrive://";
 
     // Constant utility class.
     private NXAuthConstants() {
