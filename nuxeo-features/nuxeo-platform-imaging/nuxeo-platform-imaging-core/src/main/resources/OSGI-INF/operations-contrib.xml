@@ -12,6 +12,16 @@
 
     <operation class="org.nuxeo.ecm.platform.picture.operation.GetPictureView" />
 
+    <operation class="org.nuxeo.ecm.platform.picture.operation.RecomputePictureViews" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer" point="bindings">
+
+    <binding name="Picture.RecomputeViews">
+      <administrator>true</administrator>
+    </binding>
+
   </extension>
 
   <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
