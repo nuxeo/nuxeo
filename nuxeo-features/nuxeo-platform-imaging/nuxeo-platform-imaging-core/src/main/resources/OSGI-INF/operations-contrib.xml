@@ -4,8 +4,7 @@
     Define the default operations for the imaging library
   </documentation>
 
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-    point="operations">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
 
     <operation class="org.nuxeo.ecm.platform.picture.operation.PictureResize" />
 
@@ -15,8 +14,7 @@
 
   </extension>
 
-  <extension point="chains"
-    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+  <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
 
     <chain id="Image.Blob.Resize">
       <operation id="Blob.RunConverter">
@@ -25,7 +23,7 @@
     </chain>
 
     <chain id="Image.Blob.ConvertToPDF">
-      <operation id="Context.PopBlob"/>
+      <operation id="Context.PopBlob" />
       <operation id="Blob.RunConverter">
         <param name="converter" type="string">pictureConvertToPDF</param>
       </operation>
