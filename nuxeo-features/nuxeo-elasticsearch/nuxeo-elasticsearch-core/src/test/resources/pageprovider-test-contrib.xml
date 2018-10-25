@@ -280,9 +280,6 @@
         <aggregate id="mixinType" parameter="ecm:mixinType" type="terms">
           <field name="system_mixinType_agg" schema="advanced_search" />
         </aggregate>
-        <aggregate id="level1" type="terms" parameter="ecm:path@level1">
-          <field name="system_level1_agg" schema="advanced_search" />
-        </aggregate>
       </aggregates>
     </genericPageProvider>
 
