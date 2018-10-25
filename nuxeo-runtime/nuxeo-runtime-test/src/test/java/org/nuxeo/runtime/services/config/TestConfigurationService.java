@@ -174,20 +174,19 @@ public class TestConfigurationService {
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
     public void testToJson() throws Exception {
-        String expected = "{" + "\"namespace.anothertest.dummyBooleanProperty\": \"true\"," + //
-                "\"namespace.anothertest.pouet\": \"toto\", " + //
-                "\"namespace.test.anotherDummyBooleanProperty\": \"false\", " + //
-                "\"namespace.test.dummyBooleanProperty\": \"true\", " + //
-                "\"namespace.test.dummyStringProperty\": [" + //
-                "\"dummyValue\", " + //
-                "\"anotherDummyValue\"" + //
-                "], " + //
-                "\"namespace.yetanothertest.pouet\": \"bar\", " + //
-                "\"namespace.yetanothertest.truc\": [" + //
-                "\"foo\", " + //
-                "\"bar\"" + //
-                "]" + //
-                "}";
+        String expected =
+                "{\"namespace\":{" +
+                    "\"test\":{" +
+                        "\"anotherDummyBooleanProperty\":\"false\"," +
+                        "\"dummyBooleanProperty\":\"true\"," +
+                        "\"dummyStringProperty\":[\"dummyValue\"," +
+                        "\"anotherDummyValue\"]}," +
+                    "\"anothertest\":{" +
+                        "\"dummyBooleanProperty\":\"true\"," +
+                        "\"pouet\":\"toto\"}," +
+                    "\"yetanothertest\":{" +
+                        "\"pouet\":\"bar\"," +
+                        "\"truc\":[\"foo\",\"bar\"]}}}}";
         String json = cs.getPropertiesAsJson("nuxeo");
         JSONAssert.assertEquals(expected, json, false);
     }
