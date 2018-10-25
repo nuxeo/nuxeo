@@ -252,6 +252,14 @@ public class RestESDocumentsTest extends BaseTest {
                                                  .orElse(null);
             assertNotNull(tagFacetNode);
 
+            JsonNode level1Node = node.get("aggregations").get("level1");
+            assertEquals("terms", level1Node.get("type").getTextValue());
+            JsonNode noteLevel1Node = StreamSupport.stream(level1Node.get("buckets").spliterator(), false)
+                                                   .filter(n -> "folder_1".equals(n.get("key").getTextValue()))
+                                                   .findFirst()
+                                                   .orElse(null);
+            assertNotNull(noteLevel1Node);
+
         }
 
         // Test invalid system property as page provider aggregate
