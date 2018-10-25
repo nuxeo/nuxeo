@@ -137,7 +137,7 @@ public class TestSetSystemPropertiesAction {
         txFeature.nextTransaction();
 
         String nxql = String.format("SELECT * FROM Document WHERE ecm:uuid in ( '%s', '%s')",
-                ver.getId(), // not writable
+                ver.getId(), // writable since NXP-26030
                 doc.getId() // ok
         );
 
@@ -161,7 +161,7 @@ public class TestSetSystemPropertiesAction {
 
         txFeature.nextTransaction();
 
-        assertEquals(1, listener.count);
+        assertEquals(2, listener.count);
 
         eventService.removeEventListener(listener);
     }

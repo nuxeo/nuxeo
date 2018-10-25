@@ -1502,4 +1502,33 @@ public class TestSQLRepositoryProperties {
         assertEquals(expectedList, updatedList);
     }
 
+    @Test
+    public void testSetDocumentSystemPropUnknown() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        try {
+            session.setDocumentSystemProp(doc.getRef(), "noSuchSystemProp", "foo bar");
+            fail("shouldn't allow writing unknown property");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("Unknown system property, noSuchSystemProp", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSetDocumentSystemPropOnVersion() {
+        // what we test
+        List<String> stringSysProps = Arrays.asList("fulltextSimple", "fulltextBinary", "fulltextJobId");
+        List<String> booleanSysProps = Arrays.asList("isTrashed");
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = doc.checkIn(null, null);
+        for (String prop : stringSysProps) {
+            session.setDocumentSystemProp(verRef, prop, "foobar");
+        }
+        for (String prop : booleanSysProps) {
+            session.setDocumentSystemProp(verRef, prop, Boolean.TRUE);
+        }
+    }
+
 }

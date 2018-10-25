@@ -113,6 +113,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
 
+    public static final String IS_TRASHED_PROP = "ecm:isTrashed";
+
     public static final String MISC_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
 
     public static final String LOCK_OWNER_PROP = "ecm:lockOwner";
@@ -122,6 +124,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<>(Arrays.asList( //
                                                                                           FULLTEXT_JOBID_PROP, //
                                                                                           FULLTEXT_BINARYTEXT_PROP, //
+                                                                                          IS_TRASHED_PROP, //
                                                                                           MISC_LIFECYCLE_STATE_PROP, //
                                                                                           LOCK_OWNER_PROP, //
                                                                                           LOCK_CREATED_PROP, //
