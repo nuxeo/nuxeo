@@ -555,8 +555,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                     }
                 }
                 if (!(engine instanceof Invocable)) {
-                    throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
-                            + scriptLanguage);
+                    throw new NuxeoException(
+                            "Engine " + engine.getClass().getName() + " not Invocable for language: " + scriptLanguage);
                 }
                 try {
                     engine.eval(desc.getScript());

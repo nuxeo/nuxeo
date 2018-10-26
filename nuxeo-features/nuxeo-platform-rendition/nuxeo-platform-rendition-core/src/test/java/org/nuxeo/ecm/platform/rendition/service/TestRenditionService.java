@@ -148,8 +148,8 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
-                "renditionDefinitionWithUnknownOperationChain", "zipExport", "zipTreeExport",
-                "zipTreeExportLazily", "containerDefaultRendition");
+                "renditionDefinitionWithUnknownOperationChain", "zipExport", "zipTreeExport", "zipTreeExportLazily",
+                "containerDefaultRendition");
 
         RenditionDefinition rd = renditionDefinitions.stream()
                                                      .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
@@ -760,9 +760,8 @@ public class TestRenditionService {
             }
             DocumentModel renditionDocModel = session.getDocument(renditionDocRef);
             String renditionDocTypeName = renditionDocModel.getType();
-            assertEquals(String.format(
-                    "Folderish with docType '%s' rendered as '%s' instead of 'File'", docTypeName, renditionDocTypeName),
-                    "File", renditionDocTypeName);
+            assertEquals(String.format("Folderish with docType '%s' rendered as '%s' instead of 'File'", docTypeName,
+                    renditionDocTypeName), "File", renditionDocTypeName);
         }
     }
 
@@ -1095,8 +1094,7 @@ public class TestRenditionService {
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertRenditionDefinitions(availableRenditionDefinitions, "containerDefaultRendition", "dummyRendition1",
-                "dummyRendition2", "zipTreeExport",
-                "zipTreeExportLazily");
+                "dummyRendition2", "zipTreeExport", "zipTreeExportLazily");
     }
 
     protected static void assertRenditionDefinitions(List<RenditionDefinition> actual, String... otherExpected) {
