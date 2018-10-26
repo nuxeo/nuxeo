@@ -29,10 +29,12 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.code.externalsorting.ExternalSort;
 
@@ -55,7 +57,8 @@ public class SortBlob extends AbstractTransientBlobComputation {
         DataBucket in = codec.decode(record.getData());
 
         String commandId = in.getCommandId();
-        Blob tmpBlob = getBlob(in.getDataAsString());
+        String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
+        Blob tmpBlob = getBlob(in.getDataAsString(), storeName);
         tmpBlob = sort(tmpBlob, commandId);
 
         // Create a new file to add header and footer
@@ -70,7 +73,7 @@ public class SortBlob extends AbstractTransientBlobComputation {
             log.error("Unable to copy header/footer", e);
         }
 
-        storeBlob(new FileBlob(path.toFile()), commandId);
+        storeBlob(new FileBlob(path.toFile()), commandId, storeName);
 
         DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
         context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));

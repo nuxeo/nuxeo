@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.transientstore.TransientStorageComponent.DEFAULT_STORE_NAME;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -90,7 +91,7 @@ public class TestMakeBlob {
 
         // check the output blob
         String blobPath = codec.decode(output.getData()).getDataAsString();
-        Blob blob = comp.getBlob(blobPath);
+        Blob blob = comp.getBlob(blobPath, DEFAULT_STORE_NAME);
         assertBlobEquals("abcdef", blob);
 
         comp.destroy();
@@ -165,9 +166,9 @@ public class TestMakeBlob {
 
         // check the output blob
         String blobPath = codec.decode(output1.getData()).getDataAsString();
-        assertBlobEquals("abcdef", comp.getBlob(blobPath));
+        assertBlobEquals("abcdef", comp.getBlob(blobPath, DEFAULT_STORE_NAME));
         blobPath = codec.decode(output2.getData()).getDataAsString();
-        assertBlobEquals("mnopqr", comp.getBlob(blobPath));
+        assertBlobEquals("mnopqr", comp.getBlob(blobPath, DEFAULT_STORE_NAME));
 
         comp.destroy();
     }

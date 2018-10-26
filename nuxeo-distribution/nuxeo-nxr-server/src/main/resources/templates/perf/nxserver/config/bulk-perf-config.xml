@@ -14,7 +14,7 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction" logConfig="bulk"
       defaultConcurrency="4" defaultPartitions="8" />
-    <streamProcessor name="csvExport" class="org.nuxeo.ecm.core.bulk.action.CSVExportAction" logConfig="bulk"
+    <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction" logConfig="bulk"
       defaultConcurrency="4" defaultPartitions="8">
       <option name="produceImmediate">true</option>
     </streamProcessor>

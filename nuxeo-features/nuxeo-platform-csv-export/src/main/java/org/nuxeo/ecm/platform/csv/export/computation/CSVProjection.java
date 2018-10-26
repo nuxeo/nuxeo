@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.action.computation;
+package org.nuxeo.ecm.platform.csv.export.computation;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
@@ -39,7 +39,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
-import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -98,7 +100,8 @@ public class CSVProjection extends AbstractBulkComputation {
 
     @Override
     public void endBucket(ComputationContext context, int bucketSize) {
-        String commandId = getCurrentCommand().getId();
+        BulkCommand command = getCurrentCommand();
+        String commandId = command.getId();
         try {
             // Extract header from data
             String csv = out.toString(UTF_8.name());

@@ -17,6 +17,7 @@
     <module>nuxeo-platform-audit</module>
     <module>nuxeo-platform-task</module>
     <module>nuxeo-platform-comment</module>
+    <module>nuxeo-platform-csv-export</module>
     <module>nuxeo-platform-imaging</module>
     <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-io</module>
