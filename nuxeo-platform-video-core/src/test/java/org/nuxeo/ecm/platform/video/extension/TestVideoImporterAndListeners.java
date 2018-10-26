@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +45,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -103,18 +102,12 @@ public class TestVideoImporterAndListeners {
     @Inject
     protected TransactionalFeature txFeature;
 
-    private File getTestFile() {
-        return new File(FileUtils.getResourcePathFromContext("test-data/sample.mpg"));
-    }
-
-    protected static BlobHolder getBlobFromPath(String path) throws IOException {
-        Blob blob;
+    protected static Blob getBlobFromPath(String path, String mimeType) throws IOException {
         try (InputStream in = TestVideoImporterAndListeners.class.getResourceAsStream("/" + path)) {
-            assertNotNull(String.format("Failed to load resource: " + path), in);
-            blob = Blobs.createBlob(in);
+            Blob blob = Blobs.createBlob(in, mimeType);
+            blob.setFilename(FilenameUtils.getName(path));
+            return blob;
         }
-        blob.setFilename(path);
-        return new SimpleBlobHolder(blob);
     }
 
     @Test
@@ -157,15 +150,12 @@ public class TestVideoImporterAndListeners {
 
     @Test
     public void testImportSmallVideo() throws Exception {
-        File testFile = getTestFile();
-        Blob blob = Blobs.createBlob(testFile, "video/mpg");
-        blob.setFilename("Test file.mov");
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
         assertNotNull(blob);
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, "/", true,
-                "test-data/sample.mpg");
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, "/", true, "sample.mpg");
         assertNotNull(docModel);
 
         txFeature.nextTransaction();
@@ -201,7 +191,7 @@ public class TestVideoImporterAndListeners {
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
-        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
+        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM, "video/mp4"));
         docModel = session.createDocument(docModel);
 
         txFeature.nextTransaction();
@@ -266,16 +256,13 @@ public class TestVideoImporterAndListeners {
 
     @Test
     public void testVideoInfo() throws Exception {
-        File testFile = getTestFile();
-        Blob blob = Blobs.createBlob(testFile, "video/mpg");
-        blob.setFilename("Sample.mpg");
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
         String rootPath = "/";
         assertNotNull(blob);
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
-                "test-data/sample.mpg");
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true, "sample.mpg");
 
         txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
@@ -334,8 +321,8 @@ public class TestVideoImporterAndListeners {
         assertEquals(Collections.emptyList(), transcodedVideos);
 
         // update document with a video blob
-        Blob video = Blobs.createBlob(getTestFile());
-        doc.setPropertyValue("file:content", (Serializable) video);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
         session.saveDocument(doc);
 
         txFeature.nextTransaction();
@@ -352,8 +339,9 @@ public class TestVideoImporterAndListeners {
         assertEquals(Collections.emptyList(), transcodedVideos);
 
         // update document with a different video blob
-        video = Blobs.createBlob(new File(FileUtils.getResourcePathFromContext("test-data/ccdemo.mov")));
-        doc.setPropertyValue("file:content", (Serializable) video);
+        blob = Blobs.createBlob(new File(FileUtils.getResourcePathFromContext("test-data/ccdemo.mov")),
+                "video/quicktime");
+        doc.setPropertyValue("file:content", (Serializable) blob);
         session.saveDocument(doc);
 
         txFeature.nextTransaction();
@@ -394,8 +382,8 @@ public class TestVideoImporterAndListeners {
     @SuppressWarnings("unchecked")
     public void testVideoConversions() throws IOException, InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
-        Blob video = Blobs.createBlob(getTestFile());
-        doc.setPropertyValue("file:content", (Serializable) video);
+        Blob blob = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
 
         txFeature.nextTransaction();
@@ -433,7 +421,7 @@ public class TestVideoImporterAndListeners {
 
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
-        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath("test-data/sample.mpg").getBlob());
+        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath("test-data/sample.mpg", "video/mpeg"));
         docModel = session.createDocument(docModel);
 
         txFeature.nextTransaction();
