@@ -44,6 +44,7 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -447,7 +448,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
-            String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
+            String digest = blob.getDigest();
+            if (digest == null) {
+                digest = DigestUtils.md5Hex(blob.getStream());
+            }
+            String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
             response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
             addCacheControlHeaders(request, response);
 
