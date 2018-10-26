@@ -36,6 +36,7 @@ limitations under the License.
 
     S3Provider.prototype._upload = function(file, callback) {
       return new Promise(function(resolve, reject) {
+        callback({ type: 'uploadStarted', file });
         this.uploader.upload({
           Key: this.extraInfo.baseKey.replace(/^\/+/g, '').concat(file.name),
           ContentType: file.type,
@@ -124,6 +125,8 @@ limitations under the License.
         return Promise.all(promises).then(function() {
           callback({ type: 'batchFinished', batchId: this.batchId });
         }.bind(this));
+      }.bind(this)).catch(function(error) {
+        callback({ type: 'uploadInterrupted', error });
       }.bind(this));
     };
 
