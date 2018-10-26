@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.stream.StreamService;
  */
 public class BulkServiceImpl implements BulkService {
 
-    private static final Log log = LogFactory.getLog(BulkServiceImpl.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BulkServiceImpl.class);
 
     public static final String BULK_LOG_MANAGER_NAME = "bulk";
 

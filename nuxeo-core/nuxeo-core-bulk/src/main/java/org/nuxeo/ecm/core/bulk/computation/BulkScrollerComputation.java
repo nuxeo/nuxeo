@@ -32,8 +32,8 @@ import java.util.List;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -70,7 +70,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class BulkScrollerComputation extends AbstractComputation {
 
-    private static final Log log = LogFactory.getLog(BulkScrollerComputation.class);
+    private static final Logger log = LogManager.getLogger(BulkScrollerComputation.class);
 
     public static final int MAX_SCROLL_SIZE = 4_000;
 
