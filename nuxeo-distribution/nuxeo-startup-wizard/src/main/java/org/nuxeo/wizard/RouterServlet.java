@@ -23,6 +23,7 @@ package org.nuxeo.wizard;
 import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEV_SYSTEM_PROP;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
@@ -580,6 +581,12 @@ public class RouterServlet extends HttpServlet {
             } catch (ConfigurationException e) {
                 ctx.trackError(PARAM_BIND_ADDRESS, "error.already.used.ip");
             }
+        }
+
+        // "org.nuxeo.dev" is a checkbox which posts null if unchecked, set to false to have it displayed in the Recap
+        // screen
+        if (collector.getConfigurationParamValue(NUXEO_DEV_SYSTEM_PROP) == null) {
+            collector.addConfigurationParam(NUXEO_DEV_SYSTEM_PROP, "false");
         }
 
         if (ctx.hasErrors()) {
