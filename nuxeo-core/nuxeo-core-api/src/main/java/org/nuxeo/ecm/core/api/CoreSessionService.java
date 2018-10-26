@@ -29,15 +29,18 @@ public interface CoreSessionService {
 
     /**
      * Debug information about a {@link CoreSession} acquisition.
+     * <p>
+     * Since 10.3, we also store the closing stacktrace as a suppressed exception.
      */
     static class CoreSessionRegistrationInfo extends Throwable {
 
         private static final long serialVersionUID = 1L;
 
-        private final CloseableCoreSession session;
+        protected CloseableCoreSession session;
 
         public CoreSessionRegistrationInfo(CloseableCoreSession session) {
-            super("CoreSessionDebugInfo(" + Thread.currentThread().getName() + ", " + session.getSessionId() + ")");
+            super("DEBUG: opening stacktrace, sessionId=" + session.getSessionId() + ", thread="
+                    + Thread.currentThread().getName());
             this.session = session;
         }
 
