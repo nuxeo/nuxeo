@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -79,6 +80,7 @@ import com.google.common.hash.Hashing;
 @Features({ CoreBulkFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
+@Ignore("NXP-26039")
 public class TestCSVExportAction {
 
     @Inject
