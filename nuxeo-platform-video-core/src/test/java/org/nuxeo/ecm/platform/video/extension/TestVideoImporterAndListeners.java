@@ -36,8 +36,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,11 +90,6 @@ public class TestVideoImporterAndListeners {
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
     protected static final String VIDEO_TYPE = "Video";
-
-    public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
-
-    @Inject
-    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
