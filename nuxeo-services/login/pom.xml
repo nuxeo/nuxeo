@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-services-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>8.10-HF38-SNAPSHOT</version>
+    <version>8.10-HF39-SNAPSHOT</version>
   </parent>
   <groupId>org.nuxeo.ecm.login</groupId>
   <artifactId>parent</artifactId>
