@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -51,7 +52,9 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
 
         String commandId = in.getCommandId();
         long documents = in.getCount();
-        Blob blob = getBlob(in.getDataAsString());
+
+        String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
+        Blob blob = getBlob(in.getDataAsString(), storeName);
         // store it in download transient store
         TransientStore store = Framework.getService(TransientStoreService.class)
                                         .getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);

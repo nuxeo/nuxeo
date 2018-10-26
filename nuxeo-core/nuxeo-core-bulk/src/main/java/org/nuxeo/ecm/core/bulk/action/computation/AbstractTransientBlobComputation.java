@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
@@ -61,8 +60,8 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         return metadata.name() + commandId;
     }
 
-    public Blob getBlob(String key) {
-        TransientStore store = Framework.getService(TransientStoreService.class).getStore(CSVExportAction.ACTION_NAME);
+    public Blob getBlob(String key, String storeName) {
+        TransientStore store = Framework.getService(TransientStoreService.class).getStore(storeName);
         List<Blob> blobs = store.getBlobs(key);
         Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
         if (blob == null) {
@@ -71,8 +70,8 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         return blob;
     }
 
-    protected void storeBlob(Blob blob, String commandId) {
-        TransientStore store = Framework.getService(TransientStoreService.class).getStore(CSVExportAction.ACTION_NAME);
+    protected void storeBlob(Blob blob, String commandId, String storeName) {
+        TransientStore store = Framework.getService(TransientStoreService.class).getStore(storeName);
         store.putBlobs(getTransientStoreKey(commandId), Collections.singletonList(blob));
         store.setCompleted(getTransientStoreKey(commandId), true);
     }

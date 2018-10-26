@@ -30,7 +30,6 @@
     <action name="setSystemProperties" bucketSize="100" batchSize="25" />
     <action name="setProperties" bucketSize="100" batchSize="25" />
     <action name="removeProxy" bucketSize="100" batchSize="25" />
-    <action name="csvExport" bucketSize="100" batchSize="50" />
     <action name="trash" bucketSize="100" batchSize="25" />
   </extension>
 
@@ -51,11 +50,6 @@
     <streamProcessor name="trash" class="org.nuxeo.ecm.core.bulk.action.TrashAction"
       logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
-    <!-- CSV exporter processor -->
-    <streamProcessor name="csvExport" class="org.nuxeo.ecm.core.bulk.action.CSVExportAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <option name="produceImmediate">false</option>
-    </streamProcessor>
   </extension>
 
 </component>

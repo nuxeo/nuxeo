@@ -80,7 +80,8 @@ public class MakeBlob extends AbstractTransientBlobComputation {
             return;
         }
         // all docs for the command are processed
-        String value = saveInTransientStore(commandId);
+        String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
+        String value = saveInTransientStore(commandId, storeName);
         DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
                 in.getFooterAsString());
         if (produceImmediate) {
@@ -118,9 +119,9 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         }
     }
 
-    protected String saveInTransientStore(String commandId) {
+    protected String saveInTransientStore(String commandId, String storeName) {
         Path path = createTemp(commandId);
-        storeBlob(new FileBlob(path.toFile()), commandId);
+        storeBlob(new FileBlob(path.toFile()), commandId, storeName);
         try {
             Files.delete(path);
         } catch (IOException e) {

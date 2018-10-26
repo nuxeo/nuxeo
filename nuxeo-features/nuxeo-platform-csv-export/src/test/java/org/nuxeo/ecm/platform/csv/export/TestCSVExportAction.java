@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk;
+package org.nuxeo.ecm.platform.csv.export;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -24,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.nuxeo.ecm.core.bulk.DocumentSetRepositoryInit.DOC_BY_LEVEL;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVHeader.SYSTEM_PROPERTIES_HEADER_FIELDS;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.DOC_BY_LEVEL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,11 +59,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.bulk.action.CSVExportAction;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
@@ -78,6 +81,7 @@ import com.google.common.hash.Hashing;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreBulkFeature.class, CoreFeature.class })
+@Deploy("org.nuxeo.ecm.platform.csv.export")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
 @Ignore("NXP-26039")

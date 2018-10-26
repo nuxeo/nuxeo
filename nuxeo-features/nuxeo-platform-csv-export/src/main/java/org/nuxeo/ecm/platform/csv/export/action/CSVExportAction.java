@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.bulk.action;
+package org.nuxeo.ecm.platform.csv.export.action;
 
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.PRODUCE_IMMEDIATE_OPTION;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
@@ -26,11 +26,11 @@ import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.bulk.action.computation.CSVProjection;
 import org.nuxeo.ecm.core.bulk.action.computation.ExposeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.MakeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.SortBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.ZipBlob;
+import org.nuxeo.ecm.platform.csv.export.computation.CSVProjection;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
