@@ -57,7 +57,7 @@
       </parameters>
     </converter>
     <converter name="dae2gltf" class="org.nuxeo.ecm.platform.threed.convert.Collada2glTFConverter">
-      <sourceMimeType>model/vnd.collada+xml</sourceMimeType>
+      <sourceMimeType>*</sourceMimeType>
       <destinationMimeType>model/gltf+json</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">collada2gltlf</parameter>
