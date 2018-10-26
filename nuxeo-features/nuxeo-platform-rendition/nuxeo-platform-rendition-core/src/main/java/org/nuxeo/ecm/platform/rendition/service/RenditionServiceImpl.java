@@ -420,10 +420,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     public List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) {
         List<Rendition> renditions = new ArrayList<>();
 
-        if (doc.isProxy()) {
-            return renditions;
-        }
-
         List<RenditionDefinition> defs = getAvailableRenditionDefinitions(doc);
         if (defs != null) {
             for (RenditionDefinition def : defs) {
