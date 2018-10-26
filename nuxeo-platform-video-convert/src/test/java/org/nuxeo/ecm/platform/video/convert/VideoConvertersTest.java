@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.junit.Assume;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -63,7 +62,7 @@ public class VideoConvertersTest {
         String path = "/" + ELEPHANTS_DREAM;
         try (InputStream is = VideoConvertersTest.class.getResourceAsStream(path)) {
             assertNotNull(String.format("Failed to load resource: %s", path), is);
-            return new SimpleBlobHolder(Blobs.createBlob(is));
+            return new SimpleBlobHolder(Blobs.createBlob(is, "video/mp4"));
         }
     }
 

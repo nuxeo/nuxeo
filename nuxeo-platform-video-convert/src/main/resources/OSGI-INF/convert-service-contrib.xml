@@ -6,13 +6,7 @@
 
     <converter name="videoStoryboard"
       class="org.nuxeo.ecm.platform.video.convert.StoryboardConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/mp4</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
@@ -20,13 +14,7 @@
 
     <converter name="videoScreenshot"
       class="org.nuxeo.ecm.platform.video.convert.ScreenshotConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/mp4</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
@@ -34,13 +22,7 @@
 
     <converter name="convertToWebM"
       class="org.nuxeo.ecm.platform.video.convert.VideoConversionConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/mp4</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/webm</destinationMimeType>
@@ -54,13 +36,7 @@
 
     <converter name="convertToMP4"
       class="org.nuxeo.ecm.platform.video.convert.VideoConversionConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/webm</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/mp4</destinationMimeType>
@@ -74,13 +50,7 @@
 
     <converter name="convertToOgg"
       class="org.nuxeo.ecm.platform.video.convert.VideoConversionConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/mp4</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/webm</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/ogg</destinationMimeType>
@@ -94,13 +64,7 @@
 
     <converter name="convertToAVI"
       class="org.nuxeo.ecm.platform.video.convert.VideoConversionConverter">
-      <sourceMimeType>video/mpeg</sourceMimeType>
-      <sourceMimeType>video/mp4</sourceMimeType>
-      <sourceMimeType>video/quicktime</sourceMimeType>
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <sourceMimeType>video/x-ms-asf</sourceMimeType>
-      <sourceMimeType>video/x-msvideo</sourceMimeType>
-      <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>video/*</sourceMimeType>
       <sourceMimeType>application/gxf</sourceMimeType>
       <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/x-msvideo</destinationMimeType>
