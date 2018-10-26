@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.video.convert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Test;
 
@@ -57,23 +56,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.video.convert")
 public class VideoConvertersTest {
 
-    public static final Log log = LogFactory.getLog(VideoConvertersTest.class);
-
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
-    protected static BlobHolder getBlobFromPath(String path) throws IOException {
-        try (InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path)) {
-            assertNotNull(String.format("Failed to load resource: " + path), is);
+    protected static BlobHolder getTestBlobFromPath() throws IOException {
+        String path = "/" + ELEPHANTS_DREAM;
+        try (InputStream is = VideoConvertersTest.class.getResourceAsStream(path)) {
+            assertNotNull(String.format("Failed to load resource: %s", path), is);
             return new SimpleBlobHolder(Blobs.createBlob(is));
         }
     }
 
-    protected BlobHolder applyConverter(String converter, String fileName, Double position, Double duration)
-            throws Exception {
+    protected BlobHolder applyConverter(String converter, Double position, Double duration) throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
-        assertNotNull(cs.getRegistredConverters().contains(converter));
-        BlobHolder in = getBlobFromPath(fileName);
+        assertTrue(cs.getRegistredConverters().contains(converter));
+        BlobHolder in = getTestBlobFromPath();
         Map<String, Serializable> params = new HashMap<>();
         if (position != null) {
             params.put("position", position);
@@ -92,7 +89,7 @@ public class VideoConvertersTest {
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
         Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
-        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, ELEPHANTS_DREAM, null, 653.53);
+        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, null, 653.53);
         List<Blob> blobs = result.getBlobs();
         assertEquals(9, blobs.size());
         assertEquals("0.00-seconds.jpeg", blobs.get(0).getFilename());
@@ -106,12 +103,12 @@ public class VideoConvertersTest {
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
-        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, null, null);
+        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, null, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00000.000.jpeg", blobs.get(0).getFilename());
 
-        result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, 10.0, null);
+        result = applyConverter(Constants.SCREENSHOT_CONVERTER, 10.0, null);
         blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00010.000.jpeg", blobs.get(0).getFilename());
