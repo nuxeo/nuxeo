@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -624,14 +623,51 @@ public class TestRenditionService {
     }
 
     @Test
-    public void testRenderAProxyDocument() {
+    public void testRenderAProxyDocument() throws IOException {
         DocumentModel file = createBlobFile();
+        DocumentRef fileRef = file.getRef();
 
-        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
-        DocumentRef renditionRef = renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
-        DocumentModel rendition = session.getDocument(renditionRef);
-        assertTrue(rendition.isVersion());
-        assertEquals(null, rendition.getParentRef()); // placeless
+        // render a live document (reference)
+        Rendition rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
+        String expectedRenditionContent = rendition.getBlob().getString();
+
+        // render a proxy to a live document, lazy rendition
+        DocumentRef rootRef = session.getRootDocument().getRef();
+        DocumentModel proxy = session.createProxy(fileRef, rootRef);
+        rendition = renditionService.getRendition(proxy, PDF_RENDITION_DEFINITION);
+        DocumentModel hostDocument = rendition.getHostDocument();
+        assertTrue(hostDocument.isProxy());
+        assertFalse(hostDocument.isVersion());
+        assertEquals(rootRef, hostDocument.getParentRef());
+        assertEquals(expectedRenditionContent, rendition.getBlob().getString());
+
+        // render a proxy to a live document, stored rendition
+        rendition = renditionService.getRendition(proxy, PDF_RENDITION_DEFINITION, true);
+        hostDocument = rendition.getHostDocument();
+        assertFalse(hostDocument.isProxy());
+        assertTrue(hostDocument.isVersion());
+        assertNull(hostDocument.getParentRef()); // placeless
+        assertEquals(expectedRenditionContent, rendition.getBlob().getString());
+
+        // render a proxy to a version, lazy rendition
+        session.checkOut(fileRef);
+        session.checkIn(fileRef, null, null);
+        DocumentModel version = session.getLastDocumentVersion(fileRef);
+        proxy = session.createProxy(version.getRef(), rootRef);
+        rendition = renditionService.getRendition(proxy, PDF_RENDITION_DEFINITION);
+        hostDocument = rendition.getHostDocument();
+        assertTrue(hostDocument.isProxy());
+        assertFalse(hostDocument.isVersion());
+        assertEquals(rootRef, hostDocument.getParentRef());
+        assertEquals(expectedRenditionContent, rendition.getBlob().getString());
+
+        // render a proxy to a version, stored rendition
+        rendition = renditionService.getRendition(proxy, PDF_RENDITION_DEFINITION, true);
+        hostDocument = rendition.getHostDocument();
+        assertFalse(hostDocument.isProxy());
+        assertTrue(hostDocument.isVersion());
+        assertNull(hostDocument.getParentRef()); // placeless
+        assertEquals(expectedRenditionContent, rendition.getBlob().getString());
     }
 
     @Test
