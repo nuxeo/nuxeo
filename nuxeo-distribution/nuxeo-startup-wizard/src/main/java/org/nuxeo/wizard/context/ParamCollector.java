@@ -20,6 +20,8 @@
 
 package org.nuxeo.wizard.context;
 
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEV_SYSTEM_PROP;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -84,7 +86,13 @@ public class ParamCollector {
     }
 
     public Map<String, String> getChangedParameters() {
-        return configurationGenerator.getChangedParameters(configurationParams);
+        Map<String, String> changedParameters = configurationGenerator.getChangedParameters(configurationParams);
+        // Don't consider "org.nuxeo.dev" as changed if unset in the config and unchecked in the form
+        if (configurationGenerator.getUserConfig().get(NUXEO_DEV_SYSTEM_PROP) == null
+                && !Boolean.parseBoolean(changedParameters.get(NUXEO_DEV_SYSTEM_PROP))) {
+            changedParameters.remove(NUXEO_DEV_SYSTEM_PROP);
+        }
+        return changedParameters;
     }
 
     public String getConfigurationParam(String name) {

@@ -33,6 +33,12 @@
     </tr><tr>
       <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.data.dir.help"/></td>
     </tr>
+    <tr>
+      <td class="labelCell"><fmt:message key="label.org.nuxeo.dev"/></td>
+      <td><input type="checkbox" name="org.nuxeo.dev" value="true" checked /></td>
+    </tr><tr>
+      <td colspan="2" class="helpCell"><fmt:message key="label.org.nuxeo.dev.help"/></td>
+    </tr>
     <% } %>
   </table>
 
