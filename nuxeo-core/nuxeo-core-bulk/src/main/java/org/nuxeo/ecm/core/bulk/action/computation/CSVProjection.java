@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -56,6 +58,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public class CSVProjection extends AbstractBulkComputation {
+
+    private static final Logger log = LogManager.getLogger(CSVProjection.class);
 
     public static final String SCHEMAS_PARAM = "schemas";
 
@@ -107,7 +111,7 @@ public class CSVProjection extends AbstractBulkComputation {
             context.produceRecord(OUTPUT_1, record);
             out = null;
         } catch (UnsupportedEncodingException e) {
-            getLog().error(e, e);
+            log.error("Unable to extract csv content", e);
         }
     }
 

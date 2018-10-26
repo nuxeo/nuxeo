@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -67,6 +69,8 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
 
     public static class SetSystemPropertyComputation extends AbstractBulkComputation {
 
+        private static final Logger log = LogManager.getLogger(SetSystemPropertyComputation.class);
+
         public static final String NOTIFY = "param-notify";
 
         public SetSystemPropertyComputation() {
@@ -86,7 +90,7 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
                         updatedRefs.add(ref);
                     } catch (NuxeoException e) {
                         // TODO send to error stream
-                        getLog().warn("Cannot set system property: " + entry.getKey() + " on: " + ref.toString(), e);
+                        log.warn("Cannot set system property: " + entry.getKey() + " on: " + ref.toString(), e);
                     }
                 }
             }
@@ -97,7 +101,7 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
                 }
             } catch (PropertyException e) {
                 // TODO send to error stream
-                getLog().warn("Cannot save session", e);
+                log.warn("Cannot save session", e);
             }
         }
 
