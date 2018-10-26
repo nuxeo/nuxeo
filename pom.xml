@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>8.10-HF38-SNAPSHOT</version>
+    <version>8.10-HF38</version>
   </parent>
 
   <groupId>org.nuxeo.duoweb.authentication</groupId>
