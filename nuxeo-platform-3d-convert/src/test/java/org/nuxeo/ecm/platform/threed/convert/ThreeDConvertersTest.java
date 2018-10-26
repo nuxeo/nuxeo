@@ -178,7 +178,9 @@ public class ThreeDConvertersTest {
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testCollada2glTFConverter() throws Exception {
-        BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestBlob(EXTENSION_COLLADA));
+        BlobHolder testBlob = getTestBlob(EXTENSION_COLLADA);
+        testBlob.getBlob().setMimeType("model/vnd.collada+xml");
+        BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, testBlob);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
