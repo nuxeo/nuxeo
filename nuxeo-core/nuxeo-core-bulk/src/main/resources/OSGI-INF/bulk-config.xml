@@ -27,10 +27,13 @@
 
   <!-- Defines some actions -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="setSystemProperties" bucketSize="100" batchSize="25" />
-    <action name="setProperties" bucketSize="100" batchSize="25" />
-    <action name="removeProxy" bucketSize="100" batchSize="25" />
+    <!-- internal -->
     <action name="trash" bucketSize="100" batchSize="25" />
+    <action name="removeProxy" bucketSize="100" batchSize="25" />
+    <action name="setSystemProperties" bucketSize="100" batchSize="25" />
+    <!-- actions available through REST API -->
+    <action name="setProperties" bucketSize="100" batchSize="25" httpEnabled="true" />
+    <action name="csvExport" bucketSize="100" batchSize="50" httpEnabled="true" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">

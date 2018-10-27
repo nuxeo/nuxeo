@@ -5,7 +5,7 @@
   <require>org.nuxeo.runtime.stream.service</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="removeDocuments" />
+    <action name="removeDocuments" httpEnabled="true" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">

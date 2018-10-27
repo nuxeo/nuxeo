@@ -38,4 +38,11 @@ public interface BulkAdminService {
     int getBucketSize(String action);
 
     int getBatchSize(String action);
+
+    /**
+     * Returns true if the action id is to be accessible through http API.
+     *
+     * @since 10.3
+     */
+    boolean isHttpEnabled(String actionId);
 }

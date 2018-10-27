@@ -32,6 +32,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 
@@ -45,6 +47,9 @@ public class RunBulkAction {
 
     @Context
     protected BulkService service;
+
+    @Context
+    protected BulkAdminService admin;
 
     @Context
     protected CoreSession session;
@@ -69,6 +74,14 @@ public class RunBulkAction {
 
     @OperationMethod
     public Blob run() throws IOException {
+
+        if (!admin.getActions().contains(action)) {
+            throw new NuxeoException("The operation does not exist");
+        }
+        if (!admin.isHttpEnabled(action) && !session.getPrincipal().isAdministrator()) {
+            throw new NuxeoException("The operation is not accessible");
+        }
+
         String userName = session.getPrincipal().getName();
         BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(parameters);
         if (repositoryName != null) {
