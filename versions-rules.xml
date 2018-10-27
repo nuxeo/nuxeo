@@ -1,0 +1,80 @@
+<ruleset comparisonMethod="maven"
+         xmlns="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://mojo.codehaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
+  <ignoreVersions>
+    <ignoreVersion type="regex">.*[-_\.]b[0-9\.]*</ignoreVersion> <!-- com.sun.xml.bind:jaxb-impl 2.4.0-b180830.0438 -->
+    <ignoreVersion type="regex">.*[-_\.][Mm][0-9\.]*</ignoreVersion> <!-- jline:jline 3.0.0.M1 -->
+    <ignoreVersion type="regex">.*[-_\.]AM[0-9\.]*</ignoreVersion> <!-- org.apache.directory.server:apacheds-core 2.0.0.AM25 -->
+    <ignoreVersion type="regex">.*[-_\.]CR[0-9\.]*</ignoreVersion> <!-- org.jboss.el:jboss-el 2.0.2.CR1 -->
+    <ignoreVersion type="regex">.*[-_\.]EA[0-9\.]*</ignoreVersion> <!-- javax.annotation:jsr250-api 2.0-JAXWS-2.0-EA3-depot -->
+    <ignoreVersion type="regex">.*[-_\.](rc|RC)[0-9\.]*</ignoreVersion> <!-- io.dropwizard.metrics:metrics-core 4.1.0-rc2 -->
+    <ignoreVersion type="regex">.*[-_\.][Aa]lpha[0-9\.-]*</ignoreVersion> <!-- javax.resource:connector-api 1.6-alpha-1 -->
+    <ignoreVersion type="regex">.*[-_\.][Bb]eta[0-9\.-]*</ignoreVersion> <!-- org.ow2.asm:asm 7.0-beta -->
+    <ignoreVersion type="regex">.*-atlassian-[0-9\.]*</ignoreVersion> <!-- org.hamcrest:hamcrest-core 1.4-atlassian-1 -->
+    <ignoreVersion type="regex">.*\.redhat-[0-9]+</ignoreVersion> <!-- org.apache.directory.shared:shared-asn1 0.9.19.redhat-002 -->
+    <ignoreVersion type="regex">.*-patch</ignoreVersion> <!-- com.smartgwt:smartgwt 2.5-patch -->
+    <ignoreVersion type="regex">200[34][0-9\.]*</ignoreVersion> <!-- commons-cli:commons-cli 20040117.000000 -->
+  </ignoreVersions>
+  <rules>
+    <rule groupId="com.octo.captcha" artifactId="jcaptcha">
+      <ignoreVersions>
+        <ignoreVersion type="exact">1.0-all</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="commons-httpclient" artifactId="commons-httpclient">
+      <ignoreVersions>
+        <ignoreVersion type="exact">3.1-jbossorg-1</ignoreVersion>
+        <ignoreVersion type="exact">3.1-jenkins-1</ignoreVersion>
+        <ignoreVersion type="exact">3.1.SONATYPE</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="commons-logging" artifactId="commons-logging">
+      <ignoreVersions>
+        <ignoreVersion type="exact">99.0-does-not-exist</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="concurrent" artifactId="concurrent">
+      <ignoreVersions>
+        <ignoreVersion type="exact">1.3.4-jahia6</ignoreVersion>
+        <ignoreVersion type="exact">1.3.4-patched</ignoreVersion>
+        <ignoreVersion type="exact">1.3.4-withdebug</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="javax.inject" artifactId="javax.inject">
+      <ignoreVersions>
+        <ignoreVersion type="exact">1.0-PFD-1</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="javax.annotation" artifactId="jsr250-api">
+      <ignoreVersions>
+        <ignoreVersion type="exact">1.0-20050927.133100</ignoreVersion>
+        <ignoreVersion type="exact">2.0-JAXWS-2.0-EA3-depot</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.jboss.javaee" artifactId="jboss-ejb-api">
+      <ignoreVersions>
+        <ignoreVersion type="exact">3.0.0.20070913080910</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.samba.jcifs" artifactId="jcifs">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-kohsuke-.*</ignoreVersion>
+        <ignoreVersion type="regex">.*-largetransfer-.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+
+    <!-- versions we don't want for JDK variant or API upgrade reasons -->
+
+    <rule groupId="org.postgresql" artifactId="postgresql">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*\.jre6</ignoreVersion>
+        <ignoreVersion type="regex">.*\.jre7</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.apache.pdfbox" artifactId="jbig2-imageio">
+      <ignoreVersions>
+        <ignoreVersion type="regex">3.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+  </rules>
+</ruleset>
