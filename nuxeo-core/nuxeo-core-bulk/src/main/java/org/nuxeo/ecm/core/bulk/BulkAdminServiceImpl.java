@@ -153,6 +153,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         return descriptors.get(action).getBatchSize();
     }
 
+    @Override
+    public boolean isHttpEnabled(String actionId) {
+        return descriptors.get(actionId).httpEnabled;
+    }
+
     public void afterStart() {
         initProcessor();
         streamProcessor.start();
@@ -163,4 +168,5 @@ public class BulkAdminServiceImpl implements BulkAdminService {
             streamProcessor.stop(STOP_DURATION);
         }
     }
+
 }

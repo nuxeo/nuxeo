@@ -42,6 +42,9 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@batchSize")
     public Integer batchSize = DEFAULT_BATCH_SIZE;
 
+    @XNode("@httpEnabled")
+    public Boolean httpEnabled = Boolean.FALSE;
+
     @Override
     public String getId() {
         return name;

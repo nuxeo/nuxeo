@@ -29,8 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.io.BulkParameters;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -47,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "bulkAction")
 public class BulkActionObject extends DefaultObject {
 
-    private static final Log log = LogFactory.getLog(BulkActionObject.class);
-
     protected String query;
 
     @Override
@@ -60,9 +57,16 @@ public class BulkActionObject extends DefaultObject {
     @Path("{actionId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @SuppressWarnings("unchecked")
     public Response executeBulkAction(@PathParam("actionId") String actionId, String actionParams)
             throws IOException {
+
+        BulkAdminService admin = Framework.getService(BulkAdminService.class);
+        if (!admin.getActions().contains(actionId)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        if (!admin.isHttpEnabled(actionId) && !getContext().getPrincipal().isAdministrator()) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
         String repository = getContext().getCoreSession().getRepositoryName();
         String username = getContext().getPrincipal().getName();
