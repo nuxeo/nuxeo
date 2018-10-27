@@ -4128,6 +4128,11 @@
         <artifactId>openws</artifactId>
         <version>1.5.4</version>
       </dependency>
+      <dependency>
+        <groupId>org.owasp.esapi</groupId>
+        <artifactId>esapi</artifactId>
+        <version>2.1.0.1</version>
+      </dependency>
       <!-- SCIM -->
       <dependency>
         <artifactId>scim-sdk</artifactId>
