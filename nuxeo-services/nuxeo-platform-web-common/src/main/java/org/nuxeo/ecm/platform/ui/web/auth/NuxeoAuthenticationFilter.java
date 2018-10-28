@@ -140,7 +140,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static final String XMLHTTP_REQUEST_TYPE = "XMLHttpRequest";
 
-    protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
+    protected static final String LOGIN_CATEGORY = "NuxeoAuthentication";
 
     protected static volatile Boolean isLoginSynchronized;
 
@@ -210,7 +210,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             Map<String, Serializable> props = new HashMap<>();
             props.put("AuthenticationPlugin", userInfo.getAuthPluginName());
             props.put("LoginPlugin", userInfo.getLoginPluginName());
-            props.put("category", LOGIN_JMS_CATEGORY);
+            props.put("category", LOGIN_CATEGORY);
             props.put("comment", comment);
 
             EventContext ctx = new UnboundEventContext(principal, props);

@@ -146,30 +146,6 @@ public class EventImpl implements Event {
     }
 
     @Override
-    public boolean isLocal() {
-        return (flags & FLAG_LOCAL) != 0;
-    }
-
-    @Override
-    public void setLocal(boolean isLocal) {
-        if (isLocal) {
-            flags |= FLAG_LOCAL;
-        } else {
-            flags &= ~FLAG_LOCAL;
-        }
-    }
-
-    @Override
-    public boolean isPublic() {
-        return !isLocal();
-    }
-
-    @Override
-    public void setPublic(boolean isPublic) {
-        setLocal(!isPublic);
-    }
-
-    @Override
     public boolean isImmediate() {
         return (flags & FLAG_IMMEDIATE) != 0;
     }

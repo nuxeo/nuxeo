@@ -508,11 +508,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event-jms</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-io</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
@@ -1938,11 +1933,6 @@
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-impl</artifactId>
         <version>${nxjsf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.jms</groupId>
-        <artifactId>jms</artifactId>
-        <version>1.1</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>

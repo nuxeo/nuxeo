@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
@@ -310,14 +309,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public void fireEventBundle(EventBundle event) {
-        boolean comesFromJMS = false;
-
-        if (event instanceof ReconnectedEventBundle) {
-            if (((ReconnectedEventBundle) event).comesFromJMS()) {
-                comesFromJMS = true;
-            }
-        }
-
         List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
         List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors();
 
@@ -339,11 +330,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         // run sync listeners
         if (blockSyncPostCommitProcessing) {
             log.debug("Dropping PostCommit handler execution");
-        } else if (comesFromJMS) {
-            // when called from JMS we must skip sync listeners
-            // - postComit listeners should be on the core
-            // - there is no transaction started by JMS listener
-            log.debug("Deactivating sync post-commit listener since we are called from JMS");
         } else {
             if (!postCommitSync.isEmpty()) {
                 postCommitExec.run(postCommitSync, event);
@@ -356,15 +342,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         }
 
         // fire async listeners
-        if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
-            log.debug("Skipping async exec, this will be triggered via JMS");
+        if (pipeDispatcher == null) {
+            asyncExec.run(postCommitAsync, event);
         } else {
-            if (pipeDispatcher == null) {
-                asyncExec.run(postCommitAsync, event);
-            } else {
-                // rather than sending to the WorkManager: send to the Pipe
-                pipeDispatcher.sendEventBundle(event);
-            }
+            // rather than sending to the WorkManager: send to the Pipe
+            pipeDispatcher.sendEventBundle(event);
         }
     }
 

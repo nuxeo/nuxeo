@@ -262,14 +262,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (inline) {
             event.setInline(true);
         }
-        // compat code: set isLocal on event if JMS is blocked
-        if (source != null) {
-            Boolean blockJms = (Boolean) source.getContextData("BLOCK_JMS_PRODUCING");
-            if (blockJms != null && blockJms.booleanValue()) {
-                event.setLocal(true);
-                event.setInline(true);
-            }
-        }
         Framework.getService(EventService.class).fireEvent(event);
     }
 
@@ -625,8 +617,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (options == null) {
             options = new HashMap<>();
         }
-        // do not forward this event on the JMS Bus
-        options.put("BLOCK_JMS_PRODUCING", true);
         notifyEvent(DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED, docModel, options, null, null, false, true);
         return docModel;
     }

@@ -62,64 +62,30 @@ public class EventListenerTest {
     @Test
     public void testFlags() {
         EventImpl event = new EventImpl("test", null);
-        assertTrue(event.isPublic());
         assertEquals(Event.FLAG_NONE, event.getFlags());
 
-        event.setLocal(true);
         event.setInline(true);
-        assertEquals(Event.FLAG_LOCAL | Event.FLAG_INLINE, event.getFlags());
-        assertTrue(event.isInline());
-        assertTrue(event.isLocal());
-
-        event.setLocal(false);
         assertEquals(Event.FLAG_INLINE, event.getFlags());
         assertTrue(event.isInline());
-        assertFalse(event.isLocal());
 
         event.setInline(false);
         assertEquals(Event.FLAG_NONE, event.getFlags());
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
-
-        event.setPublic(false);
-        assertFalse(event.isPublic());
-        assertTrue(event.isLocal());
-        assertFalse(event.isInline());
-        assertFalse(event.isCommitEvent());
-
-        event.setPublic(true);
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
         assertFalse(event.isInline());
         assertFalse(event.isCommitEvent());
 
         event.setInline(true);
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
         assertTrue(event.isInline());
         assertFalse(event.isCommitEvent());
 
         event.setIsCommitEvent(true);
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
         assertTrue(event.isInline());
         assertTrue(event.isCommitEvent());
 
         event.setIsCommitEvent(false);
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
         assertTrue(event.isInline());
         assertFalse(event.isCommitEvent());
 
         event.setInline(false);
-        assertTrue(event.isPublic());
-        assertFalse(event.isLocal());
-        assertFalse(event.isInline());
-        assertFalse(event.isCommitEvent());
-
-        event.setPublic(false);
-        assertFalse(event.isPublic());
-        assertTrue(event.isLocal());
         assertFalse(event.isInline());
         assertFalse(event.isCommitEvent());
     }
