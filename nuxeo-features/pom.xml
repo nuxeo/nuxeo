@@ -19,7 +19,6 @@
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-imaging</module>
     <module>nuxeo-platform-relations</module>
-    <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-tag-service</module>
     <module>annot</module>
