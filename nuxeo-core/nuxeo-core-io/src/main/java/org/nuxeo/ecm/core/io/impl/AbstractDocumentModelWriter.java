@@ -333,7 +333,8 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         Class klass = JavaTypes.getClass(fieldType);
         // for enumerated SimpleTypes we may need to lookup on the supertype
         // we do the recursion here and not in JavaTypes to avoid potential impacts
-        if (klass == null && fieldType.getSuperType() != null) {
+        if (klass == null) {
+            assert fieldType.getSuperType() != null;
             return getFieldClass(fieldType.getSuperType());
         }
         return klass;

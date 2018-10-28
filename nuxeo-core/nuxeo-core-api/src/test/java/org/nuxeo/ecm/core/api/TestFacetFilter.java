@@ -51,8 +51,8 @@ public class TestFacetFilter {
         facets.add("A");
         facets.add("B");
         facets.add("C");
-        DocumentModel model = new DocumentModelImpl("sid", "my type", "id", null, null, null, null, null, facets, null,
-                null);
+        DocumentModel model = new DocumentModelImpl("sid", "my type", "id", null, null, null, null, new String[0],
+                facets, null, null);
 
         // One facet statements
         assertTrue(new FacetFilter("A", true).accept(model));

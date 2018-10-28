@@ -300,7 +300,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         sourceSession.getContext().modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrsToAdd);
 
                         // robustly clean any existing empty marker now that we are sure that the list in not empty
-                        if (storedAttr.contains(emptyRefMarker)) {
+                        if (storedAttr != null && storedAttr.contains(emptyRefMarker)) {
                             Attributes cleanAttrs = new BasicAttributes(attributeId, emptyRefMarker);
 
                             if (log.isDebugEnabled()) {

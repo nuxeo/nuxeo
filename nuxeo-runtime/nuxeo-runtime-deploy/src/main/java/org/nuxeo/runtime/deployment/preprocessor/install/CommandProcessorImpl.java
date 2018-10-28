@@ -46,13 +46,15 @@ public class CommandProcessorImpl implements CommandProcessor {
     public void exec(CommandContext ctx) {
         try {
             for (Command cmd : commands) {
-                if (log != null && log.isInfoEnabled()) {
+                if (log != null && log.isDebugEnabled()) {
                     log.debug("Executing: " + cmd.toString(ctx));
                 }
                 cmd.exec(ctx);
             }
         } catch (IOException e) {
-            log.error(e, e);
+            if (log != null) {
+                log.error(e, e);
+            }
         }
     }
 

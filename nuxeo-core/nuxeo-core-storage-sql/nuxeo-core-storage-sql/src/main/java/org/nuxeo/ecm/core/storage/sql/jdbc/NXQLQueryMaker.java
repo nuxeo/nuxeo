@@ -1697,7 +1697,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     table = getFragmentTable(dataHierTable, fragmentName);
                 }
             }
-            Column column = table.getColumn(fragmentKey);
+            Column column = table.getColumn(fragmentKey); // NOSONAR
             return new ColumnInfo(column, null, -1, false, false);
         }
 

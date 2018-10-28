@@ -26,8 +26,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,8 +66,8 @@ public class ImportExportActionBean implements Serializable {
     @In(create = true)
     protected transient ClipboardActions clipboardActions;
 
-    private static StringBuffer getRestletBaseURL(DocumentModel doc) {
-        StringBuffer urlb = new StringBuffer();
+    private static StringBuilder getRestletBaseURL(DocumentModel doc) {
+        StringBuilder urlb = new StringBuilder();
 
         urlb.append(BaseURL.getBaseURL());
         urlb.append(RESTLET_PREFIX);
@@ -82,29 +80,13 @@ public class ImportExportActionBean implements Serializable {
     }
 
     private static HttpServletResponse getHttpServletResponse() {
-        ServletResponse response = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            response = (ServletResponse) facesContext.getExternalContext().getResponse();
-        }
-
-        if (response != null && response instanceof HttpServletResponse) {
-            return (HttpServletResponse) response;
-        }
-        return null;
+        return facesContext == null ? null : (HttpServletResponse) facesContext.getExternalContext().getResponse();
     }
 
     private static HttpServletRequest getHttpServletRequest() {
-        ServletRequest request = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            request = (ServletRequest) facesContext.getExternalContext().getRequest();
-        }
-
-        if (request != null && request instanceof HttpServletRequest) {
-            return (HttpServletRequest) request;
-        }
-        return null;
+        return (HttpServletRequest) facesContext.getExternalContext().getRequest();
     }
 
     private static void handleRedirect(HttpServletResponse response, String url) throws IOException {
@@ -144,7 +126,7 @@ public class ImportExportActionBean implements Serializable {
         if (doc == null) {
             return null;
         }
-        StringBuffer urlb = getRestletBaseURL(doc);
+        StringBuilder urlb = getRestletBaseURL(doc);
         if (exportAsTree) {
             urlb.append("exportTree");
         } else {

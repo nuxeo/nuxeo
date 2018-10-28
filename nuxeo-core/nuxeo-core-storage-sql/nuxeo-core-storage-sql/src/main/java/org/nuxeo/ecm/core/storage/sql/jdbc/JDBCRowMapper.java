@@ -289,7 +289,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         curId = newId;
                         list = new ArrayList<>();
                     }
-                    list.add(value);
+                    list.add(value); // NOSONAR
                 }
                 if (curId != null && list != null) {
                     // flush last list

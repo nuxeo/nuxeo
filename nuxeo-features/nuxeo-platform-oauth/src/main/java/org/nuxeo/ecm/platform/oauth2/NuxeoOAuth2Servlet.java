@@ -307,7 +307,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
             // If no token exists for the client id and username passed in the token request store a new one,
             // else retrieve the existing token, refreshing it if needed
-            String username = authRequest.getUsername();
+            String username = authRequest.getUsername(); // NOSONAR
             NuxeoOAuth2Token token = tokenStore.getToken(clientId, username);
             if (token == null) {
                 final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(ACCESS_TOKEN_EXPIRATION_TIME, clientId);

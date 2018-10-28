@@ -79,7 +79,7 @@ public class DocumentModelFactory {
         String sourceId = sourceDoc == null ? null : sourceDoc.getUUID();
 
         // Immutable flag
-        boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion());
+        boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion()); // NOSONAR (proxy has source)
 
         // Instance facets
         Set<String> facets = new HashSet<>(Arrays.asList(doc.getFacets()));

@@ -140,6 +140,7 @@ public class Update extends AbstractCommand {
         if (file == null || todir == null) {
             status.addError("Cannot execute command in installer."
                     + " Invalid update syntax: file or todir was not specified.");
+            return;
         }
         if (todir.isFile()) {
             status.addError("Cannot execute command in installer."

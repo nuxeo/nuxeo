@@ -65,7 +65,7 @@ public class LdapRetryHandler implements InvocationHandler {
                 }
             }
         }
-        throw e;
+        throw e; // NOSONAR
     }
 
     public static DirContext wrap(DirContext dirContext, int retries) {

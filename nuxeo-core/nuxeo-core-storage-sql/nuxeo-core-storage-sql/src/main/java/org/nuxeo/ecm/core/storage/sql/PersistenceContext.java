@@ -1385,7 +1385,7 @@ public class PersistenceContext {
         }
         if (destId == null) {
             Long setPos = Long.valueOf(i);
-            if (!setPos.equals(source.get(Model.HIER_CHILD_POS_KEY))) {
+            if (!setPos.equals(source.get(Model.HIER_CHILD_POS_KEY))) { // NOSONAR
                 source.put(Model.HIER_CHILD_POS_KEY, setPos);
             }
         }

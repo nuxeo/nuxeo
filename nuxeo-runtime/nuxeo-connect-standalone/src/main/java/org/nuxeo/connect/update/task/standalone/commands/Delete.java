@@ -72,6 +72,7 @@ public class Delete extends AbstractCommand {
     protected void doValidate(Task task, ValidationStatus status) {
         if (file == null) {
             status.addError("Invalid delete syntax: No file specified");
+            return;
         }
         if (file.isDirectory()) {
             status.addError("Cannot delete directories: " + file.getName());

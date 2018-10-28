@@ -174,7 +174,7 @@ public class DownloadHelper {
             logClientAbort(e);
         } else {
             // unexpected problem, let traditional error management handle it
-            throw e;
+            throw e; // NOSONAR
         }
     }
 

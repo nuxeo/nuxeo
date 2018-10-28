@@ -59,7 +59,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
      * @param ns
      */
     public SchemaImpl(ComplexType complexType, String name, Namespace ns, boolean isVersionWritabe) {
-        super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
+        super(null, SchemaNames.SCHEMAS, name, ns);
         this.isVersionWritabe = isVersionWritabe;
         if (complexType != null) {
             for (Field field : complexType.getFields()) {

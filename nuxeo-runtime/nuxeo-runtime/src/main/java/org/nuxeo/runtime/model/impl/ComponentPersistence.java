@@ -204,6 +204,9 @@ public class ComponentPersistence {
             owner = name.substring(0, p);
         }
         DefaultRuntimeContext rc = (DefaultRuntimeContext) getContext(owner);
+        if (rc == null) {
+            throw new IllegalArgumentException("Invalid component name: " + name);
+        }
         File file = new File(this.root, name + ".xml");
         if (!isPersistent) {
             file.deleteOnExit();
@@ -225,6 +228,9 @@ public class ComponentPersistence {
             owner = compName.substring(0, p);
         }
         DefaultRuntimeContext rc = (DefaultRuntimeContext) getContext(owner);
+        if (rc == null) {
+            throw new IllegalArgumentException("Invalid component name: " + compName);
+        }
         rc.undeploy(file.toURI().toURL());
         file.delete();
         return true;

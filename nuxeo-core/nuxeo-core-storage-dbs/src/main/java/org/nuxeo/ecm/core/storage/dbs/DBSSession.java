@@ -331,7 +331,7 @@ public class DBSSession implements Session<QueryFilter> {
             }
             parentId = docState.getId();
         }
-        return docState.getId();
+        return docState.getId(); // NOSONAR
     }
 
     protected Document getChild(String parentId, String name) {
@@ -525,7 +525,7 @@ public class DBSSession implements Session<QueryFilter> {
         }
         if (destId == null) {
             Long setPos = Long.valueOf(i);
-            if (!setPos.equals(source.get(KEY_POS))) {
+            if (!setPos.equals(source.get(KEY_POS))) { // NOSONAR
                 source.put(KEY_POS, setPos);
             }
         }
