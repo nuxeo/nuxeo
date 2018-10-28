@@ -49,7 +49,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestUserTreeNodeParsing {
 
     protected DocumentModel newDoc(String id, String type) {
-        return new DocumentModelImpl(null, type, id, null, null, null, null, null, null, null, null);
+        return new DocumentModelImpl(null, type, id, null, null, null, null, new String[0], null, null, null);
     }
 
     @Test
