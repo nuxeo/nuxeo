@@ -52,9 +52,4 @@ public interface ReconnectedEventBundle extends EventBundle {
      */
     void disconnect();
 
-    /**
-     * Marker for Bundles coming from JMS.
-     */
-    boolean comesFromJMS();
-
 }

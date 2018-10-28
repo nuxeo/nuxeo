@@ -25,13 +25,6 @@ import java.io.Serializable;
  * <p>
  * These events should be used by all core components not only by the repository.
  * <p>
- * The events may specify a set of control flags that can be used to control the visibility and the way post commit
- * events are handled. There are 3 types of visibility:
- * <ul>
- * <li>LOCAL - events that are considered being visible to the local machine.
- * <li>PUBLIC (the default) - events visible on any machine. Clearing this flag will avoid forwarding the event on
- * remote machines (through JMS or other messaging systems)
- * </ul>
  * There are 2 post commit control flags:
  * <ul>
  * <li>INLINE - if true the event will not be recorded as part of the post commit event bundle. Defaults to false.
@@ -52,8 +45,6 @@ public interface Event extends Serializable {
     int FLAG_ROLLBACK = 2;
 
     int FLAG_COMMIT = 4;
-
-    int FLAG_LOCAL = 8;
 
     int FLAG_INLINE = 16;
 
@@ -202,38 +193,36 @@ public interface Event extends Serializable {
     void setIsCommitEvent(boolean isCommit);
 
     /**
-     * Tests if this event is local.
-     * <p>
-     * Local events events are of interest only on the local machine.
-     *
-     * @return true if private false otherwise
+     * @deprecated since 10.3
      */
-    boolean isLocal();
+    @Deprecated
+    default boolean isLocal() {
+        return false;
+    }
 
     /**
-     * Sets the local flag.
-     *
-     * @param isLocal
-     * @see #isLocal()
+     * @deprecated since 10.3
      */
-    void setLocal(boolean isLocal);
+    @Deprecated
+    default void setLocal(boolean isLocal) {
+        // deprecated
+    }
 
     /**
-     * Tests if this event is public.
-     * <p>
-     * Public events are of interest to everyone.
-     *
-     * @return true if public, false otherwise
+     * @deprecated since 10.3
      */
-    boolean isPublic();
+    @Deprecated
+    default boolean isPublic() {
+        return true;
+    }
 
     /**
-     * Set the public flag.
-     *
-     * @param isPublic
-     * @see #isPublic()
+     * @deprecated since 10.3
      */
-    void setPublic(boolean isPublic);
+    @Deprecated
+    default void setPublic(boolean isPublic) {
+        // deprecated
+    }
 
     /**
      * Tests if event is Immediate
