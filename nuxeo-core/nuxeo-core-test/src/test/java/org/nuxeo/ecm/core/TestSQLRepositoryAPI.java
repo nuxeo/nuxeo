@@ -3651,8 +3651,8 @@ public class TestSQLRepositoryAPI {
         typeName = CoreSession.IMPORT_PROXY_TYPE;
         parentRef = new IdRef(folderId);
         name = "myproxy";
-        DocumentModel proxy = new DocumentModelImpl((String) null, typeName, pid, new Path(name), null, null,
-                parentRef, null, null, null, null);
+        DocumentModel proxy = new DocumentModelImpl((String) null, typeName, pid, new Path(name), null, null, parentRef,
+                new String[0], null, null, null);
         proxy.putContextData(CoreSession.IMPORT_PROXY_TARGET_ID, vid);
         proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
         session.importDocuments(Collections.singletonList(proxy));

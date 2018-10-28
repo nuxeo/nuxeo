@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -266,29 +264,13 @@ public class RestHelper implements Serializable {
     }
 
     public static HttpServletResponse getHttpServletResponse() {
-        ServletResponse response = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            response = (ServletResponse) facesContext.getExternalContext().getResponse();
-        }
-
-        if (response != null && response instanceof HttpServletResponse) {
-            return (HttpServletResponse) response;
-        }
-        return null;
+        return facesContext == null ? null : (HttpServletResponse) facesContext.getExternalContext().getResponse();
     }
 
     public static HttpServletRequest getHttpServletRequest() {
-        ServletRequest request = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            request = (ServletRequest) facesContext.getExternalContext().getRequest();
-        }
-
-        if (request != null && request instanceof HttpServletRequest) {
-            return (HttpServletRequest) request;
-        }
-        return null;
+        return (HttpServletRequest) facesContext.getExternalContext().getRequest();
     }
 
     public static void handleRedirect(HttpServletResponse response, String url) throws IOException {

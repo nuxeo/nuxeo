@@ -173,7 +173,7 @@ public class StateHelper {
             ListDiff ldb = (ListDiff) b;
             return lda.isArray == ldb.isArray && equalsLoose(lda.diff, ldb.diff) && equalsLoose(lda.rpush, ldb.rpush);
         } else if (isScalar(a) && isScalar(b)) {
-            return a.equals(b);
+            return a.equals(b); // NOSONAR
         } else {
             return false;
         }

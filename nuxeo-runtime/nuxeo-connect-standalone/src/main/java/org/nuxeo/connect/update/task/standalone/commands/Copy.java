@@ -304,6 +304,7 @@ public class Copy extends AbstractCommand {
         if (file == null || tofile == null) {
             status.addError("Cannot execute command in installer."
                     + " Invalid copy syntax: file, dir, tofile or todir was not specified.");
+            return;
         }
         if (tofile.isFile() && !overwrite && !append) {
             if (removeOnExit) {

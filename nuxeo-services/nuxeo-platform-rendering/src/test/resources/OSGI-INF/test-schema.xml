@@ -7,4 +7,12 @@
     <schema name="file" src="schemas/myFile.xsd" />
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+      point="doctype">
+    <doctype name="File" extends="Document">
+      <schema name="dublincore"/>
+      <schema name="file"/>
+    </doctype>
+  </extension>
+
 </component>

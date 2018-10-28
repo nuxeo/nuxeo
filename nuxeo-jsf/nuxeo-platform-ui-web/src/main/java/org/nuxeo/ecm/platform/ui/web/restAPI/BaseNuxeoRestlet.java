@@ -114,25 +114,15 @@ public class BaseNuxeoRestlet extends Restlet {
     }
 
     protected static HttpServletRequest getHttpRequest(Request req) {
-        if (req instanceof HttpRequest) {
-            HttpRequest httpRequest = (HttpRequest) req;
-            ServerCall httpCall = httpRequest.getHttpCall();
-            if (httpCall instanceof ServletCall) {
-                return ((ServletCall) httpCall).getRequest();
-            }
-        }
-        return null;
+        HttpRequest httpRequest = (HttpRequest) req;
+        ServletCall httpCall = (ServletCall) httpRequest.getHttpCall();
+        return httpCall.getRequest();
     }
 
     protected static HttpServletResponse getHttpResponse(Response res) {
-        if (res instanceof HttpResponse) {
-            HttpResponse httpResponse = (HttpResponse) res;
-            ServerCall httpCall = httpResponse.getHttpCall();
-            if (httpCall instanceof ServletCall) {
-                return ((ServletCall) httpCall).getResponse();
-            }
-        }
-        return null;
+        HttpResponse httpResponse = (HttpResponse) res;
+        ServletCall httpCall = (ServletCall) httpResponse.getHttpCall();
+        return httpCall.getResponse();
     }
 
     protected static String getRestletFullUrl(Request request) {

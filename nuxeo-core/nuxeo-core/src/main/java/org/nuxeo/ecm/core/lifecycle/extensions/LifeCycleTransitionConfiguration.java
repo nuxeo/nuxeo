@@ -60,19 +60,18 @@ public class LifeCycleTransitionConfiguration {
         Collection<LifeCycleTransition> transitions = new ArrayList<LifeCycleTransition>();
 
         NodeList transitionsElements = element.getElementsByTagName(TAG_TRANSITIONS);
-        Element transitionsElement = null;
-        if (transitionsElements.getLength() > 0) {
-            // NXP-1472 : don't get the first element, but the first one attached to <lifecycle>
-            for (int i = 0; i < transitionsElements.getLength(); i++) {
-                transitionsElement = (Element) transitionsElements.item(i);
-                if (TAG_LIFECYCLE.equals(transitionsElement.getParentNode().getNodeName())) {
-                    break;
-                }
-            }
-        } else {
+        if (transitionsElements.getLength() <= 0) {
             return transitions;
         }
-        NodeList elements = transitionsElement.getElementsByTagName(TAG_TRANSITION);
+        // NXP-1472 : don't get the first element, but the first one attached to <lifecycle>
+        Element transitionsElement = null;
+        for (int i = 0; i < transitionsElements.getLength(); i++) {
+            transitionsElement = (Element) transitionsElements.item(i);
+            if (TAG_LIFECYCLE.equals(transitionsElement.getParentNode().getNodeName())) {
+                break;
+            }
+        }
+        NodeList elements = transitionsElement.getElementsByTagName(TAG_TRANSITION); // NOSONAR
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
             Element element = (Element) elements.item(i);

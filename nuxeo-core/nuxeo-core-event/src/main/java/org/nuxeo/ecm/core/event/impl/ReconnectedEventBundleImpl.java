@@ -120,7 +120,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if (refetchDocumentModel(session, arg) && session.getPrincipal() != null) {
+                    if (refetchDocumentModel(session, arg) && session.getPrincipal() != null) { // NOSONAR
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
@@ -156,7 +156,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                         DocumentModel oldDoc = (DocumentModel) propValue;
                         DocumentRef oldRef = oldDoc.getRef();
                         try {
-                            if (session.exists(oldRef)) {
+                            if (session.exists(oldRef)) { // NOSONAR
                                 propValue = session.getDocument(oldRef);
                             } else {
                                 log.warn("Listener " + (listenerName == null ? "" : "'" + listenerName + "' ")

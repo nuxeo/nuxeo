@@ -728,7 +728,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                         if (!Boolean.TRUE.equals(selected)) {
                             allSelected = false;
                         }
-                        entries.add(new PageSelection<>(entry, selected.booleanValue()));
+                        entries.add(new PageSelection<>(entry, selected.booleanValue())); // NOSONAR
                     }
                     if (allSelected) {
                         currentSelectPage.setSelected(true);

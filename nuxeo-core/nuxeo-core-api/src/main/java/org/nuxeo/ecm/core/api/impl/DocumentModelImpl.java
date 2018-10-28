@@ -272,9 +272,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      */
     public static Set<String> computeSchemas(DocumentType type, Collection<String> instanceFacets, boolean isProxy) {
         Set<String> schemas = new HashSet<>();
-        if (type != null) {
-            schemas.addAll(Arrays.asList(type.getSchemaNames()));
-        }
+        schemas.addAll(Arrays.asList(type.getSchemaNames()));
         TypeProvider typeProvider = getSchemaManager();
         for (String facet : instanceFacets) {
             CompositeType facetType = typeProvider.getFacet(facet);

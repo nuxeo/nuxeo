@@ -385,8 +385,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             state = STARTED;
             manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_STARTED, this));
         } catch (RuntimeException e) {
-            log.error(String.format("Component %s notification of application started failed: %s", component.getName(),
-                    e.getMessage()), e);
+            log.error(String.format("Component %s notification of application started failed: %s",
+                    component == null ? null : component.getName(), e.getMessage()), e);
             state = START_FAILURE;
         }
     }

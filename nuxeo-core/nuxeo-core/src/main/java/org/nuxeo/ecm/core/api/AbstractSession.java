@@ -1404,9 +1404,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
-        if (docModel != null) {
-            options.put("docTitle", docModel.getTitle());
-        }
+        options.put("docTitle", docModel.getTitle());
         String versionLabel = "";
         Document sourceDoc = null;
         // notify different events depending on wether the document is a

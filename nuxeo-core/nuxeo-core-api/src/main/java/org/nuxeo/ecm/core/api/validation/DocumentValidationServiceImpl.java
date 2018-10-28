@@ -180,7 +180,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
         String[] splittedXpath = xpath.split("/");
         List<PathNode> path = new ArrayList<>();
         Field field = null;
-        String fieldXpath = null;
+        StringBuilder fieldXpath = new StringBuilder(xpath.length());
         // rebuild the field path
         for (String xpathToken : splittedXpath) {
             // manage the list item case
@@ -189,7 +189,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 Field itemField = ((ListType) field.getType()).getField();
                 if (xpathToken.matches("\\d+")) {
                     // if the current token is an index, append the token and append an indexed PathNode to the path
-                    fieldXpath += "/" + xpathToken;
+                    fieldXpath.append('/').append(xpathToken);
                     field = itemField;
                     int index = Integer.parseInt(xpathToken);
                     path.add(new PathNode(field, index));
@@ -201,25 +201,22 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 } else {
                     // otherwise, the token in an item's element
                     // append the token and append the item's field and the item's element's field to the path node
-                    fieldXpath += "/" + xpathToken;
+                    fieldXpath.append('/').append(xpathToken);
                     field = itemField;
                     path.add(new PathNode(field));
-                    field = tm.getField(fieldXpath);
+                    field = tm.getField(fieldXpath.toString());
                     if (field == null) {
                         throw new IllegalArgumentException("Invalid xpath " + fieldXpath);
                     }
                     path.add(new PathNode(field));
                 }
             } else {
-                // in any case, if it's the first item, the token is the path
-                if (fieldXpath == null) {
-                    fieldXpath = xpathToken;
-                } else {
-                    // otherwise, append the token to the existing path
-                    fieldXpath += "/" + xpathToken;
+                if (fieldXpath.length() != 0) {
+                    fieldXpath.append('/');
                 }
+                fieldXpath.append(xpathToken);
                 // get the field
-                field = tm.getField(fieldXpath);
+                field = tm.getField(fieldXpath.toString());
                 // check it exists
                 if (field == null) {
                     throw new IllegalArgumentException("Invalid xpath " + fieldXpath);
@@ -228,7 +225,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 path.add(new PathNode(field));
             }
         }
-        Schema schema = field.getDeclaringType().getSchema();
+        Schema schema = field.getDeclaringType().getSchema(); // NOSONAR
         return new DocumentValidationReport(validateAnyTypeField(schema, path, field, value, validateSubProperties));
     }
 

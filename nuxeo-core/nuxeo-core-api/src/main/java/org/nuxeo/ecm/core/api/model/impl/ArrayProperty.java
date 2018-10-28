@@ -69,7 +69,7 @@ public class ArrayProperty extends ScalarProperty {
             Object[] newValues = (Object[]) internalGetValue();
             boolean[] newChildDirty = new boolean[newValues != null ? newValues.length : 0];
             for (int i = 0; i < newChildDirty.length; i++) {
-                Object newValue = newValues[i];
+                Object newValue = newValues[i]; // NOSONAR
                 if (oldValues == null || i >= oldValues.length) {
                     newChildDirty[i] = true;
                 } else {

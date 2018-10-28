@@ -201,7 +201,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
 
         if (LoginComponent.isSystemLogin(principal)) {
-            return new SystemPrincipal(principal.getName());
+            return new SystemPrincipal(principal.getName()); // NOSONAR
         }
         // if (principal instanceof NuxeoPrincipal) { // a nuxeo principal
         // return validatePrincipal((NuxeoPrincipal) principal);

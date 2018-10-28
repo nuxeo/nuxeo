@@ -75,9 +75,7 @@ public class TypeAdapterHelper {
         if (obj instanceof DocumentRef) {
             return (DocumentRef) obj;
         } else if (obj instanceof Expression) {
-            if (ctx != null) {
-                obj = ((Expression) obj).eval(ctx);
-            }
+            obj = ((Expression) obj).eval(ctx);
             if (obj instanceof DocumentModel) {
                 return ((DocumentModel) obj).getRef();
             } else if (obj instanceof DocumentRef) {

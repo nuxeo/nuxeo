@@ -1159,7 +1159,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                                     todo.add(id);
                                 }
                                 if (logger.isLogEnabled()) {
-                                    debugIds.add(id);
+                                    debugIds.add(id); // NOSONAR
                                 }
                             }
                         }
