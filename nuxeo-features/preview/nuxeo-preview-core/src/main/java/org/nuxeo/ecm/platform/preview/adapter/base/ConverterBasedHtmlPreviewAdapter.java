@@ -56,6 +56,11 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     private static final Log log = LogFactory.getLog(ConverterBasedHtmlPreviewAdapter.class);
 
     /**
+     * @since 9.10-HF21
+     */
+    public static final String ALLOW_GENERIC_HTML_CONVERTER = "nuxeo.preview.allowGenericHTMLConverter";
+
+    /**
      * @since 10.3
      * @deprecated since 10.3
      */
@@ -162,8 +167,12 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
 
         String converterName = getConversionService().getConverterName(srcMT, "text/html");
         if (converterName == null) {
-            log.debug("No dedicated converter found, using generic");
-            converterName = "any2html";
+            if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_GENERIC_HTML_CONVERTER)) {
+                log.debug("No dedicated converter found, using generic");
+                converterName = "any2html";
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         BlobHolder result;
