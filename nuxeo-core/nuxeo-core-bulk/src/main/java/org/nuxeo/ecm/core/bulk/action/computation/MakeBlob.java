@@ -18,20 +18,27 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import static org.nuxeo.ecm.core.bulk.action.computation.SortBlob.SORT_PARAMETER;
+import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -50,6 +57,14 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     protected static final long CHECK_DELAY_MS = 1000;
 
+    protected static final String SORT_STREAM = OUTPUT_1;
+
+    protected static final String ZIP_STREAM = OUTPUT_2;
+
+    protected static final String EXPOSE_BLOB_STREAM = OUTPUT_3;
+
+    protected static final int NB_OUTPUT_STREAMS = 3;
+
     protected final Map<String, Long> counters = new HashMap<>();
 
     protected final Map<String, Long> totals = new HashMap<>();
@@ -63,7 +78,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
     }
 
     public MakeBlob(boolean produceImmediate) {
-        super(NAME);
+        super(NAME, NB_OUTPUT_STREAMS);
         this.produceImmediate = produceImmediate;
     }
 
@@ -94,7 +109,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         long nbDocuments = in.getCount();
 
         appendToFile(commandId, in.getData());
-        // TODO append header and footer when the sort parameter is available and equals false
+
         if (counters.containsKey(commandId)) {
             counters.put(commandId, nbDocuments + counters.get(commandId));
         } else {
@@ -118,13 +133,38 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         return totals.get(commandId);
     }
 
-    protected void appendToFile(String commandId, byte[] content) {
+    protected Path appendToFile(String commandId, byte[] content) {
         Path path = createTemp(commandId);
         try (FileOutputStream stream = new FileOutputStream(path.toFile(), true)) {
             stream.write(content);
             stream.flush();
         } catch (IOException e) {
             log.error("Unable to write content", e);
+        }
+        return path;
+    }
+
+    protected void appendHeaderFooterToFile(Path filePath, String commandId, byte[] header, byte[] footer) {
+        if (header.length == 0 && footer.length == 0) {
+            return;
+        }
+        try {
+            Path tmpPath = Files.move(filePath, createTemp("tmp" + commandId), StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream is = Files.newInputStream(tmpPath);
+                    FileOutputStream os = new FileOutputStream(filePath.toFile(), true)) {
+                if (header.length > 0) {
+                    os.write(header);
+                }
+                IOUtils.copy(is, os);
+                if (footer.length > 0) {
+                    os.write(footer);
+                }
+                os.flush();
+            } finally {
+                Files.delete(tmpPath);
+            }
+        } catch (IOException e) {
+            log.error("Unable to append header and footer", e);
         }
     }
 
@@ -139,18 +179,45 @@ public class MakeBlob extends AbstractTransientBlobComputation {
         return getTransientStoreKey(commandId);
     }
 
+    protected String getOutputStream(String commandId) {
+        String outputStream = EXPOSE_BLOB_STREAM;
+        BulkCommand command = Framework.getService(BulkService.class).getCommand(commandId);
+        boolean sort = true;
+        boolean zip = false;
+        if (command != null) {
+            if (command.getParam(SORT_PARAMETER) != null) {
+                sort = command.getParam(SORT_PARAMETER);
+            }
+            if (command.getParam(ZIP_PARAMETER) != null) {
+                zip = command.getParam(ZIP_PARAMETER);
+            }
+        }
+        if (sort) {
+            outputStream = SORT_STREAM;
+        } else if (zip) {
+            outputStream = ZIP_STREAM;
+        }
+        return outputStream;
+    }
+
     protected void finishBlob(ComputationContext context, String commandId) {
+        String outputStream = getOutputStream(commandId);
+        DataBucket in = lastBuckets.get(commandId);
+        if (!SORT_STREAM.equals(outputStream)) {
+            appendHeaderFooterToFile(createTemp(commandId), commandId, in.getHeader(), in.getFooter());
+        }
+
         String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
         String value = saveInTransientStore(commandId, storeName);
-        DataBucket in = lastBuckets.get(commandId);
         DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
                 in.getFooterAsString());
         Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+
         if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate(OUTPUT_1,
+            ((ComputationContextImpl) context).produceRecordImmediate(outputStream,
                     Record.of(commandId, codec.encode(out)));
         } else {
-            context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
+            context.produceRecord(outputStream, Record.of(commandId, codec.encode(out)));
         }
         totals.remove(commandId);
         counters.remove(commandId);
