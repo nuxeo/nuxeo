@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.api.test.preview.properties">
+
+  <require>org.nuxeo.ecm.platform.preview.properties</require>
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="nuxeo.preview.allowGenericHTMLConverter">false</property>
+  </extension>
+
+</component>

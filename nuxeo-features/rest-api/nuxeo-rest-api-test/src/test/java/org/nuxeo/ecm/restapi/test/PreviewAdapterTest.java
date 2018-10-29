@@ -106,6 +106,39 @@ public class PreviewAdapterTest extends BaseTest {
         }
     }
 
+    @Test
+    public void testUnknownMimeTypePreview() {
+        DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
+        Blob blob = Blobs.createBlob("Dummy", "application/octet-stream", null, "dummy");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        try (CloseableClientResponse response = getPreview(doc)) {
+            assertEquals(200, response.getStatus());
+        }
+        try (CloseableClientResponse response = getPreview(doc, "file:content")) {
+            assertEquals(200, response.getStatus());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test:test-preview-properties.xml")
+    public void testUnknownMimeTypeNoPreview() {
+        DocumentModel doc = session.createDocumentModel("/", "adoc", "File");
+        Blob blob = Blobs.createBlob("Dummy", "application/octet-stream", null, "dummy");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        try (CloseableClientResponse response = getPreview(doc)) {
+            assertEquals(404, response.getStatus());
+        }
+        try (CloseableClientResponse response = getPreview(doc, "file:content")) {
+            assertEquals(404, response.getStatus());
+        }
+    }
+
     protected CloseableClientResponse getPreview(DocumentModel doc) {
         return getPreview(doc, null);
     }
@@ -116,8 +149,6 @@ public class PreviewAdapterTest extends BaseTest {
             path.add("@blob").add(xpath);
         }
         path.add("@preview");
-        CloseableClientResponse response = getResponse(RequestType.GET, path.toString());
-        assertEquals(200, response.getStatus());
-        return response;
+        return getResponse(RequestType.GET, path.toString());
     }
 }

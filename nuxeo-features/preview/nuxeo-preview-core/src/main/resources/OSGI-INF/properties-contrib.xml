@@ -11,6 +11,13 @@
       Property that enables or disables zip files preview.
     </documentation>
     <property name="nuxeo.preview.zip.enabled">false</property>
+
+    <documentation>
+      Property that enables the use of the generic HTML converter if no converter is found
+      for a given source mime type. Defaults to true.
+      @since 9.10-HF21
+    </documentation>
+    <property name="nuxeo.preview.allowGenericHTMLConverter">true</property>
   </extension>
 
 </component>
