@@ -20,8 +20,9 @@ package org.nuxeo.ecm.platform.csv.export.computation;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV_TYPE;
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.XPATHS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.LANG_CTX_DATA;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -65,6 +66,8 @@ public class CSVProjection extends AbstractBulkComputation {
 
     public static final String XPATHS_PARAM = "xpaths";
 
+    public static final String LANG_PARAM = "lang";
+
     protected ByteArrayOutputStream out;
 
     public CSVProjection() {
@@ -85,6 +88,7 @@ public class CSVProjection extends AbstractBulkComputation {
         RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
         renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, schemas);
         renderingCtx.setParameterValues(XPATHS_CTX_DATA, xpaths);
+        renderingCtx.setParameterValues(LANG_CTX_DATA, properties.get(LANG_PARAM));
         Writer<DocumentModelList> writer = registry.getWriter(renderingCtx, DocumentModelList.class, TEXT_CSV_TYPE);
         try {
             writer.write(docs, DocumentModelList.class, null, TEXT_CSV_TYPE, out);

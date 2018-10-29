@@ -17,23 +17,32 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.io.marshallers.csv;
+package org.nuxeo.ecm.platform.csv.export.io;
 
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentPropertyCSVWriter.LIST_DELIMITER;
+
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.LIST_DELIMITER;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.NULL_PROPERTY_LABEL;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
+import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriterTest;
+import org.nuxeo.ecm.core.io.marshallers.csv.CSVAssert;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 10.3
  */
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
+@Deploy("org.nuxeo.ecm.default.config")
+@Deploy("org.nuxeo.ecm.platform.csv.export")
 public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<DocumentModelCSVWriter, DocumentModel> {
 
     protected DocumentModel document;
@@ -50,6 +59,10 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         document = session.createDocumentModel("/", "myDoc", "File");
         document.setPropertyValue("dc:description", "There is a , in the description");
         document.setPropertyValue("dc:contributors", new String[] { "John", "Jane" });
+        document.setPropertyValue("dc:nature", "article");
+        // Test that a non-existing property is exported as null
+        document.putContextData(DocumentValidationService.CTX_MAP_KEY, DocumentValidationService.Forcing.TURN_OFF);
+        document.setPropertyValue("dc:subjects", new String[] { "art", "toto" });
         document = session.createDocument(document);
     }
 
@@ -69,6 +82,9 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("changeToken").isNull();
         csv.has("title").isEquals("myDoc");
         csv.has("dc:description").isEquals("There is a , in the description");
-        csv.has("dc:contributors").isEquals("John" + LIST_DELIMITER + "Jane");
+        csv.has("dc:contributors").isEquals("John\nJane");
+        csv.has("dc:nature").isEquals("article");
+        csv.has("dc:nature[label]").isEquals("Article EN");
+        csv.has("dc:subjects[label]").isEquals("Art\nnull property");
     }
 }

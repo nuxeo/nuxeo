@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVHeader.SYSTEM_PROPERTIES_HEADER_FIELDS;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.DOC_BY_LEVEL;
 
 import java.io.File;
@@ -55,6 +55,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,13 +75,15 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreBulkFeature.class, CoreFeature.class })
+@Features({ CoreBulkFeature.class, CoreFeature.class, DirectoryFeature.class })
+@Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.platform.csv.export")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
@@ -161,6 +164,15 @@ public class TestCSVExportAction {
 
     @Test
     public void testExportWithParams() throws Exception {
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        for (DocumentModel child : session.getChildren(model.getRef())) {
+            child.setPropertyValue("dc:nature", "article");
+            session.saveDocument(child);
+        }
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         BulkCommand command = createCommandWithParams();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
@@ -183,12 +195,19 @@ public class TestCSVExportAction {
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         // Check header
         List<String> header = Arrays.asList(lines.get(0).split(","));
+        // Check that the given schemas and properties are present after the system properties
         assertArrayEquals(
-                new String[] { "dc:contributors", "dc:coverage", "dc:created", "dc:creator", "dc:description",
-                        "dc:expired", "dc:format", "dc:issued", "dc:language", "dc:lastContributor", "dc:modified",
-                        "dc:nature", "dc:publisher", "dc:rights", "dc:source", "dc:subjects", "dc:title", "dc:valid",
-                        "cpx:complex/foo" },
-                header.subList(18, 37).toArray());
+                new String[] { "dc:contributors", "dc:coverage", "dc:coverage[label]", "dc:created", "dc:creator",
+                        "dc:description", "dc:expired", "dc:format", "dc:issued", "dc:language", "dc:lastContributor",
+                        "dc:modified", "dc:nature", "dc:nature[label]", "dc:publisher", "dc:rights", "dc:source",
+                        "dc:subjects", "dc:subjects[label]", "dc:title", "dc:valid", "cpx:complex/foo" },
+                header.subList(18, 40).toArray());
+
+        List<String> content = lines.subList(1, lines.size());
+        for (String doc : content) {
+            List<String> properties = Arrays.asList(doc.split(","));
+            assertTrue(properties.contains("Article FR"));
+        }
 
     }
 
@@ -286,6 +305,7 @@ public class TestCSVExportAction {
                                                                                  ImmutableList.of("dublincore"))
                                                                          .param("xpaths",
                                                                                  ImmutableList.of("cpx:complex/foo"))
+                                                                         .param("lang", "fr")
                                                                          .build();
     }
 

@@ -16,7 +16,7 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.io.marshallers.csv;
+package org.nuxeo.ecm.platform.csv.export.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -34,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
+import org.nuxeo.ecm.core.io.marshallers.csv.OutputStreamWithCSVWriter;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -74,11 +76,11 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 
     @Override
     protected void writeHeader(DocumentModel entity, CSVPrinter printer) throws IOException {
-        DocumentModelCSVHeader.printSystemPropertiesHeader(printer);
+        DocumentModelCSVHelper.printSystemPropertiesHeader(printer);
         List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
                 : Arrays.asList(entity.getSchemas());
         List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
-        DocumentModelCSVHeader.printPropertiesHeader(schemas, xpaths, printer);
+        DocumentModelCSVHelper.printPropertiesHeader(schemas, xpaths, printer);
         printer.println();
     }
 

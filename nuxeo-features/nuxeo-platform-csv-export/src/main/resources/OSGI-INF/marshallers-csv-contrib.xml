@@ -4,8 +4,8 @@
     Core IO CSV registered marshallers set.
   </documentation>
   <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelListCSVWriter" enable="true" />
-    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter" enable="true" />
-    <register class="org.nuxeo.ecm.core.io.marshallers.csv.DocumentPropertyCSVWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.csv.export.io.DocumentModelListCSVWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter" enable="true" />
   </extension>
 </component>

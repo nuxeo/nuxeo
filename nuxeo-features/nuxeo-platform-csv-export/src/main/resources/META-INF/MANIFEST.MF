@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Core Bulk
 Bundle-SymbolicName: org.nuxeo.ecm.platform.csv.export;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/csv-export-config.xml
+Nuxeo-Component: OSGI-INF/csv-export-config.xml,
+ OSGI-INF/marshallers-csv-contrib.xml

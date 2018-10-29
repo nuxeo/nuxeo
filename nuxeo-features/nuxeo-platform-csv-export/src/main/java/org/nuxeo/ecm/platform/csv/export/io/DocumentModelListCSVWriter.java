@@ -16,10 +16,10 @@
  * Contributors:
  *     pierre
  */
-package org.nuxeo.ecm.core.io.marshallers.csv;
+package org.nuxeo.ecm.platform.csv.export.io;
 
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
-import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVWriter.XPATHS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
+import org.nuxeo.ecm.core.io.marshallers.csv.OutputStreamWithCSVWriter;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -54,11 +56,11 @@ public class DocumentModelListCSVWriter extends AbstractCSVWriter<List<DocumentM
 
     @Override
     protected void writeHeader(List<DocumentModel> entity, CSVPrinter printer) throws IOException {
-        DocumentModelCSVHeader.printSystemPropertiesHeader(printer);
+        DocumentModelCSVHelper.printSystemPropertiesHeader(printer);
         List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
                 : Arrays.asList(entity.get(0).getSchemas());
         List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
-        DocumentModelCSVHeader.printPropertiesHeader(schemas, xpaths, printer);
+        DocumentModelCSVHelper.printPropertiesHeader(schemas, xpaths, printer);
         printer.println();
     }
 
