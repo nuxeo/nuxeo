@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -92,6 +93,8 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         String targetFileName = FileUtils.getFileNameNoExt(templateBasedDocument.getAdaptedDoc().getTitle());
         targetFileName = targetFileName + "." + targetFileExt;
         newBlob.setFilename(targetFileName);
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        newBlob.setMimeType(mimetypeRegistry.getMimetypeFromExtension(targetFileExt));
 
         // mark the file for automatic deletion on GC
         Framework.trackFile(generated, newBlob);
