@@ -17,7 +17,7 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.io.marshallers.csv;
+package org.nuxeo.ecm.platform.csv.export.io;
 
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
@@ -44,27 +44,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryEntryResolver;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Utility class to generate CSV header for document model.
+ * Utility class to have helper methods for exporting a document model in a CSV file.
  *
  * @since 10.3
  */
-public class DocumentModelCSVHeader {
+public class DocumentModelCSVHelper {
 
     public static final String[] SYSTEM_PROPERTIES_HEADER_FIELDS = new String[] { REPOSITORY_FIELD, UID_FIELD,
             PATH_FIELD, TYPE_FIELD, STATE_FIELD, PARENT_REF_FIELD, IS_CHECKED_OUT_FIELD, IS_VERSION_FIELD,
             IS_PROXY_FIELD, PROXY_TARGET_ID_FIELD, VERSIONABLE_ID_FIELD, CHANGE_TOKEN_FIELD, IS_TRASHED_FIELD,
             TITLE_FIELD, VERSION_LABEL_FIELD, LOCK_OWNER_FIELD, LOCK_CREATED_FIELD, LAST_MODIFIED_FIELD };
+
+    public static final List<String> VOCABULARY_TYPES = Arrays.asList("vocabulary", "xvocabulary", "l10nxvocabulary");
 
     /**
      * Prints the fields for document model system properties.
@@ -95,6 +100,9 @@ public class DocumentModelCSVHeader {
                 for (Field f : fields) {
                     String prefixedName = prefix + f.getName().getLocalName();
                     printer.print(prefixedName);
+                    if (isVocabulary(f.getType())) {
+                        printer.print(prefixedName + "[label]");
+                    }
                 }
             }
         }
@@ -102,11 +110,39 @@ public class DocumentModelCSVHeader {
             Collections.sort(xpaths);
             for (String xpath : xpaths) {
                 printer.print(xpath);
+                if (isVocabulary(schemaManager.getField(xpath).getType())) {
+                    printer.print(xpath + "[label]");
+                }
             }
         }
     }
 
-    private DocumentModelCSVHeader() {
+    /**
+     * Checks if given type is a vocabulary.
+     */
+    public static boolean isVocabulary(Type type) {
+        if (type instanceof ListType) {
+            type = ((ListType) type).getFieldType();
+        }
+        ObjectResolver resolver = type.getObjectResolver();
+        if (resolver instanceof DirectoryEntryResolver) {
+            DirectoryEntryResolver directoryEntryResolver = (DirectoryEntryResolver) resolver;
+            return VOCABULARY_TYPES.contains(directoryEntryResolver.getDirectory().getSchema());
+        }
+        return false;
+    }
+
+    public static Directory getVocabulary(Type type) {
+        if (type instanceof ListType) {
+            type = ((ListType) type).getFieldType();
+        }
+        if (isVocabulary(type)) {
+            return ((DirectoryEntryResolver) type.getObjectResolver()).getDirectory();
+        }
+        return null;
+    }
+
+    private DocumentModelCSVHelper() {
         // utility class
     }
 }

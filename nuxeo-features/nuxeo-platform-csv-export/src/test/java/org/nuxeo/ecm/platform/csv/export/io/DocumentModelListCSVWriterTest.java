@@ -17,7 +17,7 @@
  *     Funsho David
  */
 
-package org.nuxeo.ecm.core.io.marshallers.csv;
+package org.nuxeo.ecm.platform.csv.export.io;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,15 +26,21 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriterTest;
+import org.nuxeo.ecm.core.io.marshallers.csv.CSVAssert;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 10.3
  */
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
+@Deploy("org.nuxeo.ecm.default.config")
+@Deploy("org.nuxeo.ecm.platform.csv.export")
 public class DocumentModelListCSVWriterTest
         extends AbstractCSVWriterTest.Local<DocumentModelListCSVWriter, List<DocumentModel>> {
 
