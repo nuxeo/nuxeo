@@ -43,6 +43,25 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
  *
  * Enabled when parameter enrichers-blob=appLinks is present.
  *
+ * <p>
+ * Blob format is:
+ *
+ * <pre>{@code
+ * {
+ *  "name": "...",
+ *  "mime-type": "...",
+ *  ...
+ *  "appLinks": [
+ *    {
+ *      "appName": "...",
+ *      "icon": "...",
+ *      "link": "..."
+ *    },
+ *    ...
+ *  ]
+ * }
+ * }</pre>
+ *
  * @since 10.3
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
@@ -83,9 +102,8 @@ public class BlobAppLinksJsonEnricher extends AbstractJsonEnricher<Blob> {
                     jg.writeObject(app);
                 }
             }
-        } finally {
-            jg.writeEndArray();
         }
+        jg.writeEndArray();
     }
 
 }

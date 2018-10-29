@@ -264,7 +264,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
      */
     private void enrichBlob(JsonGenerator jg, Blob blob) throws IOException {
         Set<String> enrichers = ctx.getEnrichers("blob");
-        if (enrichers.size() > 0) {
+        if (!enrichers.isEmpty()) {
             WrappedContext wrappedCtx = ctx.wrap();
             OutputStreamWithJsonWriter out = new OutputStreamWithJsonWriter(jg);
             Enriched<Blob> enriched = new Enriched<>(blob);
