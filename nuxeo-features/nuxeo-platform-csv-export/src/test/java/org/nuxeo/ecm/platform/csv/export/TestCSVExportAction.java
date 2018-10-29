@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.bulk.action.computation.SortBlob.SORT_PARAMETER;
+import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.io.marshallers.csv.DocumentModelCSVHeader.SYSTEM_PROPERTIES_HEADER_FIELDS;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.DOC_BY_LEVEL;
@@ -120,6 +122,18 @@ public class TestCSVExportAction {
         testCsvExport(command);
     }
 
+    @Test
+    public void testSimpleWithFileUnsorted() throws Exception {
+        BulkCommand command = createCommand(false, false);
+        testCsvExport(command);
+    }
+
+    @Test
+    public void testSimpleWithFileZipped() throws Exception {
+        BulkCommand command = createCommand(false, true);
+        testCsvExport(command);
+    }
+
     public void testCsvExport(BulkCommand command) throws Exception {
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
@@ -134,15 +148,20 @@ public class TestCSVExportAction {
 
         Blob blob = getBlob(command.getId());
         // file is ziped
-        assertNotNull(blob);
-        assertEquals("zip", FilenameUtils.getExtension(blob.getFilename()));
-        try (InputStream is = new FileInputStream(blob.getFile())) {
-            assertTrue(ZipUtils.isValid(is));
+        boolean zipped = command.getParam(ZIP_PARAMETER);
+        String extension = zipped ? "zip" : "csv";
+        assertEquals(extension, FilenameUtils.getExtension(blob.getFilename()));
+        File file;
+        if (zipped) {
+            try (InputStream is = new FileInputStream(blob.getFile())) {
+                assertTrue(ZipUtils.isValid(is));
+            }
+            file = getUnzipFile(command, blob);
+        } else {
+            file = blob.getFile();
         }
 
         // file has the correct number of lines
-        File file = getUnzipFile(command, blob);
-
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         // number of docs plus the header
         assertEquals(DOC_BY_LEVEL + 1, lines.size());
@@ -153,10 +172,13 @@ public class TestCSVExportAction {
         assertEquals(1, count);
 
         // file is sorted
-        List<String> content = lines.subList(1, lines.size());
-        List<String> sortedContent = new ArrayList<>(content);
-        Collections.sort(sortedContent);
-        assertEquals(content, sortedContent);
+        boolean sorted = command.getParam(SORT_PARAMETER);
+        if (sorted) {
+            List<String> content = lines.subList(1, lines.size());
+            List<String> sortedContent = new ArrayList<>(content);
+            Collections.sort(sortedContent);
+            assertEquals(content, sortedContent);
+        }
     }
 
     @Test
@@ -171,14 +193,7 @@ public class TestCSVExportAction {
         assertEquals(DOC_BY_LEVEL, status.getTotal());
 
         Blob blob = getBlob(command.getId());
-        // file is ziped
-        assertNotNull(blob);
-        try (InputStream is = new FileInputStream(blob.getFile())) {
-            assertTrue(ZipUtils.isValid(is));
-        }
-
-        // file has the correct number of lines
-        File file = getUnzipFile(command, blob);
+        File file = blob.getFile();
 
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         // Check header
@@ -219,8 +234,8 @@ public class TestCSVExportAction {
         Blob blob2 = getBlob(command2.getId());
 
         // this produce the exact same content
-        HashCode hash1 = hash(getUnzipFile(command1, blob1));
-        HashCode hash2 = hash(getUnzipFile(command2, blob2));
+        HashCode hash1 = hash(blob1.getFile());
+        HashCode hash2 = hash(blob2.getFile());
         assertEquals(hash1, hash2);
     }
 
@@ -237,8 +252,8 @@ public class TestCSVExportAction {
         assertEquals(DOC_BY_LEVEL, status.getTotal());
 
         Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
-        File testZip = new File(dir.toFile(), "test.zip");
-        try (FileOutputStream out = new FileOutputStream(testZip)) {
+        File testCsv = new File(dir.toFile(), "test.csv");
+        try (FileOutputStream out = new FileOutputStream(testCsv)) {
             HttpServletRequest request = mock(HttpServletRequest.class);
             when(request.getMethod()).thenReturn("GET");
 
@@ -257,9 +272,7 @@ public class TestCSVExportAction {
             downloadService.handleDownload(request, response, null, url);
         }
 
-        ZipUtils.unzip(testZip, dir.toFile());
-        File csv = new File(dir.toFile(), command.getId() + ".csv");
-        List<String> lines = Files.lines(csv.toPath()).collect(Collectors.toList());
+        List<String> lines = Files.lines(testCsv.toPath()).collect(Collectors.toList());
         // number of docs plus header
         assertEquals(DOC_BY_LEVEL + 1, lines.size());
 
@@ -270,10 +283,16 @@ public class TestCSVExportAction {
     }
 
     protected BulkCommand createCommand() {
+        return createCommand(true, false);
+    }
+
+    protected BulkCommand createCommand(boolean sorted, boolean zipped) {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
+                                                                         .param(SORT_PARAMETER, sorted)
+                                                                         .param(ZIP_PARAMETER, zipped)
                                                                          .build();
     }
 

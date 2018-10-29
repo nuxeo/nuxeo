@@ -41,6 +41,8 @@ public class ZipBlob extends AbstractTransientBlobComputation {
 
     public static final String NAME = "zipBlob";
 
+    public static final String ZIP_PARAMETER = "zip";
+
     public ZipBlob() {
         super(NAME);
     }

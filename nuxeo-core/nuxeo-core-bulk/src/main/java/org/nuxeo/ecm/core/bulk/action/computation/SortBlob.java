@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -47,8 +50,16 @@ public class SortBlob extends AbstractTransientBlobComputation {
 
     public static final String NAME = "sortBlob";
 
+    public static final String SORT_PARAMETER = "sort";
+
+    protected static final String ZIP_STREAM = OUTPUT_1;
+
+    protected static final String EXPOSE_BLOB_STREAM = OUTPUT_2;
+
+    protected static final int NB_OUTPUT_STREAMS = 2;
+
     public SortBlob() {
-        super(NAME);
+        super(NAME, NB_OUTPUT_STREAMS);
     }
 
     @Override
@@ -75,8 +86,12 @@ public class SortBlob extends AbstractTransientBlobComputation {
 
         storeBlob(new FileBlob(path.toFile()), commandId, storeName);
 
+        BulkCommand command = Framework.getService(BulkService.class).getCommand(commandId);
+        boolean zip = command.getParam(ZIP_PARAMETER) != null ? command.getParam(ZIP_PARAMETER) : false;
+        String outputStream = zip ? ZIP_STREAM : EXPOSE_BLOB_STREAM;
+
         DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
-        context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
+        context.produceRecord(outputStream, Record.of(commandId, codec.encode(out)));
         context.askForCheckpoint();
     }
 
