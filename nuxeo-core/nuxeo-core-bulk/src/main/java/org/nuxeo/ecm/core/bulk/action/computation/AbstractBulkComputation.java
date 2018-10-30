@@ -87,6 +87,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
         command = getCommand(bucket.getCommandId());
         if (command != null) {
+            startBucket(record.getKey());
             for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
                 processBatchOfDocuments(batch);
             }
@@ -143,6 +144,13 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
                 throw new NuxeoException(e);
             }
         });
+    }
+
+    /**
+     * Can be overridden to init stuff before processing the bucket
+     */
+    public void startBucket(String bucketKey) {
+        // nothing to do
     }
 
     /**

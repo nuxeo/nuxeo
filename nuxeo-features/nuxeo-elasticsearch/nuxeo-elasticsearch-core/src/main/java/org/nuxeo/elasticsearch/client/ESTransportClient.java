@@ -29,6 +29,7 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -233,6 +234,11 @@ public class ESTransportClient implements ESClient {
     @Override
     public ClearScrollResponse clearScroll(ClearScrollRequest request) {
         return client.clearScroll(request).actionGet();
+    }
+
+    @Override
+    public BulkProcessor.Builder bulkProcessorBuilder(BulkProcessor.Listener listener) {
+        return BulkProcessor.builder(client, listener);
     }
 
     @Override

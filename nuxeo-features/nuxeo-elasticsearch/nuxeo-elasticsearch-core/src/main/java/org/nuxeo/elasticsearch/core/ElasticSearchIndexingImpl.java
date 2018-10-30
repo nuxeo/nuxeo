@@ -97,7 +97,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     private JsonESDocumentWriter jsonESDocumentWriter;
 
-    protected final JsonFactory jsonFactory = new JsonFactory();
+    protected static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
@@ -429,7 +429,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     @Override
     public BytesReference source(DocumentModel doc) throws IOException {
         BytesStreamOutput out = new BytesStreamOutput();
-        try(JsonGenerator jsonGen = jsonFactory.createGenerator(out)) {
+        try (JsonGenerator jsonGen = JSON_FACTORY.createGenerator(out)) {
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, null, null);
             return out.bytes();
         }

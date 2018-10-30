@@ -33,6 +33,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -408,6 +409,11 @@ public class ESRestClient implements ESClient {
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
+    }
+
+    @Override
+    public BulkProcessor.Builder bulkProcessorBuilder(BulkProcessor.Listener listener) {
+        return BulkProcessor.builder(client::bulkAsync, listener);
     }
 
     @Override
