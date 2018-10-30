@@ -49,6 +49,14 @@
       <artifactId>nuxeo-core-management</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.lib.stream</groupId>
+      <artifactId>nuxeo-stream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-bulk</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-query-api</artifactId>
     </dependency>

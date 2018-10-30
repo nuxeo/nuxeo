@@ -18,6 +18,7 @@
  */
 package org.nuxeo.elasticsearch.api;
 
+import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -99,4 +100,10 @@ public interface ESClient extends AutoCloseable {
 
     ClearScrollResponse clearScroll(ClearScrollRequest request);
 
+    /**
+     * Creates an elasticsearch BulkProcessor builder.
+     *
+     * @since 10.3
+     */
+    BulkProcessor.Builder bulkProcessorBuilder(BulkProcessor.Listener listener);
 }

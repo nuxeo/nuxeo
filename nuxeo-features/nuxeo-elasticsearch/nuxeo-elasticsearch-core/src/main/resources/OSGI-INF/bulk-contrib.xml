@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.core.bulk.contrib" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="index" bucketSize="1000" batchSize="25" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="reindex" class="org.nuxeo.elasticsearch.bulk.IndexAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="4">
+      <!-- concurrency to build indexing requests -->
+      <computation name="index" concurrency="2" />
+      <!-- concurrency to execute indexing requests -->
+      <computation name="bulkIndex" concurrency="2" />
+
+      <!-- what to do on failure -->
+      <option name="continueOnFailure">false</option>
+
+      <!-- optimal size of the elasticsearch bulk request -->
+      <option name="esBulkSizeBytes">5242880</option>
+      <!-- max number of actions in the elasticsearch bulk request -->
+      <option name="esBulkActions">1000</option>
+      <!-- flush elasticsearch bulk request interval -->
+      <option name="flushIntervalSeconds">5</option>
+    </streamProcessor>
+
+  </extension>
+
+</component>

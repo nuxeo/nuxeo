@@ -20,8 +20,11 @@
 
 package org.nuxeo.elasticsearch.api;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.elasticsearch.common.bytes.BytesReference;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 /**
@@ -93,4 +96,10 @@ public interface ElasticSearchIndexing {
      */
     void indexNonRecursive(List<IndexingCommand> cmds);
 
+    /**
+     * Returns the JSON Elasticsearch source representation of a document.
+     *
+     * @since 10.3
+     */
+    BytesReference source(DocumentModel doc) throws IOException;
 }
