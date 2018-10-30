@@ -175,6 +175,23 @@ public class TestDriveLikeExporterPlugin {
 
     }
 
+    @Test
+    public void title_to_filename_handles_special_chars() throws Exception {
+        folder().at("/").withName("folder1").withTitle("Title of folder 1 on 10/29/2018").create(session);
+        session.save();
+
+        // When I export the repository
+        File exportRoot = exportRepository();
+
+        // Then the exported folder special chars are replaced by a dash.
+        List<File> files = Arrays.asList(exportRoot.listFiles());
+        assertThat(files).hasSize(1);
+
+        File expectedFolder = files.get(0);
+        assertThat(expectedFolder).hasName("Title of folder 1 on 10-29-2018");
+
+    }
+
     private File exportRepository() throws IOException {
         File exportRoot = new File(Environment.getDefault().getTemp().getPath() + "/export");
         FileUtils.deleteDirectory(exportRoot);
