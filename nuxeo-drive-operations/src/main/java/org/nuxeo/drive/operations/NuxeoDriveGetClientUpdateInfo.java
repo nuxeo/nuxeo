@@ -45,7 +45,6 @@ public class NuxeoDriveGetClientUpdateInfo {
 
     @OperationMethod
     public Blob run() throws IOException {
-
         String serverVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
         String updateSiteURL = Framework.getProperty(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY);
         String betaUpdateSiteURL = Framework.getProperty(NuxeoDriveConstants.BETA_UPDATE_SITE_URL_PROP_KEY);

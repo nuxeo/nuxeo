@@ -48,7 +48,7 @@ public class NuxeoDriveAttachBlob {
 
     /**
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this parameter is not used anymore
+     *             drive level, this parameter is not used anymore
      */
     @Deprecated
     @Param(name = "applyVersioningPolicy", required = false, values = "false")
@@ -56,7 +56,7 @@ public class NuxeoDriveAttachBlob {
 
     /**
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this parameter is not used anymore
+     *             drive level, this parameter is not used anymore
      */
     @Deprecated
     @Param(name = "factoryName", required = false, values = "defaultFileSystemItemFactory")
@@ -66,8 +66,8 @@ public class NuxeoDriveAttachBlob {
     public Blob run(Blob blob) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new NuxeoException(String.format("Document %s is not a BlobHolder, no blob can be attached to it.",
-                    doc.getId()));
+            throw new NuxeoException(
+                    String.format("Document %s is not a BlobHolder, no blob can be attached to it.", doc.getId()));
         }
         bh.setBlob(blob);
         session.saveDocument(doc);

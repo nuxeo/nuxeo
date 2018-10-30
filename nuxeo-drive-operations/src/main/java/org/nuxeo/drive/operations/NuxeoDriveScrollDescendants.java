@@ -75,10 +75,9 @@ public class NuxeoDriveScrollDescendants {
 
     @OperationMethod
     public Blob run() throws IOException {
-
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
-        ScrollFileSystemItemList descendants = fileSystemItemManager.scrollDescendants(id, ctx.getPrincipal(),
-                scrollId, batchSize, keepAlive);
+        ScrollFileSystemItemList descendants = fileSystemItemManager.scrollDescendants(id, ctx.getPrincipal(), scrollId,
+                batchSize, keepAlive);
         return writeJSONBlob(descendants);
     }
 

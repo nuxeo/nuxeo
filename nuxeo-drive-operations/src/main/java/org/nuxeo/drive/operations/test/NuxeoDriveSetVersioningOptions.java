@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  * @deprecated since 9.1 as the automatic versioning is handled by versioning system, versioning mechanism has been
- * removed from drive, setting options is not supported anymore
+ *             removed from drive, setting options is not supported anymore
  */
 @Deprecated
 @Operation(id = NuxeoDriveSetVersioningOptions.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Set versioning options")
@@ -55,8 +55,10 @@ public class NuxeoDriveSetVersioningOptions {
     @OperationMethod
     public void run() {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
-        FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getService(FileSystemItemAdapterService.class);
-        VersioningFileSystemItemFactory defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getService(
+                FileSystemItemAdapterService.class);
+        VersioningFileSystemItemFactory defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultFileSystemItemFactory");
         if (delay != null) {
             defaultFileSystemItemFactory.setVersioningDelay(Double.parseDouble(delay));
         }

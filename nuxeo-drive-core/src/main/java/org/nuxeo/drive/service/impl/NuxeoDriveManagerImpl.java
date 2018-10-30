@@ -336,8 +336,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         allRepositories.addAll(lastSyncRootRefs.keySet());
         allRepositories.addAll(collectionSyncRootMemberIds.keySet());
         long syncDate;
-        long upperBound;
-        upperBound = changeFinder.getUpperBound(allRepositories);
+        long upperBound = changeFinder.getUpperBound(allRepositories);
         // Truncate sync date to 0 milliseconds
         syncDate = System.currentTimeMillis();
         syncDate = syncDate - (syncDate % 1000);

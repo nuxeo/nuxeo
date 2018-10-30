@@ -52,7 +52,6 @@ public class NuxeoDriveGetChildren {
 
     @OperationMethod
     public Blob run() throws IOException {
-
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getChildren(id, ctx.getPrincipal());
         return Blobs.createJSONBlobFromValue(children);

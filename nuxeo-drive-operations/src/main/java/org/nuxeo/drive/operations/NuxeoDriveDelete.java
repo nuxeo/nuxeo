@@ -53,7 +53,6 @@ public class NuxeoDriveDelete {
 
     @OperationMethod
     public void run() throws InvalidOperationException {
-
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         try {
             if (parentId == null) {

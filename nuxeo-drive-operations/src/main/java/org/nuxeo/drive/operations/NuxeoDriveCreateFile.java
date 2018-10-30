@@ -60,11 +60,9 @@ public class NuxeoDriveCreateFile {
 
     @OperationMethod
     public Blob run(Blob blob) throws ParseException, IOException {
-
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal(), overwrite);
-
         return Blobs.createJSONBlobFromValue(fileItem);
     }
 
