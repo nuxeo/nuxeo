@@ -36,8 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
@@ -77,14 +75,11 @@ public class CSVProjection extends AbstractBulkComputation {
     @SuppressWarnings("unchecked")
     protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
         out = new ByteArrayOutputStream();
-        DocumentRef[] refs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
-
         List<String> schemas = properties.get(SCHEMAS_PARAM) != null ? (List<String>) properties.get(SCHEMAS_PARAM)
                 : new ArrayList<>();
         List<String> xpaths = properties.get(XPATHS_PARAM) != null ? (List<String>) properties.get(XPATHS_PARAM)
                 : new ArrayList<>();
-
-        DocumentModelList docs = session.getDocuments(refs);
+        DocumentModelList docs = loadDocuments(session, ids);
 
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
         RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
