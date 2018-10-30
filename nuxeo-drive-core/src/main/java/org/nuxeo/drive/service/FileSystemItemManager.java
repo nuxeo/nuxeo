@@ -154,7 +154,7 @@ public interface FileSystemItemManager {
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
      *
-     * @param overwrite allows to overwrite an existing folder with the same title
+     * @param overwrite allows to overwrite an existing file with the same title
      * @see FolderItem#createFile(Blob, boolean)
      * @since 9.1
      */

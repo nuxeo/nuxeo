@@ -28,15 +28,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Adds the given {@link DocumentModel} to the {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
+ * Adds the input {@link DocumentModel} to the {@link NuxeoDriveManager#LOCALLY_EDITED_COLLECTION_NAME} collection.
  *
  * @author Antoine Taillefer
  * @since 6.0
  * @deprecated since 10.3
  */
 @Deprecated
-@Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection", deprecatedSince = "10.3")
-@Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection")
+@Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection", description = "Add the input document to the \"Locally Edited\" collection." //
+        + " Return the input document.", deprecatedSince = "10.3")
 public class NuxeoDriveAddToLocallyEditedCollection {
 
     public static final String ID = "NuxeoDrive.AddToLocallyEditedCollection";

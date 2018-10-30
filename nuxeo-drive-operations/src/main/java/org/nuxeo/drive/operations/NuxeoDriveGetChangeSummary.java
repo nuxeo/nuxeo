@@ -37,11 +37,13 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets a summary of document changes in the synchronization roots of the currently authenticated user.
+ * Gets a summary of the document changes in the synchronization roots of the currently authenticated user for the
+ * interval starting with the given lower bound.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveGetChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get change summary")
+@Operation(id = NuxeoDriveGetChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get change summary", description = "Get a summary of document changes in the synchronization roots of the currently authenticated user." //
+        + " Return the result as a JSON blob.")
 public class NuxeoDriveGetChangeSummary {
 
     public static final String ID = "NuxeoDrive.GetChangeSummary";
@@ -49,7 +51,9 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "lowerBound", required = false)
+    @Param(name = "lowerBound", required = false, description = "Optional lower bound of the interval for which to get the changes." //
+            + " If not provided, the list of document changes will be emtpy, yet the summary will contain the upper bound of the scanned interval." //
+            + " If set to 0, the interval will start from the repository's initialization.", values = "-1")
     protected Long lowerBound = -1L;
 
     /**

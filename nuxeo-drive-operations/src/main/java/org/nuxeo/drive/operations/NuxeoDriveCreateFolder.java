@@ -34,12 +34,13 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the currently authenticated
- * user.
+ * Creates a container with the given name as title in the container backing the {@link FileSystemItem} with the given
+ * id.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveCreateFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create folder")
+@Operation(id = NuxeoDriveCreateFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create folder", description = "Create a container with the given name as title in the container backing the file system item with the given id." //
+        + " Return the file system item backed by the created container as a JSON blob.")
 public class NuxeoDriveCreateFolder {
 
     public static final String ID = "NuxeoDrive.CreateFolder";
@@ -47,16 +48,16 @@ public class NuxeoDriveCreateFolder {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "parentId")
+    @Param(name = "parentId", description = "Id of the file system item backed by the parent container.")
     protected String parentId;
 
-    @Param(name = "name")
+    @Param(name = "name", description = "Title of the container to create.")
     protected String name;
 
     /**
      * @since 9.1
      */
-    @Param(name = "overwrite", required = false)
+    @Param(name = "overwrite", required = false, description = "Optional, whether to overwrite an existing container with the same title.", values = "false")
     protected boolean overwrite;
 
     @OperationMethod

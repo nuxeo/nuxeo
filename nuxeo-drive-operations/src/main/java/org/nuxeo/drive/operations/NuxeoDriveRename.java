@@ -34,11 +34,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Renames the {@link FileSystemItem} with the given id with the given name for the currently authenticated user.
+ * Renames the document backing the {@link FileSystemItem} with the given id to the given name.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveRename.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Rename")
+@Operation(id = NuxeoDriveRename.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Rename", description = "Rename the document backing the file system item with the given id to the given name." //
+        + " Return the file system item backed by the renamed document as a JSON blob.")
 public class NuxeoDriveRename {
 
     public static final String ID = "NuxeoDrive.Rename";
@@ -46,10 +47,10 @@ public class NuxeoDriveRename {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item backed by the document to rename.")
     protected String id;
 
-    @Param(name = "name")
+    @Param(name = "name", description = "The new name.")
     protected String name;
 
     @OperationMethod

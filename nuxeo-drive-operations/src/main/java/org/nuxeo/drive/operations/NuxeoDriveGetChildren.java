@@ -35,11 +35,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Get the children of the {@link FolderItem} with the given id for the currently authenticated user.
+ * Gets the children of the document backing the {@link FolderItem} with the given id.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveGetChildren.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get children")
+@Operation(id = NuxeoDriveGetChildren.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get children", description = "Get the children of the document backing the folder item with the given id." //
+        + " Return the results as a JSON blob.")
 public class NuxeoDriveGetChildren {
 
     public static final String ID = "NuxeoDrive.GetChildren";
@@ -47,7 +48,7 @@ public class NuxeoDriveGetChildren {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item backed by the document whose children to get.")
     protected String id;
 
     @OperationMethod

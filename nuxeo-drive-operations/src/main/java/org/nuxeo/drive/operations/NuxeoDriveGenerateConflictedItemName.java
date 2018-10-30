@@ -44,8 +44,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * @deprecated since 10.3
  */
 @Deprecated
-@Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name", deprecatedSince = "10.3")
-@Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name")
+@Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name", description = "Generate a conflicted name for a file system item given its name, the currently authenticated user's first name and last name." //
+        + " Return the result as a JSON blob.", deprecatedSince = "10.3")
 public class NuxeoDriveGenerateConflictedItemName {
 
     public static final String ID = "NuxeoDrive.GenerateConflictedItemName";
@@ -53,7 +53,7 @@ public class NuxeoDriveGenerateConflictedItemName {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "name")
+    @Param(name = "name", description = "Name from which to generate the conflicted name.")
     protected String name;
 
     @OperationMethod

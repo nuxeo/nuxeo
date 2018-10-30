@@ -36,12 +36,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the currently authenticated
- * user.
+ * Creates a document from the input blob in the container backing the {@link FileSystemItem} with the given id.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveCreateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create file")
+@Operation(id = NuxeoDriveCreateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create file", description = "Create a document from the input blob in the container backing the file system item with the given id." //
+        + " Return the file system item backed by the created document as a JSON blob.")
 public class NuxeoDriveCreateFile {
 
     public static final String ID = "NuxeoDrive.CreateFile";
@@ -49,13 +49,13 @@ public class NuxeoDriveCreateFile {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "parentId")
+    @Param(name = "parentId", description = "Id of the file system item backed by the parent container.")
     protected String parentId;
 
     /**
      * @since 9.1
      */
-    @Param(name = "overwrite", required = false)
+    @Param(name = "overwrite", required = false, description = "Optional, whether to overwrite an existing document with the same title.", values = "false")
     protected boolean overwrite;
 
     @OperationMethod

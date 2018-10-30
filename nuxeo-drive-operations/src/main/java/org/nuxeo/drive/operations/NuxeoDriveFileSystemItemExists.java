@@ -33,11 +33,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Check if the {@link FileSystemItem} with the given id exists for the currently authenticated user.
+ * Checks if the document backing the {@link FileSystemItem} with the given id exists.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveFileSystemItemExists.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: File system item exists")
+@Operation(id = NuxeoDriveFileSystemItemExists.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: File system item exists", description = "Check if the document backing the file system item with the given id exists." //
+        + " Return the result as a JSON blob.")
 public class NuxeoDriveFileSystemItemExists {
 
     public static final String ID = "NuxeoDrive.FileSystemItemExists";
@@ -45,7 +46,7 @@ public class NuxeoDriveFileSystemItemExists {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item backed by the document whose existence to check.")
     protected String id;
 
     @OperationMethod

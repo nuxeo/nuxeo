@@ -36,14 +36,15 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Checks if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem} with the
- * given destination id for the currently authenticated user.
+ * Checks if the document backing the {@link FileSystemItem} with the given source id can be moved to the document
+ * backing the {@link FileSystemItem} with the given destination id.
  *
  * @author Antoine Taillefer
  * @deprecated since 10.3
  */
 @Deprecated
-@Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move", deprecatedSince = "10.3")
+@Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move", description = "Check if the document backing the file system item with the given source id can be moved to the document backing the file system item with the given destination id." //
+        + " Return the result as a JSON blob.", deprecatedSince = "10.3")
 public class NuxeoDriveCanMove {
 
     private static final Logger log = LogManager.getLogger(NuxeoDriveCanMove.class);
@@ -53,10 +54,10 @@ public class NuxeoDriveCanMove {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "srcId")
+    @Param(name = "srcId", description = "Id of the source file system item.")
     protected String srcId;
 
-    @Param(name = "destId")
+    @Param(name = "destId", description = "Id of the destination file system item.")
     protected String destId;
 
     @OperationMethod

@@ -32,11 +32,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets the top level {@link FolderItem} for the currently authenticated user.
+ * Gets the top level {@link FolderItem}.
  *
  * @author Olivier Grisel
  */
-@Operation(id = NuxeoDriveGetTopLevelFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get the top level folder")
+@Operation(id = NuxeoDriveGetTopLevelFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get the top level folder", description = "Get the top level folder item." //
+        + " Return the result as a JSON blob.")
 public class NuxeoDriveGetTopLevelFolder {
 
     public static final String ID = "NuxeoDrive.GetTopLevelFolder";

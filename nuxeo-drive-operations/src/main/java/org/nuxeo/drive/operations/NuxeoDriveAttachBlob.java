@@ -30,12 +30,13 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- * Updates the given {@link DocumentModel} with the given blob.
+ * Updates the given {@link DocumentModel} with the input blob.
  *
  * @author Antoine Taillefer
  * @since 7.4
  */
-@Operation(id = NuxeoDriveAttachBlob.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Attach blob")
+@Operation(id = NuxeoDriveAttachBlob.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Attach blob", description = "Update the given document with the input blob." //
+        + " Return the input blob.")
 public class NuxeoDriveAttachBlob {
 
     public static final String ID = "NuxeoDrive.AttachBlob";
@@ -43,7 +44,7 @@ public class NuxeoDriveAttachBlob {
     @Context
     protected CoreSession session;
 
-    @Param(name = "document")
+    @Param(name = "document", description = "The document to update.")
     protected DocumentModel doc;
 
     /**

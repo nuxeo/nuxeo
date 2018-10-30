@@ -39,8 +39,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the currently
- * authenticated user and the given {@code scrollId}.
+ * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the given
+ * {@code scrollId}.
  * <p>
  * When passing a null {@code scrollId} the initial search request is executed and the first batch of results is
  * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next batch of
@@ -53,7 +53,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @since 8.3
  */
-@Operation(id = NuxeoDriveScrollDescendants.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Scroll descendants")
+@Operation(id = NuxeoDriveScrollDescendants.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Scroll descendants", description = "Retrieve at most batchSize descendants of the folder item with the given id and the given scrollId." //
+        + " When passing a null scrollId the initial search request is executed and the first batch of results is returned along with a scrollId which should be passed to the next call in order to retrieve the next batch of results." //
+        + " Ideally, the search context made available by the initial search request is kept alive during keepAlive milliseconds if keepAlive is positive." //
+        + " Results are not necessarily sorted." //
+        + " Return the results as a JSON blob.")
 public class NuxeoDriveScrollDescendants {
 
     public static final String ID = "NuxeoDrive.ScrollDescendants";
@@ -61,16 +65,16 @@ public class NuxeoDriveScrollDescendants {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item whose descendants to retrieve.")
     protected String id;
 
-    @Param(name = "scrollId", required = false)
+    @Param(name = "scrollId", required = false, description = "Optional scroll id.")
     protected String scrollId;
 
-    @Param(name = "batchSize")
+    @Param(name = "batchSize", description = "Batch size.")
     protected int batchSize;
 
-    @Param(name = "keepAlive", required = false)
+    @Param(name = "keepAlive", required = false, description = "Optional keep alive duration in milliseconds.", values = "60000")
     protected long keepAlive = 60000; // 1 minute
 
     @OperationMethod

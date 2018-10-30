@@ -34,12 +34,13 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given destination id
- * for the currently authenticated user.
+ * Moves the document backing the {@link FileSystemItem} with the given source id to the document backing the
+ * {@link FileSystemItem} with the given destination id.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Move")
+@Operation(id = NuxeoDriveMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Move", description = "Move the document backing the file system item with the given source id to the document backing the file system item with the given destination id." //
+        + " Return the moved file system item as a JSON blob.")
 public class NuxeoDriveMove {
 
     public static final String ID = "NuxeoDrive.Move";
@@ -47,10 +48,10 @@ public class NuxeoDriveMove {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "srcId")
+    @Param(name = "srcId", description = "Id of the source file system item.")
     protected String srcId;
 
-    @Param(name = "destId")
+    @Param(name = "destId", description = "Id of the destination file system item.")
     protected String destId;
 
     @OperationMethod

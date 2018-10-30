@@ -33,11 +33,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Get the {@link FileSystemItem} with the given id for the currently authenticated user.
+ * Gets the {@link FileSystemItem} with the given id.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveGetFileSystemItem.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get file system item")
+@Operation(id = NuxeoDriveGetFileSystemItem.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get file system item", description = "Get the file system item with the given id." //
+        + " Return the result as a JSON blob.")
 public class NuxeoDriveGetFileSystemItem {
 
     public static final String ID = "NuxeoDrive.GetFileSystemItem";
@@ -45,13 +46,14 @@ public class NuxeoDriveGetFileSystemItem {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item to get.")
     protected String id;
 
     /**
      * @since 6.0
      */
-    @Param(name = "parentId", required = false)
+    @Param(name = "parentId", required = false, description = "Optional parent id of the file system item to get." //
+            + " For optimization purpose.")
     protected String parentId;
 
     @OperationMethod

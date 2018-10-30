@@ -36,11 +36,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Updates the {@link FileSystemItem} with the given id with the given blob for the currently authenticated user.
+ * Updates the document backing the {@link FileSystemItem} with the given id with the input blob.
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveUpdateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Update file")
+@Operation(id = NuxeoDriveUpdateFile.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Update file", description = "Update the document backing the file system item with the given id with the input blob." //
+        + " Return the file system item backed by the updated document as a JSON blob.")
 public class NuxeoDriveUpdateFile {
 
     public static final String ID = "NuxeoDrive.UpdateFile";
@@ -48,13 +49,14 @@ public class NuxeoDriveUpdateFile {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
+    @Param(name = "id", description = "Id of the file system item backed by the document to update.")
     protected String id;
 
     /**
      * @since 6.0
      */
-    @Param(name = "parentId", required = false)
+    @Param(name = "parentId", required = false, description = "Optional id of the file system item backed by the parent container of the document to update." //
+            + " For optimization purpose.")
     protected String parentId;
 
     @OperationMethod

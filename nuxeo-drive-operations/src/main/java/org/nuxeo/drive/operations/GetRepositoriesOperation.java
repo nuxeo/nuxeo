@@ -30,13 +30,12 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
 /**
- * Fetch the list of the repositories registered on the server. TODO: move this to the list of default operations in
- * 5.7.
+ * Returns the list of repository names.
  *
  * @deprecated since 10.3
  */
 @Deprecated
-@Operation(id = GetRepositoriesOperation.ID, category = Constants.CAT_FETCH, label = "List repository names on the server", deprecatedSince = "10.3")
+@Operation(id = GetRepositoriesOperation.ID, category = Constants.CAT_FETCH, label = "List repository names on the server", description = "Return the list of repository names.", deprecatedSince = "10.3")
 public class GetRepositoriesOperation {
 
     public static final String ID = "GetRepositories";

@@ -15,9 +15,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Make it possible for the client to add / remove synchronization roots.
+ * If the {@code enable} parameter is {@code true}, registers the input document as a synchronization root for the
+ * currently authenticated user. Unregisters it otherwise.
  */
-@Operation(id = NuxeoDriveSetSynchronizationOperation.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Register / Unregister Synchronization Root")
+@Operation(id = NuxeoDriveSetSynchronizationOperation.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Register / Unregister Synchronization Root", description = "If the enable parameter is true, register the input document as a synchronization root for the currently authenticated user." //
+        + " Unregister it otherwise.")
 public class NuxeoDriveSetSynchronizationOperation {
 
     public static final String ID = "NuxeoDrive.SetSynchronization";
@@ -25,7 +27,7 @@ public class NuxeoDriveSetSynchronizationOperation {
     @Context
     protected CoreSession session;
 
-    @Param(name = "enable")
+    @Param(name = "enable", description = "Whether to register or unregister the input document as a synchronizaiton root.")
     protected boolean enable;
 
     @OperationMethod
