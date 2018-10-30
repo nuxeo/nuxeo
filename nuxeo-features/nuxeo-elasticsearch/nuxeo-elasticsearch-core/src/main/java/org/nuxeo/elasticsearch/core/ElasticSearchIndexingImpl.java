@@ -20,14 +20,12 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,10 +42,11 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
-import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
@@ -97,6 +96,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     private final boolean useExternalVersion;
 
     private JsonESDocumentWriter jsonESDocumentWriter;
+
+    protected final JsonFactory jsonFactory = new JsonFactory();
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
@@ -410,12 +411,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return null;
         }
         try {
-            JsonFactory factory = new JsonFactory();
-            OutputStream out = new BytesStreamOutput();
-            JsonGenerator jsonGen = factory.createGenerator(out);
-            jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             IndexRequest request = new IndexRequest(getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE,
-                    cmd.getTargetDocumentId()).source(jsonBuilder(out));
+                    cmd.getTargetDocumentId()).source(source(doc), XContentType.JSON);
             if (useExternalVersion && cmd.getOrder() > 0) {
                 request.versionType(VersionType.EXTERNAL).version(cmd.getOrder());
             }
@@ -429,4 +426,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return esa.getWriteIndexName(esa.getIndexNameForRepository(repository));
     }
 
+    @Override
+    public BytesReference source(DocumentModel doc) throws IOException {
+        BytesStreamOutput out = new BytesStreamOutput();
+        try(JsonGenerator jsonGen = jsonFactory.createGenerator(out)) {
+            jsonESDocumentWriter.writeESDocument(jsonGen, doc, null, null);
+            return out.bytes();
+        }
+    }
 }
