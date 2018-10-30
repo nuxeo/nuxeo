@@ -23,6 +23,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,9 +41,11 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -498,6 +501,11 @@ public class ElasticSearchComponent extends DefaultComponent
     public void reindexRepository(String repositoryName) {
         esa.dropAndInitRepositoryIndex(repositoryName, false);
         runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document", true);
+    }
+
+    @Override
+    public BytesReference source(DocumentModel doc) throws IOException {
+        return esi.source(doc);
     }
 
     // ES Search ===============================================================
