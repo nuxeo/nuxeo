@@ -20,6 +20,7 @@ package org.nuxeo.io.fsexporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -33,6 +34,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  * @since 10.3
  */
 public class DriveLikeExporterPlugin extends DefaultExporterPlugin {
+
+    public static final Pattern FORBIDDEN_CHAR_PATTERN = Pattern.compile("[\\\"|*/:<>?\\\\]", Pattern.MULTILINE);
 
     @Override
     public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws IOException {
@@ -51,8 +54,8 @@ public class DriveLikeExporterPlugin extends DefaultExporterPlugin {
         }
 
         if (docfrom.isFolder()) {
-            String fileName = StringUtils.isNotBlank(docfrom.getTitle()) ? docfrom.getTitle() : docfrom.getName();
-            newFolder = avoidingCollision(new File(fsPath + "/" + fileName));
+            String fileName = encodeFilename(StringUtils.isNotBlank(docfrom.getTitle()) ? docfrom.getTitle() : docfrom.getName());
+            newFolder = avoidingCollision(new File(fsPath, fileName));
 
             newFolder.mkdir();
         }
@@ -81,7 +84,7 @@ public class DriveLikeExporterPlugin extends DefaultExporterPlugin {
      * @return a file that can be created.
      * @since 10.3
      */
-    private File avoidingCollision(File file) {
+    protected File avoidingCollision(File file) {
         int i = 1;
         while (file.exists()) {
             // If there is an extension
@@ -96,6 +99,11 @@ public class DriveLikeExporterPlugin extends DefaultExporterPlugin {
             }
         }
         return file;
+    }
+
+
+    protected String encodeFilename(String filename) {
+        return FORBIDDEN_CHAR_PATTERN.matcher(filename).replaceAll("-");
     }
 
 }
