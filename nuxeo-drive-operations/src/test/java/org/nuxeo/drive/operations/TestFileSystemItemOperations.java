@@ -683,7 +683,11 @@ public class TestFileSystemItemOperations {
         }
     }
 
+    /**
+     * @deprecated since 10.3, see {@link NuxeoDriveCanMove}
+     */
     @Test
+    @Deprecated
     public void testCanMove() throws Exception {
 
         // ------------------------------------------------------
@@ -885,7 +889,11 @@ public class TestFileSystemItemOperations {
         assertEquals(movedFileBlob.getDigest(), movedFileItem.getDigest());
     }
 
+    /**
+     * @deprecated since 10.3, see {@link NuxeoDriveGenerateConflictedItemName}
+     */
     @Test
+    @Deprecated
     public void testConflictedNames() throws Exception {
         // Try a canonical example with the Administrator user
         Blob jsonOut = (Blob) clientSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)

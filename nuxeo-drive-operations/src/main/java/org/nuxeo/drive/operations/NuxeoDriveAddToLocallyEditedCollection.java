@@ -32,7 +32,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  * @since 6.0
+ * @deprecated since 10.3
  */
+@Deprecated
+@Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection", deprecatedSince = "10.3")
 @Operation(id = NuxeoDriveAddToLocallyEditedCollection.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Add document to the 'Locally Edited' collection")
 public class NuxeoDriveAddToLocallyEditedCollection {
 

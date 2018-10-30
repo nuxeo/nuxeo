@@ -41,7 +41,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * codebase.
  *
  * @author Olivier Grisel
+ * @deprecated since 10.3
  */
+@Deprecated
+@Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name", deprecatedSince = "10.3")
 @Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name")
 public class NuxeoDriveGenerateConflictedItemName {
 

@@ -40,8 +40,10 @@ import org.nuxeo.runtime.api.Framework;
  * given destination id for the currently authenticated user.
  *
  * @author Antoine Taillefer
+ * @deprecated since 10.3
  */
-@Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move")
+@Deprecated
+@Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move", deprecatedSince = "10.3")
 public class NuxeoDriveCanMove {
 
     private static final Logger log = LogManager.getLogger(NuxeoDriveCanMove.class);

@@ -40,7 +40,9 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
  * Tests the {@link NuxeoDriveSetVersioningOptions} operation.
  *
  * @author Antoine Taillefer
+ * @deprecated since 9.1, see {@link NuxeoDriveSetVersioningOptions}
  */
+@Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
 @ServletContainer(port = 18080)

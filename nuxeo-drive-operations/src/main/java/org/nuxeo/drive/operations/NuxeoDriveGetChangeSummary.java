@@ -52,8 +52,12 @@ public class NuxeoDriveGetChangeSummary {
     @Param(name = "lowerBound", required = false)
     protected Long lowerBound = -1L;
 
-    // Expect a String structure with form:
-    // repo-1:root-ref-1,repo-1:root-ref-2,repo-2:root-ref-3
+    /**
+     * Expect a String structure with form: repo-1:root-ref-1,repo-1:root-ref-2,repo-2:root-ref-3
+     *
+     * @deprecated since 10.3
+     */
+    @Deprecated
     @Param(name = "lastSyncActiveRootDefinitions", required = false)
     protected String lastSyncActiveRootDefinitions;
 

@@ -29,8 +29,10 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * Waits for asynchronous event listener completion.
  *
  * @author Antoine Taillefer
+ * @deprecated since 10.3
  */
-@Operation(id = NuxeoDriveWaitForAsyncCompletion.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Wait for async completion")
+@Deprecated
+@Operation(id = NuxeoDriveWaitForAsyncCompletion.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Wait for async completion", deprecatedSince = "10.3")
 public class NuxeoDriveWaitForAsyncCompletion {
 
     public static final String ID = "NuxeoDrive.WaitForAsyncCompletion";

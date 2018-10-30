@@ -142,7 +142,7 @@ public class TestCollectionSyncRootFolderItemFactory {
 
         log.trace("Check FolderItem#createFile");
         try {
-            collectionFSItem.createFile(new StringBlob("Child file content."));
+            collectionFSItem.createFile(new StringBlob("Child file content."), false);
             fail("Should not be able to create a file in a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot create a file in a collection synchronization root.", e.getMessage());

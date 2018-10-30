@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  *             removed from drive, setting options is not supported anymore
  */
 @Deprecated
-@Operation(id = NuxeoDriveSetVersioningOptions.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Set versioning options")
+@Operation(id = NuxeoDriveSetVersioningOptions.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Set versioning options", deprecatedSince = "9.1")
 public class NuxeoDriveSetVersioningOptions {
 
     public static final String ID = "NuxeoDrive.SetVersioningOptions";

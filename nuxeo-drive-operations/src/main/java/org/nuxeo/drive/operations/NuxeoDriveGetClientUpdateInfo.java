@@ -37,8 +37,10 @@ import org.nuxeo.runtime.api.Framework;
  * </ul>
  *
  * @author Antoine Taillefer
+ * @deprecated since 10.3
  */
-@Operation(id = NuxeoDriveGetClientUpdateInfo.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get client update information")
+@Deprecated
+@Operation(id = NuxeoDriveGetClientUpdateInfo.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get client update information", deprecatedSince = "10.3")
 public class NuxeoDriveGetClientUpdateInfo {
 
     public static final String ID = "NuxeoDrive.GetClientUpdateInfo";

@@ -41,7 +41,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Tests the {@link NuxeoDriveGetClientUpdateInfo} operation.
  *
  * @author Antoine Taillefer
+ * @deprecated since 10.3, see {@link NuxeoDriveGetClientUpdateInfo}
  */
+@Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
 @ServletContainer(port = 18080)
