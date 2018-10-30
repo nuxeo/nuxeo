@@ -216,7 +216,9 @@ public class BulkServiceImpl implements BulkService {
             }
             Thread.sleep(100);
         } while (deadline > System.currentTimeMillis());
-        log.debug("await timeout for commandId(" + commandId + ") after " + duration.toMillis() + " ms");
+        if (log.isDebugEnabled()) {
+            log.debug("await timeout " + status + " after " + duration.toMillis() + " ms");
+        }
         return false;
     }
 
@@ -235,12 +237,16 @@ public class BulkServiceImpl implements BulkService {
         long deadline = System.nanoTime() + duration.toNanos();
         for (String commandId : commandIds) {
             for (;;) {
-                BulkStatus.State state = getStatus(commandId).getState();
+                BulkStatus status = getStatus(commandId);
+                BulkStatus.State state = status.getState();
                 if (state == COMPLETED || state == ABORTED || state == UNKNOWN) {
                     break;
                 }
                 Thread.sleep(200);
                 if (deadline < System.nanoTime()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("await timeout, at least one uncompleted command: " + status);
+                    }
                     return false;
                 }
             }

@@ -72,6 +72,8 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     private static final Log log = LogFactory.getLog(BulkScrollerComputation.class);
 
+    public static final int MAX_SCROLL_SIZE = 4_000;
+
     protected final int scrollBatchSize;
 
     protected final int scrollKeepAliveSeconds;
@@ -111,10 +113,15 @@ public class BulkScrollerComputation extends AbstractComputation {
             String commandId = command.getId();
             int bucketSize = command.getBucketSize() > 0 ? command.getBucketSize()
                     : Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
-            if (bucketSize > scrollBatchSize) {
-                log.warn(String.format("Bucket size: %d too big for action: %s, reduce to scroll size: %d", bucketSize,
-                        command.getAction(), scrollBatchSize));
-                bucketSize = scrollBatchSize;
+            int scrollSize = scrollBatchSize;
+            if (bucketSize > scrollSize) {
+                if (bucketSize <= MAX_SCROLL_SIZE) {
+                    scrollSize = bucketSize;
+                } else {
+                    log.warn(String.format("Bucket size: %d too big for command: %s, reduce to: %d", bucketSize,
+                            command, MAX_SCROLL_SIZE));
+                    scrollSize = bucketSize = MAX_SCROLL_SIZE;
+                }
             }
             updateStatusAsScrolling(context, commandId);
             LoginContext loginContext;
@@ -122,7 +129,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                 loginContext = Framework.loginAsUser(command.getUsername());
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
                     // scroll documents
-                    ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollBatchSize,
+                    ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize,
                             scrollKeepAliveSeconds);
                     long documentCount = 0;
                     long bucketNumber = 1;
