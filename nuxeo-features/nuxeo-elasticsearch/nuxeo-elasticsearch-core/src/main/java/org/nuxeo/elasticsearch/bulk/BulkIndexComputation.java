@@ -117,11 +117,13 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     @Override
     public void processRecord(ComputationContext context, String inputStream, Record record) {
         DataBucket in = codec.decode(record.getData());
-        BulkRequest bulkRequest = decodeRequest(in);
-        for (DocWriteRequest request : bulkRequest.requests()) {
-            bulkProcessor.add(request);
+        if (in.getCount() > 0) {
+            BulkRequest bulkRequest = decodeRequest(in);
+            for (DocWriteRequest request : bulkRequest.requests()) {
+                bulkProcessor.add(request);
+            }
+            AbstractBulkComputation.updateStatusProcessed(context, in.getCommandId(), in.getCount());
         }
-        AbstractBulkComputation.updateStatusProcessed(context, in.getCommandId(), in.getCount());
         updates = true;
     }
 

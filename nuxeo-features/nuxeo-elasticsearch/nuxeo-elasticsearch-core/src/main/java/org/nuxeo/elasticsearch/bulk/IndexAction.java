@@ -18,11 +18,13 @@
  */
 package org.nuxeo.elasticsearch.bulk;
 
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import org.nuxeo.lib.stream.computation.Topology;
@@ -51,6 +53,10 @@ public class IndexAction implements StreamProcessorTopology {
 
     public static final int DEFAULT_BULK_INTERVAL = 10;
 
+    public static final String INDEX_UPDATE_ALIAS_PARAM = "updateAlias";
+
+    public static final String REFRESH_INDEX_PARAM = "refresh";
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         boolean continueOnFailure = getOptionAsBoolean(options, CONTINUE_ON_FAILURE, false);
@@ -66,6 +72,8 @@ public class IndexAction implements StreamProcessorTopology {
                                        continueOnFailure, esBulkSize, esBulkActions, esBulkFlushInterval),
                                Arrays.asList(INPUT_1 + ":" + BulkIndexComputation.NAME, //
                                OUTPUT_1 + ":" + STATUS_STREAM))
+                       .addComputation(() -> new IndexCompletionComputation(continueOnFailure),
+                               Collections.singletonList(INPUT_1 + ":" + DONE_STREAM))
                        .build();
 
     }

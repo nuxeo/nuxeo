@@ -20,6 +20,8 @@ package org.nuxeo.elasticsearch.test.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
+import static org.nuxeo.elasticsearch.bulk.IndexAction.REFRESH_INDEX_PARAM;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -90,10 +92,13 @@ public class TestBulkIndex {
         esa.initIndexes(true);
         String commandId = bulkService.submit(
                 new BulkCommand.Builder(IndexAction.ACTION_NAME,
-                "SELECT * FROM Document").batch(2).bucket(2).build());
+                        "SELECT * FROM Document").param(REFRESH_INDEX_PARAM, true)
+                                                 .param(INDEX_UPDATE_ALIAS_PARAM, true)
+                                                 .batch(2)
+                                                 .bucket(2)
+                                                 .build());
         assertTrue("command timeout", bulkService.await(commandId, Duration.ofSeconds(60)));
         BulkStatus status = bulkService.getStatus(commandId);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());
-        System.out.println(status);
     }
 }

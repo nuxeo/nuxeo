@@ -130,11 +130,20 @@ public class IndexRequestComputation extends AbstractBulkComputation {
         bulkRequests.add(bulkRequest);
         String commandId = getCurrentCommand().getId();
         int i = 0;
+        int count = 0;
         for (BulkRequest request : bulkRequests) {
             DataBucket dataBucket = new DataBucket(commandId, request.numberOfActions(), toBytes(request));
             // use distinct key to distribute the message evenly between partitions
             String key = bucketKey + "-" + i++;
             context.produceRecord(OUTPUT_1, Record.of(key, BulkCodecs.getDataBucketCodec().encode(dataBucket)));
+            count += request.numberOfActions();
+        }
+        if (count < bucketSize) {
+            log.warn(String.format("Command: %s offset: %s created %d documents out of %d, %d not accessible",
+                    commandId, context.getLastOffset(), count, bucketSize, bucketSize - count));
+            DataBucket dataBucket = new DataBucket(commandId, bucketSize - count, toBytes(new BulkRequest()));
+            context.produceRecord(OUTPUT_1,
+                    Record.of(bucketKey + "-missing", BulkCodecs.getDataBucketCodec().encode(dataBucket)));
         }
         bulkRequest = null;
         bulkRequests.clear();
