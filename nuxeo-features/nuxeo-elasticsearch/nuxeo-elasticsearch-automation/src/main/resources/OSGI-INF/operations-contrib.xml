@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
     <operation class="org.nuxeo.ecm.automation.elasticsearch.ElasticsearchIndexOperation" />
     <operation class="org.nuxeo.ecm.automation.elasticsearch.ElasticsearchWaitForIndexingOperation" />
+    <operation class="org.nuxeo.ecm.automation.elasticsearch.ElasticsearchBulkIndexOperation" />
   </extension>
 
   <extension target="org.nuxeo.ecm.automation.server.AutomationServer" point="bindings">
@@ -11,6 +12,9 @@
       <administrator>true</administrator>
     </binding>
     <binding name="Elasticsearch.WaitForIndexing">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Elasticsearch.BulkIndex">
       <administrator>true</administrator>
     </binding>
   </extension>

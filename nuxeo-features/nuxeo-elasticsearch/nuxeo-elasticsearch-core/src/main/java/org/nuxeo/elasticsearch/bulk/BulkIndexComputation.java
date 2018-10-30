@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     pierre
+ *     bdelbosc
  */
 package org.nuxeo.elasticsearch.bulk;
 

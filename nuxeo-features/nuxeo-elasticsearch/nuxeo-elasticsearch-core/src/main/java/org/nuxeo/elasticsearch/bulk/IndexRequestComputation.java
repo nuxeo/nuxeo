@@ -59,7 +59,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
     private static final Log log = LogFactory.getLog(IndexRequestComputation.class);
 
     // we want to avoid record bigger than 1MB because they requires specific configuration and impact performance
-    protected static final long MAX_RECORD_SIZE = 990_000;
+    protected static final long MAX_RECORD_SIZE = 900_000;
 
     protected static final String INDEX_OPTION = "indexName";
 

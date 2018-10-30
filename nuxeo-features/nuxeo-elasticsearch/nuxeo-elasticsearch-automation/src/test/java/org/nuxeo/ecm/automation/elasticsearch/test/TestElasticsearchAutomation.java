@@ -19,7 +19,10 @@
 package org.nuxeo.ecm.automation.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -29,9 +32,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.elasticsearch.ElasticsearchBulkIndexOperation;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -43,6 +50,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @RunWith(FeaturesRunner.class)
@@ -67,6 +76,9 @@ public class TestElasticsearchAutomation {
 
     @Inject
     AutomationService automationService;
+
+    @Inject
+    BulkService bulkService;
 
     protected DocumentRef rootRef;
 
@@ -132,7 +144,6 @@ public class TestElasticsearchAutomation {
         assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
     }
 
-
     @Test
     public void testIndexingFromNxql() throws Exception {
         OperationContext ctx = new OperationContext(coreSession);
@@ -142,6 +153,17 @@ public class TestElasticsearchAutomation {
         assertEquals(1, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
     }
 
-
+    @Test
+    public void testIndexingAllBulkService() throws Exception {
+        OperationContext ctx = new OperationContext(coreSession);
+        Blob result = (Blob) automationService.run(ctx, ElasticsearchBulkIndexOperation.ID);
+        assertNotNull(result);
+        String commandId = new ObjectMapper().readTree(result.getString()).get("commandId").asText();
+        boolean waitResult = bulkService.await(commandId, Duration.ofSeconds(60));
+        assertTrue("Bulk action didn't finish", waitResult);
+        // indexing is done but refresh is processed just after, do it sync
+        esa.refresh();
+        assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
+    }
 
 }

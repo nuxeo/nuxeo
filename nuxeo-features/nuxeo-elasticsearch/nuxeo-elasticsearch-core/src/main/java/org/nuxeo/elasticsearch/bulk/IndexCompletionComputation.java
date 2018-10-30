@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     pierre
+ *     bdelbosc
  */
 package org.nuxeo.elasticsearch.bulk;
 
@@ -94,7 +94,7 @@ public class IndexCompletionComputation extends AbstractComputation {
     protected void logIndexing(BulkStatus status) {
         long elapsed = status.getCompletedTime().toEpochMilli() - status.getSubmitTime().toEpochMilli();
         long wait = status.getScrollStartTime().toEpochMilli() - status.getSubmitTime().toEpochMilli();
-        long scroll = status.getScrollEndTime().toEpochMilli() - status.getScrollEndTime().toEpochMilli();
+        long scroll = status.getScrollEndTime().toEpochMilli() - status.getScrollStartTime().toEpochMilli();
         double rate = 1000.0 * status.getTotal() / (elapsed);
         log.warn(String.format(
                 "Index command: %s completed: %d docs in %.2fs (wait: %.2fs, scroll: %.2fs) rate: %.2f docs/s",
