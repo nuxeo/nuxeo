@@ -57,7 +57,7 @@ When calling the segment.io API (identify or track), Nuxeo service will always s
  - `firstName` : `principal.getFirstName()`
  - `lastName` : `principal.getLastName()`
 
-However, you can override this default binding, by providing custom bindng for these fields `email`, `firstName`, `lastName`.
+However, you can override this default binding, by providing custom binding for these fields `email`, `firstName`, `lastName`.
 
 The parameters binding, is generated from a Groovy script evaluated in a context containing :
 
