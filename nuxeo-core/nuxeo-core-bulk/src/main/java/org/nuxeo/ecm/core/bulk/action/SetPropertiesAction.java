@@ -33,9 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.lib.stream.computation.Topology;
@@ -67,9 +64,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            DocumentRef[] docRefs = ids.stream().map(IdRef::new).toArray(DocumentRef[]::new);
-            DocumentModelList docs = session.getDocuments(docRefs);
-            for (DocumentModel doc : docs) {
+            for (DocumentModel doc : loadDocuments(session, ids)) {
                 for (Entry<String, Serializable> es : properties.entrySet()) {
                     try {
                         doc.setPropertyValue(es.getKey(), es.getValue());

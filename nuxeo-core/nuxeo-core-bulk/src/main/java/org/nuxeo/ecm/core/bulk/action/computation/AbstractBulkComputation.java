@@ -34,7 +34,9 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
@@ -66,7 +68,9 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     private static final Logger log = LogManager.getLogger(AbstractBulkComputation.class);
 
-    protected Map<String, BulkCommand> commands = new PassiveExpiringMap(60, TimeUnit.SECONDS);
+    protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM Document, Relation WHERE ecm:uuid IN ('%s')";
+
+    protected Map<String, BulkCommand> commands = new PassiveExpiringMap<>(60, TimeUnit.SECONDS);
 
     protected BulkCommand command;
 
@@ -169,4 +173,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     }
 
     protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);
+
+    /**
+     * Helper to load a list of documents. Documents without read access or that does not exists are not returned.
+     */
+    public DocumentModelList loadDocuments(CoreSession session, List<String> documentIds) {
+        if (documentIds == null || documentIds.isEmpty()) {
+            return new DocumentModelListImpl(0);
+        }
+        return session.query(String.format(SELECT_DOCUMENTS_IN, String.join("', '", documentIds)));
+    }
 }
