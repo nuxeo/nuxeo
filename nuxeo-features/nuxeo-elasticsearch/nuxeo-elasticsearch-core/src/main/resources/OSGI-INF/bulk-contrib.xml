@@ -14,7 +14,7 @@
       <computation name="index" concurrency="2" />
       <!-- concurrency to execute indexing requests -->
       <computation name="bulkIndex" concurrency="2" />
-
+      <computation name="indexCompletion" concurrency="1" />
       <!-- what to do on failure -->
       <option name="continueOnFailure">false</option>
 
