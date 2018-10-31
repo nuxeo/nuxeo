@@ -23,13 +23,18 @@ import java.time.Duration;
 import net.jodah.failsafe.RetryPolicy;
 
 /**
- * Defines how a computation should handle the batching retries and fallback.
+ * Defines how a computation should handle the retries, fallback and batching if any.
  *
  * @since 10.3
  */
 public class ComputationPolicy {
 
     public static final RetryPolicy NO_RETRY = new RetryPolicy().withMaxRetries(0);
+
+    /* No retry, abort on failure, no batching */
+    public static final ComputationPolicy NONE = new ComputationPolicyBuilder().retryPolicy(NO_RETRY)
+            .continueOnFailure(false)
+            .build();
 
     protected final RetryPolicy retryPolicy;
 

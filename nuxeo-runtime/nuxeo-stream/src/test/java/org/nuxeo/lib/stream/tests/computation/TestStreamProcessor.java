@@ -38,6 +38,8 @@ import org.nuxeo.lib.stream.codec.AvroJsonCodec;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
+import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
@@ -50,6 +52,8 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+
+import net.jodah.failsafe.RetryPolicy;
 
 /**
  * @since 9.3
@@ -489,6 +493,59 @@ public abstract class TestStreamProcessor {
                 assertNotNull(tailer.read(Duration.ofSeconds(1)));
             }
         }
+    }
+
+    @Test
+    public void testComputationPolicy() throws Exception {
+        // Default topology: no retry, abort on failure
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationFailureForward("C1", 1, 1),
+                                            Arrays.asList("i1:input", "o1:output"))
+                                    .build();
+        // Topology continue on error
+        ComputationPolicy policySkip = new ComputationPolicyBuilder().retryPolicy(
+                new RetryPolicy(ComputationPolicy.NO_RETRY)).continueOnFailure(true).build();
+        Topology topologySkip = Topology.builder()
+                                        .addComputation(() -> new ComputationFailureForward("C2", 1, 1, policySkip),
+                                                Arrays.asList("i1:input", "o1:output"))
+                                        .build();
+        // Topology retry abort on failure
+        ComputationPolicy policyRetry = new ComputationPolicyBuilder().retryPolicy(
+                new RetryPolicy().withMaxRetries(ComputationFailureForward.FAILURE_COUNT)
+                                 .retryOn(IllegalStateException.class))
+                                                                      .continueOnFailure(false)
+
+                                                                      .build();
+        Topology topologyRetry = Topology.builder()
+                                         .addComputation(() -> new ComputationFailureForward("C3", 1, 1, policyRetry),
+                                                 Arrays.asList("i1:input", "o1:output"))
+                                         .build();
+
+        Settings settings = new Settings(1, 1);
+        try (LogManager manager = getLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            processor.init(topology, settings).start();
+            LogAppender<Record> appender = manager.getAppender("input");
+            appender.append("foo", Record.of("foo", null));
+
+            // default policy: abort on error resulting in lag on input
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            LogLag lag = manager.getLag("input", "C1");
+            assertEquals(lag.toString(), 1, lag.lag());
+
+            // Skip policy:
+            processor.init(topologySkip, settings).start();
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            lag = manager.getLag("input", "C2");
+            assertEquals(lag.toString(), 0, lag.lag());
+
+            // Retry policy
+            processor.init(topologyRetry, settings).start();
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            lag = manager.getLag("input", "C3");
+            assertEquals(lag.toString(), 0, lag.lag());
+        }
+
     }
 
     // ---------------------------------

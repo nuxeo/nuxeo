@@ -37,9 +37,9 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
 
     public static final String TIMER_BATCH = "batch";
 
-    protected final ComputationPolicy policy;
-
     protected final List<Record> batchRecords;
+
+    protected final ComputationPolicy batchPolicy;
 
     protected String currentInputStream;
 
@@ -56,10 +56,11 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * @param policy the policy to manage batch, retries and fallback
      */
     public AbstractBatchComputation(String name, int nbInputStreams, int nbOutputStreams, ComputationPolicy policy) {
-        super(name, nbInputStreams, nbOutputStreams);
-        this.policy = policy;
+        // the policy is managed at the batch level
+        super(name, nbInputStreams, nbOutputStreams, ComputationPolicy.NONE);
         thresholdMillis = policy.getBatchThreshold().toMillis();
         batchRecords = new ArrayList<>(policy.batchCapacity);
+        this.batchPolicy = policy;
     }
 
     /**
@@ -106,13 +107,13 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
             newBatch = false;
         }
         batchRecords.add(record);
-        if (batchRecords.size() >= policy.getBatchCapacity()) {
+        if (batchRecords.size() >= batchPolicy.getBatchCapacity()) {
             processBatch(context);
         }
     }
 
     protected void processBatch(ComputationContext context) {
-        Failsafe.with(policy.getRetryPolicy())
+        Failsafe.with(batchPolicy.getRetryPolicy())
                 .onSuccess(ret -> checkpointBatch(context))
                 .onFailure(failure -> processFailure(context, failure))
                 .onRetry(failure -> processRetry(context, failure))
@@ -121,7 +122,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
     }
 
     protected void processFallback(ComputationContext context) {
-        if (policy.isSkipFailure()) {
+        if (batchPolicy.isSkipFailure()) {
             batchRecords.forEach(record -> log.error(
                     String.format("Computation %s skips processing of record because of batch failure: %s",
                             metadata.name(), record)));
@@ -140,10 +141,10 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * @param context Computation context that could be used
      * @param failure The throwable
      */
-    protected void processRetry(ComputationContext context, Throwable failure) {
+    public void processRetry(ComputationContext context, Throwable failure) {
         log.warn(String.format(
                 "Computation: %s fails to process batch of %d records from stream: %s, policy: %s, retrying ...",
-                metadata.name(), batchRecords.size(), currentInputStream, policy), failure);
+                metadata.name(), batchRecords.size(), currentInputStream, batchPolicy), failure);
     }
 
     protected void checkpointBatch(ComputationContext context) {
@@ -152,10 +153,10 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
         newBatch = true;
     }
 
-    protected void processFailure(ComputationContext context, Throwable failure) {
+    public void processFailure(ComputationContext context, Throwable failure) {
         log.error(String.format(
                 "Computation: %s fails to process batch of %d records from stream: %s, after applying retries: %s",
-                metadata.name(), batchRecords.size(), currentInputStream, policy), failure);
+                metadata.name(), batchRecords.size(), currentInputStream, batchPolicy), failure);
         batchFailure(context, currentInputStream, batchRecords);
     }
 
