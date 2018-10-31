@@ -189,6 +189,11 @@ public final class EventNames {
      */
     public static final String FLUSH_EVENT = "flush";
 
+    /**
+     * @since 10.3
+     */
+    public static final String MAIN_TABS_CHANGED = "mainTabsChanged";
+
     // Constant utility class.
     private EventNames() {
     }
