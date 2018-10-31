@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 10.3
  */
-@Operation(id = RecomputePictureViews.ID, category = Constants.CAT_SERVICES, label = "Recompute Picture Wiews", description = "Recompute the picture views of the documents resulting from the provided NXQL query.", since = "10.3")
+@Operation(id = RecomputePictureViews.ID, category = Constants.CAT_SERVICES, label = "Recompute Picture Views", description = "Recompute the picture views of the documents resulting from the provided NXQL query.", since = "10.3")
 public class RecomputePictureViews {
 
     public static final String ID = "Picture.RecomputeViews";
