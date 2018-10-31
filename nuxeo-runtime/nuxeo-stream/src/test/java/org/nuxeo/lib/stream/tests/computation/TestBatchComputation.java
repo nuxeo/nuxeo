@@ -42,7 +42,7 @@ import net.jodah.failsafe.RetryPolicy;
 public class TestBatchComputation {
 
     @Test
-    public void testComputationBatchForward() throws Exception {
+    public void testComputationBatchForward() {
         int batchCapacity = 5;
         ComputationPolicy policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, Duration.ofMillis(500))
                                                                  .build();
@@ -105,7 +105,7 @@ public class TestBatchComputation {
     }
 
     @Test
-    public void testComputationBatchFailureForward() throws Exception {
+    public void testComputationBatchFailureForward() {
         Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         int batchCapacity = 3;
         ComputationPolicy policyNoRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
@@ -144,7 +144,7 @@ public class TestBatchComputation {
     }
 
     @Test
-    public void testComputationBatchFailureBatchForwardThatFails() throws Exception {
+    public void testComputationBatchFailureBatchForwardThatFails() {
         Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         int batchCapacity = 3;
         ComputationPolicy policyWithRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,

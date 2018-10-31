@@ -152,7 +152,6 @@ public class TestComputation {
         assertEquals(2, context.getRecords("o1").size());
         // the counter has been reset
         assertEquals("1", context.getRecords("o1").get(1).getKey());
-
     }
 
 }
