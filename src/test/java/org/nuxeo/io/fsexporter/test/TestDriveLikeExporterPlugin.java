@@ -19,7 +19,6 @@
 package org.nuxeo.io.fsexporter.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 import static org.nuxeo.io.fsexporter.test.DocumentBuilder.file;
 import static org.nuxeo.io.fsexporter.test.DocumentBuilder.folder;
 
@@ -177,7 +176,7 @@ public class TestDriveLikeExporterPlugin {
 
     @Test
     public void title_to_filename_handles_special_chars() throws Exception {
-        folder().at("/").withName("folder1").withTitle("Title of folder 1 on 10/29/2018").create(session);
+        folder().at("/").withName("folder1").withTitle("Title of folder 1 on 10/29/2018 \"|*/:<>?\\").create(session);
         session.save();
 
         // When I export the repository
@@ -188,7 +187,7 @@ public class TestDriveLikeExporterPlugin {
         assertThat(files).hasSize(1);
 
         File expectedFolder = files.get(0);
-        assertThat(expectedFolder).hasName("Title of folder 1 on 10-29-2018");
+        assertThat(expectedFolder).hasName("Title of folder 1 on 10-29-2018 ---------");
 
     }
 
