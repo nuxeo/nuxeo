@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.UserAgentMatcher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -297,6 +298,11 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public void setCurrentTabId(String category, String tabId, String... subTabIds) {
+        if (category != null && category.equals(MAIN_TABS_CATEGORY) && tabId != null
+                && currentTabActions.getCurrentTabIds() != null
+                && !currentTabActions.getCurrentTabIds().startsWith(category + ":" + tabId)) {
+            Events.instance().raiseEvent(EventNames.MAIN_TABS_CHANGED);
+        }
         currentTabActions.setCurrentTabId(actionManager, createActionContext(), category, tabId, subTabIds);
         // additional cleanup of this cache
         if (WebActions.DEFAULT_TABS_CATEGORY.equals(category)) {
@@ -311,6 +317,10 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public void setCurrentTabIds(String tabIds) {
+        if (tabIds != null && tabIds.startsWith(MAIN_TABS_CATEGORY) && currentTabActions.getCurrentTabIds() != null
+                && !currentTabActions.getCurrentTabIds().startsWith(tabIds)) {
+            Events.instance().raiseEvent(EventNames.MAIN_TABS_CHANGED);
+        }
         currentTabActions.setCurrentTabIds(actionManager, createActionContext(), tabIds);
         // reset subtabs just in case
         resetSubTabs();
