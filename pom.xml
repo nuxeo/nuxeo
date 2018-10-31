@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.nuxeo.io</groupId>
   <artifactId>nuxeo-fsexporter</artifactId>
-  <version>8.10-HF38-SNAPSHOT</version>
+  <version>8.10-NXP-26071</version>
   <name>Nuxeo File System Exporter</name>
   <dependencies>
     <dependency>
