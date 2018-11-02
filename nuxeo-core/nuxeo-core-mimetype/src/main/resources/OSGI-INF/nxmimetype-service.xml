@@ -1125,6 +1125,24 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="application/gxf" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>application/gxf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>gxf</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/mxf" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>application/mxf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mxf</extension>
+      </extensions>
+    </mimetype>
+
     <mimetype normalized="application/java-archive" binary="true"
       iconPath="java.png">
       <mimetypes>
