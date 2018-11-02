@@ -50,6 +50,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -777,10 +779,17 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     /**
-     * The requested URL is like the requested page but also includes the query string, except without conversation id.
+     * The requested URL is like the requested page BUT is not decoded AND also includes the query string (except
+     * without conversation id).
      */
     public static String getRequestedUrl(HttpServletRequest request) {
         String path = getRequestedPage(request);
+        // re-encode path, as it's what the caller expects
+        try {
+            path = new URI(null, null, path, null).toASCIIString();
+        } catch (URISyntaxException e) {
+            // keep path as is
+        }
         String qs = request.getQueryString();
         if (StringUtils.isNotEmpty(qs)) {
             // strip conversation id
