@@ -33,8 +33,8 @@ public class ComputationPolicy {
 
     /* No retry, abort on failure, no batching */
     public static final ComputationPolicy NONE = new ComputationPolicyBuilder().retryPolicy(NO_RETRY)
-            .continueOnFailure(false)
-            .build();
+                                                                               .continueOnFailure(false)
+                                                                               .build();
 
     protected final RetryPolicy retryPolicy;
 

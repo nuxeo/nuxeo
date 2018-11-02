@@ -74,7 +74,7 @@ public interface Computation {
      * quick shutdown. <br>
      * This method is not invoked from the computation thread, it should only set some volatile flag and returns
      * immediately.
-     * 
+     *
      * @since 10.2
      */
     @SuppressWarnings("EmptyMethod")

@@ -194,8 +194,10 @@ public class Topology {
 
     public Set<String> getChildren(String name) {
         Vertex start = getVertex(name);
-        return dag.outgoingEdgesOf(start).stream().map(edge -> dag.getEdgeTarget(edge).getName()).collect(
-                Collectors.toSet());
+        return dag.outgoingEdgesOf(start)
+                  .stream()
+                  .map(edge -> dag.getEdgeTarget(edge).getName())
+                  .collect(Collectors.toSet());
     }
 
     public Set<String> getChildrenComputationNames(String name) {
@@ -211,8 +213,10 @@ public class Topology {
 
     public Set<String> getParents(String name) {
         Vertex start = getVertex(name);
-        return dag.incomingEdgesOf(start).stream().map(edge -> dag.getEdgeSource(edge).getName()).collect(
-                Collectors.toSet());
+        return dag.incomingEdgesOf(start)
+                  .stream()
+                  .map(edge -> dag.getEdgeSource(edge).getName())
+                  .collect(Collectors.toSet());
     }
 
     public Set<String> getParentComputationsNames(String name) {

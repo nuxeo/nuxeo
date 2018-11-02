@@ -70,6 +70,7 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
         return errorMessage + record.dataOverview(dataSize);
 
     }
+
     protected String renderAvroMessage(AvroSchemaStore store, Record record) {
         if (store == null || !isAvroMessage(record.getData())) {
             throw new IllegalArgumentException("Not avro encoded");
@@ -85,7 +86,8 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
             GenericRecord avroRecord = decoder.decode(record.getData(), null);
             return avroRecord.toString();
         } catch (IOException e) {
-            throw new IllegalStateException(String.format("Error: %s decoding with schema: 0x%08X", e.getMessage(), fp));
+            throw new IllegalStateException(
+                    String.format("Error: %s decoding with schema: 0x%08X", e.getMessage(), fp));
         }
     }
 
@@ -95,9 +97,6 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
     }
 
     protected boolean isAvroMessage(byte[] data) {
-        if (data.length >= 10 && data[0] == AVRO_MESSAGE_V1_HEADER[0] && data[1] == AVRO_MESSAGE_V1_HEADER[1]) {
-            return true;
-        }
-        return false;
+        return data.length >= 10 && data[0] == AVRO_MESSAGE_V1_HEADER[0] && data[1] == AVRO_MESSAGE_V1_HEADER[1];
     }
 }

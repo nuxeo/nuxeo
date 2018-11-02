@@ -224,8 +224,11 @@ public class KafkaLogManager extends AbstractLogManager {
 
     @Override
     public List<String> listAll() {
-        return kUtils.listTopics().stream().filter(name -> name.startsWith(prefix)).map(ns::getLogName).collect(
-                Collectors.toList());
+        return kUtils.listTopics()
+                     .stream()
+                     .filter(name -> name.startsWith(prefix))
+                     .map(ns::getLogName)
+                     .collect(Collectors.toList());
     }
 
     @Override
@@ -240,8 +243,11 @@ public class KafkaLogManager extends AbstractLogManager {
         if (!exists(name)) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
-        return kUtils.listConsumers(topic).stream().filter(group -> group.startsWith(prefix)).map(ns::getGroup).collect(
-                Collectors.toList());
+        return kUtils.listConsumers(topic)
+                     .stream()
+                     .filter(group -> group.startsWith(prefix))
+                     .map(ns::getGroup)
+                     .collect(Collectors.toList());
     }
 
 }

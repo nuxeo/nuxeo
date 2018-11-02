@@ -212,8 +212,10 @@ public class RestoreCommand extends Command {
 
     protected List<String> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll().stream().filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX)).collect(
-                    Collectors.toList());
+            return manager.listAll()
+                          .stream()
+                          .filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX))
+                          .collect(Collectors.toList());
         }
         List<String> ret = Arrays.asList(names.split(","));
         for (String name : ret) {

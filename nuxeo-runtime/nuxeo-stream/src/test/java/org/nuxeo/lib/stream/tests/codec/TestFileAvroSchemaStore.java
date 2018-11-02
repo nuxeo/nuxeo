@@ -18,6 +18,9 @@
  */
 package org.nuxeo.lib.stream.tests.codec;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -25,13 +28,8 @@ import org.apache.avro.reflect.ReflectData;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.AvroSchemaStore;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 10.3

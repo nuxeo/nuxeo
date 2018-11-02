@@ -174,8 +174,10 @@ public class ChronicleLogManager extends AbstractLogManager {
     @Override
     public List<String> listAll() {
         try (Stream<Path> paths = Files.list(basePath)) {
-            return paths.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString).collect(
-                    Collectors.toList());
+            return paths.filter(Files::isDirectory)
+                        .map(Path::getFileName)
+                        .map(Path::toString)
+                        .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid base path: " + basePath, e);
         }
