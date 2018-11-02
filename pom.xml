@@ -230,7 +230,7 @@
 
     <kafka.version>2.0.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
-    <chronicle.bom.version>1.16.158</chronicle.bom.version>
+    <chronicle.bom.version>2.17.28</chronicle.bom.version>
     <metrics.version>4.0.3</metrics.version>
     <maven.surefire.version>2.22.0</maven.surefire.version>
   </properties>
