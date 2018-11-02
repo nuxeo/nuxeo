@@ -18,7 +18,22 @@
 
   <extension-point name="actions">
     <documentation>
-      Allows to define the bulk actions
+      Allows to define the bulk actions.
+
+      A bulk action is a stream processing composed of one or more computations.
+
+      A bulk action can be made available through http APIs, default is false.
+
+      The bucket size determines the number of document ids per record at the scroller level, default is 100.
+
+      The batch size determines the number of document ids handled per transactions at the computation level, default is 25.
+
+      <code>
+        <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+          <action name="internalAction" bucketSize="100" batchSize="25" />
+          <action name="publicAction" bucketSize="100" batchSize="25" httpEnabled="true" />
+        </extension>
+      </code>
     </documentation>
     <object class="org.nuxeo.ecm.core.bulk.BulkActionDescriptor" />
   </extension-point>
