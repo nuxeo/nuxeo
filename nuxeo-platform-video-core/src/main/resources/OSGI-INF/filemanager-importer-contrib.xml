@@ -12,6 +12,8 @@
             class="org.nuxeo.ecm.platform.video.importer.VideoImporter"
             order="10">
       <filter>video/.*</filter>
+      <filter>application/gxf</filter>
+      <filter>application/mxf</filter>
     </plugin>
   </extension>
 
