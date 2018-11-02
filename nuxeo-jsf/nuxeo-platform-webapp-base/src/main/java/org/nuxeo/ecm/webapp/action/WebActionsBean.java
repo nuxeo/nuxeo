@@ -300,7 +300,7 @@ public class WebActionsBean implements WebActions, Serializable {
     public void setCurrentTabId(String category, String tabId, String... subTabIds) {
         if (category != null && category.equals(MAIN_TABS_CATEGORY) && tabId != null
                 && currentTabActions.getCurrentTabIds() != null
-                && !currentTabActions.getCurrentTabIds().startsWith(category + ":" + tabId)) {
+                && !tabId.equals(getCurrentTabId(MAIN_TABS_CATEGORY))) {
             Events.instance().raiseEvent(EventNames.MAIN_TABS_CHANGED);
         }
         currentTabActions.setCurrentTabId(actionManager, createActionContext(), category, tabId, subTabIds);
