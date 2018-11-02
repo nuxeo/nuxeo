@@ -156,9 +156,13 @@ public class LogStreamProcessor implements StreamProcessor {
         Set<String> ancestorsComputations = topology.getAncestorComputationNames(computationName);
         ancestorsComputations.add(computationName);
         List<Latency> latencies = new ArrayList<>();
-        ancestorsComputations.forEach(comp -> topology.getMetadata(comp).inputStreams().forEach(
-                stream -> latencies.add(manager.getLatency(stream, comp, settings.getCodec(comp),
-                        (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey)))));
+        ancestorsComputations.forEach(
+                comp -> topology.getMetadata(comp)
+                                .inputStreams()
+                                .forEach(stream -> latencies.add(
+                                        manager.getLatency(stream, comp, settings.getCodec(comp),
+                                                (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()),
+                                                (Record::getKey)))));
         return Latency.of(latencies);
     }
 

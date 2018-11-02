@@ -349,8 +349,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected void forceCommit() {
         log.info("Force commit after a move");
 
-        Map<TopicPartition, OffsetAndMetadata> offsets = topicPartitions.stream().collect(
-                toMap(tp -> tp, tp -> new OffsetAndMetadata(consumer.position(tp))));
+        Map<TopicPartition, OffsetAndMetadata> offsets = topicPartitions.stream()
+                                                                        .collect(toMap(tp -> tp,
+                                                                                tp -> new OffsetAndMetadata(
+                                                                                        consumer.position(tp))));
         consumer.commitSync(offsets);
         offsets.forEach((topicPartition, offset) -> lastCommittedOffsets.put(topicPartition, offset.offset()));
         consumerMoved = false;

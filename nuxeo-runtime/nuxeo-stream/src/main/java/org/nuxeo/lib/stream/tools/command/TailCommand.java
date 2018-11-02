@@ -73,13 +73,12 @@ public class TailCommand extends Command {
                                 .hasArg()
                                 .argName("CODEC")
                                 .build());
-        options.addOption(
-                Option.builder()
-                      .longOpt("data-size")
-                      .desc("Maximum size of message data to render")
-                      .hasArg()
-                      .argName("L")
-                      .build());
+        options.addOption(Option.builder()
+                                .longOpt("data-size")
+                                .desc("Maximum size of message data to render")
+                                .hasArg()
+                                .argName("L")
+                                .build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder("t")
@@ -89,11 +88,11 @@ public class TailCommand extends Command {
                                 .argName("TIMEOUT")
                                 .build());
         options.addOption(Option.builder()
-                .longOpt("schema-store")
-                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
-                .hasArg()
-                .argName("SCHEMA_STORE_PATH")
-                .build());
+                                .longOpt("schema-store")
+                                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
+                                .hasArg()
+                                .argName("SCHEMA_STORE_PATH")
+                                .build());
     }
 
     @Override
@@ -104,7 +103,7 @@ public class TailCommand extends Command {
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         String codec = cmd.getOptionValue("codec");
-        String avroSchemaStorePath  = cmd.getOptionValue("schema-store");
+        String avroSchemaStorePath = cmd.getOptionValue("schema-store");
         if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
             avroSchemaStorePath = NUXEO_SCHEMA_STORE;
         }

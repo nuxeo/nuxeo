@@ -37,19 +37,19 @@ public abstract class AbstractComputation implements Computation {
 
     protected final ComputationMetadata metadata;
 
-    public final static String INPUT_1 = "i1";
+    public static final String INPUT_1 = "i1";
 
-    public final static String INPUT_2 = "i2";
+    public static final String INPUT_2 = "i2";
 
-    public final static String INPUT_3 = "i3";
+    public static final String INPUT_3 = "i3";
 
-    public final static String OUTPUT_1 = "o1";
+    public static final String OUTPUT_1 = "o1";
 
-    public final static String OUTPUT_2 = "o2";
+    public static final String OUTPUT_2 = "o2";
 
-    public final static String OUTPUT_3 = "o3";
+    public static final String OUTPUT_3 = "o3";
 
-    public final static String OUTPUT_4 = "o4";
+    public static final String OUTPUT_4 = "o4";
 
     protected ComputationPolicy policy;
 

@@ -126,9 +126,10 @@ public class TestLibKafka {
         createTopic(topic, partitions);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(getConsumerProperties());
 
-        consumer.assign(
-                IntStream.range(0, partitions).boxed().map(partition -> new TopicPartition(topic, partition)).collect(
-                        Collectors.toList()));
+        consumer.assign(IntStream.range(0, partitions)
+                                 .boxed()
+                                 .map(partition -> new TopicPartition(topic, partition))
+                                 .collect(Collectors.toList()));
         consumer.seekToEnd(consumer.assignment());
         consumer.seekToBeginning(consumer.assignment());
 

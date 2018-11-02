@@ -135,8 +135,10 @@ public interface LogManager extends AutoCloseable {
             throw new IllegalArgumentException("Log name: " + name + " not found");
         }
         return createTailer(group,
-                IntStream.range(0, partitions).boxed().map(partition -> new LogPartition(name, partition)).collect(
-                        Collectors.toList()),
+                IntStream.range(0, partitions)
+                         .boxed()
+                         .map(partition -> new LogPartition(name, partition))
+                         .collect(Collectors.toList()),
                 codec);
     }
 

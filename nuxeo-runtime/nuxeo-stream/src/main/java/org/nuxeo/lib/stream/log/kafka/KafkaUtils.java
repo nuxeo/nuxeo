@@ -214,8 +214,9 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public List<String> listConsumers(String topic) {
-        return listAllConsumers().stream().filter(consumer -> getConsumerTopics(consumer).contains(topic)).collect(
-                Collectors.toList());
+        return listAllConsumers().stream()
+                                 .filter(consumer -> getConsumerTopics(consumer).contains(topic))
+                                 .collect(Collectors.toList());
     }
 
     protected List<String> getConsumerTopics(String group) {

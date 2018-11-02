@@ -74,11 +74,11 @@ public class CatCommand extends Command {
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder()
-                .longOpt("schema-store")
-                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
-                .hasArg()
-                .argName("SCHEMA_STORE_PATH")
-                .build());
+                                .longOpt("schema-store")
+                                .desc("Set path of a FileAvroSchemaStore to load Avro schemas")
+                                .hasArg()
+                                .argName("SCHEMA_STORE_PATH")
+                                .build());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CatCommand extends Command {
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         String codec = cmd.getOptionValue("codec");
-        String avroSchemaStorePath  = cmd.getOptionValue("schema-store");
+        String avroSchemaStorePath = cmd.getOptionValue("schema-store");
         if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
             avroSchemaStorePath = NUXEO_SCHEMA_STORE;
         }
