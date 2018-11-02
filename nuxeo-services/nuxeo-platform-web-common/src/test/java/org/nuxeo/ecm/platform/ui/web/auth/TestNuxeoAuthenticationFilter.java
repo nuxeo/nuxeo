@@ -316,6 +316,7 @@ public class TestNuxeoAuthenticationFilter {
         doTestGetRequestedUrl("", "");
         doTestGetRequestedUrl("?gee=moo", "gee=moo");
         doTestGetRequestedUrl("?gee=moo&abc=def", "gee=moo&abc=def");
+        doTestGetRequestedUrl("?gee=moo+def", "gee=moo+def");
         // strip conversationId
         doTestGetRequestedUrl("?gee=moo", "gee=moo&conversationId=1234");
         doTestGetRequestedUrl("?gee=moo", "conversationId=1234&gee=moo");
@@ -326,6 +327,9 @@ public class TestNuxeoAuthenticationFilter {
         doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/foo/bar.xhtml", "/foo/bar.xhtml", null,
                 queryString);
         doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/foo/bar.xhtml", "/foo", "/bar.xhtml",
+                queryString);
+        // we expected the requested URL to NOT be decoded
+        doTestGetRequestedUrl("foo%20bar.xhtml" + expectedSuffix, "/nuxeo/foo%20bar.xhtml", "/foo bar.xhtml", null,
                 queryString);
         // here we use info that a servlet container would provide, based on parsing per the servlet spec
         doTestGetRequestedUrl("foo/bar.xhtml" + expectedSuffix, "/nuxeo/login.jsp/../foo/bar.xhtml;jsessionid=123",
