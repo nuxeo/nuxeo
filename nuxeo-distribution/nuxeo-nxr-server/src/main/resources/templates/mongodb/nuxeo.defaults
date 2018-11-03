@@ -6,6 +6,15 @@ nuxeo.db.type=mongodb
 nuxeo.mongodb.server=localhost:27017
 #nuxeo.mongodb.server=mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 nuxeo.mongodb.dbname=nuxeo
+# TLS/SSL configuration
+nuxeo.mongodb.ssl=
+nuxeo.mongodb.truststore.path=
+nuxeo.mongodb.truststore.password=
+nuxeo.mongodb.truststore.type=
+nuxeo.mongodb.keystore.path=
+nuxeo.mongodb.keystore.password=
+nuxeo.mongodb.keystore.type=
+
 nuxeo.quartz.enable=true
 
 ## MongoDB directories activation
