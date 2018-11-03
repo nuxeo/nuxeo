@@ -58,7 +58,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         Collection<MongoDBConnectionConfig> confs = getDescriptors(XP_CONNECTION);
         confs.forEach(c -> {
             log.debug("Initializing MongoClient with id={}", c::getId);
-            clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c.server));
+            clients.put(c.getId(), MongoDBConnectionHelper.newMongoClient(c));
         });
     }
 
