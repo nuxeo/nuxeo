@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -69,14 +68,54 @@ public class ESRestClientFactory implements ESClientFactory {
 
     public static final String AUTH_PASSWORD_OPT = "password";
 
+    /**
+     * @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PATH_OPT} instead
+     */
+    @Deprecated
     public static final String KEYSTORE_PATH_OPT = "keystore.path";
 
+    /**
+     * @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PASSWORD_OPT} instead
+     */
+    @Deprecated
     public static final String KEYSTORE_PASSWORD_OPT = "keystore.password";
 
     /**
      * @since 9.10-HF01
+     * @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_TYPE_OPT} instead
      */
+    @Deprecated
     public static final String KEYSTORE_TYPE_OPT = "keystore.type";
+
+    /** @since 10.3 */
+    public static final String TRUST_STORE_PATH_OPT = "trustStorePath";
+
+    /** @since 10.3 */
+    public static final String TRUST_STORE_PASSWORD_OPT = "trustStorePassword";
+
+    /** @since 10.3 */
+    public static final String TRUST_STORE_TYPE_OPT = "trustStoreType";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_PATH_OPT = "keyStorePath";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_PASSWORD_OPT = "keyStorePassword";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_TYPE_OPT = "keyStoreType";
+
+    /** @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PATH_OPT} instead */
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_PATH_OPT = KEYSTORE_PATH_OPT;
+
+    /** @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PASSWORD_OPT} instead */
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_PASSWORD_OPT = KEYSTORE_PASSWORD_OPT;
+
+    /** @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_TYPE_OPT} instead */
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_TYPE_OPT = KEYSTORE_TYPE_OPT;
 
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
@@ -115,10 +154,7 @@ public class ESRestClientFactory implements ESClientFactory {
                                                               getConnectTimeoutMs(config)).setSocketTimeout(
                                                                       getSocketTimeoutMs(config)))
                                               .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
-        if (StringUtils.isNotBlank(config.getOption(AUTH_USER_OPT))
-                || StringUtils.isNotBlank(config.getOption(KEYSTORE_PATH_OPT))) {
-            addClientCallback(config, builder);
-        }
+        addClientCallback(config, builder);
         RestClient lowLevelRestClient = builder.build();
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
         // checkConnection(client);
@@ -128,13 +164,12 @@ public class ESRestClientFactory implements ESClientFactory {
     private void addClientCallback(ElasticSearchClientConfig config, RestClientBuilder builder) {
         BasicCredentialsProvider credentialProvider = getCredentialProvider(config);
         SSLContext sslContext = getSslContext(config);
+        if (sslContext == null && credentialProvider == null) {
+            return;
+        }
         builder.setHttpClientConfigCallback(httpClientBuilder -> {
-            if (sslContext != null) {
-                httpClientBuilder.setSSLContext(sslContext);
-            }
-            if (credentialProvider != null) {
-                httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
-            }
+            httpClientBuilder.setSSLContext(sslContext);
+            httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
             return httpClientBuilder;
         });
     }
@@ -151,24 +186,46 @@ public class ESRestClientFactory implements ESClientFactory {
     }
 
     protected SSLContext getSslContext(ElasticSearchClientConfig config) {
-        if (StringUtils.isBlank(config.getOption(KEYSTORE_PATH_OPT))) {
-            return null;
-        }
+        String trustStorePath = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_PATH_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_PATH_OPT));
+        String trustStorePassword = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_PASSWORD_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_PASSWORD_OPT));
+        String trustStoreType = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_TYPE_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_TYPE_OPT));
+        String keyStorePath = config.getOption(KEY_STORE_PATH_OPT);
+        String keyStorePassword = config.getOption(KEY_STORE_PASSWORD_OPT);
+        String keyStoreType = config.getOption(KEY_STORE_TYPE_OPT);
         try {
-            Path keyStorePath = Paths.get(config.getOption(KEYSTORE_PATH_OPT));
-            String keyStorePass = config.getOption(KEYSTORE_PASSWORD_OPT);
-            String keyStoreType = StringUtils.defaultIfBlank(config.getOption(KEYSTORE_TYPE_OPT), KeyStore.getDefaultType());
-            char[] keyPass = StringUtils.isBlank(keyStorePass) ? null : keyStorePass.toCharArray();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            try (InputStream is = Files.newInputStream(keyStorePath)) {
-                keyStore.load(is, keyPass);
+            KeyStore trustStore = loadKeyStore(trustStorePath, trustStorePassword, trustStoreType);
+            KeyStore keyStore = loadKeyStore(keyStorePath, keyStorePassword, keyStoreType);
+            if (trustStore == null && keyStore == null) {
+                return null;
             }
-            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(keyStore, null);
-            return sslBuilder.build();
+            SSLContextBuilder sslContextBuilder = SSLContexts.custom();
+            if (trustStore != null) {
+                sslContextBuilder.loadTrustMaterial(trustStore, null);
+            }
+            if (keyStore != null) {
+                sslContextBuilder.loadKeyMaterial(keyStore, null);
+            }
+            return sslContextBuilder.build();
         } catch (GeneralSecurityException | IOException e) {
             throw new NuxeoException("Cannot setup SSL for RestClient: " + config, e);
         }
+    }
 
+    protected KeyStore loadKeyStore(String path, String password, String type)
+            throws GeneralSecurityException, IOException {
+        if (StringUtils.isBlank(path)) {
+            return null;
+        }
+        String keyStoreType = StringUtils.defaultIfBlank(type, KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] passwordChars = StringUtils.isBlank(password) ? null : password.toCharArray();
+        try (InputStream is = Files.newInputStream(Paths.get(path))) {
+            keyStore.load(is, passwordChars);
+        }
+        return keyStore;
     }
 
     protected int getConnectTimeoutMs(ElasticSearchClientConfig config) {
