@@ -20,11 +20,21 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.stream.StreamSupport;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -59,6 +69,20 @@ public class MongoDBConnectionHelper {
      * @return the MongoDB client
      */
     public static MongoClient newMongoClient(String server) {
+        MongoDBConnectionConfig config = new MongoDBConnectionConfig();
+        config.server = server;
+        return newMongoClient(config);
+    }
+
+    /**
+     * Initializes a connection to the MongoDB server.
+     *
+     * @param config the MongoDB connection config
+     * @return the MongoDB client
+     * @since 10.3
+     */
+    public static MongoClient newMongoClient(MongoDBConnectionConfig config) {
+        String server = config.server;
         if (StringUtils.isBlank(server)) {
             throw new RuntimeException("Missing <server> in MongoDB descriptor");
         }
@@ -69,6 +93,15 @@ public class MongoDBConnectionHelper {
                   .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
                   .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
                   .description("Nuxeo");
+        SSLContext sslContext = getSSLContext(config);
+        if (sslContext == null) {
+            if (config.ssl != null) {
+                optionsBuilder.sslEnabled(config.ssl.booleanValue());
+            }
+        } else {
+            optionsBuilder.sslEnabled(true);
+            optionsBuilder.sslContext(sslContext);
+        }
         MongoClient client;
         if (server.startsWith("mongodb://")) {
             // allow mongodb:// URI syntax for the server, to pass everything in one string
@@ -80,6 +113,40 @@ public class MongoDBConnectionHelper {
             log.debug("MongoClient initialized with options: " + client.getMongoClientOptions().toString());
         }
         return client;
+    }
+
+    protected static SSLContext getSSLContext(MongoDBConnectionConfig config) {
+        try {
+            KeyStore trustStore = loadKeyStore(config.trustStorePath, config.trustStorePassword, config.trustStoreType);
+            KeyStore keyStore = loadKeyStore(config.keyStorePath, config.keyStorePassword, config.keyStoreType);
+            if (trustStore == null && keyStore == null) {
+                return null;
+            }
+            SSLContextBuilder sslContextBuilder = SSLContexts.custom();
+            if (trustStore != null) {
+                sslContextBuilder.loadTrustMaterial(trustStore, null);
+            }
+            if (keyStore != null) {
+                sslContextBuilder.loadKeyMaterial(keyStore, null);
+            }
+            return sslContextBuilder.build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("Cannot setup SSL context: " + config, e);
+        }
+    }
+
+    protected static KeyStore loadKeyStore(String path, String password, String type)
+            throws GeneralSecurityException, IOException {
+        if (StringUtils.isBlank(path)) {
+            return null;
+        }
+        String keyStoreType = StringUtils.defaultIfBlank(type, KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] passwordChars = StringUtils.isBlank(password) ? null : password.toCharArray();
+        try (InputStream is = Files.newInputStream(Paths.get(path))) {
+            keyStore.load(is, passwordChars);
+        }
+        return keyStore;
     }
 
     /**

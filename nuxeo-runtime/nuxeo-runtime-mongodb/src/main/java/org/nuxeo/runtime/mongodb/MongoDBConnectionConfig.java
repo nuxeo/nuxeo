@@ -36,6 +36,34 @@ public class MongoDBConnectionConfig implements Descriptor {
     @XNode("server")
     public String server;
 
+    /** @since 10.3 */
+    @XNode("ssl")
+    public Boolean ssl;
+
+    /** @since 10.3 */
+    @XNode("trustStorePath")
+    public String trustStorePath;
+
+    /** @since 10.3 */
+    @XNode("trustStorePassword")
+    public String trustStorePassword;
+
+    /** @since 10.3 */
+    @XNode("trustStoreType")
+    public String trustStoreType;
+
+    /** @since 10.3 */
+    @XNode("keyStorePath")
+    public String keyStorePath;
+
+    /** @since 10.3 */
+    @XNode("keyStorePassword")
+    public String keyStorePassword;
+
+    /** @since 10.3 */
+    @XNode("keyStoreType")
+    public String keyStoreType;
+
     @XNode("dbname")
     public String dbname;
 
